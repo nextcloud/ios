@@ -46,6 +46,13 @@
                             <constraint firstAttribute="width" constant="25" id="cZG-gx-gwt"/>
                         </constraints>
                     </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
+                        <rect key="frame" x="5" y="200" width="15" height="15"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="15" id="gq1-0a-eLC"/>
+                            <constraint firstAttribute="width" constant="15" id="uJE-4b-Qt7"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
             </view>
             <constraints>
@@ -56,10 +63,12 @@
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="EJs-Ro-nbe" secondAttribute="trailing" id="Pfe-J0-t9I"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="a0p-rj-jnV" secondAttribute="trailing" constant="-20" id="UtQ-6D-cYc"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="45" id="eEC-eB-alE"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="gZe-FC-8XQ"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
+                <constraint firstItem="a0p-rj-jnV" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-20" id="upV-Ov-WWd"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <size key="customSize" width="220" height="260"/>
@@ -67,6 +76,7 @@
                 <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
+                <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
                 <outlet property="labelTitleTrailing" destination="5SO-rO-DnZ" id="peA-RW-j2u"/>
             </connections>

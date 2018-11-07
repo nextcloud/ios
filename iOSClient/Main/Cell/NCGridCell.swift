@@ -29,7 +29,8 @@ class NCGridCell: UICollectionViewCell {
     @IBOutlet weak var imageItem: UIImageView!
     
     @IBOutlet weak var imageSelect: UIImageView!
-    
+    @IBOutlet weak var imageStatus: UIImageView!
+
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
 

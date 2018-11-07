@@ -691,6 +691,14 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             if metadata.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
+                // Status image: passcode
+                let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
+                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
+                    cell.imageStatus.image = UIImage.init(named: "passcode")
+                } else {
+                    cell.imageStatus.image = nil
+                }
             } else {
                 cell.imageItem.image = image
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " " + CCUtility.transformedSize(metadata.size)
@@ -739,6 +747,14 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                 image = UIImage.init(named: "folder")
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
                 cell.imageItem.contentMode = .center
+                // Status image: passcode
+                let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
+                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
+                    cell.imageStatus.image = UIImage.init(named: "passcode")
+                } else {
+                    cell.imageStatus.image = nil
+                }
             } else {
                 cell.imageItem.image = image
                 if imagePreview == false {

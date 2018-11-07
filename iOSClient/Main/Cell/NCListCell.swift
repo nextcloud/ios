@@ -30,6 +30,7 @@ class NCListCell: UICollectionViewCell {
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var imageSelect: UIImageView!
+    @IBOutlet weak var imageStatus: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
@@ -50,7 +51,7 @@ class NCListCell: UICollectionViewCell {
         super.awakeFromNib()
        
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-        
+
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
     }
     
