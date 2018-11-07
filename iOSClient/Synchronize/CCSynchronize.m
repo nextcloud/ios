@@ -333,7 +333,7 @@
         
         if (withDownload) {
             
-            if (![localFile.etag isEqualToString:metadata.etag])
+            if (![localFile.etag isEqualToString:metadata.etag] || ![CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView])
                 changeRev = YES;
             
         } else {
