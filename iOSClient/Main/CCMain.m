@@ -3791,7 +3791,7 @@
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        if (localFile == nil) {
+                                        if (localFile == nil || ![CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
                                             self.metadata.session = k_download_session;
                                             self.metadata.sessionError = @"";
                                             self.metadata.sessionSelector = selectorLoadOffline;
