@@ -363,6 +363,8 @@
 "_search_in_progress_"          = "Search in progress…";
 "_search_instruction_"          = "Search for file (minimum 2 characters)";
 "_files_no_files_"              = "No files in here";
+"_files_no_folders_"            = "No folders in here";
+"_request_in_progress_"         = "Request in progress…";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";

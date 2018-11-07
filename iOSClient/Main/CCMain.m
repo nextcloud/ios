@@ -1856,44 +1856,33 @@
     }];
 }
 
-// DELEGATE : Move
-- (void)dismissMove
+// DELEGATE : Select
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type
 {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
-}
-
-// DELEGATE : Move
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
-{
-    [_queueSelector removeAllObjects];
-    
-    // E2EE DENIED
-    if ([CCUtility isFolderEncrypted:serverUrlTo account:appDelegate.activeAccount]) {
-        
-        [appDelegate messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
-        return;
-    }
-    
-    if ([_selectedFileIDsMetadatas count] > 0) {
-            
-        _numSelectedFileIDsMetadatas = [_selectedFileIDsMetadatas count];
-        NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
-            
-        [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[[metadatas objectAtIndex:0], serverUrlTo, [NSNumber numberWithInteger:[_selectedFileIDsMetadatas count]], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
-            
-    } else {
-        
-        _numSelectedFileIDsMetadatas = 1;
-        [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[self.metadata, serverUrlTo, [NSNumber numberWithInteger:1], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
-    }
-}
-
-- (void)dismissSelectWithServerUrl:(NSString *)withServerUrl metadata:(tableMetadata *)metadata type:(NSString *)type
-{
-    if (withServerUrl == nil && metadata == nil) {
+    if (serverUrl == nil) {
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     } else {
+        [_queueSelector removeAllObjects];
         
+        // E2EE DENIED
+        if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) {
+            
+            [appDelegate messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+            return;
+        }
+        
+        if ([_selectedFileIDsMetadatas count] > 0) {
+            
+            _numSelectedFileIDsMetadatas = [_selectedFileIDsMetadatas count];
+            NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
+            
+            [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[[metadatas objectAtIndex:0], serverUrl, [NSNumber numberWithInteger:[_selectedFileIDsMetadatas count]], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
+            
+        } else {
+            
+            _numSelectedFileIDsMetadatas = 1;
+            [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[self.metadata, serverUrl, [NSNumber numberWithInteger:1], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
+        }
     }
 }
 
@@ -1901,32 +1890,6 @@
 {
     if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
         return;
-    
-    /*
-    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
-    
-    CCMove *viewController = (CCMove *)navigationController.topViewController;
-
-    viewController.delegate = self;
-    viewController.move.title = NSLocalizedString(@"_move_", nil);
-    viewController.tintColor = [NCBrandColor sharedInstance].brandText;
-    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
-    viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
-    viewController.networkingOperationQueue = appDelegate.netQueue;
-    // E2EE
-    viewController.includeDirectoryE2EEncryption = NO;
-    
-    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-    [self presentViewController:navigationController animated:YES completion:nil];
-     
-     @objc var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
-     @objc var serverUrl = ""
-     @objc var directoryID = ""
-     @objc var hideButtonCreateFolder = false
-     @objc var selectFile = false
-     @objc var includeDirectoryE2EEncryption = false
-     @objc var includeImages = false
-    */
     
     UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCSelect" bundle:nil] instantiateInitialViewController];
     NCSelect *viewController = (NCSelect *)navigationController.topViewController;

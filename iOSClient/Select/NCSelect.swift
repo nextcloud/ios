@@ -24,7 +24,7 @@
 import Foundation
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(withServerUrl: String?, metadata: tableMetadata?, type: String)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String)
 }
 
 class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
@@ -36,8 +36,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     @IBOutlet fileprivate weak var buttonCreateFolder: UIBarButtonItem!
     @IBOutlet fileprivate weak var buttonDone: UIBarButtonItem!
 
-    // external settings
+    // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
+    
     @objc var hideButtonCreateFolder = false
     @objc var selectFile = false
     @objc var includeDirectoryE2EEncryption = false
@@ -48,10 +49,12 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
     var serverUrl = ""
     var directoryID = ""
+    // -------------------------------------------------------------
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var isEditMode = false
+    private var networkInProgress = false
     private var selectFileID = [String]()
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
@@ -71,8 +74,6 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     private let footerHeight: CGFloat = 50
     
     private let refreshControl = UIRefreshControl()
-    
-    private var metadataSelect = tableMetadata()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -161,13 +162,23 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+        if networkInProgress {
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), multiplier: 2, color: UIColor.lightGray)
+        } else {
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+        }
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_files_no_files_", comment: "")
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        return NSAttributedString.init(string: text, attributes: attributes)
+        
+        if networkInProgress {
+            return NSAttributedString.init(string: "\n"+NSLocalizedString("_request_in_progress_", comment: ""), attributes: attributes)
+        } else if includeImages {
+            return NSAttributedString.init(string: "\n"+NSLocalizedString("_files_no_files_", comment: ""), attributes: attributes)
+        } else {
+            return NSAttributedString.init(string: "\n"+NSLocalizedString("_files_no_folders_", comment: ""), attributes: attributes)
+        }
     }
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
@@ -177,16 +188,37 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: Any) {
-        delegate?.dismissSelect(withServerUrl: nil, metadata: nil, type: type)
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type)
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone(_ sender: Any) {
-        delegate?.dismissSelect(withServerUrl: serverUrl, metadata: metadataSelect, type: type)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: nil, type: type)
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionCreateFolder(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message:"", preferredStyle: .alert)
+        
+        alertController.addTextField { (textField) in
+            textField.autocapitalizationType = UITextAutocapitalizationType.words
+        }
+        
+        let actionSave = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default) { (action:UIAlertAction) in
+            if let fileName = alertController.textFields?.first?.text  {
+                self.createFolder(with: fileName)
+            }
+        }
+        
+        let actionCancel = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (action:UIAlertAction) in
+            print("You've pressed cancel button")
+        }
+        
+        alertController.addAction(actionSave)
+        alertController.addAction(actionCancel)
+        
+        self.present(alertController, animated: true, completion:nil)
     }
     
     // MARK: TAP EVENT
@@ -289,59 +321,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     }
     
     func tapMoreListItem(with fileID: String, sender: Any) {
-        tapMoreGridItem(with: fileID, sender: sender)
     }
     
     func tapMoreGridItem(with fileID: String, sender: Any) {
-        
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
-            return
-        }
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        
-        if !isEditMode {
-            
-            var items = [ActionSheetItem]()
-            let appearanceDelete = ActionSheetItemAppearance.init()
-            appearanceDelete.textColor = UIColor.red
-            
-            if (metadata.directory == false || serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)) {
-                items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
-            }
-            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
-            
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
-            itemDelete.customAppearance = appearanceDelete
-            items.append(itemDelete)
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-            
-            actionSheet = ActionSheet(items: items) { sheet, item in
-                if item.value as? Int == 0 {
-                    if metadata.directory {
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!, offline: false)
-                    } else {
-                        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
-                    }
-                    self.loadDatasource(withLoadFolder: false)
-                }
-                if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
-                if item.value as? Int == 2 {  print("option 2") }
-                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-            }
-            
-            let headerView = actionSheetHeader(with: metadata)
-            actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
-            
-            actionSheet?.present(in: self, from: sender as! UIButton)
-        } else {
-            
-            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
-            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
-            collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        }
     }
     
     // MARK: DROP-DOWN-MENU
@@ -405,11 +387,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
-            
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
-            
         }
     }
     
@@ -442,6 +422,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     func loadFolder() {
         
+        networkInProgress = true
+        collectionView.reloadData()
+        
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         ocNetworking?.readFolder(serverUrl, depth: "1", account: appDelegate.activeAccount, success: { (metadatas, metadataFolder, directoryID) in
@@ -459,14 +442,16 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.networkInProgress = false
                 self.loadDatasource(withLoadFolder: false)
             }
             
         }, failure: { (message, errorCode) in
-            
+                        
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.networkInProgress = false
                 self.loadDatasource(withLoadFolder: false)
             }
         })
@@ -755,22 +740,25 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                 return
             }
             
-            visualController.directoryID = directoryIDPush
-            visualController.serverUrl = serverUrlPush
-            visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
-            visualController.includeImages = includeImages
+            visualController.delegate = delegate
+            
             visualController.hideButtonCreateFolder = hideButtonCreateFolder
             visualController.selectFile = selectFile
+            visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
+            visualController.includeImages = includeImages
             visualController.type = type
-            visualController.titleCurrentFolder = metadata.fileNameView
             visualController.titleButtonDone = titleButtonDone
-            
-//            visualController.metadataSelect = metadata
+
+            visualController.titleCurrentFolder = metadata.fileNameView
+            visualController.serverUrl = serverUrlPush
+            visualController.directoryID = directoryIDPush
             
             self.navigationController?.pushViewController(visualController, animated: true)
             
         } else {
             
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type)
+            self.dismiss(animated: true, completion: nil)
         }
     }
     
