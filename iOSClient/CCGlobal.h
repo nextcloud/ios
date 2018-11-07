@@ -312,6 +312,7 @@
 
 // Layout View
 #define k_layout_view_move                              @"LayoutMove"
+#define k_layout_view_richdocument                      @"LayoutRichdocument"
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
 

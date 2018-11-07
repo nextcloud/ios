@@ -129,6 +129,11 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         buttonDone.title = titleButtonDone
         
+        if selectFile {
+            buttonDone.isEnabled = false
+            buttonDone.tintColor = UIColor.clear
+        }
+        
         if hideButtonCreateFolder {
             buttonCreateFolder.isEnabled = false
             buttonCreateFolder.tintColor = UIColor.clear

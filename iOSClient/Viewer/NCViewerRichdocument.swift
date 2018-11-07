@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CCMoveDelegate {
+class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     
     @objc static let sharedInstance: NCViewerRichdocument = {
         let instance = NCViewerRichdocument()
@@ -77,23 +77,20 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
             
             if message.body as! String == "insertGraphic" {
                 
-                let storyboard = UIStoryboard(name: "CCMove", bundle: nil)
-                let movieNavigationController = storyboard.instantiateViewController(withIdentifier: "CCMove") as! UINavigationController
-                let moveViewController = movieNavigationController.topViewController as! CCMove
+                let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+                let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
+                let viewController = navigationController.topViewController as! NCSelect
                 
-                moveViewController.delegate = self
-                moveViewController.hideMoveutton = true
-                moveViewController.hideCreateFolder = true
-                moveViewController.tintColor = NCBrandColor.sharedInstance.brandText
-                moveViewController.barTintColor = NCBrandColor.sharedInstance.brand
-                moveViewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
-                moveViewController.networkingOperationQueue = appDelegate.netQueue
-                moveViewController.includeImages = true
-                moveViewController.includeDirectoryE2EEncryption = false
-                moveViewController.selectFile = true
+                viewController.delegate = self
+                viewController.hideButtonCreateFolder = true
+                viewController.selectFile = true
+                viewController.includeDirectoryE2EEncryption = false
+                viewController.includeImages = true
+                viewController.type = ""
+                viewController.layoutViewSelect = k_layout_view_richdocument
                 
-                movieNavigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-                self.detail.present(movieNavigationController, animated: true, completion: nil)
+                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                self.detail.present(navigationController, animated: true, completion: nil)
             }
             
             if message.body as! String == "share" {
@@ -103,6 +100,22 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
     }
     
     //MARK: -
+    
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+        
+        if serverUrl != nil && metadata != nil {
+            
+            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+            ocNetworking?.createAssetRichdocuments(withFileName: metadata!.fileName, serverUrl: serverUrl, success: { (url) in
+                
+                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
+                self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+                
+            }, failure: { (message, errorCode) in
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            })
+        }
+    }
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
