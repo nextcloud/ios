@@ -549,6 +549,9 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+        }
         
         if metadata.iconName.count > 0 {
             image = UIImage.init(named: metadata.iconName)
@@ -574,13 +577,40 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             cell.fileID = metadata.fileID
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
+            cell.imageStatus.image = nil
+            cell.imageLocal.image = nil
+            cell.imageFavorite.image = nil
             
             if metadata.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
+                
+                let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
+                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                // Status image: passcode
+                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
+                    cell.imageStatus.image = UIImage.init(named: "passcode")
+                }
+                // Local image: offline
+                if tableDirectory != nil && tableDirectory!.offline {
+                    cell.imageLocal.image = UIImage.init(named: "offlineFlag")
+                }
+                
             } else {
                 cell.imageItem.image = image
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " " + CCUtility.transformedSize(metadata.size)
+                
+                // image Local
+                let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+                if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+                    if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
+                    else { cell.imageLocal.image = UIImage.init(named: "local") }
+                }
+            }
+            
+            // image Favorite
+            if metadata.favorite {
+                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
             }
             
             if isEditMode {
@@ -623,6 +653,17 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 image = UIImage.init(named: "folder")
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
                 cell.imageItem.contentMode = .center
+                
+                let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
+                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                // Status image: passcode
+                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
+                    cell.imageStatus.image = UIImage.init(named: "passcode")
+                }
+                // Local image: offline
+                if tableDirectory != nil && tableDirectory!.offline {
+                    cell.imageLocal.image = UIImage.init(named: "offlineFlag")
+                }
             } else {
                 cell.imageItem.image = image
                 if imagePreview == false {
@@ -631,6 +672,17 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                     cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
                     cell.imageItem.contentMode = .center
                 }
+                // image Local
+                let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+                if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+                    if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
+                    else { cell.imageLocal.image = UIImage.init(named: "local") }
+                }
+            }
+            
+            // image Favorite
+            if metadata.favorite {
+                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
             }
             
             if isEditMode {
