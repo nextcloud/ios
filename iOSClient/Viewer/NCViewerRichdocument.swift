@@ -38,6 +38,8 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         
         self.detail = detail
         
+//        detail.navigationController?.setNavigationBarHidden(true, animated: false)
+        
         let contentController = WKUserContentController()
         contentController.add(self, name: "RichDocumentsMobileInterface")
         let configuration = WKWebViewConfiguration()
@@ -71,7 +73,8 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
 
                 self.webView.removeFromSuperview()
                 
-                self.detail.navigationController?.popToRootViewController(animated: true)
+                self.detail.navigationController?.popViewController(animated: true)
+//                detail.navigationController?.setNavigationBarHidden(false, animated: false)
                 self.detail.navigationController?.navigationBar.topItem?.title = ""
             }
             
