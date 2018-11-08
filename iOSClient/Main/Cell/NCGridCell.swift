@@ -36,12 +36,18 @@ class NCGridCell: UICollectionViewCell {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
 
+    @IBOutlet weak var imageShare: UIImageView!
+    @IBOutlet weak var imageShareTrailing: NSLayoutConstraint!
+
     @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCGridCellDelegate?
     
     var fileID = ""
     var indexPath = IndexPath()
+    
+    let labelTitleTrailingConstant: CGFloat = 55
+    let imageShareTrailingConstant: CGFloat = 25
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -51,6 +57,46 @@ class NCGridCell: UICollectionViewCell {
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreGridItem(with: fileID, sender: sender)
+    }
+    
+    func hide(buttonMore: Bool, imageShare: Bool) {
+        
+        if buttonMore && imageShare {
+            
+            self.buttonMore.isHidden = true
+            self.buttonMore.isEnabled = false
+            self.imageShare.isHidden = true
+            
+            imageShareTrailing.constant = 0
+            labelTitleTrailing.constant = imageShareTrailingConstant
+            
+        } else if buttonMore && !imageShare {
+            
+            self.buttonMore.isHidden = true
+            self.buttonMore.isEnabled = false
+            self.imageShare.isHidden = false
+            
+            imageShareTrailing.constant = 0
+            labelTitleTrailing.constant = 10
+            
+        } else if !buttonMore && imageShare {
+            
+            self.buttonMore.isHidden = false
+            self.buttonMore.isEnabled = true
+            self.imageShare.isHidden = true
+            
+            imageShareTrailing.constant = 0
+            labelTitleTrailing.constant = 25
+            
+        } else if !buttonMore && !imageShare {
+            
+            self.buttonMore.isHidden = false
+            self.buttonMore.isEnabled = true
+            self.imageShare.isHidden = false
+            
+            imageShareTrailing.constant = labelTitleTrailingConstant
+            labelTitleTrailing.constant = labelTitleTrailingConstant
+        }
     }
     
     func hideButtonMore() {

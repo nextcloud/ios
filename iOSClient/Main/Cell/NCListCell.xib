@@ -41,13 +41,13 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
-                        <rect key="frame" x="95" y="13" width="455" height="18"/>
+                        <rect key="frame" x="95" y="13" width="430" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="labelInfo">
-                        <rect key="frame" x="95" y="31" width="455" height="15"/>
+                        <rect key="frame" x="95" y="31" width="430" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -91,9 +91,17 @@
                             <constraint firstAttribute="height" constant="15" id="N8h-3R-JpE"/>
                         </constraints>
                     </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShare">
+                        <rect key="frame" x="530" y="17.5" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="Cvy-nZ-zyD"/>
+                            <constraint firstAttribute="width" constant="25" id="jfe-Fg-vA8"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
             </view>
             <constraints>
+                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="jc6-Vg-TaS" secondAttribute="trailing" constant="45" id="4YU-yn-33L"/>
                 <constraint firstItem="H4E-G2-C1H" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="-10" id="6fN-Jc-WID"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="dgL-g5-Nkc" secondAttribute="trailing" constant="-25" id="980-6s-ave"/>
@@ -104,7 +112,7 @@
                 <constraint firstItem="AXX-71-9Q6" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="Qvq-r5-AX9"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" constant="10" id="RYl-cO-cCN"/>
                 <constraint firstItem="C4K-Nv-phA" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="-10" id="Sof-wy-toF"/>
-                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="50" id="Tq4-bB-YMV"/>
+                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="75" id="Tq4-bB-YMV"/>
                 <constraint firstItem="H4E-G2-C1H" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="-10" id="UWI-r9-vcA"/>
                 <constraint firstItem="7Q9-Tv-9yo" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="-10" id="XbB-4a-WpA"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
@@ -113,10 +121,11 @@
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" constant="45" id="mBb-ff-7HD"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="7Q9-Tv-9yo" secondAttribute="trailing" constant="-10" id="mon-aq-gcP"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="top" secondItem="Gu8-oz-zWa" secondAttribute="top" constant="13" id="nrY-2F-QZ2"/>
+                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="75" id="p0M-zU-aDG"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="qKl-4Y-m5t"/>
-                <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="10" id="qem-j1-9RR"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" id="s2S-RP-cw5"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="sJp-0x-bdC"/>
+                <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="sp2-s7-rxZ"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="Gu8-oz-zWa"/>
             <size key="customSize" width="650" height="58"/>
@@ -128,6 +137,8 @@
                 <outlet property="imageLocal" destination="H4E-G2-C1H" id="waX-r5-viX"/>
                 <outlet property="imageMore" destination="dgL-g5-Nkc" id="r7x-Ib-4nz"/>
                 <outlet property="imageSelect" destination="AyA-hP-r6w" id="c1t-yz-HBg"/>
+                <outlet property="imageShare" destination="jc6-Vg-TaS" id="uca-x2-wak"/>
+                <outlet property="imageShareTrailing" destination="p0M-zU-aDG" id="O55-nu-gbB"/>
                 <outlet property="imageStatus" destination="7Q9-Tv-9yo" id="Qug-Q7-rRZ"/>
                 <outlet property="labelInfo" destination="AXX-71-9Q6" id="krb-tZ-UQ7"/>
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
