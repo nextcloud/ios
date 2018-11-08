@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -32,6 +32,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
+    private var metadataPush: tableMetadata?
     private var isEditMode = false
     private var selectFileID = [String]()
     
@@ -54,8 +55,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
 
     private let refreshControl = UIRefreshControl()
     
-    private var metadataSelect = tableMetadata()
-
+    //BKPasscodeViewController
+    private var failedAttempts: Double = 0
+    private var lockUntilDate: NSDate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -139,6 +142,50 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
+    }
+    
+    // MARK: BKPASSCODEVIEWCONTROLLER
+    
+    func passcodeViewController(_ aViewController: BKPasscodeViewController!, didFinishWithPasscode aPasscode: String!) {
+        aViewController.dismiss(animated: true, completion: nil)
+        performSegueDirectoryWithControlPasscode(controlPasscode: false)
+    }
+    
+    func passcodeViewController(_ aViewController: BKPasscodeViewController!, authenticatePasscode aPasscode: String!, resultHandler aResultHandler: ((Bool) -> Void)!) {
+        if aPasscode == CCUtility.getBlockCode() {
+            failedAttempts = 0
+            lockUntilDate = nil
+            aResultHandler(true)
+        } else {
+            aResultHandler(false)
+        }
+    }
+    
+    func passcodeViewControllerDidFailAttempt(_ aViewController: BKPasscodeViewController!) {
+        failedAttempts += 1
+        if failedAttempts > 5 {
+            var timeInterval: TimeInterval = 60
+            if failedAttempts > 6 {
+                let multiplier: Double = failedAttempts - 6
+                timeInterval = (5 * 60) * multiplier
+                if timeInterval > 3600 * 24 {
+                    timeInterval = 3600 * 24
+                }
+            }
+            lockUntilDate = NSDate.init(timeIntervalSinceNow: timeInterval)
+        }
+    }
+    
+    func passcodeViewControllerNumber(ofFailedAttempts aViewController: BKPasscodeViewController!) -> UInt {
+        return UInt(failedAttempts)
+    }
+    
+    func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date? {
+        return lockUntilDate as Date?
+    }
+    
+    @objc func passcodeViewCloseButtonPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
     }
 
     // MARK: TAP EVENT
@@ -549,7 +596,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
             return
         }
-    
+        metadataPush = metadata
+        
         if isEditMode {
             if let index = selectFileID.index(of: metadata.fileID) {
                 selectFileID.remove(at: index)
@@ -562,24 +610,11 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         if metadata.directory {
         
-            let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
-            
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                return
-            }
-            let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
-            guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
-                return
-            }
-            
-            ncOffline.directoryID = directoryIDPush
-            ncOffline.titleCurrentFolder = metadata.fileNameView
-            
-            self.navigationController?.pushViewController(ncOffline, animated: true)
+            performSegueDirectoryWithControlPasscode(controlPasscode: true)
             
         } else {
             
-            metadataSelect = metadata
+            
             performSegue(withIdentifier: "segueDetail", sender: self)
         }
     }
@@ -600,11 +635,63 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? CCDetail {
             
-                segueViewController.metadataDetail = metadataSelect
+                segueViewController.metadataDetail = metadataPush
                 segueViewController.dateFilterQuery = nil
                 segueViewController.photoDataSource = photoDataSource
-                segueViewController.title = metadataSelect.fileNameView
+                segueViewController.title = metadataPush!.fileNameView
             }
         }
+    }
+    
+    // MARK: NAVIGATION
+    
+    private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadataPush!.directoryID) else {
+            return
+        }
+        let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadataPush!.fileName)
+        guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
+            return
+        }
+        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", directoryIDPush))  else {
+            return
+        }
+        
+        if directoryPush.lock == true && CCUtility.getBlockCode() != nil && (CCUtility.getBlockCode()?.count)! > 0 && controlPasscode {
+            
+            let viewController = CCBKPasscode.init(nibName: nil, bundle: nil)
+            guard let touchIDManager = BKTouchIDManager.init(keychainServiceName: k_serviceShareKeyChain) else {
+                return
+            }
+            touchIDManager.promptText = NSLocalizedString("_scan_fingerprint_", comment: "")
+            
+            viewController.delegate = self
+            viewController.type = BKPasscodeViewControllerCheckPasscodeType
+            viewController.inputViewTitlePassword = true
+            if CCUtility.getSimplyBlockCode() {
+                viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle
+                viewController.passcodeInputView.maximumLength = 6
+            } else {
+                viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle
+                viewController.passcodeInputView.maximumLength = 64
+            }
+            viewController.touchIDManager = touchIDManager
+            viewController.title = NSLocalizedString("_folder_blocked_", comment: "")
+            viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(_:)))
+            viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
+            
+            let navigationController = UINavigationController.init(rootViewController: viewController)
+            self.present(navigationController, animated: true, completion: nil)
+            
+            return
+        }
+        
+        let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
+        
+        ncOffline.directoryID = directoryIDPush
+        ncOffline.titleCurrentFolder = metadataPush!.fileNameView
+        
+        self.navigationController?.pushViewController(ncOffline, animated: true)
     }
 }

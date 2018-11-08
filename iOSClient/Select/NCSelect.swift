@@ -745,6 +745,5 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         visualController.directoryID = directoryIDPush
         
         self.navigationController?.pushViewController(visualController, animated: true)
-        
     }
 }

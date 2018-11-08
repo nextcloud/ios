@@ -3576,7 +3576,7 @@
                                     }];
         }
         
-        if (!lockDirectory && !isFolderEncrypted && optionOffline) {
+        if (!isFolderEncrypted && optionOffline) {
             
             NSString *title;
             
