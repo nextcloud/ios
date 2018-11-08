@@ -273,7 +273,11 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            let headerView = actionSheetHeader(with: fileID)
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+                return
+            }
+            
+            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, fileID: tableTrash.fileID, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)            
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
@@ -304,7 +308,11 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            let headerView = actionSheetHeader(with: fileID)
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+                return
+            }
+            
+            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, fileID: tableTrash.fileID, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
@@ -635,7 +643,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 if selectFileID.contains(tableTrash.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
-                    cell.backgroundView = cellBlurEffect(with: cell.bounds)
+                    cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.backgroundView = nil
@@ -668,7 +676,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(tableTrash.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
-                    cell.backgroundView = cellBlurEffect(with: cell.bounds)
+                    cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
                     cell.backgroundView = nil
@@ -704,49 +712,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
-    }
-    
-    // MARK: UTILITY
-    
-    private func cellBlurEffect(with frame: CGRect) -> UIView {
-        
-        let blurEffect = UIBlurEffect(style: .extraLight)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        
-        blurEffectView.frame = frame
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
-        
-        return blurEffectView
-    }
-    
-    private func actionSheetHeader(with fileID: String) -> UIView? {
-        
-        var image: UIImage?
-
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
-            return nil
-        }
-        
-        // Header
-        if tableTrash.directory {
-            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-        } else if tableTrash.iconName.count > 0 {
-            image = UIImage.init(named: tableTrash.iconName)
-        } else {
-            image = UIImage.init(named: "file")
-        }
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
-        }
-        
-        let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
-        
-        headerView.imageItem.image = image
-        headerView.label.text = tableTrash.trashbinFileName
-        headerView.label.textColor = NCBrandColor.sharedInstance.icon
-        
-        return headerView
     }
 }
 

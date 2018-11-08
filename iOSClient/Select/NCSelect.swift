@@ -747,43 +747,4 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         self.navigationController?.pushViewController(visualController, animated: true)
         
     }
-    
-    // MARK: UTILITY
-    
-    private func cellBlurEffect(with frame: CGRect) -> UIView {
-        
-        let blurEffect = UIBlurEffect(style: .extraLight)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        
-        blurEffectView.frame = frame
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
-        
-        return blurEffectView
-    }
-    
-    private func actionSheetHeader(with metadata: tableMetadata) -> UIView? {
-        
-        var image: UIImage?
-        
-        // Header
-        if metadata.directory {
-            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-        } else if metadata.iconName.count > 0 {
-            image = UIImage.init(named: metadata.iconName)
-        } else {
-            image = UIImage.init(named: "file")
-        }
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
-        }
-        
-        let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
-        
-        headerView.imageItem.image = image
-        headerView.label.text = metadata.fileNameView
-        headerView.label.textColor = NCBrandColor.sharedInstance.icon
-        
-        return headerView
-    }
 }
