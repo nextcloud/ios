@@ -308,7 +308,10 @@
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
-// Layout View
+// Layout
+#define k_layout_list                                   @"typeLayoutList"
+#define k_layout_grid                                   @"typeLayoutGrid"
+
 #define k_layout_view_move                              @"LayoutMove"
 #define k_layout_view_richdocument                      @"LayoutRichdocument"
 #define k_layout_view_trash                             @"LayoutTrash"

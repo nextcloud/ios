@@ -129,6 +129,18 @@ class NCUtility: NSObject {
         return newImage
     }
     
+    func cellBlurEffect(with frame: CGRect) -> UIView {
+        
+        let blurEffect = UIBlurEffect(style: .extraLight)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        blurEffectView.frame = frame
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
+        
+        return blurEffectView
+    }
+    
     func setLayoutForView(key: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool) {
         
         let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)"
@@ -139,7 +151,7 @@ class NCUtility: NSObject {
     func getLayoutForView(key: String) -> (String, String, Bool, String, Bool) {
         
         guard let string = UICKeyChainStore.string(forKey: key, service: k_serviceShareKeyChain) else {
-            return ("list", "fileName", true, "none", true)
+            return (k_layout_list, "fileName", true, "none", true)
         }
 
         let array = string.components(separatedBy: "|")
@@ -150,6 +162,6 @@ class NCUtility: NSObject {
             return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue)
         }
         
-        return ("list", "fileName", true, "none", true)
+        return (k_layout_list, "fileName", true, "none", true)
     }
 }

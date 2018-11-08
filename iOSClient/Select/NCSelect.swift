@@ -149,7 +149,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: layoutViewSelect)
         
-        if typeLayout == "list" {
+        if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -290,7 +290,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = "list"
+            typeLayout = k_layout_list
             NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
@@ -301,7 +301,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = "grid"
+            typeLayout = k_layout_grid
             NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
@@ -460,20 +460,6 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             self.loadDatasource(withLoadFolder: true)
         }, failure: { (message, errorCode) in
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        })
-    }
-    
-    func downloadThumbnail(with metadata: tableMetadata, indexPath: IndexPath) {
-        
-        let width = NCUtility.sharedInstance.getScreenWidthForPreview()
-        let height = NCUtility.sharedInstance.getScreenHeightForPreview()
-        
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.downloadPreview(with: metadata, serverUrl: serverUrl, withWidth: width, andHeight: height, completion: { (message, errorCode) in
-            if errorCode == 0 && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
-                self.collectionView.reloadItems(at: [indexPath])
-            }
         })
     }
     
@@ -653,168 +639,13 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        var image: UIImage?
-        var imagePreview = false
-        
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        if metadata.iconName.count > 0 {
-            image = UIImage.init(named: metadata.iconName)
-        } else {
-            image = UIImage.init(named: "file")
-        }
+        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, hideButtonMore: true, source: self)
         
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName))
-            imagePreview = true
-        } else {
-            if metadata.hasPreview == 1 && !CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
-                downloadThumbnail(with: metadata, indexPath: indexPath)
-            }
-        }
-        
-        if collectionView.collectionViewLayout == listLayout {
-            
-            // LIST
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-            cell.delegate = self
-            
-            // hide button more
-            cell.hideButtonMore()
-            
-            cell.fileID = metadata.fileID
-            cell.indexPath = indexPath
-            cell.labelTitle.text = metadata.fileNameView
-            cell.imageStatus.image = nil
-            cell.imageLocal.image = nil
-            cell.imageFavorite.image = nil
-            
-            if metadata.directory {
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
-                
-                let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
-                // Status image: passcode
-                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
-                    cell.imageStatus.image = UIImage.init(named: "passcode")
-                }
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = UIImage.init(named: "offlineFlag")
-                }
-            } else {
-                cell.imageItem.image = image
-                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " " + CCUtility.transformedSize(metadata.size)
-                
-                // image Local
-                let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
-                    if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
-                    else { cell.imageLocal.image = UIImage.init(named: "local") }
-                }
-            }
-            
-            // image Favorite
-            if metadata.favorite {
-                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
-            }
-            
-            if isEditMode {
-                cell.imageItemLeftConstraint.constant = 45
-                cell.imageSelect.isHidden = false
-                
-                if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
-                    cell.backgroundView = cellBlurEffect(with: cell.bounds)
-                } else {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.backgroundView = nil
-                }
-            } else {
-                cell.imageItemLeftConstraint.constant = 10
-                cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
-            }
-            
-            // Remove last separator
-            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
-                cell.separator.isHidden = true
-            } else {
-                cell.separator.isHidden = false
-            }
-            
-            return cell
-            
-        } else {
-            
-            // GRID
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
-            cell.delegate = self
-            
-            // hide button more
-            cell.hideButtonMore()
-            
-            cell.fileID = metadata.fileID
-            cell.indexPath = indexPath
-            cell.labelTitle.text = metadata.fileNameView
-            cell.imageStatus.image = nil
-            cell.imageLocal.image = nil
-            cell.imageFavorite.image = nil
-            
-            if metadata.directory {
-                image = UIImage.init(named: "folder")
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
-                cell.imageItem.contentMode = .center
-
-                let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
-                // Status image: passcode
-                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
-                    cell.imageStatus.image = UIImage.init(named: "passcode")
-                }
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = UIImage.init(named: "offlineFlag")
-                }
-            } else {
-                cell.imageItem.image = image
-                if imagePreview == false {
-                    let width = cell.imageItem.image!.size.width * 2
-                    //let scale = UIScreen.main.scale
-                    cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
-                    cell.imageItem.contentMode = .center
-                }
-                // image Local
-                let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
-                    if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
-                    else { cell.imageLocal.image = UIImage.init(named: "local") }
-                }
-            }
-            
-            // image Favorite
-            if metadata.favorite {
-                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
-            }
-            
-            if isEditMode {
-                cell.imageSelect.isHidden = false
-                if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
-                    cell.backgroundView = cellBlurEffect(with: cell.bounds)
-                } else {
-                    cell.imageSelect.isHidden = true
-                    cell.backgroundView = nil
-                }
-            } else {
-                cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
-            }
-            return cell
-        }
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

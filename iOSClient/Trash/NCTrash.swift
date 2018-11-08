@@ -96,7 +96,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
         (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_trash)
 
-        if typeLayout == "list" {
+        if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -154,7 +154,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = "list"
+            typeLayout = k_layout_list
             NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
@@ -165,7 +165,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = "grid"
+            typeLayout = k_layout_grid
             NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
