@@ -4381,6 +4381,10 @@
                     
                     [self shouldPerformSegue];
                     
+                } if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCViewerRichdocument sharedInstance] isRichDocument:self.metadata]) {
+                    
+                    [self shouldPerformSegue];
+                    
                 } else {
                    
                     self.metadata.session = k_download_session;

@@ -151,5 +151,30 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("didFinish");
     }
+ 
+    //MARK: -
     
+    @objc func isRichDocument( _ metadata: tableMetadata) -> Bool {
+        
+        guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
+            return false
+        }
+        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes() else {
+            return false
+        }
+        
+        if richdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
+            
+            let mimeTypeArray = mimeType.components(separatedBy: ".")
+            let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
+            
+            for richdocumentMimetype: String in richdocumentsMimetypes {
+                if richdocumentMimetype.contains(mimeType) {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
 }

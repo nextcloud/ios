@@ -189,9 +189,7 @@
     
     // DOCUMENT
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
-        
-        BOOL openWithRichDocument = false;
-        
+                
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
         if ([fileNameExtension isEqualToString:@"PDF"]) {
@@ -203,23 +201,8 @@
             return;
         }
         
-        // Very if mimeType is compatible with Rich Document viewer
-        NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
-        NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
-        
-        if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
-            
-            NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
-            NSString *mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
-            
-            for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
-                if ([richdocumentMimetype containsString:mimeType]) {
-                    openWithRichDocument = true;
-                }
-            }
-        }
-
-        if (openWithRichDocument) {
+        // RichDocument
+        if ([[NCViewerRichdocument sharedInstance] isRichDocument:self.metadataDetail]) {
             
             OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
             

@@ -33,32 +33,6 @@ class NCViewerDocumentWeb: NSObject {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var safeAreaBottom: Int = 0
     
-    @objc func isRichDocument( _ metadata: tableMetadata) -> Bool {
-        
-        var isRichDocument = false
-        
-        guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
-            return isRichDocument
-        }
-        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes() else {
-            return isRichDocument
-        }
-        
-        if richdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
-            
-            let mimeTypeArray = mimeType.components(separatedBy: ".")
-            let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-            
-            for richdocumentMimetype: String in richdocumentsMimetypes {
-                if richdocumentMimetype.contains(mimeType) {
-                    isRichDocument = true
-                }
-            }
-        }
-        
-        return isRichDocument
-    }
-    
     @objc func viewDocumentWebAt(_ metadata: tableMetadata, detail: CCDetail) {
         
         if !CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
