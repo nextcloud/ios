@@ -36,7 +36,7 @@
                         </constraints>
                         <state key="normal" image="more"/>
                         <connections>
-                            <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="I1O-F9-0Sh"/>
+                            <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="GDx-NN-gE9"/>
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
