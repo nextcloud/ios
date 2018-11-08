@@ -184,7 +184,7 @@ class NCMainCommon: NSObject {
     
     //MARK: -
     
-    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, typeLayout: String, metadata: tableMetadata, serverUrl: String, isEditMode: Bool, selectFileID: [String], hideButtonMore: Bool, source: UIViewController) -> UICollectionViewCell {
+    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, typeLayout: String, metadata: tableMetadata, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, source: UIViewController) -> UICollectionViewCell {
         
         var image: UIImage?
         var imagePreview = false
@@ -223,7 +223,13 @@ class NCMainCommon: NSObject {
             }
             
             if metadata.directory {
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                
+                if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
+                    cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                } else {
+                    cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                }
+                
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -283,7 +289,7 @@ class NCMainCommon: NSObject {
             
             // GRID
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
-            cell.delegate = self as? NCGridCellDelegate
+            cell.delegate = source as? NCGridCellDelegate
             
             cell.fileID = metadata.fileID
             cell.indexPath = indexPath
@@ -298,7 +304,12 @@ class NCMainCommon: NSObject {
             }
             
             if metadata.directory {
-                image = UIImage.init(named: "folder")
+                
+                if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
+                    image = UIImage.init(named: "folderAutomaticUpload")
+                } else {
+                    image = UIImage.init(named: "folder")
+                }
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
                 cell.imageItem.contentMode = .center
                 

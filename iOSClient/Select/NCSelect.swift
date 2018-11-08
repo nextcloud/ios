@@ -70,6 +70,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     private var datasourceGroupBy = ""
     private var datasourceDirectoryOnTop = false
     
+    private var autoUploadFileName = ""
+    private var autoUploadDirectory = ""
+    
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
     
@@ -148,6 +151,10 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         }
         
         (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: layoutViewSelect)
+        
+        // get auto upload folder
+        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -643,7 +650,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, hideButtonMore: true, source: self)
+        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, source: self)
         
         return cell
     }
