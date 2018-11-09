@@ -61,16 +61,16 @@ class NCGridCell: UICollectionViewCell {
         delegate?.tapMoreGridItem(with: fileID, sender: sender)
     }
     
-    func hide(buttonMore: Bool, imageShare: Bool) {
+    func hide(buttonMore: Bool, hideImageShare: Bool) {
         
-        if buttonMore && imageShare {
+        if buttonMore && hideImageShare {
             
             self.buttonMore.isHidden = true
             self.imageShare.isHidden = true
             
             labelTitleTrailing.constant = 0
             
-        } else if buttonMore && !imageShare {
+        } else if buttonMore && !hideImageShare {
             
             self.buttonMore.isHidden = true
             self.imageShare.isHidden = false
@@ -78,19 +78,19 @@ class NCGridCell: UICollectionViewCell {
             imageShareTrailing.constant = 0
             labelTitleTrailing.constant = imageShareWidth
             
-        } else if !buttonMore && imageShare {
+        } else if !buttonMore && hideImageShare {
             
             self.buttonMore.isHidden = false
             self.imageShare.isHidden = true
             
             labelTitleTrailing.constant = buttonMoreWidth
             
-        } else if !buttonMore && !imageShare {
+        } else if !buttonMore && !hideImageShare {
             
             self.buttonMore.isHidden = false
             self.imageShare.isHidden = false
             
-            imageShareTrailing.constant = labelTitleTrailingConstant
+            imageShareTrailing.constant = imageShareTrailingConstant
             labelTitleTrailing.constant = labelTitleTrailingConstant
         }
     }

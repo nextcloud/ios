@@ -57,6 +57,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     private var serverUrlPush = ""
     private var directoryIDPush = ""
     private var metadataPush: tableMetadata?
+    private var metadataFolder: tableMetadata?
     
     private var isEditMode = false
     private var networkInProgress = false
@@ -479,6 +480,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         ocNetworking?.readFolder(serverUrl, depth: "1", account: appDelegate.activeAccount, success: { (metadatas, metadataFolder, directoryID) in
             
+            self.metadataFolder = metadataFolder
+            
             // Update directory etag
             NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted)
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide), clearDateReadDirectoryID: directoryID)
@@ -650,7 +653,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, source: self)
+        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, metadataFolder: metadataFolder, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, source: self)
         
         return cell
     }

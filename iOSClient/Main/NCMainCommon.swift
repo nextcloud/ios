@@ -184,7 +184,7 @@ class NCMainCommon: NSObject {
     
     //MARK: -
     
-    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, typeLayout: String, metadata: tableMetadata, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, source: UIViewController) -> UICollectionViewCell {
+    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, typeLayout: String, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, source: UIViewController) -> UICollectionViewCell {
         
         var image: UIImage?
         var imagePreview = false
@@ -204,6 +204,17 @@ class NCMainCommon: NSObject {
             }
         }
         
+        // Share
+        let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
+        let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName)
+        var isShare = false
+        var isMounted = false
+        
+        if metadataFolder != nil {
+            isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
+            isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+        }
+        
         if typeLayout == k_layout_list {
             
             // LIST
@@ -216,33 +227,45 @@ class NCMainCommon: NSObject {
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
-            
-            // hide button more
-            if hideButtonMore {
-                cell.hide(buttonMore: true, imageShare: true)
-            }
+            cell.imageShare.image = nil
+            cell.hide(buttonMore: hideButtonMore, hideImageShare: true)
             
             if metadata.directory {
                 
-                if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                if metadata.e2eEncrypted {
+                    image = UIImage.init(named: "folderEncrypted")
+                } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
+                    image = UIImage.init(named: "folderAutomaticUpload")
+                } else if isShare {
+                    image = UIImage.init(named: "folder_shared_with_me")
+                } else if isMounted {
+                    image = UIImage.init(named: "folder_external")
+                } else if (sharesUserAndGroup != nil) {
+                    image = UIImage.init(named: "folder_shared_with_me")
+                } else if (sharesLink != nil) {
+                    image = UIImage.init(named: "folder_public")
                 } else {
-                    cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folder")
                 }
                 
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                
                 // Status image: passcode
                 if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
                     cell.imageStatus.image = UIImage.init(named: "passcode")
                 }
+                
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
                     cell.imageLocal.image = UIImage.init(named: "offlineFlag")
                 }
+                
             } else {
+                
                 cell.imageItem.image = image
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " " + CCUtility.transformedSize(metadata.size)
                 
@@ -251,6 +274,21 @@ class NCMainCommon: NSObject {
                 if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
                     if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
                     else { cell.imageLocal.image = UIImage.init(named: "local") }
+                }
+                
+                // Share
+                if (isShare) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
+                } else if (isMounted) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
+                } else if (sharesLink != nil) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
+                } else if (sharesUserAndGroup != nil) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
             
@@ -297,33 +335,45 @@ class NCMainCommon: NSObject {
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
-            
-            // hide button more
-            if hideButtonMore {
-                cell.hide(buttonMore: true, imageShare: true)
-            }
+            cell.imageShare.image = nil
+            cell.hide(buttonMore: hideButtonMore, hideImageShare: true)
             
             if metadata.directory {
                 
-                if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
+                if metadata.e2eEncrypted {
+                    image = UIImage.init(named: "folderEncrypted")
+                } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
                     image = UIImage.init(named: "folderAutomaticUpload")
+                } else if isShare {
+                    image = UIImage.init(named: "folder_shared_with_me")
+                } else if isMounted {
+                    image = UIImage.init(named: "folder_external")
+                } else if (sharesUserAndGroup != nil) {
+                    image = UIImage.init(named: "folder_shared_with_me")
+                } else if (sharesLink != nil) {
+                    image = UIImage.init(named: "folder_public")
                 } else {
                     image = UIImage.init(named: "folder")
                 }
+                
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
                 cell.imageItem.contentMode = .center
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                
                 // Status image: passcode
                 if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
                     cell.imageStatus.image = UIImage.init(named: "passcode")
                 }
+                
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
                     cell.imageLocal.image = UIImage.init(named: "offlineFlag")
                 }
+                
             } else {
+                
                 cell.imageItem.image = image
                 if imagePreview == false {
                     let width = cell.imageItem.image!.size.width * 2
@@ -331,11 +381,27 @@ class NCMainCommon: NSObject {
                     cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
                     cell.imageItem.contentMode = .center
                 }
+                
                 // image Local
                 let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
                     if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
                     else { cell.imageLocal.image = UIImage.init(named: "local") }
+                }
+                
+                // Share
+                if (isShare) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
+                } else if (isMounted) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
+                } else if (sharesLink != nil) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
+                } else if (sharesUserAndGroup != nil) {
+                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
             

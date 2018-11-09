@@ -69,9 +69,9 @@ class NCListCell: UICollectionViewCell {
         delegate?.tapMoreListItem(with: fileID, sender: sender)
     }
     
-    func hide(buttonMore: Bool, imageShare: Bool) {
+    func hide(buttonMore: Bool, hideImageShare: Bool) {
         
-        if buttonMore && imageShare {
+        if buttonMore && hideImageShare {
             
             self.buttonMore.isHidden = true
             self.imageMore.isHidden = true
@@ -79,7 +79,7 @@ class NCListCell: UICollectionViewCell {
             
             labelTitleTrailing.constant = 0
             
-        } else if buttonMore && !imageShare {
+        } else if buttonMore && !hideImageShare {
             
             self.buttonMore.isHidden = true
             self.imageMore.isHidden = true
@@ -88,7 +88,7 @@ class NCListCell: UICollectionViewCell {
             imageShareTrailing.constant = 5
             labelTitleTrailing.constant = imageShareWidth + imageShareTrailing.constant
             
-        } else if !buttonMore && imageShare {
+        } else if !buttonMore && hideImageShare {
             
             self.buttonMore.isHidden = false
             self.imageMore.isHidden = false
@@ -96,7 +96,7 @@ class NCListCell: UICollectionViewCell {
 
             labelTitleTrailing.constant = buttonMoreWidth
             
-        } else if !buttonMore && !imageShare {
+        } else if !buttonMore && !hideImageShare {
             
             self.buttonMore.isHidden = false
             self.imageMore.isHidden = false
