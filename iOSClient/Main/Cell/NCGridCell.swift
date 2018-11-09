@@ -46,9 +46,11 @@ class NCGridCell: UICollectionViewCell {
     var fileID = ""
     var indexPath = IndexPath()
     
-    let labelTitleTrailingConstant: CGFloat = 55
+    let labelTitleTrailingConstant: CGFloat = 50
     let imageShareTrailingConstant: CGFloat = 25
-    
+    let imageShareWidth: CGFloat = 25
+    let buttonMoreWidth: CGFloat = 25
+
     override func awakeFromNib() {
         super.awakeFromNib()
        
@@ -64,45 +66,33 @@ class NCGridCell: UICollectionViewCell {
         if buttonMore && imageShare {
             
             self.buttonMore.isHidden = true
-            self.buttonMore.isEnabled = false
             self.imageShare.isHidden = true
             
-            imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = imageShareTrailingConstant
+            labelTitleTrailing.constant = 0
             
         } else if buttonMore && !imageShare {
             
             self.buttonMore.isHidden = true
-            self.buttonMore.isEnabled = false
             self.imageShare.isHidden = false
             
             imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = 10
+            labelTitleTrailing.constant = imageShareWidth
             
         } else if !buttonMore && imageShare {
             
             self.buttonMore.isHidden = false
-            self.buttonMore.isEnabled = true
             self.imageShare.isHidden = true
             
-            imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = 25
+            labelTitleTrailing.constant = buttonMoreWidth
             
         } else if !buttonMore && !imageShare {
             
             self.buttonMore.isHidden = false
-            self.buttonMore.isEnabled = true
             self.imageShare.isHidden = false
             
             imageShareTrailing.constant = labelTitleTrailingConstant
             labelTitleTrailing.constant = labelTitleTrailingConstant
         }
-    }
-    
-    func hideButtonMore() {
-        buttonMore.isHidden = true
-        buttonMore.isEnabled = false
-        labelTitleTrailing.constant = 10
     }
 }
 

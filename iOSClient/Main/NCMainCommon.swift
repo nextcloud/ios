@@ -219,7 +219,7 @@ class NCMainCommon: NSObject {
             
             // hide button more
             if hideButtonMore {
-                cell.hideButtonMore()
+                cell.hide(buttonMore: true, imageShare: true)
             }
             
             if metadata.directory {
@@ -300,7 +300,7 @@ class NCMainCommon: NSObject {
             
             // hide button more
             if hideButtonMore {
-                cell.hideButtonMore()
+                cell.hide(buttonMore: true, imageShare: true)
             }
             
             if metadata.directory {

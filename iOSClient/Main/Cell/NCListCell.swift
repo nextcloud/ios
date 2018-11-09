@@ -54,6 +54,8 @@ class NCListCell: UICollectionViewCell {
 
     let labelTitleTrailingConstant: CGFloat = 75
     let imageShareTrailingConstant: CGFloat = 45
+    let imageShareWidth: CGFloat = 25
+    let buttonMoreWidth: CGFloat = 40
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -72,50 +74,37 @@ class NCListCell: UICollectionViewCell {
         if buttonMore && imageShare {
             
             self.buttonMore.isHidden = true
-            self.buttonMore.isEnabled = false
             self.imageMore.isHidden = true
             self.imageShare.isHidden = true
             
-            imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = 25
+            labelTitleTrailing.constant = 0
             
         } else if buttonMore && !imageShare {
             
             self.buttonMore.isHidden = true
-            self.buttonMore.isEnabled = false
             self.imageMore.isHidden = true
             self.imageShare.isHidden = false
             
-            imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = 10
+            imageShareTrailing.constant = 5
+            labelTitleTrailing.constant = imageShareWidth + imageShareTrailing.constant
             
         } else if !buttonMore && imageShare {
             
             self.buttonMore.isHidden = false
-            self.buttonMore.isEnabled = true
             self.imageMore.isHidden = false
             self.imageShare.isHidden = true
 
-            imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = 25
+            labelTitleTrailing.constant = buttonMoreWidth
             
         } else if !buttonMore && !imageShare {
             
             self.buttonMore.isHidden = false
-            self.buttonMore.isEnabled = true
             self.imageMore.isHidden = false
             self.imageShare.isHidden = false
             
-            imageShareTrailing.constant = labelTitleTrailingConstant
+            imageShareTrailing.constant = imageShareTrailingConstant
             labelTitleTrailing.constant = labelTitleTrailingConstant
         }
-    }
-    
-    func hideButtonMore() {
-        buttonMore.isHidden = true
-        buttonMore.isEnabled = false
-        imageMore.isHidden = true
-        labelTitleTrailing.constant = 10
     }
 }
 
