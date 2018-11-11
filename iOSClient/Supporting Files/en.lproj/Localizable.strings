@@ -93,6 +93,9 @@
 "_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration";
 "_warning_unsupported_"     = "You are using an unsupported version of Nextcloud. For the safety of your data we strongly recommend updating to the latest stable Nextcloud";
 "_restore_"                 = "Restore";
+"_camera_roll_"             = "Camera roll";
+"_tap_here_to_change_"      = "Tap here to change";
+"_no_albums_"               = "No albums";
 
 // App
 

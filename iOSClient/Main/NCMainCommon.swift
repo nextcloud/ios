@@ -857,7 +857,14 @@ class NCMainCommon: NSObject {
     @objc func openPhotosPickerViewController(_ sourceViewController: UIViewController, phAssets: @escaping () -> ()) {
      
         var selectedAssets = [TLPHAsset]()
+        var configure = TLPhotosPickerConfigure()
         
+        configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
+        configure.defaultCameraRollTitle = NSLocalizedString("_camera_roll_", comment: "")
+        configure.doneTitle = NSLocalizedString("_done_", comment: "")
+        configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
+        configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
+
         let viewController = TLPhotosPickerViewController(withTLPHAssets: { [weak self] (assets) in // TLAssets
             selectedAssets = assets
             phAssets()
@@ -871,7 +878,10 @@ class NCMainCommon: NSObject {
         viewController.handleNoCameraPermissions = { [weak self] (picker) in
             // handle denied camera permissions case
         }
+
         viewController.selectedAssets = selectedAssets
+        viewController.configure = configure
+
         sourceViewController.present(viewController, animated: true, completion: nil)
     }
 }
