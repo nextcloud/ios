@@ -22,7 +22,6 @@
 //
 
 #import "CCQuickActions.h"
-#import "CTAssetCheckmark.h"
 #import "CCHud.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
@@ -32,7 +31,6 @@
 {
     AppDelegate *appDelegate;
 
-    CTAssetsPickerController *_picker;
     CCMove *_move;
     CCMain *_mainVC;
     NSMutableArray *_assets;
@@ -72,13 +70,9 @@
 
 - (void)closeAll
 {
-    if (_picker)
-        [_picker dismissViewControllerAnimated:NO completion:nil];
-    
     if (_move)
         [_move dismissViewControllerAnimated:NO completion:nil];
     
-    _picker = nil;
     _move = nil;
     _assets = nil;
 }
@@ -87,6 +81,21 @@
 #pragma mark ===== Assets Picker =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)openAssetsPickerController
+{
+    [[NCMainCommon sharedInstance] openPhotosPickerViewController:self phAssets:^(NSArray<PHAsset *> * _Nonnull assets) {
+        if (assets.count > 0) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                _assets = [[NSMutableArray alloc] initWithArray:assets];
+                
+                if ([assets count] > 0)
+                    [self moveOpenWindow:nil];
+            });
+        }
+    }];
+}
+
+/*
 - (void)openAssetsPickerController
 {
     CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
@@ -117,34 +126,7 @@
         });
     }];
 }
-
-- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(PHAsset *)asset
-{
-    if (picker.selectedAssets.count > k_pickerControllerMax) {
-        
-        [appDelegate messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
-        
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)assetsPickerController:(CTAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets
-{
-    [picker dismissViewControllerAnimated:YES completion:^{
-                
-        _assets = [[NSMutableArray alloc] initWithArray:assets];
-        
-        if ([assets count] > 0)
-            [self moveOpenWindow:nil];
-    }];
-}
-
-- (void)assetsPickerControllerDidCancel:(CTAssetsPickerController *)picker
-{
-    [picker dismissViewControllerAnimated:YES completion:nil];
-}
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Move =====

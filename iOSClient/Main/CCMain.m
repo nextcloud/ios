@@ -30,7 +30,6 @@
 #import "OCNotificationsAction.h"
 #import "OCFrameworkConstants.h"
 #import "OCCapabilities.h"
-#import "CTAssetCheckmark.h"
 #import "JDStatusBarNotification.h"
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"

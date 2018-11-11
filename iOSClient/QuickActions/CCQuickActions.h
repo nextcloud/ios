@@ -24,11 +24,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "CTAssetSelectionLabel.h"
-#import "CTAssetsPickerController.h"
 #import "CCMove.h"
 
-@interface CCQuickActions : NSObject <CTAssetsPickerControllerDelegate, CCMoveDelegate>
+@interface CCQuickActions : NSObject <CCMoveDelegate>
 
 + (instancetype) quickActionsManager;
 
