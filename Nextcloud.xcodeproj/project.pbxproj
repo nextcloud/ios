@@ -516,18 +516,6 @@
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
-		F7960D0A219823C400459AE2 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = F7960CFC219823C300459AE2 /* .gitkeep */; };
-		F7960D0B219823C400459AE2 /* TLPhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960CFD219823C300459AE2 /* TLPhotoLibrary.swift */; };
-		F7960D0C219823C400459AE2 /* TLCollectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960CFE219823C300459AE2 /* TLCollectionTableViewCell.swift */; };
-		F7960D0D219823C400459AE2 /* TLCollectionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7960CFF219823C300459AE2 /* TLCollectionTableViewCell.xib */; };
-		F7960D0E219823C400459AE2 /* TLBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D00219823C300459AE2 /* TLBundle.swift */; };
-		F7960D0F219823C400459AE2 /* TLAlbumPopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D01219823C300459AE2 /* TLAlbumPopView.swift */; };
-		F7960D10219823C400459AE2 /* TLPhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D02219823C300459AE2 /* TLPhotoCollectionViewCell.swift */; };
-		F7960D11219823C400459AE2 /* TLPhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7960D03219823C300459AE2 /* TLPhotoCollectionViewCell.xib */; };
-		F7960D12219823C400459AE2 /* TLPhotosPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D04219823C300459AE2 /* TLPhotosPickerViewController.swift */; };
-		F7960D13219823C400459AE2 /* TLAssetsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D05219823C300459AE2 /* TLAssetsCollection.swift */; };
-		F7960D14219823C400459AE2 /* TLPhotosPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7960D06219823C300459AE2 /* TLPhotosPickerViewController.xib */; };
-		F7960D15219823C400459AE2 /* TLPhotoPickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7960D09219823C300459AE2 /* TLPhotoPickerController.bundle */; };
 		F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerMedia.swift */; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
@@ -567,7 +555,6 @@
 		F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC120E7E3FE002CC65E /* PKCircleView.m */; };
 		F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC220E7E3FE002CC65E /* PKStopDownloadButton.m */; };
 		F7CA1ED420E7E3FE002CC65E /* PKPendingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC320E7E3FE002CC65E /* PKPendingView.m */; };
-		F7CA1ED520E7E3FE002CC65E /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = F7CA1EC520E7E3FE002CC65E /* .gitkeep */; };
 		F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC720E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m */; };
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
@@ -679,6 +666,17 @@
 		F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */; };
 		F7F8D71D1ED6183000E711F3 /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7F8D71B1ED6183000E711F3 /* CCCellShareExt.xib */; };
 		F7FB1D3E215E191D00D669EA /* NCViewerDocumentWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FB1D3D215E191D00D669EA /* NCViewerDocumentWeb.swift */; };
+		F7FBBB3A2198381600ADC654 /* TLPhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB2C2198381500ADC654 /* TLPhotoLibrary.swift */; };
+		F7FBBB3B2198381600ADC654 /* TLCollectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB2D2198381500ADC654 /* TLCollectionTableViewCell.swift */; };
+		F7FBBB3C2198381600ADC654 /* TLCollectionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB2E2198381500ADC654 /* TLCollectionTableViewCell.xib */; };
+		F7FBBB3D2198381600ADC654 /* TLBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB2F2198381500ADC654 /* TLBundle.swift */; };
+		F7FBBB3E2198381600ADC654 /* TLAlbumPopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB302198381500ADC654 /* TLAlbumPopView.swift */; };
+		F7FBBB3F2198381600ADC654 /* TLPhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB312198381500ADC654 /* TLPhotoCollectionViewCell.swift */; };
+		F7FBBB402198381600ADC654 /* TLPhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB322198381500ADC654 /* TLPhotoCollectionViewCell.xib */; };
+		F7FBBB412198381600ADC654 /* TLPhotosPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB332198381500ADC654 /* TLPhotosPickerViewController.swift */; };
+		F7FBBB422198381600ADC654 /* TLAssetsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB342198381500ADC654 /* TLAssetsCollection.swift */; };
+		F7FBBB432198381600ADC654 /* TLPhotosPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB352198381500ADC654 /* TLPhotosPickerViewController.xib */; };
+		F7FBBB442198381600ADC654 /* TLPhotoPickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB382198381500ADC654 /* TLPhotoPickerController.bundle */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
@@ -1437,19 +1435,6 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
-		F7960CFC219823C300459AE2 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
-		F7960CFD219823C300459AE2 /* TLPhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoLibrary.swift; sourceTree = "<group>"; };
-		F7960CFE219823C300459AE2 /* TLCollectionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLCollectionTableViewCell.swift; sourceTree = "<group>"; };
-		F7960CFF219823C300459AE2 /* TLCollectionTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLCollectionTableViewCell.xib; sourceTree = "<group>"; };
-		F7960D00219823C300459AE2 /* TLBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLBundle.swift; sourceTree = "<group>"; };
-		F7960D01219823C300459AE2 /* TLAlbumPopView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAlbumPopView.swift; sourceTree = "<group>"; };
-		F7960D02219823C300459AE2 /* TLPhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoCollectionViewCell.swift; sourceTree = "<group>"; };
-		F7960D03219823C300459AE2 /* TLPhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotoCollectionViewCell.xib; sourceTree = "<group>"; };
-		F7960D04219823C300459AE2 /* TLPhotosPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotosPickerViewController.swift; sourceTree = "<group>"; };
-		F7960D05219823C300459AE2 /* TLAssetsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAssetsCollection.swift; sourceTree = "<group>"; };
-		F7960D06219823C300459AE2 /* TLPhotosPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotosPickerViewController.xib; sourceTree = "<group>"; };
-		F7960D08219823C300459AE2 /* TLPhotoPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLPhotoPicker.h; sourceTree = "<group>"; };
-		F7960D09219823C300459AE2 /* TLPhotoPickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TLPhotoPickerController.bundle; sourceTree = "<group>"; };
 		F79630ED215527D40015EEA5 /* NCViewerMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerMedia.swift; sourceTree = "<group>"; };
 		F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSelect.storyboard; sourceTree = "<group>"; };
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
@@ -1526,7 +1511,6 @@
 		F7CA1EC220E7E3FE002CC65E /* PKStopDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKStopDownloadButton.m; sourceTree = "<group>"; };
 		F7CA1EC320E7E3FE002CC65E /* PKPendingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKPendingView.m; sourceTree = "<group>"; };
 		F7CA1EC420E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+PKDownloadButton.h"; sourceTree = "<group>"; };
-		F7CA1EC520E7E3FE002CC65E /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		F7CA1EC620E7E3FE002CC65E /* PKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKMacros.h; sourceTree = "<group>"; };
 		F7CA1EC720E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+PKDownloadButtonAnimations.m"; sourceTree = "<group>"; };
 		F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKDownloadButton.m; sourceTree = "<group>"; };
@@ -1695,6 +1679,18 @@
 		F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7F8D71B1ED6183000E711F3 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
 		F7FB1D3D215E191D00D669EA /* NCViewerDocumentWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerDocumentWeb.swift; sourceTree = "<group>"; };
+		F7FBBB2C2198381500ADC654 /* TLPhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoLibrary.swift; sourceTree = "<group>"; };
+		F7FBBB2D2198381500ADC654 /* TLCollectionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLCollectionTableViewCell.swift; sourceTree = "<group>"; };
+		F7FBBB2E2198381500ADC654 /* TLCollectionTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLCollectionTableViewCell.xib; sourceTree = "<group>"; };
+		F7FBBB2F2198381500ADC654 /* TLBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLBundle.swift; sourceTree = "<group>"; };
+		F7FBBB302198381500ADC654 /* TLAlbumPopView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAlbumPopView.swift; sourceTree = "<group>"; };
+		F7FBBB312198381500ADC654 /* TLPhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		F7FBBB322198381500ADC654 /* TLPhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotoCollectionViewCell.xib; sourceTree = "<group>"; };
+		F7FBBB332198381500ADC654 /* TLPhotosPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotosPickerViewController.swift; sourceTree = "<group>"; };
+		F7FBBB342198381500ADC654 /* TLAssetsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAssetsCollection.swift; sourceTree = "<group>"; };
+		F7FBBB352198381500ADC654 /* TLPhotosPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotosPickerViewController.xib; sourceTree = "<group>"; };
+		F7FBBB372198381500ADC654 /* TLPhotoPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLPhotoPicker.h; sourceTree = "<group>"; };
+		F7FBBB382198381500ADC654 /* TLPhotoPickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TLPhotoPickerController.bundle; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
@@ -1929,11 +1925,11 @@
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
+				F7FBBB292198381500ADC654 /* TLPhotoPicker */,
 				F7DFE24E1EBDC3A400CF5202 /* Realm */,
 				F7A55417204EF8AF008468EC /* TOScrollBar */,
 				F7622F6F2175FCC0000383FF /* Sheeeeeeeeet */,
 				F75AE3C51E9D12900088BB09 /* SwiftyAvatar */,
-				F7960CFA219823C300459AE2 /* TLPhotoPicker */,
 				F73CCE271DC13798007E38D8 /* UICKeyChainStore */,
 				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
 			);
@@ -3025,42 +3021,6 @@
 			path = Trash;
 			sourceTree = "<group>";
 		};
-		F7960CFA219823C300459AE2 /* TLPhotoPicker */ = {
-			isa = PBXGroup;
-			children = (
-				F7960CFB219823C300459AE2 /* Classes */,
-				F7960D07219823C300459AE2 /* TLPhotoPicker */,
-				F7960D09219823C300459AE2 /* TLPhotoPickerController.bundle */,
-			);
-			path = TLPhotoPicker;
-			sourceTree = "<group>";
-		};
-		F7960CFB219823C300459AE2 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				F7960CFC219823C300459AE2 /* .gitkeep */,
-				F7960CFD219823C300459AE2 /* TLPhotoLibrary.swift */,
-				F7960CFE219823C300459AE2 /* TLCollectionTableViewCell.swift */,
-				F7960CFF219823C300459AE2 /* TLCollectionTableViewCell.xib */,
-				F7960D00219823C300459AE2 /* TLBundle.swift */,
-				F7960D01219823C300459AE2 /* TLAlbumPopView.swift */,
-				F7960D02219823C300459AE2 /* TLPhotoCollectionViewCell.swift */,
-				F7960D03219823C300459AE2 /* TLPhotoCollectionViewCell.xib */,
-				F7960D04219823C300459AE2 /* TLPhotosPickerViewController.swift */,
-				F7960D05219823C300459AE2 /* TLAssetsCollection.swift */,
-				F7960D06219823C300459AE2 /* TLPhotosPickerViewController.xib */,
-			);
-			path = Classes;
-			sourceTree = "<group>";
-		};
-		F7960D07219823C300459AE2 /* TLPhotoPicker */ = {
-			isa = PBXGroup;
-			children = (
-				F7960D08219823C300459AE2 /* TLPhotoPicker.h */,
-			);
-			path = TLPhotoPicker;
-			sourceTree = "<group>";
-		};
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
@@ -3346,7 +3306,6 @@
 				F7CA1EC220E7E3FE002CC65E /* PKStopDownloadButton.m */,
 				F7CA1EC320E7E3FE002CC65E /* PKPendingView.m */,
 				F7CA1EC420E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.h */,
-				F7CA1EC520E7E3FE002CC65E /* .gitkeep */,
 				F7CA1EC620E7E3FE002CC65E /* PKMacros.h */,
 				F7CA1EC720E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m */,
 				F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */,
@@ -3653,6 +3612,41 @@
 			path = Move;
 			sourceTree = "<group>";
 		};
+		F7FBBB292198381500ADC654 /* TLPhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				F7FBBB2A2198381500ADC654 /* Classes */,
+				F7FBBB362198381500ADC654 /* TLPhotoPicker */,
+				F7FBBB382198381500ADC654 /* TLPhotoPickerController.bundle */,
+			);
+			path = TLPhotoPicker;
+			sourceTree = "<group>";
+		};
+		F7FBBB2A2198381500ADC654 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				F7FBBB2C2198381500ADC654 /* TLPhotoLibrary.swift */,
+				F7FBBB2D2198381500ADC654 /* TLCollectionTableViewCell.swift */,
+				F7FBBB2E2198381500ADC654 /* TLCollectionTableViewCell.xib */,
+				F7FBBB2F2198381500ADC654 /* TLBundle.swift */,
+				F7FBBB302198381500ADC654 /* TLAlbumPopView.swift */,
+				F7FBBB312198381500ADC654 /* TLPhotoCollectionViewCell.swift */,
+				F7FBBB322198381500ADC654 /* TLPhotoCollectionViewCell.xib */,
+				F7FBBB332198381500ADC654 /* TLPhotosPickerViewController.swift */,
+				F7FBBB342198381500ADC654 /* TLAssetsCollection.swift */,
+				F7FBBB352198381500ADC654 /* TLPhotosPickerViewController.xib */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		F7FBBB362198381500ADC654 /* TLPhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				F7FBBB372198381500ADC654 /* TLPhotoPicker.h */,
+			);
+			path = TLPhotoPicker;
+			sourceTree = "<group>";
+		};
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -3789,7 +3783,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0940;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = TWS;
 				TargetAttributes = {
 					F71459B41D12E3B700CAFEEC = {
@@ -3967,7 +3961,7 @@
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F7F54CF61E5B14C700E19C62 /* PlayButtonOverlayLarge@3x.png in Resources */,
-				F7960D11219823C400459AE2 /* TLPhotoCollectionViewCell.xib in Resources */,
+				F7FBBB402198381600ADC654 /* TLPhotoCollectionViewCell.xib in Resources */,
 				F7D423371F0596AC009C9782 /* AppIcon-180.png in Resources */,
 				F7D423401F0596AC009C9782 /* Reader-Email@3x.png in Resources */,
 				F7D423391F0596AC009C9782 /* Reader-Button-H@2x.png in Resources */,
@@ -3984,7 +3978,7 @@
 				F7F54CE81E5B14C700E19C62 /* ImageSelectedOff.png in Resources */,
 				F7D4234B1F0596AC009C9782 /* Reader-Print@2x.png in Resources */,
 				F762CB971EACB84400B38484 /* icon-info.png in Resources */,
-				F7960D14219823C400459AE2 /* TLPhotosPickerViewController.xib in Resources */,
+				F7FBBB432198381600ADC654 /* TLPhotosPickerViewController.xib in Resources */,
 				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F73D71641F2674A400E233EB /* NCText.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
@@ -4007,7 +4001,6 @@
 				F7F54CF11E5B14C700E19C62 /* ImageSelectedSmallOn.png in Resources */,
 				F762CB1B1EACB66200B38484 /* XLForm.bundle in Resources */,
 				F712AC9D2175E56F0061158E /* CTAssetsPicker.xcassets in Resources */,
-				F7CA1ED520E7E3FE002CC65E /* .gitkeep in Resources */,
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				F762CB9A1EACB84400B38484 /* icon-success@2x.png in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
@@ -4032,19 +4025,18 @@
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
 				F7F54CEB1E5B14C700E19C62 /* ImageSelectedOn.png in Resources */,
 				F72D1003210B67CE009C96B7 /* GoogleService-Info.plist in Resources */,
-				F7960D0D219823C400459AE2 /* TLCollectionTableViewCell.xib in Resources */,
+				F7FBBB3C2198381600ADC654 /* TLCollectionTableViewCell.xib in Resources */,
 				F762CB951EACB84400B38484 /* icon-error.png in Resources */,
 				F7F54CF01E5B14C700E19C62 /* ImageSelectedSmallOff@3x.png in Resources */,
 				F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */,
 				F7F54CEC1E5B14C700E19C62 /* ImageSelectedOn@2x.png in Resources */,
 				F73B4F151F470D9100BBEE4B /* symbols.cmake in Resources */,
-				F7960D0A219823C400459AE2 /* .gitkeep in Resources */,
 				F7F54CF21E5B14C700E19C62 /* ImageSelectedSmallOn@2x.png in Resources */,
 				F7D4233A1F0596AC009C9782 /* Reader-Button-H@3x.png in Resources */,
 				F7D423341F0596AC009C9782 /* AppIcon-120.png in Resources */,
 				F7D4234F1F0596AC009C9782 /* Reader-Thumbs@3x.png in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
-				F7960D15219823C400459AE2 /* TLPhotoPickerController.bundle in Resources */,
+				F7FBBB442198381600ADC654 /* TLPhotoPickerController.bundle in Resources */,
 				F7D423381F0596AC009C9782 /* Reader-Button-H.png in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
@@ -4339,7 +4331,7 @@
 				F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */,
 				F712ACAB2175E56F0061158E /* NSBundle+CTAssetsPickerController.m in Sources */,
 				F758B444212C516300515F55 /* AVCaptureVideoOrientation+Utils.swift in Sources */,
-				F7960D0B219823C400459AE2 /* TLPhotoLibrary.swift in Sources */,
+				F7FBBB3A2198381600ADC654 /* TLPhotoLibrary.swift in Sources */,
 				F758B3E4212C4A6C00515F55 /* PDFGenerator.swift in Sources */,
 				F712AC982175E56F0061158E /* CTAssetsPageViewController.m in Sources */,
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
@@ -4392,7 +4384,7 @@
 				F7622FAF2175FCC0000383FF /* ActionSheet.swift in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F7622FD12175FCC0000383FF /* ActionSheetSingleSelectItem.swift in Sources */,
-				F7960D12219823C400459AE2 /* TLPhotosPickerViewController.swift in Sources */,
+				F7FBBB412198381600ADC654 /* TLPhotosPickerViewController.swift in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F712ACA82175E56F0061158E /* PHAssetCollection+CTAssetsPickerController.m in Sources */,
@@ -4492,7 +4484,7 @@
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
-				F7960D0F219823C400459AE2 /* TLAlbumPopView.swift in Sources */,
+				F7FBBB3E2198381600ADC654 /* TLAlbumPopView.swift in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F754EECC21772B6100BB1CDF /* SectionHeader.swift in Sources */,
 				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
@@ -4550,7 +4542,7 @@
 				F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */,
 				F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F758B43E212C516300515F55 /* ImageScannerController.swift in Sources */,
-				F7960D0C219823C400459AE2 /* TLCollectionTableViewCell.swift in Sources */,
+				F7FBBB3B2198381600ADC654 /* TLCollectionTableViewCell.swift in Sources */,
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */,
@@ -4562,7 +4554,7 @@
 				F758B447212C516300515F55 /* CGRect+Utils.swift in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,
-				F7960D0E219823C400459AE2 /* TLBundle.swift in Sources */,
+				F7FBBB3D2198381600ADC654 /* TLBundle.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F7622FBB2175FCC0000383FF /* ActionSheetSelectItemAppearance.swift in Sources */,
 				F7622FB12175FCC0000383FF /* ActionSheetPopoverApperance.swift in Sources */,
@@ -4573,7 +4565,7 @@
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
-				F7960D10219823C400459AE2 /* TLPhotoCollectionViewCell.swift in Sources */,
+				F7FBBB3F2198381600ADC654 /* TLPhotoCollectionViewCell.swift in Sources */,
 				F7622FD82175FCC0000383FF /* ActionSheetCollectionItemCell.swift in Sources */,
 				F762CB891EACB81000B38484 /* REMenuItem.m in Sources */,
 				F7D423791F0596C6009C9782 /* CGPDFDocument.m in Sources */,
@@ -4597,7 +4589,7 @@
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */,
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
-				F7960D13219823C400459AE2 /* TLAssetsCollection.swift in Sources */,
+				F7FBBB422198381600ADC654 /* TLAssetsCollection.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F758B3E6212C4A6C00515F55 /* PDFPage.swift in Sources */,
