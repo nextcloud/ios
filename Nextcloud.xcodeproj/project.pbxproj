@@ -288,6 +288,7 @@
 		F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */; };
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
+		F761855A2198A2B500A65DC4 /* NCPhotosPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76185592198A2B500A65DC4 /* NCPhotosPickerViewController.swift */; };
 		F7622FAD2175FCC0000383FF /* ActionSheetMargin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7622F712175FCC0000383FF /* ActionSheetMargin.swift */; };
 		F7622FAE2175FCC0000383FF /* ActionSheetItemHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7622F722175FCC0000383FF /* ActionSheetItemHandler.swift */; };
 		F7622FAF2175FCC0000383FF /* ActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7622F732175FCC0000383FF /* ActionSheet.swift */; };
@@ -1064,6 +1065,7 @@
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
+		F76185592198A2B500A65DC4 /* NCPhotosPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPhotosPickerViewController.swift; sourceTree = "<group>"; };
 		F7622F712175FCC0000383FF /* ActionSheetMargin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionSheetMargin.swift; sourceTree = "<group>"; };
 		F7622F722175FCC0000383FF /* ActionSheetItemHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionSheetItemHandler.swift; sourceTree = "<group>"; };
 		F7622F732175FCC0000383FF /* ActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionSheet.swift; sourceTree = "<group>"; };
@@ -1748,6 +1750,7 @@
 				F78ACD4D219043E70088454D /* Layout */,
 				F78ACD3E21903BA20088454D /* Cell */,
 				F78ACD5921904E460088454D /* ActionSheetHeaderView */,
+				F76185582198A28E00A65DC4 /* NCPhotosPickerViewController */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
 				F70211FB1BAC56E9003FC03E /* CCMain.m */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
@@ -2307,6 +2310,14 @@
 				F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */,
 			);
 			path = SwiftyAvatar;
+			sourceTree = "<group>";
+		};
+		F76185582198A28E00A65DC4 /* NCPhotosPickerViewController */ = {
+			isa = PBXGroup;
+			children = (
+				F76185592198A2B500A65DC4 /* NCPhotosPickerViewController.swift */,
+			);
+			path = NCPhotosPickerViewController;
 			sourceTree = "<group>";
 		};
 		F7622F6F2175FCC0000383FF /* Sheeeeeeeeet */ = {
@@ -4132,6 +4143,7 @@
 				F7F54D0A1E5B14C800E19C62 /* MWPhotoBrowser.m in Sources */,
 				F762CB081EACB66200B38484 /* XLFormOptionsViewController.m in Sources */,
 				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
+				F761855A2198A2B500A65DC4 /* NCPhotosPickerViewController.swift in Sources */,
 				F73B4F101F470D9100BBEE4B /* nsSBCharSetProber.cpp in Sources */,
 				F762CB0E1EACB66200B38484 /* NSExpression+XLFormAdditions.m in Sources */,
 				F73B4F071F470D9100BBEE4B /* nsEscSM.cpp in Sources */,
