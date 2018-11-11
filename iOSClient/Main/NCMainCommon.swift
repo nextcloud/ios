@@ -868,13 +868,14 @@ class NCMainCommon: NSObject {
         configure.maxSelectedAssets = Int(k_pickerControllerMax)
         configure.selectedColor = NCBrandColor.sharedInstance.brand
         
-        let viewController = TLPhotosPickerViewController(withTLPHAssets: { (assets) in // TLAssets
+        let viewController = TLPhotosPickerViewController(withTLPHAssets: { (assets) in
             
             for asset: TLPHAsset in assets {
                 if asset.phAsset != nil {
                     selectedPhAssets.append(asset.phAsset!)
                 }
             }
+            
             phAssets(selectedPhAssets)
             
             }, didCancel: nil)
