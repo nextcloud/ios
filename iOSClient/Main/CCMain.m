@@ -794,7 +794,6 @@
 - (void)openAssetsPickerController
 {
     [[NCMainCommon sharedInstance] openPhotosPickerViewController:self phAssets:^(NSArray<PHAsset *> * _Nonnull assets) {
-        
         if (assets.count > 0) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                 NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
