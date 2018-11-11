@@ -793,70 +793,20 @@
 
 - (void)openAssetsPickerController
 {
-    [[NCMainCommon sharedInstance] openPhotosPickerViewController:self phAssets:^(NSArray<PHAsset *> * _Nonnull asset) {
-        NSLog(@"ciao");
-    }];
-    
-    return;
-    
-    CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
-    checkmark.tintColor = [NCBrandColor sharedInstance].brandElement;
-    [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
-    
-    //UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil]; // DEPRECATED iOS9
-    UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedInInstancesOfClasses:@[[CTAssetsPickerController class]]];
-    
-    [appDelegate aspectNavigationControllerBar:navBar online:YES hidden:NO];
-    
-    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
-            [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeBottom];
-            
-            // init picker
-            CTAssetsPickerController *picker = [CTAssetsPickerController new];
-            
-            // set delegate
-            picker.delegate = self;
-            
-            // to show selection order
-            //picker.showsSelectionIndex = YES;
-            
-            // to present picker as a form sheet in iPad
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-                picker.modalPresentationStyle = UIModalPresentationFormSheet;
-            
-            // present picker
-            [self presentViewController:picker animated:YES completion:nil];
-        });
-    }];
-}
-
-- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(PHAsset *)asset
-{
-    if (picker.selectedAssets.count > k_pickerControllerMax) {
+    [[NCMainCommon sharedInstance] openPhotosPickerViewController:self phAssets:^(NSArray<PHAsset *> * _Nonnull assets) {
         
-        [appDelegate messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorInternalError];
-        
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)assetsPickerController:(CTAssetsPickerController *)picker didFinishPickingAssets:(NSMutableArray *)assets
-{
-    [picker dismissViewControllerAnimated:YES completion:^{
-        
-        NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-        
-        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
-        [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-        
-        [self presentViewController:navigationController animated:YES completion:nil];
+        if (assets.count > 0) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
+                
+                CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:(NSMutableArray *)assets cryptated:NO session:k_upload_session delegate:self];
+                
+                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
+                [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+                
+                [self presentViewController:navigationController animated:YES completion:nil];
+            });
+        }
     }];
 }
 
