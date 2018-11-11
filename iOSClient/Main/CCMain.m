@@ -793,7 +793,7 @@
 
 - (void)openAssetsPickerController
 {
-    [[NCMainCommon sharedInstance] openPhotosPickerViewController:self phAssets:^{
+    [[NCMainCommon sharedInstance] openPhotosPickerViewController:self phAssets:^(NSArray<PHAsset *> * _Nonnull asset) {
         NSLog(@"ciao");
     }];
     

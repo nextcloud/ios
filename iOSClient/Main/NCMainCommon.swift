@@ -854,9 +854,9 @@ class NCMainCommon: NSObject {
         self.appDelegate.activeMedia.reloadDatasource(nil, action: Int(k_action_NULL))
     }
     
-    @objc func openPhotosPickerViewController(_ sourceViewController: UIViewController, phAssets: @escaping () -> ()) {
+    @objc func openPhotosPickerViewController(_ sourceViewController: UIViewController, phAssets: @escaping ([PHAsset]) -> ()) {
      
-        var selectedAssets = [TLPHAsset]()
+        var selectedPhAssets = [PHAsset]()
         var configure = TLPhotosPickerConfigure()
         
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
@@ -864,22 +864,33 @@ class NCMainCommon: NSObject {
         configure.doneTitle = NSLocalizedString("_done_", comment: "")
         configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
         configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
-
-        let viewController = TLPhotosPickerViewController(withTLPHAssets: { [weak self] (assets) in // TLAssets
-            selectedAssets = assets
-            phAssets()
+        
+        configure.maxSelectedAssets = Int(k_pickerControllerMax)
+        configure.selectedColor = NCBrandColor.sharedInstance.brand
+        
+        let viewController = TLPhotosPickerViewController(withTLPHAssets: { (assets) in // TLAssets
+            
+            for asset: TLPHAsset in assets {
+                if asset.phAsset != nil {
+                    selectedPhAssets.append(asset.phAsset!)
+                }
+            }
+            phAssets(selectedPhAssets)
+            
             }, didCancel: nil)
-        viewController.didExceedMaximumNumberOfSelection = { [weak self] (picker) in
-            //exceed max selection
+        
+        viewController.didExceedMaximumNumberOfSelection = { (picker) in
+            self.appDelegate.messageNotification("_info_", description: "_limited_dimension_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
         }
-        viewController.handleNoAlbumPermissions = { [weak self] (picker) in
-            // handle denied albums permissions case
+        
+        viewController.handleNoAlbumPermissions = { (picker) in
+            self.appDelegate.messageNotification("_info_", description: "_denied_album_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
         }
-        viewController.handleNoCameraPermissions = { [weak self] (picker) in
-            // handle denied camera permissions case
+        
+        viewController.handleNoCameraPermissions = { (picker) in
+            self.appDelegate.messageNotification("_info_", description: "_denied_camera_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
         }
 
-        viewController.selectedAssets = selectedAssets
         viewController.configure = configure
 
         sourceViewController.present(viewController, animated: true, completion: nil)

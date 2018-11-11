@@ -96,6 +96,8 @@
 "_camera_roll_"             = "Camera roll";
 "_tap_here_to_change_"      = "Tap here to change";
 "_no_albums_"               = "No albums";
+"_denied_album_"            = "This app does not have access to \"Photos\", you can enable access in Privacy Settings";
+"_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 
 // App
 
