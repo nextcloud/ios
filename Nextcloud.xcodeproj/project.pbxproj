@@ -516,6 +516,18 @@
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
+		F7960D0A219823C400459AE2 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = F7960CFC219823C300459AE2 /* .gitkeep */; };
+		F7960D0B219823C400459AE2 /* TLPhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960CFD219823C300459AE2 /* TLPhotoLibrary.swift */; };
+		F7960D0C219823C400459AE2 /* TLCollectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960CFE219823C300459AE2 /* TLCollectionTableViewCell.swift */; };
+		F7960D0D219823C400459AE2 /* TLCollectionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7960CFF219823C300459AE2 /* TLCollectionTableViewCell.xib */; };
+		F7960D0E219823C400459AE2 /* TLBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D00219823C300459AE2 /* TLBundle.swift */; };
+		F7960D0F219823C400459AE2 /* TLAlbumPopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D01219823C300459AE2 /* TLAlbumPopView.swift */; };
+		F7960D10219823C400459AE2 /* TLPhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D02219823C300459AE2 /* TLPhotoCollectionViewCell.swift */; };
+		F7960D11219823C400459AE2 /* TLPhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7960D03219823C300459AE2 /* TLPhotoCollectionViewCell.xib */; };
+		F7960D12219823C400459AE2 /* TLPhotosPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D04219823C300459AE2 /* TLPhotosPickerViewController.swift */; };
+		F7960D13219823C400459AE2 /* TLAssetsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7960D05219823C300459AE2 /* TLAssetsCollection.swift */; };
+		F7960D14219823C400459AE2 /* TLPhotosPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7960D06219823C300459AE2 /* TLPhotosPickerViewController.xib */; };
+		F7960D15219823C400459AE2 /* TLPhotoPickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7960D09219823C300459AE2 /* TLPhotoPickerController.bundle */; };
 		F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerMedia.swift */; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
@@ -1425,6 +1437,19 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
+		F7960CFC219823C300459AE2 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
+		F7960CFD219823C300459AE2 /* TLPhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoLibrary.swift; sourceTree = "<group>"; };
+		F7960CFE219823C300459AE2 /* TLCollectionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLCollectionTableViewCell.swift; sourceTree = "<group>"; };
+		F7960CFF219823C300459AE2 /* TLCollectionTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLCollectionTableViewCell.xib; sourceTree = "<group>"; };
+		F7960D00219823C300459AE2 /* TLBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLBundle.swift; sourceTree = "<group>"; };
+		F7960D01219823C300459AE2 /* TLAlbumPopView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAlbumPopView.swift; sourceTree = "<group>"; };
+		F7960D02219823C300459AE2 /* TLPhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		F7960D03219823C300459AE2 /* TLPhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotoCollectionViewCell.xib; sourceTree = "<group>"; };
+		F7960D04219823C300459AE2 /* TLPhotosPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotosPickerViewController.swift; sourceTree = "<group>"; };
+		F7960D05219823C300459AE2 /* TLAssetsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAssetsCollection.swift; sourceTree = "<group>"; };
+		F7960D06219823C300459AE2 /* TLPhotosPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotosPickerViewController.xib; sourceTree = "<group>"; };
+		F7960D08219823C300459AE2 /* TLPhotoPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLPhotoPicker.h; sourceTree = "<group>"; };
+		F7960D09219823C300459AE2 /* TLPhotoPickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TLPhotoPickerController.bundle; sourceTree = "<group>"; };
 		F79630ED215527D40015EEA5 /* NCViewerMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerMedia.swift; sourceTree = "<group>"; };
 		F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSelect.storyboard; sourceTree = "<group>"; };
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
@@ -1908,6 +1933,7 @@
 				F7A55417204EF8AF008468EC /* TOScrollBar */,
 				F7622F6F2175FCC0000383FF /* Sheeeeeeeeet */,
 				F75AE3C51E9D12900088BB09 /* SwiftyAvatar */,
+				F7960CFA219823C300459AE2 /* TLPhotoPicker */,
 				F73CCE271DC13798007E38D8 /* UICKeyChainStore */,
 				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
 			);
@@ -2999,6 +3025,42 @@
 			path = Trash;
 			sourceTree = "<group>";
 		};
+		F7960CFA219823C300459AE2 /* TLPhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				F7960CFB219823C300459AE2 /* Classes */,
+				F7960D07219823C300459AE2 /* TLPhotoPicker */,
+				F7960D09219823C300459AE2 /* TLPhotoPickerController.bundle */,
+			);
+			path = TLPhotoPicker;
+			sourceTree = "<group>";
+		};
+		F7960CFB219823C300459AE2 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				F7960CFC219823C300459AE2 /* .gitkeep */,
+				F7960CFD219823C300459AE2 /* TLPhotoLibrary.swift */,
+				F7960CFE219823C300459AE2 /* TLCollectionTableViewCell.swift */,
+				F7960CFF219823C300459AE2 /* TLCollectionTableViewCell.xib */,
+				F7960D00219823C300459AE2 /* TLBundle.swift */,
+				F7960D01219823C300459AE2 /* TLAlbumPopView.swift */,
+				F7960D02219823C300459AE2 /* TLPhotoCollectionViewCell.swift */,
+				F7960D03219823C300459AE2 /* TLPhotoCollectionViewCell.xib */,
+				F7960D04219823C300459AE2 /* TLPhotosPickerViewController.swift */,
+				F7960D05219823C300459AE2 /* TLAssetsCollection.swift */,
+				F7960D06219823C300459AE2 /* TLPhotosPickerViewController.xib */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		F7960D07219823C300459AE2 /* TLPhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				F7960D08219823C300459AE2 /* TLPhotoPicker.h */,
+			);
+			path = TLPhotoPicker;
+			sourceTree = "<group>";
+		};
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
@@ -3905,6 +3967,7 @@
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F7F54CF61E5B14C700E19C62 /* PlayButtonOverlayLarge@3x.png in Resources */,
+				F7960D11219823C400459AE2 /* TLPhotoCollectionViewCell.xib in Resources */,
 				F7D423371F0596AC009C9782 /* AppIcon-180.png in Resources */,
 				F7D423401F0596AC009C9782 /* Reader-Email@3x.png in Resources */,
 				F7D423391F0596AC009C9782 /* Reader-Button-H@2x.png in Resources */,
@@ -3921,6 +3984,7 @@
 				F7F54CE81E5B14C700E19C62 /* ImageSelectedOff.png in Resources */,
 				F7D4234B1F0596AC009C9782 /* Reader-Print@2x.png in Resources */,
 				F762CB971EACB84400B38484 /* icon-info.png in Resources */,
+				F7960D14219823C400459AE2 /* TLPhotosPickerViewController.xib in Resources */,
 				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F73D71641F2674A400E233EB /* NCText.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
@@ -3968,16 +4032,19 @@
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
 				F7F54CEB1E5B14C700E19C62 /* ImageSelectedOn.png in Resources */,
 				F72D1003210B67CE009C96B7 /* GoogleService-Info.plist in Resources */,
+				F7960D0D219823C400459AE2 /* TLCollectionTableViewCell.xib in Resources */,
 				F762CB951EACB84400B38484 /* icon-error.png in Resources */,
 				F7F54CF01E5B14C700E19C62 /* ImageSelectedSmallOff@3x.png in Resources */,
 				F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */,
 				F7F54CEC1E5B14C700E19C62 /* ImageSelectedOn@2x.png in Resources */,
 				F73B4F151F470D9100BBEE4B /* symbols.cmake in Resources */,
+				F7960D0A219823C400459AE2 /* .gitkeep in Resources */,
 				F7F54CF21E5B14C700E19C62 /* ImageSelectedSmallOn@2x.png in Resources */,
 				F7D4233A1F0596AC009C9782 /* Reader-Button-H@3x.png in Resources */,
 				F7D423341F0596AC009C9782 /* AppIcon-120.png in Resources */,
 				F7D4234F1F0596AC009C9782 /* Reader-Thumbs@3x.png in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
+				F7960D15219823C400459AE2 /* TLPhotoPickerController.bundle in Resources */,
 				F7D423381F0596AC009C9782 /* Reader-Button-H.png in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
@@ -4272,6 +4339,7 @@
 				F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */,
 				F712ACAB2175E56F0061158E /* NSBundle+CTAssetsPickerController.m in Sources */,
 				F758B444212C516300515F55 /* AVCaptureVideoOrientation+Utils.swift in Sources */,
+				F7960D0B219823C400459AE2 /* TLPhotoLibrary.swift in Sources */,
 				F758B3E4212C4A6C00515F55 /* PDFGenerator.swift in Sources */,
 				F712AC982175E56F0061158E /* CTAssetsPageViewController.m in Sources */,
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
@@ -4324,6 +4392,7 @@
 				F7622FAF2175FCC0000383FF /* ActionSheet.swift in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F7622FD12175FCC0000383FF /* ActionSheetSingleSelectItem.swift in Sources */,
+				F7960D12219823C400459AE2 /* TLPhotosPickerViewController.swift in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F712ACA82175E56F0061158E /* PHAssetCollection+CTAssetsPickerController.m in Sources */,
@@ -4423,6 +4492,7 @@
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
+				F7960D0F219823C400459AE2 /* TLAlbumPopView.swift in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F754EECC21772B6100BB1CDF /* SectionHeader.swift in Sources */,
 				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
@@ -4480,6 +4550,7 @@
 				F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */,
 				F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F758B43E212C516300515F55 /* ImageScannerController.swift in Sources */,
+				F7960D0C219823C400459AE2 /* TLCollectionTableViewCell.swift in Sources */,
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */,
@@ -4491,6 +4562,7 @@
 				F758B447212C516300515F55 /* CGRect+Utils.swift in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,
+				F7960D0E219823C400459AE2 /* TLBundle.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F7622FBB2175FCC0000383FF /* ActionSheetSelectItemAppearance.swift in Sources */,
 				F7622FB12175FCC0000383FF /* ActionSheetPopoverApperance.swift in Sources */,
@@ -4501,6 +4573,7 @@
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
+				F7960D10219823C400459AE2 /* TLPhotoCollectionViewCell.swift in Sources */,
 				F7622FD82175FCC0000383FF /* ActionSheetCollectionItemCell.swift in Sources */,
 				F762CB891EACB81000B38484 /* REMenuItem.m in Sources */,
 				F7D423791F0596C6009C9782 /* CGPDFDocument.m in Sources */,
@@ -4524,6 +4597,7 @@
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */,
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
+				F7960D13219823C400459AE2 /* TLAssetsCollection.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F758B3E6212C4A6C00515F55 /* PDFPage.swift in Sources */,
@@ -4701,7 +4775,7 @@
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = "-ObjC";
@@ -4743,7 +4817,7 @@
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = "-ObjC";
@@ -4978,7 +5052,7 @@
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external/openssl\"";
 				OTHER_LDFLAGS = "-ObjC";
@@ -5026,7 +5100,7 @@
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external/openssl\"";
 				OTHER_LDFLAGS = "-ObjC";
@@ -5089,7 +5163,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -5141,7 +5215,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"-Obj-C",

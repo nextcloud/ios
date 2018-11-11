@@ -853,6 +853,27 @@ class NCMainCommon: NSObject {
         self.reloadDatasource(ServerUrl: serverUrl, fileID: nil, action: k_action_NULL)
         self.appDelegate.activeMedia.reloadDatasource(nil, action: Int(k_action_NULL))
     }
+    
+    @objc func openPhotosPickerViewController(_ sourceViewController: UIViewController, phAssets: @escaping () -> ()) {
+     
+        var selectedAssets = [TLPHAsset]()
+        
+        let viewController = TLPhotosPickerViewController(withTLPHAssets: { [weak self] (assets) in // TLAssets
+            selectedAssets = assets
+            phAssets()
+            }, didCancel: nil)
+        viewController.didExceedMaximumNumberOfSelection = { [weak self] (picker) in
+            //exceed max selection
+        }
+        viewController.handleNoAlbumPermissions = { [weak self] (picker) in
+            // handle denied albums permissions case
+        }
+        viewController.handleNoCameraPermissions = { [weak self] (picker) in
+            // handle denied camera permissions case
+        }
+        viewController.selectedAssets = selectedAssets
+        sourceViewController.present(viewController, animated: true, completion: nil)
+    }
 }
     
 //MARK: -
