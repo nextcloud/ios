@@ -1,0 +1,6 @@
+coverage:
+    ignore: 
+        - "Demo/*"
+        - "PDFGeneratorTests/*"
+
+comment: false

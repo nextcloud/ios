@@ -39,15 +39,15 @@ public struct PDFPassword {
         guard userPassword.canBeConverted(to: String.Encoding.ascii) else {
             throw PDFGenerateError.invalidPassword(userPassword)
         }
-        guard userPassword.count <= type(of: self).PasswordLengthMax else {
-            throw PDFGenerateError.tooLongPassword(userPassword.count)
+        guard userPassword.characters.count <= type(of: self).PasswordLengthMax else {
+            throw PDFGenerateError.tooLongPassword(userPassword.characters.count)
         }
         
         guard ownerPassword.canBeConverted(to: String.Encoding.ascii) else {
             throw PDFGenerateError.invalidPassword(ownerPassword)
         }
-        guard ownerPassword.count <= type(of: self).PasswordLengthMax else {
-            throw PDFGenerateError.tooLongPassword(ownerPassword.count)
+        guard ownerPassword.characters.count <= type(of: self).PasswordLengthMax else {
+            throw PDFGenerateError.tooLongPassword(ownerPassword.characters.count)
         }
     }
 }

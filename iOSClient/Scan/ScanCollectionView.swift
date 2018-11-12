@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import PDFGenerator
 
 @available(iOS 11, *)
 

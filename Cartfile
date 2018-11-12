@@ -1,3 +1,4 @@
 github "tilltue/TLPhotoPicker"
 github "kishikawakatsumi/UICKeyChainStore"
 github "danielsaidi/Sheeeeeeeeet"
+github "sgr-ksmt/PDFGenerator" ~> 2.1
