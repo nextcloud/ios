@@ -72,7 +72,7 @@ class NCPhotosPickerViewController: NSObject {
         }
         
         viewController.configure = configure
-        
+
         sourceViewController.present(viewController, animated: true, completion: nil)
     }
 }
