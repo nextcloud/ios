@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import Sheeeeeeeeet
 
 @objc protocol NCSelectDelegate {
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String)
