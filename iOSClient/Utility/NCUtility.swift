@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import SVGKit
 
 class NCUtility: NSObject {
 
@@ -163,6 +164,32 @@ class NCUtility: NSObject {
         }
         
         return (k_layout_list, "fileName", true, "none", true)
+    }
+    
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String) {
+        
+        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            return
+        }
+        guard let iconURL = URL(string: svgUrlString) else {
+            return
+        }
+        
+        let fileName = iconURL.deletingPathExtension().lastPathComponent
+        let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+        
+        if !FileManager.default.fileExists(atPath: imageNamePath) {
+            guard let svgkImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
+                return
+            }
+            guard let image: UIImage = svgkImage.uiImage else {
+                return
+            }
+            guard let pngImageData = image.pngData() else {
+                return
+            }
+            CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+        }
     }
 }
 

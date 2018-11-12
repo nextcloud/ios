@@ -205,6 +205,8 @@
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
++ (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;

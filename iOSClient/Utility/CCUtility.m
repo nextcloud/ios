@@ -1071,6 +1071,30 @@
     return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
 }
 
++ (NSString *)getMimeType:(NSString *)fileNameView
+{
+    CFStringRef fileUTI = nil;
+    NSString *returnFileUTI = nil;
+    
+    if ([fileNameView isEqualToString:@"."]) {
+        
+        return returnFileUTI;
+        
+    } else {
+        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
+        NSString *ext = (__bridge NSString *)fileExtension;
+        ext = ext.uppercaseString;
+        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+        
+        if (fileUTI != nil) {
+            returnFileUTI = (__bridge NSString *)fileUTI;
+            CFRelease(fileUTI);
+        }
+    }
+    
+    return returnFileUTI;
+}
+
 + (NSString *)getDirectoryScan
 {
     NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScan] path];
@@ -1079,6 +1103,11 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     return path;
+}
+
++ (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath
+{
+    [data writeToFile:fileNamePath atomically:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1174,30 +1203,6 @@
     [self insertTypeFileIconName:fileNameView metadata:metadata];
  
     return metadata;
-}
-
-+ (NSString *)getMimeType:(NSString *)fileNameView
-{
-    CFStringRef fileUTI = nil;
-    NSString *returnFileUTI = nil;
-    
-    if ([fileNameView isEqualToString:@"."]) {
-        
-        return returnFileUTI;
-        
-    } else {
-        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
-        NSString *ext = (__bridge NSString *)fileExtension;
-        ext = ext.uppercaseString;
-        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-        
-        if (fileUTI != nil) {
-            returnFileUTI = (__bridge NSString *)fileUTI;
-            CFRelease(fileUTI);
-        }
-    }
-    
-    return returnFileUTI;
 }
 
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
