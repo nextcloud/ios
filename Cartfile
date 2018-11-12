@@ -7,3 +7,4 @@ github "dzenbot/DZNEmptyDataSet"
 github "ealeksandrov/EAIntroView"
 github "calimarkus/JDStatusBarNotification"
 github "ChangbaDevs/KTVHTTPCache" ~> 1.1.7
+github "jdg/MBProgressHUD" ~> 1.1.0

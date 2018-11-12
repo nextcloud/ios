@@ -81,7 +81,6 @@
 		F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
-		F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
 		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
 		F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
@@ -376,7 +375,6 @@
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
 		F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
-		F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
 		F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F51BAC56E9003FC03E /* CCCellMain.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
 		F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = F777F0311C29717F00CE81CB /* PHAsset+Utility.m */; };
@@ -456,6 +454,7 @@
 		F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEC219993330004137E /* JDStatusBarNotification.framework */; };
 		F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */; };
 		F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF0219994F20004137E /* KTVHTTPCache.framework */; };
+		F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF22199978B0004137E /* MBProgressHUD.framework */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */; };
@@ -713,8 +712,6 @@
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
 		F70F02B31C889183008DAB36 /* AFViewShaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFViewShaker.h; sourceTree = "<group>"; };
 		F70F02B41C889183008DAB36 /* AFViewShaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFViewShaker.m; sourceTree = "<group>"; };
-		F70F04831C889183008DAB36 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
-		F70F04841C889183008DAB36 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		F70F05251C889184008DAB36 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		F70F05261C889184008DAB36 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		F70F05571C889184008DAB36 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
@@ -1232,6 +1229,7 @@
 		F7C40BEC219993330004137E /* JDStatusBarNotification.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JDStatusBarNotification.framework; path = Carthage/Build/iOS/JDStatusBarNotification.framework; sourceTree = "<group>"; };
 		F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KTVCocoaHTTPServer.framework; path = Carthage/Build/iOS/KTVCocoaHTTPServer.framework; sourceTree = "<group>"; };
 		F7C40BF0219994F20004137E /* KTVHTTPCache.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KTVHTTPCache.framework; path = Carthage/Build/iOS/KTVHTTPCache.framework; sourceTree = "<group>"; };
+		F7C40BF22199978B0004137E /* MBProgressHUD.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MBProgressHUD.framework; path = Carthage/Build/iOS/MBProgressHUD.framework; sourceTree = "<group>"; };
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
@@ -1460,6 +1458,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
 				F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */,
 				F7DFE2571EBDC52E00CF5202 /* Realm.framework in Frameworks */,
 				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
@@ -1642,7 +1641,6 @@
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F72D0FED210B6638009C96B7 /* Firebase */,
 				F7659A2F1DC0B737004860C4 /* iRate */,
-				F70F04821C889183008DAB36 /* MBProgressHUD */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
 				F7540EE11D5B238600C3FFA8 /* openssl */,
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
@@ -1663,15 +1661,6 @@
 				F70F02B41C889183008DAB36 /* AFViewShaker.m */,
 			);
 			path = AFViewShaker;
-			sourceTree = "<group>";
-		};
-		F70F04821C889183008DAB36 /* MBProgressHUD */ = {
-			isa = PBXGroup;
-			children = (
-				F70F04831C889183008DAB36 /* MBProgressHUD.h */,
-				F70F04841C889183008DAB36 /* MBProgressHUD.m */,
-			);
-			path = MBProgressHUD;
 			sourceTree = "<group>";
 		};
 		F70F05241C889184008DAB36 /* Reachability */ = {
@@ -3010,6 +2999,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7C40BF22199978B0004137E /* MBProgressHUD.framework */,
 				F7C40BF0219994F20004137E /* KTVHTTPCache.framework */,
 				F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */,
 				F7C40BEC219993330004137E /* JDStatusBarNotification.framework */,
@@ -3457,6 +3447,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/JDStatusBarNotification.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/MBProgressHUD.framework",
 			);
 			outputPaths = (
 			);
@@ -3516,7 +3507,6 @@
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
 				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
 				F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */,
-				F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */,
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
 				F70022CF1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
@@ -3843,7 +3833,6 @@
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F758B44C212C516300515F55 /* ZoomGestureController.swift in Sources */,
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
-				F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */,
 				F758B447212C516300515F55 /* CGRect+Utils.swift in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,

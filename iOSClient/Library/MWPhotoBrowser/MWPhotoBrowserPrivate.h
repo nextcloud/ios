@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <MBProgressHUD/MBProgressHUD.h>
+
 #import "MWZoomingScrollView.h"
-#import "MBProgressHUD.h"
 
 // Declare private methods of browser
 @interface MWPhotoBrowser () {
