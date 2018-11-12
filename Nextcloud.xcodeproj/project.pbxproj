@@ -126,6 +126,9 @@
 		F72D1042210B783D009C96B7 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
+		F733B65321997D12001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
+		F733B65421997D12001C1FFA /* TLPhotoPicker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
@@ -631,17 +634,6 @@
 		F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */; };
 		F7F8D71D1ED6183000E711F3 /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7F8D71B1ED6183000E711F3 /* CCCellShareExt.xib */; };
 		F7FB1D3E215E191D00D669EA /* NCViewerDocumentWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FB1D3D215E191D00D669EA /* NCViewerDocumentWeb.swift */; };
-		F7FBBB3A2198381600ADC654 /* TLPhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB2C2198381500ADC654 /* TLPhotoLibrary.swift */; };
-		F7FBBB3B2198381600ADC654 /* TLCollectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB2D2198381500ADC654 /* TLCollectionTableViewCell.swift */; };
-		F7FBBB3C2198381600ADC654 /* TLCollectionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB2E2198381500ADC654 /* TLCollectionTableViewCell.xib */; };
-		F7FBBB3D2198381600ADC654 /* TLBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB2F2198381500ADC654 /* TLBundle.swift */; };
-		F7FBBB3E2198381600ADC654 /* TLAlbumPopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB302198381500ADC654 /* TLAlbumPopView.swift */; };
-		F7FBBB3F2198381600ADC654 /* TLPhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB312198381500ADC654 /* TLPhotoCollectionViewCell.swift */; };
-		F7FBBB402198381600ADC654 /* TLPhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB322198381500ADC654 /* TLPhotoCollectionViewCell.xib */; };
-		F7FBBB412198381600ADC654 /* TLPhotosPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB332198381500ADC654 /* TLPhotosPickerViewController.swift */; };
-		F7FBBB422198381600ADC654 /* TLAssetsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FBBB342198381500ADC654 /* TLAssetsCollection.swift */; };
-		F7FBBB432198381600ADC654 /* TLPhotosPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB352198381500ADC654 /* TLPhotosPickerViewController.xib */; };
-		F7FBBB442198381600ADC654 /* TLPhotoPickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7FBBB382198381500ADC654 /* TLPhotoPickerController.bundle */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
@@ -680,6 +672,7 @@
 			files = (
 				F7DFE25A1EBDC53200CF5202 /* RealmSwift.framework in Embed Frameworks */,
 				F7DFE2581EBDC52E00CF5202 /* Realm.framework in Embed Frameworks */,
+				F733B65421997D12001C1FFA /* TLPhotoPicker.framework in Embed Frameworks */,
 				F784FA2F210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Embed Frameworks */,
 				F784FA31210F6FC500256C26 /* KTVHTTPCache.framework in Embed Frameworks */,
 			);
@@ -834,6 +827,7 @@
 		F732093B201B81E4008A0888 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
+		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
 		F7381EDA218218C9000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
 		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
@@ -1550,18 +1544,6 @@
 		F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7F8D71B1ED6183000E711F3 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
 		F7FB1D3D215E191D00D669EA /* NCViewerDocumentWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerDocumentWeb.swift; sourceTree = "<group>"; };
-		F7FBBB2C2198381500ADC654 /* TLPhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoLibrary.swift; sourceTree = "<group>"; };
-		F7FBBB2D2198381500ADC654 /* TLCollectionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLCollectionTableViewCell.swift; sourceTree = "<group>"; };
-		F7FBBB2E2198381500ADC654 /* TLCollectionTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLCollectionTableViewCell.xib; sourceTree = "<group>"; };
-		F7FBBB2F2198381500ADC654 /* TLBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLBundle.swift; sourceTree = "<group>"; };
-		F7FBBB302198381500ADC654 /* TLAlbumPopView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAlbumPopView.swift; sourceTree = "<group>"; };
-		F7FBBB312198381500ADC654 /* TLPhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotoCollectionViewCell.swift; sourceTree = "<group>"; };
-		F7FBBB322198381500ADC654 /* TLPhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotoCollectionViewCell.xib; sourceTree = "<group>"; };
-		F7FBBB332198381500ADC654 /* TLPhotosPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLPhotosPickerViewController.swift; sourceTree = "<group>"; };
-		F7FBBB342198381500ADC654 /* TLAssetsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLAssetsCollection.swift; sourceTree = "<group>"; };
-		F7FBBB352198381500ADC654 /* TLPhotosPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TLPhotosPickerViewController.xib; sourceTree = "<group>"; };
-		F7FBBB372198381500ADC654 /* TLPhotoPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLPhotoPicker.h; sourceTree = "<group>"; };
-		F7FBBB382198381500ADC654 /* TLPhotoPickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TLPhotoPickerController.bundle; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
@@ -1616,6 +1598,7 @@
 				F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
 				F784FA2E210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
+				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F72D0FFE210B6638009C96B7 /* nanopb.framework in Frameworks */,
@@ -1625,6 +1608,7 @@
 				F72D1000210B6638009C96B7 /* FirebaseInstanceID.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
+				F733B65321997D12001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F784FA30210F6FC500256C26 /* KTVHTTPCache.framework in Frameworks */,
 				F72D1001210B6638009C96B7 /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F72D0FFA210B6638009C96B7 /* FirebaseMessaging.framework in Frameworks */,
@@ -1796,7 +1780,6 @@
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
-				F7FBBB292198381500ADC654 /* TLPhotoPicker */,
 				F7DFE24E1EBDC3A400CF5202 /* Realm */,
 				F7A55417204EF8AF008468EC /* TOScrollBar */,
 				F7622F6F2175FCC0000383FF /* Sheeeeeeeeet */,
@@ -3396,44 +3379,10 @@
 			path = Move;
 			sourceTree = "<group>";
 		};
-		F7FBBB292198381500ADC654 /* TLPhotoPicker */ = {
-			isa = PBXGroup;
-			children = (
-				F7FBBB2A2198381500ADC654 /* Classes */,
-				F7FBBB362198381500ADC654 /* TLPhotoPicker */,
-				F7FBBB382198381500ADC654 /* TLPhotoPickerController.bundle */,
-			);
-			path = TLPhotoPicker;
-			sourceTree = "<group>";
-		};
-		F7FBBB2A2198381500ADC654 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				F7FBBB2C2198381500ADC654 /* TLPhotoLibrary.swift */,
-				F7FBBB2D2198381500ADC654 /* TLCollectionTableViewCell.swift */,
-				F7FBBB2E2198381500ADC654 /* TLCollectionTableViewCell.xib */,
-				F7FBBB2F2198381500ADC654 /* TLBundle.swift */,
-				F7FBBB302198381500ADC654 /* TLAlbumPopView.swift */,
-				F7FBBB312198381500ADC654 /* TLPhotoCollectionViewCell.swift */,
-				F7FBBB322198381500ADC654 /* TLPhotoCollectionViewCell.xib */,
-				F7FBBB332198381500ADC654 /* TLPhotosPickerViewController.swift */,
-				F7FBBB342198381500ADC654 /* TLAssetsCollection.swift */,
-				F7FBBB352198381500ADC654 /* TLPhotosPickerViewController.xib */,
-			);
-			path = Classes;
-			sourceTree = "<group>";
-		};
-		F7FBBB362198381500ADC654 /* TLPhotoPicker */ = {
-			isa = PBXGroup;
-			children = (
-				F7FBBB372198381500ADC654 /* TLPhotoPicker.h */,
-			);
-			path = TLPhotoPicker;
-			sourceTree = "<group>";
-		};
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */,
 				F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */,
 				F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */,
 				08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */,
@@ -3743,7 +3692,6 @@
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F7F54CF61E5B14C700E19C62 /* PlayButtonOverlayLarge@3x.png in Resources */,
-				F7FBBB402198381600ADC654 /* TLPhotoCollectionViewCell.xib in Resources */,
 				F7D423371F0596AC009C9782 /* AppIcon-180.png in Resources */,
 				F7D423401F0596AC009C9782 /* Reader-Email@3x.png in Resources */,
 				F7D423391F0596AC009C9782 /* Reader-Button-H@2x.png in Resources */,
@@ -3760,7 +3708,6 @@
 				F7F54CE81E5B14C700E19C62 /* ImageSelectedOff.png in Resources */,
 				F7D4234B1F0596AC009C9782 /* Reader-Print@2x.png in Resources */,
 				F762CB971EACB84400B38484 /* icon-info.png in Resources */,
-				F7FBBB432198381600ADC654 /* TLPhotosPickerViewController.xib in Resources */,
 				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F73D71641F2674A400E233EB /* NCText.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
@@ -3806,7 +3753,6 @@
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
 				F7F54CEB1E5B14C700E19C62 /* ImageSelectedOn.png in Resources */,
 				F72D1003210B67CE009C96B7 /* GoogleService-Info.plist in Resources */,
-				F7FBBB3C2198381600ADC654 /* TLCollectionTableViewCell.xib in Resources */,
 				F762CB951EACB84400B38484 /* icon-error.png in Resources */,
 				F7F54CF01E5B14C700E19C62 /* ImageSelectedSmallOff@3x.png in Resources */,
 				F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */,
@@ -3817,7 +3763,6 @@
 				F7D423341F0596AC009C9782 /* AppIcon-120.png in Resources */,
 				F7D4234F1F0596AC009C9782 /* Reader-Thumbs@3x.png in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
-				F7FBBB442198381600ADC654 /* TLPhotoPickerController.bundle in Resources */,
 				F7D423381F0596AC009C9782 /* Reader-Button-H.png in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
@@ -4103,7 +4048,6 @@
 				F73B4EF71F470D9100BBEE4B /* LangBulgarianModel.cpp in Sources */,
 				F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */,
 				F758B444212C516300515F55 /* AVCaptureVideoOrientation+Utils.swift in Sources */,
-				F7FBBB3A2198381600ADC654 /* TLPhotoLibrary.swift in Sources */,
 				F758B3E4212C4A6C00515F55 /* PDFGenerator.swift in Sources */,
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
 				F7622FD02175FCC0000383FF /* ActionSheetCustomItem.swift in Sources */,
@@ -4153,7 +4097,6 @@
 				F7622FAF2175FCC0000383FF /* ActionSheet.swift in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F7622FD12175FCC0000383FF /* ActionSheetSingleSelectItem.swift in Sources */,
-				F7FBBB412198381600ADC654 /* TLPhotosPickerViewController.swift in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
@@ -4244,7 +4187,6 @@
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
-				F7FBBB3E2198381600ADC654 /* TLAlbumPopView.swift in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F754EECC21772B6100BB1CDF /* SectionHeader.swift in Sources */,
 				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
@@ -4298,7 +4240,6 @@
 				F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */,
 				F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F758B43E212C516300515F55 /* ImageScannerController.swift in Sources */,
-				F7FBBB3B2198381600ADC654 /* TLCollectionTableViewCell.swift in Sources */,
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */,
@@ -4309,7 +4250,6 @@
 				F758B447212C516300515F55 /* CGRect+Utils.swift in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,
-				F7FBBB3D2198381600ADC654 /* TLBundle.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F7622FBB2175FCC0000383FF /* ActionSheetSelectItemAppearance.swift in Sources */,
 				F7622FB12175FCC0000383FF /* ActionSheetPopoverApperance.swift in Sources */,
@@ -4319,7 +4259,6 @@
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
-				F7FBBB3F2198381600ADC654 /* TLPhotoCollectionViewCell.swift in Sources */,
 				F7622FD82175FCC0000383FF /* ActionSheetCollectionItemCell.swift in Sources */,
 				F762CB891EACB81000B38484 /* REMenuItem.m in Sources */,
 				F7D423791F0596C6009C9782 /* CGPDFDocument.m in Sources */,
@@ -4340,7 +4279,6 @@
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */,
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
-				F7FBBB422198381600ADC654 /* TLAssetsCollection.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F758B3E6212C4A6C00515F55 /* PDFPage.swift in Sources */,
@@ -4753,6 +4691,7 @@
 					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 					"$(PROJECT_DIR)\"/Libraries external/Realm\"",
 					"$(PROJECT_DIR)\"/Libraries external/KTVHTTPCache\"",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
@@ -4801,6 +4740,7 @@
 					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 					"$(PROJECT_DIR)\"/Libraries external/Realm\"",
 					"$(PROJECT_DIR)\"/Libraries external/KTVHTTPCache\"",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;

@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import TLPhotoPicker
 
 class NCMainCommon: NSObject {
     
