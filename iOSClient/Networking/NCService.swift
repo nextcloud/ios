@@ -142,6 +142,10 @@ class NCService: NSObject, OCNetworkingDelegate {
             
             // ------ THEMING -----------------------------------------------------------------------
             
+            // theming logo
+            let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
+            NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, rewrite: true)
+            
             if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
                 
                 // Download Theming Background & Change Theming color
@@ -380,7 +384,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                 for notification in listOfNotifications! {
                     let id = (notification as! OCNotifications).idNotification
                     if let icon = (notification as! OCNotifications).icon {
-                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon)
+                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, rewrite: false)
                     }
                     new = new + String(describing: id)
                 }

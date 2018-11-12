@@ -166,7 +166,9 @@ class NCUtility: NSObject {
         return (k_layout_list, "fileName", true, "none", true)
     }
     
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, rewrite: Bool) {
+        
+        var fileNamePNG = ""
         
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             return
@@ -175,10 +177,15 @@ class NCUtility: NSObject {
             return
         }
         
-        let fileName = iconURL.deletingPathExtension().lastPathComponent
-        let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+        if fileName == nil {
+            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
+        } else {
+            fileNamePNG = fileName!
+        }
         
-        if !FileManager.default.fileExists(atPath: imageNamePath) {
+        let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileNamePNG
+        
+        if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             guard let svgkImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
                 return
             }
