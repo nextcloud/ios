@@ -22,6 +22,7 @@
 //
 
 #import "AppDelegate.h"
+#import <JDStatusBarNotification/JDStatusBarNotification.h>
 
 #import "iRate.h"
 #import "AFURLSessionManager.h"
@@ -33,7 +34,6 @@
 #import "CCDetail.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
-#import "JDStatusBarNotification.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "Firebase.h"

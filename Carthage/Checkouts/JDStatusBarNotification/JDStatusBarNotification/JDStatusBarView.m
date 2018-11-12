@@ -7,9 +7,7 @@
 //
 
 #import "JDStatusBarView.h"
-#import <sys/utsname.h>
-
-CGFloat const ADJUSTIPHONEX = 28;
+#import "JDStatusBarLayoutMarginHelper.h"
 
 @interface JDStatusBarView ()
 @property (nonatomic, strong) UILabel *textLabel;
@@ -57,29 +55,32 @@ CGFloat const ADJUSTIPHONEX = 28;
 - (void)layoutSubviews;
 {
   [super layoutSubviews];
-    
-  CGFloat yPos = self.textVerticalPositionAdjustment;
-  CGFloat textLabelHeight = self.bounds.size.height-1;
-  if ([JDStatusBarView isIphoneX]) {
-    yPos += ADJUSTIPHONEX;
-    textLabelHeight -= ADJUSTIPHONEX;
-  }
 
   // label
-  self.textLabel.frame = CGRectMake(0, 1+yPos,
-                                    self.bounds.size.width, textLabelHeight);
+  CGFloat topLayoutMargin = JDStatusBarRootVCLayoutMargin().top;
+  CGFloat labelY = self.textVerticalPositionAdjustment + topLayoutMargin + 1;
+  CGFloat height = self.bounds.size.height - topLayoutMargin - 1;
+
+  // adjust for iPhone X
+  if (topLayoutMargin > 0){
+    switch (_heightForIPhoneX) {
+      case JDStatusBarHeightForIPhoneXHalf:
+        labelY -= 12;
+        height += 9.0;
+        break;
+      case JDStatusBarHeightForIPhoneXFullNavBar:
+        break;
+    }
+  }
+
+  self.textLabel.frame = CGRectMake(0, labelY, self.bounds.size.width, height);
 
   // activity indicator
   if (_activityIndicatorView ) {
     CGSize textSize = [self currentTextSize];
     CGRect indicatorFrame = _activityIndicatorView.frame;
     indicatorFrame.origin.x = round((self.bounds.size.width - textSize.width)/2.0) - indicatorFrame.size.width - 8.0;
-    indicatorFrame.origin.y = ceil(1+(self.bounds.size.height - indicatorFrame.size.height)/2.0);
-      
-  if ([JDStatusBarView isIphoneX]) {
-    indicatorFrame.origin.y += ADJUSTIPHONEX * 0.5;
-  }
-      
+    indicatorFrame.origin.y = labelY + 1 + floor((CGRectGetHeight(self.textLabel.bounds) - CGRectGetHeight(indicatorFrame))/2.0);
     _activityIndicatorView.frame = indicatorFrame;
   }
 }
@@ -106,37 +107,5 @@ CGFloat const ADJUSTIPHONEX = 28;
 
   return textSize;
 }
-
-+ (BOOL)isIphoneX
-{
-  NSString *modelName = [self modelName];
-  return [modelName isEqualToString: @"Phone10,3"] || [modelName isEqualToString: @"iPhone10,6"] || [JDStatusBarView isSimulatorIphoneX];
-}
-
-+ (NSString *)modelName
-{
-  struct utsname systemInfo;
-  uname(&systemInfo);
-  return [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-}
-
-+ (BOOL)isSimulatorIphoneX
-{
-  if ([JDStatusBarView isSimulator] && [UIScreen mainScreen].bounds.size.height == 812) {
-    return YES;
-  } else {
-    return NO;
-  }
-}
-
-+ (BOOL)isSimulator
-{
-#if TARGET_OS_SIMULATOR
-  return YES;
-#else
-  return NO;
-#endif
-}
-
 
 @end

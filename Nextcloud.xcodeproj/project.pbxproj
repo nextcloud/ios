@@ -401,9 +401,6 @@
 		F784FA2F210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F784FA30210F6FC500256C26 /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA27210F672E00256C26 /* KTVHTTPCache.framework */; };
 		F784FA31210F6FC500256C26 /* KTVHTTPCache.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA27210F672E00256C26 /* KTVHTTPCache.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */; };
-		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
-		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
 		F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD3F21903CC20088454D /* NCGridCell.swift */; };
 		F78ACD4221903CE00088454D /* NCListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4121903CE00088454D /* NCListCell.swift */; };
 		F78ACD4421903CF20088454D /* NCListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4321903CF20088454D /* NCListCell.xib */; };
@@ -460,6 +457,7 @@
 		F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */; };
 		F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE8219991A60004137E /* EAIntroView.framework */; };
 		F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEA219991AC0004137E /* EARestrictedScrollView.framework */; };
+		F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEC219993330004137E /* JDStatusBarNotification.framework */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */; };
@@ -1144,12 +1142,6 @@
 		F784FA25210F672E00256C26 /* KTVHTTPCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTVHTTPCache.h; sourceTree = "<group>"; };
 		F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KTVCocoaHTTPServer.framework; sourceTree = "<group>"; };
 		F784FA27210F672E00256C26 /* KTVHTTPCache.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KTVHTTPCache.framework; sourceTree = "<group>"; };
-		F78964A71EBB576C00403E13 /* JDStatusBarNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarNotification.h; sourceTree = "<group>"; };
-		F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarNotification.m; sourceTree = "<group>"; };
-		F78964A91EBB576C00403E13 /* JDStatusBarStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarStyle.h; sourceTree = "<group>"; };
-		F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarStyle.m; sourceTree = "<group>"; };
-		F78964AB1EBB576C00403E13 /* JDStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarView.h; sourceTree = "<group>"; };
-		F78964AC1EBB576C00403E13 /* JDStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarView.m; sourceTree = "<group>"; };
 		F78ACD3F21903CC20088454D /* NCGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCGridCell.swift; sourceTree = "<group>"; };
 		F78ACD4121903CE00088454D /* NCListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCListCell.swift; sourceTree = "<group>"; };
 		F78ACD4321903CF20088454D /* NCListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCListCell.xib; sourceTree = "<group>"; };
@@ -1244,6 +1236,7 @@
 		F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DZNEmptyDataSet.framework; path = Carthage/Build/iOS/DZNEmptyDataSet.framework; sourceTree = "<group>"; };
 		F7C40BE8219991A60004137E /* EAIntroView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EAIntroView.framework; path = Carthage/Build/iOS/EAIntroView.framework; sourceTree = "<group>"; };
 		F7C40BEA219991AC0004137E /* EARestrictedScrollView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EARestrictedScrollView.framework; path = Carthage/Build/iOS/EARestrictedScrollView.framework; sourceTree = "<group>"; };
+		F7C40BEC219993330004137E /* JDStatusBarNotification.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JDStatusBarNotification.framework; path = Carthage/Build/iOS/JDStatusBarNotification.framework; sourceTree = "<group>"; };
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
@@ -1486,6 +1479,7 @@
 				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
 				F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
+				F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */,
 				F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */,
 				F72D0FFE210B6638009C96B7 /* nanopb.framework in Frameworks */,
 				F72D0FFD210B6638009C96B7 /* GoogleToolboxForMac.framework in Frameworks */,
@@ -1652,7 +1646,6 @@
 			children = (
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F72D0FED210B6638009C96B7 /* Firebase */,
-				F78964A61EBB576C00403E13 /* JDStatusBarNotification */,
 				F784FA24210F672E00256C26 /* KTVHTTPCache */,
 				F7659A2F1DC0B737004860C4 /* iRate */,
 				F70F04821C889183008DAB36 /* MBProgressHUD */,
@@ -2384,19 +2377,6 @@
 			path = KTVHTTPCache;
 			sourceTree = "<group>";
 		};
-		F78964A61EBB576C00403E13 /* JDStatusBarNotification */ = {
-			isa = PBXGroup;
-			children = (
-				F78964A71EBB576C00403E13 /* JDStatusBarNotification.h */,
-				F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */,
-				F78964A91EBB576C00403E13 /* JDStatusBarStyle.h */,
-				F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */,
-				F78964AB1EBB576C00403E13 /* JDStatusBarView.h */,
-				F78964AC1EBB576C00403E13 /* JDStatusBarView.m */,
-			);
-			path = JDStatusBarNotification;
-			sourceTree = "<group>";
-		};
 		F78ACD3E21903BA20088454D /* Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -3046,6 +3026,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7C40BEC219993330004137E /* JDStatusBarNotification.framework */,
 				F7C40BEA219991AC0004137E /* EARestrictedScrollView.framework */,
 				F7C40BE8219991A60004137E /* EAIntroView.framework */,
 				F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */,
@@ -3487,6 +3468,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/DZNEmptyDataSet.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/EAIntroView.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/EARestrictedScrollView.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/JDStatusBarNotification.framework",
 			);
 			outputPaths = (
 			);
@@ -3768,7 +3750,6 @@
 				F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */,
 				F758B449212C516300515F55 /* UIImage+Orientation.swift in Sources */,
 				F73B4F0E1F470D9100BBEE4B /* nsMBCSGroupProber.cpp in Sources */,
-				F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */,
 				F7EC9CBC21185F2000F1C5CE /* CCMedia.m in Sources */,
 				F7D423831F0596C6009C9782 /* ReaderThumbFetch.m in Sources */,
 				F73B4F171F470D9100BBEE4B /* uchardet.cpp in Sources */,
@@ -3872,7 +3853,6 @@
 				F758B43E212C516300515F55 /* ImageScannerController.swift in Sources */,
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
-				F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */,
 				F758B44C212C516300515F55 /* ZoomGestureController.swift in Sources */,
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */,
@@ -3896,7 +3876,6 @@
 				F7F54D0B1E5B14C800E19C62 /* MWTapDetectingImageView.m in Sources */,
 				F7D423821F0596C6009C9782 /* ReaderThumbCache.m in Sources */,
 				F70022A71EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
-				F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */,
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,

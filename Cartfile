@@ -5,3 +5,4 @@ github "sgr-ksmt/PDFGenerator" ~> 2.1
 github "MortimerGoro/MGSwipeTableCell"
 github "dzenbot/DZNEmptyDataSet"
 github "ealeksandrov/EAIntroView"
+github "calimarkus/JDStatusBarNotification"

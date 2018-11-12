@@ -21,6 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#import <JDStatusBarNotification/JDStatusBarNotification.h>
+
 #import "CCMain.h"
 #import "AppDelegate.h"
 #import "CCMedia.h"
@@ -30,7 +32,6 @@
 #import "OCNotificationsAction.h"
 #import "OCFrameworkConstants.h"
 #import "OCCapabilities.h"
-#import "JDStatusBarNotification.h"
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 #import "NCNetworkingEndToEnd.h"
