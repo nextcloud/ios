@@ -126,8 +126,6 @@
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
-		F733B65321997D12001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
-		F733B65421997D12001C1FFA /* TLPhotoPicker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
@@ -434,14 +432,10 @@
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
 		F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerMedia.swift */; };
-		F79918A121997F9000C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
 		F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
-		F79918A321997FA300C2E308 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F79918A42199806500C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
 		F79918A52199816500C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
 		F79918A62199817600C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
-		F79918A92199840E00C2E308 /* Sheeeeeeeeet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A72199840500C2E308 /* Sheeeeeeeeet.framework */; };
-		F79918AA2199840E00C2E308 /* Sheeeeeeeeet.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A72199840500C2E308 /* Sheeeeeeeeet.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
 		F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3214F1E9E2A070069AD1B /* CCFavorites.m */; };
@@ -627,12 +621,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F79918A321997FA300C2E308 /* UICKeyChainStore.framework in Embed Frameworks */,
 				F7DFE25A1EBDC53200CF5202 /* RealmSwift.framework in Embed Frameworks */,
 				F7DFE2581EBDC52E00CF5202 /* Realm.framework in Embed Frameworks */,
-				F733B65421997D12001C1FFA /* TLPhotoPicker.framework in Embed Frameworks */,
 				F784FA2F210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Embed Frameworks */,
-				F79918AA2199840E00C2E308 /* Sheeeeeeeeet.framework in Embed Frameworks */,
 				F784FA31210F6FC500256C26 /* KTVHTTPCache.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -1519,13 +1510,10 @@
 				F72D0FFE210B6638009C96B7 /* nanopb.framework in Frameworks */,
 				F72D0FFD210B6638009C96B7 /* GoogleToolboxForMac.framework in Frameworks */,
 				F72D0FF9210B6638009C96B7 /* Protobuf.framework in Frameworks */,
-				F79918A121997F9000C2E308 /* UICKeyChainStore.framework in Frameworks */,
 				F72D0FFB210B6638009C96B7 /* FirebaseCore.framework in Frameworks */,
 				F72D1000210B6638009C96B7 /* FirebaseInstanceID.framework in Frameworks */,
-				F79918A92199840E00C2E308 /* Sheeeeeeeeet.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
-				F733B65321997D12001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F784FA30210F6FC500256C26 /* KTVHTTPCache.framework in Frameworks */,
 				F72D1001210B6638009C96B7 /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F72D0FFA210B6638009C96B7 /* FirebaseMessaging.framework in Frameworks */,
@@ -3565,12 +3553,15 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Sheeeeeeeeet.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/TLPhotoPicker.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework/strip-frameworks.sh\"";
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 		F7A377371EB24469002856D3 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
