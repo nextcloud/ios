@@ -166,7 +166,7 @@ class NCUtility: NSObject {
         return (k_layout_list, "fileName", true, "none", true)
     }
     
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, rewrite: Bool) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool) {
         
         var fileNamePNG = ""
         
@@ -189,6 +189,12 @@ class NCUtility: NSObject {
             guard let svgkImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
                 return
             }
+            
+            if width != nil {
+                let scale = svgkImage.size.height / svgkImage.size.width
+                svgkImage.size = CGSize(width: width!, height: width! * scale)
+            }
+            
             guard let image: UIImage = svgkImage.uiImage else {
                 return
             }
