@@ -142,19 +142,19 @@ class NCService: NSObject, OCNetworkingDelegate {
             
             // ------ THEMING -----------------------------------------------------------------------
             
-            // theming logo
-            let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-            NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true)
-            
             if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
                 
-                // Download Theming Background & Change Theming color
+                // Download Logo
+                let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
+                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 80, rewrite: true)
+                
+                // Download Theming Background
                 DispatchQueue.global().async {
                 
-                    let address = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
 
-                    guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
+                    guard let imageData = try? Data(contentsOf: URL(string: backgroundURL)!) else {
                         DispatchQueue.main.async {
                             self.appDelegate.settingThemingColorBrand()
                         }

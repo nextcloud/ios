@@ -157,7 +157,7 @@
     // Back Button
     if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
         
-        UIImage *backButtonImage = [UIImage imageNamed:@"navigationLogo"];
+        UIImage *backButtonImage = [UIImage imageNamed:@"themingLogo"];
         backButtonImage = [backButtonImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         
         self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:backButtonImage style:UIBarButtonItemStylePlain target:nil action:nil];
@@ -564,7 +564,7 @@
             self.navigationItem.title = nil;
             
             if ([appDelegate.reachability isReachable] == NO) {
-                _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogoOffline"]];
+                _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[NCBrandColor sharedInstance].icon]];
             } else {
                 
                 if ([NCBrandOptions sharedInstance].use_themingColor) {
@@ -572,12 +572,12 @@
                     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
                     
                     if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
-                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] multiplier:2 color:[UIColor blackColor]]];
+                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[UIColor blackColor]]];
                     else
-                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] multiplier:2 color:[UIColor whiteColor]]];
+                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[UIColor whiteColor]]];
                 } else {
                     
-                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogo"]];
+                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"themingLogo"]];
                 }
             }
             

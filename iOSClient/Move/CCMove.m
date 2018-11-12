@@ -81,9 +81,9 @@
         
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
         if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
-            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] multiplier:2 color:[UIColor blackColor]]];
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[UIColor blackColor]]];
         else
-            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] multiplier:2 color:[UIColor whiteColor]]];
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[UIColor whiteColor]]];
 
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
