@@ -6,3 +6,4 @@ github "MortimerGoro/MGSwipeTableCell"
 github "dzenbot/DZNEmptyDataSet"
 github "ealeksandrov/EAIntroView"
 github "calimarkus/JDStatusBarNotification"
+github "ChangbaDevs/KTVHTTPCache" ~> 1.1.7
