@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import SVGKit
 
 class NCService: NSObject, OCNetworkingDelegate {
     
@@ -377,11 +378,26 @@ class NCService: NSObject, OCNetworkingDelegate {
                 var new = ""
                 
                 for notification in listOfNotifications! {
-                    let id = (notification as AnyObject).idNotification!
+                    let id = (notification as! OCNotifications).idNotification
+                    if let icon = (notification as! OCNotifications).icon {
+                        if let iconURL = URL(string: icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) {
+                            let fileName = iconURL.deletingPathExtension().lastPathComponent
+                            let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                            if !FileManager.default.fileExists(atPath: imageNamePath) {
+                                if let svgkImage: SVGKImage = SVGKImage(contentsOf: iconURL) {
+                                    if let image: UIImage = svgkImage.uiImage {
+                                        if let pngImageData = image.pngData() {
+                                            try? pngImageData.write(to: imageNamePath.url)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     new = new + String(describing: id)
                 }
                 for notification in self.appDelegate.listOfNotifications! {
-                    let id = (notification as AnyObject).idNotification!
+                    let id = (notification as! OCNotifications).idNotification
                     old = old + String(describing: id)
                 }
                 
