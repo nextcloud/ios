@@ -126,7 +126,6 @@
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
-		F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
@@ -187,7 +186,6 @@
 		F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */; };
 		F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */; };
 		F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */; };
-		F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F73D71621F2673C200E233EB /* NCText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D71611F2673C200E233EB /* NCText.swift */; };
 		F73D71641F2674A400E233EB /* NCText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D71631F2674A400E233EB /* NCText.storyboard */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
@@ -462,6 +460,7 @@
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C40BE321998C060004137E /* PDFGenerator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE221998C050004137E /* PDFGenerator.framework */; };
 		F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */; };
+		F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */; };
@@ -856,8 +855,6 @@
 		F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDManager.m; sourceTree = "<group>"; };
 		F73CC0671E813DFF006E3047 /* BKTouchIDSwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDSwitchView.h; sourceTree = "<group>"; };
 		F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDSwitchView.m; sourceTree = "<group>"; };
-		F73CCE231DC13788007E38D8 /* UIScrollView+EmptyDataSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+EmptyDataSet.h"; sourceTree = "<group>"; };
-		F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+EmptyDataSet.m"; sourceTree = "<group>"; };
 		F73D71611F2673C200E233EB /* NCText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCText.swift; sourceTree = "<group>"; };
 		F73D71631F2674A400E233EB /* NCText.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCText.storyboard; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
@@ -1251,6 +1248,7 @@
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7C40BE221998C050004137E /* PDFGenerator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFGenerator.framework; path = Carthage/Build/iOS/PDFGenerator.framework; sourceTree = "<group>"; };
 		F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MGSwipeTableCell.framework; path = Carthage/Build/iOS/MGSwipeTableCell.framework; sourceTree = "<group>"; };
+		F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DZNEmptyDataSet.framework; path = Carthage/Build/iOS/DZNEmptyDataSet.framework; sourceTree = "<group>"; };
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
@@ -1491,6 +1489,7 @@
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
+				F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */,
 				F72D0FFE210B6638009C96B7 /* nanopb.framework in Frameworks */,
 				F72D0FFD210B6638009C96B7 /* GoogleToolboxForMac.framework in Frameworks */,
 				F72D0FF9210B6638009C96B7 /* Protobuf.framework in Frameworks */,
@@ -1655,7 +1654,6 @@
 			isa = PBXGroup;
 			children = (
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
-				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
 				F7659A211DC0B726004860C4 /* EAIntroView */,
 				F7659A2A1DC0B72F004860C4 /* EARestrictedScrollView */,
 				F72D0FED210B6638009C96B7 /* Firebase */,
@@ -1920,15 +1918,6 @@
 				F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */,
 			);
 			path = BKPasscodeView;
-			sourceTree = "<group>";
-		};
-		F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */ = {
-			isa = PBXGroup;
-			children = (
-				F73CCE231DC13788007E38D8 /* UIScrollView+EmptyDataSet.h */,
-				F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */,
-			);
-			path = DZNEmptyDataSet;
 			sourceTree = "<group>";
 		};
 		F73D71561F26739100E233EB /* Text */ = {
@@ -3082,6 +3071,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */,
 				F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */,
 				F7C40BE221998C050004137E /* PDFGenerator.framework */,
 				F79918A72199840500C2E308 /* Sheeeeeeeeet.framework */,
@@ -3517,6 +3507,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/PDFGenerator.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MGSwipeTableCell.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/DZNEmptyDataSet.framework",
 			);
 			outputPaths = (
 			);
@@ -3559,7 +3550,6 @@
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
-				F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
@@ -3853,7 +3843,6 @@
 				F73D71621F2673C200E233EB /* NCText.swift in Sources */,
 				F77B0E631D118A16002130FE /* CCShareOC.m in Sources */,
 				F73B4EF81F470D9100BBEE4B /* LangDanishModel.cpp in Sources */,
-				F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F73B4F051F470D9100BBEE4B /* nsCharSetProber.cpp in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,

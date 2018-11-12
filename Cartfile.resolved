@@ -1,5 +1,6 @@
 github "MortimerGoro/MGSwipeTableCell" "1.6.7"
 github "danielsaidi/Sheeeeeeeeet" "1.0.1"
+github "dzenbot/DZNEmptyDataSet" "v1.8.1"
 github "kishikawakatsumi/UICKeyChainStore" "v2.1.2"
 github "sgr-ksmt/PDFGenerator" "2.1"
 github "tilltue/TLPhotoPicker" "1.7.7"

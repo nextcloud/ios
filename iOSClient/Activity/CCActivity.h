@@ -22,7 +22,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UIScrollView+EmptyDataSet.h"
+#import <DZNEmptyDataSet/DZNEmptyDataSet.h>
 
 @interface CCActivity : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 

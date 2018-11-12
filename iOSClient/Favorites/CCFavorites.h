@@ -22,9 +22,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 #import "CCDetail.h"
-#import "UIScrollView+EmptyDataSet.h"
 #import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
 #import "CCCellMain.h"

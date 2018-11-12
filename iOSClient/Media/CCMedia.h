@@ -24,8 +24,8 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import <ImageIO/ImageIO.h>
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-#import "UIScrollView+EmptyDataSet.h"
 #import "OCErrorMsg.h"
 #import "TWMessageBarManager.h"
 #import "CCManageLocation.h"

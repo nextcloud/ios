@@ -25,12 +25,12 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 #import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
 #import "BKPasscodeViewController.h"
 #import "NSString+TruncateToWidth.h"
-#import "UIScrollView+EmptyDataSet.h"
 #import "CCLogin.h"
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
