@@ -48,7 +48,7 @@
     NSUInteger _numSelectedFileIDsMetadatas;
     NSMutableArray *_queueSelector;
     
-    UIImageView *_ImageTitleHomeCryptoCloud;
+    UIImageView *_imageTitleHome;
     
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
@@ -540,7 +540,7 @@
     // Actuate `Peek` feedback (weak boom)
     AudioServicesPlaySystemSound(1519);
     
-    [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
+    [_imageTitleHome setUserInteractionEnabled:NO];
 }
 
 - (void)setTitle
@@ -561,32 +561,49 @@
         // we are in home : LOGO BRAND
         if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
             
+            UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
+            NSInteger multiplier = 2;
+            
+            NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
+            UIImage *image = [UIImage imageWithContentsOfFile:fileNameThemingLogo];
+            if (image != nil) {
+                imageThemingLogo = image;
+                multiplier = 1;
+            }
+            
             self.navigationItem.title = nil;
             
-            if ([appDelegate.reachability isReachable] == NO) {
-                _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[NCBrandColor sharedInstance].icon]];
-            } else {
+            if ([NCBrandOptions sharedInstance].use_themingColor) {
                 
-                if ([NCBrandOptions sharedInstance].use_themingColor) {
+                if ([appDelegate.reachability isReachable] == NO) {
+                    
+                    _imageTitleHome = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[NCBrandColor sharedInstance].icon]];
+                    
+                } else {
                 
                     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
                     
                     if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
-                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[UIColor blackColor]]];
+                        _imageTitleHome = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[UIColor blackColor]]];
                     else
-                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[UIColor whiteColor]]];
-                } else {
-                    
-                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"themingLogo"]];
+                        _imageTitleHome = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[UIColor whiteColor]]];
                 }
+                
+            } else {
+                    
+                if ([appDelegate.reachability isReachable] == NO)
+                    _imageTitleHome = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[NCBrandColor sharedInstance].icon]];
+                else
+                    _imageTitleHome = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"themingLogo"]];
             }
             
-            [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+            
+            [_imageTitleHome setUserInteractionEnabled:YES];
             UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo:)];
             [singleTap setNumberOfTapsRequired:1];
-            [_ImageTitleHomeCryptoCloud addGestureRecognizer:singleTap];
+            [_imageTitleHome addGestureRecognizer:singleTap];
             
-            self.navigationItem.titleView = _ImageTitleHomeCryptoCloud;
+            self.navigationItem.titleView = _imageTitleHome;
             
         } else {
         
@@ -921,14 +938,14 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
+    [_imageTitleHome setUserInteractionEnabled:NO];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
         
-        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+        [_imageTitleHome setUserInteractionEnabled:YES];
     });
     
     [appDelegate subscribingNextcloudServerPushNotification];
@@ -1223,7 +1240,7 @@
         } else {
             [self tableViewReloadData];
             
-            [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+            [_imageTitleHome setUserInteractionEnabled:YES];
             
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             
@@ -1278,7 +1295,7 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
     
         // Enable change user
-        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+        [_imageTitleHome setUserInteractionEnabled:YES];
                 
         _loadingFolder = NO;
         [self tableViewReloadData];
