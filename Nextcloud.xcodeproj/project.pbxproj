@@ -1629,6 +1629,7 @@
 			isa = PBXGroup;
 			children = (
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
+				F7A377131EB2364A002856D3 /* Fabric */,
 				F72D0FED210B6638009C96B7 /* Firebase */,
 				F7659A2F1DC0B737004860C4 /* iRate */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
@@ -2906,7 +2907,6 @@
 			isa = PBXGroup;
 			children = (
 				F70F02A81C889183008DAB36 /* Libraries external */,
-				F7A377131EB2364A002856D3 /* Fabric */,
 				F70022561EC4C9100080073F /* OCCommunicationLib */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
