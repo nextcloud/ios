@@ -461,6 +461,7 @@
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C40BE321998C060004137E /* PDFGenerator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE221998C050004137E /* PDFGenerator.framework */; };
+		F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */; };
@@ -522,8 +523,6 @@
 		F7D4238B1F0596C6009C9782 /* ThumbsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423761F0596C6009C9782 /* ThumbsViewController.m */; };
 		F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423781F0596C6009C9782 /* UIXToolbarView.m */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
-		F7DC5FEC1F011EB700A903C7 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */; };
-		F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */; };
 		F7DFE2521EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
 		F7DFE2551EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
@@ -1251,6 +1250,7 @@
 		F7C0F46E1C8880540059EC54 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShareViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7C40BE221998C050004137E /* PDFGenerator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFGenerator.framework; path = Carthage/Build/iOS/PDFGenerator.framework; sourceTree = "<group>"; };
+		F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MGSwipeTableCell.framework; path = Carthage/Build/iOS/MGSwipeTableCell.framework; sourceTree = "<group>"; };
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
@@ -1361,10 +1361,6 @@
 		F7D5328F1F5D443B006568B1 /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D532A41F5D4461006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D6650620FF341600BFBA9E /* NCMainCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainCommon.swift; sourceTree = "<group>"; };
-		F7DC5FE81F011EB700A903C7 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
-		F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
-		F7DC5FEA1F011EB700A903C7 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
-		F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
 		F7DE9AB01F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7DFE24F1EBDC3A400CF5202 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
@@ -1493,6 +1489,7 @@
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
+				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F72D0FFE210B6638009C96B7 /* nanopb.framework in Frameworks */,
 				F72D0FFD210B6638009C96B7 /* GoogleToolboxForMac.framework in Frameworks */,
@@ -1666,7 +1663,6 @@
 				F784FA24210F672E00256C26 /* KTVHTTPCache */,
 				F7659A2F1DC0B737004860C4 /* iRate */,
 				F70F04821C889183008DAB36 /* MBProgressHUD */,
-				F7DC5FD31F00F98B00A903C7 /* MGSwipeTableCell */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
 				F7540EE11D5B238600C3FFA8 /* openssl */,
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
@@ -2885,17 +2881,6 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		F7DC5FD31F00F98B00A903C7 /* MGSwipeTableCell */ = {
-			isa = PBXGroup;
-			children = (
-				F7DC5FE81F011EB700A903C7 /* MGSwipeButton.h */,
-				F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */,
-				F7DC5FEA1F011EB700A903C7 /* MGSwipeTableCell.h */,
-				F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */,
-			);
-			path = MGSwipeTableCell;
-			sourceTree = "<group>";
-		};
 		F7DFE24E1EBDC3A400CF5202 /* Realm */ = {
 			isa = PBXGroup;
 			children = (
@@ -3097,6 +3082,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */,
 				F7C40BE221998C050004137E /* PDFGenerator.framework */,
 				F79918A72199840500C2E308 /* Sheeeeeeeeet.framework */,
 				F79918A021997F9000C2E308 /* UICKeyChainStore.framework */,
@@ -3530,6 +3516,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/TLPhotoPicker.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/PDFGenerator.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/MGSwipeTableCell.framework",
 			);
 			outputPaths = (
 			);
@@ -3744,7 +3731,6 @@
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F70022B01EC4C9100080073F /* AFURLSessionManager.m in Sources */,
 				F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */,
-				F7DC5FEC1F011EB700A903C7 /* MGSwipeButton.m in Sources */,
 				F7D423801F0596C6009C9782 /* ReaderMainPagebar.m in Sources */,
 				F762CB061EACB66200B38484 /* XLFormTextViewCell.m in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
@@ -3951,7 +3937,6 @@
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
-				F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */,
 				F7D4238B1F0596C6009C9782 /* ThumbsViewController.m in Sources */,
 				F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F7D423811F0596C6009C9782 /* ReaderMainToolbar.m in Sources */,

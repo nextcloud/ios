@@ -27,7 +27,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #import "TWMessageBarManager.h"
-#import "MGSwipeTableCell.h"
 #import "AHKActionSheet.h"
 #import "BKPasscodeViewController.h"
 #import "NSString+TruncateToWidth.h"
@@ -44,6 +43,7 @@
 #import "CCHud.h"
 #import "CCMenuAccount.h"
 #import "CCPeekPop.h"
+#import <MGSwipeTableCell/MGSwipeTableCell.h>
 
 @class tableMetadata;
 

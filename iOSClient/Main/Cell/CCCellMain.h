@@ -22,7 +22,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MGSwipeTableCell.h"
+#import <MGSwipeTableCell/MGSwipeTableCell.h>
 
 @interface CCCellMain : MGSwipeTableCell
 

@@ -27,7 +27,6 @@
 #import "UIScrollView+EmptyDataSet.h"
 #import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
-#import "MGSwipeTableCell.h"
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
 #import "CCUtility.h"
