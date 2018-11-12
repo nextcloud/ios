@@ -290,7 +290,7 @@
 {
     NSLog(@"[LOG] Enter in Background");
 
-    [[CCQuickActions quickActionsManager] closeAll];
+    //[[CCQuickActions quickActionsManager] closeAll];
     
     [[BKPasscodeLockScreenManager sharedManager] showLockScreen:YES];
     
@@ -538,8 +538,8 @@
     UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
    
     // add the array to our app
-    if (shortcutUpload && shortcutMedia)
-        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutMedia];
+    if (shortcutMedia)
+        [UIApplication sharedApplication].shortcutItems = @[shortcutMedia];
 }
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
