@@ -164,12 +164,12 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             var image : UIImage?
             
             if let urlIcon = urlIcon {
-                let pathFileName = CCUtility.getDirectoryUserData() + "/" + urlIcon.lastPathComponent
+                let pathFileName = CCUtility.getDirectoryUserData() + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
                 image = UIImage(contentsOfFile: pathFileName)
             }
             
             if let image = image {
-                cell.icon.image = image
+                cell.icon.image = CCGraphics.changeThemingColorImage(image, multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
             } else {
                 cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement)
             }
