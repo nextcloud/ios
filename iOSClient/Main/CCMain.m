@@ -564,9 +564,8 @@
             UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
             _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 30)]; // IMAGE = 120 x 60
             _imageTitleHome.contentMode = UIViewContentModeScaleAspectFill;
-            _imageTitleHome.clipsToBounds = YES;
+            //_imageTitleHome.clipsToBounds = YES;
             NSInteger multiplierImageTitleHome = 2;
-//            _imageTitleHome.backgroundColor = [UIColor redColor];
             
             NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
             UIImage *image = [UIImage imageWithContentsOfFile:fileNameThemingLogo];

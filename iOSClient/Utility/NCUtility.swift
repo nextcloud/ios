@@ -186,22 +186,61 @@ class NCUtility: NSObject {
         let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileNamePNG
         
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
-            guard let svgkImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
+            
+            guard let imageData = try? Data(contentsOf:iconURL) else {
                 return
             }
             
-            if width != nil {
-                let scale = svgkImage.size.height / svgkImage.size.width
-                svgkImage.size = CGSize(width: width!, height: width! * scale)
+            if let image = UIImage.init(data: imageData) {
+                
+                var newImage: UIImage = image
+                
+                if width != nil {
+                    
+                    let ratio = image.size.height / image.size.width
+                    let newSize = CGSize(width: width!, height: width! * ratio)
+                    
+                    if #available(iOS 10.0, *) {
+                        let renderFormat = UIGraphicsImageRendererFormat.default()
+                        renderFormat.opaque = false
+                        let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
+                        newImage = renderer.image {
+                            (context) in
+                            image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
+                        }
+                    } else {
+                        UIGraphicsBeginImageContextWithOptions(CGSize(width: newSize.width, height: newSize.height), false, 0)
+                        image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
+                        newImage = UIGraphicsGetImageFromCurrentImageContext()!
+                        UIGraphicsEndImageContext()
+                    }
+                }
+                
+                guard let pngImageData = newImage.pngData() else {
+                    return
+                }
+                CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                
+            } else {
+                
+                guard let svgImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
+                    return
+                }
+                
+                if width != nil {
+                    let scale = svgImage.size.height / svgImage.size.width
+                    svgImage.size = CGSize(width: width!, height: width! * scale)
+                }
+                
+                guard let image: UIImage = svgImage.uiImage else {
+                    return
+                }
+                guard let pngImageData = image.pngData() else {
+                    return
+                }
+                
+                CCUtility.write(pngImageData, fileNamePath: imageNamePath)
             }
-            
-            guard let image: UIImage = svgkImage.uiImage else {
-                return
-            }
-            guard let pngImageData = image.pngData() else {
-                return
-            }
-            CCUtility.write(pngImageData, fileNamePath: imageNamePath)
         }
     }
 }
