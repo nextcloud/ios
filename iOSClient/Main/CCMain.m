@@ -154,15 +154,6 @@
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
     }
 
-    // Back Button
-    if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
-        
-        UIImage *backButtonImage = [self getImageLogoHome];
-        backButtonImage = [backButtonImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        
-        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:backButtonImage style:UIBarButtonItemStylePlain target:nil action:nil];
-    }
-    
     // reMenu Background
     _reMenuBackgroundView = [UIView new];
     _reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
@@ -191,7 +182,7 @@
     
     // Plus Button
     [appDelegate plusButtonVisibile:true];
-    
+
     if (_isSelectedMode)
         [self setUINavigationBarSelected];
     else
@@ -565,7 +556,10 @@
 
             _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 30)]; // IMAGE = 120 x 60
             _imageTitleHome.contentMode = UIViewContentModeScaleAspectFill;
-            _imageTitleHome.image = [self getImageLogoHome];
+            UIImage *image = [self getImageLogoHome];
+            _imageTitleHome.image = image;
+            // backbutton
+            self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:nil action:nil];
             
             [_imageTitleHome setUserInteractionEnabled:YES];
             UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo:)];
