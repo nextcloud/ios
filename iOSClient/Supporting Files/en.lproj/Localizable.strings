@@ -620,6 +620,12 @@
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
 
+// Richdocuments
+
+"_create_new_document_"             = "Create new document";
+"_create_new_spreadsheet"           = "Create new spreadsheet";
+"_create_new_presentation_"         = "Create new presentation";
+
 // Intro
 
 "_intro_1_title_"                   = "Keep your data secure and under your control";

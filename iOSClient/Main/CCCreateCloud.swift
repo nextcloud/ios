@@ -67,7 +67,6 @@ class CreateMenuAdd: NSObject {
         items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
         items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
         
-        
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
         
         let actionSheet = ActionSheet(items: items) { sheet, item in
