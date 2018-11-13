@@ -600,7 +600,7 @@
         multiplier = 1;
     }
     
-    if ([NCBrandOptions sharedInstance].use_themingColor) {
+    if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
         if ([appDelegate.reachability isReachable] == NO) {
             
