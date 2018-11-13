@@ -63,9 +63,22 @@ class CreateMenuAdd: NSObject {
         // items.append(ActionSheetSectionTitle(title: "Cheap"))
         // items.append(ActionSheetSectionMargin())
 
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
+        /*
+        let appearanceSectionMargin = ActionSheetAppearance.standard
+        //appearanceSectionMargin. = 10
+        appearanceSectionMargin.backgroundColor = UIColor.red
+        let itemSectionMargin = ActionSheetSectionTitle(title: "Cheap")
+        itemSectionMargin.customAppearance = appearanceSectionMargin
+        items.append(itemSectionMargin)
+        */
+        
+        if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes() {
+            if richdocumentsMimetypes.count > 0 {
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
+            }
+        }
         
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
         
