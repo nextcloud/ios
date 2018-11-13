@@ -61,7 +61,8 @@ class CreateMenuAdd: NSObject {
         items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:1, color: colorIcon)))
         
         // items.append(ActionSheetSectionTitle(title: "Cheap"))
-        
+        // items.append(ActionSheetSectionMargin())
+
         items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
         items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
         items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
@@ -84,6 +85,10 @@ class CreateMenuAdd: NSObject {
                 }
             }
             if item.value as? Int == 5 { self.appDelegate.activeMain.createFolder() }
+
+            if item.value as? Int == 6 { print("Cancel buttons has the value `true`") }
+            if item.value as? Int == 7 { print("Cancel buttons has the value `true`") }
+            if item.value as? Int == 8 { print("Cancel buttons has the value `true`") }
 
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
