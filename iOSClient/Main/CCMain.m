@@ -562,16 +562,17 @@
         if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
             
             UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
-            _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 80, 40)];
-            
-            
-            NSInteger multiplier = 2;
+            _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 30)]; // IMAGE = 120 x 60
+            _imageTitleHome.contentMode = UIViewContentModeScaleAspectFill;
+            _imageTitleHome.clipsToBounds = YES;
+            NSInteger multiplierImageTitleHome = 2;
+//            _imageTitleHome.backgroundColor = [UIColor redColor];
             
             NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
             UIImage *image = [UIImage imageWithContentsOfFile:fileNameThemingLogo];
             if (image != nil) {
                 imageThemingLogo = image;
-                multiplier = 1;
+                multiplierImageTitleHome = 1;
             }
             
             self.navigationItem.title = nil;
@@ -580,22 +581,22 @@
                 
                 if ([appDelegate.reachability isReachable] == NO) {
                     
-                    _imageTitleHome.image = [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[NCBrandColor sharedInstance].icon];
+                    _imageTitleHome.image = [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplierImageTitleHome color:[NCBrandColor sharedInstance].icon];
                     
                 } else {
                 
                     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
                     
                     if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
-                        _imageTitleHome.image = [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[UIColor blackColor]];
+                        _imageTitleHome.image = [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplierImageTitleHome color:[UIColor blackColor]];
                     else
-                        _imageTitleHome.image = [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[UIColor whiteColor]];
+                        _imageTitleHome.image = [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplierImageTitleHome color:[UIColor whiteColor]];
                 }
                 
             } else {
                     
                 if ([appDelegate.reachability isReachable] == NO)
-                    _imageTitleHome.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
+                    _imageTitleHome.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:multiplierImageTitleHome color:[NCBrandColor sharedInstance].icon];
                 else
                     _imageTitleHome.image = [UIImage imageNamed:@"themingLogo"];
             }
