@@ -47,7 +47,7 @@ class CreateMenuAdd: NSObject {
     @objc func createMenu(viewController: UIViewController, view : UIView) {
         
         var items = [ActionSheetItem]()
-                
+        
         items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
         items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
@@ -59,6 +59,13 @@ class CreateMenuAdd: NSObject {
         }
         
         items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:1, color: colorIcon)))
+        
+        // items.append(ActionSheetSectionTitle(title: "Cheap"))
+        
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
+        
         
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
         
