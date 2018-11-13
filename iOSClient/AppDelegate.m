@@ -962,7 +962,8 @@
     UIView *view = [[(UIButton *)sender superview] superview];
     
     CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
-    [menuAdd createMenuWithView:view];
+    [menuAdd createMenuWithViewController:self.window.rootViewController view:view];
+    //[menuAdd createMenuWithView:view];
 }
 
 - (void)selectedTabBarController:(NSInteger)index

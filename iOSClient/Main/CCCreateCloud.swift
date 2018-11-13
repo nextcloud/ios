@@ -23,6 +23,7 @@
 
 import Foundation
 import PDFGenerator
+import Sheeeeeeeeet
 
 // MARK: -
 
@@ -43,54 +44,44 @@ class CreateMenuAdd: NSObject {
         colorIcon = themingColor
     }
     
-    @objc func createMenu(view : UIView) {
+    @objc func createMenu(viewController: UIViewController, view : UIView) {
         
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let actionSheet = AHKActionSheet.init(view: view, title: nil)!
+        var items = [ActionSheetItem]()
+                
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
-        actionSheet.animationDuration = 0.2
-        actionSheet.automaticallyTintButtonImages = 0
-        
-        actionSheet.buttonHeight = 50.0
-        actionSheet.cancelButtonHeight = 50.0
-        actionSheet.separatorHeight = 5.0
-        
-        actionSheet.separatorColor = NCBrandColor.sharedInstance.seperator
-        
-        actionSheet.buttonTextAttributes = fontButton
-        actionSheet.encryptedButtonTextAttributes = fontEncrypted
-        actionSheet.cancelButtonTextAttributes = fontCancel
-        actionSheet.disableButtonTextAttributes = fontDisable
-        
-        actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:2, color: NCBrandColor.sharedInstance.icon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.openAssetsPickerController()
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:2, color: NCBrandColor.sharedInstance.icon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.openImportDocumentPicker()
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:2, color: NCBrandColor.sharedInstance.icon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            
-            let storyboard = UIStoryboard(name: "NCText", bundle: nil)
-            let controller = storyboard.instantiateViewController(withIdentifier: "NCText")
-            controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-            appDelegate.activeMain.present(controller, animated: true, completion: nil)
-        })
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+       
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
         if #available(iOS 11.0, *) {
-            actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: NCBrandColor.sharedInstance.icon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain, openScan: true)
-            })
+            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: NCBrandColor.sharedInstance.icon)))
         }
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:2, color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.createFolder()
-        })
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:1, color: colorIcon)))
         
-        actionSheet.show()
+        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        
+        let actionSheet = ActionSheet(items: items) { sheet, item in
+            if item.value as? Int == 1 { self.appDelegate.activeMain.openAssetsPickerController() }
+            if item.value as? Int == 2 { self.appDelegate.activeMain.openImportDocumentPicker() }
+            if item.value as? Int == 3 {
+                let storyboard = UIStoryboard(name: "NCText", bundle: nil)
+                let controller = storyboard.instantiateViewController(withIdentifier: "NCText")
+                controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                self.appDelegate.activeMain.present(controller, animated: true, completion: nil)
+            }
+            if item.value as? Int == 4 {
+                if #available(iOS 11.0, *) {
+                    NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self.appDelegate.activeMain, openScan: true)
+                }
+            }
+            if item.value as? Int == 5 { self.appDelegate.activeMain.createFolder() }
+
+            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        }
+        
+        actionSheet.present(in: viewController, from: view)
     }
 }
 
