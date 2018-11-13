@@ -1008,8 +1008,8 @@
 {
     NSString *firstPath = serverUrl;
 
-    NSURL *serverUrlURL = [NSURL URLWithString:serverUrl];
-    NSURL *activeUrlURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", activeUrl, k_webDAV]];
+    NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+    NSURL *activeUrlURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", [activeUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]], k_webDAV]];
     
     while ([[serverUrlURL absoluteString] isEqualToString:[activeUrlURL absoluteString]] == false) {
         firstPath = [serverUrlURL absoluteString];
