@@ -308,6 +308,11 @@
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
+// Template Rich document
+#define k_richdocument_document                         @"document"
+#define k_richdocument_spreadsheet                      @"spreadsheet"
+#define k_richdocument_presentation                     @"presentation"
+
 // Layout
 #define k_layout_list                                   @"typeLayoutList"
 #define k_layout_grid                                   @"typeLayoutGrid"
