@@ -523,14 +523,11 @@
 		F7DFB7E1219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
 		F7DFB7E2219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
 		F7DFB7E3219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
-		F7DFB7E5219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7DFB7E4219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard */; };
-		F7DFB7E6219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7DFB7E4219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard */; };
-		F7DFB7E7219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7DFB7E4219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard */; };
-		F7DFB7E8219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7DFB7E4219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard */; };
 		F7DFB7EB219C5A2E00680748 /* NCCreateMenuAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7EA219C5A2E00680748 /* NCCreateMenuAdd.swift */; };
 		F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */; };
 		F7DFB7F2219C5C0000680748 /* NCCreateFormUploadFileText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */; };
 		F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */; };
+		F7DFB7F6219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */; };
 		F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E9C41820F4CA870040CF18 /* CCTransfers.m */; };
 		F7EC9CBC21185F2000F1C5CE /* CCMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CBB21185F2000F1C5CE /* CCMedia.m */; };
 		F7ECBA6D1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */; };
@@ -1354,11 +1351,11 @@
 		F7DE9AB01F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7DFB7DE219C312D00680748 /* NCRichDocumentTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCRichDocumentTemplate.h; sourceTree = "<group>"; };
 		F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCRichDocumentTemplate.m; sourceTree = "<group>"; };
-		F7DFB7E4219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadRichDocuments.storyboard; sourceTree = "<group>"; };
 		F7DFB7EA219C5A2E00680748 /* NCCreateMenuAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateMenuAdd.swift; sourceTree = "<group>"; };
 		F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadAssets.swift; sourceTree = "<group>"; };
 		F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadFileText.swift; sourceTree = "<group>"; };
 		F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadScanDocument.swift; sourceTree = "<group>"; };
+		F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadRichdocuments.storyboard; sourceTree = "<group>"; };
 		F7E9C41520F4CA870040CF18 /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
 		F7E9C41820F4CA870040CF18 /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
 		F7EC9CBA21185F2000F1C5CE /* CCMedia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMedia.h; sourceTree = "<group>"; };
@@ -2130,7 +2127,6 @@
 			isa = PBXGroup;
 			children = (
 				F76185592198A2B500A65DC4 /* NCPhotosPickerViewController.swift */,
-				F7DFB7E4219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard */,
 			);
 			path = NCPhotosPickerViewController;
 			sourceTree = "<group>";
@@ -2812,6 +2808,7 @@
 			isa = PBXGroup;
 			children = (
 				F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */,
+				F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */,
 				F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */,
 				F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */,
 				F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */,
@@ -3286,7 +3283,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
-				F7DFB7E6219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */,
 				F7F8D71D1ED6183000E711F3 /* CCCellShareExt.xib in Resources */,
@@ -3299,7 +3295,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7DFB7E8219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3307,7 +3302,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7DFB7E7219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3337,6 +3331,7 @@
 				F7F54CF31E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png in Resources */,
 				F7D423441F0596AC009C9782 /* Reader-Mark-N.png in Resources */,
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
+				F7DFB7F6219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F7F54CF61E5B14C700E19C62 /* PlayButtonOverlayLarge@3x.png in Resources */,
 				F7D423371F0596AC009C9782 /* AppIcon-180.png in Resources */,
@@ -3393,7 +3388,6 @@
 				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
-				F7DFB7E5219C577D00680748 /* NCCreateFormUploadRichDocuments.storyboard in Resources */,
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
 				F7D4234C1F0596AC009C9782 /* Reader-Print@3x.png in Resources */,
 				F7F54CFB1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@2x.png in Resources */,

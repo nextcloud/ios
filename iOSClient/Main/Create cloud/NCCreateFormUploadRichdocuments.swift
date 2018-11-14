@@ -25,7 +25,7 @@ import Foundation
 
 // MARK: -
 
-class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
+class NCCreateFormUploadRichdocuments: UIViewController, NCSelectDelegate {
     
     var typeTemplate = ""
     var serverUrl = ""
@@ -43,11 +43,10 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
-        }
-        
-        self.initializeForm()
+        }        
     }
     
+    /*
     func initializeForm() {
         
         let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_upload_photos_videos_", comment: "")) as XLFormDescriptor
@@ -90,6 +89,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
         
         self.form = form
     }
+    */
     
     // MARK: - View Life Cycle
     
@@ -114,21 +114,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        
-        self.reloadForm()
-    }
-    
-    func reloadForm() {
-        
-        self.form.delegate = nil
-        
-        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-        buttonDestinationFolder.title = fileNameFolder
-        
-        self.tableView.reloadData()
-        self.form.delegate = self
     }
     
     // MARK: - Action
@@ -145,12 +130,9 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
         }
-        reloadForm()
     }
     
     @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
-        
-        self.deselectFormRow(sender)
         
         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
