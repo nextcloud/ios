@@ -961,7 +961,7 @@
     
     UIView *view = [[(UIButton *)sender superview] superview];
     
-    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
+    NCCreateMenuAdd *menuAdd = [[NCCreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
     [menuAdd createMenuWithViewController:self.window.rootViewController view:view];
     //[menuAdd createMenuWithView:view];
 }
