@@ -98,7 +98,13 @@ class CreateMenuAdd: NSObject {
             }
             if item.value as? Int == 5 { self.appDelegate.activeMain.createFolder() }
 
-            if item.value as? Int == 6 { print("Cancel buttons has the value `true`") }
+            if item.value as? Int == 6 {
+                let form = CreateFormUploadRichdocuments.init(typeTemplate: k_richdocument_document)
+                let navigationController = UINavigationController.init(rootViewController: form)
+                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                
+                self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+            }
             if item.value as? Int == 7 { print("Cancel buttons has the value `true`") }
             if item.value as? Int == 8 { print("Cancel buttons has the value `true`") }
 
@@ -109,6 +115,25 @@ class CreateMenuAdd: NSObject {
     }
 }
 
+
+// MARK: -
+
+class CreateFormUploadRichdocuments: XLFormViewController {
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    @objc convenience init(typeTemplate : String) {
+        self.init()
+        
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (url) in
+            //
+        }, failure: { (message, errorCode) in
+            //
+        })
+    }
+}
 // MARK: -
 
 @objc protocol createFormUploadAssetsDelegate {

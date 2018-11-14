@@ -1211,7 +1211,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSParameterAssert(success);
     
-    _requestMethod = @"POST";
+    _requestMethod = @"GET";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
