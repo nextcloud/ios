@@ -22,3 +22,4 @@
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
 #import "NCNetworkingEndToEnd.h"
+#import "NCRichDocumentTemplate.h"
