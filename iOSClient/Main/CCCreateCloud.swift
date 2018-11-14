@@ -127,7 +127,7 @@ class CreateFormUploadRichdocuments: XLFormViewController {
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (url) in
+        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
             //
         }, failure: { (message, errorCode) in
             //

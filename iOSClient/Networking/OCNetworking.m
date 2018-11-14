@@ -2263,16 +2263,16 @@
     }];
 }
 
-- (void)createTemplateRichdocumentsWithTemplate:(NSString *)template success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)createTemplateRichdocumentsWithTemplate:(NSString *)template success:(void(^)(NSArray *listOfTemplate))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
         
-    [communication createTemplateRichdocuments:[_activeUrl stringByAppendingString:@"/"] template:template onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
+    [communication createTemplateRichdocuments:[_activeUrl stringByAppendingString:@"/"] template:template onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer) {
         
-        success(link);
+        success(listOfTemplate);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         

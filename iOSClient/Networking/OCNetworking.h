@@ -75,7 +75,7 @@
 
 - (void)createLinkRichdocumentsWithFileID:(NSString *)fileID success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
-- (void)createTemplateRichdocumentsWithTemplate:(NSString *)template success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+- (void)createTemplateRichdocumentsWithTemplate:(NSString *)template success:(void(^)(NSArray *listOfTemplate))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 - (void)createAssetRichdocumentsWithFileName:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 

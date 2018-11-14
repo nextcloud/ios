@@ -54,6 +54,7 @@
 #import "OCNotificationsAction.h"
 #import "OCRichObjectStrings.h"
 #import "OCUserProfile.h"
+#import "NCRichDocumentTemplate.h"
 
 @interface OCCommunication ()
 
@@ -2794,7 +2795,7 @@
     }];
 }
 
-- (void)createTemplateRichdocuments:(NSString *)serverPath template:(NSString *)template onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)createTemplateRichdocuments:(NSString *)serverPath template:(NSString *)template onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_create_template_mobile_editor];
     serverPath = [serverPath stringByAppendingString:template];
@@ -2822,15 +2823,8 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:@"url"] && ![[data valueForKey:@"url"] isKindOfClass:[NSNull class]]) {
-                    
-                    NSString *link = [data valueForKey:@"url"];
-                    successRequest(response, link, request.redirectedServer);
-                    
-                } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
-                }
-                
+                successRequest(response, data, request.redirectedServer);
+
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
