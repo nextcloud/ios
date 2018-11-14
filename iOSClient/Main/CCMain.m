@@ -554,10 +554,13 @@
             
             self.navigationItem.title = nil;
 
+            UIImage *image = [self getImageLogoHome];
+
             _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 30)]; // IMAGE = 120 x 60
             _imageTitleHome.contentMode = UIViewContentModeScaleAspectFill;
-            UIImage *image = [self getImageLogoHome];
+            _imageTitleHome.translatesAutoresizingMaskIntoConstraints = NO;
             _imageTitleHome.image = image;
+            
             // backbutton
             self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:nil action:nil];
             
