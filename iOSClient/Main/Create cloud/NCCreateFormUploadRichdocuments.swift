@@ -33,7 +33,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     var fileName = ""
     var fileNameExtension = ""
     var listOfTemplate = [NCRichDocumentTemplate]()
-    var selectTemplateName = ""
+    var selectTemplate: NCRichDocumentTemplate?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -151,7 +151,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
-        if selectTemplateName == template.name {
+        if selectTemplate != nil && selectTemplate?.name == template.name {
             cell.backgroundColor = NCBrandColor.sharedInstance.brand
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
@@ -167,7 +167,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         let template = listOfTemplate[indexPath.row]
         
-        selectTemplateName = template.name
+        selectTemplate = template
         fileNameExtension = template.extension
         
         self.navigationItem.rightBarButtonItem?.isEnabled = true
