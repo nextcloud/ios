@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *preview;
 @property (nonatomic, strong) NSString *type;
+@property (nonatomic, strong) UIImage *image;
 
 @end
 

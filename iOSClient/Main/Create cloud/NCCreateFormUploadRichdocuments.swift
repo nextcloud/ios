@@ -35,7 +35,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @IBOutlet weak var collectioView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView!
 
     // MARK: - View Life Cycle
     
@@ -49,8 +49,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         }
         
         self.initializeForm()
-        
-        collectioView.delegate = self
+    
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
         let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
@@ -121,11 +120,22 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     // MARK: - CollectionView
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 0
+        return listOfTemplate.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return UICollectionViewCell()
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        
+        let template = listOfTemplate[indexPath.row]
+        
+        let imageView = cell.viewWithTag(100) as! UIImageView
+        let name = cell.viewWithTag(200) as! UILabel
+        
+        imageView.image = UIImage.init(named: "folder")
+        name.text = template.name
+
+        return cell
     }
     
     // MARK: - Action
@@ -192,7 +202,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
             
             self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
-            self.collectioView.reloadData()
+            self.collectionView.reloadData()
             
         }, failure: { (message, errorCode) in
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
