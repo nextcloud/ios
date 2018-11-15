@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="uQo-FX-ejX">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -10,16 +10,16 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Trash-->
+        <!--Create Form Upload Richdocuments-->
         <scene sceneID="UDa-5t-Os6">
             <objects>
-                <viewController storyboardIdentifier="NCTrash.storyboard" id="uQo-FX-ejX" customClass="NCTrash" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCCreateFormUploadRichdocuments.storyboard" id="uQo-FX-ejX" customClass="NCCreateFormUploadRichdocuments" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PyZ-sH-zNM">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="QFQ-b1-sYp">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="417"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="5c2-Sg-cbP">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -33,18 +33,28 @@
                                     <outlet property="delegate" destination="uQo-FX-ejX" id="b4f-61-b7l"/>
                                 </connections>
                             </collectionView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eeP-9N-ZRP">
+                                <rect key="frame" x="0.0" y="467" width="375" height="200"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="kKy-VZ-d0g"/>
+                                </constraints>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="ILQ-5j-b92" firstAttribute="bottom" secondItem="QFQ-b1-sYp" secondAttribute="bottom" id="0aZ-0w-sGT"/>
+                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="QFQ-b1-sYp" secondAttribute="bottom" constant="30" id="4SD-46-bjb"/>
+                            <constraint firstItem="ILQ-5j-b92" firstAttribute="bottom" secondItem="eeP-9N-ZRP" secondAttribute="bottom" id="GzZ-KF-foB"/>
                             <constraint firstItem="QFQ-b1-sYp" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="MXp-68-ZQf"/>
                             <constraint firstItem="QFQ-b1-sYp" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" id="ajB-4C-fxg"/>
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="QFQ-b1-sYp" secondAttribute="trailing" id="hls-h7-nPO"/>
+                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
+                            <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="eeP-9N-ZRP" secondAttribute="trailing" id="yxz-bK-MTp"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ILQ-5j-b92"/>
                     </view>
                     <connections>
-                        <outlet property="collectionView" destination="QFQ-b1-sYp" id="cVh-b2-bKI"/>
+                        <outlet property="collectioView" destination="QFQ-b1-sYp" id="BaZ-Ko-IUq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tPT-Fr-1CS" userLabel="First Responder" sceneMemberID="firstResponder"/>

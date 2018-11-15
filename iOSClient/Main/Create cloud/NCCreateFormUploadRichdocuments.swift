@@ -25,7 +25,7 @@ import Foundation
 
 // MARK: -
 
-class NCCreateFormUploadRichdocuments: UIViewController, NCSelectDelegate {
+class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
     
     var typeTemplate = ""
     var serverUrl = ""
@@ -33,6 +33,8 @@ class NCCreateFormUploadRichdocuments: UIViewController, NCSelectDelegate {
     var fileName = ""
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    @IBOutlet weak var collectioView: UICollectionView!
+
     @objc convenience init(typeTemplate : String) {
         self.init()
         
@@ -43,10 +45,9 @@ class NCCreateFormUploadRichdocuments: UIViewController, NCSelectDelegate {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
-        }        
+        }
     }
     
-    /*
     func initializeForm() {
         
         let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_upload_photos_videos_", comment: "")) as XLFormDescriptor
@@ -89,13 +90,14 @@ class NCCreateFormUploadRichdocuments: UIViewController, NCSelectDelegate {
         
         self.form = form
     }
-    */
     
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.initializeForm()
+
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
@@ -114,6 +116,21 @@ class NCCreateFormUploadRichdocuments: UIViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
+        self.reloadForm()
+    }
+    
+    func reloadForm() {
+        
+        self.form.delegate = nil
+        
+        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        buttonDestinationFolder.title = fileNameFolder
+        
+        self.tableView.reloadData()
+        self.form.delegate = self
     }
     
     // MARK: - Action
@@ -130,9 +147,12 @@ class NCCreateFormUploadRichdocuments: UIViewController, NCSelectDelegate {
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
         }
+        reloadForm()
     }
     
     @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
+        
+        self.deselectFormRow(sender)
         
         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
