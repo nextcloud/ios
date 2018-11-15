@@ -33,12 +33,16 @@
                                     <outlet property="delegate" destination="uQo-FX-ejX" id="b4f-61-b7l"/>
                                 </connections>
                             </collectionView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eeP-9N-ZRP">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eeP-9N-ZRP">
                                 <rect key="frame" x="0.0" y="467" width="375" height="200"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="kKy-VZ-d0g"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="dataSource" destination="uQo-FX-ejX" id="Y7U-AM-3WZ"/>
+                                    <outlet property="delegate" destination="uQo-FX-ejX" id="gsE-cc-f9G"/>
+                                </connections>
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -56,6 +60,7 @@
                     <navigationItem key="navigationItem" id="YB9-Lg-X9d"/>
                     <connections>
                         <outlet property="collectioView" destination="QFQ-b1-sYp" id="BaZ-Ko-IUq"/>
+                        <outlet property="tableView" destination="eeP-9N-ZRP" id="dzG-bV-m9u"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tPT-Fr-1CS" userLabel="First Responder" sceneMemberID="firstResponder"/>

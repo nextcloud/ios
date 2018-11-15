@@ -25,7 +25,7 @@ import Foundation
 
 // MARK: -
 
-class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
+class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
     
     var typeTemplate = ""
     var serverUrl = ""
@@ -35,19 +35,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
     
     @IBOutlet weak var collectioView: UICollectionView!
 
-    @objc convenience init(typeTemplate : String) {
-        self.init()
-        
-        self.typeTemplate = typeTemplate
-        serverUrl = appDelegate.activeMain.serverUrl
-        
-        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
-            fileNameFolder = "/"
-        } else {
-            fileNameFolder = (serverUrl as NSString).lastPathComponent
-        }
-    }
-    
     func initializeForm() {
         
         let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_upload_photos_videos_", comment: "")) as XLFormDescriptor
@@ -63,6 +50,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
+        row.value = fileNameFolder
         
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:1, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig["imageView.image"] = imageFolder
@@ -77,11 +65,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
-        row.value = self.fileName
-        
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.value = fileName
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -91,13 +76,32 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
         self.form = form
     }
     
+    // MARK: - CollectionView
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        return UICollectionViewCell()
+    }
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+            fileNameFolder = "/"
+        } else {
+            fileNameFolder = (serverUrl as NSString).lastPathComponent
+        }
+        
         self.initializeForm()
-
+        
+        collectioView.delegate = self
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
@@ -116,10 +120,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        
-        self.reloadForm()
     }
     
     func reloadForm() {
