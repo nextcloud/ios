@@ -132,7 +132,18 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         let imageView = cell.viewWithTag(100) as! UIImageView
         let name = cell.viewWithTag(200) as! UILabel
         
-        imageView.image = template.image
+        if template.preview != "" {
+            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
+            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                let imageURL = URL(fileURLWithPath: fileNameLocalPath)
+                if let image = UIImage(contentsOfFile: imageURL.path) {
+                    imageView.image = image
+                }
+            } else {
+                getImage(template: template, indexPath: indexPath)
+            }
+        }
+        
         name.text = template.name
 
         return cell
@@ -202,38 +213,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
             
             self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
-            for template: NCRichDocumentTemplate in self.listOfTemplate {
-                if let url = URL(string: template.preview.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) {
-                    if let imageData = try? Data(contentsOf: url) {
-                        if let image = UIImage.init(data: imageData) {
-                            template.image = image
-                        }
-                    }
-                }
-                
-                /*
- self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
- for template: NCRichDocumentTemplate in self.listOfTemplate {
- 
- if let url = URL(string: template.preview.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) {
- let task = URLSession.shared.dataTask(with: NSURLRequest(url: url) as URLRequest, completionHandler: { data,response,error in
- if error == nil && data != nil && data!.count > 0 {
- if let image = UIImage.init(data: data!) {
- template.image = image
- self.collectionView.reloadData()
- }
- } else {
- print(error?.localizedDescription)
- }
- 
- })
- task.resume()
- }
- }
- */
-                
-            }
-            
             self.collectionView.reloadData()
             
         }, failure: { (message, errorCode) in
@@ -241,4 +220,16 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         })
     }
     
+    func getImage(template: NCRichDocumentTemplate, indexPath: IndexPath) {
+        
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
+        
+        ocNetworking?.downloadFile(template.preview, fileNameLocalPath: fileNameLocalPath, success: {
+            self.collectionView.reloadItems(at: [indexPath])
+        }, failure: { (message, errorCode) in
+            print("\(errorCode)")
+        })
+    }
 }
