@@ -81,7 +81,7 @@
                                 </connections>
                             </collectionView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eeP-9N-ZRP">
-                                <rect key="frame" x="0.0" y="347" width="375" height="200"/>
+                                <rect key="frame" x="0.0" y="324" width="375" height="200"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="kKy-VZ-d0g"/>
@@ -94,7 +94,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="kdt-bX-icm" secondAttribute="bottom" constant="33" id="Fhq-zQ-1Cx"/>
+                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="kdt-bX-icm" secondAttribute="bottom" constant="10" id="Fhq-zQ-1Cx"/>
                             <constraint firstItem="kdt-bX-icm" firstAttribute="leading" secondItem="eeP-9N-ZRP" secondAttribute="leading" id="M0y-VC-ex7"/>
                             <constraint firstItem="kdt-bX-icm" firstAttribute="trailing" secondItem="eeP-9N-ZRP" secondAttribute="trailing" id="iNB-l9-u3p"/>
                             <constraint firstItem="kdt-bX-icm" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" id="nnJ-OQ-Uly"/>
@@ -106,6 +106,7 @@
                     <navigationItem key="navigationItem" id="YB9-Lg-X9d"/>
                     <connections>
                         <outlet property="collectionView" destination="kdt-bX-icm" id="KHF-Np-nhf"/>
+                        <outlet property="collectionViewHeigth" destination="XAH-EC-bwE" id="I4u-n9-7pm"/>
                         <outlet property="tableView" destination="eeP-9N-ZRP" id="dzG-bV-m9u"/>
                     </connections>
                 </viewController>
