@@ -31,9 +31,48 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     var serverUrl = ""
     var fileNameFolder = ""
     var fileName = ""
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @IBOutlet weak var collectioView: UICollectionView!
+
+    // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+            fileNameFolder = "/"
+        } else {
+            fileNameFolder = (serverUrl as NSString).lastPathComponent
+        }
+        
+        self.initializeForm()
+        
+        collectioView.delegate = self
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
+            //
+        }, failure: { (message, errorCode) in
+            //
+        })
+        
+        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        
+        self.navigationItem.leftBarButtonItem = cancelButton
+        self.navigationItem.rightBarButtonItem = saveButton
+        
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
+    }
+    
+    // MARK: - Tableview (XLForm)
 
     func initializeForm() {
         
@@ -86,53 +125,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         return UICollectionViewCell()
     }
     
-    // MARK: - View Life Cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
-            fileNameFolder = "/"
-        } else {
-            fileNameFolder = (serverUrl as NSString).lastPathComponent
-        }
-        
-        self.initializeForm()
-        
-        collectioView.delegate = self
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
-            //
-        }, failure: { (message, errorCode) in
-            //
-        })
-        
-        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
-        
-        self.navigationItem.leftBarButtonItem = cancelButton
-        self.navigationItem.rightBarButtonItem = saveButton
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-    }
-    
-    func reloadForm() {
-        
-        self.form.delegate = nil
-        
-        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-        buttonDestinationFolder.title = fileNameFolder
-        
-        self.tableView.reloadData()
-        self.form.delegate = self
-    }
-    
     // MARK: - Action
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
@@ -147,7 +139,11 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
         }
-        reloadForm()
+        
+        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        buttonDestinationFolder.title = fileNameFolder
+        
+        self.tableView.reloadData()
     }
     
     @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
@@ -184,12 +180,3 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         self.dismiss(animated: true, completion: nil)
     }
 }
-
-// MARK: -
-
-
-// MARK: -
-
-
-//MARK: -
-
