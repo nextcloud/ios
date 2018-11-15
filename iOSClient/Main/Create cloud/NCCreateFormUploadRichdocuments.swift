@@ -35,10 +35,15 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     var listOfTemplate = [NCRichDocumentTemplate]()
     var selectTemplate: NCRichDocumentTemplate?
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
+
+    // Layout
+    let numItems = 2
+    let sectionInsets: CGFloat = 10
+    let highLabelName: CGFloat = 20
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     // MARK: - View Life Cycle
     
@@ -128,11 +133,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        let numItems = 2
-        let sectionInsets: CGFloat = 10
-        
         let itemWidth: CGFloat = (collectionView.frame.width - (sectionInsets * 4) - CGFloat(numItems)) / CGFloat(numItems)
-        let itemHeight: CGFloat = itemWidth + 15
+        let itemHeight: CGFloat = itemWidth + highLabelName
         
         collectionViewHeigth.constant = itemHeight + sectionInsets
         
