@@ -99,21 +99,13 @@ class NCCreateMenuAdd: NSObject {
                 guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
                     return
                 }
-                navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
                 let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadRichdocuments
                 viewController.typeTemplate = k_richdocument_document
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
-
-                /*
-                let viewController = NCCreateFormUploadRichdocuments.init(typeTemplate: k_richdocument_document)
-                let navigationController = UINavigationController.init(rootViewController: viewController)
-                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-                
-                self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
-                */
             }
             if item.value as? Int == 7 { print("Cancel buttons has the value `true`") }
             if item.value as? Int == 8 { print("Cancel buttons has the value `true`") }
