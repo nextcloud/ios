@@ -2741,7 +2741,7 @@
 
 - (void)createLinkRichdocuments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_editor];
+    serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_richdocuments];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -2795,16 +2795,16 @@
     }];
 }
 
-- (void)createTemplateRichdocuments:(NSString *)serverPath template:(NSString *)template onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)geTemplatesRichdocuments:(NSString *)serverPath typeTemplate:(NSString *)typeTemplate onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_create_template_mobile_editor];
-    serverPath = [serverPath stringByAppendingString:template];
+    serverPath = [serverPath stringByAppendingString:k_url_get_template_mobile_richdocuments];
+    serverPath = [serverPath stringByAppendingString:typeTemplate];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request createTemplateRichdocuments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+    [request geTemplatesRichdocuments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
         
         NSData *responseData = (NSData*) response;
         
@@ -2874,7 +2874,7 @@
 
 - (void)createAssetRichdocuments:(NSString *)serverPath path:(NSString *)path onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_insert_assets_to_collabora];
+    serverPath = [serverPath stringByAppendingString:k_url_insert_assets_to_richdocuments];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];

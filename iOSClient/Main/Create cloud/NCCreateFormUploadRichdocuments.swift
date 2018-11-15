@@ -236,7 +236,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
      
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
+        ocNetworking?.geTemplatesRichdocuments(withTypeTemplate: typeTemplate, success: { (listOfTemplate) in
             
             self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
             self.collectionView.reloadData()
