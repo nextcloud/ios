@@ -25,7 +25,7 @@ import Foundation
 
 // MARK: -
 
-class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     var typeTemplate = ""
     var serverUrl = ""
@@ -123,6 +123,17 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return listOfTemplate.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        let numItems = 2
+        let sectionInsets: CGFloat = 10
+        
+        let itemWidth: CGFloat = (collectionView.frame.width - (sectionInsets * 4) - CGFloat(numItems)) / CGFloat(numItems)
+        let itemHeight: CGFloat = itemWidth + 15
+        
+        return CGSize(width: itemWidth, height: itemHeight)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
