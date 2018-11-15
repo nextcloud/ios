@@ -132,7 +132,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         let imageView = cell.viewWithTag(100) as! UIImageView
         let name = cell.viewWithTag(200) as! UILabel
         
-        imageView.image = UIImage.init(named: "folder")
+        imageView.image = template.image
         name.text = template.name
 
         return cell
@@ -202,6 +202,38 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
             
             self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
+            for template: NCRichDocumentTemplate in self.listOfTemplate {
+                if let url = URL(string: template.preview.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) {
+                    if let imageData = try? Data(contentsOf: url) {
+                        if let image = UIImage.init(data: imageData) {
+                            template.image = image
+                        }
+                    }
+                }
+                
+                /*
+ self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
+ for template: NCRichDocumentTemplate in self.listOfTemplate {
+ 
+ if let url = URL(string: template.preview.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) {
+ let task = URLSession.shared.dataTask(with: NSURLRequest(url: url) as URLRequest, completionHandler: { data,response,error in
+ if error == nil && data != nil && data!.count > 0 {
+ if let image = UIImage.init(data: data!) {
+ template.image = image
+ self.collectionView.reloadData()
+ }
+ } else {
+ print(error?.localizedDescription)
+ }
+ 
+ })
+ task.resume()
+ }
+ }
+ */
+                
+            }
+            
             self.collectionView.reloadData()
             
         }, failure: { (message, errorCode) in
