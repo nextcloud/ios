@@ -104,6 +104,7 @@ class NCCreateMenuAdd: NSObject {
                 let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadRichdocuments
                 viewController.typeTemplate = k_richdocument_document
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
+                viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
                 
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
             }

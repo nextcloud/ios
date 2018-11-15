@@ -32,6 +32,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     var fileNameFolder = ""
     var fileName = ""
     var fileNameExtension = ""
+    var titleForm = ""
     var listOfTemplate = [NCRichDocumentTemplate]()
     var selectTemplate: NCRichDocumentTemplate?
     
@@ -56,6 +57,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             fileNameFolder = (serverUrl as NSString).lastPathComponent
         }
         
+        self.title = titleForm
         self.initializeForm()
     
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
