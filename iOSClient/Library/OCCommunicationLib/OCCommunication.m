@@ -2830,7 +2830,7 @@
                     NCRichDocumentTemplate *template = [NCRichDocumentTemplate new];
                     
                     if ([dicDatas valueForKey:@"id"] && ![[dicDatas valueForKey:@"id"] isEqual:[NSNull null]])
-                        template.idTemplate = [[dicDatas valueForKey:@"id"] integerValue];
+                        template.templateID = [[dicDatas valueForKey:@"id"] integerValue];
                     
                     if ([dicDatas valueForKey:@"delete"] && ![[dicDatas valueForKey:@"delete"] isKindOfClass:[NSNull class]])
                         template.delete = [dicDatas valueForKey:@"delete"];

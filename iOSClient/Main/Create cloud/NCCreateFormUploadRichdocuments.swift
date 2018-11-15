@@ -221,6 +221,15 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         self.dismiss(animated: true, completion: {
             
+            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: self.appDelegate.activeUser, withUserID: self.appDelegate.activeUserID, withPassword: self.appDelegate.activePassword, withUrl: self.appDelegate.activeUrl)
+            
+            ocNetworking?.createNewRichdocuments(withFileName: self.fileName, serverUrl: self.serverUrl, templateID: "\(self.selectTemplate!.templateID)", success: { (path) in
+                
+            }, failure: { (message, errorCode) in
+                
+            })
+            
+            
             //self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
         })
     }

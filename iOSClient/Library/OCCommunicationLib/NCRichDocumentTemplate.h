@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NCRichDocumentTemplate : NSObject
 
-@property NSInteger idTemplate;
+@property NSInteger templateID;
 @property (nonatomic, strong) NSString *delete;
 @property (nonatomic, strong) NSString *extension;
 @property (nonatomic, strong) NSString *name;
