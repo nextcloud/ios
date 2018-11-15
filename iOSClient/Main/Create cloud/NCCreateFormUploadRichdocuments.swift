@@ -31,7 +31,9 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     var serverUrl = ""
     var fileNameFolder = ""
     var fileName = ""
+    var fileNameExtension = ""
     var listOfTemplate = [NCRichDocumentTemplate]()
+    var selectTemplateName = ""
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -129,24 +131,48 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         let template = listOfTemplate[indexPath.row]
         
-        let imageView = cell.viewWithTag(100) as! UIImageView
-        let name = cell.viewWithTag(200) as! UILabel
-        
+        // image
+        let imagePreview = cell.viewWithTag(100) as! UIImageView
         if template.preview != "" {
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
-                    imageView.image = image
+                    imagePreview.image = image
                 }
             } else {
                 getImage(template: template, indexPath: indexPath)
             }
         }
         
+        // name
+        let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-
+        
+        // select
+        let imageSelect = cell.viewWithTag(300) as! UIImageView
+        if selectTemplateName == template.name {
+            cell.backgroundColor = NCBrandColor.sharedInstance.brand
+            imageSelect.image = UIImage(named: "plus100")
+            imageSelect.isHidden = false
+        } else {
+            cell.backgroundColor = UIColor.black
+            imageSelect.isHidden = true
+        }
+        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let template = listOfTemplate[indexPath.row]
+        
+        selectTemplateName = template.name
+        fileNameExtension = template.extension
+        
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+
+        collectionView.reloadData()
     }
     
     // MARK: - Action
