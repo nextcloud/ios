@@ -64,15 +64,9 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
-            
-            self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
-            
-        }, failure: { (message, errorCode) in
-        })
+     
+        // load the templates available
+        getTemplate()
     }
     
     // MARK: - Tableview (XLForm)
@@ -188,4 +182,21 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         self.dismiss(animated: true, completion: nil)
     }
+    
+    // MARK: NC API
+    
+    func getTemplate() {
+     
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        ocNetworking?.createTemplateRichdocuments(withTemplate: typeTemplate, success: { (listOfTemplate) in
+            
+            self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
+            self.collectioView.reloadData()
+            
+        }, failure: { (message, errorCode) in
+            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        })
+    }
+    
 }
