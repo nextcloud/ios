@@ -65,7 +65,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
 
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
@@ -186,8 +185,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         selectTemplate = template
         fileNameExtension = template.extension
         
-        self.navigationItem.rightBarButtonItem?.isEnabled = true
-
         collectionView.reloadData()
     }
     
@@ -239,14 +236,22 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             return
         }
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+        guard let fileNameForm = rowFileName.value else {
+            return
+        }
+        if fileNameForm as! String == "" {
+            return
+        } else {
+            fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
+        }
         
-        fileName = "/test." + selectTemplate.extension
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         ocNetworking?.createNewRichdocuments(withFileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", success: { (path) in
             
         }, failure: { (message, errorCode) in
-            
+            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
         
         //self.dismiss(animated: true, completion: {
@@ -274,6 +279,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             for template: NCRichDocumentTemplate in self.listOfTemplate {
                 if template.preview == "" {
                     self.selectTemplate = template
+                    self.fileNameExtension = template.extension
                 }
             }
             
