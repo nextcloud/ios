@@ -58,6 +58,8 @@
 @property (nonatomic, strong) NSString *passwordPDF;
 
 @property(nonatomic, weak) IBOutlet UIImageView *imageBackground;
+@property(nonatomic, weak) IBOutlet UIActivityIndicatorView *indicator;
+
 
 - (void)changeToDisplayMode;
 - (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode;

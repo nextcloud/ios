@@ -72,7 +72,7 @@ class NCCreateMenuAdd: NSObject {
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes() {
             if richdocumentsMimetypes.count > 0 {
                 items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
                 items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
             }
         }
@@ -108,8 +108,32 @@ class NCCreateMenuAdd: NSObject {
                 
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
             }
-            if item.value as? Int == 7 { print("Cancel buttons has the value `true`") }
-            if item.value as? Int == 8 { print("Cancel buttons has the value `true`") }
+            if item.value as? Int == 7 {
+                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
+                    return
+                }
+                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                
+                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadRichdocuments
+                viewController.typeTemplate = k_richdocument_spreadsheet
+                viewController.serverUrl = self.appDelegate.activeMain.serverUrl
+                viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
+                
+                self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+            }
+            if item.value as? Int == 8 {
+                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
+                    return
+                }
+                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                
+                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadRichdocuments
+                viewController.typeTemplate = k_richdocument_presentation
+                viewController.serverUrl = self.appDelegate.activeMain.serverUrl
+                viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
+                
+                self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+            }
             
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }

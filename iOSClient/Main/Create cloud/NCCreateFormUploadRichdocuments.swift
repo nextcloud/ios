@@ -277,6 +277,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     
     func getTemplate() {
      
+        indicator.color = NCBrandColor.sharedInstance.brand
         indicator.startAnimating()
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)

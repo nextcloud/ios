@@ -152,9 +152,10 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        detail.indicator.stopAnimating()
         print("didFinish");
     }
- 
+     
     //MARK: -
     
     @objc func isRichDocument( _ metadata: tableMetadata) -> Bool {

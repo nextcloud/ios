@@ -158,6 +158,11 @@
 
 - (void)viewFile
 {
+    // Remove all subview except ..
+    //for (UIView *view in self.view.superview.subviews) {
+    //    NSInteger tag = view.tag;
+    //}
+    
     // Title
     self.navigationController.navigationBar.topItem.title =  _metadataDetail.fileNameView;
 
@@ -204,6 +209,9 @@
         // RichDocument
         if ([[NCViewerRichdocument sharedInstance] isRichDocument:self.metadataDetail]) {
             
+            self.indicator.color = [[NCBrandColor sharedInstance] brand];
+            [self.indicator startAnimating];
+
             OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
             
             [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
@@ -212,6 +220,7 @@
                 
             } failure:^(NSString *message, NSInteger errorCode) {
                 
+                [self.indicator stopAnimating];
                 [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                 [self.navigationController popViewControllerAnimated:YES];
             }];
