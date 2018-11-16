@@ -263,11 +263,11 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         ocNetworking?.createNewRichdocuments(withFileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", success: { (path) in
             if path != nil && path!.count > 0 {
 
-                
-                let metadataDetail = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), directoryID: directoryID, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal))
-                
-                
-                
+                self.dismiss(animated: true, completion: {
+                    let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), directoryID: directoryID, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal))
+                    
+                    self.appDelegate.activeMain.shouldPerformSegue(metadata)
+                })                
             }
         }, failure: { (message, errorCode) in
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)

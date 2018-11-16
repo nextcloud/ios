@@ -218,7 +218,8 @@ class tableMetadata: Object {
     @objc dynamic var size: Double = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var typeFile = ""
-    
+    @objc dynamic var url = ""
+
     override static func primaryKey() -> String {
         return "fileID"
     }
@@ -251,7 +252,8 @@ class tablePhotos: Object {
     @objc dynamic var size: Double = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var typeFile = ""
-    
+    @objc dynamic var url = ""
+
     override static func primaryKey() -> String {
         return "fileID"
     }
