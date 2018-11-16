@@ -286,7 +286,7 @@
                                 <rect key="frame" x="134" y="296" width="107" height="75"/>
                             </imageView>
                             <activityIndicatorView hidden="YES" opaque="NO" tag="998" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="tOl-wb-BCf">
-                                <rect key="frame" x="162.5" y="299" width="50" height="50"/>
+                                <rect key="frame" x="162.5" y="316" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="33J-1G-oRz" userLabel="width = 50"/>
                                     <constraint firstAttribute="height" constant="50" id="jKr-0P-1Sh" userLabel="height = 50"/>
@@ -298,7 +298,7 @@
                             <constraint firstItem="zlU-MP-ZVs" firstAttribute="centerY" secondItem="cUA-lB-tGG" secondAttribute="centerY" id="NqJ-e6-LfV"/>
                             <constraint firstItem="tOl-wb-BCf" firstAttribute="centerX" secondItem="3ph-Od-2hO" secondAttribute="centerX" id="Uxz-IU-DEW"/>
                             <constraint firstItem="zlU-MP-ZVs" firstAttribute="centerX" secondItem="3ph-Od-2hO" secondAttribute="centerX" id="VG7-UF-Zrf"/>
-                            <constraint firstItem="tOl-wb-BCf" firstAttribute="centerY" secondItem="3ph-Od-2hO" secondAttribute="centerY" constant="-17" id="ffA-CP-De8"/>
+                            <constraint firstItem="tOl-wb-BCf" firstAttribute="centerY" secondItem="3ph-Od-2hO" secondAttribute="centerY" id="ffA-CP-De8"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
                     </view>
