@@ -1230,9 +1230,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
-    [request setHTTPBody:[[NSString stringWithFormat: @"path=%@",path] dataUsingEncoding:NSUTF8StringEncoding]];
-    [request setHTTPBody:[[NSString stringWithFormat: @"template=%@",templateID] dataUsingEncoding:NSUTF8StringEncoding]];
-
+    [request setHTTPBody:[[NSString stringWithFormat: @"path=%@&template=%@", path, templateID] dataUsingEncoding:NSUTF8StringEncoding]];
+    
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     
