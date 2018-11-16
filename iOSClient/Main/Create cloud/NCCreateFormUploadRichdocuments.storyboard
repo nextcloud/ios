@@ -91,11 +91,20 @@
                                     <outlet property="delegate" destination="uQo-FX-ejX" id="gsE-cc-f9G"/>
                                 </connections>
                             </tableView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="MR6-tv-tqK">
+                                <rect key="frame" x="172.5" y="174" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="0S5-5q-xmr"/>
+                                    <constraint firstAttribute="height" constant="30" id="pBW-Yp-CNJ"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="MR6-tv-tqK" firstAttribute="centerX" secondItem="ILQ-5j-b92" secondAttribute="centerX" id="71o-CE-nGW"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="kdt-bX-icm" secondAttribute="bottom" constant="10" id="Fhq-zQ-1Cx"/>
                             <constraint firstItem="kdt-bX-icm" firstAttribute="leading" secondItem="eeP-9N-ZRP" secondAttribute="leading" id="M0y-VC-ex7"/>
+                            <constraint firstItem="MR6-tv-tqK" firstAttribute="centerY" secondItem="kdt-bX-icm" secondAttribute="centerY" id="eM4-te-y7u"/>
                             <constraint firstItem="kdt-bX-icm" firstAttribute="trailing" secondItem="eeP-9N-ZRP" secondAttribute="trailing" id="iNB-l9-u3p"/>
                             <constraint firstItem="kdt-bX-icm" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" id="nnJ-OQ-Uly"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
@@ -107,6 +116,7 @@
                     <connections>
                         <outlet property="collectionView" destination="kdt-bX-icm" id="KHF-Np-nhf"/>
                         <outlet property="collectionViewHeigth" destination="XAH-EC-bwE" id="I4u-n9-7pm"/>
+                        <outlet property="indicator" destination="MR6-tv-tqK" id="zvu-t9-npc"/>
                         <outlet property="tableView" destination="eeP-9N-ZRP" id="dzG-bV-m9u"/>
                     </connections>
                 </viewController>

@@ -36,8 +36,11 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     var listOfTemplate = [NCRichDocumentTemplate]()
     var selectTemplate: NCRichDocumentTemplate?
     
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
+
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
+    
 
     // Layout
     let numItems = 2
@@ -57,9 +60,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             fileNameFolder = (serverUrl as NSString).lastPathComponent
         }
         
-        self.title = titleForm
-        self.initializeForm()
-    
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
         let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
@@ -72,7 +72,13 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-     
+
+        // title 
+        self.title = titleForm
+
+        // form
+        initializeForm()
+
         // load the templates available
         getTemplate()
     }
@@ -271,6 +277,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     
     func getTemplate() {
      
+        indicator.startAnimating()
+        
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         ocNetworking?.geTemplatesRichdocuments(withTypeTemplate: typeTemplate, success: { (listOfTemplate) in
@@ -285,9 +293,11 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
                 }
             }
             
+            self.indicator.stopAnimating()
             self.collectionView.reloadData()
             
         }, failure: { (message, errorCode) in
+            self.indicator.stopAnimating()
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
     }
