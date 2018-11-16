@@ -998,7 +998,6 @@
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
 {
     NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
-    
     NSString *pather = [[url absoluteString] stringByRemovingPercentEncoding];
     
     return [pather substringToIndex: [pather length] - 1];
@@ -1025,7 +1024,7 @@
     if ([serverUrl isEqualToString:activeUrl])
         return @"";
     
-    NSURL *serverUrlURL = [NSURL URLWithString:serverUrl];
+    NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     NSString *fileName = [serverUrlURL lastPathComponent];
 
     return fileName;

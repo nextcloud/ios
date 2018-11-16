@@ -26,7 +26,7 @@
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
-@interface CCManageAutoUpload ()
+@interface CCManageAutoUpload () <NCSelectDelegate>
 {
     AppDelegate *appDelegate;
 }
@@ -459,51 +459,40 @@
     return sectionName;
 }
 
-
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type
 {
-   
-     if ([type isEqualToString:@"automaticUploadFolder"]) {
-     
-         if (title == nil) {
-             [appDelegate messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-             return;
-         }
-         
-         NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrlTo];
-         
-         // Clear data (old) Auto Upload
-         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
-         
-         // Settings new folder Automatatic upload
-         [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:title];
-         [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
-         
-         // Clear data new Auto Upload
-         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
-     }
-    
+    if (serverUrl != nil) {
+        
+        if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
+            [appDelegate messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            return;
+        }
+        
+        // Clear data (old) Auto Upload
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
+        
+        // Settings new folder Automatatic upload
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:[CCUtility getLastPathFromServerUrl:serverUrl activeUrl:appDelegate.activeUrl]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:serverUrl] activeUrl:appDelegate.activeUrl];
+        
+        // Clear data new Auto Upload
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+    }
 }
 
- - (void)selectAutomaticUploadFolder
+- (void)selectAutomaticUploadFolder
  {
-     UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
-     
-     CCMove *viewController = (CCMove *)navigationController.topViewController;
+     UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCSelect" bundle:nil] instantiateInitialViewController];
+     NCSelect *viewController = (NCSelect *)navigationController.topViewController;
      
      viewController.delegate = self;
-     viewController.move.title = NSLocalizedString(@"_select_", nil);
-     viewController.tintColor = [NCBrandColor sharedInstance].brandText;
-     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
-     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
-     viewController.networkingOperationQueue = appDelegate.netQueue;
-     viewController.hideCreateFolder = NO;
-     
-     // TYPE
-     viewController.type = @"automaticUploadFolder";
-     
-     // E2EE
-     viewController.includeDirectoryE2EEncryption = NO;
+     viewController.hideButtonCreateFolder = false;
+     viewController.selectFile = false;
+     viewController.includeDirectoryE2EEncryption = false;
+     viewController.includeImages = false;
+     viewController.type = @"";
+     viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
+     viewController.layoutViewSelect = k_layout_view_move;
      
      [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
      [self presentViewController:navigationController animated:YES completion:nil];
