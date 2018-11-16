@@ -212,18 +212,23 @@
             self.indicator.color = [[NCBrandColor sharedInstance] brand];
             [self.indicator startAnimating];
 
-            OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-            
-            [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+            if ([self.metadataDetail.url isEqualToString:@""]) {
+                OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
                 
-                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
+                [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+                    
+                    [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
+                    
+                } failure:^(NSString *message, NSInteger errorCode) {
+                    
+                    [self.indicator stopAnimating];
+                    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                    [self.navigationController popViewControllerAnimated:YES];
+                }];
+            } else {
                 
-            } failure:^(NSString *message, NSInteger errorCode) {
-                
-                [self.indicator stopAnimating];
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                [self.navigationController popViewControllerAnimated:YES];
-            }];
+                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:self.metadataDetail.url detail:self];
+            }
             
             return;
         }
