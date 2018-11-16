@@ -51,6 +51,7 @@
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) tableMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadataForPushDetail;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleMain;
 @property (nonatomic, weak) CCShareOC *shareOC;
@@ -63,7 +64,7 @@
 
 - (void)openIn:(tableMetadata *)metadata;
 
-- (void)shouldPerformSegue;
+- (void)shouldPerformSegue:(tableMetadata *)metadata;
 
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata;
 

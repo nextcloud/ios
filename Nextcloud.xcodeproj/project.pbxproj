@@ -2807,8 +2807,8 @@
 		F7DFB7E9219C5A0500680748 /* Create cloud */ = {
 			isa = PBXGroup;
 			children = (
-				F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */,
 				F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */,
+				F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */,
 				F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */,
 				F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */,
 				F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */,

@@ -243,7 +243,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         guard let selectTemplate = self.selectTemplate else {
             return
         }
-        
         let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
         guard let fileNameForm = rowFileName.value else {
             return
@@ -251,14 +250,24 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         if fileNameForm as! String == "" {
             return
         } else {
+            
             fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
+            fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
+        }
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
+            return
         }
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         ocNetworking?.createNewRichdocuments(withFileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", success: { (path) in
             if path != nil && path!.count > 0 {
-                print("x")
+
+                
+                let metadataDetail = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), directoryID: directoryID, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal))
+                
+                
+                
             }
         }, failure: { (message, errorCode) in
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)

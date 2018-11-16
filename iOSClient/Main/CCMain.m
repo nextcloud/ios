@@ -4356,11 +4356,11 @@
             
                 if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && _metadataFolder.e2eEncrypted == NO) {
                     
-                    [self shouldPerformSegue];
+                    [self shouldPerformSegue:self.metadata];
                     
                 } if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCViewerRichdocument sharedInstance] isRichDocument:self.metadata]) {
                     
-                    [self shouldPerformSegue];
+                    [self shouldPerformSegue:self.metadata];
                     
                 } else {
                    
@@ -4433,7 +4433,7 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)shouldPerformSegue
+- (void)shouldPerformSegue:(tableMetadata *)metadata
 {
     // if background return
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;
@@ -4444,6 +4444,9 @@
     // Collapsed ma siamo già in detail esci
     if (self.splitViewController.isCollapsed)
         if (_detailViewController.isViewLoaded && _detailViewController.view.window) return;
+    
+    // Metadata for push detail
+    self.metadataForPushDetail = metadata;
     
     [self performSegueWithIdentifier:@"segueDetail" sender:self];
 }
@@ -4472,7 +4475,7 @@
         
     } else {
         
-        metadata = self.metadata;
+        metadata = self.metadataForPushDetail;
         
         for (NSString *fileID in sectionDataSource.allFileID) {
             tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];

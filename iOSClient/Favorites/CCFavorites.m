@@ -724,7 +724,7 @@
                     
                     if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
                         
-                        [self shouldPerformSegue];
+                        [self shouldPerformSegue:self.metadata];
                         
                     } else {
                         
@@ -768,7 +768,7 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)shouldPerformSegue
+- (void)shouldPerformSegue:(tableMetadata *)metadata
 {
     // if i am in background -> exit
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;
@@ -780,6 +780,9 @@
     // Collapsed but i am in detail -> exit
     if (self.splitViewController.isCollapsed)
         if (self.detailViewController.isViewLoaded && self.detailViewController.view.window) return;
+    
+    // Metadata for push detail
+    self.metadataForPushDetail = metadata;
     
     [self performSegueWithIdentifier:@"segueDetail" sender:self];
 }
@@ -803,7 +806,7 @@
             [photoDataSource addObject:metadata];
     }
     
-    _detailViewController.metadataDetail = self.metadata;
+    _detailViewController.metadataDetail = self.metadataForPushDetail;
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.photoDataSource = photoDataSource;
     
