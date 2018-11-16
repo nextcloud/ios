@@ -2889,11 +2889,17 @@
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
         NSLog(@"[LOG] URL Asset : %@",jsongParsed);
         
-        if (jsongParsed && jsongParsed.allKeys > 0) {
-            
-            NSString *url = [jsongParsed valueForKey:@"url"];
-            successRequest(response, url, request.redirectedServer);
-            
+        NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+        NSDictionary *meta = [ocs valueForKey:@"meta"];
+        NSDictionary *data = [ocs valueForKey:@"data"];
+        
+        NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+        
+        if (statusCode == kOCUserProfileAPISuccessful) {            
+            if ([data valueForKey:@"url"] && ![[data valueForKey:@"url"] isKindOfClass:[NSNull class]])
+                successRequest(response, [data valueForKey:@"url"], request.redirectedServer);
+            else
+                successRequest(response, nil, request.redirectedServer);
         } else {
             failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }

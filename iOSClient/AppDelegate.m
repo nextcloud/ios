@@ -963,7 +963,6 @@
     
     NCCreateMenuAdd *menuAdd = [[NCCreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
     [menuAdd createMenuWithViewController:self.window.rootViewController view:view];
-    //[menuAdd createMenuWithView:view];
 }
 
 - (void)selectedTabBarController:(NSInteger)index
