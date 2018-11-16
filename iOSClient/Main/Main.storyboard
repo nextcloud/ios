@@ -701,7 +701,7 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jgw-HO-Z7g">
-                                                    <rect key="frame" x="63" y="15" width="522" height="20"/>
+                                                    <rect key="frame" x="63" y="15" width="297" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -726,7 +726,7 @@
                                     <outlet property="delegate" destination="Frr-j9-xav" id="46E-kI-GUB"/>
                                 </connections>
                             </tableView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="SwiftyAvatar" customModule="Nextcloud" customModuleProvider="target">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="15" y="79" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="moA-ZW-N2y"/>

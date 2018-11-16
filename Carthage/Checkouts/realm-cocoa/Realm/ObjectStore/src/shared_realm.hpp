@@ -59,6 +59,7 @@ namespace _impl {
 }
 namespace sync {
     struct PermissionsCache;
+    struct TableInfoCache;
 }
 
 // How to handle update_schema() being called on a file which has
@@ -388,6 +389,7 @@ private:
     bool m_dynamic_schema = true;
 
     std::shared_ptr<_impl::RealmCoordinator> m_coordinator;
+    std::unique_ptr<sync::TableInfoCache> m_table_info_cache;
     std::unique_ptr<sync::PermissionsCache> m_permissions_cache;
 
     // File format versions populated when a file format upgrade takes place during realm opening
