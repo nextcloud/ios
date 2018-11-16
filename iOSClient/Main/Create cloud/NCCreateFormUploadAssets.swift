@@ -28,7 +28,7 @@ import Foundation
     func dismissFormUploadAssets()
 }
 
-class NCCreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
+class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     
     var serverUrl : String = ""
     var titleServerUrl : String?
@@ -272,20 +272,23 @@ class NCCreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     // MARK: - Action
     
-    func moveServerUrl(to serverUrlTo: String!, title: String!, type: String!) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
         
-        self.serverUrl = serverUrlTo
-        
-        if let title = title {
+        if serverUrl != nil {
             
-            self.titleServerUrl = title
+            self.serverUrl = serverUrl!
             
-        } else {
+            if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+                self.titleServerUrl = "/"
+            } else {
+                self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
+            }
             
-            self.titleServerUrl = "/"
+            // Update
+            let row : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+            row.title = self.titleServerUrl
+            self.updateFormRow(row)
         }
-        
-        self.reloadForm()
     }
     
     @objc func save() {
@@ -353,18 +356,18 @@ class NCCreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         self.deselectFormRow(sender)
         
-        let storyboard : UIStoryboard = UIStoryboard(name: "CCMove", bundle: nil)
-        let navigationController = storyboard.instantiateViewController(withIdentifier: "CCMove") as! UINavigationController
-        let viewController : CCMove = navigationController.topViewController as! CCMove
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
+        let viewController = navigationController.topViewController as! NCSelect
         
-        viewController.delegate = self;
-        viewController.tintColor = NCBrandColor.sharedInstance.brandText
-        viewController.barTintColor = NCBrandColor.sharedInstance.brand
-        viewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
-        viewController.move.title = NSLocalizedString("_select_", comment: "");
-        viewController.networkingOperationQueue =  appDelegate.netQueue
-        // E2EE
-        viewController.includeDirectoryE2EEncryption = true;
+        viewController.delegate = self
+        viewController.hideButtonCreateFolder = false
+        viewController.includeDirectoryE2EEncryption = true
+        viewController.includeImages = false
+        viewController.layoutViewSelect = k_layout_view_move
+        viewController.selectFile = false
+        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
+        viewController.type = ""
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
         self.present(navigationController, animated: true, completion: nil)
