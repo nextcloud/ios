@@ -35,7 +35,7 @@ class NCMainCommon: NSObject {
     
     //MARK: -
     
-    @objc func triggerProgressTask(_ notification: Notification, sectionDataSourceFileIDIndexPath: NSDictionary, tableView: UITableView, viewController: UIViewController) {
+    @objc func triggerProgressTask(_ notification: Notification, sectionDataSourceFileIDIndexPath: NSDictionary, tableView: UITableView, viewController: UIViewController, serverUrlViewController: String?) {
         
         if viewController.viewIfLoaded?.window == nil {
             return
@@ -46,11 +46,15 @@ class NCMainCommon: NSObject {
         }
         
         let fileID = dic["fileID"] as! NSString
-        _ = dic["serverUrl"] as! NSString
+        let serverUrl = dic["serverUrl"] as! String
         let status = dic["status"] as! Int
         let progress = dic["progress"] as! CGFloat
         let totalBytes = dic["totalBytes"] as! Double
         let totalBytesExpected = dic["totalBytesExpected"] as! Double
+        
+        if serverUrlViewController != nil && serverUrlViewController! != serverUrl {
+            return
+        }
         
         appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: fileID)
         

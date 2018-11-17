@@ -315,7 +315,7 @@
                 if ([CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                     cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
                 } else {
-                    [[NCNetworkingMain sharedInstance] downloadThumbnailWith:tableView serverUrl:table.serverUrl view:tableView indexPath:indexPath forceDownload:false];
+                    [[NCNetworkingMain sharedInstance] downloadThumbnailWith:metadata serverUrl:table.serverUrl view:tableView indexPath:indexPath forceDownload:false];
                 }
             }
         }
