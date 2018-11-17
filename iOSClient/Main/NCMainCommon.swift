@@ -202,7 +202,7 @@ class NCMainCommon: NSObject {
         }
         
         // Download preview
-        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: collectionView, indexPath: indexPath)
+        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: collectionView, indexPath: indexPath, forceDownload: false)
         
         // Share
         let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
@@ -437,7 +437,7 @@ class NCMainCommon: NSObject {
         }
         
         // Download preview
-        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: tableView, indexPath: indexPath)
+        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: tableView, indexPath: indexPath, forceDownload: false)
         
         // CCCell
         if metadata.status == k_metadataStatusNormal {
@@ -1130,9 +1130,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         }
     }
     
-    @objc func downloadThumbnail(with metadata: tableMetadata, serverUrl: String, view: Any, indexPath: IndexPath) {
+    @objc func downloadThumbnail(with metadata: tableMetadata, serverUrl: String, view: Any, indexPath: IndexPath, forceDownload: Bool) {
         
-        if metadata.hasPreview == 1 && !CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
+        if metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || forceDownload) {
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             

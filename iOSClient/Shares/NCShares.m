@@ -312,10 +312,10 @@
 
             if (cell.fileImageView.image == nil) {
                 
-                if (metadata.hasPreview == 1 && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
-                    [[NCNetworkingMain sharedInstance] downloadThumbnailWith:tableView serverUrl:table.serverUrl view:tableView indexPath:indexPath];
-                } else {
+                if ([CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                     cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+                } else {
+                    [[NCNetworkingMain sharedInstance] downloadThumbnailWith:tableView serverUrl:table.serverUrl view:tableView indexPath:indexPath forceDownload:false];
                 }
             }
         }

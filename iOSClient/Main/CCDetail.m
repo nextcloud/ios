@@ -134,6 +134,11 @@
             [[NCViewerMedia sharedInstance] removeObserver];
         }@catch(id anException) { }
     }
+    
+    // document ? cancel preview
+    if ([self.metadataDetail.typeFile isEqualToString:k_metadataTypeFile_document]) {
+        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] error:nil];
+    }
 }
 
 - (void)changeTheming
