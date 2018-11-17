@@ -134,11 +134,6 @@
             [[NCViewerMedia sharedInstance] removeObserver];
         }@catch(id anException) { }
     }
-    
-    // document ? cancel preview
-    if ([self.metadataDetail.typeFile isEqualToString:k_metadataTypeFile_document]) {
-        
-    }
 }
 
 - (void)changeTheming
