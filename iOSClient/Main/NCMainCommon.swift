@@ -32,6 +32,7 @@ class NCMainCommon: NSObject {
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let operationQueueReloadDatasource = OperationQueue.main
     
     //MARK: -
     
@@ -748,15 +749,25 @@ class NCMainCommon: NSObject {
     
     @objc func reloadDatasource(ServerUrl: String?, fileID: String?, action: Int32) {
         
+        if operationQueueReloadDatasource.operationCount > 0 {
+            return
+        } 
+        
         DispatchQueue.main.async {
             if self.appDelegate.activeMain != nil {
-                self.appDelegate.activeMain.reloadDatasource(ServerUrl, fileID: fileID, action: Int(action))
+                self.operationQueueReloadDatasource.addOperation {
+                    self.appDelegate.activeMain.reloadDatasource(ServerUrl, fileID: fileID, action: Int(action))
+                }
             }
             if self.appDelegate.activeFavorites != nil {
-                self.appDelegate.activeFavorites.reloadDatasource(fileID, action: Int(action))
+                self.operationQueueReloadDatasource.addOperation {
+                    self.appDelegate.activeFavorites.reloadDatasource(fileID, action: Int(action))
+                }
             }
             if self.appDelegate.activeTransfers != nil {
-                self.appDelegate.activeTransfers.reloadDatasource(fileID, action: Int(action))
+                self.operationQueueReloadDatasource.addOperation {
+                    self.appDelegate.activeTransfers.reloadDatasource(fileID, action: Int(action))
+                }
             }
         }
     }
