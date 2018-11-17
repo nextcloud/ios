@@ -445,9 +445,6 @@ class NCMainCommon: NSObject {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)
         }
         
-        // Download preview
-        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: tableView, indexPath: indexPath, forceDownload: false)
-        
         // CCCell
         if metadata.status == k_metadataStatusNormal {
             
@@ -474,6 +471,9 @@ class NCMainCommon: NSObject {
             
             cell.labelTitle.textColor = UIColor.black
             cell.labelTitle.text = metadata.fileNameView
+            
+            // Download preview
+            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: tableView, indexPath: indexPath, forceDownload: false)
             
             // Share
             let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
@@ -751,7 +751,7 @@ class NCMainCommon: NSObject {
         
         if operationQueueReloadDatasource.operationCount > 0 {
             return
-        } 
+        }
         
         DispatchQueue.main.async {
             if self.appDelegate.activeMain != nil {

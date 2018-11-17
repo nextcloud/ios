@@ -446,9 +446,6 @@
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
     
-    // Download thumbnail
-    [[NCNetworkingMain sharedInstance] downloadThumbnailWith:metadata serverUrl:serverUrl view:tableView indexPath:indexPath forceDownload:false];
-    
     UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
     
     // TRANSFER
