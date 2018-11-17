@@ -199,7 +199,7 @@ class NCMainCommon: NSObject {
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName)) {
             image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName))
             imagePreview = true
-        } 
+        }
         
         // Download preview
         NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: collectionView, indexPath: indexPath)
@@ -435,6 +435,9 @@ class NCMainCommon: NSObject {
         } else {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)
         }
+        
+        // Download preview
+        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: tableView, indexPath: indexPath)
         
         // CCCell
         if metadata.status == k_metadataStatusNormal {
@@ -1127,7 +1130,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         }
     }
     
-    func downloadThumbnail(with metadata: tableMetadata, serverUrl: String, view: Any, indexPath: IndexPath) {
+    @objc func downloadThumbnail(with metadata: tableMetadata, serverUrl: String, view: Any, indexPath: IndexPath) {
         
         if metadata.hasPreview == 1 && !CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
