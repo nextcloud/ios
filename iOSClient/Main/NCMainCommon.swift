@@ -54,7 +54,7 @@ class NCMainCommon: NSObject {
             return
         }
         
-        if isValidIndexPath(indexPath as! IndexPath, tableView: tableView) {
+        if isValidIndexPath(indexPath as! IndexPath, view: tableView) {
             
             if let cell = tableView.cellForRow(at: indexPath as! IndexPath) as? CCCellMainTransfer {
                 
@@ -753,9 +753,17 @@ class NCMainCommon: NSObject {
         }
     }
     
-    @objc func isValidIndexPath(_ indexPath: IndexPath, tableView: UITableView) -> Bool {
+    @objc func isValidIndexPath(_ indexPath: IndexPath, view: Any) -> Bool {
         
-        return indexPath.section < tableView.numberOfSections && indexPath.row < tableView.numberOfRows(inSection: indexPath.section)
+        if view is UICollectionView {
+            return indexPath.section < (view as! UICollectionView).numberOfSections && indexPath.row < (view as! UICollectionView).numberOfItems(inSection: indexPath.section)
+        }
+        
+        if view is UITableView {
+            return indexPath.section < (view as! UITableView).numberOfSections && indexPath.row < (view as! UITableView).numberOfRows(inSection: indexPath.section)
+        }
+        
+        return true
     }
     
     //MARK: -
@@ -1140,10 +1148,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             
             ocNetworking?.downloadPreview(with: metadata, serverUrl: serverUrl, withWidth: width, andHeight: height, completion: { (message, errorCode) in
                 if errorCode == 0 && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
-                    if view is UICollectionView {
+                    if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
                         (view as! UICollectionView).reloadItems(at: [indexPath])
                     }
-                    if view is UITableView {
+                    if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName){
                         (view as! UITableView).reloadRows(at: [indexPath], with: UITableView.RowAnimation.none)
                     }
                 }

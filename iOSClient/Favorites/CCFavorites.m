@@ -314,7 +314,7 @@
     CGPoint location = [touch locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    if ([[NCMainCommon sharedInstance] isValidIndexPath:indexPath tableView:self.tableView]) {
+    if ([[NCMainCommon sharedInstance] isValidIndexPath:indexPath view:self.tableView]) {
         
         tableMetadata *metadataSection = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
