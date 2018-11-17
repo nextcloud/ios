@@ -35,7 +35,11 @@ class NCMainCommon: NSObject {
     
     //MARK: -
     
-    @objc func triggerProgressTask(_ notification: Notification, sectionDataSourceFileIDIndexPath: NSDictionary, tableView: UITableView) {
+    @objc func triggerProgressTask(_ notification: Notification, sectionDataSourceFileIDIndexPath: NSDictionary, tableView: UITableView, viewController: UIViewController) {
+        
+        if viewController.viewIfLoaded?.window == nil {
+            return
+        }
         
         guard let dic = notification.userInfo else {
             return
