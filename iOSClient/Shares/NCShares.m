@@ -140,24 +140,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
-{
-    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
-    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
-    
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
-        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        }
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Read File <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -331,7 +313,7 @@
             if (cell.fileImageView.image == nil) {
                 
                 if (metadata.hasPreview == 1 && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
-                    [self downloadThumbnail:metadata serverUrl:table.serverUrl indexPath:indexPath];
+                    [[NCNetworkingMain sharedInstance] downloadThumbnailWith:tableView serverUrl:table.serverUrl view:tableView indexPath:indexPath];
                 } else {
                     cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
                 }
