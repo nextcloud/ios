@@ -1043,7 +1043,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             // open View File
             if selector == selectorLoadFileView && UIApplication.shared.applicationState == UIApplication.State.active {
             
-                if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
+                var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
+                if uti == nil { uti = "" }
+                
+                if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown || uti!.contains("opendocument") {
                 
                     if appDelegate.activeMain.view.window != nil {
                         appDelegate.activeMain.open(in: metadata)
