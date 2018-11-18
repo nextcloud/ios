@@ -164,32 +164,39 @@ class NCMainCommon: NSObject {
         }
     }
     
-    @objc func cancelAllTransfer() {
+    @objc func cancelAllTransfer(view: UIView) {
         
         // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError), clearDateReadDirectoryID: nil)
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d AND status != %d", appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true)  {
-            
-            for metadata in metadatas {
+        NCUtility.sharedInstance.startActivityIndicator(view: view)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d AND status != %d", self.appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true)  {
                 
-                // Modify
-                if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
-                    metadata.session = ""
-                    metadata.sessionSelector = ""
-                    metadata.status = Int(k_metadataStatusNormal)
+                for metadata in metadatas {
                     
-                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                }
-                
-                // Cancel Task
-                if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                    cancelTransferMetadata(metadata, reloadDatasource: false)
+                    // Modify
+                    if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
+                        metadata.session = ""
+                        metadata.sessionSelector = ""
+                        metadata.status = Int(k_metadataStatusNormal)
+                        
+                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    }
+                    
+                    // Cancel Task
+                    if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
+                        self.cancelTransferMetadata(metadata, reloadDatasource: false)
+                    }
                 }
             }
         }
         
-        self.reloadDatasource(ServerUrl: nil, fileID: nil, action: k_action_NULL)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.reloadDatasource(ServerUrl: nil, fileID: nil, action: k_action_NULL)
+            NCUtility.sharedInstance.stopActivityIndicator()
+        }
     }
     
     //MARK: -

@@ -31,6 +31,8 @@ class NCUtility: NSObject {
         return instance
     }()
     
+    let activityIndicator = UIActivityIndicatorView()
+    
     @objc func createFileName(_ fileName: String, directoryID: String) -> String {
         
         var resultFileName = fileName
@@ -242,6 +244,29 @@ class NCUtility: NSObject {
                 CCUtility.write(pngImageData, fileNamePath: imageNamePath)
             }
         }
+    }
+    
+    @objc func startActivityIndicator(view: UIView) {
+        
+        activityIndicator.color = NCBrandColor.sharedInstance.brand
+        activityIndicator.hidesWhenStopped = true
+            
+        view.addSubview(activityIndicator)
+            
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+            
+        let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
+        view.addConstraint(horizontalConstraint)
+            
+        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: 0)
+        view.addConstraint(verticalConstraint)
+
+        activityIndicator.startAnimating()
+    }
+    
+    @objc func stopActivityIndicator() {
+        activityIndicator.stopAnimating()
+        activityIndicator.removeFromSuperview()
     }
 }
 
