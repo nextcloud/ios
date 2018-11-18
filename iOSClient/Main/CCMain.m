@@ -4339,7 +4339,7 @@
                     
                     [self shouldPerformSegue:self.metadata];
                     
-                } if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCViewerRichdocument sharedInstance] isRichDocument:self.metadata]) {
+                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCViewerRichdocument sharedInstance] isRichDocument:self.metadata]) {
                     
                     [self shouldPerformSegue:self.metadata];
                     
