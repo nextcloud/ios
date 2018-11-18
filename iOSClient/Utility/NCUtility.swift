@@ -31,7 +31,7 @@ class NCUtility: NSObject {
         return instance
     }()
     
-    let activityIndicator = UIActivityIndicatorView()
+    let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
     @objc func createFileName(_ fileName: String, directoryID: String) -> String {
         
