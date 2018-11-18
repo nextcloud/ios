@@ -1037,6 +1037,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             
             // Synchronized
             if selector == selectorDownloadSynchronize {
+                appDelegate.updateApplicationIconBadgeNumber()
                 return
             }
             
