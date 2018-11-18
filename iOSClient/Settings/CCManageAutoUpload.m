@@ -433,11 +433,16 @@
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     NSString *sectionName;
-    
+    NSString *autoUploadPath = [NSString stringWithFormat:@"%@/%@", [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl], [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName]];
+
     switch (section)
     {
         case 0:
             sectionName = NSLocalizedString(@"_autoupload_description_", nil);
+            break;
+        case 1:
+            if (tableAccount.autoUpload) sectionName = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_autoupload_current_folder_", nil), [CCUtility returnPathfromServerUrl:autoUploadPath activeUrl:appDelegate.activeUrl]];
+            else sectionName = @"";
             break;
         case 3:
             if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_description_background_", nil);

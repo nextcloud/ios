@@ -218,7 +218,7 @@
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
 "_autoupload_filenamemask_"         = "Change filename mask";
 "_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
-
+"_autoupload_current_folder_"       = "Currently selected folder";
 
 // Manage Help
 
