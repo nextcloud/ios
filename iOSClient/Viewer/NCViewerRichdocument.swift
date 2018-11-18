@@ -152,8 +152,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        detail.indicator.stopAnimating()
-        print("didFinish");
+        NCUtility.sharedInstance.stopActivityIndicator()
     }
      
     //MARK: -

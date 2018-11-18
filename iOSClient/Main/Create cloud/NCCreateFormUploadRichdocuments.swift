@@ -272,11 +272,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         }, failure: { (message, errorCode) in
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
-        
-        //self.dismiss(animated: true, completion: {
-            
-            //self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
-        //})
     }
     
     @objc func cancel() {

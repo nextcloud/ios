@@ -209,9 +209,8 @@
         // RichDocument
         if ([[NCViewerRichdocument sharedInstance] isRichDocument:self.metadataDetail]) {
             
-            self.indicator.color = [[NCBrandColor sharedInstance] brand];
-            [self.indicator startAnimating];
-
+            [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view];
+            
             if ([self.metadataDetail.url isEqualToString:@""]) {
                 OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
                 
@@ -221,7 +220,7 @@
                     
                 } failure:^(NSString *message, NSInteger errorCode) {
                     
-                    [self.indicator stopAnimating];
+                    [[NCUtility sharedInstance] stopActivityIndicator];
                     [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                     [self.navigationController popViewControllerAnimated:YES];
                 }];
