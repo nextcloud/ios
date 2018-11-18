@@ -1037,7 +1037,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             
             // Synchronized
             if selector == selectorDownloadSynchronize {
-                //
+                return
             }
             
             // open View File
