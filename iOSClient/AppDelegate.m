@@ -1283,11 +1283,15 @@
         return;
     
     // Detect E2EE
+    NSString *saveDirectoryID = @"";
     NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d", self.activeAccount, k_metadataStatusNormal] sorted:nil ascending:NO];
     for (tableMetadata *metadata in metadatasForE2EE) {
-        if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]] != nil) {
-            isE2EE = true;
-            break;
+        if (![saveDirectoryID isEqualToString:metadata.directoryID]) {
+            saveDirectoryID = metadata.directoryID;
+            if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]] != nil) {
+                isE2EE = true;
+                break;
+            }
         }
     }
     
