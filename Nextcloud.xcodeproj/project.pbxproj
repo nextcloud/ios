@@ -3240,16 +3240,6 @@
 				ko,
 				"es-419",
 				"pt-PT",
-				he,
-				ar,
-				ja,
-				da,
-				"zh-Hant",
-				"hi-IN",
-				"nl-NL",
-				fi,
-				id,
-				pt,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
