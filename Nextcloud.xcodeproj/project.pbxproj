@@ -327,8 +327,6 @@
 		F762CB9B1EACB84400B38484 /* TWMessageBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB941EACB84400B38484 /* TWMessageBarManager.m */; };
 		F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FBE21832F8700721B71 /* NCTrashSectionHeaderMenu.xib */; };
 		F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */; };
-		F7659A371DC0B737004860C4 /* iRate.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7659A311DC0B737004860C4 /* iRate.bundle */; };
-		F7659A391DC0B737004860C4 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A331DC0B737004860C4 /* iRate.m */; };
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76C6F8E21943C8C0063591B /* NCActionSheetHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76C6F8D21943C8C0063591B /* NCActionSheetHeader.swift */; };
@@ -1087,9 +1085,6 @@
 		F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashSectionFooter.xib; sourceTree = "<group>"; };
 		F76344751BF259A800188725 /* synchronized.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronized.gif; sourceTree = "<group>"; };
 		F76344761BF259A800188725 /* synchronizedcrypto.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronizedcrypto.gif; sourceTree = "<group>"; };
-		F7659A311DC0B737004860C4 /* iRate.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = iRate.bundle; sourceTree = "<group>"; };
-		F7659A321DC0B737004860C4 /* iRate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iRate.h; sourceTree = "<group>"; };
-		F7659A331DC0B737004860C4 /* iRate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iRate.m; sourceTree = "<group>"; };
 		F768EAFB1BFB7CD800B6E341 /* CCShareOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareOC.h; sourceTree = "<group>"; };
 		F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareOC.m; sourceTree = "<group>"; };
 		F768EB021BFB7EA900B6E341 /* CCShare.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCShare.storyboard; sourceTree = "<group>"; };
@@ -1658,7 +1653,6 @@
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F7A377131EB2364A002856D3 /* Fabric */,
 				F72D0FED210B6638009C96B7 /* Firebase */,
-				F7659A2F1DC0B737004860C4 /* iRate */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
 				F7540EE11D5B238600C3FFA8 /* openssl */,
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
@@ -2331,16 +2325,6 @@
 				F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */,
 			);
 			path = Section;
-			sourceTree = "<group>";
-		};
-		F7659A2F1DC0B737004860C4 /* iRate */ = {
-			isa = PBXGroup;
-			children = (
-				F7659A311DC0B737004860C4 /* iRate.bundle */,
-				F7659A321DC0B737004860C4 /* iRate.h */,
-				F7659A331DC0B737004860C4 /* iRate.m */,
-			);
-			path = iRate;
 			sourceTree = "<group>";
 		};
 		F771E3D120E2392D00AFB62D /* File Provider Extension */ = {
@@ -3348,7 +3332,6 @@
 				F77B0F2F1D118A16002130FE /* CCMove.storyboard in Resources */,
 				F7F54D001E5B14C700E19C62 /* UIBarButtonItemGrid.png in Resources */,
 				F7F54CFE1E5B14C700E19C62 /* UIBarButtonItemArrowRight@2x.png in Resources */,
-				F7659A371DC0B737004860C4 /* iRate.bundle in Resources */,
 				F7F54D031E5B14C800E19C62 /* VideoOverlay.png in Resources */,
 				F7F54CE81E5B14C700E19C62 /* ImageSelectedOff.png in Resources */,
 				F7D4234B1F0596AC009C9782 /* Reader-Print@2x.png in Resources */,
@@ -3837,7 +3820,6 @@
 				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
 				F758B44A212C516300515F55 /* UIImage+Utils.swift in Sources */,
-				F7659A391DC0B737004860C4 /* iRate.m in Sources */,
 				F7B1FBC81E72E3D1001781FE /* SwiftWebVCActivity.swift in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F762CB011EACB66200B38484 /* XLFormSelectorCell.m in Sources */,

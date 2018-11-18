@@ -24,7 +24,6 @@
 #import "AppDelegate.h"
 #import <JDStatusBarNotification/JDStatusBarNotification.h>
 
-#import "iRate.h"
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 #import "CCGraphics.h"
@@ -47,14 +46,7 @@
 
 + (void)initialize
 {
-    [iRate sharedInstance].daysUntilPrompt = 5;
-    [iRate sharedInstance].usesUntilPrompt = 5;
-    [iRate sharedInstance].promptForNewVersionIfUserRated = true;
-    
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": [CCUtility getUserAgent]}];
-
-    //enable preview mode
-    //[iRate sharedInstance].previewMode = YES;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
