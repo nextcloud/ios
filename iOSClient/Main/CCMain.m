@@ -1058,9 +1058,6 @@
 
 - (void)uploadFileAsset:(NSArray *)assets serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID) return;
-    
     for (PHAsset *asset in assets) {
         
         tableMetadata *metadata;
@@ -1080,6 +1077,9 @@
             
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         }
+        
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+        if (!directoryID) return;
         
         // Check if is in upload
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@ AND session != ''", directoryID, fileName];
