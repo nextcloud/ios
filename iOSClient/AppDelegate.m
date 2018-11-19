@@ -224,6 +224,11 @@
     [Fabric with:@[[Crashlytics class]]];
     [self logUser];
     
+    // Store review
+    NCStoreReview *review = [NCStoreReview new];
+    [review incrementAppRuns];
+    [review showStoreReview];
+    
     return YES;
 }
 
