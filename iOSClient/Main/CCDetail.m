@@ -89,7 +89,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
-    self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
+    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[[[NCBrandColor sharedInstance] brand] colorWithAlphaComponent:0.4]];
     
     // Change bar bottom line shadow and remove title back button <"title"
     self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];

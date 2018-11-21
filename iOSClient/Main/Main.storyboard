@@ -282,7 +282,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="backgroundDetail" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
+                            <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
                                 <rect key="frame" x="134" y="296" width="107" height="75"/>
                             </imageView>
                         </subviews>
@@ -819,8 +819,8 @@
     </scenes>
     <resources>
         <image name="avatar" width="25" height="25"/>
-        <image name="backgroundDetail" width="107" height="75.599998474121094"/>
         <image name="disclosureIndicator" width="13" height="14"/>
+        <image name="logo" width="107" height="75.599998474121094"/>
         <image name="tabBarPlus" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
