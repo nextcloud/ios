@@ -404,7 +404,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"hideDownload"]) {
         
-        BOOL hideDownload = [[rowDescriptor.value valueData] boolValue];
+        BOOL hideDownload = [newValue boolValue];
         
         [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:0 hideDownload:hideDownload];
         [self disableForm];
