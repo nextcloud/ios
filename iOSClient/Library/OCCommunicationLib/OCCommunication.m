@@ -897,7 +897,7 @@
     }];
 }
 
-- (void) shareFileOrFolderByServer: (NSString *) serverPath andFileOrFolderPath: (NSString *) filePath andPassword:(NSString *)password andPermission:(NSInteger)permission
+- (void) shareFileOrFolderByServer: (NSString *) serverPath andFileOrFolderPath: (NSString *) filePath andPassword:(NSString *)password andPermission:(NSInteger)permission andHideDownload:(BOOL)hideDownload
                    onCommunication:(OCCommunication *)sharedOCCommunication
                     successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest
                     failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
@@ -909,7 +909,7 @@
     request = [self getRequestWithCredentials:request];
     
     
-    [request shareByLinkFileOrFolderByServer:serverPath andPath:filePath andPassword:password andPermission:permission onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request shareByLinkFileOrFolderByServer:serverPath andPath:filePath andPassword:password andPermission:permission andHideDownload:hideDownload onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         
@@ -1131,7 +1131,7 @@
     }];
 }
 
-- (void) updateShare:(NSInteger)shareId ofServerPath:(NSString *)serverPath withPasswordProtect:(NSString*)password andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions
+- (void) updateShare:(NSInteger)shareId ofServerPath:(NSString *)serverPath withPasswordProtect:(NSString*)password andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
                    onCommunication:(OCCommunication *)sharedOCCommunication
                     successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest
       failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
@@ -1145,7 +1145,7 @@
     request = [self getRequestWithCredentials:request];
     
     
-    [request updateShareItem:shareId ofServerPath:serverPath withPasswordProtect:password andExpirationTime:expirationTime andPermissions:permissions onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request updateShareItem:shareId ofServerPath:serverPath withPasswordProtect:password andExpirationTime:expirationTime andPermissions:permissions andHideDownload:hideDownload onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         

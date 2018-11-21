@@ -95,6 +95,7 @@
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *fileNameTo;
 @property (nonatomic, strong) NSString *fileNameView;
+@property BOOL hideDownload;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *keyCipher;
 @property (nonatomic, strong) id optionAny;

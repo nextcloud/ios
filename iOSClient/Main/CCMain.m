@@ -2093,7 +2093,7 @@
     [self tableViewReloadData];
 }
 
-- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission
+- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
@@ -2101,6 +2101,7 @@
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
     metadataNet.fileNameView = metadata.fileNameView;
+    metadataNet.hideDownload = hideDownload;
     metadataNet.sharePermission = permission;
     metadataNet.password = password;
     metadataNet.selector = selectorShare;
@@ -2150,13 +2151,14 @@
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
-- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionUpdateShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.expirationTime = expirationTime;
+    metadataNet.hideDownload = hideDownload;
     metadataNet.password = password;
     metadataNet.selector = selectorUpdateShare;
     metadataNet.serverUrl = serverUrl;

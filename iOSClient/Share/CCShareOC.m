@@ -73,6 +73,10 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"hideDownload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_share_link_hide_download_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+
     // Expiration date
     
     section = [XLFormSectionDescriptor formSection];
@@ -180,6 +184,7 @@
     XLFormRowDescriptor *rowShareLinkSwitch = [self.form formRowWithTag:@"shareLinkSwitch"];
     XLFormRowDescriptor *rowShareLinkPermission = [self.form formRowWithTag:@"shareLinkPermission"];
     XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
+    XLFormRowDescriptor *rowHideDownload = [self.form formRowWithTag:@"hideDownload"];
     
     XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
     XLFormRowDescriptor *rowExpirationDateSwitch = [self.form formRowWithTag:@"expirationDateSwitch"];
@@ -193,6 +198,7 @@
         
         rowShareLinkPermission.disabled = @NO;
         rowPassword.disabled = @NO;
+        rowHideDownload.disabled = @NO;
         rowExpirationDate.disabled = @NO;
         rowExpirationDateSwitch.disabled = @NO;
         
@@ -204,6 +210,7 @@
         
         rowShareLinkPermission.disabled = @YES;
         rowPassword.disabled = @YES;
+        rowHideDownload.disabled = @YES;
         rowExpirationDate.disabled = @YES;
         rowExpirationDateSwitch.disabled = @YES;
         
@@ -242,6 +249,10 @@
         rowPassword.value = [self.itemShareLink shareWith];
     else
         rowPassword.value = @"";
+    
+    // Hide Download
+    if (self.itemShareLink.hideDownload) rowHideDownload.value = @1;
+    else rowHideDownload.value = @0;
     
     // Expiration Date
     if (self.itemShareLink.expirationDate) {
@@ -374,7 +385,7 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [self.delegate share:self.metadata serverUrl:self.serverUrl password:@"" permission:1];
+            [self.delegate share:self.metadata serverUrl:self.serverUrl password:@"" permission:1 hideDownload:false];
             [self disableForm];
             
         } else {
@@ -387,7 +398,15 @@
     
     if ([rowDescriptor.tag isEqualToString:@"shareLinkPermission"]) {
         
-        [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:[self getShareLinkPermission:newValue]];
+        [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:[self getShareLinkPermission:newValue] hideDownload:false];
+        [self disableForm];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"hideDownload"]) {
+        
+        BOOL hideDownload = [[rowDescriptor.value valueData] boolValue];
+        
+        [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:0 hideDownload:hideDownload];
         [self disableForm];
     }
     
@@ -396,7 +415,7 @@
         // remove expiration date
         if ([[rowDescriptor.value valueData] boolValue] == NO) {
             
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:@"" permission:0];
+            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:@"" permission:0 hideDownload:false];
             [self disableForm];
             
         } else {
@@ -405,7 +424,7 @@
             XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
             NSString *expirationDate = [self convertDateInServerFormat:rowExpirationDate.value];
             
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0];
+            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0 hideDownload:false];
             [self disableForm];
         }
     }
@@ -447,7 +466,7 @@
         
             NSString *expirationDate = [self convertDateInServerFormat:rowDescriptor.value];
         
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0];
+            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0 hideDownload:false];
             [self disableForm];
         }
         
@@ -470,7 +489,7 @@
             
             if (self.shareLink) {
                 
-                [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:0];
+                [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:0 hideDownload:false];
                 [self disableForm];
             }
         }
@@ -511,9 +530,9 @@
     [self.delegate shareUserAndGroup:user shareeType:shareeType permission:permission metadata:self.metadata directoryID:self.metadata.directoryID serverUrl:self.serverUrl];
 }
 
-- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
 {
-    [self.delegate updateShare:share metadata:metadata serverUrl:serverUrl password:password expirationTime:expirationTime permission:permission];
+    [self.delegate updateShare:share metadata:metadata serverUrl:serverUrl password:password expirationTime:expirationTime permission:permission hideDownload:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
