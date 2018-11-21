@@ -32,7 +32,6 @@
 #import "CCUtility.h"
 #import "CCActivity.h"
 #import "CCDetail.h"
-#import "CCQuickActions.h"
 #import "CCMain.h"
 #import "CCMedia.h"
 #import "CCSettings.h"

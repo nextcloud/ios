@@ -441,7 +441,6 @@
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
-		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C40BE321998C060004137E /* PDFGenerator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE221998C050004137E /* PDFGenerator.framework */; };
 		F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */; };
@@ -1218,8 +1217,6 @@
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		F7BE6E2B1D2D5C3B00106933 /* CCQuickActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCQuickActions.h; sourceTree = "<group>"; };
-		F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCQuickActions.m; sourceTree = "<group>"; };
 		F7BF1B3F1D51E893000854F6 /* CCLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLogin.h; sourceTree = "<group>"; };
 		F7BF1B401D51E893000854F6 /* CCLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLogin.m; sourceTree = "<group>"; };
 		F7BFCCC01B68C21900548E76 /* CCManageLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageLocation.h; sourceTree = "<group>"; };
@@ -2577,15 +2574,6 @@
 			path = Database;
 			sourceTree = "<group>";
 		};
-		F7BE6E2A1D2D5C3B00106933 /* QuickActions */ = {
-			isa = PBXGroup;
-			children = (
-				F7BE6E2B1D2D5C3B00106933 /* CCQuickActions.h */,
-				F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */,
-			);
-			path = QuickActions;
-			sourceTree = "<group>";
-		};
 		F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */ = {
 			isa = PBXGroup;
 			children = (
@@ -2948,7 +2936,6 @@
 				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F7381ED9218218A4000B1560 /* Offline */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
-				F7BE6E2A1D2D5C3B00106933 /* QuickActions */,
 				F7FE125B1BAC03FB0041924B /* Security */,
 				F79A65C12191D8DC00FF6DCC /* Select */,
 				F7ACE4281BAC0268006C0017 /* Settings */,
@@ -3772,7 +3759,6 @@
 				F758B445212C516300515F55 /* CGPoint+Utils.swift in Sources */,
 				F73B4EFA1F470D9100BBEE4B /* LangFrenchModel.cpp in Sources */,
 				F762CAF91EACB66200B38484 /* XLFormCheckCell.m in Sources */,
-				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
 				F762CB101EACB66200B38484 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F7D4237E1F0596C6009C9782 /* ReaderDocument.m in Sources */,
 				F7D4237C1F0596C6009C9782 /* ReaderContentTile.m in Sources */,

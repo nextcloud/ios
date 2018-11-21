@@ -890,49 +890,6 @@ class NCMainCommon: NSObject {
         self.reloadDatasource(ServerUrl: serverUrl, fileID: nil, action: k_action_NULL)
         self.appDelegate.activeMedia.reloadDatasource(nil, action: Int(k_action_NULL))
     }
-    
-    @objc func openPhotosPickerViewController(_ sourceViewController: UIViewController, phAssets: @escaping ([PHAsset]) -> ()) {
-     
-        var selectedPhAssets = [PHAsset]()
-        var configure = TLPhotosPickerConfigure()
-        
-        configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
-        configure.defaultCameraRollTitle = NSLocalizedString("_camera_roll_", comment: "")
-        configure.doneTitle = NSLocalizedString("_done_", comment: "")
-        configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
-        configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
-        
-        configure.maxSelectedAssets = Int(k_pickerControllerMax)
-        configure.selectedColor = NCBrandColor.sharedInstance.brand
-        
-        let viewController = TLPhotosPickerViewController(withTLPHAssets: { (assets) in
-            
-            for asset: TLPHAsset in assets {
-                if asset.phAsset != nil {
-                    selectedPhAssets.append(asset.phAsset!)
-                }
-            }
-            
-            phAssets(selectedPhAssets)
-            
-            }, didCancel: nil)
-        
-        viewController.didExceedMaximumNumberOfSelection = { (picker) in
-            self.appDelegate.messageNotification("_info_", description: "_limited_dimension_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
-        }
-        
-        viewController.handleNoAlbumPermissions = { (picker) in
-            self.appDelegate.messageNotification("_info_", description: "_denied_album_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
-        }
-        
-        viewController.handleNoCameraPermissions = { (picker) in
-            self.appDelegate.messageNotification("_info_", description: "_denied_camera_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
-        }
-
-        viewController.configure = configure
-
-        sourceViewController.present(viewController, animated: true, completion: nil)
-    }
 }
     
 //MARK: -

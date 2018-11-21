@@ -288,8 +288,6 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     NSLog(@"[LOG] Enter in Background");
-
-    //[[CCQuickActions quickActionsManager] closeAll];
     
     [[BKPasscodeLockScreenManager sharedManager] showLockScreen:YES];
     
@@ -531,10 +529,7 @@
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
 
     UIApplicationShortcutIcon *shortcutMediaIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionMedia"];
-    UIApplicationShortcutIcon *shortcutUploadIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionUpload"];
-    
     UIApplicationShortcutItem *shortcutMedia = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.media", bundleId] localizedTitle:NSLocalizedString(@"_media_", nil) localizedSubtitle:nil icon:shortcutMediaIcon userInfo:nil];
-    UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
    
     // add the array to our app
     if (shortcutMedia)
@@ -553,90 +548,9 @@
     BOOL handled = NO;
     
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    
     NSString *shortcutMedia = [NSString stringWithFormat:@"%@.media", bundleId];
-    NSString *shortcutUpload = [NSString stringWithFormat:@"%@.upload", bundleId];
-    NSString *shortcutUploadEncrypted = [NSString stringWithFormat:@"%@.uploadEncrypted", bundleId];
-        
-    if ([shortcutItem.type isEqualToString:shortcutUpload] && self.activeAccount) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if (_activeMain) {
-                
-                UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-                
-                if (splitViewController.isCollapsed) {
-                    
-                    UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                    for (UINavigationController *nvc in tbc.viewControllers) {
-                        
-                        if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                            [nvc popToRootViewControllerAnimated:NO];
-                    }
-                    
-                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
-                    
-                } else {
-                    
-                    UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-                    [nvcDetail popToRootViewControllerAnimated:NO];
-                    
-                    UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
-                }
-
-                [_activeMain.navigationController popToRootViewControllerAnimated:NO];
-
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [[CCQuickActions quickActionsManager] startQuickActionsViewController:_activeMain];
-                });
-            }
-        });
-        
-        handled = YES;
-    }
     
-    else if ([shortcutItem.type isEqualToString:shortcutUploadEncrypted] && self.activeAccount) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-
-            if (_activeMain) {
-                
-                UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-                
-                if (splitViewController.isCollapsed) {
-                    
-                    UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                    for (UINavigationController *nvc in tbc.viewControllers) {
-                        
-                        if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                            [nvc popToRootViewControllerAnimated:NO];
-                    }
-                    
-                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
-                    
-                } else {
-                    
-                    UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-                    [nvcDetail popToRootViewControllerAnimated:NO];
-                    
-                    UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
-                }
-                
-                [_activeMain.navigationController popToRootViewControllerAnimated:NO];
-                
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [[CCQuickActions quickActionsManager] startQuickActionsViewController:_activeMain];
-                });
-            }
-        });
-        
-        handled = YES;
-    }
-    
-    else if ([shortcutItem.type isEqualToString:shortcutMedia] && self.activeAccount) {
+    if ([shortcutItem.type isEqualToString:shortcutMedia] && self.activeAccount) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
 
