@@ -72,11 +72,13 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"password" rowType:XLFormRowDescriptorTypePassword title:NSLocalizedString(@"_password_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
-    
+ 
+#if TARGET_OS_SIMULATOR
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"hideDownload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_share_link_hide_download_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
-
+#endif
+    
     // Expiration date
     
     section = [XLFormSectionDescriptor formSection];
