@@ -225,7 +225,7 @@
     [self logUser];
     
     // Store review
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
     NCStoreReview *review = [NCStoreReview new];
     [review incrementAppRuns];
     [review showStoreReview];

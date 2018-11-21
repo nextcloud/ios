@@ -51,9 +51,11 @@ class NCCreateMenuAdd: NSObject {
         
         items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
+#if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
             items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: NCBrandColor.sharedInstance.icon)))
         }
+#endif
         
         items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:1, color: colorIcon)))
         

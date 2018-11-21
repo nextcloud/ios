@@ -38,6 +38,9 @@
 //#if targetEnvironment(simulator)
 //#endif
 
+//#if TARGET_OS_SIMULATOR
+//#endif
+
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 
 #endif

@@ -86,7 +86,7 @@
 
 + (NSString *)getUUID
 {
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:k_UUID_SIM];
     return [deviceId UUIDString];
 #else
