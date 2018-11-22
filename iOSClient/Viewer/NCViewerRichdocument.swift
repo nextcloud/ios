@@ -159,6 +159,10 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
     
     @objc func isRichDocument( _ metadata: tableMetadata) -> Bool {
         
+        if appDelegate.reachability.isReachable() == false {
+            return false
+        }
+        
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
             return false
         }
