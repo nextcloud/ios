@@ -589,7 +589,7 @@
                         
                         // root folder
                         serverUrlFolder = @"..";
-                        directoryIDFolder = @"00000000-0000-0000-0000-000000000000";
+                        directoryIDFolder = k_directoryID_root;
                         
                         metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
                         
