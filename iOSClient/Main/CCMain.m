@@ -1296,12 +1296,12 @@
     
     // E2EE Is encrypted folder get metadata
     if (_metadataFolder.e2eEncrypted) {
-        
+        NSString *metadataFolderFileID = metadataFolder.fileID;
         // Read Metadata
         if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{                
                 NSString *metadata;
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata fileID:metadataFolder.fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata fileID:metadataFolderFileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (error) {
                         if (error.code != 404)
