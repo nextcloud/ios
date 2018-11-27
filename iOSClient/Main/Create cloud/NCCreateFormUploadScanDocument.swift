@@ -24,6 +24,7 @@
 
 import Foundation
 import PDFGenerator
+import WeScan
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
