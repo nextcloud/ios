@@ -212,7 +212,7 @@
     [self logUser];
     
     // Store review
-#if !TARGET_OS_SIMULATOR
+#if !TARGET_OS_SIMULATOR && !defined(DEBUG)
     NCStoreReview *review = [NCStoreReview new];
     [review incrementAppRuns];
     [review showStoreReview];
