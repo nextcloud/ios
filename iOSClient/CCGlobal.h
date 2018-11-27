@@ -302,6 +302,7 @@
 
 // Trash Version
 #define k_trash_version_available                       14
+#define k_trash_version_available_more_fix              15
 
 // Cell Reload Data Source
 #define k_action_NULL                                   0
