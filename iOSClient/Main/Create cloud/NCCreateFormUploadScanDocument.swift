@@ -494,7 +494,6 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     var viewController: UIViewController?
     var openScan: Bool = false
     
-    @available(iOS 10, *)
     func openScannerDocument(viewController: UIViewController, openScan: Bool) {
         
         self.viewController = viewController
@@ -505,7 +504,6 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         self.viewController?.present(scannerVC, animated: true, completion: nil)
     }
     
-    @available(iOS 10, *)
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
         
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
@@ -526,12 +524,10 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         })
     }
     
-    @available(iOS 10, *)
     func imageScannerControllerDidCancel(_ scanner: ImageScannerController) {
         scanner.dismiss(animated: true, completion: nil)
     }
     
-    @available(iOS 10, *)
     func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
         appDelegate.messageNotification("_error_", description: error.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
     }
