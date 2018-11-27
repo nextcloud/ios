@@ -212,11 +212,11 @@
     [self logUser];
     
     // Store review
-#if !TARGET_OS_SIMULATOR && !defined(DEBUG)
-    NCStoreReview *review = [NCStoreReview new];
-    [review incrementAppRuns];
-    [review showStoreReview];
-#endif
+    if ([[NCUtility sharedInstance] isSimulatorOrTestFlight] == false) {
+        NCStoreReview *review = [NCStoreReview new];
+        [review incrementAppRuns];
+        [review showStoreReview];
+    }
     
     return YES;
 }

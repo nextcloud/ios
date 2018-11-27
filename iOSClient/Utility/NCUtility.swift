@@ -268,5 +268,13 @@ class NCUtility: NSObject {
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
     }
+    
+    @objc func isSimulatorOrTestFlight() -> Bool {
+        guard let path = Bundle.main.appStoreReceiptURL?.path else {
+            return false
+        }
+        return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
+    }
+
 }
 
