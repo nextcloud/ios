@@ -118,6 +118,13 @@
     self.tabBarController.tabBar.translucent = YES;
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+
+    [self.navigationController setNavigationBarHidden:false];
+}
+
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];

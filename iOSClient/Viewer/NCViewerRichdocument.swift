@@ -38,7 +38,9 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         
         self.detail = detail
         
-//        detail.navigationController?.setNavigationBarHidden(true, animated: false)
+        if (UIDevice.current.userInterfaceIdiom == .phone) {
+            detail.navigationController?.setNavigationBarHidden(true, animated: false)
+        }
         
         let contentController = WKUserContentController()
         contentController.add(self, name: "RichDocumentsMobileInterface")
