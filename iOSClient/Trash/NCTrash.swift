@@ -499,6 +499,13 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         })
     }
     
+    func deleteTrash() {
+        
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        
+    }
+    
     func deleteItem(with fileID: String) {
         
         guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
