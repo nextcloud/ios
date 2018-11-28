@@ -2573,17 +2573,27 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func deleteTrash(fileID: String) {
+    @objc func deleteTrash(fileID: String?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
         }
         
         let realm = try! Realm()
+        var filter = ""
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableTrash.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
+        if fileID != nil {
+            
+            filter = "account =" + tableAccount.account
+            
+        } else {
+            
+            filter = "account =" + tableAccount.account + " AND fileID = " + fileID!
+        }
+        
+        guard let result = realm.objects(tableTrash.self).filter(filter).first else {
             realm.cancelWrite()
             return
         }

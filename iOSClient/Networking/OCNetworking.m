@@ -2476,16 +2476,19 @@
     }];
 }
 
-- (void)emptyTrash:(NSString *)path account:(NSString *)account success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+
+- (void)emptyTrash:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
+    NSString* path = [NSString stringWithFormat:@"%@/trashbin/%@/trash", _activeUrl, _activeUserID];
+    
     [communication emptyTrash:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        success();
+        completion(nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -2504,7 +2507,7 @@
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
-        failure(message, errorCode);
+        completion(message, errorCode);
     }];
 }
 

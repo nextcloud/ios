@@ -503,7 +503,18 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        
+        ocNetworking?.emptyTrash({ (message, errorCode) in
+            
+            if errorCode == 0 {
+                
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: nil)
+                
+                self.loadDatasource()
+
+            } else {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+        });
     }
     
     func deleteItem(with fileID: String) {

@@ -85,6 +85,8 @@
 
 - (void)listingTrash:(NSString *)serverUrl path:(NSString *)path account:(NSString *)account success:(void(^)(NSArray *items))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
+- (void)emptyTrash:(void (^)(NSString *message, NSInteger errorCode))completion;
+
 @end
 
 @protocol OCNetworkingDelegate <NSObject>
