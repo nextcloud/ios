@@ -2580,24 +2580,20 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        var filter = ""
+        var predicate = NSPredicate()
         
         realm.beginWrite()
         
-        if fileID != nil {
+        if fileID == nil {
             
-            filter = "account =" + tableAccount.account
+            predicate = NSPredicate(format: "account == %@", tableAccount.account)
             
         } else {
             
-            filter = "account =" + tableAccount.account + " AND fileID = " + fileID!
+            predicate = NSPredicate(format: "account = %@ AND fileID = %@", tableAccount.account, fileID!)
         }
         
-        guard let result = realm.objects(tableTrash.self).filter(filter).first else {
-            realm.cancelWrite()
-            return
-        }
-        
+        let result = realm.objects(tableTrash.self).filter(predicate)
         realm.delete(result)
         
         do {
