@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 08/11/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by

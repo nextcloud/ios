@@ -30,7 +30,7 @@
 //  Add Support for Favorite
 //  isFavorite
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 
 #import "OCXMLParser.h"

@@ -30,7 +30,7 @@
 //  Add : Support for Favorite
 //  Add : getActivityServer
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 
