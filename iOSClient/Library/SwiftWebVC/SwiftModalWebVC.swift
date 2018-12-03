@@ -13,7 +13,6 @@ import UIKit
     @objc func didReceiveServerRedirectForProvisionalNavigation(url: URL)
     @objc func didFinishLoading(success: Bool, url: URL)
     @objc func webDismiss()
-    @objc func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
 }
 
 public class SwiftModalWebVC: UINavigationController {
@@ -95,9 +94,5 @@ extension SwiftModalWebVC: SwiftWebVCDelegate {
     
     public func webDismiss() {
         self.delegateWeb?.webDismiss()
-    }
-    
-    public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        self.delegateWeb?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
     }
 }

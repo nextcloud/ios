@@ -263,9 +263,4 @@
     
 }
 
-- (void)decidePolicyForNavigationAction:(WKWebView *)webView decidePolicyFor:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
-{
-    decisionHandler(WKNavigationActionPolicyAllow);
-}
-
 @end

@@ -150,10 +150,6 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
     public func webDismiss() {
         self.delegate?.webDismiss?()
     }
-    
-    public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(.allow)
-    }
 }
 
 

@@ -510,10 +510,6 @@ extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
         print("Finished loading. Success: \(success).")
     }
     
-    public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(.allow)
-    }
-    
     public func webDismiss() {
         print("Web dismiss.")
     }
