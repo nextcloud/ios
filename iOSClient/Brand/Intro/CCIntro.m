@@ -229,38 +229,4 @@
     [self.intro showInView:self.rootView animateDuration:0];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Web =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)host:(id)sender
-{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
-    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost colorText:[UIColor whiteColor] colorDoneButton:[UIColor blackColor] doneButtonVisible:YES hideToolbar:NO];    
-    webVC.delegateWeb = self;
-    
-    [appDelegate.window.rootViewController presentViewController:webVC animated:YES completion:nil];
-}
-    
-- (void)didStartLoading
-{
-    
-}
-
-- (void)didReceiveServerRedirectForProvisionalNavigationWithUrl:(NSURL *)url
-{
-    
-}
-
-- (void)didFinishLoadingWithSuccess:(BOOL)success url:(NSURL *)url
-{
-    
-}
-
-- (void)webDismiss
-{
-    
-}
-
 @end

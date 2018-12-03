@@ -23,6 +23,7 @@ public class SwiftWebVC: UIViewController {
     var buttonColor: UIColor? = nil
     var titleColor: UIColor? = nil
     var closing: Bool! = false
+    var useRedirectCookieHandling: Bool = false
     
     lazy var backBarButtonItem: UIBarButtonItem =  {
         var tempBackBarButtonItem = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCBack"),
@@ -69,8 +70,8 @@ public class SwiftWebVC: UIViewController {
     }()
     
     
-    lazy var webView: WKWebView = {
-        var tempWebView = WKWebView(frame: UIScreen.main.bounds)
+    lazy var webView: WKCookieWebView = {
+        var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: useRedirectCookieHandling)
         tempWebView.uiDelegate = self
         tempWebView.navigationDelegate = self
         return tempWebView;
@@ -91,16 +92,17 @@ public class SwiftWebVC: UIViewController {
         webView.navigationDelegate = nil;
     }
     
-    public convenience init(urlString: String, hideToolbar: Bool) {
-        self.init(pageURL: URL(string: urlString)!, hideToolbar: hideToolbar)
+    public convenience init(urlString: String, hideToolbar: Bool, useRedirectCookieHandling: Bool) {
+        self.init(pageURL: URL(string: urlString)!, hideToolbar: hideToolbar, useRedirectCookieHandling: useRedirectCookieHandling)
     }
     
-    public convenience init(pageURL: URL, hideToolbar: Bool) {
-        self.init(aRequest: URLRequest(url: pageURL), hideToolbar: hideToolbar)
+    public convenience init(pageURL: URL, hideToolbar: Bool, useRedirectCookieHandling: Bool) {
+        self.init(aRequest: URLRequest(url: pageURL), hideToolbar: hideToolbar, useRedirectCookieHandling: useRedirectCookieHandling)
     }
     
-    public convenience init(aRequest: URLRequest, hideToolbar: Bool) {
+    public convenience init(aRequest: URLRequest, hideToolbar: Bool, useRedirectCookieHandling: Bool) {
         self.init()
+        self.useRedirectCookieHandling = useRedirectCookieHandling
         self.request = aRequest
         self.request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
@@ -114,7 +116,7 @@ public class SwiftWebVC: UIViewController {
         
         webView.customUserAgent = userAgent
        
-        webView.load(request)
+        _ = webView.load(request)
     }
     
     ////////////////////////////////////////////////
@@ -334,25 +336,7 @@ extension SwiftWebVC: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if #available(iOS 11.0, *) {
-            let url = request.url!.host!
-            webView.loadDiskCookies(for: url){
-                decisionHandler(.allow)
-            }
-        } else {
-            decisionHandler(.allow)
-        }
-    }
-    
-    public func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        if #available(iOS 11.0, *) {
-            let url = request.url!.host!
-            webView.writeDiskCookies(for: url){
-                decisionHandler(.allow)
-            }
-        } else {
-            decisionHandler(.allow)
-        }
+        decisionHandler(.allow)
     }
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -370,71 +354,4 @@ extension SwiftWebVC: WKNavigationDelegate {
         }
     }
     
-}
-
-@available(iOS 11, *)
-
-extension WKWebView {
-    
-    enum PrefKey {
-        static let cookie = "cookies"
-    }
-    
-    func writeDiskCookies(for domain: String, completion: @escaping () -> ()) {
-        fetchInMemoryCookies(for: domain) { data in
-            print("write cookies data", data)
-            UserDefaults.standard.setValue(data, forKey: PrefKey.cookie + domain)
-            completion();
-        }
-    }
-    
-    func loadDiskCookies(for domain: String, completion: @escaping () -> ()) {
-        if let diskCookie = UserDefaults.standard.dictionary(forKey: (PrefKey.cookie + domain)){
-            fetchInMemoryCookies(for: domain) { freshCookie in
-                
-                print("read cookies data", freshCookie)
-                
-                let mergedCookie = diskCookie.merging(freshCookie) { (_, new) in new }
-                
-                for (_, cookieConfig) in mergedCookie {
-                    let cookie = cookieConfig as! Dictionary<String, Any>
-                    
-                    var expire : Any? = nil
-                    
-                    if let expireTime = cookie["Expires"] as? Double{
-                        expire = Date(timeIntervalSinceNow: expireTime)
-                    }
-                    
-                    let newCookie = HTTPCookie(properties: [
-                        .domain: cookie["Domain"] as Any,
-                        .path: cookie["Path"] as Any,
-                        .name: cookie["Name"] as Any,
-                        .value: cookie["Value"] as Any,
-                        .secure: cookie["Secure"] as Any,
-                        .expires: expire as Any
-                        ])
-                    
-                    self.configuration.websiteDataStore.httpCookieStore.setCookie(newCookie!)
-                }
-                
-                completion()
-            }
-            
-        }
-        else{
-            completion()
-        }
-    }
-    
-    func fetchInMemoryCookies(for domain: String, completion: @escaping ([String: Any]) -> ()) {
-        var cookieDict = [String: AnyObject]()
-        WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (cookies) in
-            for cookie in cookies {
-                if cookie.domain.contains(domain) {
-                    cookieDict[cookie.name] = cookie.properties as AnyObject?
-                }
-            }
-            completion(cookieDict)
-        }
-    }
 }

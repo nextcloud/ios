@@ -47,7 +47,7 @@ public class CCLoginWeb: UIViewController {
             urlString =  urlBase+k_flowEndpoint
         }
         
-        let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: true)
+        let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: true, useRedirectCookieHandling: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)

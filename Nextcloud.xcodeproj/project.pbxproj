@@ -128,6 +128,7 @@
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
+		F734A8BF21B59137009DE2E8 /* WKCookieWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F734A8BE21B59137009DE2E8 /* WKCookieWebView.swift */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
@@ -746,6 +747,7 @@
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
 		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
+		F734A8BE21B59137009DE2E8 /* WKCookieWebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WKCookieWebView.swift; sourceTree = "<group>"; };
 		F7381EDA218218C9000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
 		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
@@ -2396,6 +2398,7 @@
 			isa = PBXGroup;
 			children = (
 				F7B1FBB01E72E3D1001781FE /* Resources */,
+				F734A8BE21B59137009DE2E8 /* WKCookieWebView.swift */,
 				F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */,
 				F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */,
 				F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */,
@@ -3683,6 +3686,7 @@
 				F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */,
 				F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
+				F734A8BF21B59137009DE2E8 /* WKCookieWebView.swift in Sources */,
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
