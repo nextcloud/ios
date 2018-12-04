@@ -35,13 +35,12 @@ class WKCookieWebView : WKWebView {
 
         requestWithCookieHandling(request, success: { (newRequest , response, data) in
             DispatchQueue.main.async {
-                self.syncCookiesInJS()
+                self.syncCookiesInJS(for: newRequest)
                 if let data = data, let response = response {
                     let _ = self.webViewLoad(data: data, response: response)
                 }
             }
         }, failure: {
-            // let WKWebView handle the network error
             DispatchQueue.main.async {
                 let _ = super.load(request)
             }
