@@ -2399,8 +2399,8 @@
 			children = (
 				F7B1FBB01E72E3D1001781FE /* Resources */,
 				F734A8BE21B59137009DE2E8 /* WKCookieWebView.swift */,
-				F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */,
 				F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */,
+				F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */,
 				F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */,
 				F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */,
 				F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */,

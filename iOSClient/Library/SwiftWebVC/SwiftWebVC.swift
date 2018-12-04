@@ -104,9 +104,6 @@ public class SwiftWebVC: UIViewController {
         self.init()
         self.useRedirectCookieHandling = useRedirectCookieHandling
         self.request = aRequest
-        self.request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        let language = NSLocale.preferredLanguages[0] as String
-        self.request.addValue(language, forHTTPHeaderField: "Accept-Language")
         self.hideToolbar = hideToolbar
     }
     

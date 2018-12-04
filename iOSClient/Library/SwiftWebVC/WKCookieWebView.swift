@@ -43,8 +43,11 @@ class WKCookieWebView : WKWebView {
     override func load(_ request: URLRequest) -> WKNavigation? {
         
         var request = request
-
+        let language = NSLocale.preferredLanguages[0] as String
+        
         request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
+        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
 
         guard useRedirectCookieHandling else {
             return super.load(request)
