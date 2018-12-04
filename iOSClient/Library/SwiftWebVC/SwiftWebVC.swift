@@ -69,21 +69,13 @@ public class SwiftWebVC: UIViewController {
         return tempActionBarButtonItem
     }()
     
-    /*
     lazy var webView: WKCookieWebView = {
         var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: useRedirectCookieHandling)
         tempWebView.uiDelegate = self
         tempWebView.navigationDelegate = self
         return tempWebView;
     }()
-    */
-    lazy var webView: WKWebView = {
-        var tempWebView = WKWebView(frame: UIScreen.main.bounds)
-        tempWebView.uiDelegate = self
-        tempWebView.navigationDelegate = self
-        return tempWebView;
-    }()
-    
+  
     var request: URLRequest!
     
     var navBarTitle: UILabel!
@@ -118,11 +110,7 @@ public class SwiftWebVC: UIViewController {
     // View Lifecycle
     
     override public func loadView() {
-        let language = NSLocale.preferredLanguages[0] as String
         view = webView
-        request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
-        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        request.addValue(language, forHTTPHeaderField: "Accept-Language")
         _ = webView.load(request)
     }
     
