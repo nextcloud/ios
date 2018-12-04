@@ -90,6 +90,7 @@ class WKCookieWebView : WKWebView {
                         // for code 200 return data to load data directly
                         success(request, response, data)
 
+                    /*
                     } else if code >= 300 && code <  400  {
                         // for redirect get location in header,and make a new URLRequest
                         guard let location = response.allHeaderFields["Location"] as? String, let redirectURL = URL(string: location) else {
@@ -99,7 +100,7 @@ class WKCookieWebView : WKWebView {
 
                         let request = URLRequest(url: redirectURL, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
                         success(request, nil, nil)
-
+                    */
                     } else {
                         success(request, response, data)
                     }
