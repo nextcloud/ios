@@ -112,6 +112,10 @@ public class SwiftWebVC: UIViewController {
     
     override public func loadView() {
         view = webView
+        let language = NSLocale.preferredLanguages[0] as String        
+        request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
+        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
         _ = webView.load(request)
     }
     
