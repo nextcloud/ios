@@ -110,21 +110,12 @@ public class SwiftWebVC: UIViewController {
         self.hideToolbar = hideToolbar
     }
     
-    func loadRequest(_ request: URLRequest) {
-        
-        let userAgent : String = CCUtility.getUserAgent()
-        
-        webView.customUserAgent = userAgent
-       
-        _ = webView.load(request)
-    }
-    
     ////////////////////////////////////////////////
     // View Lifecycle
     
     override public func loadView() {
         view = webView
-        loadRequest(request)
+        _ = webView.load(request)
     }
     
     override public func viewDidLoad() {

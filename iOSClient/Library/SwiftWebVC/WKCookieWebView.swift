@@ -43,7 +43,6 @@ class WKCookieWebView : WKWebView {
     override func load(_ request: URLRequest) -> WKNavigation? {
         
         var request = request
-        let language = NSLocale.preferredLanguages[0] as String
 
         request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
 

@@ -45,7 +45,7 @@ class SwiftWebVCActivityChrome : SwiftWebVCActivity {
             let chromeURL: URL! = URL(string: chromeURLString)
             
             // Open the URL with Chrome.
-            UIApplication.shared.openURL(chromeURL)
+            UIApplication.shared.open(chromeURL, options: [:], completionHandler: nil)
         }
     }
     
