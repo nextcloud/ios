@@ -127,6 +127,7 @@
         _user.hidden = YES;
         _imagePassword.hidden = YES;
         _password.hidden = YES;
+        _annulla.hidden = YES;
     }
     
     if (_loginType == k_login_Modify_Password) {

@@ -34,6 +34,7 @@ public class CCLoginWeb: UIViewController {
     @objc var loginType: NSInteger = Int(k_login_Add)
     @objc var urlBase = ""
     
+    var doneButtonVisible: Bool = true
     var viewController: UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -42,12 +43,16 @@ public class CCLoginWeb: UIViewController {
         var urlString = urlBase
         self.viewController = vc
         
+        if loginType == k_login_Add_Forced {
+            doneButtonVisible = false
+        }
+        
         // ADD k_flowEndpoint for Web Flow
         if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders) {
             urlString =  urlBase+k_flowEndpoint
         }
         
-        let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: true, useRedirectCookieHandling: true)
+        let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: doneButtonVisible, hideToolbar: true, useRedirectCookieHandling: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
