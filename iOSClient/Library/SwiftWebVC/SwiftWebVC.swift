@@ -24,7 +24,6 @@ public class SwiftWebVC: UIViewController {
     var titleColor: UIColor? = nil
     var closing: Bool! = false
     var useRedirectCookieHandling: Bool = false
-    var configuration = WKWebViewConfiguration()
     
     lazy var backBarButtonItem: UIBarButtonItem =  {
         var tempBackBarButtonItem = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCBack"),
@@ -70,18 +69,14 @@ public class SwiftWebVC: UIViewController {
         return tempActionBarButtonItem
     }()
     
-    /*
- lazy var webView: WKCookieWebView = {
- var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: useRedirectCookieHandling)
-    */
     
-    lazy var webView: WKWebView = {
-        var tempWebView = WKWebView(frame: UIScreen.main.bounds, configuration: configuration)
+    lazy var webView: WKCookieWebView = {
+        var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: useRedirectCookieHandling)
         tempWebView.uiDelegate = self
         tempWebView.navigationDelegate = self
         return tempWebView;
     }()
-  
+    
     var request: URLRequest!
     
     var navBarTitle: UILabel!
@@ -113,50 +108,10 @@ public class SwiftWebVC: UIViewController {
     }
     
     ////////////////////////////////////////////////
-    // MARK: - JS Cookie handling
-    
-    private func syncCookiesInJS(for request: URLRequest? = nil) {
-        if let url = request?.url,
-            let cookies = HTTPCookieStorage.shared.cookies(for: url) {
-            let script = jsCookiesString(for: cookies)
-            let cookieScript = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-            self.configuration.userContentController.addUserScript(cookieScript)
-            
-        } else if let cookies = HTTPCookieStorage.shared.cookies {
-            let script = jsCookiesString(for: cookies)
-            let cookieScript = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-            self.configuration.userContentController.addUserScript(cookieScript)
-        }
-    }
-    
-    private func jsCookiesString(for cookies: [HTTPCookie]) -> String {
-        var result = ""
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-        dateFormatter.dateFormat = "EEE, d MMM yyyy HH:mm:ss zzz"
-        
-        for cookie in cookies {
-            result += "document.cookie='\(cookie.name)=\(cookie.value); domain=\(cookie.domain); path=\(cookie.path); "
-            if let date = cookie.expiresDate {
-                result += "expires=\(dateFormatter.string(from: date)); "
-            }
-            if (cookie.isSecure) {
-                result += "secure; "
-            }
-            result += "'; "
-        }
-        return result
-    }
-    
-    ////////////////////////////////////////////////
     // View Lifecycle
     
     override public func loadView() {
         view = webView
-        let language = NSLocale.preferredLanguages[0] as String
-        request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
-        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        request.addValue(language, forHTTPHeaderField: "Accept-Language")
         _ = webView.load(request)
     }
     
