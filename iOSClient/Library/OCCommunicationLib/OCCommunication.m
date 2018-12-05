@@ -1485,7 +1485,8 @@
                 NSDictionary *richdocuments = [capabilitiesDict valueForKey:@"richdocuments"];
                 
                 if (richdocuments!= nil && [richdocuments count] > 0) {
-                    capabilities.RichdocumentsMimetypes = [richdocuments valueForKey:@"mimetypes"];
+                    capabilities.richdocumentsDirectEditing = [[richdocuments valueForKey:@"direct_editing"] boolValue];
+                    capabilities.richdocumentsMimetypes = [richdocuments valueForKey:@"mimetypes"];
                 }
             }
         

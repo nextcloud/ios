@@ -39,7 +39,7 @@
         
         self.spreedFeatures = @"";
         
-        self.RichdocumentsMimetypes = [NSArray new];
+        self.richdocumentsMimetypes = [NSArray new];
     }
     return self;
 }

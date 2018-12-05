@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 32,
+            schemaVersion: 33,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -82,6 +82,7 @@ class NCManageDatabase: NSObject {
             // 30 : Version 2.22.6.0
             // 31 : Version 2.22.6.3
             // 32 : Version 2.22.6.10
+            // 33 : Version 2.22.7.1
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -676,6 +677,7 @@ class NCManageDatabase: NSObject {
                 for mimeType in capabilities.richdocumentsMimetypes {
                     resultCapabilities.richdocumentsMimetypes.append(mimeType as! String)
                 }
+                resultCapabilities.richdocumentsDirectEditing = capabilities.richdocumentsDirectEditing
                 
                 if result == nil {
                     realm.add(resultCapabilities)
