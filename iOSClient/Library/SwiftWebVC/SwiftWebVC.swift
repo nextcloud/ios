@@ -69,12 +69,21 @@ public class SwiftWebVC: UIViewController {
     }()
     
     
+    lazy var webView: WKWebView = {
+        var tempWebView = WKWebView(frame: UIScreen.main.bounds)
+        tempWebView.uiDelegate = self
+        tempWebView.navigationDelegate = self
+        return tempWebView;
+    }()
+    
+    /*
     lazy var webView: WKCookieWebView = {
         var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: true)
         tempWebView.uiDelegate = self
         tempWebView.navigationDelegate = self
         return tempWebView;
     }()
+    */
     
     var request: URLRequest!
     
