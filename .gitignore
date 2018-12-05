@@ -3,7 +3,7 @@
 #########################################################################
 #                                                                       #
 #       Title         - .gitignore file                                 #
-#       For           - iOS - Xcode8                                    #
+#       For           - iOS - Xcode                                    #
 #                                                                       #
 #########################################################################
 
@@ -24,3 +24,6 @@ DerivedData/
 build/
 xcuserdata/
 UserInterfaceState.xcuserstate
+
+## Carthage
+Carthage/
