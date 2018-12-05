@@ -348,7 +348,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  * @param failure A block callback, to be fired upon the failure of the request, with two arguments: the request operation and error.
  *
  */
-- (void)shareByLinkFileOrFolderByServer:(NSString * _Nonnull)serverPath andPath:(NSString * _Nonnull) filePath andPassword:(NSString * _Nonnull)password andPermission:(NSInteger)permission
+- (void)shareByLinkFileOrFolderByServer:(NSString * _Nonnull)serverPath andPath:(NSString * _Nonnull) filePath andPassword:(NSString * _Nonnull)password andPermission:(NSInteger)permission andHideDownload:(BOOL)hideDownload
                         onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication
                                 success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success
                                 failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
@@ -440,7 +440,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  * @param success A block callback, to be fired upon successful completion, with two arguments: the request operation and a data with the json file.
  * @param failure A block callback, to be fired upon the failure of the request, with two arguments: the request operation and error.
  */
-- (void) updateShareItem:(NSInteger)shareId ofServerPath:(NSString * _Nonnull)serverPath withPasswordProtect:(NSString * _Nonnull)password andExpirationTime:(NSString * _Nonnull)expirationTime andPermissions:(NSInteger)permissions
+- (void) updateShareItem:(NSInteger)shareId ofServerPath:(NSString * _Nonnull)serverPath withPasswordProtect:(NSString * _Nonnull)password andExpirationTime:(NSString * _Nonnull)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
          onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication
                  success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
                  failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
@@ -657,6 +657,10 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 ///-----------------------------------
 
 - (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileID:(NSString * _Nonnull)fileID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
+- (void)geTemplatesRichdocuments:(NSString *_Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
+- (void)createNewRichdocuments:(NSString *_Nonnull)serverPath path:(NSString *_Nonnull)path templateID:(NSString *_Nonnull)templateID onCommunication:(OCCommunication *_Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)createAssetRichdocuments:(NSString *_Nonnull)serverPath path:(NSString *_Nonnull)path onCommunication:(OCCommunication *_Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 

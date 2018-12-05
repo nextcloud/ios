@@ -89,7 +89,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
-    self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
+    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[[[NCBrandColor sharedInstance] brand] colorWithAlphaComponent:0.4]];
     
     // Change bar bottom line shadow and remove title back button <"title"
     self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
@@ -158,6 +158,11 @@
 
 - (void)viewFile
 {
+    // Remove all subview except ..
+    //for (UIView *view in self.view.superview.subviews) {
+    //    NSInteger tag = view.tag;
+    //}
+    
     // Title
     self.navigationController.navigationBar.topItem.title =  _metadataDetail.fileNameView;
 
@@ -189,9 +194,7 @@
     
     // DOCUMENT
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
-        
-        BOOL openWithRichDocument = false;
-        
+                
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
         if ([fileNameExtension isEqualToString:@"PDF"]) {
@@ -203,35 +206,28 @@
             return;
         }
         
-        // Very if mimeType is compatible with Rich Document viewer
-        NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
-        NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
-        
-        if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
+        // RichDocument
+        if ([[NCViewerRichdocument sharedInstance] isRichDocument:self.metadataDetail]) {
             
-            NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
-            NSString *mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
+            [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view];
             
-            for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
-                if ([richdocumentMimetype containsString:mimeType]) {
-                    openWithRichDocument = true;
-                }
+            if ([self.metadataDetail.url isEqualToString:@""]) {
+                OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+                
+                [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+                    
+                    [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
+                    
+                } failure:^(NSString *message, NSInteger errorCode) {
+                    
+                    [[NCUtility sharedInstance] stopActivityIndicator];
+                    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                    [self.navigationController popViewControllerAnimated:YES];
+                }];
+            } else {
+                
+                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:self.metadataDetail.url detail:self];
             }
-        }
-
-        if (openWithRichDocument) {
-            
-            OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-            
-            [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
-                
-                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
-                
-            } failure:^(NSString *message, NSInteger errorCode) {
-                
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                [self.navigationController popViewControllerAnimated:YES];
-            }];
             
             return;
         }
@@ -397,7 +393,7 @@
         
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && status == k_metadataStatusNormal) {
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO && metadata.hasPreview) {
                 
                 [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
                 

@@ -71,13 +71,12 @@ class NCBrandColor: NSObject {
     
     @objc public let brand:                             String = "Nextcloud"
     @objc public let mailMe:                            String = "ios@nextcloud.com"
-    @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2018 T.W.S. Inc."
+    @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2018"
     @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
-    @objc public let loginBaseUrl:                      String = "https://cloud.twsweb.it"
+    @objc public let loginBaseUrl:                      String = "https://cloud.nextcloud.com"
     @objc public let pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
     @objc public let linkLoginHost:                     String = "https://nextcloud.com/install"
     @objc public let linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
-    @objc public let textLoginProvider:                 String = "_login_bottom_label_"
     @objc public let middlewarePingUrl:                 String = ""
     @objc public let webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
     // Personalized
@@ -95,6 +94,7 @@ class NCBrandColor: NSObject {
     @objc public let use_default_auto_upload:           Bool = false
     @objc public let use_themingColor:                  Bool = true
     @objc public let use_themingBackground:             Bool = true
+    @objc public let use_themingLogo:                   Bool = true
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
     
@@ -103,7 +103,7 @@ class NCBrandColor: NSObject {
     @objc public let disable_multiaccount:              Bool = false
     @objc public let disable_manage_account:            Bool = false
     @objc public let disable_more_external_site:        Bool = false
-    @objc public let disable_openin_file:               Bool = false
+    @objc public let disable_openin_file:               Bool = false                                                // Don't touch me !!
 
     override init() {
         

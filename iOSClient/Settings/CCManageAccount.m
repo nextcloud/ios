@@ -21,9 +21,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#import <JDStatusBarNotification/JDStatusBarNotification.h>
+
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
-#import "JDStatusBarNotification.h"
 #import "CCLogin.h"
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"

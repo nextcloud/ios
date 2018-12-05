@@ -152,9 +152,6 @@
 + (void)setPushNotificationToken:(NSString *)token;
 + (NSString *)getPushNotificationToken;
 
-+ (NSString *)getLayoutTrash;
-+ (void)setLayoutTrash:(NSString *)layout;
-
 // ===== Varius =====
 
 + (NSString *)getUserAgent;
@@ -196,6 +193,9 @@
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
++ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
++ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
++ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
@@ -206,6 +206,8 @@
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
++ (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
@@ -213,7 +215,7 @@
 
 // ===== CCMetadata =====
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status;
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
 
 + (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted;
 

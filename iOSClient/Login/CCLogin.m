@@ -46,7 +46,7 @@
     self.view.backgroundColor = [NCBrandColor sharedInstance].customer;
     
     // Image Brand
-    self.imageBrand.image = [UIImage imageNamed:@"loginLogo"];
+    self.imageBrand.image = [UIImage imageNamed:@"logo"];
     
     // Annulla
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];

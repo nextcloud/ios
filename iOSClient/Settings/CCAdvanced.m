@@ -118,9 +118,10 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
-    
+    section.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
+
     // Clear cache
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_no_size_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -132,6 +133,7 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_exit_footer_", nil);
     
     // Exit
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"esci" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_exit_", nil)];
@@ -406,26 +408,6 @@
     
     [self presentViewController:alertController animated:YES completion:nil];
 }
-
-/*
-- (void)recalculateSize
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        self.form.delegate = nil;
-        
-        XLFormRowDescriptor *rowAzzeraCache = [self.form formRowWithTag:@"azzeracache"];
-        
-        NSString *size = [CCUtility transformedSize:[[self getUserDirectorySize] longValue]];
-        rowAzzeraCache.title = [NSString stringWithFormat:NSLocalizedString(@"_clear_cache_", nil), size];
-        //rowAzzeraCache.title = NSLocalizedString(@"_clear_cache_no_size_", nil);
-        
-        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-        
-        self.form.delegate = self;
-    });
-}
-*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == Exit Nextcloud ==

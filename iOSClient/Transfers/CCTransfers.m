@@ -145,30 +145,12 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
-{
-    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
-    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
-    
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
-        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [[NCMainCommon sharedInstance] isValidIndexPath:indexPath tableView:self.tableView]) {
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        }
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark - ===== Progress & Task Button =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView];
+    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView viewController:self serverUrlViewController:nil];
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -195,7 +177,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [[NCMainCommon sharedInstance] cancelAllTransfer];
+        [[NCMainCommon sharedInstance] cancelAllTransferWithView:self.view];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -464,11 +446,6 @@
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
     
-    // Download thumbnail
-    if (metadata.thumbnailExists && !metadataFolder.e2eEncrypted && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
-        [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
-    }
-  
     UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
     
     // TRANSFER

@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import PDFGenerator
 
 @available(iOS 11, *)
 
@@ -118,7 +119,7 @@ class DragDropViewController: UIViewController {
                 images.append(filter(image: image)!)
             }
             
-            let formViewController = CreateFormUploadScanDocument.init(serverUrl: appDelegate.activeMain.serverUrl, arrayImages: images)
+            let formViewController = NCCreateFormUploadScanDocument.init(serverUrl: appDelegate.activeMain.serverUrl, arrayImages: images)
             self.navigationController?.pushViewController(formViewController, animated: true)
         }
     }

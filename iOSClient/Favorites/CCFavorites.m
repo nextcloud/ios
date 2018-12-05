@@ -236,23 +236,18 @@
             if (![serverUrlSon containsString:father]) {
                 
                 if (metadata.directory) {
-                    
-                    // use : readFileForFolder less secure but more optimized       old
-                    // use : readFolder more secure but less optimed                V 2.22.0
-                    
+                                        
                     if ([CCUtility getFavoriteOffline])
                         [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
-                        //[[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
                     else
                         [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder];
-                        //[[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
                     
                 } else {
                     
                     if ([CCUtility getFavoriteOffline])
-                        [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
+                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
                     else
-                        [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFile];
+                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile];
                 }
                 
                 father = serverUrlSon;
@@ -270,24 +265,6 @@
         
     } failure:^(NSString *message, NSInteger errorCode) {
         NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
-{
-    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
-    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
-
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-        
-    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
-        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [[NCMainCommon sharedInstance] isValidIndexPath:indexPath tableView:self.tableView]) {
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        }
     }];
 }
 
@@ -328,7 +305,7 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView];
+    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -337,7 +314,7 @@
     CGPoint location = [touch locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    if ([[NCMainCommon sharedInstance] isValidIndexPath:indexPath tableView:self.tableView]) {
+    if ([[NCMainCommon sharedInstance] isValidIndexPath:indexPath view:self.tableView]) {
         
         tableMetadata *metadataSection = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
@@ -358,7 +335,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [[NCMainCommon sharedInstance] cancelAllTransfer];
+        [[NCMainCommon sharedInstance] cancelAllTransferWithView:self.view];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -632,11 +609,6 @@
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
     
-    // Download thumbnail
-    if (metadata.thumbnailExists && !metadataFolder.e2eEncrypted && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
-        [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
-    }
-    
     UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:self.serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
     // NORMAL - > MAIN
@@ -729,7 +701,7 @@
                     
                     if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
                         
-                        [self shouldPerformSegue];
+                        [self shouldPerformSegue:self.metadata];
                         
                     } else {
                         
@@ -773,7 +745,7 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)shouldPerformSegue
+- (void)shouldPerformSegue:(tableMetadata *)metadata
 {
     // if i am in background -> exit
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;
@@ -785,6 +757,9 @@
     // Collapsed but i am in detail -> exit
     if (self.splitViewController.isCollapsed)
         if (self.detailViewController.isViewLoaded && self.detailViewController.view.window) return;
+    
+    // Metadata for push detail
+    self.metadataForPushDetail = metadata;
     
     [self performSegueWithIdentifier:@"segueDetail" sender:self];
 }
@@ -808,7 +783,7 @@
             [photoDataSource addObject:metadata];
     }
     
-    _detailViewController.metadataDetail = self.metadata;
+    _detailViewController.metadataDetail = self.metadataForPushDetail;
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.photoDataSource = photoDataSource;
     

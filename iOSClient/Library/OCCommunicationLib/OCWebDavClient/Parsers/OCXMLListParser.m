@@ -201,6 +201,8 @@
         _currentFile.trashbinOriginalLocation = _xmlChars;
     }else if ([elementName isEqualToString:@"nc:trashbin-deletion-time"]) {
         _currentFile.trashbinDeletionTime = (long)[_xmlChars longLongValue];
+    }else if ([elementName isEqualToString:@"nc:has-preview"] && [_xmlChars length]) {
+        _currentFile.hasPreview = [_xmlChars boolValue];
     }
 }
 

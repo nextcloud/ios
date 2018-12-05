@@ -111,6 +111,7 @@ class tableDirectory: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
+    @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
@@ -186,6 +187,7 @@ class tableLocalFile: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
+    @objc dynamic var offline: Bool = false
     @objc dynamic var size: Double = 0
     
     override static func primaryKey() -> String {
@@ -206,6 +208,7 @@ class tableMetadata: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
+    @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""
@@ -214,9 +217,9 @@ class tableMetadata: Object {
     @objc dynamic var sessionTaskIdentifier: Int = 0
     @objc dynamic var size: Double = 0
     @objc dynamic var status: Int = 0
-    @objc dynamic var thumbnailExists: Bool = false
     @objc dynamic var typeFile = ""
-    
+    @objc dynamic var url = ""
+
     override static func primaryKey() -> String {
         return "fileID"
     }
@@ -239,6 +242,7 @@ class tablePhotos: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
+    @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""
@@ -247,9 +251,9 @@ class tablePhotos: Object {
     @objc dynamic var sessionTaskIdentifier: Int = 0
     @objc dynamic var size: Double = 0
     @objc dynamic var status: Int = 0
-    @objc dynamic var thumbnailExists: Bool = false
     @objc dynamic var typeFile = ""
-    
+    @objc dynamic var url = ""
+
     override static func primaryKey() -> String {
         return "fileID"
     }
@@ -297,9 +301,9 @@ class tableTrash: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var filePath = ""
+    @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
     @objc dynamic var size: Double = 0
-    @objc dynamic var thumbnailExists: Bool = false
     @objc dynamic var typeFile = ""
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""

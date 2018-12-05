@@ -1348,6 +1348,7 @@
     [metadataNet setFileName: self.fileName];
     [metadataNet setFileNameTo: self.fileNameTo];
     [metadataNet setFileNameView: self.fileNameView];
+    [metadataNet setHideDownload: self.hideDownload];
     [metadataNet setKey: self.key];
     [metadataNet setKeyCipher: self.keyCipher];
     [metadataNet setOptionAny: self.optionAny];

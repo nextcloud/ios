@@ -22,8 +22,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <EAIntroView/EAIntroView.h>
 
-#import "EAIntroView.h"
 #import "CCUtility.h"
 
 @protocol CCIntroDelegate;

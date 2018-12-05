@@ -70,11 +70,17 @@
 //Url to access to End To End Encryption API
 #define k_url_client_side_encryption @"ocs/v2.php/apps/end_to_end_encryption/api/v1"
 
-//Url to access to Mobile Editor OCS API
-#define k_url_create_link_mobile_editor @"ocs/v2.php/apps/richdocuments/api/v1/document"
+//Url to access to document Mobile Editor OCS API
+#define k_url_create_link_mobile_richdocuments @"ocs/v2.php/apps/richdocuments/api/v1/document"
 
-//Url to insert files directly from your Nextcloud to a Collabora Online document
-#define k_url_insert_assets_to_collabora @"apps/richdocuments/assets"
+//Url to access to templates Mobile Editor OCS API
+#define k_url_get_template_mobile_richdocuments @"ocs/v2.php/apps/richdocuments/api/v1/templates/"
+
+// Url to create a new richdocuments from a Template
+#define k_url_create_new_mobile_richdocuments @"ocs/v2.php/apps/richdocuments/api/v1/templates/new"
+
+//Url to insert files directly from your Nextcloud to a richdocuments
+#define k_url_insert_assets_to_richdocuments @"apps/richdocuments/assets"
 
 //Version of the server that have share API
 #define k_version_support_shared [NSArray arrayWithObjects:  @"5", @"0", @"27", nil]

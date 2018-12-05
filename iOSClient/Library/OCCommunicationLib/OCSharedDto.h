@@ -56,6 +56,6 @@ typedef enum {
 @property (nonatomic, copy) NSString *displayNameOwner;
 @property (nonatomic, copy) NSString *uidFileOwner;
 @property (nonatomic, copy) NSString *fileTarget;
-
+@property BOOL hideDownload;
 
 @end

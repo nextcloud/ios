@@ -93,6 +93,11 @@
 "_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration";
 "_warning_unsupported_"     = "You are using an unsupported version of Nextcloud. For the safety of your data we strongly recommend updating to the latest stable Nextcloud";
 "_restore_"                 = "Restore";
+"_camera_roll_"             = "Camera roll";
+"_tap_here_to_change_"      = "Tap here to change";
+"_no_albums_"               = "No albums";
+"_denied_album_"            = "This app does not have access to \"Photos\", you can enable access in Privacy Settings";
+"_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 
 // App
 
@@ -136,9 +141,10 @@
 "_app_version_"                 = "Application version";
 "_app_in_use_"                  = "Application in use";
 "_contact_by_email_"            = "Contact us by email";
-"_clear_cache_"                 = "Clear cache (%@ used)";
-"_clear_cache_no_size_"         = "Clear cache";
-"_exit_"                        = "Exit";
+"_clear_cache_"                 = "Clear cache";
+"_clear_cache_footer_"          = "Clear downloaded and offline files from the app";
+"_exit_"                        = "Reset application";
+"_exit_footer_"                 = "Remove all accounts and local data from the app";
 "_funct_not_enabled_"           = "Functionality not enabled";
 "_passcode_activate_"           = "Password lock on";
 "_disabling_passcode_"          = "Removing password lock";
@@ -212,7 +218,7 @@
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
 "_autoupload_filenamemask_"         = "Change filename mask";
 "_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
-
+"_autoupload_current_folder_"       = "Currently selected folder";
 
 // Manage Help
 
@@ -362,6 +368,8 @@
 "_search_in_progress_"          = "Search in progress…";
 "_search_instruction_"          = "Search for file (minimum 2 characters)";
 "_files_no_files_"              = "No files in here";
+"_files_no_folders_"            = "No folders in here";
+"_request_in_progress_"         = "Request to server in progress…";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";
@@ -459,6 +467,7 @@
 "_share_link_modify_"               = "Allow editing";
 "_share_link_upload_"               = "File drop (upload only)";
 "_share_link_upload_modify_"        = "Allow upload and editing";
+"_share_link_hide_download_"        = "Hide download";
 
 // ShareInfoCMOC
 
@@ -583,7 +592,7 @@
 "_file_type_"                       = "File type";
 "_pdf_password_"                    = "PDF Password";
 "_file_creation_"                   = "File creation";
-
+"_delete_all_scanned_images_"       = "Do you want to delete all scanned images?";
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";
@@ -601,15 +610,22 @@
 "_trash_view_"                      = "Deleted files";
 "_trash_restore_all_"               = "Restore all files";
 "_trash_delete_all_"                = "Empty trash";
-"_trash_no_trash_"                  = "No files yet";
+"_trash_no_trash_"                  = "No files deleted";
+"_trash_no_trash_description_"      = "You can restore deleted files from here";
 "_trash_restore_selected_"          = "Restore selected files";
 "_trash_delete_selected_"           = "Deleted selected files";
 
-// On the device
+// Offline
 
-"_on_the_device_"                   = "On the device";
+"_manage_file_offline_"             = "Manage file offline";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
+
+// Richdocuments
+
+"_create_new_document_"             = "Create new document";
+"_create_new_spreadsheet_"          = "Create new spreadsheet";
+"_create_new_presentation_"         = "Create new presentation";
 
 // Intro
 

@@ -38,6 +38,9 @@
 //#if targetEnvironment(simulator)
 //#endif
 
+//#if TARGET_OS_SIMULATOR
+//#endif
+
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 
 #endif
@@ -91,6 +94,9 @@
 
 // define Nextcloud IOS
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
+
+// directoryID root
+#define k_directoryID_root                              @"00000000-0000-0000-0000-000000000000"
 
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"
@@ -190,14 +196,13 @@
 #define selectorLoadModelView                           @"loadModelView"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
+#define selectorLoadOffline                             @"loadOffline"
 #define selectorMove                                    @"move"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFileReloadFolder                    @"readFileReloadFolder"
-#define selectorReadFileFolder                          @"readFileFolder"
-#define selectorReadFileFolderWithDownload              @"readFileFolderWithDownload"
 #define selectorReadFolder                              @"readFolder"
 #define selectorReadFolderWithDownload                  @"readFolderWithDownload"
 #define selectorReadShare                               @"readShare"
@@ -308,6 +313,20 @@
 
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
+
+// Template Rich document
+#define k_richdocument_document                         @"document"
+#define k_richdocument_spreadsheet                      @"spreadsheet"
+#define k_richdocument_presentation                     @"presentation"
+
+// Layout
+#define k_layout_list                                   @"typeLayoutList"
+#define k_layout_grid                                   @"typeLayoutGrid"
+
+#define k_layout_view_move                              @"LayoutMove"
+#define k_layout_view_richdocument                      @"LayoutRichdocument"
+#define k_layout_view_trash                             @"LayoutTrash"
+#define k_layout_view_offline                           @"LayoutOffline"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

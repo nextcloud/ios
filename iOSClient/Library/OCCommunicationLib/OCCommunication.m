@@ -54,6 +54,7 @@
 #import "OCNotificationsAction.h"
 #import "OCRichObjectStrings.h"
 #import "OCUserProfile.h"
+#import "NCRichDocumentTemplate.h"
 
 @interface OCCommunication ()
 
@@ -896,7 +897,7 @@
     }];
 }
 
-- (void) shareFileOrFolderByServer: (NSString *) serverPath andFileOrFolderPath: (NSString *) filePath andPassword:(NSString *)password andPermission:(NSInteger)permission
+- (void) shareFileOrFolderByServer: (NSString *) serverPath andFileOrFolderPath: (NSString *) filePath andPassword:(NSString *)password andPermission:(NSInteger)permission andHideDownload:(BOOL)hideDownload
                    onCommunication:(OCCommunication *)sharedOCCommunication
                     successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest
                     failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
@@ -908,7 +909,7 @@
     request = [self getRequestWithCredentials:request];
     
     
-    [request shareByLinkFileOrFolderByServer:serverPath andPath:filePath andPassword:password andPermission:permission onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request shareByLinkFileOrFolderByServer:serverPath andPath:filePath andPassword:password andPermission:permission andHideDownload:hideDownload onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         
@@ -1130,7 +1131,7 @@
     }];
 }
 
-- (void) updateShare:(NSInteger)shareId ofServerPath:(NSString *)serverPath withPasswordProtect:(NSString*)password andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions
+- (void) updateShare:(NSInteger)shareId ofServerPath:(NSString *)serverPath withPasswordProtect:(NSString*)password andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
                    onCommunication:(OCCommunication *)sharedOCCommunication
                     successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest
       failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
@@ -1144,7 +1145,7 @@
     request = [self getRequestWithCredentials:request];
     
     
-    [request updateShareItem:shareId ofServerPath:serverPath withPasswordProtect:password andExpirationTime:expirationTime andPermissions:permissions onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request updateShareItem:shareId ofServerPath:serverPath withPasswordProtect:password andExpirationTime:expirationTime andPermissions:permissions andHideDownload:hideDownload onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         
@@ -2740,7 +2741,7 @@
 
 - (void)createLinkRichdocuments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_editor];
+    serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_richdocuments];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -2794,9 +2795,125 @@
     }];
 }
 
+- (void)geTemplatesRichdocuments:(NSString *)serverPath typeTemplate:(NSString *)typeTemplate onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_get_template_mobile_richdocuments];
+    serverPath = [serverPath stringByAppendingString:typeTemplate];
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request geTemplatesRichdocuments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+        NSData *responseData = (NSData*) response;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Link richdocuments : %@",jsongParsed);
+        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            NSMutableArray *list = [NSMutableArray new];
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+               
+                for (NSDictionary *dicDatas in data) {
+                    
+                    NCRichDocumentTemplate *template = [NCRichDocumentTemplate new];
+                    
+                    if ([dicDatas valueForKey:@"id"] && ![[dicDatas valueForKey:@"id"] isEqual:[NSNull null]])
+                        template.templateID = [[dicDatas valueForKey:@"id"] integerValue];
+                    
+                    if ([dicDatas valueForKey:@"delete"] && ![[dicDatas valueForKey:@"delete"] isKindOfClass:[NSNull class]])
+                        template.delete = [dicDatas valueForKey:@"delete"];
+                    
+                    if ([dicDatas valueForKey:@"extension"] && ![[dicDatas valueForKey:@"extension"] isKindOfClass:[NSNull class]])
+                        template.extension = [dicDatas valueForKey:@"extension"];
+                    
+                    if ([dicDatas valueForKey:@"name"] && ![[dicDatas valueForKey:@"name"] isKindOfClass:[NSNull class]])
+                        template.name = [dicDatas valueForKey:@"name"];
+                    
+                    if ([dicDatas valueForKey:@"preview"] && ![[dicDatas valueForKey:@"preview"] isKindOfClass:[NSNull class]])
+                        template.preview = [dicDatas valueForKey:@"preview"];
+                    
+                    if ([dicDatas valueForKey:@"type"] && ![[dicDatas valueForKey:@"type"] isKindOfClass:[NSNull class]])
+                        template.type = [dicDatas valueForKey:@"type"];
+                    
+                    [list addObject:template];
+                }
+                
+                successRequest(response, list, request.redirectedServer);
+
+            } else {
+                
+                NSString *message = (NSString *)[meta objectForKey:@"message"];
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = NSLocalizedString(@"_server_response_error_", nil);
+                }
+                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+            }
+            
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)createNewRichdocuments:(NSString *)serverPath path:(NSString *)path templateID:(NSString *)templateID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_create_new_mobile_richdocuments];
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request createNewRichdocuments:serverPath path:path templateID:templateID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+        NSData *responseData = (NSData*) response;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] URL Asset : %@",jsongParsed);
+        
+        NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+        NSDictionary *meta = [ocs valueForKey:@"meta"];
+        NSDictionary *data = [ocs valueForKey:@"data"];
+        
+        NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+        
+        if (statusCode == kOCUserProfileAPISuccessful) {            
+            if ([data valueForKey:@"url"] && ![[data valueForKey:@"url"] isKindOfClass:[NSNull class]])
+                successRequest(response, [data valueForKey:@"url"], request.redirectedServer);
+            else
+                successRequest(response, nil, request.redirectedServer);
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
 - (void)createAssetRichdocuments:(NSString *)serverPath path:(NSString *)path onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_insert_assets_to_collabora];
+    serverPath = [serverPath stringByAppendingString:k_url_insert_assets_to_richdocuments];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];

@@ -46,30 +46,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.22.5</string>
+	<string>2.22.6</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>path</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>cryptocloud</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>db-urer5mpnihkwh79</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleVersion</key>
-	<string>10</string>
+	<string>20</string>
 	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
 	<true/>
 	<key>Fabric</key>
@@ -106,15 +87,17 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) requires access to the camera for scan documents</string>
+	<string>$(PRODUCT_NAME) requires access to the photo library for send your photos and videos to your cloud.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>This app requires Face ID permission to authenticate using Face recognition.</string>
+	<string>$(PRODUCT_NAME) requires access to the Face ID for authenticate using face recognition.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll on background, the use of GPS only when the App is in use is useless</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(PRODUCT_NAME) requires access to the photo library for send your photos and videos to your cloud.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>$(PRODUCT_NAME) requires access to the photo library for send your photos and videos to your cloud.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

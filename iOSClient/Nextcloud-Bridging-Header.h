@@ -12,6 +12,7 @@
 #import "NCUchardet.h"
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
+#import "CCSynchronize.h"
 
 #import "OCActivity.h"
 #import "OCUserProfile.h"
@@ -21,3 +22,4 @@
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
 #import "NCNetworkingEndToEnd.h"
+#import "NCRichDocumentTemplate.h"

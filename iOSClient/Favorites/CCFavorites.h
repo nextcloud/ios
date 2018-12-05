@@ -22,12 +22,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 #import "CCDetail.h"
-#import "UIScrollView+EmptyDataSet.h"
 #import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
-#import "MGSwipeTableCell.h"
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
 #import "CCUtility.h"
@@ -41,12 +40,13 @@
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
 @property (nonatomic, strong) tableMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadataForPushDetail;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleViewControl;
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 
-- (void)shouldPerformSegue;
+- (void)shouldPerformSegue:(tableMetadata *)metadata;
 - (void)openIn:(tableMetadata *)metadata;
 - (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
 - (void)listingFavorites;

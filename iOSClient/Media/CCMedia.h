@@ -24,8 +24,8 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import <ImageIO/ImageIO.h>
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-#import "UIScrollView+EmptyDataSet.h"
 #import "OCErrorMsg.h"
 #import "TWMessageBarManager.h"
 #import "CCManageLocation.h"
@@ -34,11 +34,10 @@
 #import "CCSection.h"
 #import "CCHud.h"
 #import "OCNetworking.h"
-#import "CCMove.h"
 
 @class tableMetadata;
 
-@interface CCMedia: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate, CCMoveDelegate>
+@interface CCMedia: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) tableMetadata *metadata;

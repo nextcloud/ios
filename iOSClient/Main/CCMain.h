@@ -25,36 +25,33 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 #import "TWMessageBarManager.h"
-#import "MGSwipeTableCell.h"
 #import "AHKActionSheet.h"
-#import "CTAssetSelectionLabel.h"
 #import "BKPasscodeViewController.h"
 #import "NSString+TruncateToWidth.h"
-#import "UIScrollView+EmptyDataSet.h"
 #import "CCLogin.h"
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
-#import "CCMove.h"
 #import "CCDetail.h"
-#import "CTAssetsPickerController.h"
 #import "CCShareOC.h"
 #import "CCShareInfoCMOC.h"
-#import "CCMove.h"
 #import "CCGraphics.h"
 #import "CCSection.h"
 #import "CCUtility.h"
 #import "CCHud.h"
 #import "CCMenuAccount.h"
 #import "CCPeekPop.h"
+#import <MGSwipeTableCell/MGSwipeTableCell.h>
 
 @class tableMetadata;
 
-@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCShareOCDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCShareOCDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) tableMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadataForPushDetail;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleMain;
 @property (nonatomic, weak) CCShareOC *shareOC;
@@ -67,7 +64,7 @@
 
 - (void)openIn:(tableMetadata *)metadata;
 
-- (void)shouldPerformSegue;
+- (void)shouldPerformSegue:(tableMetadata *)metadata;
 
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata;
 

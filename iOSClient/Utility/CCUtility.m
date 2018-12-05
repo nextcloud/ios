@@ -86,7 +86,7 @@
 
 + (NSString *)getUUID
 {
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:k_UUID_SIM];
     return [deviceId UUIDString];
 #else
@@ -556,25 +556,6 @@
     return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getLayoutTrash
-{
-    NSString *layout = [UICKeyChainStore stringForKey:@"layoutTrash" service:k_serviceShareKeyChain];
-    
-    // Default
-    if (layout == nil) {
-        [self setLayoutTrash:@"list"];
-        return @"list";
-    }
-    
-    return layout;
-}
-
-+ (void)setLayoutTrash:(NSString *)layout
-{
-    [UICKeyChainStore setString:layout forKey:@"layoutTrash" service:k_serviceShareKeyChain];
-}
-
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1016,15 +997,46 @@
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
 {
-    //NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] URLByDeletingLastPathComponent]; DEPRECATED iOS9
-    
     NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
-    
     NSString *pather = [[url absoluteString] stringByRemovingPercentEncoding];
     
     return [pather substringToIndex: [pather length] - 1];
 }
 
++ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
+{
+    NSString *firstPath = serverUrl;
+
+    NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+    NSURL *activeUrlURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", [activeUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]], k_webDAV]];
+    
+    while ([[serverUrlURL absoluteString] isEqualToString:[activeUrlURL absoluteString]] == false) {
+        firstPath = [serverUrlURL absoluteString];
+        serverUrlURL = [serverUrlURL URLByDeletingLastPathComponent];
+    }
+    
+    if ([firstPath hasSuffix:@"/"]) firstPath = [firstPath substringToIndex:[firstPath length] - 1];
+    return firstPath;
+}
+
++ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
+{
+    if ([serverUrl isEqualToString:activeUrl])
+        return @"";
+    
+    NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+    NSString *fileName = [serverUrlURL lastPathComponent];
+
+    return fileName;
+}
+
++ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
+{
+    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:k_webDAV] withString:@""];
+    
+    return path;
+}
+                                       
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
 {
     NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl] withString:@""], metadataFileName];
@@ -1065,6 +1077,30 @@
     return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
 }
 
++ (NSString *)getMimeType:(NSString *)fileNameView
+{
+    CFStringRef fileUTI = nil;
+    NSString *returnFileUTI = nil;
+    
+    if ([fileNameView isEqualToString:@"."]) {
+        
+        return returnFileUTI;
+        
+    } else {
+        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
+        NSString *ext = (__bridge NSString *)fileExtension;
+        ext = ext.uppercaseString;
+        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+        
+        if (fileUTI != nil) {
+            returnFileUTI = (__bridge NSString *)fileUTI;
+            CFRelease(fileUTI);
+        }
+    }
+    
+    return returnFileUTI;
+}
+
 + (NSString *)getDirectoryScan
 {
     NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScan] path];
@@ -1073,6 +1109,11 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     return path;
+}
+
++ (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath
+{
+    [data writeToFile:fileNamePath atomically:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1112,7 +1153,7 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
 {
     tableMetadata *metadata = [tableMetadata new];
     
@@ -1126,6 +1167,7 @@
     metadata.fileNameView = fileName;
     metadata.size = size;
     metadata.status = status;
+    metadata.url = url;
     
     [self insertTypeFileIconName:fileName metadata:metadata];
     
@@ -1156,6 +1198,7 @@
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileNameView;
+    metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
     metadata.etag = itemDto.etag;
@@ -1167,30 +1210,6 @@
     [self insertTypeFileIconName:fileNameView metadata:metadata];
  
     return metadata;
-}
-
-+ (NSString *)getMimeType:(NSString *)fileNameView
-{
-    CFStringRef fileUTI = nil;
-    NSString *returnFileUTI = nil;
-    
-    if ([fileNameView isEqualToString:@"."]) {
-        
-        return returnFileUTI;
-        
-    } else {
-        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
-        NSString *ext = (__bridge NSString *)fileExtension;
-        ext = ext.uppercaseString;
-        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-        
-        if (fileUTI != nil) {
-            returnFileUTI = (__bridge NSString *)fileUTI;
-            CFRelease(fileUTI);
-        }
-    }
-    
-    return returnFileUTI;
 }
 
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
@@ -1215,12 +1234,13 @@
         ext = ext.uppercaseString;
         fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
 
-        // thumbnailExists
-            
-        if ([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
-            metadata.thumbnailExists = YES;
-        else
-            metadata.thumbnailExists = NO;
+        // hasPreview
+        if (metadata.hasPreview == -1) {
+            if ([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
+                metadata.hasPreview = 1;
+            else
+                metadata.hasPreview = 0;
+        }
         
         // Type image
         if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
@@ -1301,7 +1321,6 @@
     
     metadata.date = attributes[NSFileModificationDate];
     metadata.size = [attributes[NSFileSize] longValue];
-    metadata.thumbnailExists = false;
     
     [self insertTypeFileIconName:metadata.fileNameView metadata:metadata];
     

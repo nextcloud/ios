@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 29,
+            schemaVersion: 32,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -79,6 +79,9 @@ class NCManageDatabase: NSObject {
             // 27 : Version 2.22.0.7
             // 28 : Version 2.22.3.5
             // 29 : Version 2.22.5.2
+            // 30 : Version 2.22.6.0
+            // 31 : Version 2.22.6.3
+            // 32 : Version 2.22.6.10
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -1118,6 +1121,29 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
+    
+    @objc func setDirectory(serverUrl: String, offline: Bool) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+                    realm.cancelWrite()
+                    return
+                }
+                
+                result.offline = offline
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
 
     //MARK: -
     //MARK: Table e2e Encryption
@@ -1537,6 +1563,29 @@ class NCManageDatabase: NSObject {
             return Array(results.map { tableLocalFile.init(value:$0) })
         } else {
             return nil
+        }
+    }
+    
+    @objc func setLocalFile(fileID: String, offline: Bool) {
+        
+        guard self.getAccountActive() != nil else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first else {
+                    realm.cancelWrite()
+                    return
+                }
+                
+                result.offline = offline
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
         }
     }
 

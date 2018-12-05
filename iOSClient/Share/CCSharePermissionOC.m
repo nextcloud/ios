@@ -180,7 +180,7 @@
         permission = [UtilsFramework getPermissionsValueByCanEdit:[rowEdit.value boolValue] andCanCreate:[rowCreate.value boolValue] andCanChange:[rowChange.value boolValue] andCanDelete:[rowDelete.value boolValue] andCanShare:[rowShare.value boolValue] andIsFolder:shareDto.isDirectory];
     
     if (permission != shareDto.permissions)
-        [self.delegate updateShare:self.idRemoteShared metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:permission];
+        [self.delegate updateShare:self.idRemoteShared metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:permission hideDownload:false];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

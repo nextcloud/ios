@@ -27,7 +27,7 @@
 #import "TOScrollBar.h"
 #import "NCBridgeSwift.h"
 
-@interface CCMedia ()
+@interface CCMedia () <NCSelectDelegate>
 {
     AppDelegate *appDelegate;
 
@@ -623,16 +623,16 @@
 #pragma mark ==== Change Start directory ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type
 {
     if ([type isEqualToString:@"mediaFolder"]) {
         
         NSString *oldStartDirectoryMediaTabView = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
         
-        if (![serverUrlTo isEqualToString:oldStartDirectoryMediaTabView]) {
+        if (![serverUrl isEqualToString:oldStartDirectoryMediaTabView]) {
             
             // Save Start Directory
-            [[NCManageDatabase sharedInstance] setAccountStartDirectoryMediaTabView:serverUrlTo];
+            [[NCManageDatabase sharedInstance] setAccountStartDirectoryMediaTabView:serverUrl];
             
             // search PhotoVideo with new start directory
             [self searchPhotoVideo];
@@ -666,23 +666,17 @@
 
 - (void)selectStartDirectoryPhotosTab
 {
-    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
-    
-    CCMove *viewController = (CCMove *)navigationController.topViewController;
+    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCSelect" bundle:nil] instantiateInitialViewController];
+    NCSelect *viewController = (NCSelect *)navigationController.topViewController;
     
     viewController.delegate = self;
-    viewController.move.title = NSLocalizedString(@"_select_", nil);
-    viewController.tintColor = [NCBrandColor sharedInstance].brandText;
-    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
-    viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
-    viewController.networkingOperationQueue = appDelegate.netQueue;
-    viewController.hideCreateFolder = YES;
-    
-    // TYPE
+    viewController.hideButtonCreateFolder = true;
+    viewController.selectFile = false;
+    viewController.includeDirectoryE2EEncryption = false;
+    viewController.includeImages = false;
     viewController.type = @"mediaFolder";
-    
-    // E2EE
-    viewController.includeDirectoryE2EEncryption = NO;
+    viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
+    viewController.layoutViewSelect = k_layout_view_move;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -945,7 +939,7 @@
         
             imageView.image = [UIImage imageNamed:@"file_photo"];
 
-            if (metadata.thumbnailExists && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+            if (metadata.hasPreview == 1 && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 [self downloadThumbnail:metadata indexPath:indexPath];
             }
         }

@@ -22,8 +22,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-#import "UIScrollView+EmptyDataSet.h"
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 @interface NCShares : UIViewController <UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetDelegate , DZNEmptyDataSetSource>
 
