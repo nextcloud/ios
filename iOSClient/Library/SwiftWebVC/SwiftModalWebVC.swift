@@ -21,14 +21,14 @@ public class SwiftModalWebVC: UINavigationController {
     
     weak var webViewDelegate: UIWebViewDelegate? = nil
     
-    @objc public convenience init(urlString: String, colorText: UIColor, colorDoneButton: UIColor, doneButtonVisible: Bool, hideToolbar: Bool = false, useRedirectCookieHandling:Bool) {
+    @objc public convenience init(urlString: String, colorText: UIColor, colorDoneButton: UIColor, doneButtonVisible: Bool, hideToolbar: Bool = false) {
         let url = URL(string: urlString)!
-        self.init(request: URLRequest(url: url), colorText: colorText, colorDoneButton: colorDoneButton, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar, useRedirectCookieHandling: useRedirectCookieHandling)
+        self.init(request: URLRequest(url: url), colorText: colorText, colorDoneButton: colorDoneButton, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
     }
     
-    public init(request: URLRequest, colorText: UIColor = UIColor.white, colorDoneButton: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false, useRedirectCookieHandling: Bool) {
+    public init(request: URLRequest, colorText: UIColor = UIColor.white, colorDoneButton: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
         
-        let webViewController = SwiftWebVC(aRequest: request, hideToolbar: hideToolbar, useRedirectCookieHandling: useRedirectCookieHandling)
+        let webViewController = SwiftWebVC(aRequest: request, hideToolbar: hideToolbar)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
         
         super.init(rootViewController: webViewController)

@@ -408,14 +408,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false, useRedirectCookieHandling: false)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
                 webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true, useRedirectCookieHandling: false)
+                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
@@ -450,14 +450,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true, useRedirectCookieHandling: false)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
                 webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: false, useRedirectCookieHandling: false)
+                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: false)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }

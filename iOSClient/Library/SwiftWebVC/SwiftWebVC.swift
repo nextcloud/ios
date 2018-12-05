@@ -23,7 +23,6 @@ public class SwiftWebVC: UIViewController {
     var buttonColor: UIColor? = nil
     var titleColor: UIColor? = nil
     var closing: Bool! = false
-    var useRedirectCookieHandling: Bool = false
     
     lazy var backBarButtonItem: UIBarButtonItem =  {
         var tempBackBarButtonItem = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCBack"),
@@ -71,7 +70,7 @@ public class SwiftWebVC: UIViewController {
     
     
     lazy var webView: WKCookieWebView = {
-        var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: useRedirectCookieHandling)
+        var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: true)
         tempWebView.uiDelegate = self
         tempWebView.navigationDelegate = self
         return tempWebView;
@@ -92,17 +91,16 @@ public class SwiftWebVC: UIViewController {
         webView.navigationDelegate = nil;
     }
     
-    public convenience init(urlString: String, hideToolbar: Bool, useRedirectCookieHandling: Bool) {
-        self.init(pageURL: URL(string: urlString)!, hideToolbar: hideToolbar, useRedirectCookieHandling: useRedirectCookieHandling)
+    public convenience init(urlString: String, hideToolbar: Bool) {
+        self.init(pageURL: URL(string: urlString)!, hideToolbar: hideToolbar)
     }
     
-    public convenience init(pageURL: URL, hideToolbar: Bool, useRedirectCookieHandling: Bool) {
-        self.init(aRequest: URLRequest(url: pageURL), hideToolbar: hideToolbar, useRedirectCookieHandling: useRedirectCookieHandling)
+    public convenience init(pageURL: URL, hideToolbar: Bool) {
+        self.init(aRequest: URLRequest(url: pageURL), hideToolbar: hideToolbar)
     }
     
-    public convenience init(aRequest: URLRequest, hideToolbar: Bool, useRedirectCookieHandling: Bool) {
+    public convenience init(aRequest: URLRequest, hideToolbar: Bool) {
         self.init()
-        self.useRedirectCookieHandling = useRedirectCookieHandling
         self.request = aRequest
         self.hideToolbar = hideToolbar
     }
