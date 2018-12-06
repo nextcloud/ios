@@ -70,11 +70,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         gridLayout = NCGridLayout()
         
         // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        collectionView.refreshControl = refreshControl
+      
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText

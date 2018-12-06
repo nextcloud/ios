@@ -202,19 +202,12 @@ class NCUtility: NSObject {
                     let ratio = image.size.height / image.size.width
                     let newSize = CGSize(width: width!, height: width! * ratio)
                     
-                    if #available(iOS 10.0, *) {
-                        let renderFormat = UIGraphicsImageRendererFormat.default()
-                        renderFormat.opaque = false
-                        let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
-                        newImage = renderer.image {
-                            (context) in
-                            image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-                        }
-                    } else {
-                        UIGraphicsBeginImageContextWithOptions(CGSize(width: newSize.width, height: newSize.height), false, 0)
+                    let renderFormat = UIGraphicsImageRendererFormat.default()
+                    renderFormat.opaque = false
+                    let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
+                    newImage = renderer.image {
+                        (context) in
                         image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-                        newImage = UIGraphicsGetImageFromCurrentImageContext()!
-                        UIGraphicsEndImageContext()
                     }
                 }
                 
