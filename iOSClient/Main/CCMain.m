@@ -558,12 +558,7 @@
 
             _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 30)]; // IMAGE = 120 x 60
             _imageTitleHome.contentMode = UIViewContentModeScaleAspectFill;
-            
-            if ([[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
-                _imageTitleHome.translatesAutoresizingMaskIntoConstraints = YES;    //iOS 9
-            } else {
-                _imageTitleHome.translatesAutoresizingMaskIntoConstraints = NO;     //iOS >= 9
-            }
+            _imageTitleHome.translatesAutoresizingMaskIntoConstraints = NO;
             _imageTitleHome.image = image;
             
             // backbutton
