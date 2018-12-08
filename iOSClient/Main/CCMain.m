@@ -581,12 +581,7 @@
             }
             
             self.navigationItem.title = _titleMain;
-            
-            if (self.imageTitle) {
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:self.imageTitle multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
-            } else {
-                self.navigationItem.titleView = nil;
-            }
+            self.navigationItem.titleView = nil;
         }
     }
 }
@@ -4542,7 +4537,6 @@
             
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = self.metadata.fileName;
-            viewController.imageTitle = imageTitleSegue;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -4554,7 +4548,6 @@
             if (viewController.isViewLoaded) {
                 
                 viewController.titleMain = self.metadata.fileName;
-                viewController.imageTitle = imageTitleSegue;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {
