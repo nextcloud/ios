@@ -24,7 +24,6 @@
 #import <UIKit/UIKit.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-#import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "OCNetworking.h"
