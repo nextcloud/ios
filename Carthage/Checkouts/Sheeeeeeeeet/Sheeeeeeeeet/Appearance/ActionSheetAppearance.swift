@@ -33,6 +33,10 @@ open class ActionSheetAppearance {
         contentInset = copy.contentInset
         groupMargins = copy.groupMargins
         
+        backgroundColor = copy.backgroundColor
+        itemsBackgroundColor = copy.itemsBackgroundColor ?? backgroundColor
+        buttonsSeparatorColor = copy.buttonsSeparatorColor ?? backgroundColor
+        
         separatorColor = copy.separatorColor
         itemsSeparatorColor = copy.itemsSeparatorColor ?? separatorColor
         buttonsSeparatorColor = copy.buttonsSeparatorColor ?? separatorColor
@@ -64,8 +68,11 @@ open class ActionSheetAppearance {
     public var contentInset: CGFloat = 15
     public var groupMargins: CGFloat = 15
     
+    public var backgroundColor: UIColor?
     public var separatorColor: UIColor?
+    public var itemsBackgroundColor: UIColor?
     public var itemsSeparatorColor: UIColor?
+    public var buttonsBackgroundColor: UIColor?
     public var buttonsSeparatorColor: UIColor?
     
     

@@ -20,8 +20,17 @@ extension UIUserInterfaceIdiom {
     
     var defaultPresenter: ActionSheetPresenter {
         switch self {
-        case .pad: return ActionSheetPopoverPresenter()
-        default: return ActionSheetStandardPresenter()
+        case .pad: return ipadPresenter
+        default: return iphonePresenter
         }
+    }
+    
+    var ipadPresenter: ActionSheetPresenter {
+        let isFullscreen = UIApplication.shared.isFullScreen
+        return isFullscreen ? ActionSheetPopoverPresenter() : ActionSheetStandardPresenter()
+    }
+    
+    var iphonePresenter: ActionSheetPresenter {
+        return ActionSheetStandardPresenter()
     }
 }
