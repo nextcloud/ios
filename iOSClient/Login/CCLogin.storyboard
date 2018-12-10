@@ -121,7 +121,7 @@
                                     <action selector="handleToggleVisiblePassword:" destination="yj9-jo-WIn" eventType="touchUpInside" id="if0-s4-Gzt"/>
                                 </connections>
                             </button>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Kfq-Bg-a0E">
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Kfq-Bg-a0E">
                                 <rect key="frame" x="381" y="176" width="20" height="20"/>
                             </activityIndicatorView>
                         </subviews>
