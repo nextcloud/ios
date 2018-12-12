@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 09/04/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@
 @property (nonatomic, weak) IBOutlet UIImageView *imageUser;
 @property (nonatomic, weak) IBOutlet UIImageView *imagePassword;
 
-@property (nonatomic, weak) IBOutlet UIImageView *loadingBaseUrl;
+@property (nonatomic, weak) IBOutlet UIActivityIndicatorView *activity;
 
 @property (nonatomic, weak) IBOutlet UIButton *login;
 @property (nonatomic, weak) IBOutlet UIButton *annulla;

@@ -135,16 +135,23 @@ extension TLPhotoLibrary {
         let options = configure.fetchOption ?? PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         if let mediaType = configure.mediaType {
-            let mediaTypePredicate = configure.maxVideoDuration != nil && mediaType == PHAssetMediaType.video ? NSPredicate(format: "mediaType = %i AND duration < %f", mediaType.rawValue, configure.maxVideoDuration! + 1) : NSPredicate(format: "mediaType = %i", mediaType.rawValue)
-            options.merge(predicate: mediaTypePredicate)
-        } else if !configure.allowedVideo {
-            let mediaTypePredicate = NSPredicate(format: "mediaType = %i", PHAssetMediaType.image.rawValue)
-            options.merge(predicate: mediaTypePredicate)
-        } else if let duration = configure.maxVideoDuration {
-            let mediaTypePredicate = NSPredicate(format: "mediaType = %i OR (mediaType = %i AND duration < %f)", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue, duration + 1)
-            options.merge(predicate: mediaTypePredicate)
+            let mediaPredicate = NSPredicate(format: "mediaType = %i", mediaType.rawValue)
+            options.merge(predicate: mediaPredicate)
         }
-        
+        if configure.allowedVideo == false {
+            let notVideoPredicate = NSPredicate(format: "mediaType != %i", PHAssetMediaType.video.rawValue)
+            options.merge(predicate: notVideoPredicate)
+        }
+        if configure.allowedLivePhotos == false {
+            let notLivePhotoPredicate = NSPredicate(format: "mediaType = %i OR mediaSubtype != %i",
+                                                    PHAssetMediaType.video.rawValue,
+                                                    PHAssetMediaSubtype.photoLive.rawValue)
+            options.merge(predicate: notLivePhotoPredicate)
+        }
+        if let maxVideoDuration = configure.maxVideoDuration {
+            let durationPredicate = NSPredicate(format: "duration < %f", maxVideoDuration)
+            options.merge(predicate: durationPredicate)
+        }
         return options
     }
     

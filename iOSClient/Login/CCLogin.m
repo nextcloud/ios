@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 09/04/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -57,20 +57,16 @@
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
-    [_baseUrl setValue:[UIColor lightGrayColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_baseUrl setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
     [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
     [self.baseUrl setDelegate:self];
-
-    // Loading Base Utl GIF
-    self.loadingBaseUrl.image = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource: @"loading@2x" withExtension:@"gif"]];
-    self.loadingBaseUrl.hidden = YES;
     
     // User
     _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
     _user.textColor = [NCBrandColor sharedInstance].customerText;
     _user.tintColor = [NCBrandColor sharedInstance].customerText;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
-    [_user setValue:[UIColor lightGrayColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_user setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.user setDelegate:self];
 
@@ -79,10 +75,12 @@
     _password.textColor = [NCBrandColor sharedInstance].customerText;
     _password.tintColor = [NCBrandColor sharedInstance].customerText;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
-    [_password setValue:[UIColor lightGrayColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_password setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
+    [self.toggleVisiblePassword setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"visiblePassword"] multiplier:2 color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    
     // Login
     [self.login setTitle:[NSLocalizedString(@"_login_", nil) uppercaseString] forState:UIControlStateNormal] ;
     self.login.backgroundColor = [NCBrandColor sharedInstance].customerText;
@@ -92,22 +90,8 @@
     
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.loginTypeView setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 
-   
-    if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
-        
-        // Portrait
-        self.loginTypeView.hidden = NO;
-        
-    } else {
-        
-        // Landscape
-        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
-            self.loginTypeView.hidden = YES;
-        }
-    }
-    
     // Brand
     if ([NCBrandOptions sharedInstance].disable_request_login_url) {
         _baseUrl.text = [NCBrandOptions sharedInstance].loginBaseUrl;
@@ -127,6 +111,7 @@
         _user.hidden = YES;
         _imagePassword.hidden = YES;
         _password.hidden = YES;
+        _annulla.hidden = YES;
     }
     
     if (_loginType == k_login_Modify_Password) {
@@ -166,27 +151,6 @@
     return YES;
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        
-        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
-            
-            // Portrait
-            self.loginTypeView.hidden = NO;
-            
-        } else {
-            
-            // Landscape
-            if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
-                self.loginTypeView.hidden = YES;
-            }
-        }
-    }];
-    
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == Chech Server URL ==
 #pragma --------------------------------------------------------------------------------------------
@@ -194,7 +158,7 @@
 - (void)testUrl
 {
     self.login.enabled = NO;
-    self.loadingBaseUrl.hidden = NO;
+    [self.activity startAnimating];
     
     // Check whether baseUrl contain protocol. If not add https:// by default.
     if(![self.baseUrl.text hasPrefix:@"https"] && ![self.baseUrl.text hasPrefix:@"http"]) {
@@ -208,7 +172,7 @@
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:@"" withUserID:@"" withPassword:@"" withUrl:nil];
     [ocNetworking serverStatus:self.baseUrl.text success:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor) {
         
-        self.loadingBaseUrl.hidden = YES;
+        [self.activity stopAnimating];
         self.login.enabled = YES;
         
         // Login Flow
@@ -237,7 +201,7 @@
         
     } failure:^(NSString *message, NSInteger errorCode) {
         
-        self.loadingBaseUrl.hidden = YES;
+        [self.activity stopAnimating];
         self.login.enabled = YES;
         
         if (errorCode == NSURLErrorServerCertificateUntrusted) {
@@ -252,7 +216,6 @@
             [alertController addAction:okAction];
             [self presentViewController:alertController animated:YES completion:nil];
         }
-        
     }];
 }
 
@@ -330,9 +293,11 @@
         OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:user withUserID:user withPassword:password withUrl:nil];
 
         self.login.enabled = NO;
-        self.loadingBaseUrl.hidden = NO;
+        [self.activity startAnimating];
 
         [ocNetworking checkServer:[NSString stringWithFormat:@"%@%@", url, k_webDAV] success:^{
+            
+            [self.activity stopAnimating];
             
             // account
             NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
@@ -374,6 +339,9 @@
             
         } failure:^(NSString *message, NSInteger errorCode) {
             
+            self.login.enabled = YES;
+            [self.activity stopAnimating];
+            
             if (errorCode != NSURLErrorServerCertificateUntrusted) {
                 
                 NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
@@ -384,11 +352,7 @@
                 [alertController addAction:okAction];
                 [self presentViewController:alertController animated:YES completion:nil];
             }
-            
-            self.login.enabled = YES;
-            self.loadingBaseUrl.hidden = YES;
         }];
-
     }
 }
 

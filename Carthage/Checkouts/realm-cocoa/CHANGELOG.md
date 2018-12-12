@@ -1,3 +1,21 @@
+3.12.0 Release notes (2018-11-26)
+=============================================================
+
+### Enhancements
+
+* Add a User-Agent header to HTTP requests made to the Realm Object Server. By
+  default, this contains information about the Realm library version and your
+  app's bundle ID. The application identifier can be customized by setting
+  `RLMSyncManager.sharedManager.userAgent`/`SyncManager.shared.userAgent` prior
+  to opening a synchronized Realm.
+  (PR: https://github.com/realm/realm-cocoa/pull/6007).
+* Add Xcode 10.1 binary to the prebuilt package.
+
+### Compatibility
+
+* File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.11.0 or later.
+
 3.11.2 Release notes (2018-11-15)
 =============================================================
 

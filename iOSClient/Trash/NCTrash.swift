@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 02/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -70,11 +70,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         gridLayout = NCGridLayout()
         
         // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        collectionView.refreshControl = refreshControl
+      
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
@@ -219,20 +216,20 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if isEditMode {
             
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_selected_", comment: ""))
+            //let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
+            //let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_selected_", comment: ""))
             let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_selected_", comment: ""))
             
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1, item2], selectedRow: -1)
+            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item2], selectedRow: -1)
             menuView?.token = "tapMoreHeaderMenuSelect"
             
         } else {
             
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
+            //let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
+            //let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
             let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
             
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1, item2], selectedRow: -1)
+            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item2], selectedRow: -1)
             menuView?.token = "tapMoreHeaderMenu"
         }
         
@@ -352,6 +349,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
         
+            /*
             // Select
             if indexPath.row == 0 {
                 isEditMode = true
@@ -364,21 +362,23 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     restoreItem(with: record.fileID)
                 }
             }
+            */
             
-            // Delete ALL
-            if indexPath.row == 2 {
+            // Empty Trash
+            if indexPath.row == 0 {
                 
                 var items = [ActionSheetItem]()
                 
                 items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
-                items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+                items.append(ActionSheetDangerButton(title: NSLocalizedString("_ok_", comment: "")))
                 items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
                 actionSheet = ActionSheet(items: items) { sheet, item in
                     if item is ActionSheetDangerButton {
-                        for record: tableTrash in self.datasource {
-                            self.deleteItem(with: record.fileID)
-                        }
+                        self.emptyTrash()
+                        //for record: tableTrash in self.datasource {
+                        //    self.deleteItem(with: record.fileID)
+                        //}
                     }
                     if item is ActionSheetCancelButton { return }
                 }
@@ -499,6 +499,24 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         })
     }
     
+    func emptyTrash() {
+        
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        ocNetworking?.emptyTrash({ (message, errorCode) in
+            
+            if errorCode == 0 {
+                
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: nil)
+                
+                self.loadDatasource()
+
+            } else {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+        });
+    }
+    
     func deleteItem(with fileID: String) {
         
         guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
@@ -536,6 +554,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     // MARK: DATASOURCE
+    
     @objc func loadDatasource() {
         
         datasource.removeAll()

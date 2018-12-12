@@ -28,7 +28,7 @@
 //  Add : Support for Favorite
 //  Add : getActivityServer
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 
@@ -1485,7 +1485,8 @@
                 NSDictionary *richdocuments = [capabilitiesDict valueForKey:@"richdocuments"];
                 
                 if (richdocuments!= nil && [richdocuments count] > 0) {
-                    capabilities.RichdocumentsMimetypes = [richdocuments valueForKey:@"mimetypes"];
+                    capabilities.richdocumentsDirectEditing = [[richdocuments valueForKey:@"direct_editing"] boolValue];
+                    capabilities.richdocumentsMimetypes = [richdocuments valueForKey:@"mimetypes"];
                 }
             }
         
@@ -2970,6 +2971,23 @@
         failureRequest(response, error, request.redirectedServer);
     }];
 }
+
+- (void)emptyTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
+{
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request emptyTrash:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        successRequest(response, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+
 
 #pragma mark - Manage Mobile Editor OCS API
 

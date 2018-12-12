@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 06/05/17.
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 32,
+            schemaVersion: 33,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -82,6 +82,7 @@ class NCManageDatabase: NSObject {
             // 30 : Version 2.22.6.0
             // 31 : Version 2.22.6.3
             // 32 : Version 2.22.6.10
+            // 33 : Version 2.22.7.1
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -676,6 +677,7 @@ class NCManageDatabase: NSObject {
                 for mimeType in capabilities.richdocumentsMimetypes {
                     resultCapabilities.richdocumentsMimetypes.append(mimeType as! String)
                 }
+                resultCapabilities.richdocumentsDirectEditing = capabilities.richdocumentsDirectEditing
                 
                 if result == nil {
                     realm.add(resultCapabilities)
@@ -2573,21 +2575,27 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func deleteTrash(fileID: String) {
+    @objc func deleteTrash(fileID: String?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
         }
         
         let realm = try! Realm()
+        var predicate = NSPredicate()
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableTrash.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
-            realm.cancelWrite()
-            return
+        if fileID == nil {
+            
+            predicate = NSPredicate(format: "account == %@", tableAccount.account)
+            
+        } else {
+            
+            predicate = NSPredicate(format: "account = %@ AND fileID = %@", tableAccount.account, fileID!)
         }
         
+        let result = realm.objects(tableTrash.self).filter(predicate)
         realm.delete(result)
         
         do {

@@ -618,8 +618,7 @@ extension TLPhotosPickerViewController: PHLivePhotoViewDelegate {
             if requestId > 0 {
                 self.playRequestId = (indexPath,requestId)
             }
-        }else if asset.type == .livePhoto {
-            
+        }else if asset.type == .livePhoto && self.allowedLivePhotos {
             guard let cell = self.collectionView.cellForItem(at: indexPath) as? TLPhotoCollectionViewCell else { return }
             let requestId = self.photoLibrary.livePhotoAsset(asset: phAsset, size: self.thumbnailSize, completionBlock: { [weak cell] (livePhoto,complete) in
                 cell?.livePhotoView?.isHidden = false
@@ -813,7 +812,7 @@ extension TLPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: nibName, for: indexPath) as! TLPhotoCollectionViewCell
             cell.configure = self.configure
             cell.imageView?.image = self.placeholderThumbnail
-            cell.liveBadgeImageView = nil
+            cell.liveBadgeImageView?.image = nil
             return cell
         }
         let nibName = self.configure.nibSet?.nibName ?? "TLPhotoCollectionViewCell"

@@ -84,6 +84,7 @@
 @property (nonatomic, strong) NSString *endToEndEncryptionVersion;
 
 // Richdocuments
-@property (nonatomic, strong) NSArray *RichdocumentsMimetypes;
+@property (nonatomic, strong) NSArray *richdocumentsMimetypes;
+@property (nonatomic) BOOL richdocumentsDirectEditing;
 
 @end

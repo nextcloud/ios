@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 07/04/17.
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ public class CCLoginWeb: UIViewController {
     @objc var loginType: NSInteger = Int(k_login_Add)
     @objc var urlBase = ""
     
+    var doneButtonVisible: Bool = true
     var viewController: UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -42,12 +43,16 @@ public class CCLoginWeb: UIViewController {
         var urlString = urlBase
         self.viewController = vc
         
+        if loginType == k_login_Add_Forced {
+            doneButtonVisible = false
+        }
+        
         // ADD k_flowEndpoint for Web Flow
         if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders) {
             urlString =  urlBase+k_flowEndpoint
         }
         
-        let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: true)
+        let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
@@ -149,10 +154,6 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
     
     public func webDismiss() {
         self.delegate?.webDismiss?()
-    }
-    
-    public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(.allow)
     }
 }
 

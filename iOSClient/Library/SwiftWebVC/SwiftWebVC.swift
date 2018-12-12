@@ -14,7 +14,6 @@ public protocol SwiftWebVCDelegate: class {
     func didFinishLoading(success: Bool)
     func didFinishLoading(success: Bool, url: URL)
     func webDismiss()
-    func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
 }
 
 public class SwiftWebVC: UIViewController {
@@ -77,6 +76,15 @@ public class SwiftWebVC: UIViewController {
         return tempWebView;
     }()
     
+    /*
+    lazy var webView: WKCookieWebView = {
+        var tempWebView = WKCookieWebView(frame: UIScreen.main.bounds, configuration: WKWebViewConfiguration(), useRedirectCookieHandling: true)
+        tempWebView.uiDelegate = self
+        tempWebView.navigationDelegate = self
+        return tempWebView;
+    }()
+    */
+    
     var request: URLRequest!
     
     var navBarTitle: UILabel!
@@ -103,19 +111,7 @@ public class SwiftWebVC: UIViewController {
     public convenience init(aRequest: URLRequest, hideToolbar: Bool) {
         self.init()
         self.request = aRequest
-        self.request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        let language = NSLocale.preferredLanguages[0] as String
-        self.request.addValue(language, forHTTPHeaderField: "Accept-Language")
         self.hideToolbar = hideToolbar
-    }
-    
-    func loadRequest(_ request: URLRequest) {
-        
-        let userAgent : String = CCUtility.getUserAgent()
-        
-        webView.customUserAgent = userAgent
-       
-        webView.load(request)
     }
     
     ////////////////////////////////////////////////
@@ -123,7 +119,11 @@ public class SwiftWebVC: UIViewController {
     
     override public func loadView() {
         view = webView
-        loadRequest(request)
+        let language = NSLocale.preferredLanguages[0] as String        
+        request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
+        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
+        _ = webView.load(request)
     }
     
     override public func viewDidLoad() {
@@ -335,28 +335,7 @@ extension SwiftWebVC: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        
-        self.delegate?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
-        
-        /*
-        let url = navigationAction.request.url
-        
-        if #available(iOS 9.0, *) {
-            decisionHandler(.allow)
-        } else {
-            
-            let userAgent : String = CCUtility.getUserAgent()
-
-            if (navigationAction.request.value(forHTTPHeaderField: "User-Agent") == userAgent) {
-                decisionHandler(.allow)
-            } else {
-                let newRequest : NSMutableURLRequest = navigationAction.request as! NSMutableURLRequest
-                newRequest.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-                decisionHandler(.cancel)
-                webView.load(newRequest as URLRequest)
-            }
-        }
-        */
+        decisionHandler(.allow)
     }
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -367,7 +346,6 @@ extension SwiftWebVC: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        
         if let serverTrust = challenge.protectionSpace.serverTrust {
             completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
         } else {

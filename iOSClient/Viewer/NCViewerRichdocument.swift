@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 06/09/18.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -38,7 +38,9 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         
         self.detail = detail
         
-//        detail.navigationController?.setNavigationBarHidden(true, animated: false)
+        if (UIDevice.current.userInterfaceIdiom == .phone) {
+            detail.navigationController?.setNavigationBarHidden(true, animated: false)
+        }
         
         let contentController = WKUserContentController()
         contentController.add(self, name: "RichDocumentsMobileInterface")

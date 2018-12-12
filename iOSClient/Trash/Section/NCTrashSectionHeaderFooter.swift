@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 09/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,16 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        // Button More
+        /*
+        let capabilities = NCManageDatabase.sharedInstance.getCapabilites()
+        if capabilities != nil && capabilities!.versionMajor >= Int(k_trash_version_available_more_fix) {
+            buttonMore.isHidden = false
+        } else {
+            buttonMore.isHidden = true
+        }
+        */
         
         buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         

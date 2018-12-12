@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 25/06/18.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -202,19 +202,12 @@ class NCUtility: NSObject {
                     let ratio = image.size.height / image.size.width
                     let newSize = CGSize(width: width!, height: width! * ratio)
                     
-                    if #available(iOS 10.0, *) {
-                        let renderFormat = UIGraphicsImageRendererFormat.default()
-                        renderFormat.opaque = false
-                        let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
-                        newImage = renderer.image {
-                            (context) in
-                            image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-                        }
-                    } else {
-                        UIGraphicsBeginImageContextWithOptions(CGSize(width: newSize.width, height: newSize.height), false, 0)
+                    let renderFormat = UIGraphicsImageRendererFormat.default()
+                    renderFormat.opaque = false
+                    let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
+                    newImage = renderer.image {
+                        (context) in
                         image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-                        newImage = UIGraphicsGetImageFromCurrentImageContext()!
-                        UIGraphicsEndImageContext()
                     }
                 }
                 
@@ -268,5 +261,13 @@ class NCUtility: NSObject {
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
     }
+    
+    @objc func isSimulatorOrTestFlight() -> Bool {
+        guard let path = Bundle.main.appStoreReceiptURL?.path else {
+            return false
+        }
+        return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
+    }
+
 }
 

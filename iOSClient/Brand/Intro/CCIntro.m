@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 05/11/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -62,18 +62,6 @@
 
 - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-}
-
-- (void)login:(id)sender
-{
-    selector = k_intro_login;
-    [self.intro hideWithFadeOutDuration:0.7];
-}
-
-- (void)signUp:(id)sender
-{
-    selector = k_intro_signup;
-    [self.intro hideWithFadeOutDuration:0.7];
 }
 
 - (void)show
@@ -230,42 +218,41 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Web =====
+#pragma mark ===== Action =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)login:(id)sender
+{
+    selector = k_intro_login;
+    [self.intro hideWithFadeOutDuration:0.7];
+}
+
+- (void)signUp:(id)sender
+{
+    selector = k_intro_signup;
+    [self.intro hideWithFadeOutDuration:0.7];
+}
 
 - (void)host:(id)sender
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost colorText:[UIColor whiteColor] colorDoneButton:[UIColor blackColor] doneButtonVisible:YES hideToolbar:NO];    
+    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost colorText:[UIColor whiteColor] colorDoneButton:[UIColor blackColor] doneButtonVisible:YES hideToolbar:NO];
     webVC.delegateWeb = self;
     
     [appDelegate.window.rootViewController presentViewController:webVC animated:YES completion:nil];
 }
-    
 - (void)didStartLoading
 {
-    
 }
-
 - (void)didReceiveServerRedirectForProvisionalNavigationWithUrl:(NSURL *)url
 {
-    
 }
-
 - (void)didFinishLoadingWithSuccess:(BOOL)success url:(NSURL *)url
 {
-    
 }
-
 - (void)webDismiss
 {
-    
-}
-
-- (void)decidePolicyForNavigationAction:(WKWebView *)webView decidePolicyFor:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
-{
-    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

@@ -26,6 +26,10 @@ class ActionSheetTests: QuickSpec {
             return MockActionSheet(items: items, action: { _, _ in })
         }
         
+        func createTableView() -> ActionSheetTableView {
+            return ActionSheetTableView(frame: .zero)
+        }
+        
         
         // MARK: - Initialization
         
@@ -162,7 +166,7 @@ class ActionSheetTests: QuickSpec {
             
             it("is correctly setup when set") {
                 let sheet = createSheet()
-                let view = UITableView(frame: .zero)
+                let view = createTableView()
                 sheet.itemsTableView = view
                 
                 expect(view.delegate).to(be(sheet.itemHandler))
@@ -214,7 +218,7 @@ class ActionSheetTests: QuickSpec {
             
             it("is correctly setup when set") {
                 let sheet = createSheet()
-                let view = UITableView(frame: .zero)
+                let view = createTableView()
                 sheet.buttonsTableView = view
                 
                 expect(view.delegate).to(be(sheet.buttonHandler))
@@ -309,8 +313,8 @@ class ActionSheetTests: QuickSpec {
             
             var sheet: MockActionSheet!
             var headerViewContainer: UIView!
-            var itemsView: UITableView!
-            var buttonsView: UITableView!
+            var itemsView: ActionSheetTableView!
+            var buttonsView: ActionSheetTableView!
             var stackView: UIStackView!
             
             beforeEach {
@@ -318,8 +322,8 @@ class ActionSheetTests: QuickSpec {
                 sheet.appearance.groupMargins = 123
                 sheet.appearance.cornerRadius = 90
                 headerViewContainer = UIView(frame: .zero)
-                itemsView = UITableView(frame: .zero)
-                buttonsView = UITableView(frame: .zero)
+                itemsView = createTableView()
+                buttonsView = createTableView()
                 stackView = UIStackView(frame: .zero)
                 sheet.headerViewContainer = headerViewContainer
                 sheet.itemsTableView = itemsView
@@ -404,12 +408,21 @@ class ActionSheetTests: QuickSpec {
                     expect(item2.applyAppearanceInvokeAppearances[0]).to(be(sheet.appearance))
                 }
                 
-                it("applies separator color") {
-                    sheet.appearance.itemsSeparatorColor = .yellow
-                    let view = UITableView(frame: .zero)
+                it("applies background color") {
+                    sheet.appearance.itemsBackgroundColor = .yellow
+                    let view = createTableView()
                     sheet.itemsTableView = view
                     sheet.refresh()
                     
+                    expect(view.backgroundColor).to(equal(.yellow))
+                }
+                
+                it("applies separator color") {
+                    sheet.appearance.itemsSeparatorColor = .yellow
+                    let view = createTableView()
+                    sheet.itemsTableView = view
+                    sheet.refresh()
+
                     expect(view.separatorColor).to(equal(.yellow))
                 }
             }
@@ -434,9 +447,18 @@ class ActionSheetTests: QuickSpec {
                     expect(item2.applyAppearanceInvokeAppearances[0]).to(be(sheet.appearance))
                 }
                 
+                it("applies background color") {
+                    sheet.appearance.buttonsBackgroundColor = .yellow
+                    let view = createTableView()
+                    sheet.buttonsTableView = view
+                    sheet.refresh()
+                    
+                    expect(view.backgroundColor).to(equal(.yellow))
+                }
+                
                 it("applies separator color") {
                     sheet.appearance.buttonsSeparatorColor = .yellow
-                    let view = UITableView(frame: .zero)
+                    let view = createTableView()
                     sheet.buttonsTableView = view
                     sheet.refresh()
                     

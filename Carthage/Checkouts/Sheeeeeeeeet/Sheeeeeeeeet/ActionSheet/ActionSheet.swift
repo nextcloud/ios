@@ -181,7 +181,7 @@ open class ActionSheet: UIViewController {
     
     public lazy var itemHandler = ActionSheetItemHandler(actionSheet: self, itemType: .items)
     
-    @IBOutlet weak var itemsTableView: UITableView? {
+    @IBOutlet weak var itemsTableView: ActionSheetTableView? {
         didSet { setup(itemsTableView, with: itemHandler) }
     }
     
@@ -196,7 +196,7 @@ open class ActionSheet: UIViewController {
     
     public lazy var buttonHandler = ActionSheetItemHandler(actionSheet: self, itemType: .buttons)
     
-    @IBOutlet weak var buttonsTableView: UITableView? {
+    @IBOutlet weak var buttonsTableView: ActionSheetTableView? {
         didSet {
             setup(buttonsTableView, with: buttonHandler)
             refreshButtonsVisibility()
@@ -250,6 +250,7 @@ open class ActionSheet: UIViewController {
     
     open func refreshItems() {
         items.forEach { $0.applyAppearance(appearance) }
+        itemsTableView?.backgroundColor = appearance.itemsBackgroundColor
         itemsTableView?.separatorColor = appearance.itemsSeparatorColor
         itemsTableViewHeight?.constant = itemsHeight
     }
@@ -257,6 +258,7 @@ open class ActionSheet: UIViewController {
     open func refreshButtons() {
         refreshButtonsVisibility()
         buttons.forEach { $0.applyAppearance(appearance) }
+        buttonsTableView?.backgroundColor = appearance.buttonsBackgroundColor
         buttonsTableView?.separatorColor = appearance.buttonsSeparatorColor
         buttonsTableViewHeight?.constant = buttonsHeight
     }

@@ -5,7 +5,7 @@
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -558,12 +558,7 @@
 
             _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 30)]; // IMAGE = 120 x 60
             _imageTitleHome.contentMode = UIViewContentModeScaleAspectFill;
-            
-            if ([[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
-                _imageTitleHome.translatesAutoresizingMaskIntoConstraints = YES;    //iOS 9
-            } else {
-                _imageTitleHome.translatesAutoresizingMaskIntoConstraints = NO;     //iOS >= 9
-            }
+            _imageTitleHome.translatesAutoresizingMaskIntoConstraints = NO;
             _imageTitleHome.image = image;
             
             // backbutton
@@ -586,12 +581,7 @@
             }
             
             self.navigationItem.title = _titleMain;
-            
-            if (self.imageTitle) {
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:self.imageTitle multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
-            } else {
-                self.navigationItem.titleView = nil;
-            }
+            self.navigationItem.titleView = nil;
         }
     }
 }
@@ -4547,7 +4537,6 @@
             
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = self.metadata.fileName;
-            viewController.imageTitle = imageTitleSegue;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -4559,7 +4548,6 @@
             if (viewController.isViewLoaded) {
                 
                 viewController.titleMain = self.metadata.fileName;
-                viewController.imageTitle = imageTitleSegue;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {

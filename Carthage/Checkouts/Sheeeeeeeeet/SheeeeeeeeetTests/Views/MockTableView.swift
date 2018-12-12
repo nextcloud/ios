@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import Sheeeeeeeeet
 
-class MockTableView: UITableView {
+class MockTableView: ActionSheetTableView {
 
     var deselectRowInvokeCount = 0
     var deselectRowInvokePaths = [IndexPath]()
