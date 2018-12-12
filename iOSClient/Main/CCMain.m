@@ -538,7 +538,7 @@
 {
     // Color text self.navigationItem.title
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-
+    
     if (_isSelectedMode) {
         
         NSUInteger totali = [sectionDataSource.allRecordsDataSource count];
@@ -573,15 +573,18 @@
             
         } else {
         
-            NSString *shareLink, *shareUserAndGroup;
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataFolder.directoryID];
-            if (serverUrl) {
-                shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
-                shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
-            }
+            if (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder] == NO) {
             
-            self.navigationItem.title = _titleMain;
-            self.navigationItem.titleView = nil;
+                NSString *shareLink, *shareUserAndGroup;
+                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataFolder.directoryID];
+                if (serverUrl) {
+                    shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
+                    shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
+                }
+                
+                self.navigationItem.title = _titleMain;
+                self.navigationItem.titleView = nil;
+            }
         }
     }
 }
@@ -3293,10 +3296,7 @@
 
 - (BOOL)canOpenMenuAction:(tableMetadata *)metadata
 {
-    if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
-        return NO;
-    
-    if (metadata == nil || metadata.status != k_metadataStatusNormal)
+    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || metadata.status != k_metadataStatusNormal)
         return NO;
     
     // E2EE
