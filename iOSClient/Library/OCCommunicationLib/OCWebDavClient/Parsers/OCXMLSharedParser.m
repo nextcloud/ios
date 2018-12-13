@@ -195,7 +195,9 @@
             _currentShared.shareWithDisplayName = @"";
         }
         
-    } 
+    } else if ([elementName isEqualToString:@"hide_download"]) {
+        _currentShared.hideDownload = [_xmlChars boolValue];
+    }
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {

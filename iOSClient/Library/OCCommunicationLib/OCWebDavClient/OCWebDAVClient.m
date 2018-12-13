@@ -709,7 +709,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     } else if (permissions > 0) {
         self.postStringForShare = [NSString stringWithFormat:@"permissions=%ld",(long)permissions];
     } else {
-        self.postStringForShare = [NSString stringWithFormat:@"hidedownload=%i",hideDownload];
+        if (hideDownload) self.postStringForShare = [NSString stringWithFormat:@"hideDownload=true"];
+        else self.postStringForShare = [NSString stringWithFormat:@"hideDownload=false"];
     }
     
     [request setHTTPBody:[_postStringForShare dataUsingEncoding:NSUTF8StringEncoding]];
