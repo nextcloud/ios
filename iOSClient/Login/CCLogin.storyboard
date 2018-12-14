@@ -101,9 +101,9 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owR-PS-F32" userLabel="loginTypeView">
-                                <rect key="frame" x="153.66666666666666" y="842" width="106.99999999999997" height="20"/>
+                                <rect key="frame" x="153.66666666666666" y="822" width="106.99999999999997" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="PaU-7J-gkn"/>
+                                    <constraint firstAttribute="height" constant="40" id="PaU-7J-gkn"/>
                                 </constraints>
                                 <state key="normal" title="Login type view"/>
                                 <connections>

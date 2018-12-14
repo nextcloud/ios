@@ -28,7 +28,6 @@
 @interface CCIntro () <SwiftModalWebVCDelegate>
 {
     int titlePositionY;
-    int descPositionY;
     int titleIconPositionY;
     int buttonPosition;
     
@@ -78,18 +77,16 @@
     if (height <= 568) {
         titleIconPositionY = 20;
         titlePositionY = height / 2 + 40.0;
-        descPositionY  = height / 2;
         buttonPosition = height / 2 + 50.0;
     } else {
-        titleIconPositionY = 100;
+        titleIconPositionY = 40;
         titlePositionY = height / 2 + 40.0;
-        descPositionY  = height / 2;
         buttonPosition = height / 2 + 120.0;
     }
     
     // Button
     
-    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.rootView.bounds.size.width,220)];
+    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.rootView.bounds.size.width, height - buttonPosition)];
     buttonView.userInteractionEnabled = YES ;
     
     UIButton *buttonLogin = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -117,12 +114,12 @@
     [buttonView addSubview:buttonSignUp];
     
     UIButton *buttonHost = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    buttonHost.frame = CGRectMake(50.0, 200.0, width - 100.0, 20.0);
+    buttonHost.frame = CGRectMake(50.0, height - buttonPosition - 40.0, width - 100.0, 20.0);
     buttonHost.layer.cornerRadius = 3;
     buttonHost.clipsToBounds = YES;
     [buttonHost setTitle:NSLocalizedString(@"_host_your_own_server", nil) forState:UIControlStateNormal];
     buttonHost.titleLabel.font = [UIFont systemFontOfSize:14];
-    [buttonHost setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [buttonHost setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     buttonHost.backgroundColor = [UIColor clearColor];
     [buttonHost addTarget:self action:@selector(host:) forControlEvents:UIControlEventTouchDown];
     
@@ -187,8 +184,9 @@
     self.intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3,page4]];
 
     self.intro.tapToNext = NO;
-    self.intro.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-    self.intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+    self.intro.pageControlY = height - buttonPosition + 50;
+    self.intro.pageControl.pageIndicatorTintColor = [[NCBrandColor sharedInstance] nextcloudSoft];
+    self.intro.pageControl.currentPageIndicatorTintColor = [UIColor whiteColor];
     self.intro.pageControl.backgroundColor = [[NCBrandColor sharedInstance] customer];
 //    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 //    intro.skipButton.enabled = NO;
