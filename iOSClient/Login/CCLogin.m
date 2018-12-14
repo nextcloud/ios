@@ -57,7 +57,7 @@
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
-    [_baseUrl setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_baseUrl setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
     [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
     [self.baseUrl setDelegate:self];
     
@@ -82,15 +82,15 @@
     [self.toggleVisiblePassword setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"visiblePassword"] multiplier:2 color:[UIColor whiteColor]] forState:UIControlStateNormal];
     
     // Login
-    [self.login setTitle:[NSLocalizedString(@"_login_", nil) uppercaseString] forState:UIControlStateNormal] ;
+    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal] ;
     self.login.backgroundColor = [NCBrandColor sharedInstance].customerText;
     self.login.tintColor = [UIColor blackColor];
-//    self.login.layer.cornerRadius = 3;
-//    self.login.clipsToBounds = YES;
+    self.login.layer.cornerRadius = 20;
+    self.login.clipsToBounds = YES;
     
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.loginTypeView setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forState:UIControlStateNormal];
 
     // Brand
     if ([NCBrandOptions sharedInstance].disable_request_login_url) {

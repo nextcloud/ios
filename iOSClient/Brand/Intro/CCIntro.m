@@ -30,6 +30,7 @@
     int titlePositionY;
     int titleIconPositionY;
     int buttonPosition;
+    int safeAreaBottom;
     
     int selector;
 }
@@ -74,14 +75,24 @@
     CGFloat height = self.rootView.bounds.size.height;
     CGFloat width = self.rootView.bounds.size.width;
     
-    if (height <= 568) {
+    if (height <= 568) { // iPhone 5
         titleIconPositionY = 20;
         titlePositionY = height / 2 + 40.0;
-        buttonPosition = height / 2 + 50.0;
+        buttonPosition = height / 2 + 70.0;
     } else {
         titleIconPositionY = 40;
         titlePositionY = height / 2 + 40.0;
         buttonPosition = height / 2 + 120.0;
+    }
+    
+    // SafeArea
+    if (@available(iOS 11, *)) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.right;
+        } else {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        }
     }
     
     // Button
@@ -91,9 +102,9 @@
     
     UIButton *buttonLogin = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonLogin.frame = CGRectMake(50.0, 0.0, width - 100.0, 40.0);
-    buttonLogin.layer.cornerRadius = 3;
+    buttonLogin.layer.cornerRadius = 20;
     buttonLogin.clipsToBounds = YES;
-    [buttonLogin setTitle:[NSLocalizedString(@"_log_in_", nil) uppercaseString] forState:UIControlStateNormal];
+    [buttonLogin setTitle:NSLocalizedString(@"_log_in_", nil) forState:UIControlStateNormal];
     buttonLogin.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonLogin setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     buttonLogin.backgroundColor = [[NCBrandColor sharedInstance] customerText];
@@ -103,9 +114,9 @@
     
     UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
-    buttonSignUp.layer.cornerRadius = 3;
+    buttonSignUp.layer.cornerRadius = 20;
     buttonSignUp.clipsToBounds = YES;
-    [buttonSignUp setTitle:[NSLocalizedString(@"_sign_up_", nil) uppercaseString] forState:UIControlStateNormal];
+    [buttonSignUp setTitle:NSLocalizedString(@"_sign_up_", nil) forState:UIControlStateNormal];
     buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     buttonSignUp.backgroundColor = [UIColor colorWithRed:25.0/255.0 green:89.0/255.0 blue:141.0/255.0 alpha:1.000];
@@ -114,12 +125,12 @@
     [buttonView addSubview:buttonSignUp];
     
     UIButton *buttonHost = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    buttonHost.frame = CGRectMake(50.0, height - buttonPosition - 40.0, width - 100.0, 20.0);
-    buttonHost.layer.cornerRadius = 3;
+    buttonHost.frame = CGRectMake(50.0, height - buttonPosition - 30.0 - safeAreaBottom, width - 100.0, 20.0);
+    buttonHost.layer.cornerRadius = 20;
     buttonHost.clipsToBounds = YES;
     [buttonHost setTitle:NSLocalizedString(@"_host_your_own_server", nil) forState:UIControlStateNormal];
     buttonHost.titleLabel.font = [UIFont systemFontOfSize:14];
-    [buttonHost setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [buttonHost setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forState:UIControlStateNormal];
     buttonHost.backgroundColor = [UIColor clearColor];
     [buttonHost addTarget:self action:@selector(host:) forControlEvents:UIControlEventTouchDown];
     
