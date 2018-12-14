@@ -66,7 +66,7 @@
     _user.textColor = [NCBrandColor sharedInstance].customerText;
     _user.tintColor = [NCBrandColor sharedInstance].customerText;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
-    [_user setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_user setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.user setDelegate:self];
 
@@ -75,7 +75,7 @@
     _password.textColor = [NCBrandColor sharedInstance].customerText;
     _password.tintColor = [NCBrandColor sharedInstance].customerText;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
-    [_password setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_password setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
