@@ -591,17 +591,17 @@
 
 - (UIImage *)getImageLogoHome
 {
-    UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
-    NSInteger multiplier = 2;
-
-    NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
-    UIImage *image = [UIImage imageWithContentsOfFile:fileNameThemingLogo];
-    if (image != nil) {
-        imageThemingLogo = image;
-        multiplier = 1;
-    }
-    
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
+        
+        UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
+        NSInteger multiplier = 2;
+        NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
+        
+        UIImage *image = [UIImage imageWithContentsOfFile:fileNameThemingLogo];
+        if (image != nil) {
+            imageThemingLogo = image;
+            multiplier = 1;
+        }
         
         if ([appDelegate.reachability isReachable] == NO) {
             
@@ -620,7 +620,7 @@
     } else {
         
         if ([appDelegate.reachability isReachable] == NO)
-            return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:multiplier color:[NCBrandColor sharedInstance].icon];
+            return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
         else
             return [UIImage imageNamed:@"themingLogo"];
     }
