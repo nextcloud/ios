@@ -95,7 +95,7 @@ class NCBrandColor: NSObject {
     @objc public let use_default_auto_upload:           Bool = false
     @objc public let use_themingColor:                  Bool = true
     @objc public let use_themingBackground:             Bool = true
-    @objc public let use_themingLogo:                   Bool = true
+    @objc public let use_themingLogo:                   Bool = false     
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
     
