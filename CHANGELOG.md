@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.22.7] - 2018-12-17
 - See https://github.com/nextcloud/ios/milestone/42
 
-## [2.22.6] - 2018-11-25
+## [2.22.6] - 2018-12-5
 - See https://github.com/nextcloud/ios/milestone/41
 - View and actions of trash bin
 
