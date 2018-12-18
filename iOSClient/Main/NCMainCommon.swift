@@ -1142,7 +1142,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
                         (view as! UICollectionView).reloadItems(at: [indexPath])
                     }
-                    if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName){
+                    if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
                         (view as! UITableView).reloadRows(at: [indexPath], with: UITableView.RowAnimation.none)
                     }
                 }
