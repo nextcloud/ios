@@ -345,7 +345,7 @@
     PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
-    if ([newAssetToUpload count] == 0) {
+    if (newAssetToUpload == nil || [newAssetToUpload count] == 0) {
         
         NSLog(@"[LOG] Auto upload, no new asset found");
         return;
@@ -549,6 +549,9 @@
         if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
             
             PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
+            if (result.count == 0) {
+                return nil;
+            }
             
             NSPredicate *predicateImage = [NSPredicate predicateWithFormat:@"mediaType == %i", PHAssetMediaTypeImage];
             NSPredicate *predicateVideo = [NSPredicate predicateWithFormat:@"mediaType == %i", PHAssetMediaTypeVideo];
@@ -618,11 +621,13 @@
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
     PHFetchResult *assets = [self getCameraRollAssets:account selector:selectorUploadAutoUploadAll alignPhotoLibrary:YES];
-        
+   
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
-    (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
+    if (assets != nil) {
+        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
 
-    NSLog(@"[LOG] Align Photo Library %lu", (unsigned long)[assets count]);
+        NSLog(@"[LOG] Align Photo Library %lu", (unsigned long)[assets count]);
+    }
 }
 
 @end
