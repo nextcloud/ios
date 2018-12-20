@@ -68,6 +68,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
 
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
@@ -297,6 +299,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
                 if template.preview == "" {
                     self.selectTemplate = template
                     self.fileNameExtension = template.extension
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
                 }
             }
             
