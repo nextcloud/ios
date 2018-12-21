@@ -259,9 +259,6 @@
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
     }
-    
-    // Test error task upload / download
-    [self verifyInternalErrorDownloadingUploading];
 }
 
 //
@@ -1315,8 +1312,6 @@
         }
     }
     
-    // ------------------------- < END > ----------------------
-
     // No Download/upload available ? --> remove errors for retry
     //
     if (counterDownload+counterUpload == 0) {
@@ -1333,71 +1328,60 @@
         }
     }
     
-    // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Verify internal error in Download/Upload  =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)verifyInternalErrorDownloadingUploading
-{
-    // Test Maintenance
-    if (self.maintenanceMode || self.activeAccount.length == 0)
-        return;
-    
-    NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    // Verify internal error (lost task)
+    //
+    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in matadatasInDownloading) {
         
-    for (tableMetadata *metadata in recordsInDownloading) {
-            
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-            
+        
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-                
+            
             NSURLSessionTask *findTask;
-                
+            
             for (NSURLSessionTask *task in downloadTasks) {
                 if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
                     findTask = task;
                 }
             }
-                
+            
             if (!findTask) {
-                    
+                
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitDownload;
-                    
+                
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
     }
+    
+    NSArray *metadatasInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasInUploading) {
         
-    NSArray *recordsInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
-        
-    for (tableMetadata *metadata in recordsInUploading) {
-            
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-            
+        
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-                
+            
             NSURLSessionTask *findTask;
-                
+            
             for (NSURLSessionTask *task in uploadTasks) {
                 if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
                     findTask = task;
                 }
             }
-                
+            
             if (!findTask) {
-                    
+                
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitUpload;
-                    
+                
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
     }
+    
+    // Start Timer
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
