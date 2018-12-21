@@ -476,6 +476,7 @@
     cell.labelInformazioni.text = [NSString stringWithFormat:@"%@\r\r%@", fileName, [CCUtility transformedSize:fileSize]];
     cell.labelInformazioni.textColor = [UIColor blackColor];
 
+    image = [NCUtility.sharedInstance resizeImageWithImage:image newWidth:cell.frame.size.width];
     cell.fileImageView.image = image;
     
     return cell;
