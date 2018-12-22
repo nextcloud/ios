@@ -824,44 +824,58 @@ class NCManageDatabase: NSObject {
         var result: tableDirectory?
         let realm = try! Realm()
 
-        do {
-            try realm.write {
+        result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first
+        
+        realm.beginWrite()
+        
+        if result == nil || (result?.isInvalidated)! {
             
-                result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first
-            
-                if result == nil || (result?.isInvalidated)! {
+            result = tableDirectory()
+            result!.account = tableAccount.account
                 
-                    result = tableDirectory()
-                    result!.account = tableAccount.account
-                
-                    result!.directoryID = NSUUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
-                    result!.e2eEncrypted = encrypted
-                    result!.favorite = favorite
-                    if let fileID = fileID {
-                        result!.fileID = fileID
-                    }
-                    if let permissions = permissions {
-                        result!.permissions = permissions
-                    }
-                    result!.serverUrl = serverUrl
-                    realm.add(result!, update: true)
-                
-                } else {
-                
-                    result!.e2eEncrypted = encrypted
-                    result!.favorite = favorite
-                    if let fileID = fileID {
-                        result!.fileID = fileID
-                    }
-                    if let permissions = permissions {
-                        result!.permissions = permissions
-                    }
-                    realm.add(result!, update: true)
-                }
+            result!.directoryID = NSUUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
+            result!.e2eEncrypted = encrypted
+            result!.favorite = favorite
+            if let fileID = fileID {
+                result!.fileID = fileID
             }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
+            if let permissions = permissions {
+                result!.permissions = permissions
+            }
+            
+            result!.serverUrl = serverUrl
+            realm.add(result!)
+            
+            do {
+                try realm.commitWrite()
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+                return nil
+            }
+                
+        } else {
+                
+            result!.e2eEncrypted = encrypted
+            result!.favorite = favorite
+            if let fileID = fileID {
+                result!.fileID = fileID
+            }
+            if let permissions = permissions {
+                result!.permissions = permissions
+            }
+                    
+            result =  tableDirectory.init(value: result!)
+            let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl)
+
+            realm.delete(results)
+            realm.add(result!)
+            
+            do {
+                try realm.commitWrite()
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+                return nil
+            }
         }
         
         return tableDirectory.init(value: result!)
