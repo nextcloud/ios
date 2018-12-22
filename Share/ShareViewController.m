@@ -447,15 +447,17 @@
     NSString *fileName = [self.filesName objectAtIndex:indexPath.row];
     UIImage *image = nil;
     
+    CCCellShareExt *cell = (CCCellShareExt *)[tableView dequeueReusableCellWithIdentifier:@"ShareExtCell" forIndexPath:indexPath];
+
     CFStringRef fileExtension = (__bridge CFStringRef)[fileName pathExtension];
     CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
 
     if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO) image = [UIImage imageNamed:@"file_compress"];
     else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) image = [UIImage imageNamed:@"file_audio"];
-    else if ((UTTypeConformsTo(fileUTI, kUTTypeImage)) || (UTTypeConformsTo(fileUTI, kUTTypeMovie))) {
-        
+    else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) image = [UIImage imageNamed:@"file_movie"];
+    else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
         image = [UIImage imageWithContentsOfFile:[NSTemporaryDirectory() stringByAppendingString:fileName]];
-        
+        image = [NCUtility.sharedInstance resizeImageWithImage:image newWidth:cell.frame.size.width];
     }
     else if (UTTypeConformsTo(fileUTI, kUTTypeContent)) {
         
@@ -469,14 +471,12 @@
     }
     else image = [UIImage imageNamed:@"file"];
     
-    CCCellShareExt *cell = (CCCellShareExt *)[tableView dequeueReusableCellWithIdentifier:@"ShareExtCell" forIndexPath:indexPath];
     
     NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] error:nil] fileSize];
     
     cell.labelInformazioni.text = [NSString stringWithFormat:@"%@\r\r%@", fileName, [CCUtility transformedSize:fileSize]];
     cell.labelInformazioni.textColor = [UIColor blackColor];
 
-    image = [NCUtility.sharedInstance resizeImageWithImage:image newWidth:cell.frame.size.width];
     cell.fileImageView.image = image;
     
     return cell;
