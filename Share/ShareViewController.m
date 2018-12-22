@@ -457,7 +457,11 @@
     else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) image = [UIImage imageNamed:@"file_movie"];
     else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
         image = [UIImage imageWithContentsOfFile:[NSTemporaryDirectory() stringByAppendingString:fileName]];
-        image = [NCUtility.sharedInstance resizeImageWithImage:image newWidth:cell.frame.size.width];
+        if (image) {
+            image = [NCUtility.sharedInstance resizeImageWithImage:image newWidth:cell.frame.size.width];
+        } else {
+            image = [UIImage imageNamed:@"file_photo"];
+        }
     }
     else if (UTTypeConformsTo(fileUTI, kUTTypeContent)) {
         
