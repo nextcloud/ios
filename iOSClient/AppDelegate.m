@@ -258,10 +258,7 @@
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
-    }
-    
-    // Test error task upload / download
-    [self verifyInternalErrorDownloadingUploading];
+    }    
 }
 
 //
@@ -1154,15 +1151,15 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)loadAutoDownloadUpload
-{    
+{
     tableMetadata *metadataForUpload, *metadataForDownload;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     BOOL isE2EE = false;
-
+    
     long maxConcurrentOperationDownload = k_maxConcurrentOperationDownload;
     long maxConcurrentOperationUpload = k_maxConcurrentOperationUpload;
-
+    
     // Test Maintenance
     if (self.maintenanceMode)
         return;
@@ -1207,9 +1204,9 @@
     for (tableMetadata *metadata in metadatasUpload) {
         sizeUpload = sizeUpload + metadata.size;
     }
-  
+    
     NSLog(@"%@", [NSString stringWithFormat:@"[LOG] -PROCESS-AUTO-UPLOAD- | Download %ld - %@ | Upload %ld - %@", counterDownload, [CCUtility transformedSize:sizeDownload], counterUpload, [CCUtility transformedSize:sizeUpload]]);
-
+    
     // ------------------------- <selector Download> -------------------------
     
     while (counterDownload < maxConcurrentOperationDownload) {
@@ -1228,7 +1225,7 @@
             break;
         }
     }
-  
+    
     // ------------------------- <selector Upload> -------------------------
     
     while (counterUpload < maxConcurrentOperationUpload) {
@@ -1259,7 +1256,7 @@
     // ------------------------- <selector Auto Upload> -------------------------
     
     while (counterUpload < maxConcurrentOperationUpload) {
-
+        
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
         }
@@ -1278,7 +1275,7 @@
             break;
         }
     }
-  
+    
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error k_maxErrorAutoUploadAll after STOP (100)
@@ -1290,11 +1287,11 @@
         [self messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
         
         [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutoUpload selector:selectorUploadAutoUploadAll note:@"_too_errors_automatic_all_" type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-
+        
     } else {
         
         while (counterUpload < maxConcurrentOperationUpload) {
-
+            
             if (sizeUpload > k_maxSizeOperationUpload) {
                 break;
             }
@@ -1315,8 +1312,6 @@
         }
     }
     
-    // ------------------------- < END > ----------------------
-
     // No Download/upload available ? --> remove errors for retry
     //
     if (counterDownload+counterUpload == 0) {
@@ -1333,71 +1328,60 @@
         }
     }
     
-    // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Verify internal error in Download/Upload  =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)verifyInternalErrorDownloadingUploading
-{
-    // Test Maintenance
-    if (self.maintenanceMode || self.activeAccount.length == 0)
-        return;
-    
-    NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    // Verify internal error (lost task)
+    //
+    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in matadatasInDownloading) {
         
-    for (tableMetadata *metadata in recordsInDownloading) {
-            
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-            
+        
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-                
+            
             NSURLSessionTask *findTask;
-                
+            
             for (NSURLSessionTask *task in downloadTasks) {
                 if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
                     findTask = task;
                 }
             }
-                
+            
             if (!findTask) {
-                    
+                
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitDownload;
-                    
+                
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
     }
+    
+    NSArray *metadatasInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasInUploading) {
         
-    NSArray *recordsInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
-        
-    for (tableMetadata *metadata in recordsInUploading) {
-            
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-            
+        
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-                
+            
             NSURLSessionTask *findTask;
-                
+            
             for (NSURLSessionTask *task in uploadTasks) {
                 if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
                     findTask = task;
                 }
             }
-                
+            
             if (!findTask) {
-                    
+                
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitUpload;
-                    
+                
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
     }
+    
+    // Start Timer
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

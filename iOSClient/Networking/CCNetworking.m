@@ -1185,6 +1185,7 @@
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         metadata.status = k_metadataStatusNormal;
         
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", metadata.directoryID, metadata.fileName] clearDateReadDirectoryID:metadata.directoryID];
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
