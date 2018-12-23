@@ -557,7 +557,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Varius =====
+#pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
 
 + (NSString *)getUserAgent
@@ -569,27 +569,30 @@
 
 + (NSString *)dateDiff:(NSDate *) convertedDate
 {
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setFormatterBehavior:NSDateFormatterBehavior10_4];
-    [df setDateFormat:@"EEE, dd MMM yy HH:mm:ss VVVV"];
-    //NSDate *convertedDate = [df dateFromString:origDate];
-    //NSDate *convertedDate = [NSDate dateWithTimeIntervalSince1970:origDate];
     NSDate *todayDate = [NSDate date];
     double ti = [convertedDate timeIntervalSinceDate:todayDate];
     ti = ti * -1;
     if (ti < 60) {
+        // This minute
         return NSLocalizedString(@"_less_a_minute_", nil);
     } else if (ti < 3600) {
+        // This hour
         int diff = round(ti / 60);
         return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
     } else if (ti < 86400) {
+        // This day
         int diff = round(ti / 60 / 60);
         return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
-    } else if (ti < 2629743) {
+    } else if (ti < 86400 * 30) {
+        // This month
         int diff = round(ti / 60 / 60 / 24);
         return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
     } else {
-        return NSLocalizedString(@"_over_30_days_", nil);
+        // Older than one month
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        [df setFormatterBehavior:NSDateFormatterBehavior10_4];
+        [df setDateStyle:NSDateFormatterMediumStyle];
+        return [df stringFromDate:convertedDate];
     }
 }
 
