@@ -266,7 +266,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             if url != nil && url!.count > 0 {
 
                 self.dismiss(animated: true, completion: {
-                    let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), directoryID: directoryID, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
+                    let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), serverUrl: self.serverUrl, directoryID: directoryID, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
                     
                     self.appDelegate.activeMain.shouldPerformSegue(metadata)
                 })                

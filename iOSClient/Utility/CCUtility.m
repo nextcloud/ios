@@ -1156,7 +1156,7 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
 {
     tableMetadata *metadata = [tableMetadata new];
     
@@ -1168,6 +1168,7 @@
     metadata.fileID = fileID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
+    metadata.serverUrl = serverUrl;
     metadata.size = size;
     metadata.status = status;
     metadata.url = url;
@@ -1194,19 +1195,20 @@
     
     metadata.account = activeAccount;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
-    metadata.e2eEncrypted = itemDto.isEncrypted;
     metadata.directory = itemDto.isDirectory;
+    metadata.directoryID = directoryID;
+    metadata.e2eEncrypted = itemDto.isEncrypted;
+    metadata.etag = itemDto.etag;
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
-    metadata.directoryID = directoryID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileNameView;
     metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
-    metadata.etag = itemDto.etag;
-    metadata.size = itemDto.size;
+    metadata.serverUrl = serverUrl;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+    metadata.size = itemDto.size;
     metadata.status = k_metadataStatusNormal;
     metadata.typeFile = @"";
     

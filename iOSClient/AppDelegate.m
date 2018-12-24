@@ -1508,6 +1508,17 @@
         });
     }
     
+    // VERSION == 2.22.8
+    if ([actualVersion isEqualToString:@"2.22.8"]) {
+        
+        // Build < 14
+        if (([actualBuild compare:@"14" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+            
+            // Remove All old Photo Library
+            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
+        }
+    }
+    
     return YES;
 }
 

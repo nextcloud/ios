@@ -212,6 +212,7 @@ class tableMetadata: Object {
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
+    @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
@@ -246,6 +247,7 @@ class tablePhotos: Object {
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
+    @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
