@@ -33,7 +33,6 @@
 
     NSMutableArray *selectedMetadatas;
     CCSectionDataSourceMetadata *sectionDataSource;
-    NSString *saveDirectoryID, *saveServerUrl;
     
     BOOL filterTypeFileImage;
     BOOL filterTypeFileVideo;
@@ -597,13 +596,6 @@
 
 - (void)downloadThumbnail:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
-    if (![saveDirectoryID isEqualToString:metadata.directoryID]) {
-        saveDirectoryID = metadata.directoryID;
-        saveServerUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        if (!saveServerUrl)
-            return;
-    }
-    
     counterThumbnail++;
     
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
@@ -611,7 +603,7 @@
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:saveServerUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
+    [ocNetworking downloadPreviewWithMetadata:metadata withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
         counterThumbnail--;
         if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
             [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];

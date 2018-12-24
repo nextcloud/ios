@@ -130,7 +130,7 @@ const PERMISSION_ALL = 31;
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     metadataNet.action = actionGetSharePermissionsFile;
     metadataNet.fileName = _metadata.fileName;
-    metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
+    metadataNet.serverUrl = _metadata.serverUrl;
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 
     [self initializeForm];

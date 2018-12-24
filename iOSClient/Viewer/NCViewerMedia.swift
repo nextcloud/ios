@@ -30,10 +30,6 @@ class NCViewerMedia: NSObject {
         self.detail = detail
         self.metadata = metadata
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        
         guard let rootView = UIApplication.shared.keyWindow else {
             return
         }
@@ -49,7 +45,7 @@ class NCViewerMedia: NSObject {
         
         } else {
             
-            guard let stringURL = (serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
                 return
             }
             
@@ -110,7 +106,7 @@ class NCViewerMedia: NSObject {
                 KTVHTTPCache.cacheDelete(with: self.videoURL)
                 
                 // reload Data Source
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: NCManageDatabase.sharedInstance.getServerUrl(self.metadata.directoryID), fileID: self.metadata.fileID, action: k_action_MOD)
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl:self.metadata.serverUrl, fileID: self.metadata.fileID, action: k_action_MOD)
                 
                 // Enabled Button Action (the file is in local)
                 self.detail.buttonAction.isEnabled = true

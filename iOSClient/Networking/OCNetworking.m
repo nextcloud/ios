@@ -399,7 +399,7 @@
 #pragma mark ===== downloadThumbnail / downloadPreview =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
 
@@ -414,7 +414,7 @@
         [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
         [communication setUserAgent:[CCUtility getUserAgent]];
         
-        [communication getRemoteThumbnailByServer:_activeUrl ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:_activeUrl] withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
+        [communication getRemoteThumbnailByServer:_activeUrl ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:_activeUrl] withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
             
             [thumbnail writeToFile:file atomically:YES];
             
@@ -479,7 +479,7 @@
     }
 }
 
-- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
     
@@ -488,7 +488,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
         
-    [communication getRemotePreviewByServer:_activeUrl ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:_activeUrl] withWidth:width andHeight:height andA:1 andMode:@"cover" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+    [communication getRemotePreviewByServer:_activeUrl ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:_activeUrl] withWidth:width andHeight:height andA:1 andMode:@"cover" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
 
         [preview writeToFile:file atomically:YES];
             

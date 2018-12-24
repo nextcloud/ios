@@ -575,13 +575,6 @@
         
             if (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder] == NO) {
             
-                NSString *shareLink, *shareUserAndGroup;
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataFolder.directoryID];
-                if (serverUrl) {
-                    shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
-                    shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
-                }
-                
                 self.navigationItem.title = _titleMain;
                 self.navigationItem.titleView = nil;
             }
@@ -893,19 +886,14 @@
             
             if (metadata.directory == NO && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
                 
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                
-                if (serverUrl) {
+                metadata.session = k_download_session;
+                metadata.sessionError = @"";
+                metadata.sessionSelector = selectorSave;
+                metadata.status = k_metadataStatusWaitDownload;
                     
-                    metadata.session = k_download_session;
-                    metadata.sessionError = @"";
-                    metadata.sessionSelector = selectorSave;
-                    metadata.status = k_metadataStatusWaitDownload;
-                    
-                    // Add Metadata for Download
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                }
+                // Add Metadata for Download
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
             }
         }
         
@@ -1006,16 +994,13 @@
         
         for (tableMetadata *metadata in selectedMetadatas) {
             
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            if (serverUrl == nil) continue;
-            
             if (metadata.directory) {
                 
-                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
+                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
                     
             } else {
                 
-                [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
+                [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:metadata.serverUrl selector:selectorReadFileWithDownload];
             }
         }
         
@@ -1640,7 +1625,6 @@
         // Plain
         
         NSString *fileNameNew = [CCUtility removeForbiddenCharactersServer:fileName];
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
         if ([fileName length] == 0 || [fileName isEqualToString:metadata.fileNameView]) {
             return;
@@ -1649,7 +1633,7 @@
         // Verify if exists the fileName TO
         OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
         
-        [ocNetworking readFile:fileNameNew serverUrl:serverUrl account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
+        [ocNetworking readFile:fileNameNew serverUrl:metadata.serverUrl account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
             
             UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
             UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -1668,8 +1652,8 @@
             metadataNet.fileNameTo = fileNameNew;
             metadataNet.fileNameView = metadata.fileNameView;
             metadataNet.selector = selectorRename;
-            metadataNet.serverUrl = serverUrl;
-            metadataNet.serverUrlTo = serverUrl;
+            metadataNet.serverUrl = metadata.serverUrl;
+            metadataNet.serverUrlTo = metadata.serverUrl;
             
             [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
         }];
@@ -1718,7 +1702,7 @@
         NSString *fileName = metadataNet.fileName;
         NSString *directoryID = metadataNet.directoryID;
         NSString *directoryIDTo = metadataNet.directoryIDTo;
-        NSString *serverUrlTo = [[NCManageDatabase sharedInstance] getServerUrl:directoryIDTo];
+        NSString *serverUrlTo ;//= [[NCManageDatabase sharedInstance] getServerUrl:directoryIDTo];
         if (!serverUrlTo) return;
         
         // FILE -> Metadata
@@ -1769,9 +1753,6 @@
     NSInteger numFile = [[arguments objectAtIndex:2] integerValue];
     NSInteger ofFile = [[arguments objectAtIndex:3] integerValue];
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) return;
-    
     NSString *directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
     if (!directoryIDTo) return;
     
@@ -1805,7 +1786,7 @@
         metadataNet.fileNameTo = metadata.fileName;
         metadataNet.etag = metadata.etag;
         metadataNet.selector = selectorMove;
-        metadataNet.serverUrl = serverUrl;
+        metadataNet.serverUrl = metadata.serverUrl;
         metadataNet.serverUrlTo = serverUrlTo;
         
         [_queueSelector addObject:metadataNet.selector];
@@ -2229,9 +2210,6 @@
 
 - (void)openWindowShare:(tableMetadata *)metadata
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) return;
-    
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionReadShareServer;
@@ -2239,7 +2217,7 @@
     metadataNet.fileName = metadata.fileName;
     metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.selector = selectorOpenWindowShare;
-    metadataNet.serverUrl = serverUrl;
+    metadataNet.serverUrl = metadata.serverUrl;
     
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
     
@@ -2328,9 +2306,6 @@
 
 - (void)DownloadOpenIn:(tableMetadata *)metadata
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) return;
-
     metadata.session = k_download_session;
     metadata.sessionError = @"";
     metadata.sessionSelector = selectorOpenIn;
@@ -3017,21 +2992,16 @@
         
     } else {
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-        
-        if (serverUrl) {
+        self.metadata.session = k_download_session;
+        self.metadata.sessionError = @"";
+        self.metadata.sessionSelector = selectorLoadCopy;
+        self.metadata.status = k_metadataStatusWaitDownload;
             
-            self.metadata.session = k_download_session;
-            self.metadata.sessionError = @"";
-            self.metadata.sessionSelector = selectorLoadCopy;
-            self.metadata.status = k_metadataStatusWaitDownload;
+        // Add Metadata for Download
+        (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
             
-            // Add Metadata for Download
-            (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-            
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
-        }
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
     }
 }
 
@@ -3051,21 +3021,16 @@
             
         } else {
 
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-
-            if (serverUrl) {
+            metadata.session = k_download_session;
+            metadata.sessionError = @"";
+            metadata.sessionSelector = selectorLoadCopy;
+            metadata.status = k_metadataStatusWaitDownload;
                 
-                metadata.session = k_download_session;
-                metadata.sessionError = @"";
-                metadata.sessionSelector = selectorLoadCopy;
-                metadata.status = k_metadataStatusWaitDownload;
+            // Add Metadata for Download
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                 
-                // Add Metadata for Download
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
-            }
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
         }
     }
     
@@ -3202,11 +3167,8 @@
             
             // disattivazione lock cartella
             if (aViewController.fromType == CCBKPasscodeFromDisactivateDirectory) {
-                
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-                if (!serverUrl)
-                    return;
-                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
+            
+                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
                 
                 if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO]) {
                 
@@ -3224,9 +3186,7 @@
 
 - (void)comandoLockPassword
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-    if (!serverUrl) return;
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
 
     // se non è abilitato il Lock Passcode esci
     if ([[CCUtility getBlockCode] length] == 0) {
@@ -3342,8 +3302,7 @@
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     // Directory locked ?
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] addFileName:metadata.fileName];
-    if (!lockServerUrl) return;
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:metadata.fileName];
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
     tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
@@ -3387,9 +3346,6 @@
     
     self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-    if (!serverUrl) return;
-    
     NSString *titoloLock, *titleFavorite;
     
     if (self.metadata.favorite) {
@@ -3401,7 +3357,7 @@
     if (self.metadata.directory) {
         
         // calcolo lockServerUrl
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
         
@@ -3437,7 +3393,7 @@
         
         BOOL lockDirectory = NO;
         BOOL optionOffline = NO;
-        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
+        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
         NSString *firstServerUrl = [CCUtility firtsPathComponentFromServerUrl:dirServerUrl activeUrl:appDelegate.activeUrl];
         BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] account:appDelegate.activeAccount];
         
@@ -3485,7 +3441,7 @@
                                     }];
         }
         
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !self.metadata.e2eEncrypted) {
+        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [self.metadata.serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !self.metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
@@ -3523,7 +3479,7 @@
                                     }];
         }
         
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !isFolderEncrypted) {
+        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [self.metadata.serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !isFolderEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
@@ -3567,7 +3523,7 @@
                                     }];
         }
         
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
+        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [self.metadata.serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
@@ -4142,19 +4098,14 @@
         return [CCCellMain new];
     }
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (serverUrl == nil) {
-        return [CCCellMain new];
-    }
-    
     UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory];
     
     // NORMAL - > MAIN
     
     if ([cell isKindOfClass:[CCCellMain class]]) {
         
-        NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-        NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+        NSString *shareLink = [appDelegate.sharesLink objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
+        NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
         BOOL isShare = false;
         BOOL isMounted = false;
         
@@ -4310,9 +4261,6 @@
         return;
     }
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-    if (!serverUrl) return;
-    
     // se è in corso una sessione
     if (self.metadata.status != k_metadataStatusNormal)
         return;
@@ -4323,7 +4271,7 @@
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
         if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
             
-            [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
+            [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:self.metadata.serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
             
         } else {
             
@@ -4477,10 +4425,7 @@
 
     if (self.tableView.editing == NO) {
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-        if (!serverUrl) return;
-        
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
         
@@ -4527,7 +4472,7 @@
         
         nomeDir = self.metadata.fileName;
         
-        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:serverUrl addFileName:nomeDir];
+        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:nomeDir];
     
         CCMain *viewController = [appDelegate.listMainVC objectForKey:serverUrlPush];
         

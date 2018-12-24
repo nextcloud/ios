@@ -106,11 +106,7 @@ extension FileProviderExtension {
             return
         }
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        
-        deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata, serverUrl: serverUrl)
+        deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
        
         // return immediately
         providerData.queueTradeSafe.sync(flags: .barrier) {
@@ -142,12 +138,7 @@ extension FileProviderExtension {
         }
         
         let fileIDFrom = metadataFrom.fileID
-        
-        guard let serverUrlFrom = NCManageDatabase.sharedInstance.getServerUrl(metadataFrom.directoryID) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
+        let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
         
         guard let tableDirectoryTo = providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
@@ -205,19 +196,14 @@ extension FileProviderExtension {
             return
         }
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl == %@", serverUrl)) else {
+        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, metadata.serverUrl)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
         let fileNameFrom = metadata.fileNameView
-        let fileNamePathFrom = serverUrl + "/" + fileNameFrom
-        let fileNamePathTo = serverUrl + "/" + itemName
+        let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
+        let fileNamePathTo = metadata.serverUrl + "/" + itemName
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {

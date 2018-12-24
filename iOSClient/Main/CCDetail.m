@@ -252,9 +252,6 @@
 - (void)createToolbar
 {
     CGFloat safeAreaBottom = 0;
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID];
-    if (!serverUrl)
-        return;
     
     if (@available(iOS 11, *)) {
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
@@ -274,12 +271,12 @@
     buttonDelete = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"delete"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
-        if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
+        if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
             [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
             [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
     } else {
-        if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
+        if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
             [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
             [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
@@ -309,12 +306,7 @@
     // if not images, exit
     if ([self.photoDataSource count] == 0)
         return;
-    
-    // test
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID];
-    if (!serverUrl)
-        return;
-    
+
     NSUInteger index = 0;
     for (tableMetadata *metadata in self.photoDataSource) {
         
@@ -336,7 +328,7 @@
         self.photoBrowser.displayActionButton = YES;
     }
     self.photoBrowser.displayDeleteButton = YES;
-    if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
+    if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
         self.photoBrowser.displayShareButton = NO;
     else
         self.photoBrowser.displayShareButton = YES;
@@ -389,7 +381,6 @@
     // Download image ?
     if (metadata) {
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         NSInteger status;
         tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         if (metadataDB) {
@@ -409,7 +400,7 @@
 
                 OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
 
-                [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
+                [ocNetworking downloadPreviewWithMetadata:metadata withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
                     
                     self.navigationItem.titleView = nil;
                     self.title = metadata.fileNameView;
@@ -417,7 +408,7 @@
                     [self.photoBrowser reloadData];
                 }];
             } else {
-                [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
+                [self downloadPhotoBrowser:metadata];
             }
         }
     }
@@ -652,7 +643,7 @@
     }
 }
 
-- (void)downloadPhotoBrowser:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl
+- (void)downloadPhotoBrowser:(tableMetadata *)metadata
 {
     tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
     
@@ -665,7 +656,7 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
 
     [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
 }
@@ -890,15 +881,14 @@
 
 - (void)deleteFile:(tableMetadata *)metadata
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
     
-    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
+    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:tableDirectory.serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
         
         if (errorCode == 0) {
             
             // reload data source
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_DEL];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:tableDirectory.serverUrl fileID:metadata.fileID action:k_action_DEL];
             
             // Not image
             if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] == NO) {

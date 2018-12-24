@@ -76,19 +76,14 @@
     
     UIPreviewAction *previewAction1 = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-        
-        if (serverUrl) {
+        _metadata.session = k_download_session;
+        _metadata.sessionError = @"";
+        _metadata.sessionSelector = selectorOpenIn;
+        _metadata.status = k_metadataStatusWaitDownload;
             
-            _metadata.session = k_download_session;
-            _metadata.sessionError = @"";
-            _metadata.sessionSelector = selectorOpenIn;
-            _metadata.status = k_metadataStatusWaitDownload;
-            
-            // Add Metadata for Download
-            (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-        }
+        // Add Metadata for Download
+        (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
+        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     }];
     
     return @[previewAction1];
@@ -105,7 +100,7 @@
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    [ocNetworking downloadPreviewWithMetadata:_metadata serverUrl:appDelegate.activeMain.serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
+    [ocNetworking downloadPreviewWithMetadata:_metadata withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0) {
             

@@ -434,19 +434,14 @@
         return [CCCellMainTransfer new];
     }
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (serverUrl == nil) {
-        return [CCCellMainTransfer new];
-    }
-    
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
     if (directory == nil) {
         return [CCCellMainTransfer new];
     }
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
     
     // TRANSFER
     

@@ -1029,6 +1029,7 @@ class NCManageDatabase: NSObject {
         return result.directoryID
     }
     
+    /*
     @objc func getServerUrl(_ directoryID: String?) -> String? {
         
         guard let directoryID = directoryID else {
@@ -1044,6 +1045,7 @@ class NCManageDatabase: NSObject {
         
         return result.serverUrl
     }
+    */
     
     @objc func setDateReadDirectory(directoryID: String) {
         

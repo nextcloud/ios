@@ -677,10 +677,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         if metadata.directory {
             
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                return
-            }
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName) else {
+            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else {
                 return
             }
             guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {

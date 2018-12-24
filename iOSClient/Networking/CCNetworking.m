@@ -489,22 +489,20 @@
 
 - (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-
     // File exists ?
     tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
-    if (!serverUrl || (localfile != nil && [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView])) {
+    if (localfile != nil && [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
             
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
         if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:@"" errorCode:0];
+            [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"" errorCode:0];
         }
         return;
     }
     
-    [self downloaURLSession:metadata serverUrl:serverUrl taskStatus:taskStatus];
+    [self downloaURLSession:metadata serverUrl:metadata.serverUrl taskStatus:taskStatus];
 }
 
 - (void)downloaURLSession:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl taskStatus:(NSInteger)taskStatus
@@ -711,9 +709,9 @@
 
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    NSString *serverUrl = metadata.serverUrl;
     
-    if (!serverUrl || [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO) {
+    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO) {
     
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
         

@@ -107,10 +107,7 @@
     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
 
     // reload folder ../ *
-    NSString *serverUrlParent = [[NCManageDatabase sharedInstance] getServerUrl:metadataFolder.directoryID];
-    if (serverUrlParent) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlParent fileID:nil action:k_action_NULL];
-    }
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -276,9 +273,7 @@
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
             [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadataNet.fileID];
                 
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
-            if (serverUrl)
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
         }
     }
 }
@@ -346,7 +341,7 @@
         
         // Clear date for dorce refresh view
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
-            serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            serverUrl = metadata.serverUrl;
             if (!serverUrl)
                 continue;
             oldDirectoryID = metadata.directoryID;

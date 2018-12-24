@@ -43,17 +43,12 @@ extension FileProviderExtension {
                 
                 if (metadata!.typeFile == k_metadataTypeFile_image || metadata!.typeFile == k_metadataTypeFile_video) {
                     
-                    guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata!.directoryID) else {
-                        continue
-                    }
-                    
-                    
                     let width = NCUtility.sharedInstance.getScreenWidthForPreview()
                     let height = NCUtility.sharedInstance.getScreenHeightForPreview()
                     
                     let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
                     
-                    ocNetworking?.downloadPreview(with: metadata!, serverUrl: serverUrl, withWidth: width, andHeight: height, completion: { (message, errorCode) in
+                    ocNetworking?.downloadPreview(with: metadata!, withWidth: width, andHeight: height, completion: { (message, errorCode) in
                         
                         if errorCode == 0 {
                             do {

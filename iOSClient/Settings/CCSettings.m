@@ -386,12 +386,7 @@
         
         if (metadata.directory) {
         
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            if (!serverUrl)
-                continue;
-            
-            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-
+            NSString *serverUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
             NSString *serverUrlBeginWith = serverUrl;
             
             if (![serverUrl hasSuffix:@"/"])

@@ -93,10 +93,6 @@ class NCMainCommon: NSObject {
             return
         }
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        
         // SESSION EXTENSION
         if metadata.session == k_download_session_extension || metadata.session == k_upload_session_extension {
             
@@ -117,7 +113,7 @@ class NCMainCommon: NSObject {
                 actionReloadDatasource = k_action_MOD
             }
             
-            self.reloadDatasource(ServerUrl: serverUrl, fileID: metadata.fileID, action: actionReloadDatasource)
+            self.reloadDatasource(ServerUrl: metadata.serverUrl, fileID: metadata.fileID, action: actionReloadDatasource)
             
             return
         }
@@ -159,7 +155,7 @@ class NCMainCommon: NSObject {
             }
             
             if cancel == false {
-                self.reloadDatasource(ServerUrl: serverUrl, fileID: metadata.fileID, action: actionReloadDatasource)
+                self.reloadDatasource(ServerUrl: metadata.serverUrl, fileID: metadata.fileID, action: actionReloadDatasource)
             }
         }
     }
@@ -829,13 +825,9 @@ class NCMainCommon: NSObject {
         
         for metadata in metadatas {
             
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                continue
-            }
-            
             self.appDelegate.filterFileID.add(metadata.fileID)
             
-            let path = serverUrl + "/" + metadata.fileName
+            let path = metadata.serverUrl + "/" + metadata.fileName
             
             ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
                 
@@ -1137,7 +1129,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             
             let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
             
-            ocNetworking?.downloadPreview(with: metadata, serverUrl: serverUrl, withWidth: width, andHeight: height, completion: { (message, errorCode) in
+            ocNetworking?.downloadPreview(with: metadata, withWidth: width, andHeight: height, completion: { (message, errorCode) in
                 if errorCode == 0 && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
                     if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
                         (view as! UICollectionView).reloadItems(at: [indexPath])
@@ -1177,10 +1169,7 @@ class NCFunctionMain: NSObject {
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
                     continue
                 }
-                guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                    continue
-                }
-                CCSynchronize.shared()?.readFile(metadata.fileID, fileName: metadata.fileName, serverUrl: serverUrl, selector: selectorReadFileWithDownload)
+                CCSynchronize.shared()?.readFile(metadata.fileID, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload)
             }
         }
     

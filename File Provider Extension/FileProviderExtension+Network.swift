@@ -29,16 +29,16 @@ extension FileProviderExtension {
     //  MARK: - Delete
     // --------------------------------------------------------------------------------------------
     
-    func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata, serverUrl: String) {
+    func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata) {
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         
-        let path = serverUrl + "/" + metadata.fileName
+        let path = metadata.serverUrl + "/" + metadata.fileName
         
         ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
             
             if errorCode == 0 || errorCode == 404 {
-                self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
+                self.deleteFileSystem(for: metadata, serverUrl: metadata.serverUrl, itemIdentifier: itemIdentifier)
             }
         })
     }
@@ -67,11 +67,7 @@ extension FileProviderExtension {
     
     func settingFavorite(_ favorite: Bool, withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata) {
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: self.providerData.accountUrl)
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: self.providerData.accountUrl)
 
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.settingFavorite(fileNamePath, favorite: favorite, completion: { (message, errorCode) in

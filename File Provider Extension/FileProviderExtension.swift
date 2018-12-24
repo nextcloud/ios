@@ -243,13 +243,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
             
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
-        }
-                        
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        let task = ocNetworking?.downloadFileNameServerUrl(serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
+        let task = ocNetworking?.downloadFileNameServerUrl(metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
                 
             // remove Task
             self.outstandingDownloadTasks.removeValue(forKey: url)
