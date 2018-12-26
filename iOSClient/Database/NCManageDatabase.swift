@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 34,
+            schemaVersion: 35,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -84,7 +84,8 @@ class NCManageDatabase: NSObject {
             // 32 : Version 2.22.6.10
             // 33 : Version 2.22.7.1
             // 34 : Version 2.22.8.14
-            
+            // 35 : Version 2.22.8.14
+
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
                 if (oldSchemaVersion < 6) {
@@ -896,7 +897,7 @@ class NCManageDatabase: NSObject {
         // Delete table Metadata & LocalFile
         for result in results {
             
-            self.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
+            self.deleteMetadata(predicate: NSPredicate(format: "serverUrl == %@", result.serverUrl), clearDateReadDirectoryServerUrl: result.serverUrl)
             self.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", result.fileID))
         }
         
@@ -1029,31 +1030,13 @@ class NCManageDatabase: NSObject {
         return result.directoryID
     }
     
-    /*
-    @objc func getServerUrl(_ directoryID: String?) -> String? {
-        
-        guard let directoryID = directoryID else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        realm.refresh()
-
-        guard let result = realm.objects(tableDirectory.self).filter("directoryID == %@", directoryID).first else {
-            return nil
-        }
-        
-        return result.serverUrl
-    }
-    */
-    
-    @objc func setDateReadDirectory(directoryID: String) {
+    @objc func setDateReadDirectory(serverUrl: String) {
         
         let realm = try! Realm()
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableDirectory.self).filter("directoryID == %@", directoryID).first else {
+        guard let result = realm.objects(tableDirectory.self).filter("serverUrl == %@", serverUrl).first else {
             realm.cancelWrite()
             return
         }
@@ -1621,7 +1604,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        let directoryID = metadata.directoryID
+        let serverUrl = metadata.serverUrl
         
         let realm = try! Realm()
 
@@ -1634,7 +1617,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        self.setDateReadDirectory(directoryID: directoryID)
+        self.setDateReadDirectory(serverUrl: serverUrl)
         
         if metadata.isInvalidated {
             return nil
@@ -1663,21 +1646,19 @@ class NCManageDatabase: NSObject {
         }
         
         if let serverUrl = serverUrl {
-            if let directoryID = self.getDirectoryID(serverUrl) {
-                self.setDateReadDirectory(directoryID: directoryID)
-            }
+            setDateReadDirectory(serverUrl: serverUrl)
         }
         
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
 
-    @objc func deleteMetadata(predicate: NSPredicate, clearDateReadDirectoryID: String?) {
+    @objc func deleteMetadata(predicate: NSPredicate, clearDateReadDirectoryServerUrl: String?) {
         
         guard self.getAccountActive() != nil else {
             return
         }
         
-        var directoriesID = [String]()
+        var serversUrl = [String]()
         
         let realm = try! Realm()
 
@@ -1685,11 +1666,11 @@ class NCManageDatabase: NSObject {
 
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
-        if let clearDateReadDirectoryID = clearDateReadDirectoryID {
-            directoriesID.append(clearDateReadDirectoryID)
+        if let clearDateReadDirectoryServerUrl = clearDateReadDirectoryServerUrl {
+            serversUrl.append(clearDateReadDirectoryServerUrl)
         } else {
             for result in results {
-                directoriesID.append(result.directoryID)
+                serversUrl.append(result.serverUrl)
             }
         }
         
@@ -1702,11 +1683,12 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        for directoryID in directoriesID {
-            self.setDateReadDirectory(directoryID: directoryID)
+        for serverUrl in serversUrl {
+            self.setDateReadDirectory(serverUrl: serverUrl)
         }
     }
     
+    /*
     @objc func moveMetadata(fileName: String, directoryID: String, directoryIDTo: String) {
         
         let realm = try! Realm()
@@ -1728,6 +1710,7 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(directoryID: directoryID)
         self.setDateReadDirectory(directoryID: directoryIDTo)
     }
+    */
     
     @objc func renameMetadata(fileNameTo: String, fileID: String) -> tableMetadata? {
         
@@ -1753,13 +1736,13 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        self.setDateReadDirectory(directoryID: result!.directoryID)
+        self.setDateReadDirectory(serverUrl: result!.serverUrl)
         return tableMetadata.init(value: result!)
     }
     
     @objc func updateMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         
-        let directoryID = metadata.directoryID
+        let serverUrl = metadata.serverUrl
         
         let realm = try! Realm()
 
@@ -1772,7 +1755,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        self.setDateReadDirectory(directoryID: directoryID)
+        self.setDateReadDirectory(serverUrl: serverUrl)
         
         return tableMetadata.init(value: metadata)
     }
@@ -1805,7 +1788,7 @@ class NCManageDatabase: NSObject {
         result.sessionTaskIdentifier = sessionTaskIdentifier
         result.status = status
         
-        let directoryID : String? = result.directoryID
+        let serverUrl : String? = result.serverUrl
         
         do {
             try realm.commitWrite()
@@ -1814,9 +1797,9 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        if let directoryID = directoryID {
+        if let serverUrl = serverUrl {
             // Update Date Read Directory
-            self.setDateReadDirectory(directoryID: directoryID)
+            self.setDateReadDirectory(serverUrl: serverUrl)
         }
     }
     
@@ -1833,7 +1816,7 @@ class NCManageDatabase: NSObject {
         
         result.favorite = favorite
         
-        let directoryID : String? = result.directoryID
+        let serverUrl : String? = result.serverUrl
         
         do {
             try realm.commitWrite()
@@ -1842,9 +1825,9 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        if let directoryID = directoryID {
+        if let serverUrl = serverUrl {
             // Update Date Read Directory
-            self.setDateReadDirectory(directoryID: directoryID)
+            self.setDateReadDirectory(serverUrl: serverUrl)
         }
     }
     
@@ -1861,7 +1844,7 @@ class NCManageDatabase: NSObject {
                 
         result.fileNameView = newFileNameView
         
-        let directoryID : String? = result.directoryID
+        let serverUrl : String? = result.serverUrl
     
         do {
             try realm.commitWrite()
@@ -1870,9 +1853,9 @@ class NCManageDatabase: NSObject {
             return
         }
     
-        if let directoryID = directoryID {
+        if let serverUrl = serverUrl {
             // Update Date Read Directory
-            self.setDateReadDirectory(directoryID: directoryID)
+            self.setDateReadDirectory(serverUrl: serverUrl)
         }
     }
     

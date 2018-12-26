@@ -117,7 +117,7 @@ class tableDirectory: Object {
     @objc dynamic var serverUrl = ""
     
     override static func primaryKey() -> String {
-        return "directoryID"
+        return "account" + "serverUrl"
     }
 }
 
@@ -202,7 +202,6 @@ class tableMetadata: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
@@ -225,10 +224,6 @@ class tableMetadata: Object {
     override static func primaryKey() -> String {
         return "fileID"
     }
-    
-    override static func indexedProperties() -> [String] {
-        return ["directoryID"]
-    }
 }
 
 class tablePhotos: Object {
@@ -237,7 +232,6 @@ class tablePhotos: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
