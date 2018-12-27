@@ -1514,9 +1514,24 @@
         // Build < 15
         if (([actualBuild compare:@"15" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
+            NSString *oldDirectoryID;
+            NSString *serverUrl;
+            
             // Remove All old Photo Library
-            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
-            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:nil];
+            NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@""] sorted:nil ascending:NO];
+            for (tableMetadata *metadata in metadatas) {
+                if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
+                    serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+                    oldDirectoryID = metadata.directoryID;
+                }
+                if (serverUrl == nil) {
+                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                } else {
+                    [[NCManageDatabase sharedInstance] addMetadataServerUrlWithFileID:metadata.fileID serverUrl:serverUrl];
+                }
+            }
+
+            [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:nil];
         }
     }
     

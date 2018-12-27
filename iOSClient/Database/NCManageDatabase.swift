@@ -1015,6 +1015,22 @@ class NCManageDatabase: NSObject {
         return result.directoryID
     }
     
+    @objc func getServerUrl(_ directoryID: String?) -> String? {
+        
+        guard let directoryID = directoryID else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableDirectory.self).filter("directoryID == %@", directoryID).first else {
+            return nil
+        }
+        
+        return result.serverUrl
+    }
+    
     @objc func setDateReadDirectory(serverUrl: String, account: String) {
         
         let realm = try! Realm()
@@ -1691,6 +1707,25 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return
         }        
+    }
+    
+    @objc func addMetadataServerUrl(fileID: String, serverUrl: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                let results = realm.objects(tableMetadata.self).filter("fileID == %@", fileID)
+                
+                for result in results {
+                    result.serverUrl = serverUrl
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
     }
     
     @objc func renameMetadata(fileNameTo: String, fileID: String) -> tableMetadata? {
