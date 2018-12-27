@@ -163,13 +163,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                             
                             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide))
                             
-                            NCManageDatabase.sharedInstance.setDateReadDirectory(directoryID: directoryID!)
+                            NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: self.providerData.account) 
 
                             let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID!, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
                             
-                            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
+                            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
                             if metadatasInDownload != nil {
-                                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!, serverUrl: serverUrl)
+                                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
                             }
                         }
                         

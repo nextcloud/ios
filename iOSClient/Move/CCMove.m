@@ -306,15 +306,15 @@
         // Update directory etag
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", directoryID, k_metadataStatusNormal, k_metadataStatusHide]];
-        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:directoryID];
+        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
         
         NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
         
         // insert in Database
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas serverUrl:_serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
         // reinsert metadatas in Download
         if (metadatasInDownload) {
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload serverUrl:_serverUrl];
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
         }
         
         _loadingFolder = NO;

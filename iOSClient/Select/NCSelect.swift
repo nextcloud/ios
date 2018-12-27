@@ -486,13 +486,13 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             // Update directory etag
             NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted)
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide))
-            NCManageDatabase.sharedInstance.setDateReadDirectory(directoryID: directoryID!)
+            NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
             
-            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: self.serverUrl)
+            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
             
             if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID!, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
                 
-                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload, serverUrl: self.serverUrl)
+                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

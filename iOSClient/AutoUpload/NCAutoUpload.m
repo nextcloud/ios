@@ -435,7 +435,7 @@
     // Insert all assets (Full) in tableQueueUpload
     if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
     
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataFull serverUrl:serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
         
         // Update icon badge number
         dispatch_async(dispatch_get_main_queue(), ^{

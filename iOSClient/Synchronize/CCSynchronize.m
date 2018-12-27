@@ -217,7 +217,7 @@
         }
         
         if ([addMetadatas count] > 0)
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas];
         
         if ([metadatasForVerifyChange count] > 0)
             [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:metadataNet.serverUrl account:metadataNet.account withDownload:YES];
@@ -356,7 +356,7 @@
         [metadataToAdd addObject:metadata];
     }
     
-    (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd serverUrl:nil];
+    (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
