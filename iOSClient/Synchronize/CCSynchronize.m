@@ -99,8 +99,12 @@
     }
     
     // Add/update self Folder
-    if (!metadataFolder || !metadatas || [metadatas count] == 0)
+    if (!metadataFolder || !metadatas || [metadatas count] == 0) {
+        if (metadataFolder.serverUrl != nil) {
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
+        }
         return;
+    }
     
     // Add metadata and update etag Directory
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
