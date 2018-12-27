@@ -550,12 +550,8 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableActivity.init(value:$0) })
     }
 
-    @objc func addActivityServer(_ listOfActivity: [OCActivity]) {
+    @objc func addActivityServer(_ listOfActivity: [OCActivity], account: String) {
     
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
 
         do {
@@ -568,7 +564,7 @@ class NCManageDatabase: NSObject {
                         // Add new Activity
                         let addObject = tableActivity()
                 
-                        addObject.account = tableAccount.account
+                        addObject.account = account
                 
                         if let date = activity.date {
                             addObject.date = date as NSDate

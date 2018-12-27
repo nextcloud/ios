@@ -345,7 +345,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         
         if (errorCode == 0) {
             
-            NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity])
+            NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: metadataNet.account)
             if (appDelegate.activeActivity != nil) {
                 appDelegate.activeActivity.reloadDatasource()
             }

@@ -150,7 +150,7 @@
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     [ocNetworking getActivityServer:^(NSArray *listOfActivity) {
         
-        [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
+        [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:appDelegate.activeAccount];
         [self reloadDatasource];
         
     } failure:^(NSString *message, NSInteger errorCode) {
