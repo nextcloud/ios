@@ -1511,11 +1511,12 @@
     // VERSION == 2.22.8
     if ([actualVersion isEqualToString:@"2.22.8"]) {
         
-        // Build < 14
-        if (([actualBuild compare:@"14" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Build < 15
+        if (([actualBuild compare:@"15" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             // Remove All old Photo Library
             [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:nil];
         }
     }
     
