@@ -133,7 +133,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
 #endif
         
         // ITEM : Trash
-        let capabilities = NCManageDatabase.sharedInstance.getCapabilites()
+        let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount)
         if capabilities != nil && capabilities!.versionMajor >= Int(k_trash_version_available) {
             
             item = OCExternalSites.init()

@@ -904,7 +904,7 @@
     
     if ([NCBrandOptions sharedInstance].use_themingColor) {
         
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
 
         [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
             

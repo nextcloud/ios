@@ -490,7 +490,7 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
 
     NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];

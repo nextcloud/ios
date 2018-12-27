@@ -602,7 +602,7 @@
             
         } else {
             
-            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
             
             if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
                 return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[UIColor blackColor]];
@@ -1439,7 +1439,7 @@
         [self readFolderSuccessFailure:metadataNet metadataFolder:nil metadatas:_searchResultMetadatas message:nil errorCode:0];
     
         // Version >= 12
-        if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12) {
+        if ([[NCManageDatabase sharedInstance] getServerVersionWithAccount:appDelegate.activeAccount] >= 12) {
             
             [_timerWaitInput invalidate];
             _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];

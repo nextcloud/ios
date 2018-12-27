@@ -634,18 +634,14 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Capabilities
     
-    @objc func addCapabilities(_ capabilities: OCCapabilities) {
+    @objc func addCapabilities(_ capabilities: OCCapabilities, account: String) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-
         let realm = try! Realm()
 
         do {
             try realm.write {
             
-                let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first
+                let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first
 
                 var resultCapabilities = tableCapabilities()
             
@@ -653,7 +649,7 @@ class NCManageDatabase: NSObject {
                     resultCapabilities = result
                 }
                 
-                resultCapabilities.account = tableAccount.account
+                resultCapabilities.account = account
                 resultCapabilities.themingBackground = capabilities.themingBackground
                 resultCapabilities.themingBackgroundDefault = capabilities.themingBackgroundDefault
                 resultCapabilities.themingBackgroundPlain = capabilities.themingBackgroundPlain
@@ -685,59 +681,43 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getCapabilites() -> tableCapabilities? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
+    @objc func getCapabilites(account: String) -> tableCapabilities? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        return realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first
+        return realm.objects(tableCapabilities.self).filter("account = %@", account).first
     }
     
-    @objc func getServerVersion() -> Int {
-
-        guard let tableAccount = self.getAccountActive() else {
-            return 0
-        }
+    @objc func getServerVersion(account: String) -> Int {
 
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
             return 0
         }
 
         return result.versionMajor
     }
 
-    @objc func getEndToEndEncryptionVersion() -> Float {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return 0
-        }
+    @objc func getEndToEndEncryptionVersion(account: String) -> Float {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
             return 0
         }
         
         return Float(result.endToEndEncryptionVersion)!
     }
     
-    @objc func compareServerVersion(_ versionCompare: String) -> Int {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return 0
-        }
+    @objc func compareServerVersion(_ versionCompare: String, account: String) -> Int {
         
         let realm = try! Realm()
 
-        guard let capabilities = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+        guard let capabilities = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
             return -1
         }
         
@@ -762,16 +742,12 @@ class NCManageDatabase: NSObject {
         return result
     }
     
-    @objc func getRichdocumentsMimetypes() -> [String]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
+    @objc func getRichdocumentsMimetypes(account: String) -> [String]? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
             return nil
         }
         

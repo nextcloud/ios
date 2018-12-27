@@ -422,7 +422,7 @@
         break;
         case 5: {
             
-            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
             
             NSString *versionServer = capabilities.versionString;
             

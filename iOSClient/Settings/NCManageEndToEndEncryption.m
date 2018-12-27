@@ -70,7 +70,7 @@
     
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_", nil)];
     
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
 
     if (capabilities.endToEndEncryption == NO) {
         

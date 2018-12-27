@@ -79,7 +79,7 @@
         
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
         
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:activeAccount];
         if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
             image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[UIColor blackColor]]];
         else

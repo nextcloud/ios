@@ -919,7 +919,7 @@
             }
             
             addObject.serverUrl = metadata.serverUrl;
-            addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
+            addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersionWithAccount:_activeAccount];
             
             // Get the last metadata
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", _activeAccount, metadata.serverUrl]];

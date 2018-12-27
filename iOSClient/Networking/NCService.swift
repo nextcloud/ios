@@ -138,7 +138,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         if (errorCode == 0) {
             
             // Update capabilities db
-            NCManageDatabase.sharedInstance.addCapabilities(capabilities!)
+            NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: metadataNet.account)
             
             // ------ THEMING -----------------------------------------------------------------------
             
@@ -184,7 +184,7 @@ class NCService: NSObject, OCNetworkingDelegate {
             
             // ------ SEARCH ------------------------------------------------------------------------
             
-            if (NCManageDatabase.sharedInstance.getServerVersion() != capabilities!.versionMajor && appDelegate.activeMain != nil) {
+            if (NCManageDatabase.sharedInstance.getServerVersion(account: metadataNet.account) != capabilities!.versionMajor && appDelegate.activeMain != nil) {
                 appDelegate.activeMain.cancelSearchBar()
             }
             
