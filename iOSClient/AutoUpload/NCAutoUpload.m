@@ -468,7 +468,7 @@
     
         // Add asset in table Photo Library
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
-            if (![[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]]) {
+            if (![[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.activeAccount]) {
                 [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
             }
         }
@@ -589,7 +589,7 @@
                 NSString *creationDate;
                 NSString *idAsset;
 
-                NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo];
+                NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo account:account.account];
                 
                 for (PHAsset *asset in assets) {
                     
@@ -625,7 +625,7 @@
    
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
     if (assets != nil) {
-        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
+        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets account:account.account];
 
         NSLog(@"[LOG] Align Photo Library %lu", (unsigned long)[assets count]);
     }

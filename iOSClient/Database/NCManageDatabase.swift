@@ -2062,12 +2062,8 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Photo Library
     
-    @objc func addPhotoLibrary(_ assets: [PHAsset]) -> Bool {
+    @objc func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return false
-        }
-
         let realm = try! Realm()
 
         if realm.isInWriteTransaction {
@@ -2086,7 +2082,7 @@ class NCManageDatabase: NSObject {
                     
                         let addObject = tablePhotoLibrary()
                     
-                        addObject.account = tableAccount.account
+                        addObject.account = account
                         addObject.assetLocalIdentifier = asset.localIdentifier
                         addObject.mediaType = asset.mediaType.rawValue
                     
@@ -2101,7 +2097,7 @@ class NCManageDatabase: NSObject {
                             addObject.modificationDate = modificationDate as NSDate
                         }
                         
-                        addObject.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDateString)"
+                        addObject.idAsset = "\(account)\(asset.localIdentifier)\(creationDateString)"
 
                         realm.add(addObject, update: true)
                     }
@@ -2115,11 +2111,7 @@ class NCManageDatabase: NSObject {
         return true
     }
     
-    @objc func getPhotoLibraryIdAsset(image: Bool, video: Bool) -> [String]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
+    @objc func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2128,15 +2120,15 @@ class NCManageDatabase: NSObject {
         
         if (image && video) {
          
-            predicate = NSPredicate(format: "account == %@ AND (mediaType == %i OR mediaType == %i)", tableAccount.account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND (mediaType == %i OR mediaType == %i)", account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
             
         } else if (image) {
             
-            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", tableAccount.account, PHAssetMediaType.image.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", account, PHAssetMediaType.image.rawValue)
 
         } else if (video) {
             
-            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", tableAccount.account, PHAssetMediaType.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", account, PHAssetMediaType.video.rawValue)
         }
         
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
