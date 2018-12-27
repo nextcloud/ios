@@ -1689,26 +1689,24 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func moveMetadata(fileName: String, directoryID: String, directoryIDTo: String) {
+    @objc func moveMetadata(fileID: String, serverUrlTo: String, directoryIDTo: String) {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
             
-                let results = realm.objects(tableMetadata.self).filter("directoryID == %@ AND fileName == %@", directoryID, fileName)
+                let results = realm.objects(tableMetadata.self).filter("fileID == %@", fileID)
         
                 for result in results {
+                    result.serverUrl = serverUrlTo
                     result.directoryID = directoryIDTo
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             return
-        }
-        
-        self.setDateReadDirectory(directoryID: directoryID)
-        self.setDateReadDirectory(directoryID: directoryIDTo)
+        }        
     }
     
     @objc func renameMetadata(fileNameTo: String, fileID: String) -> tableMetadata? {

@@ -1699,30 +1699,15 @@
     
         [_hud hideHud];
         
-        NSString *fileName = metadataNet.fileName;
-        NSString *directoryID = metadataNet.directoryID;
-        NSString *directoryIDTo = metadataNet.directoryIDTo;
-        NSString *serverUrlTo ;//= [[NCManageDatabase sharedInstance] getServerUrl:directoryIDTo];
-        if (!serverUrlTo) return;
-        
-        // FILE -> Metadata
-        if (metadataNet.directory == NO)
-            [[NCManageDatabase sharedInstance] moveMetadataWithFileName:fileName directoryID:directoryID directoryIDTo:directoryIDTo];
-    
-        // DIRECTORY ->  Directory - CCMetadata
-        if (metadataNet.directory == YES) {
-        
-            // delete all dir / subdir
-            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:fileName]];
-            
-            // move metadata
-            [[NCManageDatabase sharedInstance] moveMetadataWithFileName:fileName directoryID:directoryID directoryIDTo:directoryIDTo];
-            
-            // Add new directory
-            NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            (void) [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:false favorite:false fileID:nil permissions:nil serverUrl:newDirectory];
+        if (metadataNet.directory) {
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName]];
         }
-    
+        
+        [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadataNet.fileID serverUrlTo:metadataNet.serverUrlTo directoryIDTo:metadataNet.directoryIDTo];
+        
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl directoryID:nil];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrlTo directoryID:nil];
+
         // next
         [_selectedFileIDsMetadatas removeObjectForKey:metadataNet.fileID];
         
@@ -1730,7 +1715,7 @@
         
             NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
             
-            [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[[metadatas objectAtIndex:0], serverUrlTo, [NSNumber numberWithInteger:[_selectedFileIDsMetadatas count]], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
+            [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[[metadatas objectAtIndex:0], metadataNet.serverUrlTo, [NSNumber numberWithInteger:[_selectedFileIDsMetadatas count]], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
             
         } else {
             
