@@ -3380,25 +3380,15 @@
     if (self.metadata.directory) {
         
         BOOL lockDirectory = NO;
-        BOOL optionOffline = NO;
+        BOOL isOffline = NO;
         NSString *dirServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
-        NSString *firstServerUrl = [CCUtility firtsPathComponentFromServerUrl:dirServerUrl activeUrl:appDelegate.activeUrl];
         BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] account:appDelegate.activeAccount];
         
         // Directory bloccata ?
-        tableDirectory *directoryForLock = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl]];
-        if (directoryForLock.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) lockDirectory = YES;
-        
-        // Directory set as offline ?
-        tableDirectory *directoryOffline = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl CONTAINS %@ AND offline == true", appDelegate.activeAccount, firstServerUrl]];
-        if (directoryOffline == nil) {
-            optionOffline = YES;
-        } else if (directoryOffline.serverUrl.length == dirServerUrl.length) {
-            optionOffline = YES;
-        } else if (directoryOffline.serverUrl.length > dirServerUrl.length) {
-            optionOffline = YES;
-        }
-        
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl]];
+        if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) lockDirectory = YES;
+        if (directory.offline) isOffline = YES;
+            
         [actionSheet addButtonWithTitle:self.metadata.fileNameView
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
@@ -3479,15 +3469,13 @@
                                     }];
         }
         
-        if (!isFolderEncrypted && optionOffline) {
+        if (!isFolderEncrypted) {
             
             NSString *title;
             
-            if (directoryOffline == nil) {
-                title = NSLocalizedString(@"_set_available_offline_", nil);
-            } else if (directoryOffline.serverUrl.length == dirServerUrl.length) {
+            if (isOffline) {
                 title = NSLocalizedString(@"_remove_available_offline_", nil);
-            } else if (directoryOffline.serverUrl.length > dirServerUrl.length) {
+            } else {
                 title = NSLocalizedString(@"_set_available_offline_", nil);
             }
             
@@ -3497,16 +3485,13 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        if (directoryOffline == nil) {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:true];
-                                            [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
-                                        } else if (directoryOffline.serverUrl.length == dirServerUrl.length) {
+                                        if (isOffline) {
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:false];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                                        } else if (directoryOffline.serverUrl.length > dirServerUrl.length) {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:directoryOffline.serverUrl offline:false];
+                                        } else {
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:true];
                                             [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
+                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         }
                                     }];
         }
