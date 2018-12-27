@@ -341,7 +341,7 @@
         [self cancelSearchBar];
         
         // populate shared Link & User
-        NSArray *results = [[NCManageDatabase sharedInstance] getShares];
+        NSArray *results = [[NCManageDatabase sharedInstance] getSharesWithAccount:appDelegate.activeAccount];
         if (results) {
             appDelegate.sharesLink = results[0];
             appDelegate.sharesUserAndGroup = results[1];
@@ -2001,7 +2001,7 @@
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items activeUrl:appDelegate.activeUrl];
+    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items activeUrl:appDelegate.activeUrl account:metadataNet.account];
     if (result) {
         appDelegate.sharesLink = result[0];
         appDelegate.sharesUserAndGroup = result[1];
@@ -2086,7 +2086,7 @@
         return;
     
     // rimuoviamo la condivisione da db
-    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup];
+    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:metadataNet.account];
     
     if (result) {
         appDelegate.sharesLink = result[0];

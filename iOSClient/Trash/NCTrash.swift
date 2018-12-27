@@ -462,7 +462,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             self.refreshControl.endRefreshing()
 
-            NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
+            NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
             NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -564,7 +564,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             path = k_dav + "/trashbin/" + userID! + "/trash/"
         }
         
-        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
+        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.activeAccount) else {
             return
         }
         

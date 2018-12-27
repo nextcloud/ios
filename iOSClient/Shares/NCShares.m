@@ -161,7 +161,7 @@
 
 - (void)unShareSuccess:(CCMetadataNet *)metadataNet
 {
-    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup];
+    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:metadataNet.account];
     
     appDelegate.sharesLink = result[0];
     appDelegate.sharesUserAndGroup = result[1];
@@ -254,7 +254,7 @@
 
 - (void)reloadDatasource
 {
-    _dataSource = [[NCManageDatabase sharedInstance] getTableShares];
+    _dataSource = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount];
     
     [self.tableView reloadData];
 }
