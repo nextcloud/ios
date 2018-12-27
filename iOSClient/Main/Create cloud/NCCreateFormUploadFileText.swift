@@ -183,7 +183,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID)
+                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -193,11 +193,11 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             
         } else {
             let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
-            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
+            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String, serverUrl: String) {
         
         self.dismiss(animated: true, completion: {
             
@@ -214,6 +214,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.fileID = fileID
                 metadataForUpload.fileName = fileNameSave
                 metadataForUpload.fileNameView = fileNameSave
+                metadataForUpload.serverUrl = serverUrl
                 metadataForUpload.session = k_upload_session
                 metadataForUpload.sessionSelector = selectorUploadFile
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)

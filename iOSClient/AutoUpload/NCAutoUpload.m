@@ -419,6 +419,7 @@
             metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
             metadataForUpload.fileName = fileName;
             metadataForUpload.fileNameView = fileName;
+            metadataForUpload.serverUrl = serverUrl;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
             metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];

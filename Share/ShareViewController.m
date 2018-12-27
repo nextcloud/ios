@@ -224,6 +224,7 @@
         metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
         metadataForUpload.fileName = fileName;
         metadataForUpload.fileNameView = fileName;
+        metadataForUpload.serverUrl = self.serverUrl;
         metadataForUpload.session = k_upload_session_foreground;
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.status = k_metadataStatusWaitUpload;

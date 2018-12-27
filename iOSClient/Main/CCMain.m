@@ -724,6 +724,7 @@
                     metadataForUpload.fileID = fileID;
                     metadataForUpload.fileName = fileName;
                     metadataForUpload.fileNameView = fileName;
+                    metadataForUpload.serverUrl = serverUrl;
                     metadataForUpload.session = k_upload_session;
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.size = data.length;
@@ -1075,6 +1076,7 @@
         metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
         metadataForUpload.fileName = fileName;
         metadataForUpload.fileNameView = fileName;
+        metadataForUpload.serverUrl = serverUrl;
         metadataForUpload.session = session;
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
@@ -3085,6 +3087,7 @@
                 metadataForUpload.fileID = fileID;
                 metadataForUpload.fileName = fileName;
                 metadataForUpload.fileNameView = fileName;
+                metadataForUpload.serverUrl = self.serverUrl;
                 metadataForUpload.session = k_upload_session;
                 metadataForUpload.sessionSelector = selectorUploadFile;
                 metadataForUpload.size = metadata.size;

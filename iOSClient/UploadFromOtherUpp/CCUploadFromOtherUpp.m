@@ -185,6 +185,7 @@
     metadataForUpload.fileID = fileID;
     metadataForUpload.fileName = fileName;
     metadataForUpload.fileNameView = fileName;
+    metadataForUpload.serverUrl = serverUrlLocal;
     metadataForUpload.session = k_upload_session;
     metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;

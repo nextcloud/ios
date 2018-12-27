@@ -396,6 +396,7 @@ extension FileProviderExtension {
                 metadata.fileID = tableDirectory.directoryID + fileName
                 metadata.fileName = fileName
                 metadata.fileNameView = fileName
+                metadata.serverUrl = tableDirectory.serverUrl
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusHide)
                
