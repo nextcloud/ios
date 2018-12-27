@@ -154,7 +154,7 @@ extension FileProviderExtension {
             
             if metadataFrom.directory {
                 
-                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom)
+                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: self.providerData.account)
                 NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo, directoryIDTo: directoryIDTo)
                 _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo)
                 

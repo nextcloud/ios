@@ -91,7 +91,7 @@
         // Folder not present, remove it
         if (errorCode == 404) {
             
-            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl account:metadataNet.account];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
         }
         
@@ -147,10 +147,10 @@
                 
                 NSString *dirForDelete = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
                 
-                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
+                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete account:metadata.account];
             }
             
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:nil];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
         }
@@ -269,7 +269,7 @@
         // File not present, remove it
         if (errorCode == 404) {
                 
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
             [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadataNet.fileID];
                 

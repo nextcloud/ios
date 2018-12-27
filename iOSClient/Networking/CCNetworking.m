@@ -714,7 +714,7 @@
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
         
         if (!result.count) {
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             
             if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
                 [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Error photo/video not found, remove from upload" errorCode:k_CCErrorInternalError];
@@ -737,7 +737,7 @@
                 NSLog(@"cacheAsset: %f", progress);
                 
                 if (error) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                 
                     if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
                         [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:[NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description] errorCode:error.code];
@@ -759,7 +759,7 @@
                     metadata.fileNameView = metadata.fileName;
                     
                     // Change Metadata with new fileID, fileName, fileNameView
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                     metadata.fileID = [metadata.directoryID stringByAppendingString:metadata.fileName];
                 }
                 
@@ -767,7 +767,7 @@
                 [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:metadataForUpload.fileNameView] options:NSDataWritingAtomic error:&error];
 
                 if (error) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataForUpload.fileID] clearDateReadDirectoryID:metadataForUpload.directoryID];
+                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataForUpload.fileID]];
                     
                     if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
                         [self.delegate uploadFileSuccessFailure:metadataForUpload.fileName fileID:metadataForUpload.fileID assetLocalIdentifier:metadataForUpload.assetLocalIdentifier serverUrl:metadataForUpload.serverUrl selector:metadataForUpload.sessionSelector errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
@@ -796,7 +796,7 @@
                 NSLog(@"cacheAsset: %f", progress);
                 
                 if (error) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                     
                     if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
                         [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:[NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description] errorCode:error.code];
@@ -816,7 +816,7 @@
                     
                     if (error) {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                             
                             if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
                                 [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:[NSString stringWithFormat:@"Video request failed [%@]", error.description] errorCode:error.code];
@@ -1156,7 +1156,7 @@
         if (errorCode == kCFURLErrorCancelled)  {
             
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:tempFileID] error:nil];
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID] clearDateReadDirectoryID:metadata.directoryID];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
 
         } else {
 
@@ -1181,7 +1181,7 @@
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         metadata.status = k_metadataStatusNormal;
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", metadata.directoryID, metadata.fileName] clearDateReadDirectoryID:metadata.directoryID];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", metadata.directoryID, metadata.fileName]];
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
@@ -1189,7 +1189,7 @@
         // remove tempFileID and adjust the directory provider storage
         if ([tempFileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileNameView]]) {
             
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID] clearDateReadDirectoryID:nil];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
             
             // adjust file system Directory Provider Storage
             if ([tempSession isEqualToString:k_upload_session_extension]) {

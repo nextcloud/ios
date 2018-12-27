@@ -323,7 +323,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave), clearDateReadDirectoryID: directoryID)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave))
                 self.dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
             }
             

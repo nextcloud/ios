@@ -882,21 +882,17 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: result!)
     }
     
-    @objc func deleteDirectoryAndSubDirectory(serverUrl: String) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
+    @objc func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl)
+        let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
         
         // Delete table Metadata & LocalFile
         for result in results {
             
-            self.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
+            self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
             self.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", result.fileID))
         }
         
@@ -1643,7 +1639,7 @@ class NCManageDatabase: NSObject {
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
 
-    @objc func deleteMetadata(predicate: NSPredicate, clearDateReadDirectoryID: String?) {
+    @objc func deleteMetadata(predicate: NSPredicate) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1657,12 +1653,8 @@ class NCManageDatabase: NSObject {
 
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
-        if let clearDateReadDirectoryID = clearDateReadDirectoryID {
-            directoriesID.append(clearDateReadDirectoryID)
-        } else {
-            for result in results {
-                directoriesID.append(result.directoryID)
-            }
+        for result in results {
+            directoriesID.append(result.directoryID)
         }
         
         realm.delete(results)

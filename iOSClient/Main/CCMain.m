@@ -741,7 +741,7 @@
                         UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                             
                             // Remove record metadata
-                            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                             
                             // Add Medtadata for upload
                             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
@@ -1101,7 +1101,7 @@
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
                 // Remove record metadata
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
 
                 // Add Medtadata for upload
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
@@ -1224,7 +1224,7 @@
         
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusNormal, k_metadataStatusHide] clearDateReadDirectoryID:metadataNet.directoryID];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusNormal, k_metadataStatusHide]];
         
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:metadataNet.directoryID];
     }
@@ -1700,7 +1700,7 @@
         [_hud hideHud];
         
         if (metadataNet.directory) {
-            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName]];
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName] account:metadataNet.account];
         }
         
         [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadataNet.fileID serverUrlTo:metadataNet.serverUrlTo directoryIDTo:metadataNet.directoryIDTo];
@@ -1896,7 +1896,7 @@
     [ocNetworking createFolder:fileNameFolder serverUrl:serverUrl account:appDelegate.activeAccount success:^(NSString *fileID, NSDate *date) {
 
         // Delete Temp Dir
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp] clearDateReadDirectoryID:nil];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
 
         NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameFolder];
         
@@ -1926,7 +1926,7 @@
             [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
         // Delete Temp Dir
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp] clearDateReadDirectoryID:nil];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
         
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
         

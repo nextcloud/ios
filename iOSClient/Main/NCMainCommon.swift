@@ -102,7 +102,7 @@ class NCMainCommon: NSObject {
                     try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                 } catch { }
                 
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 
                 actionReloadDatasource = k_action_DEL
                 
@@ -149,7 +149,7 @@ class NCMainCommon: NSObject {
                         try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                     }
                     catch { }
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 }
                 actionReloadDatasource = k_action_DEL
             }
@@ -163,7 +163,7 @@ class NCMainCommon: NSObject {
     @objc func cancelAllTransfer(view: UIView) {
         
         // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError), clearDateReadDirectoryID: nil)
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         
@@ -839,12 +839,12 @@ class NCMainCommon: NSObject {
                         try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                     } catch { }
                     
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                     NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                     NCManageDatabase.sharedInstance.deletePhotos(fileID: metadata.fileID)
                     
                     if metadata.directory {
-                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName))
+                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName), account: metadata.account)
                     }
                     
                     if (e2ee) {
@@ -1078,7 +1078,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                 } catch { }
                 
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 NCManageDatabase.sharedInstance.deletePhotos(fileID: fileID)
                 

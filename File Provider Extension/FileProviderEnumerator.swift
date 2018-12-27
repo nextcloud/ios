@@ -161,7 +161,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         
                         if metadatas != nil {
                             
-                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide), clearDateReadDirectoryID: directoryID!)
+                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide))
                             
                             NCManageDatabase.sharedInstance.setDateReadDirectory(directoryID: directoryID!)
 
