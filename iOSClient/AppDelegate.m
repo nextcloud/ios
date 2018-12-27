@@ -1511,14 +1511,14 @@
     // VERSION == 2.22.8
     if ([actualVersion isEqualToString:@"2.22.8"]) {
         
-        // Build < 15
-        if (([actualBuild compare:@"15" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Build < 16
+        if (([actualBuild compare:@"16" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             NSString *oldDirectoryID;
             NSString *serverUrl;
             
             // Remove All old Photo Library
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@""] sorted:nil ascending:NO];
+            NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl == ''"] sorted:nil ascending:NO];
             for (tableMetadata *metadata in metadatas) {
                 if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
                     serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
