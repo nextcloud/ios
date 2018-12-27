@@ -1313,7 +1313,7 @@
     // Search Mode
     if (_isSearchMode) {
         
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
             
         _searchFileName = @"";                          // forced reload searchg
         
@@ -1705,8 +1705,8 @@
         
         [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadataNet.fileID serverUrlTo:metadataNet.serverUrlTo directoryIDTo:metadataNet.directoryIDTo];
         
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl directoryID:nil];
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrlTo directoryID:nil];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrlTo account:appDelegate.activeAccount];
 
         // next
         [_selectedFileIDsMetadatas removeObjectForKey:metadataNet.fileID];
@@ -1887,7 +1887,7 @@
     tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES fileID:fileIDTemp serverUrl:serverUrl directoryID:directoryID fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal url:@""];
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
-    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     
     // Creeate folder Networking

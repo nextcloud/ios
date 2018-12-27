@@ -474,14 +474,14 @@
         }
         
         // Clear data (old) Auto Upload
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] account:appDelegate.activeAccount];
         
         // Settings new folder Automatatic upload
         [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:[CCUtility getLastPathFromServerUrl:serverUrl activeUrl:appDelegate.activeUrl]];
         [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:serverUrl] activeUrl:appDelegate.activeUrl];
         
         // Clear data new Auto Upload
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
     }
 }
 

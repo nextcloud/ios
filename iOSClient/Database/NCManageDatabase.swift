@@ -941,11 +941,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func clearDateRead(serverUrl: String?, directoryID: String?) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
+    @objc func clearDateRead(serverUrl: String, account: String) {
         
         let realm = try! Realm()
 
@@ -954,14 +950,8 @@ class NCManageDatabase: NSObject {
 
                 var predicate = NSPredicate()
             
-                if let serverUrl = serverUrl {
-                    predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", tableAccount.account, serverUrl)
-                }
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)
                 
-                if let directoryID = directoryID {
-                    predicate = NSPredicate(format: "directoryID == %@", directoryID)
-                }
-            
                 guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
                     return
                 }

@@ -345,7 +345,7 @@
             if (!serverUrl)
                 continue;
             oldDirectoryID = metadata.directoryID;
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:metadata.account];
         }
         
         metadata.session = k_download_session;

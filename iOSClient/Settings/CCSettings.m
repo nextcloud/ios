@@ -395,7 +395,7 @@
             NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (serverUrl == %@ OR serverUrl BEGINSWITH %@)", appDelegate.activeAccount, serverUrl, serverUrlBeginWith] sorted:@"serverUrl" ascending:true];
             
             for (tableDirectory *directory in directories)
-                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:nil directoryID:directory.directoryID];
+                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:directory.serverUrl account:appDelegate.activeAccount];
         } 
     }
     
