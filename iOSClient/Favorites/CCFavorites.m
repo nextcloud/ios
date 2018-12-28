@@ -167,15 +167,12 @@
 
 - (void)addFavoriteFolder:(NSString *)serverUrl
 {
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
-    if (!directoryID) return;
-    
     NSString *selector;
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionReadFolder;
     metadataNet.depth = @"1";
-    metadataNet.directoryID = directoryID;
+    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
     
     if ([CCUtility getFavoriteOffline])
         selector = selectorReadFolderWithDownload;
@@ -555,10 +552,7 @@
         
     } else {
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:appDelegate.activeAccount];
-        
-        if (directoryID)
-            recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, _serverUrl] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
     
     sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];

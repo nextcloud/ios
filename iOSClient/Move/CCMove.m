@@ -368,23 +368,20 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:activeAccount];
-    if (!directoryID) return 0;
-
     if (self.includeDirectoryE2EEncryption) {
         
         if (self.includeImages) {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND (directory == true OR typeFile == 'image')", directoryID];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (directory == true OR typeFile == 'image')", activeAccount, _serverUrl];
         } else {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND directory == true", activeAccount, _serverUrl];
         }
         
     } else {
         
         if (self.includeImages) {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", directoryID];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", activeAccount, _serverUrl];
         } else {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == false AND directory == true", directoryID];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", activeAccount, _serverUrl];
         }
     }
     
@@ -475,8 +472,6 @@
     NSString *nomeDir;
 
     NSIndexPath *index = [self.tableView indexPathForSelectedRow];
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:activeAccount];
-    if (!directoryID) return;
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:index.row];
     
