@@ -33,14 +33,14 @@ class NCUtility: NSObject {
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
-    @objc func createFileName(_ fileName: String, directoryID: String) -> String {
+    @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
         var resultFileName = fileName
         var exitLoop = false
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND directoryID == %@", resultFileName, directoryID)) != nil {
+                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension

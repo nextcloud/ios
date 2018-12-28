@@ -377,7 +377,7 @@ extension FileProviderExtension {
                     return
                 }
             
-                let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID)
+                let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: self.providerData.account)
             
                 self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
                     _ = self.providerData.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(tableDirectory.directoryID + fileName, fileNameView: fileName))

@@ -41,7 +41,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
             let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
             if metadata != nil  {
-                if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata!.directoryID))  {
+                if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", metadata!.account, metadata!.serverUrl))  {
                     serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                 }
             }
@@ -110,9 +110,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // Select items from database
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, serverUrl))  {
-                metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@", directory.directoryID), sorted: "fileName", ascending: true)
-            }
+            metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, serverUrl), sorted: "fileName", ascending: true)
             
             // Calculate current page
             if (page != NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage && page != NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
@@ -161,11 +159,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         
                         if metadatas != nil {
                             
-                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide))
+                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.providerData.account, serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
                             
                             NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: self.providerData.account) 
 
-                            let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID!, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
+                            let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.providerData.account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
                             
                             _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
                             if metadatasInDownload != nil {
@@ -173,7 +171,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                             }
                         }
                         
-                        metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@", directoryID!), sorted: "fileName", ascending: true)
+                        metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", self.providerData.account, serverUrl), sorted: "fileName", ascending: true)
                         
                         self.selectFirstPageItems(metadatasFromDB, observer: observer)
                         

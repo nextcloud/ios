@@ -708,7 +708,7 @@
             
             NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
             NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
-            NSString *fileName =  [[NCUtility sharedInstance] createFileName:[url lastPathComponent] directoryID:directoryID];
+            NSString *fileName =  [[NCUtility sharedInstance] createFileName:[url lastPathComponent] serverUrl:serverUrl account:appDelegate.activeAccount];
             NSString *fileID = [directoryID stringByAppendingString:fileName];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
             
@@ -3063,7 +3063,7 @@
             
             if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 
-                NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView directoryID:directoryID];
+                NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.activeAccount];
                 NSString *fileID = [directoryID stringByAppendingString:fileName];
                     
                 [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
