@@ -693,7 +693,7 @@
             // Clear all Hardcoded new foto/video from CCNetworking
             [self.addMetadatasFromUpload removeAllObjects];
             
-            [[NCManageDatabase sharedInstance] createTablePhotos:metadatas];
+            [[NCManageDatabase sharedInstance] createTablePhotos:metadatas account:appDelegate.activeAccount];
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadDatasource:nil action:k_action_NULL];
@@ -794,7 +794,7 @@
     
     CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
     
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload account:appDelegate.activeAccount];
     sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
     
     if (withReloadData) {

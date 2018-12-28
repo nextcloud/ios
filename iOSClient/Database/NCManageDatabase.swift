@@ -1569,10 +1569,6 @@ class NCManageDatabase: NSObject {
     
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
             
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
-        
         if metadata.isInvalidated {
             return nil
         }
@@ -1602,10 +1598,6 @@ class NCManageDatabase: NSObject {
     
     @objc func addMetadatas(_ metadatas: [tableMetadata]) -> [tableMetadata]? {
         
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
-        
         var directoryToClearDate = [String:String]()
 
         let realm = try! Realm()
@@ -1630,10 +1622,6 @@ class NCManageDatabase: NSObject {
     }
 
     @objc func deleteMetadata(predicate: NSPredicate) {
-        
-        guard self.getAccountActive() != nil else {
-            return
-        }
         
         var directoryToClearDate = [String:String]()
         
@@ -1751,10 +1739,6 @@ class NCManageDatabase: NSObject {
     
     @objc func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int, status: Int, predicate: NSPredicate) {
         
-        guard self.getAccountActive() != nil else {
-            return
-        }
-        
         let realm = try! Realm()
 
         realm.beginWrite()
@@ -1847,10 +1831,6 @@ class NCManageDatabase: NSObject {
     
     @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
@@ -1862,10 +1842,6 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
-        
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
         
         let realm = try! Realm()
         realm.refresh()
@@ -1894,10 +1870,6 @@ class NCManageDatabase: NSObject {
     
     @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
         
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
@@ -1922,20 +1894,16 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func getTableMetadatasDirectoryFavoriteIdentifierRank() -> [String:NSNumber] {
+    @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String:NSNumber] {
         
         var listIdentifierRank = [String:NSNumber]()
 
-        guard let tableAccount = self.getAccountActive() else {
-            return listIdentifierRank
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
         var counter = 10 as Int64
         
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND directory = true AND favorite = true", tableAccount.account).sorted(byKeyPath: "fileNameView", ascending: true)
+        let results = realm.objects(tableMetadata.self).filter("account = %@ AND directory = true AND favorite = true", account).sorted(byKeyPath: "fileNameView", ascending: true)
         
         for result in results {
             counter += 1
@@ -1945,18 +1913,14 @@ class NCManageDatabase: NSObject {
         return listIdentifierRank
     }
     
-    @objc func clearMetadatasUpload() {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
+    @objc func clearMetadatasUpload(account: String) {
         
         let realm = try! Realm()
         
         do {
             try realm.write {
                 
-                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", tableAccount.account, k_metadataStatusWaitUpload, k_metadataStatusUploadError)
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", account, k_metadataStatusWaitUpload, k_metadataStatusUploadError)
                 
                 realm.delete(results)
             }
@@ -1971,16 +1935,12 @@ class NCManageDatabase: NSObject {
     
     //MARK: -
     //MARK: Table Photos
-    @objc func getTablePhotos(addMetadatasFromUpload: [tableMetadata]) -> [tableMetadata]? {
+    @objc func getTablePhotos(addMetadatasFromUpload: [tableMetadata], account: String) -> [tableMetadata]? {
 
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
         let realm = try! Realm()
         realm.refresh()
 
-        let predicate = NSPredicate(format: "account == %@", tableAccount.account)
+        let predicate = NSPredicate(format: "account == %@", account)
         let results = realm.objects(tablePhotos.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
 
         if (results.count > 0) {
@@ -2013,19 +1973,15 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func createTablePhotos(_ metadatas: [tableMetadata]) {
+    @objc func createTablePhotos(_ metadatas: [tableMetadata], account: String) {
 
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
         do {
             try realm.write {
                 // DELETE ALL
-                let results = realm.objects(tablePhotos.self).filter("account = %@", tableAccount.account)
+                let results = realm.objects(tablePhotos.self).filter("account = %@", account)
                 realm.delete(results)
                 // INSERT ALL
                 let photos = Array(metadatas.map { tablePhotos.init(value:$0) })

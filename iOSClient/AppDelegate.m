@@ -1514,6 +1514,7 @@
         // Build < 16
         if (([actualBuild compare:@"16" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
+            /*
             NSString *oldDirectoryID;
             NSString *serverUrl;
             
@@ -1530,8 +1531,11 @@
                     [[NCManageDatabase sharedInstance] addMetadataServerUrlWithFileID:metadata.fileID serverUrl:serverUrl];
                 }
             }
-
+            */
+            
+            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
             [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:nil];
+            [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
         }
     }
     

@@ -265,7 +265,7 @@
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];
 
             // remove
-            [[NCManageDatabase sharedInstance] clearMetadatasUpload];
+            [[NCManageDatabase sharedInstance] clearMetadatasUploadWithAccount:appDelegate.activeAccount];
         }
         
         [self reloadForm];
@@ -310,8 +310,7 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] clearMetadatasUpload];
-            
+            [[NCManageDatabase sharedInstance] clearMetadatasUploadWithAccount:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];
         }
     }

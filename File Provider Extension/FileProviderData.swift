@@ -164,7 +164,7 @@ class FileProviderData: NSObject {
         
         var updateWorkingSet = false
         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
         
         // (ADD)
         for (identifier, _) in listFavoriteIdentifierRank {

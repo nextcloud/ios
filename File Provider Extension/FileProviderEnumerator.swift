@@ -78,7 +78,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // ***** Favorite *****
-            providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+            providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: providerData.account)
             for (identifier, _) in providerData.listFavoriteIdentifierRank {
              
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", identifier)) else {
