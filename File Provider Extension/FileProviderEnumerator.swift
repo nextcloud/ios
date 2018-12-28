@@ -41,7 +41,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
             let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
             if metadata != nil  {
-                if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", metadata!.account, metadata!.serverUrl))  {
+                if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata!.account, metadata!.serverUrl))  {
                     serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                 }
             }
@@ -171,7 +171,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                             }
                         }
                         
-                        metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", self.providerData.account, serverUrl), sorted: "fileName", ascending: true)
+                        metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.providerData.account, serverUrl), sorted: "fileName", ascending: true)
                         
                         self.selectFirstPageItems(metadatasFromDB, observer: observer)
                         

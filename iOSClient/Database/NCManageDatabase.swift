@@ -1730,13 +1730,13 @@ class NCManageDatabase: NSObject {
         setDateReadDirectory(serverUrl: serverUrl, account: account)
     }
     
-    @objc func setMetadataFileNameView(directoryID: String, fileName: String, newFileNameView: String) {
+    @objc func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
         
         let realm = try! Realm()
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableMetadata.self).filter("directoryID == %@ AND fileName == %@", directoryID, fileName).first else {
+        guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else {
             realm.cancelWrite()
             return
         }
