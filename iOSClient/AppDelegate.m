@@ -1511,8 +1511,8 @@
     // VERSION == 2.22.8
     if ([actualVersion isEqualToString:@"2.22.8"]) {
         
-        // Build < 16
-        if (([actualBuild compare:@"16" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Build < 17
+        if (([actualBuild compare:@"17" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             /*
             NSString *oldDirectoryID;
