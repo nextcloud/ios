@@ -588,7 +588,7 @@
                     if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
                         
                         // root folder
-                        serverUrlFolder = @"..";
+                        serverUrlFolder = k_serverUrl_root;
                         directoryIDFolder = k_directoryID_root;
                         
                         metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];

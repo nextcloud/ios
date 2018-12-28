@@ -50,13 +50,11 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
     var serverUrl = ""
-    var directoryID = ""
     // -------------------------------------------------------------
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var serverUrlPush = ""
-    private var directoryIDPush = ""
     private var metadataPush: tableMetadata?
     private var metadataFolder: tableMetadata?
     
@@ -485,12 +483,12 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             
             // Update directory etag
             NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide))
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
             NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
             
             _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
             
-            if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID!, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
+            if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
                 
                 _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
             }
@@ -517,26 +515,25 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         sectionDatasource = CCSectionDataSourceMetadata()
         var predicate: NSPredicate?
         
-        if directoryID == "" {
+        if serverUrl == "" {
             
             serverUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)
-            directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl, account: appDelegate.activeAccount) ?? ""
         }
         
         if includeDirectoryE2EEncryption {
             
             if includeImages {
-                predicate = NSPredicate(format: "directoryID == %@ AND (directory == true OR typeFile == 'image')", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR typeFile == 'image')", appDelegate.activeAccount, serverUrl)
             } else {
-                predicate = NSPredicate(format: "directoryID == %@ AND directory == true", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", appDelegate.activeAccount, serverUrl)
             }
             
         } else {
             
             if includeImages {
-                predicate = NSPredicate(format: "directoryID == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", appDelegate.activeAccount, serverUrl)
             } else {
-                predicate = NSPredicate(format: "directoryID == %@ AND e2eEncrypted == false AND directory == true", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", appDelegate.activeAccount, serverUrl)
             }
         }
         
@@ -680,12 +677,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else {
                 return
             }
-            guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush, account: appDelegate.activeAccount) else {
-                return
-            }
             
             self.serverUrlPush = serverUrlPush
-            self.directoryIDPush = directoryIDPush
             self.metadataPush = metadata
             
             performSegueDirectoryWithControlPasscode(controlPasscode: true)
@@ -701,7 +694,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
         
-        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", directoryIDPush))  else {
+        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrlPush))  else {
             return
         }
         
@@ -750,7 +743,6 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         visualController.titleCurrentFolder = metadataPush!.fileNameView
         visualController.serverUrl = serverUrlPush
-        visualController.directoryID = directoryIDPush
         
         self.navigationController?.pushViewController(visualController, animated: true)
     }

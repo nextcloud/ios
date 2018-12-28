@@ -1171,7 +1171,7 @@
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         metadata.status = k_metadataStatusNormal;
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", metadata.directoryID, metadata.fileName]];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName]];
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
@@ -1235,7 +1235,7 @@
     }
     
     // Detect E2EE
-    tableMetadata *e2eeMetadataInSession = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND e2eEncrypted == 1 AND (status == %d OR status == %d)", _activeAccount, metadata.directoryID, k_metadataStatusInUpload, k_metadataStatusUploading]];
+    tableMetadata *e2eeMetadataInSession = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1 AND (status == %d OR status == %d)", _activeAccount, metadata.serverUrl, k_metadataStatusInUpload, k_metadataStatusUploading]];
     
     // E2EE : UNLOCK
     if (isE2EEDirectory && e2eeMetadataInSession == nil) {

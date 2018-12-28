@@ -97,6 +97,7 @@
 
 // directoryID root
 #define k_directoryID_root                              @"00000000-0000-0000-0000-000000000000"
+#define k_serverUrl_root                                @".."
 
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"

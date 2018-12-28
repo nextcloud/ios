@@ -305,10 +305,10 @@
         
         // Update directory etag
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", directoryID, k_metadataStatusNormal, k_metadataStatusHide]];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
         
-        NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+        NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
         
         // insert in Database
         (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
