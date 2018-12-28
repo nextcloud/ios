@@ -1887,10 +1887,6 @@ class NCManageDatabase: NSObject {
     
     @objc func getTablePhoto(predicate: NSPredicate) -> tableMetadata? {
         
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
@@ -1922,10 +1918,6 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func deletePhotos(fileID: String) {
-        
-        guard self.getAccountActive() != nil else {
-            return
-        }
         
         let realm = try! Realm()
         
@@ -2299,11 +2291,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Tag
     
-    @objc func addTag(_ fileID: String ,tagIOS: Data?) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
+    @objc func addTag(_ fileID: String ,tagIOS: Data?, account: String) {
         
         let realm = try! Realm()
         
@@ -2313,7 +2301,7 @@ class NCManageDatabase: NSObject {
                 // Add new
                 let addObject = tableTag()
                     
-                addObject.account = tableAccount.account
+                addObject.account = account
                 addObject.fileID = fileID
                 addObject.tagIOS = tagIOS
     
@@ -2371,10 +2359,6 @@ class NCManageDatabase: NSObject {
     
     @objc func addTrashs(_ trashs: [tableTrash]) {
         
-        guard self.getAccountActive() != nil else {
-            return
-        }
-        
         let realm = try! Realm()
         
         do {
@@ -2405,11 +2389,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func deleteTrash(fileID: String?) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
+    @objc func deleteTrash(fileID: String?, account: String) {
         
         let realm = try! Realm()
         var predicate = NSPredicate()
@@ -2418,11 +2398,11 @@ class NCManageDatabase: NSObject {
         
         if fileID == nil {
             
-            predicate = NSPredicate(format: "account == %@", tableAccount.account)
+            predicate = NSPredicate(format: "account == %@", account)
             
         } else {
             
-            predicate = NSPredicate(format: "account = %@ AND fileID = %@", tableAccount.account, fileID!)
+            predicate = NSPredicate(format: "account = %@ AND fileID = %@", account, fileID!)
         }
         
         let result = realm.objects(tableTrash.self).filter(predicate)
@@ -2445,16 +2425,12 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableTrash.init(value:$0) })
     }
     
-    @objc func getTrashItem(fileID: String) -> tableTrash? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
+    @objc func getTrashItem(fileID: String, account: String) -> tableTrash? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableTrash.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
+        guard let result = realm.objects(tableTrash.self).filter("account = %@ AND fileID = %@", account, fileID).first else {
             return nil
         }
         

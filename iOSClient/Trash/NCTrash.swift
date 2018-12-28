@@ -271,7 +271,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
                 return
             }
             
@@ -306,7 +306,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
                 return
             }
             
@@ -478,7 +478,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func restoreItem(with fileID: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
             return
         }
         
@@ -489,7 +489,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
             
-            NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
+            NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: self.appDelegate.activeAccount)
             
             self.loadDatasource()
             
@@ -507,7 +507,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             if errorCode == 0 {
                 
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: nil)
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
                 
                 self.loadDatasource()
 
@@ -519,7 +519,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func deleteItem(with fileID: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
             return
         }
         
@@ -531,7 +531,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             if errorCode == 0 {
                 
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: self.appDelegate.activeAccount)
                 
                 self.loadDatasource()
                 

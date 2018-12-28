@@ -304,7 +304,7 @@ extension FileProviderExtension {
         }
         
         // Add, Remove (nil)
-        NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData)
+        NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData, account: providerData.account)
         
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
