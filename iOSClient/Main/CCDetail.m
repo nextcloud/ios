@@ -47,7 +47,6 @@
     NSInteger indexNowVisible;
     NSString *fileIDNowVisible;
     
-    NSMutableOrderedSet *dataSourceDirectoryID;
     NSString *fileNameExtension;
 }
 @end
@@ -70,7 +69,6 @@
         self.metadataDetail = [[tableMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
         self.photoDataSource = [NSMutableArray new];
-        dataSourceDirectoryID = [[NSMutableOrderedSet alloc] init];
         indexNowVisible = -1;
         fileIDNowVisible = nil;
 
@@ -301,7 +299,6 @@
     fileIDNowVisible = nil;
     
     [self.photos removeAllObjects];
-    [dataSourceDirectoryID removeAllObjects];
     
     // if not images, exit
     if ([self.photoDataSource count] == 0)
@@ -317,7 +314,6 @@
         [self.photos addObject:[MWPhoto photoWithImage:nil]];
         
         // add directory
-        [dataSourceDirectoryID addObject:metadata.directoryID];
         index++;
     }
     

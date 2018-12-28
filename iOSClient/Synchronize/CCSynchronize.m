@@ -338,18 +338,18 @@
 // MULTI THREAD
 - (void)SynchronizeMetadatas:(NSArray *)metadatas withDownload:(BOOL)withDownload
 {
-    NSString *oldDirectoryID, *serverUrl;
+    NSString *oldServerUrl;
     NSMutableArray *metadataToAdd = [NSMutableArray new];
+    NSMutableArray *serverUrlToReload = [NSMutableArray new];
+
 
     for (tableMetadata *metadata in metadatas) {
         
         // Clear date for dorce refresh view
-        if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
-            serverUrl = metadata.serverUrl;
-            if (!serverUrl)
-                continue;
-            oldDirectoryID = metadata.directoryID;
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:metadata.account];
+        if (![oldServerUrl isEqualToString:metadata.serverUrl]) {
+            oldServerUrl = metadata.serverUrl;
+            [serverUrlToReload addObject:metadata.serverUrl];
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:metadata.account];
         }
         
         metadata.session = k_download_session;
@@ -363,7 +363,9 @@
     (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+    for (NSString *serverUrl in serverUrlToReload) {
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+    }
 }
 
 @end
