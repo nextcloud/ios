@@ -1304,11 +1304,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table External Sites
     
-    @objc func addExternalSites(_ externalSites: OCExternalSites) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
+    @objc func addExternalSites(_ externalSites: OCExternalSites, account: String) {
         
         let realm = try! Realm()
 
@@ -1317,7 +1313,7 @@ class NCManageDatabase: NSObject {
             
                 let addObject = tableExternalSites()
             
-                addObject.account = tableAccount.account
+                addObject.account = account
                 addObject.idExternalSite = externalSites.idExternalSite
                 addObject.icon = externalSites.icon
                 addObject.lang = externalSites.lang
@@ -1332,18 +1328,14 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteExternalSites() {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
+    @objc func deleteExternalSites(account: String) {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
             
-                let results = realm.objects(tableExternalSites.self).filter("account = %@", tableAccount.account)
+                let results = realm.objects(tableExternalSites.self).filter("account = %@", account)
 
                 realm.delete(results)
             }
@@ -1352,16 +1344,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getAllExternalSites() -> [tableExternalSites]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
+    @objc func getAllExternalSites(account: String) -> [tableExternalSites]? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableExternalSites.self).filter("account = %@", tableAccount.account).sorted(byKeyPath: "idExternalSite", ascending: true)
+        let results = realm.objects(tableExternalSites.self).filter("account = %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
         
         return Array(results)
     }
@@ -1419,10 +1407,6 @@ class NCManageDatabase: NSObject {
     
     @objc func addLocalFile(metadata: tableMetadata) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
 
         do {
@@ -1430,7 +1414,7 @@ class NCManageDatabase: NSObject {
             
                 let addObject = tableLocalFile()
             
-                addObject.account = tableAccount.account
+                addObject.account = metadata.account
                 addObject.date = metadata.date
                 addObject.etag = metadata.etag
                 addObject.exifDate = NSDate()
@@ -1449,10 +1433,6 @@ class NCManageDatabase: NSObject {
     
     @objc func deleteLocalFile(predicate: NSPredicate) {
         
-        guard self.getAccountActive() != nil else {
-            return
-        }
-        
         let realm = try! Realm()
 
         do {
@@ -1468,10 +1448,6 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
-        
-        guard self.getAccountActive() != nil else {
-            return
-        }
         
         let realm = try! Realm()
 
@@ -1509,10 +1485,6 @@ class NCManageDatabase: NSObject {
     
     @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
         
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
@@ -1524,10 +1496,6 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile]? {
-        
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
         
         let realm = try! Realm()
         realm.refresh()
@@ -1542,10 +1510,6 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func setLocalFile(fileID: String, offline: Bool) {
-        
-        guard self.getAccountActive() != nil else {
-            return
-        }
         
         let realm = try! Realm()
         

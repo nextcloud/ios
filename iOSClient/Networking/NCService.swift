@@ -215,7 +215,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                 
             } else {
                 
-                NCManageDatabase.sharedInstance.deleteExternalSites()
+                NCManageDatabase.sharedInstance.deleteExternalSites(account: appDelegate.activeAccount)
             }
             
             // Read Share
@@ -318,9 +318,9 @@ class NCService: NSObject, OCNetworkingDelegate {
         
         if (errorCode == 0) {
             
-            NCManageDatabase.sharedInstance.deleteExternalSites()
+            NCManageDatabase.sharedInstance.deleteExternalSites(account: appDelegate.activeAccount)
             for externalSites in listOfExternalSites! {
-                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites)
+                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: appDelegate.activeAccount)
             }
             
         } else {

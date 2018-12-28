@@ -146,7 +146,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // ITEM : External
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
         
-            listExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites()
+            listExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(account: appDelegate.activeAccount)
             
             if listExternalSite != nil {
                 
