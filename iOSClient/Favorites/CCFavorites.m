@@ -167,7 +167,7 @@
 
 - (void)addFavoriteFolder:(NSString *)serverUrl
 {
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
     if (!directoryID) return;
     
     NSString *selector;
@@ -555,7 +555,7 @@
         
     } else {
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:appDelegate.activeAccount];
         
         if (directoryID)
             recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];

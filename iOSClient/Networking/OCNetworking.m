@@ -574,7 +574,7 @@
                     OCFileDto *itemDtoFolder = [items objectAtIndex:0];
                     //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
                     
-                    NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl].directoryID;
+                    NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account].directoryID;
                     NSMutableArray *metadatas = [NSMutableArray new];
                     tableMetadata *metadataFolder = [tableMetadata new];
                     
@@ -596,7 +596,7 @@
                     } else {
                         
                         serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                        directoryIDFolder = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlFolder];
+                        directoryIDFolder = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlFolder account:account];
                         
                         if (!directoryIDFolder) {
                             dispatch_async(dispatch_get_main_queue(), ^{
@@ -628,7 +628,7 @@
                         }
                         
                         if (itemDto.isDirectory) {
-                            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName]];
+                            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
                         }
                         
                         // ----- BUG #942 ---------
@@ -732,7 +732,7 @@
                 
                 OCFileDto *itemDto = [items objectAtIndex:0];
                 
-                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:account];
                 if (directoryID) {
                     
                     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -859,10 +859,10 @@
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:k_webDAV] addFileName:serverPath];
                 
                 if (itemDto.isDirectory) {
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:_metadataNet.account];
                 }
                 
-                directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+                directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:_metadataNet.account];
                 
                 isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
                 
@@ -1014,10 +1014,10 @@
                     serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:k_webDAV] addFileName:serverPath];
                     
                     if (itemDto.isDirectory) {
-                        (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]];
+                        (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
                     }
                     
-                    directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+                    directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:account];
                     
                     isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
                     

@@ -484,7 +484,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             self.metadataFolder = metadataFolder
             
             // Update directory etag
-            NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted)
+            NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide))
             NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
             
@@ -520,7 +520,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         if directoryID == "" {
             
             serverUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)
-            directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) ?? ""
+            directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl, account: appDelegate.activeAccount) ?? ""
         }
         
         if includeDirectoryE2EEncryption {
@@ -680,7 +680,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else {
                 return
             }
-            guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
+            guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush, account: appDelegate.activeAccount) else {
                 return
             }
             

@@ -304,7 +304,7 @@
     [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
         
         // Update directory etag
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", directoryID, k_metadataStatusNormal, k_metadataStatusHide]];
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
         
@@ -368,7 +368,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:activeAccount];
     if (!directoryID) return 0;
 
     if (self.includeDirectoryE2EEncryption) {
@@ -475,7 +475,7 @@
     NSString *nomeDir;
 
     NSIndexPath *index = [self.tableView indexPathForSelectedRow];
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:activeAccount];
     if (!directoryID) return;
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:index.row];

@@ -64,7 +64,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionReadFolder;
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
     if (!directoryID) return;
     
     metadataNet.depth = @"1";
@@ -108,7 +108,7 @@
     
     // Add metadata and update etag Directory
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
 
     // reload folder ../ *
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];

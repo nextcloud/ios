@@ -47,7 +47,7 @@ extension FileProviderExtension {
             
             metadata.account = self.providerData.account
             metadata.directory = true
-            metadata.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)!
+            metadata.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl, account: self.providerData.account)!
             metadata.fileID = fileID!
             metadata.fileName = directoryName
             metadata.fileNameView = directoryName
@@ -60,7 +60,7 @@ extension FileProviderExtension {
             }
             
             // DIRECTORY
-            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName) else {
+            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: self.providerData.account) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -146,7 +146,7 @@ extension FileProviderExtension {
             return
         }
         let serverUrlTo = tableDirectoryTo.serverUrl
-        let directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
+        let directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo, account: providerData.account)!
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
@@ -156,7 +156,7 @@ extension FileProviderExtension {
                 
                 NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: self.providerData.account)
                 NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo, directoryIDTo: directoryIDTo)
-                _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo)
+                _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: self.providerData.account)
                 
             } else {
                 
@@ -217,7 +217,7 @@ extension FileProviderExtension {
             
             if metadata.directory {
                 
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted)
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted, account: self.providerData.account)
                 
             } else {
                 

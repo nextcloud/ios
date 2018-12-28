@@ -327,7 +327,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             actionSheet = ActionSheet(items: items) { sheet, item in
                 if item.value as? Int == 0 {
                     if metadata.directory {
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false)
+                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
                     } else {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
                     }
@@ -648,7 +648,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
         
         let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName)
-        guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
+        guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush, account: appDelegate.activeAccount) else {
             return
         }
         guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", directoryIDPush))  else {

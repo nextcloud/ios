@@ -173,7 +173,7 @@
 
 -(void)upload
 {
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal account:appDelegate.activeAccount];
     NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload directoryID:directoryID];
     NSString *fileID = [directoryID stringByAppendingString:appDelegate.fileNameUpload];
     

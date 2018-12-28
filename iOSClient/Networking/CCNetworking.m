@@ -370,9 +370,6 @@
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     if (!serverUrl) return;
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID) return;
-    tableMetadata *metadata;
     
     NSInteger errorCode;
     NSDate *date = [NSDate date];
@@ -399,7 +396,7 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, fileName]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:task.taskIdentifier];
         if (metadata) {
             
             NSString *etag = metadata.etag;
@@ -443,7 +440,7 @@
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, fileName]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:task.taskIdentifier];
         if (metadata) {
             
             NSDictionary *fields = [httpResponse allHeaderFields];
@@ -561,8 +558,6 @@
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     if (!serverUrl) return;
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID) return;
     
     if (totalBytesExpectedToWrite < 1) {
         totalBytesExpectedToWrite = totalBytesWritten;
@@ -570,8 +565,7 @@
         
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName directoryID:directoryID];
-    
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:downloadTask.taskIdentifier];
     if (metadata) {
         
         NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"status": ([NSNumber numberWithLong:k_metadataStatusInDownload]), @"progress": ([NSNumber numberWithFloat:progress]), @"totalBytes": ([NSNumber numberWithLongLong:totalBytesWritten]), @"totalBytesExpected": ([NSNumber numberWithLongLong:totalBytesExpectedToWrite])};
@@ -591,10 +585,8 @@
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     if (!serverUrl) return;
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID) return;
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, fileName]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:downloadTask.taskIdentifier];
     if (!metadata) {
         
         [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serious error internal download : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
@@ -1113,8 +1105,6 @@
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     if (!serverUrl) return;
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID) return;
     
     if (totalBytesExpectedToSend < 1) {
         totalBytesExpectedToSend = totalBytesSent;
@@ -1122,7 +1112,7 @@
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
 
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName directoryID:directoryID];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:task.taskIdentifier];
     
     if (metadata) {
 

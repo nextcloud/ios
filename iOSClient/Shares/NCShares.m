@@ -219,7 +219,7 @@
     
         tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl account:appDelegate.activeAccount];
         if (directoryID)
             metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName = %@", directoryID, table.fileName]];
     }
@@ -234,7 +234,7 @@
         
         tableShare *table = [_dataSource objectAtIndex:indexPath.row];
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl account:appDelegate.activeAccount];
         if (directoryID) {
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
         
@@ -293,7 +293,7 @@
     
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl account:appDelegate.activeAccount];
     if (!directoryID)
         return cell;
     
@@ -351,7 +351,7 @@
 
     if (table.serverUrl) {
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl account:appDelegate.activeAccount];
         if (directoryID)
             metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
 

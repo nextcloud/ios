@@ -707,7 +707,7 @@
         [coordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingForUploading error:&error byAccessor:^(NSURL *newURL) {
             
             NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
             NSString *fileName =  [[NCUtility sharedInstance] createFileName:[url lastPathComponent] directoryID:directoryID];
             NSString *fileID = [directoryID stringByAppendingString:fileName];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
@@ -1057,7 +1057,7 @@
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         }
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
         if (!directoryID) return;
         
         // Check if is in upload
@@ -1224,7 +1224,7 @@
     
     if (_isSearchMode == NO) {
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusNormal, k_metadataStatusHide]];
         
@@ -1387,7 +1387,7 @@
     metadataNet.action = actionSearch;
     metadataNet.contentType = nil;
     metadataNet.date = nil;
-    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory];
+    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory account:appDelegate.activeAccount];
     metadataNet.fileName = _searchFileName;
     metadataNet.etag = @"";
     metadataNet.depth = @"infinity";
@@ -1419,7 +1419,7 @@
         
         // First : filter
             
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:appDelegate.activeAccount];
         if (!directoryID) return;
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView CONTAINS[cd] %@", directoryID, fileName];
@@ -1553,7 +1553,7 @@
             return;
         }
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
 
     } else {
         
@@ -1740,7 +1740,7 @@
     NSInteger numFile = [[arguments objectAtIndex:2] integerValue];
     NSInteger ofFile = [[arguments objectAtIndex:3] integerValue];
     
-    NSString *directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
+    NSString *directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo account:appDelegate.activeAccount];
     if (!directoryIDTo) return;
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
@@ -1881,7 +1881,7 @@
 {
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
     if (!directoryID) return;
     NSString *fileIDTemp = [[NSUUID UUID] UUIDString];
     
@@ -3066,7 +3066,7 @@
         
         NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
         NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl account:appDelegate.activeAccount];
 
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         
@@ -3158,7 +3158,7 @@
             
                 NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
                 
-                if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO]) {
+                if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO account:appDelegate.activeAccount]) {
                 
                     [appDelegate messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
                 }
@@ -3225,7 +3225,7 @@
     
     // ---------------- ACTIVATE PASSWORD
     
-    if ([[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:YES]) {
+    if ([[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:YES account:appDelegate.activeAccount]) {
         
         NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:self.metadata.fileID];
         if ([self indexPathIsValid:indexPath])
@@ -3486,10 +3486,10 @@
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         if (isOffline) {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:false];
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:false account:appDelegate.activeAccount];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         } else {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:true];
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:true account:appDelegate.activeAccount];
                                             [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         }
@@ -3817,7 +3817,7 @@
     }
     
     // current directoryID
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
     if (directoryID == nil) {
         return nil;
     }

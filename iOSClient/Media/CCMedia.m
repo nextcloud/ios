@@ -733,7 +733,7 @@
             metadataNet.action = actionSearch;
             metadataNet.contentType = @[@"image/%", @"video/%"];
             metadataNet.date = [NSDate distantPast];
-            metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory];
+            metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory account:appDelegate.activeAccount];
             metadataNet.fileName = @"";
             metadataNet.etag = metadata.etag;
             metadataNet.depth = @"infinity";

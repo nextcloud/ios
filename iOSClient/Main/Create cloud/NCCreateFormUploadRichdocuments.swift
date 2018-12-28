@@ -256,7 +256,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         }
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl, account: appDelegate.activeAccount) else {
             return
         }
         

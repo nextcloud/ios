@@ -154,7 +154,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         
                         if metadataFolder != nil {
                             // Update directory etag
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder!.etag, fileID: metadataFolder!.fileID, encrypted: metadataFolder!.e2eEncrypted)
+                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder!.etag, fileID: metadataFolder!.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.providerData.account)
                             // Save etag for this serverUrl
                             self.providerData.listServerUrlEtag[serverUrl] = metadataFolder!.etag
                         }

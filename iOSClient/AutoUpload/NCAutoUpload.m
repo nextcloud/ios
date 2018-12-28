@@ -402,7 +402,7 @@
             serverUrl = autoUploadPath;
         
         if (![serverUrl isEqualToString:prevServerUrl]) {
-            directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+            directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
             prevServerUrl = serverUrl;
         }
         
@@ -497,7 +497,7 @@
         
         tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, autoUploadPath]];
         if (!tableDirectory)
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:autoUploadPath];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:autoUploadPath account:appDelegate.activeAccount];
         
     } else {
         
@@ -521,7 +521,7 @@
             
             if ( error == nil) {
                 
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:folderPathName];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:folderPathName account:appDelegate.activeAccount];
                 
             } else {
                 

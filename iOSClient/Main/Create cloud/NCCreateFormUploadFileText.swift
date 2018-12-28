@@ -170,7 +170,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
         }
         
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl, account: appDelegate.activeAccount) else {
             return
         }
         let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave))
@@ -192,7 +192,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
+            let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl, account: appDelegate.activeAccount)!
             dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID, serverUrl: serverUrl)
         }
     }
