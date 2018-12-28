@@ -1224,7 +1224,7 @@
     
     if (_isSearchMode == NO) {
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:metadataNet.account];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusNormal, k_metadataStatusHide]];
         
@@ -1248,7 +1248,7 @@
         
         // File is changed ??
         if (!_isSearchMode && metadatasToInsertInDB)
-            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl account:appDelegate.activeAccount withDownload:NO];
+            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl account:metadataNet.account withDownload:NO];
     });
     
     // Search Mode
@@ -1287,7 +1287,7 @@
                         if (error.code != 404)
                             [appDelegate messageNotification:@"_e2e_error_get_metadata_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                     } else {
-                        if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:appDelegate.activeAccount] serverUrl:self.serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl] == false)
+                        if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:appDelegate.activeAccount] serverUrl:self.serverUrl account:metadataNet.account url:appDelegate.activeUrl] == false)
                             [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                         else
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
@@ -1707,8 +1707,8 @@
         
         [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadataNet.fileID serverUrlTo:metadataNet.serverUrlTo directoryIDTo:metadataNet.directoryIDTo];
         
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrlTo account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl account:metadataNet.account];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrlTo account:metadataNet.account];
 
         // next
         [_selectedFileIDsMetadatas removeObjectForKey:metadataNet.fileID];
