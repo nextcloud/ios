@@ -518,7 +518,7 @@
 
 - (void)readFolder
 {
-    [self readFolder:_metadataNet.serverUrl depth:_metadataNet.depth account:_metadataNet.account success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
+    [self readFolder:_metadataNet.serverUrl depth:_metadataNet.depth account:_metadataNet.account success:^(NSArray *metadatas, tableMetadata *metadataFolder) {
                 
         if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
             [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:metadataFolder metadatas:metadatas message:nil errorCode:0];
@@ -534,7 +534,7 @@
     }];
 }
 
-- (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
@@ -572,7 +572,6 @@
                     OCFileDto *itemDtoFolder = [items objectAtIndex:0];
                     //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
                     
-                    NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account].directoryID;
                     NSMutableArray *metadatas = [NSMutableArray new];
                     tableMetadata *metadataFolder = [tableMetadata new];
                     
@@ -580,28 +579,17 @@
                     NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
                     
                     NSString *serverUrlFolder;
-                    NSString *directoryIDFolder;
 
                     // Metadata . (self Folder)
                     if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
                         
                         // root folder
                         serverUrlFolder = k_serverUrl_root;
-                        directoryIDFolder = k_directoryID_root;
-                        
                         metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
                         
                     } else {
                         
                         serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                        directoryIDFolder = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlFolder account:account];
-                        
-                        if (!directoryIDFolder) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                success(metadatas, metadataFolder, directoryID);
-                            });
-                            return;
-                        }
                         metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[serverUrl lastPathComponent] serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
                     }
 
@@ -643,7 +631,7 @@
                     }
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        success(metadatas, metadataFolder, directoryID);
+                        success(metadatas, metadataFolder);
                     });
                 });
             }
@@ -730,20 +718,12 @@
                 
                 OCFileDto *itemDto = [items objectAtIndex:0];
                 
-                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:account];
-                if (directoryID) {
+                NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+                NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
                     
-                    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-                    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
                     
-                    metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
-                    
-                    success(metadata);
-                    
-                } else {
-                    
-                    failure(NSLocalizedString(@"Directory not found", nil), k_CCErrorInternalError);
-                }
+                success(metadata);
             }
             
             // BUG 1038 item == 0
@@ -829,7 +809,7 @@
         
             for(OCFileDto *itemDto in items) {
             
-                NSString *serverUrl, *directoryID;
+                NSString *serverUrl;
                 BOOL isFolderEncrypted;
 
                 NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
@@ -859,8 +839,6 @@
                 if (itemDto.isDirectory) {
                     (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:_metadataNet.account];
                 }
-                
-                directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:_metadataNet.account];
                 
                 isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
                 
@@ -984,7 +962,7 @@
            
                 for(OCFileDto *itemDto in items) {
                     
-                    NSString *serverUrl, *directoryID;
+                    NSString *serverUrl;
                     BOOL isFolderEncrypted;
                     
                     NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
@@ -1014,8 +992,6 @@
                     if (itemDto.isDirectory) {
                         (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
                     }
-                    
-                    directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:account];
                     
                     isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
                     

@@ -301,7 +301,7 @@
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
 
-    [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
+    [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSArray *metadatas, tableMetadata *metadataFolder) {
         
         // Update directory etag
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
