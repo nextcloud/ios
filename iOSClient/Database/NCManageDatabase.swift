@@ -791,64 +791,33 @@ class NCManageDatabase: NSObject {
     
     @objc func addDirectory(encrypted: Bool, favorite: Bool, fileID: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
         
-        var result: tableDirectory?
         let realm = try! Realm()
-
-        result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first
-        
         realm.beginWrite()
         
-        if result == nil || (result?.isInvalidated)! {
-            
-            result = tableDirectory()
-            result!.account = account
-                
-            result!.directoryID = CCUtility.createIDfromAccount(account, serverUrl: serverUrl) //NSUUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
-            result!.e2eEncrypted = encrypted
-            result!.favorite = favorite
-            if let fileID = fileID {
-                result!.fileID = fileID
-            }
-            if let permissions = permissions {
-                result!.permissions = permissions
-            }
-            
-            result!.serverUrl = serverUrl
-            realm.add(result!)
-            
-            do {
-                try realm.commitWrite()
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-                return nil
-            }
-                
-        } else {
-                
-            result!.e2eEncrypted = encrypted
-            result!.favorite = favorite
-            if let fileID = fileID {
-                result!.fileID = fileID
-            }
-            if let permissions = permissions {
-                result!.permissions = permissions
-            }
-                    
-            result =  tableDirectory.init(value: result!)
-            let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl)
-
-            realm.delete(results)
-            realm.add(result!)
-            
-            do {
-                try realm.commitWrite()
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-                return nil
-            }
-        }
+        let addObject = tableDirectory()
         
-        return tableDirectory.init(value: result!)
+        addObject.account = account
+        addObject.directoryID = CCUtility.createIDfromAccount(account, serverUrl: serverUrl)
+        addObject.e2eEncrypted = encrypted
+        addObject.favorite = favorite
+        if let fileID = fileID {
+            addObject.fileID = fileID
+        }
+        if let permissions = permissions {
+            addObject.permissions = permissions
+        }
+        addObject.serverUrl = serverUrl
+        
+        realm.add(addObject, update: true)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return nil
+        }
+    
+        return tableDirectory.init(value: addObject)
     }
     
     @objc func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
