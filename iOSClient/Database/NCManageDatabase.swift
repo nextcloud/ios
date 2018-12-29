@@ -789,7 +789,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, fileID: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, lock: Bool, offline: Bool, fileID: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -803,6 +803,8 @@ class NCManageDatabase: NSObject {
         if let fileID = fileID {
             addObject.fileID = fileID
         }
+        addObject.lock = lock
+        addObject.offline = offline
         if let permissions = permissions {
             addObject.permissions = permissions
         }
@@ -931,7 +933,7 @@ class NCManageDatabase: NSObject {
         realm.refresh()
 
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first else {
-            return self.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrl, account: account)?.directoryID
+            return self.addDirectory(encrypted: false, favorite: false, lock: false, offline: false, fileID: nil, permissions: nil, serverUrl: serverUrl, account: account)?.directoryID
         }
         
         return result.directoryID

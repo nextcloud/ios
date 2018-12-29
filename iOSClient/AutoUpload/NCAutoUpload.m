@@ -496,7 +496,7 @@
         
         tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, autoUploadPath]];
         if (!tableDirectory)
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:autoUploadPath account:appDelegate.activeAccount];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false lock:false offline:false fileID:fileID permissions:nil serverUrl:autoUploadPath account:appDelegate.activeAccount];
         
     } else {
         
@@ -520,7 +520,7 @@
             
             if ( error == nil) {
                 
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:folderPathName account:appDelegate.activeAccount];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false lock:false offline:false fileID:fileID permissions:nil serverUrl:folderPathName account:appDelegate.activeAccount];
                 
             } else {
                 

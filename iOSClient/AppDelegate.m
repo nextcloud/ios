@@ -1511,30 +1511,19 @@
     // VERSION == 2.22.8
     if ([actualVersion isEqualToString:@"2.22.8"]) {
         
-        // Build < 17
-        if (([actualBuild compare:@"17" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Build < 19
+        if (([actualBuild compare:@"19" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
-            /*
-            NSString *oldDirectoryID;
-            NSString *serverUrl;
-            
-            // Remove All old Photo Library
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl == ''"] sorted:nil ascending:NO];
-            for (tableMetadata *metadata in metadatas) {
-                if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
-                    serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                    oldDirectoryID = metadata.directoryID;
-                }
-                if (serverUrl == nil) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                } else {
-                    [[NCManageDatabase sharedInstance] addMetadataServerUrlWithFileID:metadata.fileID serverUrl:serverUrl];
-                }
-            }
-            */
-            
+            NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl != ''"] sorted:@"account" ascending:NO];
+
             [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
             [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:nil];
+
+            for (tableDirectory *directory in directories) {
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:directory.e2eEncrypted favorite:directory.favorite lock:directory.lock offline:directory.offline fileID:directory.fileID permissions:directory.permissions serverUrl:directory.serverUrl account:directory.account];
+            }
+            
             [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
         }
     }
