@@ -1328,7 +1328,6 @@
     metadataNet.action = actionReadFolder;
     metadataNet.date = [NSDate date];
     metadataNet.depth = @"1";
-    metadataNet.directoryID = directory.directoryID;
     metadataNet.priority = NSOperationQueuePriorityHigh;
     metadataNet.selector = selectorReadFolder;
     metadataNet.serverUrl = serverUrl;
@@ -1381,7 +1380,6 @@
     metadataNet.action = actionSearch;
     metadataNet.contentType = nil;
     metadataNet.date = nil;
-    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory account:appDelegate.activeAccount];
     metadataNet.fileName = _searchFileName;
     metadataNet.etag = @"";
     metadataNet.depth = @"infinity";
@@ -1422,7 +1420,6 @@
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
             
         metadataNet.account = appDelegate.activeAccount;
-        metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl account:appDelegate.activeAccount];
         metadataNet.selector = selectorSearchFiles;
         metadataNet.serverUrl = _serverUrl;
 
@@ -1753,7 +1750,6 @@
         metadataNet.action = actionMoveFileOrFolder;
         metadataNet.directory = metadata.directory;
         metadataNet.fileID = metadata.fileID;
-        metadataNet.directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo account:appDelegate.activeAccount];
         metadataNet.fileName = metadata.fileName;
         metadataNet.fileNameView = metadata.fileNameView;
         metadataNet.fileNameTo = metadata.fileName;

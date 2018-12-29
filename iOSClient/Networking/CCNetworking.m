@@ -1329,8 +1329,6 @@
     [metadataNet setDelegate: self.delegate];
     [metadataNet setDepth: self.depth];
     [metadataNet setDirectory: self.directory];
-    [metadataNet setDirectoryID: self.directoryID];
-    [metadataNet setDirectoryIDTo: self.directoryIDTo];
     [metadataNet setEncryptedMetadata: self.encryptedMetadata];
     [metadataNet setEtag:self.etag];
     [metadataNet setExpirationTime: self.expirationTime];

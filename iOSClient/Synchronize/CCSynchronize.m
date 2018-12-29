@@ -68,7 +68,6 @@
     if (!directoryID) return;
     
     metadataNet.depth = @"1";
-    metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;

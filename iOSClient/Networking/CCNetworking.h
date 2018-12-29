@@ -86,8 +86,6 @@
 @property (nonatomic, weak) id delegate;
 @property (nonatomic, strong) NSString *depth;
 @property BOOL directory;
-@property (nonatomic, strong) NSString *directoryID;
-@property (nonatomic, strong) NSString *directoryIDTo;
 @property (nonatomic, strong) NSString *encryptedMetadata;
 @property (nonatomic, strong) NSString *etag;
 @property (nonatomic, strong) NSString *expirationTime;

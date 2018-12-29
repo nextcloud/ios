@@ -519,9 +519,7 @@
 - (void)readFolder
 {
     [self readFolder:_metadataNet.serverUrl depth:_metadataNet.depth account:_metadataNet.account success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
-        
-        _metadataNet.directoryID = directoryID;
-        
+                
         if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
             [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:metadataFolder metadatas:metadatas message:nil errorCode:0];
         

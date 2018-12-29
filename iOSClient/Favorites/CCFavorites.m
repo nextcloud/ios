@@ -172,7 +172,6 @@
     
     metadataNet.action = actionReadFolder;
     metadataNet.depth = @"1";
-    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
     
     if ([CCUtility getFavoriteOffline])
         selector = selectorReadFolderWithDownload;
