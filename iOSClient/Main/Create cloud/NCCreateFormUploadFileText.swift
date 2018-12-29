@@ -183,7 +183,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID, serverUrl: self.serverUrl)
+                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -192,11 +192,11 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID, serverUrl: serverUrl)
+            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String, serverUrl: String) {
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
         
         self.dismiss(animated: true, completion: {
             

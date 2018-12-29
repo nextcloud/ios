@@ -324,7 +324,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", self.appDelegate.activeAccount, self.serverUrl, fileNameSave))
-                self.dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID, serverUrl: self.serverUrl)
+                self.dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -333,11 +333,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID, serverUrl: serverUrl)
+            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String, serverUrl: String) {
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
         
         guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
