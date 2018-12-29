@@ -982,22 +982,6 @@
     }
 }
 
-+ (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
-{
-    NSString *file;
-    NSString *dir;
-    
-    dir = [self getDirectoryActiveUser:activeUser activeUrl:activeUrl];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dir];
-    
-    while (file = [enumerator nextObject]) {
-        
-        if ([file rangeOfString:@"ID_UPLOAD_"].location != NSNotFound)
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dir, file] error:nil];
-    }
-}
-
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
 {
     NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
@@ -1117,6 +1101,21 @@
 + (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath
 {
     [data writeToFile:fileNamePath atomically:YES];
+}
+
++ (NSString *)createIDfromAccount:(NSString *)account serverUrl:(NSString *)serverUrl
+{
+    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/",@" ", @".", @"-", @"@", nil];
+    
+    for (NSString *currentCharacter in arrayForbiddenCharacters) {
+        account = [account stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    }
+    
+    for (NSString *currentCharacter in arrayForbiddenCharacters) {
+        serverUrl = [serverUrl stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    }
+    
+    return [[account stringByAppendingString:serverUrl] lowercaseString];
 }
 
 #pragma --------------------------------------------------------------------------------------------

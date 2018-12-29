@@ -803,7 +803,7 @@ class NCManageDatabase: NSObject {
             result = tableDirectory()
             result!.account = account
                 
-            result!.directoryID = NSUUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
+            result!.directoryID = CCUtility.createIDfromAccount(account, serverUrl: serverUrl) //NSUUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
             result!.e2eEncrypted = encrypted
             result!.favorite = favorite
             if let fileID = fileID {

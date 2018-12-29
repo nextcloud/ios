@@ -190,7 +190,6 @@
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)removeFileAtPath:(NSString *)atPath;
-+ (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
 + (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
@@ -207,6 +206,8 @@
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
 + (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
+
++ (NSString *)createIDfromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
 
 // ===== E2E Encrypted =====
 
