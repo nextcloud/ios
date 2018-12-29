@@ -129,6 +129,10 @@ extension FileProviderExtension {
             return
         }
         
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadata.serverUrl, account: metadata.account) else {
+            return
+        }
+        
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             return
         }
@@ -138,7 +142,7 @@ extension FileProviderExtension {
             
             // Remove temp fileID = directoryID + fileName
             providerData.queueTradeSafe.sync(flags: .barrier) {
-                let itemIdentifier = NSFileProviderItemIdentifier(metadata.directoryID+fileName)
+                let itemIdentifier = NSFileProviderItemIdentifier(directoryID+fileName)
                 self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
                 self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
             }

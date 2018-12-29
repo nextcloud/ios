@@ -752,7 +752,8 @@
                     
                     // Change Metadata with new fileID, fileName, fileNameView
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                    metadata.fileID = [metadata.directoryID stringByAppendingString:metadata.fileName];
+                    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadata.serverUrl account:metadata.account];
+                    metadata.fileID = [directoryID stringByAppendingString:metadata.fileName];
                 }
                 
                 tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
@@ -873,7 +874,8 @@
         }
         
         // if new file upload [directoryID + fileName] create a new encrypted filename
-        if ([metadata.fileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileNameView]]) {
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadata.serverUrl account:metadata.account];
+        if ([metadata.fileID isEqualToString:[directoryID stringByAppendingString:metadata.fileNameView]]) {
             fileNameIdentifier = [CCUtility generateRandomIdentifier];
         } else {
             fileNameIdentifier = metadata.fileName;
@@ -1177,7 +1179,8 @@
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
 
         // remove tempFileID and adjust the directory provider storage
-        if ([tempFileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileNameView]]) {
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadata.serverUrl account:metadata.account];
+        if ([tempFileID isEqualToString:[directoryID stringByAppendingString:metadata.fileNameView]]) {
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
             
