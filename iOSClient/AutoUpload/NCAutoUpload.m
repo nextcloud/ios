@@ -415,7 +415,6 @@
             metadataForUpload.account = appDelegate.activeAccount;
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
             metadataForUpload.date = [NSDate new];
-            metadataForUpload.directoryID = directoryID;
             metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
             metadataForUpload.fileName = fileName;
             metadataForUpload.fileNameView = fileName;

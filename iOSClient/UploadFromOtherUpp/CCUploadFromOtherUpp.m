@@ -181,7 +181,6 @@
     
     metadataForUpload.account = appDelegate.activeAccount;
     metadataForUpload.date = [NSDate new];
-    metadataForUpload.directoryID = directoryID;
     metadataForUpload.fileID = fileID;
     metadataForUpload.fileName = fileName;
     metadataForUpload.fileNameView = fileName;

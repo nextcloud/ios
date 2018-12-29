@@ -47,7 +47,6 @@ extension FileProviderExtension {
             
             metadata.account = self.providerData.account
             metadata.directory = true
-            metadata.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl, account: self.providerData.account)!
             metadata.fileID = fileID!
             metadata.fileName = directoryName
             metadata.fileNameView = directoryName
@@ -146,7 +145,6 @@ extension FileProviderExtension {
             return
         }
         let serverUrlTo = tableDirectoryTo.serverUrl
-        let directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo, account: providerData.account)!
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
@@ -155,12 +153,12 @@ extension FileProviderExtension {
             if metadataFrom.directory {
                 
                 NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: self.providerData.account)
-                NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo, directoryIDTo: directoryIDTo)
+                NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
                 _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: self.providerData.account)
                 
             } else {
                 
-                NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo, directoryIDTo: directoryIDTo)
+                NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
             }
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileIDFrom)) else {
@@ -391,7 +389,6 @@ extension FileProviderExtension {
                 metadata.account = self.providerData.account
                 metadata.date = NSDate()
                 metadata.directory = false
-                metadata.directoryID = tableDirectory.directoryID
                 metadata.etag = ""
                 metadata.fileID = tableDirectory.directoryID + fileName
                 metadata.fileName = fileName

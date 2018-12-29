@@ -118,20 +118,16 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         if identifier == .rootContainer {
             
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, providerData.homeServerUrl)) {
+            let metadata = tableMetadata()
                     
-                let metadata = tableMetadata()
-                    
-                metadata.account = providerData.account
-                metadata.directory = true
-                metadata.directoryID = directory.directoryID
-                metadata.fileID = NSFileProviderItemIdentifier.rootContainer.rawValue
-                metadata.fileName = ""
-                metadata.fileNameView = ""
-                metadata.typeFile = k_metadataTypeFile_directory
-                    
-                return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue), providerData: providerData)
-            }
+            metadata.account = providerData.account
+            metadata.directory = true
+            metadata.fileID = NSFileProviderItemIdentifier.rootContainer.rawValue
+            metadata.fileName = ""
+            metadata.fileNameView = ""
+            metadata.typeFile = k_metadataTypeFile_directory
+            
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue), providerData: providerData)
             
         } else {
             
@@ -145,9 +141,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             return item
-        }
-        
-        throw NSFileProviderError(.noSuchItem)
+        }        
     }
     
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {

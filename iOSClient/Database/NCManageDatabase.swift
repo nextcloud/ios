@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 34,
+            schemaVersion: 35,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -84,6 +84,7 @@ class NCManageDatabase: NSObject {
             // 32 : Version 2.22.6.10
             // 33 : Version 2.22.7.1
             // 34 : Version 2.22.8.14
+            // 35 : Version 2.22.8.14
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -1577,7 +1578,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func moveMetadata(fileID: String, serverUrlTo: String, directoryIDTo: String) {
+    @objc func moveMetadata(fileID: String, serverUrlTo: String) {
         
         let realm = try! Realm()
 
@@ -1588,7 +1589,6 @@ class NCManageDatabase: NSObject {
         
                 for result in results {
                     result.serverUrl = serverUrlTo
-                    result.directoryID = directoryIDTo
                 }
             }
         } catch let error {

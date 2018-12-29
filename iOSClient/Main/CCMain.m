@@ -720,7 +720,6 @@
                     
                     metadataForUpload.account = appDelegate.activeAccount;
                     metadataForUpload.date = [NSDate new];
-                    metadataForUpload.directoryID = directoryID;
                     metadataForUpload.fileID = fileID;
                     metadataForUpload.fileName = fileName;
                     metadataForUpload.fileNameView = fileName;
@@ -1068,7 +1067,6 @@
         metadataForUpload.account = appDelegate.activeAccount;
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
         metadataForUpload.date = [NSDate new];
-        metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
         metadataForUpload.fileID = [[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount] stringByAppendingString:fileName];
         metadataForUpload.fileName = fileName;
         metadataForUpload.fileNameView = fileName;
@@ -1697,7 +1695,7 @@
             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName] account:metadataNet.account];
         }
         
-        [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadataNet.fileID serverUrlTo:metadataNet.serverUrlTo directoryIDTo:metadataNet.directoryIDTo];
+        [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadataNet.fileID serverUrlTo:metadataNet.serverUrlTo];
         
         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl account:metadataNet.account];
         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrlTo account:metadataNet.account];
@@ -1755,7 +1753,6 @@
         metadataNet.action = actionMoveFileOrFolder;
         metadataNet.directory = metadata.directory;
         metadataNet.fileID = metadata.fileID;
-        metadataNet.directoryID = metadata.directoryID;
         metadataNet.directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo account:appDelegate.activeAccount];
         metadataNet.fileName = metadata.fileName;
         metadataNet.fileNameView = metadata.fileNameView;
@@ -1875,7 +1872,7 @@
     NSString *fileIDTemp = [[NSUUID UUID] UUIDString];
     
     // Create Directory (temp) on metadata
-    tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES fileID:fileIDTemp serverUrl:serverUrl directoryID:directoryID fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+    tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES fileID:fileIDTemp serverUrl:serverUrl fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal url:@""];
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
@@ -2164,13 +2161,12 @@
     [_hud visibleIndeterminateHud];
 }
 
-- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission metadata:(tableMetadata *)metadata directoryID:(NSString *)directoryID serverUrl:(NSString *)serverUrl
+- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
 
     metadataNet.action = actionShareWith;
     metadataNet.fileID = metadata.fileID;
-    metadataNet.directoryID = directoryID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
     metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.serverUrl = serverUrl;
@@ -3072,7 +3068,6 @@
                         
                 metadataForUpload.account = appDelegate.activeAccount;
                 metadataForUpload.date = [NSDate new];
-                metadataForUpload.directoryID = directoryID;
                 metadataForUpload.fileID = fileID;
                 metadataForUpload.fileName = fileName;
                 metadataForUpload.fileNameView = fileName;

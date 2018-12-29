@@ -391,7 +391,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         metadataForUpload.account = self.appDelegate.activeAccount
         metadataForUpload.date = NSDate()
-        metadataForUpload.directoryID = directoryID
         metadataForUpload.fileID = fileID
         metadataForUpload.fileName = fileNameSave
         metadataForUpload.fileNameView = fileNameSave

@@ -101,7 +101,7 @@
     self.tabBarController.tabBar.translucent = YES;
     
     // Open View
-    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
+    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.fileID length] > 0) {
     
         // open view
         [self viewFile];
