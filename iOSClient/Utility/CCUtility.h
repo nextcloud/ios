@@ -207,7 +207,8 @@
 
 + (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
 
-+ (NSString *)createIDfromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
++ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
++ (NSString *)createFileIDUploadFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName;
 
 // ===== E2E Encrypted =====
 

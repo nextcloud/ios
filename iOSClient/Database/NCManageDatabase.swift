@@ -797,7 +797,7 @@ class NCManageDatabase: NSObject {
         let addObject = tableDirectory()
         
         addObject.account = account
-        addObject.directoryID = CCUtility.createIDfromAccount(account, serverUrl: serverUrl)
+        addObject.directoryID = CCUtility.createDirectoyID(fromAccount: account, serverUrl: serverUrl)
         addObject.e2eEncrypted = encrypted
         addObject.favorite = favorite
         if let fileID = fileID {
