@@ -210,6 +210,7 @@ class tableMetadata: Object {
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
+    @objc dynamic var metadataID = ""
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
@@ -222,7 +223,7 @@ class tableMetadata: Object {
     @objc dynamic var url = ""
 
     override static func primaryKey() -> String {
-        return "fileID"
+        return "metadataID"
     }
 }
 
@@ -240,6 +241,7 @@ class tablePhotos: Object {
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
+    @objc dynamic var metadataID = ""
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
@@ -252,7 +254,7 @@ class tablePhotos: Object {
     @objc dynamic var url = ""
 
     override static func primaryKey() -> String {
-        return "fileID"
+        return "metadataID"
     }
 }
 

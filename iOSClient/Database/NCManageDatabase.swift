@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 35,
+            schemaVersion: 37,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -85,13 +85,25 @@ class NCManageDatabase: NSObject {
             // 33 : Version 2.22.7.1
             // 34 : Version 2.22.8.14
             // 35 : Version 2.22.8.14
+            // 36 : Version 2.22.8.14
+            // 37 : Version 2.22.8.14
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 6) {
-                    // Nothing to do!
-                    // Realm will automatically detect new properties and removed properties
-                    // And will update the schema on disk automatically
+                if (oldSchemaVersion < 37) {
+                    migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
+                        let account = oldObject!["account"] as! String
+                        let serverUrl = oldObject!["serverUrl"] as! String
+                        let fileName = oldObject!["fileName"] as! String
+                        newObject!["metadataID"] = CCUtility.createMetadataID(fromAccount: account, serverUrl: serverUrl, fileName: fileName)
+                    }
+                    
+                    migration.enumerateObjects(ofType: tablePhotos.className()) { oldObject, newObject in
+                        let account = oldObject!["account"] as! String
+                        let serverUrl = oldObject!["serverUrl"] as! String
+                        let fileName = oldObject!["fileName"] as! String
+                        newObject!["metadataID"] = CCUtility.createMetadataID(fromAccount: account, serverUrl: serverUrl, fileName: fileName)
+                    }
                 }
         })
 
@@ -1475,6 +1487,7 @@ class NCManageDatabase: NSObject {
         
         let serverUrl = metadata.serverUrl
         let account = metadata.account
+        metadata.metadataID = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         
         let realm = try! Realm()
 
@@ -1505,6 +1518,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 for metadata in metadatas {
+                    metadata.metadataID = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                     directoryToClearDate[metadata.serverUrl] = metadata.account
                     realm.add(metadata, update: true)
                 }

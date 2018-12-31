@@ -208,7 +208,7 @@
 + (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
 
 + (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
-+ (NSString *)createFileIDUploadFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName;
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName;
 
 // ===== E2E Encrypted =====
 

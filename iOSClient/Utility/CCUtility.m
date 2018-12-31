@@ -1105,7 +1105,7 @@
 
 + (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl
 {
-    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/",@" ", @".", @"-", @"@", @"_", nil];
+    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
     
     for (NSString *currentCharacter in arrayForbiddenCharacters) {
         account = [account stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
@@ -1118,7 +1118,7 @@
     return [[account stringByAppendingString:serverUrl] lowercaseString];
 }
 
-+ (NSString *)createFileIDUploadFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName
 {
     NSString *directoryID = [self createDirectoyIDFromAccount:account serverUrl:serverUrl];
     
