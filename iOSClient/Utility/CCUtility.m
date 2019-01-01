@@ -1122,10 +1122,11 @@
 {
     NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileName] lowercaseString];
     
-    if (directory)
-        [metadataID stringByAppendingString:@"-directory"];
-        
-        return metadataID;
+    if (directory) {
+        return [metadataID stringByAppendingString:@"-directory"];
+    }
+    
+    return metadataID;
 }
 
 #pragma --------------------------------------------------------------------------------------------
