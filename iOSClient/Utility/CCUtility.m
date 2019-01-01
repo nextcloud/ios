@@ -1118,11 +1118,14 @@
     return [[account stringByAppendingString:serverUrl] lowercaseString];
 }
 
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName directory:(BOOL)directory
 {
-    NSString *directoryID = [self createDirectoyIDFromAccount:account serverUrl:serverUrl];
+    NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileName] lowercaseString];
     
-    return [[directoryID stringByAppendingString:fileName] lowercaseString];
+    if (directory)
+        [metadataID stringByAppendingString:@"-directory"];
+        
+        return metadataID;
 }
 
 #pragma --------------------------------------------------------------------------------------------

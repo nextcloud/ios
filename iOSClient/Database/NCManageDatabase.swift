@@ -1489,7 +1489,7 @@ class NCManageDatabase: NSObject {
         
         let serverUrl = metadata.serverUrl
         let account = metadata.account
-        metadata.metadataID = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+        metadata.metadataID = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName, directory: metadata.directory)
         
         let realm = try! Realm()
 
@@ -1520,7 +1520,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 for metadata in metadatas {
-                    metadata.metadataID = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                    metadata.metadataID = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName, directory: metadata.directory)
                     directoryToClearDate[metadata.serverUrl] = metadata.account
                     realm.add(metadata, update: true)
                 }
