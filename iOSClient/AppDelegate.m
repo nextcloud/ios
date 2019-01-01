@@ -665,8 +665,7 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
-    // Test Maintenance
-    if (self.maintenanceMode)
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1152,6 +1151,9 @@
 
 - (void)loadAutoDownloadUpload
 {
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
     tableMetadata *metadataForUpload, *metadataForDownload;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
@@ -1159,10 +1161,6 @@
     
     long maxConcurrentOperationDownload = k_maxConcurrentOperationDownload;
     long maxConcurrentOperationUpload = k_maxConcurrentOperationUpload;
-    
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
     
     // Detect E2EE
     NSString *saveserverUrl = @"";

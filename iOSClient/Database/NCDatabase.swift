@@ -223,7 +223,7 @@ class tableMetadata: Object {
     @objc dynamic var url = ""
 
     override static func primaryKey() -> String {
-        return "metadataID"
+        return "fileID"
     }
 }
 
@@ -254,7 +254,7 @@ class tablePhotos: Object {
     @objc dynamic var url = ""
 
     override static func primaryKey() -> String {
-        return "metadataID"
+        return "fileID"
     }
 }
 

@@ -90,6 +90,7 @@ class NCManageDatabase: NSObject {
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
+                /*
                 if (oldSchemaVersion < 37) {
                     migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
                         let account = oldObject!["account"] as! String
@@ -105,6 +106,7 @@ class NCManageDatabase: NSObject {
                         newObject!["metadataID"] = CCUtility.createMetadataID(fromAccount: account, serverUrl: serverUrl, fileName: fileName)
                     }
                 }
+                */
         })
 
         Realm.Configuration.defaultConfiguration = config
