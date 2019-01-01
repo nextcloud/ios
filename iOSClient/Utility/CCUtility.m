@@ -1123,7 +1123,7 @@
     NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileName] lowercaseString];
     
     if (directory) {
-        return [metadataID stringByAppendingString:@"-directory"];
+        return [metadataID stringByAppendingString:@"-dir"];
     }
     
     return metadataID;
