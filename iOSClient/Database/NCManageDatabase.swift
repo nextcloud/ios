@@ -871,16 +871,23 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                result.e2eEncrypted = encrypted
-                if let serverUrlTo = serverUrlTo {
-                    result.serverUrl = serverUrlTo
-                }
+                let directory = tableDirectory.init(value: result)
+                
+                realm.delete(result)
+                
+                directory.e2eEncrypted = encrypted
                 if let etag = etag {
-                    result.etag = etag
+                    directory.etag = etag
                 }
                 if let fileID = fileID {
-                    result.fileID = fileID
+                    directory.fileID = fileID
                 }
+                if let serverUrlTo = serverUrlTo {
+                    directory.serverUrl = serverUrlTo
+                }
+                directory.directoryID = CCUtility.createDirectoyID(fromAccount: account, serverUrl: directory.serverUrl)
+                
+                realm.add(directory, update: true)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
