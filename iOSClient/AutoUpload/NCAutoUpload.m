@@ -339,7 +339,7 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     NSMutableArray *metadataFull = [NSMutableArray new];
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-    NSString *serverUrl, *prevServerUrl, *directoryID;
+    NSString *serverUrl;
     
     // Check Asset : NEW or FULL
     PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
@@ -395,16 +395,10 @@
         [formatter setDateFormat:@"MM"];
         NSString *monthString = [formatter stringFromDate:assetDate];
         
-        // get directoryID
         if (tableAccount.autoUploadCreateSubfolder)
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         else
             serverUrl = autoUploadPath;
-        
-        if (![serverUrl isEqualToString:prevServerUrl]) {
-            directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl account:appDelegate.activeAccount];
-            prevServerUrl = serverUrl;
-        }
         
         // Check il file already exists
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileName]];
@@ -415,7 +409,7 @@
             metadataForUpload.account = appDelegate.activeAccount;
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
             metadataForUpload.date = [NSDate new];
-            metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
+            metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName directory:false];
             metadataForUpload.fileName = fileName;
             metadataForUpload.fileNameView = fileName;
             metadataForUpload.serverUrl = serverUrl;

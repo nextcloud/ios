@@ -95,8 +95,7 @@
 // define Nextcloud IOS
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
 
-// directoryID root
-#define k_directoryID_root                              @"00000000-0000-0000-0000-000000000000"
+// serverUrl root
 #define k_serverUrl_root                                @".."
 
 // Constants to identify the different permissions of a file

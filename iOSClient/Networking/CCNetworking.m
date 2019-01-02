@@ -752,8 +752,7 @@
                     
                     // Change Metadata with new fileID, fileName, fileNameView
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadata.serverUrl account:metadata.account];
-                    metadata.fileID = [directoryID stringByAppendingString:metadata.fileName];
+                    metadata.fileID = [CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileName:metadata.fileName directory:false];
                 }
                 
                 tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
@@ -873,9 +872,8 @@
             return;
         }
         
-        // if new file upload [directoryID + fileName] create a new encrypted filename
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadata.serverUrl account:metadata.account];
-        if ([metadata.fileID isEqualToString:[directoryID stringByAppendingString:metadata.fileNameView]]) {
+        // if new file upload create a new encrypted filename
+        if ([metadata.fileID isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileName:metadata.fileName directory:false]]) {
             fileNameIdentifier = [CCUtility generateRandomIdentifier];
         } else {
             fileNameIdentifier = metadata.fileName;
@@ -1179,8 +1177,7 @@
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
 
         // remove tempFileID and adjust the directory provider storage
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadata.serverUrl account:metadata.account];
-        if ([tempFileID isEqualToString:[directoryID stringByAppendingString:metadata.fileNameView]]) {
+        if ([tempFileID isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileName:metadata.fileName directory:metadata.directory]]) {
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
             

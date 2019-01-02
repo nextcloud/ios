@@ -55,7 +55,6 @@
 #pragma --------------------------------------------------------------------------------------------
 
 // serverUrl    : start
-// directoryID  : start
 // selector     : selectorReadFolder, selectorReadFolderWithDownload
 //
 

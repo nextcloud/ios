@@ -214,11 +214,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadata.serverUrl, account: metadata.account) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
-        }
-        
         // Error ? reUpload when touch
         if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
             
@@ -231,7 +226,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
             
         // is Upload [Office 365 !!!]
-        if metadata.fileID.contains(directoryID + metadata.fileName) {
+        if metadata.fileID == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName, directory: false)! {
             completionHandler(nil)
             return
         }

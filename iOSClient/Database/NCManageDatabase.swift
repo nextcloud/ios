@@ -944,38 +944,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getDirectoryID(_ serverUrl: String?, account: String) -> String? {
-        
-        guard let serverUrl = serverUrl else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        realm.refresh()
-
-        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first else {
-            return self.addDirectory(encrypted: false, favorite: false, lock: false, offline: false, fileID: nil, permissions: nil, serverUrl: serverUrl, account: account)?.directoryID
-        }
-        
-        return result.directoryID
-    }
-    
-    @objc func getServerUrl(_ directoryID: String?) -> String? {
-        
-        guard let directoryID = directoryID else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableDirectory.self).filter("directoryID == %@", directoryID).first else {
-            return nil
-        }
-        
-        return result.serverUrl
-    }
-    
     @objc func setDateReadDirectory(serverUrl: String, account: String) {
         
         let realm = try! Realm()

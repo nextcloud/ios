@@ -376,9 +376,10 @@ extension FileProviderExtension {
                 }
             
                 let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: self.providerData.account)
+                let fileID = CCUtility.createMetadataID(fromAccount: self.providerData.account, serverUrl: tableDirectory.serverUrl, fileName: fileName, directory: false)!
             
                 self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
-                    _ = self.providerData.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(tableDirectory.directoryID + fileName, fileNameView: fileName))
+                    _ = self.providerData.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileName))
                 }
             
                 fileURL.stopAccessingSecurityScopedResource()
@@ -390,7 +391,7 @@ extension FileProviderExtension {
                 metadata.date = NSDate()
                 metadata.directory = false
                 metadata.etag = ""
-                metadata.fileID = tableDirectory.directoryID + fileName
+                metadata.fileID = fileID
                 metadata.fileName = fileName
                 metadata.fileNameView = fileName
                 metadata.serverUrl = tableDirectory.serverUrl

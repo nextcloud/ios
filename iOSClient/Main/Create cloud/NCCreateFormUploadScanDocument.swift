@@ -310,10 +310,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             fileNameSave = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
         }
         
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl, account: appDelegate.activeAccount) else {
-            return
-        }
-        
         let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, self.serverUrl, fileNameSave))
         if (metadata != nil) {
             
@@ -324,7 +320,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", self.appDelegate.activeAccount, self.serverUrl, fileNameSave))
-                self.dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, serverUrl: self.serverUrl)
+                self.dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileName: self.serverUrl, directory: false)!, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -333,7 +329,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, serverUrl: serverUrl)
+            dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: serverUrl, directory: false)!, serverUrl: serverUrl)
         }
     }
     

@@ -630,30 +630,6 @@
             [self searchPhotoVideo];
         }
     }
-    
-    /*
-    if ([type isEqualToString:@"automaticUploadFolder"]) {
-        
-        if (title == nil) {
-            [appDelegate messageNotification:@"_error_" description:@"_media_error_select_folder_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-            return;
-        }
-        
-        NSString *serverUrl = [NSURL URLWithString:serverUrlTo].URLByDeletingLastPathComponent.absoluteString;
-        if ([[serverUrl substringFromIndex:[serverUrl length] - 1] isEqualToString:@"/"])
-            serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-
-        // Clear data (old) Auto Upload
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
-        
-        // Settings new folder Automatatic upload
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:title];
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
-        
-        // Clear data new Auto Upload
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
-    }
-    */
 }
 
 - (void)selectStartDirectoryPhotosTab

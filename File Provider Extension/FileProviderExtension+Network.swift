@@ -129,10 +129,6 @@ extension FileProviderExtension {
             return
         }
         
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadata.serverUrl, account: metadata.account) else {
-            return
-        }
-        
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             return
         }
@@ -140,9 +136,9 @@ extension FileProviderExtension {
         // OK
         if errorCode == 0 {
             
-            // Remove temp fileID = directoryID + fileName
+            // Remove temp fileID
             providerData.queueTradeSafe.sync(flags: .barrier) {
-                let itemIdentifier = NSFileProviderItemIdentifier(directoryID+fileName)
+                let itemIdentifier = NSFileProviderItemIdentifier(CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName, directory: false))
                 self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
                 self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
             }
@@ -201,13 +197,9 @@ extension FileProviderExtension {
         
         var itemIdentifierForUpload = itemIdentifier
         
-        // Is itemIdentifier = directoryID+fileName [Apple Works and ... ?]
+        // Is itemIdentifier = fileName [Apple Works and ... ?]
         if itemIdentifier.rawValue.contains(fileName) && providerData.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
-            let directoryID = itemIdentifier.rawValue.replacingOccurrences(of: fileName, with: "")
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(directoryID) else {
-                return
-            }
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", providerData.account, serverUrl, fileName)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@ AND fileName == %@", providerData.account, itemIdentifier.rawValue, fileName)) else {
                 return
             }
             itemIdentifierForUpload = providerData.getItemIdentifier(metadata: metadata)
