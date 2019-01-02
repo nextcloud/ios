@@ -752,7 +752,7 @@
                     
                     // Change Metadata with new fileID, fileName, fileNameView
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                    metadata.fileID = [CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileName:metadata.fileName directory:false];
+                    metadata.fileID = [CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:false];
                 }
                 
                 tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
@@ -873,7 +873,7 @@
         }
         
         // if new file upload create a new encrypted filename
-        if ([metadata.fileID isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileName:metadata.fileName directory:false]]) {
+        if ([metadata.fileID isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:false]]) {
             fileNameIdentifier = [CCUtility generateRandomIdentifier];
         } else {
             fileNameIdentifier = metadata.fileName;
@@ -1020,10 +1020,12 @@
         // E2EE : CREATE AND SEND METADATA
         if ([CCUtility isFolderEncrypted:metadata.serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
             
+            NSString *serverUrl = metadata.serverUrl;
+            
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
                 // Send Metadata
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:metadata.serverUrl fileNameRename:nil fileNameNewRename:nil account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl fileNameRename:nil fileNameNewRename:nil account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -1177,7 +1179,7 @@
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
 
         // remove tempFileID and adjust the directory provider storage
-        if ([tempFileID isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileName:metadata.fileName directory:metadata.directory]]) {
+        if ([tempFileID isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:metadata.directory]]) {
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
             

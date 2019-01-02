@@ -1549,7 +1549,7 @@ class NCManageDatabase: NSObject {
         
                 for result in results {
                     result.serverUrl = serverUrlTo
-                    result.metadataID = CCUtility.createMetadataID(fromAccount: result.account, serverUrl: serverUrlTo, fileName: result.fileName, directory: result.directory)
+                    result.metadataID = CCUtility.createMetadataID(fromAccount: result.account, serverUrl: serverUrlTo, fileNameView: result.fileNameView, directory: result.directory)
                 }
             }
         } catch let error {
@@ -1589,7 +1589,7 @@ class NCManageDatabase: NSObject {
                 if result != nil {
                     result!.fileName = fileNameTo
                     result!.fileNameView = fileNameTo
-                    result!.metadataID = CCUtility.createMetadataID(fromAccount: result!.account, serverUrl: result!.serverUrl, fileName: fileNameTo, directory: result!.directory)
+                    result!.metadataID = CCUtility.createMetadataID(fromAccount: result!.account, serverUrl: result!.serverUrl, fileNameView: fileNameTo, directory: result!.directory)
                 }
             }
         } catch let error {

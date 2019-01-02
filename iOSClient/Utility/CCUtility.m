@@ -1118,9 +1118,9 @@
     return [[account stringByAppendingString:serverUrl] lowercaseString];
 }
 
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName directory:(BOOL)directory
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
 {
-    NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileName] lowercaseString];
+    NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileNameView] lowercaseString];
     
     if (directory) {
         return [metadataID stringByAppendingString:@"-dir"];
@@ -1177,7 +1177,7 @@
     metadata.fileID = fileID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
-    metadata.metadataID = [self createMetadataIDFromAccount:account serverUrl:serverUrl fileName:fileName directory:directory];
+    metadata.metadataID = [self createMetadataIDFromAccount:account serverUrl:serverUrl fileNameView:fileName directory:directory];
     metadata.serverUrl = serverUrl;
     metadata.size = size;
     metadata.status = status;
@@ -1214,7 +1214,7 @@
     metadata.fileNameView = fileNameView;
     metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
-    metadata.metadataID = [self createMetadataIDFromAccount:activeAccount serverUrl:serverUrl fileName:fileName directory:itemDto.isDirectory];
+    metadata.metadataID = [self createMetadataIDFromAccount:activeAccount serverUrl:serverUrl fileNameView:fileName directory:itemDto.isDirectory];
     metadata.permissions = itemDto.permissions;
     metadata.serverUrl = serverUrl;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;

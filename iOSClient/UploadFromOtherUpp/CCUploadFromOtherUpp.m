@@ -179,7 +179,7 @@
     
     metadataForUpload.account = appDelegate.activeAccount;
     metadataForUpload.date = [NSDate new];
-    metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrlLocal fileName:fileName directory:false];
+    metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrlLocal fileNameView:fileName directory:false];
     metadataForUpload.fileName = fileName;
     metadataForUpload.fileNameView = fileName;
     metadataForUpload.serverUrl = serverUrlLocal;

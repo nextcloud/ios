@@ -188,7 +188,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            let fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileName: fileNameSave, directory: false)!
+            let fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!
             dismissAndUpload(fileNameSave, fileID: fileID, serverUrl: serverUrl)
         }
     }

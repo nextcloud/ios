@@ -226,7 +226,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
             
         // is Upload [Office 365 !!!]
-        if metadata.fileID == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName, directory: false)! {
+        if metadata.fileID == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false)! {
             completionHandler(nil)
             return
         }

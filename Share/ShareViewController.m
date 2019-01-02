@@ -219,7 +219,7 @@
         
         metadataForUpload.account = self.activeAccount;
         metadataForUpload.date = [NSDate new];
-        metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:self.activeAccount serverUrl:self.serverUrl fileName:fileName directory:false];
+        metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:self.activeAccount serverUrl:self.serverUrl fileNameView:fileName directory:false];
         metadataForUpload.fileName = fileName;
         metadataForUpload.fileNameView = fileName;
         metadataForUpload.serverUrl = self.serverUrl;
