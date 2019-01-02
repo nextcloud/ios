@@ -1538,6 +1538,7 @@
 
             for (tableDirectory *directory in directories) {
                 (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:directory.e2eEncrypted favorite:directory.favorite fileID:directory.fileID etag:directory.etag permissions:directory.permissions serverUrl:directory.serverUrl account:directory.account];
+                [[NCManageDatabase sharedInstance] setLockOfflineDirectoryWithServerUrl:directory.serverUrl account:directory.account lock:directory.lock offline:directory.offline];
             }
             
             [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];

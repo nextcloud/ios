@@ -990,6 +990,27 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func setLockOfflineDirectory(serverUrl: String, account: String, lock: Bool, offline: Bool) {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        result.lock = lock
+        result.offline = offline
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     @objc func setDirectoryLock(serverUrl: String, lock: Bool, account: String) -> Bool {
         
         let realm = try! Realm()
