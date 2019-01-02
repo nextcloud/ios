@@ -59,7 +59,7 @@ extension FileProviderExtension {
             }
             
             // DIRECTORY
-            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, etag: nil, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: self.providerData.account) else {
+            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: self.providerData.account) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -154,7 +154,7 @@ extension FileProviderExtension {
                 
                 NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: self.providerData.account)
                 NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
-                _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, etag: nil, permissions: nil, serverUrl: serverUrlTo, account: self.providerData.account)
+                _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: self.providerData.account)
                 
             } else {
                 
