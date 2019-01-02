@@ -3050,6 +3050,7 @@
             if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 
                 NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.activeAccount];
+                NSString *fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:self.serverUrl fileName:fileName directory:false];
                 
                 [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
                     
@@ -3057,7 +3058,7 @@
                         
                 metadataForUpload.account = appDelegate.activeAccount;
                 metadataForUpload.date = [NSDate new];
-                metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:self.serverUrl fileName:fileName directory:false];
+                metadataForUpload.fileID = fileID;
                 metadataForUpload.fileName = fileName;
                 metadataForUpload.fileNameView = fileName;
                 metadataForUpload.serverUrl = self.serverUrl;
