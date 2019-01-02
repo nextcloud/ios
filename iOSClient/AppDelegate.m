@@ -1527,8 +1527,8 @@
     // VERSION == 2.22.8
     if ([actualVersion isEqualToString:@"2.22.8"]) {
         
-        // Build < 19
-        if (([actualBuild compare:@"19" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Build < 20
+        if (([actualBuild compare:@"20" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl != ''"] sorted:@"account" ascending:NO];
 
