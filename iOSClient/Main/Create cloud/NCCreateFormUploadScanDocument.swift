@@ -329,7 +329,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: serverUrl, directory: false)!, serverUrl: serverUrl)
+            dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave, directory: false)!, serverUrl: serverUrl)
         }
     }
     

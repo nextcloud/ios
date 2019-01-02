@@ -228,7 +228,8 @@
         metadataForUpload.status = k_metadataStatusWaitUpload;
         
         // Prepare file and directory
-        [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:fileName]];
+        [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:[self.filesName objectAtIndex:0]] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:fileName]];
+        [self.filesName replaceObjectAtIndex:0 withObject:fileName];
         
         // Add Medtadata for upload
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];

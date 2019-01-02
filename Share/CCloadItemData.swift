@@ -68,7 +68,7 @@ class CCloadItemData: NSObject {
                                         if let pngImageData = image.pngData() {
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
-                                            let filenamePath = directory + "/" + fileName
+                                            let filenamePath = directory + fileName
                                         
                                             let result = (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
                                         
@@ -91,7 +91,7 @@ class CCloadItemData: NSObject {
                                         // OLD fileName with date
                                         //let pathExtention = URL(fileURLWithPath: url.lastPathComponent).pathExtension
                                         //let fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
-                                        let filenamePath = directory + "/" + fileName
+                                        let filenamePath = directory + fileName
                                         
                                         do {
                                             try FileManager.default.removeItem(atPath: filenamePath)
@@ -136,7 +136,7 @@ class CCloadItemData: NSObject {
                                             let pathExtention = (fileExtArr[fileExtArr.count-1]).uppercased()
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
-                                            let filenamePath = directory + "/" + fileName
+                                            let filenamePath = directory + fileName
 
                                             FileManager.default.createFile(atPath: filenamePath, contents:data, attributes:nil)
                                                                                 
@@ -151,7 +151,7 @@ class CCloadItemData: NSObject {
                                             print("item as NSString")
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).txt"
-                                            let filenamePath = directory + "/" + fileName
+                                            let filenamePath = directory + fileName
                                         
                                             FileManager.default.createFile(atPath: filenamePath, contents:data.data(using: String.Encoding.utf8.rawValue), attributes:nil)
                                         
