@@ -1574,6 +1574,7 @@ class NCManageDatabase: NSObject {
         
                 for result in results {
                     result.serverUrl = serverUrlTo
+                    result.metadataID = CCUtility.createMetadataID(fromAccount: result.account, serverUrl: serverUrlTo, fileName: result.fileName, directory: result.directory)
                 }
             }
         } catch let error {
@@ -1611,9 +1612,9 @@ class NCManageDatabase: NSObject {
                 
                 result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first
                 if result != nil {
-                                        
                     result!.fileName = fileNameTo
                     result!.fileNameView = fileNameTo
+                    result!.metadataID = CCUtility.createMetadataID(fromAccount: result!.account, serverUrl: result!.serverUrl, fileName: fileNameTo, directory: result!.directory)
                 }
             }
         } catch let error {

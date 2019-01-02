@@ -130,6 +130,8 @@
 
 @property (nonatomic, strong) NSMutableArray *filterFileID;
 
+@property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
+
 @property (nonatomic, strong) NSString *pnDeviceIdentifier;
 @property (nonatomic, strong) NSString *pnDeviceIdentifierSignature;
 @property (nonatomic, strong) NSString *pnPublicKey;

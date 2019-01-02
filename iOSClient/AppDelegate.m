@@ -135,6 +135,9 @@
     // Filter fileID
     self.filterFileID = [NSMutableArray new];
 
+    // Upload Pending In Upload (crash)
+    self.sessionPendingStatusInUpload = [NSMutableArray new];
+    
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];
     
@@ -1159,8 +1162,7 @@
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     BOOL isE2EE = false;
     
-    long maxConcurrentOperationDownload = k_maxConcurrentOperationDownload;
-    long maxConcurrentOperationUpload = k_maxConcurrentOperationUpload;
+    long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperationDownloadUpload;
     
     // Detect E2EE
     NSString *saveserverUrl = @"";
@@ -1182,8 +1184,7 @@
     
     // E2EE : only 1 operation
     if (isE2EE) {
-        maxConcurrentOperationDownload = 1;
-        maxConcurrentOperationUpload = 1;
+        maxConcurrentOperationDownloadUpload = 1;
     }
     
     // Stop Timer
@@ -1207,7 +1208,7 @@
     
     // ------------------------- <selector Download> -------------------------
     
-    while (counterDownload < maxConcurrentOperationDownload) {
+    while (counterDownload < maxConcurrentOperationDownloadUpload) {
         
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
         if (metadataForDownload) {
@@ -1226,7 +1227,7 @@
     
     // ------------------------- <selector Upload> -------------------------
     
-    while (counterUpload < maxConcurrentOperationUpload) {
+    while (counterUpload < maxConcurrentOperationDownloadUpload) {
         
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1253,7 +1254,7 @@
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUpload < maxConcurrentOperationUpload) {
+    while (counterUpload < maxConcurrentOperationDownloadUpload) {
         
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1288,7 +1289,7 @@
         
     } else {
         
-        while (counterUpload < maxConcurrentOperationUpload) {
+        while (counterUpload < maxConcurrentOperationDownloadUpload) {
             
             if (sizeUpload > k_maxSizeOperationUpload) {
                 break;
@@ -1312,7 +1313,7 @@
     
     // No Download/upload available ? --> remove errors for retry
     //
-    if (counterDownload+counterUpload == 0) {
+    if (counterDownload+counterUpload < maxConcurrentOperationDownloadUpload+1) {
         
         NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", _activeAccount, k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
         for (tableMetadata *metadata in metadatas) {
@@ -1326,7 +1327,7 @@
         }
     }
     
-    // Verify internal error (lost task)
+    // Verify internal error download (lost task)
     //
     NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
     for (tableMetadata *metadata in matadatasInDownloading) {
@@ -1353,8 +1354,10 @@
         }];
     }
     
-    NSArray *metadatasInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
-    for (tableMetadata *metadata in metadatasInUploading) {
+    // Verify internal error upload (lost task)
+    //
+    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasUploading) {
         
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
         
@@ -1376,6 +1379,21 @@
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
+    }
+    
+    // Upload in pending
+    //
+    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d AND sessionTaskIdentifier == 0", self.activeAccount, k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasInUpload) {
+        if ([self.sessionPendingStatusInUpload containsObject:metadata.fileID]) {
+            metadata.status = k_metadataStatusWaitUpload;
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        } else {
+            [self.sessionPendingStatusInUpload addObject:metadata.fileID];
+        }
+    }
+    if (metadatasInUpload.count == 0) {
+        [self.sessionPendingStatusInUpload removeAllObjects];
     }
     
     // Start Timer
