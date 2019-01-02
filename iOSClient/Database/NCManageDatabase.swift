@@ -803,22 +803,29 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, lock: Bool, offline: Bool, fileID: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, fileID: String?, etag: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
         
-        let addObject = tableDirectory()
+        var addObject = tableDirectory()
+        
+        let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first
+        if result != nil {
+            addObject = result!
+        } else {
+            addObject.directoryID = CCUtility.createDirectoyID(fromAccount: account, serverUrl: serverUrl)
+        }
         
         addObject.account = account
-        addObject.directoryID = CCUtility.createDirectoyID(fromAccount: account, serverUrl: serverUrl)
         addObject.e2eEncrypted = encrypted
         addObject.favorite = favorite
+        if let etag = etag {
+            addObject.etag = etag
+        }
         if let fileID = fileID {
             addObject.fileID = fileID
         }
-        addObject.lock = lock
-        addObject.offline = offline
         if let permissions = permissions {
             addObject.permissions = permissions
         }
