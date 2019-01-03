@@ -488,6 +488,14 @@
     NSMutableURLRequest *request;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+    if (tableAccount == nil) {
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+
+        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
+            [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Download error, account not found" errorCode:k_CCErrorInternalError];
+        }
+        return;
+    }
     
     NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName] encodeString:NSUTF8StringEncoding];
         
@@ -513,7 +521,7 @@
         if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
             [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Serious internal error downloadTask not available" errorCode:k_CCErrorInternalError];
         }
-
+        
     } else {
         
         // Manage uploadTask cancel,suspend,resume
@@ -524,13 +532,13 @@
         [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionTaskIdentifier:downloadTask.taskIdentifier status:k_metadataStatusDownloading predicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
         NSLog(@"[LOG] downloadFileSession %@ Task [%lu]", metadata.fileID, (unsigned long)downloadTask.taskIdentifier);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([self.delegate respondsToSelector:@selector(downloadStart:account:task:serverUrl:)]) {
+                [self.delegate downloadStart:metadata.fileID account:metadata.account task:downloadTask serverUrl:metadata.serverUrl];
+            }
+        });
     }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([self.delegate respondsToSelector:@selector(downloadStart:account:task:serverUrl:)]) {
-            [self.delegate downloadStart:metadata.fileID account:metadata.account task:downloadTask serverUrl:metadata.serverUrl];
-        }
-    });
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
@@ -683,6 +691,14 @@
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+    if (tableAccount == nil) {
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+        
+        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+            [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Upload error, account not found" errorCode:k_CCErrorInternalError];
+        }
+        return;
+    }
     
     if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO) {
     
@@ -752,9 +768,9 @@
                     
                     // OOOOOK
                     if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-                        [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
+                        [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
                     } else {
-                        [self uploadURLSessionMetadata:metadataForUpload taskStatus:taskStatus];
+                        [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
                     }
                 }
             }];
@@ -805,9 +821,9 @@
                             
                             // OOOOOK
                             if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-                                [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
+                                [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
                             } else {
-                                [self uploadURLSessionMetadata:metadataForUpload taskStatus:taskStatus];
+                                [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
                             }
                         });
                     }
@@ -822,14 +838,14 @@
         
         // OOOOOK
         if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-            [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
+            [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
         } else {
-            [self uploadURLSessionMetadata:metadataForUpload taskStatus:taskStatus];
+            [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
         }
     }
 }
 
-- (void)e2eEncryptedFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
+- (void)e2eEncryptedFile:(tableMetadata *)metadata tableAccount:(tableAccount *)tableAccount taskStatus:(NSInteger)taskStatus
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
@@ -841,8 +857,6 @@
         NSString *metadataKey;
         NSInteger metadataKeyIndex;
         NSString *e2eMetadata;
-
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
 
         // Verify File Size
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:&error];
@@ -938,19 +952,17 @@
             // Update Metadata
             tableMetadata *metadataEncrypted = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
-            [self uploadURLSessionMetadata:metadataEncrypted taskStatus:taskStatus];
+            [self uploadURLSessionMetadata:metadataEncrypted tableAccount:tableAccount taskStatus:taskStatus];
         });
     });
 }
 
-- (void)uploadURLSessionMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
+- (void)uploadURLSessionMetadata:(tableMetadata *)metadata tableAccount:(tableAccount *)tableAccount taskStatus:(NSInteger)taskStatus
 {
     NSURL *url;
     NSMutableURLRequest *request;
     PHAsset *asset;
     NSError *error;
-    
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     
     // calculate and store file size
     NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName] error:&error];
@@ -1118,6 +1130,14 @@
     BOOL isE2EEDirectory = false;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+    if (tableAccount == nil) {
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
+
+        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+            [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
+        }
+        return;
+    }
     
     // is this a E2EE Directory ?
     if ([CCUtility isFolderEncrypted:serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
@@ -1225,7 +1245,7 @@
     }
     
     // Detect E2EE
-    tableMetadata *e2eeMetadataInSession = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1 AND (status == %d OR status == %d)", tableAccount.account, metadata.serverUrl, k_metadataStatusInUpload, k_metadataStatusUploading]];
+    tableMetadata *e2eeMetadataInSession = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1 AND (status == %d OR status == %d)", metadata.account, metadata.serverUrl, k_metadataStatusInUpload, k_metadataStatusUploading]];
     
     // E2EE : UNLOCK
     if (isE2EEDirectory && e2eeMetadataInSession == nil) {
