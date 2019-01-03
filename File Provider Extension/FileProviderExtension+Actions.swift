@@ -50,6 +50,7 @@ extension FileProviderExtension {
             metadata.fileID = fileID!
             metadata.fileName = directoryName
             metadata.fileNameView = directoryName
+            metadata.serverUrl = serverUrl
             metadata.typeFile = k_metadataTypeFile_directory
             
             // METADATA
