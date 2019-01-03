@@ -260,7 +260,6 @@ class NCService: NSObject, OCNetworkingDelegate {
             let user = tableAccount.user
             let url = tableAccount.url
             
-            CCNetworking.shared().settingAccount()
             appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
             
             // Call func thath required the userdID

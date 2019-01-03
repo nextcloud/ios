@@ -82,9 +82,7 @@ class FileProviderData: NSObject {
         } else if account != activeAccount.account {
             assert(false, "change user")
         }
-        
-        CCNetworking.shared().settingAccount()
-        
+                
         return true
     }
     

@@ -44,8 +44,6 @@
 
 + (CCNetworking *)sharedNetworking;
 
-- (void)settingAccount;
-
 // Sessions
 - (OCCommunication *)sharedOCCommunication;
 - (OCCommunication *)sharedOCCommunicationExtensionDownload;

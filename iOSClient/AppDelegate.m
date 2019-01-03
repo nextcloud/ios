@@ -379,7 +379,6 @@
     self.activePassword = activePassword;
     
     // Setting Account to CCNetworking
-    [[CCNetworking sharedNetworking] settingAccount];
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
 }
 

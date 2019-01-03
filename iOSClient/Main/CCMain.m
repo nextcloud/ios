@@ -333,10 +333,7 @@
         
         // go Home
         [self.navigationController popToRootViewControllerAnimated:NO];
-        
-        // setting Networking
-        [[CCNetworking sharedNetworking] settingAccount];
-        
+                
         // Remove search mode
         [self cancelSearchBar];
         
