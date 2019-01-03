@@ -152,15 +152,11 @@ extension FileProviderExtension {
         ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
             
             if metadataFrom.directory {
-                
                 NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: self.providerData.account)
-                NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
                 _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: self.providerData.account)
-                
-            } else {
-                
-                NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
             }
+                
+            NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileIDFrom)) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
