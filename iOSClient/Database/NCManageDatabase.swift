@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 37,
+            schemaVersion: 38,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -87,6 +87,7 @@ class NCManageDatabase: NSObject {
             // 35 : Version 2.22.8.14
             // 36 : Version 2.22.8.14
             // 37 : Version 2.22.8.14
+            // 38 : Version 2.22.8.20
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -1574,7 +1575,6 @@ class NCManageDatabase: NSObject {
         
                 for result in results {
                     result.serverUrl = serverUrlTo
-                    result.metadataID = CCUtility.createMetadataID(fromAccount: result.account, serverUrl: serverUrlTo, fileNameView: result.fileNameView, directory: result.directory)
                 }
             }
         } catch let error {
@@ -1614,7 +1614,6 @@ class NCManageDatabase: NSObject {
                 if result != nil {
                     result!.fileName = fileNameTo
                     result!.fileNameView = fileNameTo
-                    result!.metadataID = CCUtility.createMetadataID(fromAccount: result!.account, serverUrl: result!.serverUrl, fileNameView: fileNameTo, directory: result!.directory)
                 }
             }
         } catch let error {
