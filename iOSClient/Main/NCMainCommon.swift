@@ -168,12 +168,12 @@ class NCMainCommon: NSObject {
     @objc func cancelAllTransfer(view: UIView) {
         
         // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d AND status != %d", self.appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true)  {
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d AND status != %d", k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true)  {
                 
                 for metadata in metadatas {
                     
