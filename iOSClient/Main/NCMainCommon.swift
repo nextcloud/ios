@@ -54,7 +54,7 @@ class NCMainCommon: NSObject {
         let totalBytes = dic["totalBytes"] as! Double
         let totalBytesExpected = dic["totalBytesExpected"] as! Double
         
-        if account != self.appDelegate.activeAccount! as NSString {
+        if (account != self.appDelegate.activeAccount! as NSString) && !(viewController is CCTransfers) {
             return
         }
         
@@ -159,7 +159,7 @@ class NCMainCommon: NSObject {
                 actionReloadDatasource = k_action_DEL
             }
             
-            if cancel == false {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.reloadDatasource(ServerUrl: metadata.serverUrl, fileID: metadata.fileID, action: actionReloadDatasource)
             }
         }

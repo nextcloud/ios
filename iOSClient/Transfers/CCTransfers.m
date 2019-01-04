@@ -202,7 +202,7 @@
         return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND ((session CONTAINS 'upload') OR (session CONTAINS 'download'))", appDelegate.activeAccount] sorted:@"sessionTaskIdentifier" ascending:NO];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload') OR (session CONTAINS 'download')"] sorted:@"sessionTaskIdentifier" ascending:NO];
         
         CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
         
@@ -246,11 +246,11 @@
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
     
-    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (session == %@ OR session == %@)", appDelegate.activeAccount, k_download_session, k_download_session_foreground] sorted:nil ascending:NO] count];
-    NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session == %@", appDelegate.activeAccount, k_download_session_wwan] sorted:nil ascending:NO] count];
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_download_session, k_download_session_foreground] sorted:nil ascending:NO] count];
+    NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_download_session_wwan] sorted:nil ascending:NO] count];
 
-    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (session == %@ OR session == %@)", appDelegate.activeAccount, k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
-    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session == %@", appDelegate.activeAccount, k_upload_session_wwan] sorted:nil ascending:NO] count];
+    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
+    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_upload_session_wwan] sorted:nil ascending:NO] count];
     
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [sectionDataSource.sections objectAtIndex:section];
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[sectionDataSource.sections objectAtIndex:section]];
@@ -332,7 +332,7 @@
     // Footer Download
     if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (session == %@ OR session == %@)", appDelegate.activeAccount, k_download_session, k_download_session_foreground] sorted:nil ascending:NO] count];
+        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_download_session, k_download_session_foreground] sorted:nil ascending:NO] count];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -349,7 +349,7 @@
     // Footer Download WWAN
     if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session == %@", appDelegate.activeAccount, k_download_session_wwan] sorted:nil ascending:NO] count];
+        NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_download_session_wwan] sorted:nil ascending:NO] count];
         
         // element or elements ?
         if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -370,7 +370,7 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (session == %@ OR session == %@)", appDelegate.activeAccount, k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
+        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -387,7 +387,7 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session == %@", appDelegate.activeAccount, k_upload_session_wwan] sorted:nil ascending:NO] count];
+        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_upload_session_wwan] sorted:nil ascending:NO] count];
        
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -434,7 +434,7 @@
         return [CCCellMainTransfer new];
     }
     
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl]];
     if (directory == nil) {
         return [CCCellMainTransfer new];
     }
