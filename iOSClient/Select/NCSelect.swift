@@ -475,22 +475,24 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         networkInProgress = true
         collectionView.reloadData()
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.readFolder(serverUrl, depth: "1", account: appDelegate.activeAccount, success: { (metadatas, metadataFolder) in
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.readFolder(serverUrl, depth: "1", account: appDelegate.activeAccount, success: { (account, metadatas, metadataFolder) in
             
-            self.metadataFolder = metadataFolder
+            if account == self.appDelegate.activeAccount {
             
-            // Update directory etag
-            NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
-            NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
-            
-            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
-            
-            if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
+                self.metadataFolder = metadataFolder
                 
-                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
+                // Update directory etag
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
+                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
+                
+                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
+                
+                if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
+                    
+                    _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
+                }
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -498,7 +500,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                 self.loadDatasource(withLoadFolder: false)
             }
             
-        }, failure: { (message, errorCode) in
+        }, failure: { (account, message, errorCode) in
                         
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             

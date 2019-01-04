@@ -227,7 +227,6 @@
 #define actionMiddlewarePing                            @"middlewarePing"
 #define actionMoveFileOrFolder                          @"moveFileOrFolder"
 #define actionReadFile                                  @"readFile"
-#define actionReadFolder                                @"readFolder"
 #define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
 #define actionSetNotificationServer                     @"setNotificationServer"

@@ -148,7 +148,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 if self.providerData.listServerUrlEtag[serverUrl] == nil || self.providerData.listServerUrlEtag[serverUrl] != metadata!.etag || metadatasFromDB == nil {
                     
-                    ocNetworking?.readFolder(serverUrl, depth: "1", account: self.providerData.account, success: { (metadatas, metadataFolder) in
+                    ocNetworking?.readFolder(serverUrl, depth: "1", account: self.providerData.account, success: { (account, metadatas, metadataFolder) in
                         
                         if metadataFolder != nil {
                             // Update directory etag
@@ -175,7 +175,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         
                         self.selectFirstPageItems(metadatasFromDB, observer: observer)
                         
-                    }, failure: { (errorMessage, errorCode) in
+                    }, failure: { (account, errorMessage, errorCode) in
                         
                         self.selectFirstPageItems(metadatasFromDB, observer: observer)
                     })

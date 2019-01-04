@@ -299,29 +299,31 @@
 
 - (void)readFolder
 {
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
-
-    [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSArray *metadatas, tableMetadata *metadataFolder) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder) {
         
-        // Update directory etag
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
-        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
+        if ([account isEqualToString:activeAccount]) {
         
-        NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+            // Update directory etag
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
+            [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
         
-        // insert in Database
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-        // reinsert metadatas in Download
-        if (metadatasInDownload) {
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
+            NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+        
+            // insert in Database
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+            // reinsert metadatas in Download
+            if (metadatasInDownload) {
+                (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
+            }
         }
-        
+     
         _loadingFolder = NO;
         
         [self.tableView reloadData];
         
-    } failure:^(NSString *message, NSInteger errorCode) {
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         _loadingFolder = NO;
         self.move.enabled = NO;
@@ -334,7 +336,6 @@
         }]];
         
         [self presentViewController:alertController animated:YES completion:nil];
-        
     }];
 
     _loadingFolder = YES;

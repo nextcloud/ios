@@ -528,118 +528,96 @@
 #pragma mark ===== Read Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFolder
+- (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure
 {
-    [self readFolder:_metadataNet.serverUrl depth:_metadataNet.depth account:_metadataNet.account success:^(NSArray *metadatas, tableMetadata *metadataFolder) {
-                
-        if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
-            [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:metadataFolder metadatas:metadatas message:nil errorCode:0];
-        
-        [self complete];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
-            [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:nil metadatas:nil message:message errorCode:errorCode];
-        
-        [self complete];
-    }];
-}
-
-- (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
-{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication readFolder:serverUrl depth:depth withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:account]) {
-            
-            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-            
-        } else {
-            
-            // Check items > 0
-            if ([items count] == 0) {
+        // Check items > 0
+        if ([items count] == 0) {
                 
 #ifndef EXTENSION
-                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
                 
-                [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
-                failure(NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
+            failure(account, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
 
-            } else {
+        } else {
                 
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
-                    BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-                    BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
+                BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
+                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
                     
-                    // directory [0]
-                    OCFileDto *itemDtoFolder = [items objectAtIndex:0];
-                    //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
+                // directory [0]
+                OCFileDto *itemDtoFolder = [items objectAtIndex:0];
+                //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
                     
-                    NSMutableArray *metadatas = [NSMutableArray new];
-                    tableMetadata *metadataFolder = [tableMetadata new];
+                NSMutableArray *metadatas = [NSMutableArray new];
+                tableMetadata *metadataFolder = [tableMetadata new];
                     
-                    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-                    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+                NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+                NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
                     
-                    NSString *serverUrlFolder;
+                NSString *serverUrlFolder;
 
-                    // Metadata . (self Folder)
-                    if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
+                // Metadata . (self Folder)
+                if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url]]) {
                         
-                        // root folder
-                        serverUrlFolder = k_serverUrl_root;
-                        metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
+                    // root folder
+                    serverUrlFolder = k_serverUrl_root;
+                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
                         
-                    } else {
+                } else {
                         
-                        serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                        metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[serverUrl lastPathComponent] serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
-                    }
+                    serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[serverUrl lastPathComponent] serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
+                }
                     
-                    // Add metadata folder
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account];
+                // Add metadata folder
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account];
 
-                    NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
                         
-                        NSString *first = [(OCFileDto*)a fileName];
-                        NSString *second = [(OCFileDto*)b fileName];
-                        return [[first lowercaseString] compare:[second lowercaseString]];
-                    }];
+                    NSString *first = [(OCFileDto*)a fileName];
+                    NSString *second = [(OCFileDto*)b fileName];
+                    return [[first lowercaseString] compare:[second lowercaseString]];
+                }];
                     
-                    for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
+                for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
                         
-                        OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
-                        NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                    OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
+                    NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
                         
-                        // Skip hidden files
-                        if (fileName.length > 0) {
-                            if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
-                                continue;
-                        } else {
+                    // Skip hidden files
+                    if (fileName.length > 0) {
+                        if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
                             continue;
-                        }
-                        
-                        if (itemDto.isDirectory) {
-                            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
-                        }
-                        
-                        [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted]];
+                    } else {
+                        continue;
                     }
+                        
+                    if (itemDto.isDirectory) {
+                        (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
+                    }
+                        
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted]];
+                }
                     
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        success(metadatas, metadataFolder);
-                    });
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    success(account, metadatas, metadataFolder);
                 });
-            }
+            });
         }
     
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
@@ -661,9 +639,9 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:tableAccount.url];
 
-        failure(message, errorCode);
+        failure(account, message, errorCode);
     }];
 }
 

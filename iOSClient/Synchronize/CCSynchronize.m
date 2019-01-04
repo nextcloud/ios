@@ -60,167 +60,146 @@
 
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    metadataNet.action = actionReadFolder;
-    metadataNet.depth = @"1";
-    metadataNet.priority = NSOperationQueuePriorityLow;
-    metadataNet.selector = selector;
-    metadataNet.serverUrl = serverUrl;
-    
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-    
-    NSLog(@"[LOG] %@ directory : %@", selector, serverUrl);
-}
-
-// MULTI THREAD
-- (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    // ERROR
-    if (errorCode != 0) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking readFolder:serverUrl depth:@"1" account:appDelegate.activeAccount success:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder) {
         
-        // Folder not present, remove it
-        if (errorCode == 404) {
-            
-            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl account:metadataNet.account];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+        if (tableAccount == nil) {
+            return;
         }
         
-        return;
-    }
-    
-    // Add/update self Folder
-    if (!metadataFolder || !metadatas || [metadatas count] == 0) {
-        if (metadataFolder.serverUrl != nil) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
+        // Add/update self Folder
+        if (!metadataFolder || !metadatas || [metadatas count] == 0) {
+            if (metadataFolder.serverUrl != nil) {
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
+            }
+            return;
         }
-        return;
-    }
-    
-    // Add metadata and update etag Directory
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
-
-    // reload folder ../ *
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
-        NSMutableArray *addMetadatas = [NSMutableArray new];
-    
-        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session != ''", metadataNet.account, metadataNet.serverUrl] sorted:nil ascending:NO];
+        // Add metadata and update etag Directory
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:account];
         
-        // ----- Test : (DELETE) -----
+        // reload folder ../ *
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
         
-        NSMutableArray *metadatasNotPresents = [NSMutableArray new];
-        
-        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session == ''", metadataNet.account, metadataNet.serverUrl] sorted:nil ascending:NO];
-        
-        for (tableMetadata *record in tableMetadatas) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             
-            BOOL fileIDFound = NO;
+            NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
+            NSMutableArray *addMetadatas = [NSMutableArray new];
+            
+            NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session != ''", account, serverUrl] sorted:nil ascending:NO];
+            
+            // ----- Test : (DELETE) -----
+            
+            NSMutableArray *metadatasNotPresents = [NSMutableArray new];
+            
+            NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session == ''", account, serverUrl] sorted:nil ascending:NO];
+            
+            for (tableMetadata *record in tableMetadatas) {
+                
+                BOOL fileIDFound = NO;
+                
+                for (tableMetadata *metadata in metadatas) {
+                    
+                    if ([record.fileID isEqualToString:metadata.fileID]) {
+                        fileIDFound = YES;
+                        break;
+                    }
+                }
+                
+                if (!fileIDFound)
+                    [metadatasNotPresents addObject:record];
+            }
+            
+            // delete metadata not present
+            for (tableMetadata *metadata in metadatasNotPresents) {
+                
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+                
+                if (metadata.directory && serverUrl) {
+                    
+                    NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+                    
+                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete account:metadata.account];
+                }
+                
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([metadatasNotPresents count] > 0)
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+            });
+            
+            // ----- Test : (MODIFY) -----
             
             for (tableMetadata *metadata in metadatas) {
                 
-                if ([record.fileID isEqualToString:metadata.fileID]) {
-                    fileIDFound = YES;
-                    break;
-                }
-            }
-            
-            if (!fileIDFound)
-                [metadatasNotPresents addObject:record];
-        }
-        
-        // delete metadata not present
-        for (tableMetadata *metadata in metadatasNotPresents) {
-        
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            
-            if (metadata.directory && metadataNet.serverUrl) {
-                
-                NSString *dirForDelete = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
-                
-                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete account:metadata.account];
-            }
-            
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([metadatasNotPresents count] > 0)
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
-        });
-        
-        // ----- Test : (MODIFY) -----
-        
-        for (tableMetadata *metadata in metadatas) {
-            
-            // RECURSIVE DIRECTORY MODE
-            if (metadata.directory) {
-                
-                NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
-                
-                // Verify if do not exists this Metadata
-                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-
-                if (!result)
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-              
-                    // Load if different etag
-                    //tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, serverUrl]];
-                
-                    //if (![tableDirectory.etag isEqualToString:metadata.etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
+                // RECURSIVE DIRECTORY MODE
+                if (metadata.directory) {
                                         
-                    //    [self readFolder:serverUrl selector:metadataNet.selector];
-                    //}
-                
-                [self readFolder:serverUrl selector:metadataNet.selector];
-                    
-            } else {
-                
-                if ([metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
-                    
-                    // It's in session
-                    BOOL recordInSession = NO;
-                    for (tableMetadata *record in recordsInSessions) {
-                        if ([record.fileID isEqualToString:metadata.fileID]) {
-                            recordInSession = YES;
-                            break;
-                        }
-                    }
-                    
-                    if (recordInSession)
-                        continue;
-            
-                    // Ohhhh INSERT
-                    [metadatasForVerifyChange addObject:metadata];
-                }
-                
-                if ([metadataNet.selector isEqualToString:selectorReadFolder]) {
-                    
                     // Verify if do not exists this Metadata
                     tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-
+                    
                     if (!result)
-                        [addMetadatas addObject:metadata];
+                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                    
+                    [self readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selector];
+                    
+                } else {
+                    
+                    if ([selector isEqualToString:selectorReadFolderWithDownload]) {
+                        
+                        // It's in session
+                        BOOL recordInSession = NO;
+                        for (tableMetadata *record in recordsInSessions) {
+                            if ([record.fileID isEqualToString:metadata.fileID]) {
+                                recordInSession = YES;
+                                break;
+                            }
+                        }
+                        
+                        if (recordInSession)
+                            continue;
+                        
+                        // Ohhhh INSERT
+                        [metadatasForVerifyChange addObject:metadata];
+                    }
+                    
+                    if ([selector isEqualToString:selectorReadFolder]) {
+                        
+                        // Verify if do not exists this Metadata
+                        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                        
+                        if (!result)
+                            [addMetadatas addObject:metadata];
+                    }
                 }
             }
+            
+            if ([addMetadatas count] > 0)
+                (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas];
+            
+            if ([metadatasForVerifyChange count] > 0)
+                [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:serverUrl account:account withDownload:YES];
+        });
+            
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        // Folder not present, remove it
+        if (errorCode == 404) {
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:serverUrl account:account];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
         }
         
-        if ([addMetadatas count] > 0)
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas];
-        
-        if ([metadatasForVerifyChange count] > 0)
-            [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:metadataNet.serverUrl account:metadataNet.account withDownload:YES];
-    });
+        return;
+    }];
+    
+    
+    
 }
 
 #pragma --------------------------------------------------------------------------------------------

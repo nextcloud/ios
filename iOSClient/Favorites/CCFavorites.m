@@ -167,6 +167,7 @@
 
 - (void)addFavoriteFolder:(NSString *)serverUrl
 {
+    /*
     NSString *selector;
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
@@ -182,6 +183,7 @@
     metadataNet.serverUrl = serverUrl;
     
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:[CCSynchronize sharedSynchronize] metadataNet:metadataNet];
+    */
 }
 
 - (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite
