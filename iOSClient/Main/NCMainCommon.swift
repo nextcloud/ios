@@ -1166,8 +1166,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             
-            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-            
+            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
             ocNetworking?.downloadPreview(with: metadata, withWidth: width, andHeight: height, completion: { (message, errorCode) in
                 if metadata.account == self.appDelegate.activeAccount {
                     if errorCode == 0 && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {

@@ -604,8 +604,7 @@
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
     [ocNetworking downloadPreviewWithMetadata:metadata withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
         counterThumbnail--;
         if (errorCode == 0 && [metadata.account isEqualToString:appDelegate.activeAccount] && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {

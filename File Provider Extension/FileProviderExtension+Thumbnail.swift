@@ -46,11 +46,10 @@ extension FileProviderExtension {
                     let width = NCUtility.sharedInstance.getScreenWidthForPreview()
                     let height = NCUtility.sharedInstance.getScreenHeightForPreview()
                     
-                    let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-                    
+                    let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
                     ocNetworking?.downloadPreview(with: metadata!, withWidth: width, andHeight: height, completion: { (message, errorCode) in
                         
-                        if errorCode == 0 {
+                        if errorCode == 0 && metadata!.account == self.providerData.account {
                             do {
                                 let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
                                 let data = try Data.init(contentsOf: url)
