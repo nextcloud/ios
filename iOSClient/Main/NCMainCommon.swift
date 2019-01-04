@@ -724,7 +724,7 @@ class NCMainCommon: NSObject {
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(tableAccount?.user, activeUrl: tableAccount?.url) + "-avatar.png"
                     var avatar = UIImage.init(contentsOfFile: fileNamePath)
                     if avatar != nil {
-                        let avatarImageView = CCAvatar.init(image: avatar, borderColor: UIColor.lightGray, borderWidth: 0.5)
+                        let avatarImageView = CCAvatar.init(image: avatar, borderColor: UIColor.black, borderWidth: 0.5)
                         let imageSize = avatarImageView?.bounds.size
                         UIGraphicsBeginImageContext(imageSize!)
                         let context = UIGraphicsGetCurrentContext()
