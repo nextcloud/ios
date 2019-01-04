@@ -717,6 +717,25 @@ class NCMainCommon: NSObject {
             // Progress
             cell.transferButton.progress = progress
             
+            // User
+            if metadata.account != appDelegate.activeAccount {
+                let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account))
+                if tableAccount != nil {
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(tableAccount?.user, activeUrl: tableAccount?.url) + "-avatar.png"
+                    var avatar = UIImage.init(contentsOfFile: fileNamePath)
+                    if avatar != nil {
+                        let avatarImageView = CCAvatar.init(image: avatar, borderColor: UIColor.lightGray, borderWidth: 0.5)
+                        let imageSize = avatarImageView?.bounds.size
+                        UIGraphicsBeginImageContext(imageSize!)
+                        let context = UIGraphicsGetCurrentContext()
+                        avatarImageView?.layer.render(in: context!)
+                        avatar = UIGraphicsGetImageFromCurrentImageContext()
+                        UIGraphicsEndImageContext()
+                        cell.user.image = avatar
+                    }
+                }
+            }
+            
             return cell
         }
     }
