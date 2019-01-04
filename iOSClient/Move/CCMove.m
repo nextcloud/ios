@@ -279,18 +279,16 @@
 
 - (void)readFile
 {
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
-
-    [ocNetworking readFile:nil serverUrl:_serverUrl account:activeAccount success:^(tableMetadata *metadata) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking readFile:nil serverUrl:_serverUrl account:activeAccount success:^(NSString *account, tableMetadata *metadata) {
         
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", activeAccount, _serverUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, _serverUrl]];
             
         if ([metadata.etag isEqualToString:directory.etag] == NO) {
-                
             [self readFolder];
         }
         
-    } failure:^(NSString *message, NSInteger errorCode) {
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
         [self readFolder];
     }];
 }

@@ -138,22 +138,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Read File <Delegate> ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 0) {
-        
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-        [self reloadDatasource];
-        
-    } else {
-        NSLog(@"[LOG] Read file failure error %d, %@", (int)errorCode, message);
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== unShare <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -309,13 +293,15 @@
         
         cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-            
-        metadataNet.action = actionReadFile;
-        metadataNet.fileName = table.fileName;
-        metadataNet.serverUrl = table.serverUrl;
+        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+        [ocNetworking readFile:table.fileName serverUrl:table.serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
         
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            [self reloadDatasource];
+            
+        } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+            NSLog(@"[LOG] Read file failure error %d, %@", (int)errorCode, message);
+        }];
     }
     
     cell.labelTitle.text = table.fileName;

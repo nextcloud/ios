@@ -208,52 +208,35 @@
 
 - (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-        
-    metadataNet.action = actionReadFile;
-    metadataNet.fileID = fileID;
-    metadataNet.fileName = fileName;
-    metadataNet.priority = NSOperationQueuePriorityLow;
-    metadataNet.selector = selector;
-    metadataNet.serverUrl = serverUrl;
-    
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-}
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking readFile:fileName serverUrl:serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
 
-- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-    
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             
             BOOL withDownload = NO;
             
-            if ([metadataNet.selector isEqualToString:selectorReadFileWithDownload])
+            if ([selector isEqualToString:selectorReadFileWithDownload])
                 withDownload = YES;
             
             //Add/Update Metadata
             tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                
+            
             if (addMetadata)
-                [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:appDelegate.activeAccount withDownload:withDownload];
+                [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:appDelegate.activeAccount withDownload:withDownload];
         });
-        
-    } else {
-        
+
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+
         // File not present, remove it
         if (errorCode == 404) {
-                
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
-            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadataNet.fileID];
-                
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
+            
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:fileID];
+            
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
         }
-    }
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

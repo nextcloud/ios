@@ -1124,32 +1124,6 @@
 #pragma mark ==== Read File ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-    
-        // Read Folder
-        if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
-            
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, metadataNet.serverUrl]];
-            
-            // Change etag, read folder
-            if ([metadata.etag isEqualToString:directory.etag] == NO) {
-                [self readFolder:metadataNet.serverUrl];
-            }
-        }
-        
-    } else {
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-    }
-}
-
 - (void)readFileReloadFolder
 {
     if (!_serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode)
@@ -1160,14 +1134,25 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     });
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-
-    metadataNet.action = actionReadFile;
-    metadataNet.priority = NSOperationQueuePriorityHigh;
-    metadataNet.selector = selectorReadFileReloadFolder;
-    metadataNet.serverUrl = _serverUrl;
-
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking readFile:nil serverUrl:_serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
+        
+        if ([account isEqualToString:appDelegate.activeAccount]) {
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
+            
+            // Change etag, read folder
+            if ([metadata.etag isEqualToString:directory.etag] == NO) {
+                [self readFolder:metadata.serverUrl];
+            }
+        }
+        
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized)
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1593,9 +1578,8 @@
         }
         
         // Verify if exists the fileName TO
-        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-        
-        [ocNetworking readFile:fileNameNew serverUrl:metadata.serverUrl account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
+        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+        [ocNetworking readFile:fileNameNew serverUrl:metadata.serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
             
             UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
             UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -1603,7 +1587,7 @@
             [alert addAction:ok];
             [self presentViewController:alert animated:YES completion:nil];
             
-        } failure:^(NSString *message, NSInteger errorCode) {
+        } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
             
@@ -1700,9 +1684,8 @@
     NSInteger numFile = [[arguments objectAtIndex:2] integerValue];
     NSInteger ofFile = [[arguments objectAtIndex:3] integerValue];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-
-    [ocNetworking readFile:metadata.fileName serverUrl:serverUrlTo account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking readFile:metadata.fileName serverUrl:serverUrlTo account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
     
         UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -1716,7 +1699,7 @@
         // reload Datasource
         [self readFileReloadFolder];
         
-    } failure:^(NSString *message, NSInteger errorCode) {
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
     
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
         

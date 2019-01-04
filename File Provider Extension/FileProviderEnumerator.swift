@@ -143,8 +143,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 serverUrlForFileName = (serverUrl as NSString).deletingLastPathComponent
             }
             
-            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-            ocNetworking?.readFile(fileName, serverUrl: serverUrlForFileName, account: providerData.account, success: { (metadata) in
+            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+            ocNetworking?.readFile(fileName, serverUrl: serverUrlForFileName, account: providerData.account, success: { (account, metadata) in
                 
                 if self.providerData.listServerUrlEtag[serverUrl] == nil || self.providerData.listServerUrlEtag[serverUrl] != metadata!.etag || metadatasFromDB == nil {
                     
@@ -185,7 +185,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     self.selectFirstPageItems(metadatasFromDB, observer: observer)
                 }
                 
-            }, failure: { (message, errorCode) in
+            }, failure: { (account, message, errorCode) in
                 
                  self.selectFirstPageItems(metadatasFromDB, observer: observer)
             })

@@ -226,7 +226,6 @@
 #define actionGetExternalSitesServer                    @"getExternalSitesServer"
 #define actionMiddlewarePing                            @"middlewarePing"
 #define actionMoveFileOrFolder                          @"moveFileOrFolder"
-#define actionReadFile                                  @"readFile"
 #define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
 #define actionSetNotificationServer                     @"setNotificationServer"
