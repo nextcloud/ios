@@ -46,12 +46,17 @@ class NCMainCommon: NSObject {
             return
         }
         
+        let account = dic["account"] as! NSString
         let fileID = dic["fileID"] as! NSString
         let serverUrl = dic["serverUrl"] as! String
         let status = dic["status"] as! Int
         let progress = dic["progress"] as! CGFloat
         let totalBytes = dic["totalBytes"] as! Double
         let totalBytesExpected = dic["totalBytesExpected"] as! Double
+        
+        if account != self.appDelegate.activeAccount! as NSString {
+            return
+        }
         
         if serverUrlViewController != nil && serverUrlViewController! != serverUrl {
             return
@@ -987,6 +992,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             return
         }
         
+        if metadata.account != appDelegate.activeAccount {
+            return
+        }
+        
         if errorCode == 0 {
             
             NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
@@ -1107,6 +1116,14 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+            return
+        }
+        
+        if metadata.account != appDelegate.activeAccount {
+            return
+        }
         
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
         

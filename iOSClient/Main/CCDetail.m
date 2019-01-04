@@ -599,18 +599,6 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    /*
-    NSDictionary *dict = notification.userInfo;
-    NSString *fileID = [dict valueForKey:@"fileID"];
-    //NSString *serverUrl = [dict valueForKey:@"serverUrl"];
-    //long status = [[dict valueForKey:@"status"] longValue];
-    float progress = [[dict valueForKey:@"progress"] floatValue];
-    //long long totalBytes = [[dict valueForKey:@"totalBytes"] longLongValue];
-    //long long totalBytesExpected = [[dict valueForKey:@"totalBytesExpected"] longLongValue];
-    
-    if ([fileID isEqualToString:_fileIDNowVisible])
-        [_hud progress:progress];
-    */
 }
 
 - (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode
