@@ -599,6 +599,7 @@ class NCMainCommon: NSObject {
             cell.accessoryType = UITableViewCell.AccessoryType.none
             cell.file.image = nil
             cell.status.image = nil
+            cell.user.image = nil
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
 
