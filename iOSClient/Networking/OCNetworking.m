@@ -399,6 +399,7 @@
 #pragma mark ===== downloadThumbnail / downloadPreview =====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
@@ -438,27 +439,33 @@
         }];
     }
 }
+*/
 
-- (void)downloadPreviewTrashWithFileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewTrashWithFileID:(NSString *)fileID fileName:(NSString *)fileName account:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+     
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
         
-        completion(nil, 0);
+        completion(account, nil, 0);
         
     } else {
         
         OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
         
-        [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+        [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
         [communication setUserAgent:[CCUtility getUserAgent]];
         
-        [communication getRemotePreviewTrashByServer:_activeUrl ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        [communication getRemotePreviewTrashByServer:tableAccount.url ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
             
             [preview writeToFile:file atomically:YES];
             
-            completion(nil, 0);
+            completion(account, nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
@@ -474,7 +481,7 @@
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
-            completion(message, errorCode);
+            completion(account, message, errorCode);
         }];
     }
 }

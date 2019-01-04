@@ -1169,12 +1169,14 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
             
             ocNetworking?.downloadPreview(with: metadata, withWidth: width, andHeight: height, completion: { (message, errorCode) in
-                if errorCode == 0 && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
-                    if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                        (view as! UICollectionView).reloadItems(at: [indexPath])
-                    }
-                    if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                        (view as! UITableView).reloadRows(at: [indexPath], with: UITableView.RowAnimation.none)
+                if metadata.account == self.appDelegate.activeAccount {
+                    if errorCode == 0 && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
+                        if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                            (view as! UICollectionView).reloadItems(at: [indexPath])
+                        }
+                        if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                            (view as! UITableView).reloadRows(at: [indexPath], with: UITableView.RowAnimation.none)
+                        }
                     }
                 }
             })

@@ -608,7 +608,7 @@
     
     [ocNetworking downloadPreviewWithMetadata:metadata withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
         counterThumbnail--;
-        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
+        if (errorCode == 0 && [metadata.account isEqualToString:appDelegate.activeAccount] && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
             [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
         }
     }];

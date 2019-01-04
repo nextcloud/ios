@@ -102,7 +102,7 @@
     
     [ocNetworking downloadPreviewWithMetadata:_metadata withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0) {
+        if (errorCode == 0 && [_metadata.account isEqualToString:appDelegate.activeAccount]) {
             
             UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
             

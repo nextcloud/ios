@@ -401,7 +401,9 @@
                     self.navigationItem.titleView = nil;
                     self.title = metadata.fileNameView;
                     
-                    [self.photoBrowser reloadData];
+                    if ([metadata.account isEqualToString:appDelegate.activeAccount] && errorCode == 0) {
+                        [self.photoBrowser reloadData];
+                    }
                 }];
             } else {
                 [self downloadPhotoBrowser:metadata];
