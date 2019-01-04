@@ -1013,6 +1013,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         }
         
         if metadata.account != appDelegate.activeAccount {
+            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
             return
         }
         
@@ -1142,6 +1143,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         }
         
         if metadata.account != appDelegate.activeAccount {
+            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
             return
         }
         
