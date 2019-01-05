@@ -57,12 +57,115 @@ class NCService: NSObject, OCNetworkingDelegate {
             return
         }
         
-        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
-            return
-        }
-        
-        metadataNet.action = actionGetCapabilities
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.getCapabilitiesOfServer(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
+            
+            if (errorCode == 0 && self.appDelegate.activeAccount == account!) {
+                
+                // Update capabilities db
+                NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: account!)
+                
+                // ------ THEMING -----------------------------------------------------------------------
+                
+                if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
+                    
+                    // Download Logo
+                    let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
+                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true)
+                    
+                    // Download Theming Background
+                    DispatchQueue.global().async {
+                        
+                        let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
+                        
+                        guard let imageData = try? Data(contentsOf: URL(string: backgroundURL)!) else {
+                            DispatchQueue.main.async {
+                                self.appDelegate.settingThemingColorBrand()
+                            }
+                            return
+                        }
+                        
+                        DispatchQueue.main.async {
+                            
+                            guard let image = UIImage(data: imageData) else {
+                                try? FileManager.default.removeItem(atPath: fileNamePath)
+                                self.appDelegate.settingThemingColorBrand()
+                                return
+                            }
+                            
+                            if let data = image.pngData() {
+                                try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                            }
+                            
+                            self.appDelegate.settingThemingColorBrand()
+                        }
+                    }
+                    
+                } else {
+                    
+                    self.appDelegate.settingThemingColorBrand()
+                }
+                
+                // ------ SEARCH ------------------------------------------------------------------------
+                
+                if (NCManageDatabase.sharedInstance.getServerVersion(account: account!) != capabilities!.versionMajor && self.appDelegate.activeMain != nil) {
+                    self.appDelegate.activeMain.cancelSearchBar()
+                }
+                
+                // ------ GET OTHER SERVICE -------------------------------------------------------------
+                
+                // Read Notification
+                if (capabilities!.isNotificationServerEnabled) {
+                    
+                    //metadataNet.action = actionGetNotificationServer
+                    //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                    
+                } else {
+                    
+                    // Remove all Notification
+                    self.appDelegate.listOfNotifications.removeAllObjects()
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
+                    // Update Main NavigationBar
+                    if (self.appDelegate.activeMain != nil && self.appDelegate.activeMain.isSelectedMode == false) {
+                        self.appDelegate.activeMain.setUINavigationBarDefault()
+                    }
+                }
+                
+                // Read External Sites
+                if (capabilities!.isExternalSitesServerEnabled) {
+                    
+                    //metadataNet.action = actionGetExternalSitesServer
+                    //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                    
+                } else {
+                    
+                    NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
+                }
+                
+                // Read Share
+                if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
+                    
+                    self.appDelegate.sharesID.removeAllObjects()
+                    //metadataNet.action = actionReadShareServer
+                    //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: appDelegate.activeMain, metadataNet: metadataNet)
+                }
+                
+            } else {
+                
+                // Change Theming color
+                self.appDelegate.settingThemingColorBrand()
+                
+                var error = ""
+                if let message = message {
+                    error = "Get Capabilities failure error \(errorCode) \(message)"
+                } else {
+                    error = "Get Capabilities failure error \(errorCode)"
+                }
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+            }
+        })
     }
     
     private func requestUserProfile() {
@@ -141,121 +244,7 @@ class NCService: NSObject, OCNetworkingDelegate {
     //MARK: -
     //MARK: Delegate Service API NC
     
-    func getCapabilitiesOfServerSuccessFailure(_ metadataNet: CCMetadataNet!, capabilities: OCCapabilities?, message: String?, errorCode: Int) {
-        
-        // Check Active Account
-        if (metadataNet.account != appDelegate.activeAccount) {
-            return
-        }
-        
-        if (errorCode == 0) {
-            
-            // Update capabilities db
-            NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: metadataNet.account)
-            
-            // ------ THEMING -----------------------------------------------------------------------
-            
-            if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
-                
-                // Download Logo
-                let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true)
-                
-                // Download Theming Background
-                DispatchQueue.global().async {
-                
-                    let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
-
-                    guard let imageData = try? Data(contentsOf: URL(string: backgroundURL)!) else {
-                        DispatchQueue.main.async {
-                            self.appDelegate.settingThemingColorBrand()
-                        }
-                        return
-                    }
-                    
-                    DispatchQueue.main.async {
-                        
-                        guard let image = UIImage(data: imageData) else {
-                            try? FileManager.default.removeItem(atPath: fileNamePath)
-                            self.appDelegate.settingThemingColorBrand()
-                            return
-                        }
-                    
-                        if let data = image.pngData() {
-                            try? data.write(to: URL(fileURLWithPath: fileNamePath))
-                        }
-                    
-                        self.appDelegate.settingThemingColorBrand()
-                    }
-                }
-                
-            } else {
-                
-                self.appDelegate.settingThemingColorBrand()
-            }
-            
-            // ------ SEARCH ------------------------------------------------------------------------
-            
-            if (NCManageDatabase.sharedInstance.getServerVersion(account: metadataNet.account) != capabilities!.versionMajor && appDelegate.activeMain != nil) {
-                appDelegate.activeMain.cancelSearchBar()
-            }
-            
-            // ------ GET OTHER SERVICE -------------------------------------------------------------
-
-            // Read Notification
-            if (capabilities!.isNotificationServerEnabled) {
-                
-                metadataNet.action = actionGetNotificationServer
-                appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-                
-            } else {
-                
-                // Remove all Notification
-                self.appDelegate.listOfNotifications.removeAllObjects()
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
-                // Update Main NavigationBar
-                if (appDelegate.activeMain != nil && self.appDelegate.activeMain.isSelectedMode == false) {
-                    self.appDelegate.activeMain.setUINavigationBarDefault()
-                }
-            }
-            
-            // Read External Sites
-            if (capabilities!.isExternalSitesServerEnabled) {
-                
-                metadataNet.action = actionGetExternalSitesServer
-                appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-                
-            } else {
-                
-                NCManageDatabase.sharedInstance.deleteExternalSites(account: appDelegate.activeAccount)
-            }
-            
-            // Read Share
-            if (capabilities!.isFilesSharingAPIEnabled && appDelegate.activeMain != nil) {
-                
-                appDelegate.sharesID.removeAllObjects()
-                metadataNet.action = actionReadShareServer
-                appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: appDelegate.activeMain, metadataNet: metadataNet)
-            }
-            
-        } else {
-            
-            // Change Theming color
-            appDelegate.settingThemingColorBrand()
-            
-            var error = ""
-            if let message = message {
-                error = "Get Capabilities failure error \(errorCode) \(message)"
-            } else {
-                error = "Get Capabilities failure error \(errorCode)"
-            }
-                        
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
-        }
-    }
-    
-   func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
+    func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {

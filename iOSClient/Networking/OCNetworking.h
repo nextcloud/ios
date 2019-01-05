@@ -71,6 +71,8 @@
 
 - (void)getActivityServer:(NSString *)account success:(void(^)(NSString *account, NSArray *listOfActivity))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
 
+- (void)getCapabilitiesOfServer:(NSString *)account completion:(void (^)(NSString *account, OCCapabilities *capabilities, NSString *message, NSInteger errorCode))completion;
+
 - (void)subscribingPushNotificationServer:(NSString *)url pushToken:(NSString *)pushToken Hash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey success:(void(^)(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 - (void)unsubscribingPushNotificationServer:(NSString *)url deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
@@ -102,9 +104,6 @@
 
 - (void)getSharePermissionsFileSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions;
 - (void)getSharePermissionsFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-// Capabilities
-- (void)getCapabilitiesOfServerSuccessFailure:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // External Sites
 - (void)getExternalSitesServerSuccessFailure:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites message:(NSString *)message errorCode:(NSInteger)errorCode;

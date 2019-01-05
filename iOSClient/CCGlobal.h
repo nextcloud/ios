@@ -217,7 +217,6 @@
 #define selectorUploadFile                              @"uploadFile"
 
 // Metadata.Net ACTION
-#define actionGetCapabilities                           @"getCapabilitiesOfServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetNotificationServer                     @"getNotificationServer"

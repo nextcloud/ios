@@ -1848,53 +1848,44 @@
 #pragma mark ===== Capabilities =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getCapabilitiesOfServer
+- (void)getCapabilitiesOfServer:(NSString *)account completion:(void (^)(NSString *account, OCCapabilities *capabilities, NSString *message, NSInteger errorCode))completion
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getCapabilitiesOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
+    [communication getCapabilitiesOfServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccessFailure:capabilities:message:errorCode:)])
-                [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
-        
-        if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccessFailure:capabilities:message:errorCode:)])
-            [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:capabilities message:nil errorCode:0];
-        
-        [self complete];
+        completion(account, capabilities, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-
+        
         // Error
-        if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccessFailure:capabilities:message:errorCode:)]) {
-
-            if (errorCode == 503)
-                [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
-
+        
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-
+        
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionCapabilities selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
-        [self complete];
+        completion(account, nil, message, errorCode);
     }];
 }
 
