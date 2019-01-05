@@ -2183,9 +2183,9 @@
 {
     NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking settingFavorite:fileNameServerUrl favorite:favorite completion:^(NSString *message, NSInteger errorCode) {
-        if (errorCode == 0) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking settingFavorite:fileNameServerUrl account:appDelegate.activeAccount favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
             
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
 
@@ -2196,8 +2196,15 @@
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
             
             if (metadata.directory && favorite) {
-                NSString *dir = [CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName];
-                [appDelegate.activeFavorites addFavoriteFolder:dir];
+                
+                NSString *selector;
+                
+                if ([CCUtility getFavoriteOffline])
+                    selector = selectorReadFolderWithDownload;
+                else
+                    selector = selectorReadFolder;
+                
+                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName] selector:selector];                
             }
             
             if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {

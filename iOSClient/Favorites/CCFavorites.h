@@ -50,6 +50,5 @@
 - (void)openIn:(tableMetadata *)metadata;
 - (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
 - (void)listingFavorites;
-- (void)addFavoriteFolder:(NSString *)serverUrl;
 
 @end
