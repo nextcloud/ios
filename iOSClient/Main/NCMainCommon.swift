@@ -846,7 +846,7 @@ class NCMainCommon: NSObject {
         var completionErrorCode: Int = 0
         var completionMessage = ""
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
         
         for metadata in metadatas {
             
@@ -854,51 +854,54 @@ class NCMainCommon: NSObject {
             
             let path = metadata.serverUrl + "/" + metadata.fileName
             
-            ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
+            ocNetworking?.deleteFileOrFolder(path, account:appDelegate.activeAccount, completion: { (account, message, errorCode) in
                 
-                count += 1
+                if account == self.appDelegate.activeAccount {
+                    
+                    count += 1
 
-                if errorCode == 0 || errorCode == 404 {
-                    
-                    do {
-                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
-                    } catch { }
-                    
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                    NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                    NCManageDatabase.sharedInstance.deletePhotos(fileID: metadata.fileID)
-                    
-                    if metadata.directory {
-                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName), account: metadata.account)
-                    }
-                    
-                    if (e2ee) {
-                        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
-                    }
-                    
-                    self.appDelegate.filterFileID.remove(metadata.fileID)
-                    
-                } else {
-                    
-                    completionErrorCode = errorCode
-                    completionMessage = ""
-                    if message != nil {
-                        completionMessage = message!
-                    }
-                    
-                    self.appDelegate.filterFileID.remove(metadata.fileID)
-                }
-                
-                if count == metadatas.count {
-                    if e2ee {
-                        DispatchQueue.global().async {
-                            NCNetworkingEndToEnd.sharedManager().rebuildAndSendMetadata(onServerUrl: serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl)
-                            DispatchQueue.main.async {
-                                completion(completionErrorCode, completionMessage)
-                            }
+                    if errorCode == 0 || errorCode == 404 {
+                        
+                        do {
+                            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                        } catch { }
+                        
+                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+                        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+                        NCManageDatabase.sharedInstance.deletePhotos(fileID: metadata.fileID)
+                        
+                        if metadata.directory {
+                            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName), account: metadata.account)
                         }
+                        
+                        if (e2ee) {
+                            NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
+                        }
+                        
+                        self.appDelegate.filterFileID.remove(metadata.fileID)
+                        
                     } else {
-                        completion(completionErrorCode, completionMessage)
+                        
+                        completionErrorCode = errorCode
+                        completionMessage = ""
+                        if message != nil {
+                            completionMessage = message!
+                        }
+                        
+                        self.appDelegate.filterFileID.remove(metadata.fileID)
+                    }
+                    
+                    if count == metadatas.count {
+                        if e2ee {
+                            DispatchQueue.global().async {
+                                NCNetworkingEndToEnd.sharedManager().rebuildAndSendMetadata(onServerUrl: serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl)
+                                DispatchQueue.main.async {
+                                    completion(completionErrorCode, completionMessage)
+                                }
+                            }
+                        } else {
+                            completion(completionErrorCode, completionMessage)
+                        }
                     }
                 }
             })

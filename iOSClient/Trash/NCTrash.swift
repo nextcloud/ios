@@ -523,15 +523,14 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
         let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
 
-        ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.deleteFileOrFolder(path, account:appDelegate.activeAccount, completion: { (account, message, errorCode) in
             
             if errorCode == 0 {
                 
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
                 
                 self.loadDatasource()
                 
