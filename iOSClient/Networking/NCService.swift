@@ -221,8 +221,10 @@ class NCService: NSObject, OCNetworkingDelegate {
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
                     self.appDelegate.sharesID.removeAllObjects()
-                    //metadataNet.action = actionReadShareServer
-                    //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: appDelegate.activeMain, metadataNet: metadataNet)
+                    
+                    ocNetworking?.readShareServer(account!, completion: { (account, items, message, errorCode) in
+                        
+                    })
                 }
                 
             } else {

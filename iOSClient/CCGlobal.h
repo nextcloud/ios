@@ -221,7 +221,6 @@
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionMiddlewarePing                            @"middlewarePing"
-#define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
 #define actionSetNotificationServer                     @"setNotificationServer"
 #define actionShare                                     @"share"
