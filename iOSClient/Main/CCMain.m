@@ -46,7 +46,6 @@
     
     NSMutableDictionary *_selectedFileIDsMetadatas;
     NSUInteger _numSelectedFileIDsMetadatas;
-    NSMutableArray *_queueSelector;
     
     UIImageView *_imageTitleHome;
     
@@ -120,7 +119,6 @@
     self.metadata = [tableMetadata new];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedFileIDsMetadatas = [NSMutableDictionary new];
-    _queueSelector = [NSMutableArray new];
     _isViewDidLoad = YES;
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchResultMetadatas = [NSMutableArray new];
@@ -1685,7 +1683,6 @@
     if (serverUrl == nil) {
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     } else {
-        [_queueSelector removeAllObjects];
         
         // E2EE DENIED
         if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) {
