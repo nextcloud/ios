@@ -118,8 +118,63 @@ class NCService: NSObject, OCNetworkingDelegate {
                 // Read Notification
                 if (capabilities!.isNotificationServerEnabled) {
                     
-                    //metadataNet.action = actionGetNotificationServer
-                    //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                    ocNetworking?.getNotificationServer(account!, completion: { (account, listOfNotifications, message, errorCode) in
+                        
+                        if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+                            
+                            DispatchQueue.global(qos: .default).async {
+                                
+                                let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [
+                                    NSSortDescriptor(key: "date", ascending: false)
+                                    ])
+                                
+                                var old = ""
+                                var new = ""
+                                
+                                for notification in listOfNotifications! {
+                                    let id = (notification as! OCNotifications).idNotification
+                                    if let icon = (notification as! OCNotifications).icon {
+                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false)
+                                    }
+                                    new = new + String(describing: id)
+                                }
+                                for notification in self.appDelegate.listOfNotifications! {
+                                    let id = (notification as! OCNotifications).idNotification
+                                    old = old + String(describing: id)
+                                }
+                                
+                                DispatchQueue.main.async {
+                                    
+                                    if (new != old) {
+                                        
+                                        self.appDelegate.listOfNotifications = NSMutableArray.init(array: sortedListOfNotifications)
+                                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
+                                        
+                                        // Update Main NavigationBar
+                                        if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
+                                            self.appDelegate.activeMain.setUINavigationBarDefault()
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        } else {
+                            
+                            var error = ""
+                            if let message = message {
+                                error = "Get Notification Server failure error \(errorCode) \(message)"
+                            } else {
+                                error = "Get Notification Server failure error \(errorCode)"
+                            }
+                            
+                            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: self.appDelegate.activeUrl)
+                            
+                            // Update Main NavigationBar
+                            if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
+                                self.appDelegate.activeMain.setUINavigationBarDefault()
+                            }
+                        }
+                    })
                     
                 } else {
                     
@@ -337,67 +392,5 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
     }
     
-    func getNotificationServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfNotifications: [Any]?, message: String?, errorCode: Int) {
     
-        // Check Active Account
-        if (metadataNet.account != appDelegate.activeAccount) {
-            return
-        }
-        
-        if (errorCode == 0) {
-            
-            DispatchQueue.global(qos: .default).async {
-
-                let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [
-                    NSSortDescriptor(key: "date", ascending: false)
-                ])
-                
-                var old = ""
-                var new = ""
-                
-                for notification in listOfNotifications! {
-                    let id = (notification as! OCNotifications).idNotification
-                    if let icon = (notification as! OCNotifications).icon {
-                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false)
-                    }
-                    new = new + String(describing: id)
-                }
-                for notification in self.appDelegate.listOfNotifications! {
-                    let id = (notification as! OCNotifications).idNotification
-                    old = old + String(describing: id)
-                }
-                
-                
-                DispatchQueue.main.async {
-                
-                    if (new != old) {
-                    
-                        self.appDelegate.listOfNotifications = NSMutableArray.init(array: sortedListOfNotifications)
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
-                
-                        // Update Main NavigationBar
-                        if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
-                            self.appDelegate.activeMain.setUINavigationBarDefault()
-                        }
-                    }
-                }
-            }
-            
-        } else {
-            
-            var error = ""
-            if let message = message {
-                error = "Get Notification Server failure error \(errorCode) \(message)"
-            } else {
-                error = "Get Notification Server failure error \(errorCode)"
-            }
-            
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
-            
-            // Update Main NavigationBar
-            if (appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
-                appDelegate.activeMain.setUINavigationBarDefault()
-            }
-        }
-    }
 }
