@@ -67,7 +67,7 @@
 
 - (void)settingFavorite:(NSString *)fileName account:(NSString *)account favorite:(BOOL)favorite completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
-- (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+- (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, NSArray *metadatas))success failure:(void (^)(NSString* account, NSString *message, NSInteger errorCode))failure;
 
 - (void)getActivityServer:(void(^)(NSArray *listOfActivity))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 

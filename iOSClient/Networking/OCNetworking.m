@@ -875,79 +875,76 @@
 #pragma mark ===== Listing Favorites =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, NSArray *metadatas))success failure:(void (^)(NSString* account, NSString *message, NSInteger errorCode))failure
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSString *path = [_activeUrl stringByAppendingString:k_dav];
-    NSString *folder = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
+    NSString *path = [tableAccount.url stringByAppendingString:k_dav];
+    NSString *folder = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
     
     [communication listingFavorites:path folder:folder withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:account]) {
-            
-            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-            
-        } else {
-        
-            NSMutableArray *metadatas = [NSMutableArray new];
-            BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
+        NSMutableArray *metadatas = [NSMutableArray new];
+        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
 
-            NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-            NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
         
-            // Order by fileNamePath
-            items = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        // Order by fileNamePath
+        items = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
                 
-                OCFileDto *record1 = obj1, *record2 = obj2;
+            OCFileDto *record1 = obj1, *record2 = obj2;
                 
-                NSString *path1 = [[record1.filePath stringByAppendingString:record1.fileName] lowercaseString];
-                NSString *path2 = [[record2.filePath stringByAppendingString:record2.fileName] lowercaseString];
+            NSString *path1 = [[record1.filePath stringByAppendingString:record1.fileName] lowercaseString];
+            NSString *path2 = [[record2.filePath stringByAppendingString:record2.fileName] lowercaseString];
                 
-                return [path1 compare:path2];
+            return [path1 compare:path2];
                 
-            }];
+        }];
         
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
            
-                for(OCFileDto *itemDto in items) {
+            for(OCFileDto *itemDto in items) {
                     
-                    NSString *serverUrl;
-                    BOOL isFolderEncrypted;
+                NSString *serverUrl;
+                BOOL isFolderEncrypted;
                     
-                    NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
                     
-                    // Skip hidden files
-                    if (fileName.length > 0) {
-                        if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
-                            continue;
-                    } else
+                // Skip hidden files
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
                         continue;
-                    
-                    NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, _activeUserID]];
-                    NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
-                    if ([serverPath hasSuffix:@"/"]) serverPath = [serverPath substringToIndex:[serverPath length] - 1];
-                    serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:k_webDAV] addFileName:serverPath];
-                    
-                    if (itemDto.isDirectory) {
-                        (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
-                    }
-                    
-                    isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
-                    
-                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted]];
-                }
+                } else
+                    continue;
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    success(metadatas);
-                });
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, tableAccount.userID]];
+                NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
+                if ([serverPath hasSuffix:@"/"])
+                    serverPath = [serverPath substringToIndex:[serverPath length] - 1];
+                serverUrl = [CCUtility stringAppendServerUrl:[tableAccount.url stringByAppendingString:k_webDAV] addFileName:serverPath];
+                    
+                if (itemDto.isDirectory) {
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                }
+                    
+                isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
+                    
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted]];
+            }
+                
+            dispatch_async(dispatch_get_main_queue(), ^{
+                success(account, metadatas);
             });
-        }
+        });
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
@@ -968,9 +965,9 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionListingFavorites selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionListingFavorites selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:tableAccount.url];
 
-        failure(message, errorCode);
+        failure(account, message, errorCode);
     }];
 }
 

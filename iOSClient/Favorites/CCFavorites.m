@@ -191,51 +191,54 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking listingFavorites:@"" account:appDelegate.activeAccount success:^(NSArray *metadatas) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking listingFavorites:@"" account:appDelegate.activeAccount success:^(NSString *account, NSArray *metadatas) {
         
-        NSString *father = @"";
-        NSMutableArray *filesEtag = [NSMutableArray new];
-        
-        for (tableMetadata *metadata in metadatas) {
+        if ([account isEqualToString:appDelegate.activeAccount]) {
             
-            // insert for test NOT favorite
-            [filesEtag addObject:metadata.fileID];
+            NSString *father = @"";
+            NSMutableArray *filesEtag = [NSMutableArray new];
             
-            NSString *serverUrl = metadata.serverUrl;
-            NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-            
-            if (![serverUrlSon containsString:father]) {
+            for (tableMetadata *metadata in metadatas) {
                 
-                if (metadata.directory) {
-                                        
-                    if ([CCUtility getFavoriteOffline])
-                        [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
-                    else
-                        [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder];
+                // insert for test NOT favorite
+                [filesEtag addObject:metadata.fileID];
+                
+                NSString *serverUrl = metadata.serverUrl;
+                NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+                
+                if (![serverUrlSon containsString:father]) {
                     
-                } else {
+                    if (metadata.directory) {
+                        
+                        if ([CCUtility getFavoriteOffline])
+                            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
+                        else
+                            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder];
+                        
+                    } else {
+                        
+                        if ([CCUtility getFavoriteOffline])
+                            [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
+                        else
+                            [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile];
+                    }
                     
-                    if ([CCUtility getFavoriteOffline])
-                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
-                    else
-                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile];
+                    father = serverUrlSon;
                 }
-                
-                father = serverUrlSon;
             }
+            
+            // Verify remove favorite
+            NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
+            
+            for (tableMetadata *metadata in allRecordFavorite)
+                if (![filesEtag containsObject:metadata.fileID])
+                    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
         }
         
-        // Verify remove favorite
-        NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", appDelegate.activeAccount] sorted:nil ascending:NO];
-        
-        for (tableMetadata *metadata in allRecordFavorite)
-            if (![filesEtag containsObject:metadata.fileID])
-                [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
         NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
     }];
 }
