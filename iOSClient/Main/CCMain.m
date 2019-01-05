@@ -2090,7 +2090,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
-    metadataNet.action = actionReadShareServer;
+    //metadataNet.action = actionReadShareServer;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
     metadataNet.fileNameView = metadata.fileNameView;

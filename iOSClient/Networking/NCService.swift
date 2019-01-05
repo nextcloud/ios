@@ -224,6 +224,14 @@ class NCService: NSObject, OCNetworkingDelegate {
                     
                     ocNetworking?.readShareServer(account!, completion: { (account, items, message, errorCode) in
                         
+                        if errorCode == 0 && account! == self.appDelegate.activeAccount {
+                            
+                            if items != nil {
+                                for item in items! as! [OCSharedDto]  {
+                                    self.appDelegate.sharesID.setObject(item, forKey: NSString(string: String(item.idRemoteShared)))
+                                }
+                            }
+                        }
                     })
                 }
                 
