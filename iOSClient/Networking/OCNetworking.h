@@ -63,7 +63,7 @@
 
 - (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, NSString *fileID, NSDate *date))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
 
-- (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+- (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo account:(NSString *)account success:(void (^)(NSString *account))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
 
 - (void)settingFavorite:(NSString *)fileName account:(NSString *)account favorite:(BOOL)favorite completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
@@ -93,11 +93,11 @@
 
 @optional
 
-- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
+/*
 - (void)moveSuccess:(CCMetadataNet *)metadataNet;
 - (void)renameSuccess:(CCMetadataNet *)metadataNet;
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+*/
 
 - (void)readSharedSuccess:(CCMetadataNet *)metadataNet items:(NSDictionary *)items openWindow:(BOOL)openWindow;
 - (void)unShareSuccess:(CCMetadataNet *)metadataNet;

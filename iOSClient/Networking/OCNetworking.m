@@ -1088,40 +1088,21 @@
 #pragma mark ===== Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveFileOrFolder
+- (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo account:(NSString *)account success:(void (^)(NSString *account))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure
 {
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-    NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrlTo, _metadataNet.fileNameTo];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
     
-    [self moveFileOrFolder:fileNamePath fileNameTo:fileNameToPath success:^{
-        
-        if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
-            [self.delegate renameSuccess:_metadataNet];
-        
-        if ([_metadataNet.selector isEqualToString:selectorMove] && [self.delegate respondsToSelector:@selector(moveSuccess:)])
-            [self.delegate moveSuccess:_metadataNet];
-        
-        [self complete];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
-            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:message errorCode:errorCode];
-
-        [self complete];
-    }];
-}
-
-- (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
-{
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication moveFileOrFolder:fileName toDestiny:fileNameTo onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
 
-        success();
+        success(account);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -1131,7 +1112,7 @@
         
         NSString *message = [CCError manageErrorOC:response.statusCode error:error];
         
-        failure(message, error.code);
+        failure(account, message, error.code);
         
     } errorBeforeRequest:^(NSError *error) {
         
@@ -1147,7 +1128,7 @@
             message = NSLocalizedString(@"_unknow_response_server_", nil);
         }
         
-        failure(message, error.code);
+        failure(account, message, error.code);
     }];
 }
 

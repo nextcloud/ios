@@ -148,14 +148,14 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, account: providerData.account, success: { (account) in
             
             if metadataFrom.directory {
-                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: self.providerData.account)
-                _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: self.providerData.account)
+                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account!)
+                _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: account!)
             }
-                
+            
             NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileIDFrom)) else {
@@ -169,12 +169,12 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalUpdateContainerItem[itemIdentifier] = item
                 self.providerData.fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
             }
-
+            
             self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-
+            
             completionHandler(item, nil)
             
-        }, failure: { (errorMessage, errorCode) in
+        }, failure: { (account, errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
@@ -201,9 +201,9 @@ extension FileProviderExtension {
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
-            
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, account: providerData.account, success: { (account) in
+
             // Rename metadata
             guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, fileID: metadata.fileID) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -212,7 +212,7 @@ extension FileProviderExtension {
             
             if metadata.directory {
                 
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted, account: self.providerData.account)
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted, account: account!)
                 
             } else {
                 
@@ -241,7 +241,7 @@ extension FileProviderExtension {
 
             completionHandler(item, nil)
             
-        }, failure: { (errorMessage, errorCode) in
+        }, failure: { (account, errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }

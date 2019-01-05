@@ -482,18 +482,17 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-                
         let fileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
         
-        ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
-            
-            NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: self.appDelegate.activeAccount)
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, account: appDelegate.activeAccount, success: { (account) in
+
+            NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
             
             self.loadDatasource()
             
-        }, failure: { (message, errorCode) in
+        }, failure: { (account, message, errorCode) in
             
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
