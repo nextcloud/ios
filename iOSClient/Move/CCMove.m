@@ -344,11 +344,10 @@
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
-    
-    [ocNetworking createFolder:fileNameFolder serverUrl:_serverUrl account:activeAccount success:^(NSString *fileID, NSDate *date) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking createFolder:fileNameFolder serverUrl:_serverUrl account:activeAccount success:^(NSString *account, NSString *fileID, NSDate *date) {
         [self readFolder];
-    } failure:^(NSString *message, NSInteger errorCode) {
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
         
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {

@@ -1829,33 +1829,35 @@
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     
     // Creeate folder Networking
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    [ocNetworking createFolder:fileNameFolder serverUrl:serverUrl account:appDelegate.activeAccount success:^(NSString *fileID, NSDate *date) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking createFolder:fileNameFolder serverUrl:serverUrl account:appDelegate.activeAccount success:^(NSString *account, NSString *fileID, NSDate *date) {
 
-        // Delete Temp Dir
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
-
-        NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameFolder];
-        
-        if (_metadataFolder.e2eEncrypted) {
+        if ([account isEqualToString:appDelegate.activeAccount]) {
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncryptedOnServerUrl:newDirectory fileID:fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (error) {
-                        [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                    }
-                    [self readFolder:self.serverUrl];
+            // Delete Temp Dir
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
+
+            NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameFolder];
+            
+            if (_metadataFolder.e2eEncrypted) {
+                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncryptedOnServerUrl:newDirectory fileID:fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (error) {
+                            [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                        }
+                        [self readFolder:self.serverUrl];
+                    });
                 });
-            });
-            
-        } else {
-            
-            [self readFolder:self.serverUrl];
+                
+            } else {
+                
+                [self readFolder:self.serverUrl];
+            }
         }
         
-    } failure:^(NSString *message, NSInteger errorCode) {
+    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized)

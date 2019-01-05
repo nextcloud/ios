@@ -975,32 +975,30 @@
 #pragma mark ===== Create Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, NSString *fileID, NSDate *date))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     NSString *path = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
 
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication createFolder:path onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-
-        if (![[[NCManageDatabase sharedInstance] getAccountActive].account isEqualToString:account]) {
+        
+        NSDictionary *fields = [response allHeaderFields];
             
-            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+        NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
             
-        } else {
-            
-            NSDictionary *fields = [response allHeaderFields];
-            
-            NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-            NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
-            
-            success(fileID, date);
-        }
+        success(account, fileID, date);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
 
@@ -1020,9 +1018,9 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:path fileID:@"" action:k_activityDebugActionCreateFolder selector:@"" note:NSLocalizedString(@"_not_possible_create_folder_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:path fileID:@"" action:k_activityDebugActionCreateFolder selector:@"" note:NSLocalizedString(@"_not_possible_create_folder_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:tableAccount.url];
 
-        failure(message, errorCode);
+        failure(account, message, errorCode);
 
     } errorBeforeRequest:^(NSError *error) {
         
@@ -1037,7 +1035,7 @@
                 message = NSLocalizedString(@"_unknow_response_server_", nil);
         }
         
-        failure(message, error.code);
+        failure(account, message, error.code);
     }];
 }
 

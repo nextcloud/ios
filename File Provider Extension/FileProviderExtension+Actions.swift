@@ -40,12 +40,12 @@ extension FileProviderExtension {
         
         let serverUrl = tableDirectory.serverUrl
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.account, success: { (fileID, date) in
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.account, success: { (account, fileID, date) in
             
             let metadata = tableMetadata()
             
-            metadata.account = self.providerData.account
+            metadata.account = account!
             metadata.directory = true
             metadata.fileID = fileID!
             metadata.fileName = directoryName
@@ -60,7 +60,7 @@ extension FileProviderExtension {
             }
             
             // DIRECTORY
-            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: self.providerData.account) else {
+            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -83,7 +83,7 @@ extension FileProviderExtension {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
             }
             
-        }, failure: { (errorMessage, errorCode) in
+        }, failure: { (account, errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
