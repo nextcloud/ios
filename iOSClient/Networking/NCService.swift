@@ -190,9 +190,28 @@ class NCService: NSObject, OCNetworkingDelegate {
                 // Read External Sites
                 if (capabilities!.isExternalSitesServerEnabled) {
                     
-                    //metadataNet.action = actionGetExternalSitesServer
-                    //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-                    
+                    ocNetworking?.getExternalSitesServer(account!, completion: { (account, listOfExternalSites, message, errorCode) in
+                        
+                        if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+                            
+                            NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
+                            for externalSites in listOfExternalSites! {
+                                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
+                            }
+                            
+                        } else {
+                            
+                            var error = ""
+                            if let message = message {
+                                error = "Get external site failure error \(errorCode) \(message)"
+                            } else {
+                                error = "Get external site failure error \(errorCode)"
+                            }
+                            
+                            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+                        }
+                    })
+                   
                 } else {
                     
                     NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
@@ -364,33 +383,4 @@ class NCService: NSObject, OCNetworkingDelegate {
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
     }
-    
-    func getExternalSitesServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfExternalSites: [Any]?, message: String?, errorCode: Int) {
-        
-        // Check Active Account
-        if (metadataNet.account != appDelegate.activeAccount) {
-            return
-        }
-        
-        if (errorCode == 0) {
-            
-            NCManageDatabase.sharedInstance.deleteExternalSites(account: appDelegate.activeAccount)
-            for externalSites in listOfExternalSites! {
-                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: appDelegate.activeAccount)
-            }
-            
-        } else {
-         
-            var error = ""
-            if let message = message {
-                error = "Get external site failure error \(errorCode) \(message)"
-            } else {
-                error = "Get external site failure error \(errorCode)"
-            }
-            
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
-        }
-    }
-    
-    
 }

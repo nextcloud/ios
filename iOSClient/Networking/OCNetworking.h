@@ -71,6 +71,8 @@
 
 - (void)getActivityServer:(NSString *)account success:(void(^)(NSString *account, NSArray *listOfActivity))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
 
+- (void)getExternalSitesServer:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfExternalSites, NSString *message, NSInteger errorCode))completion;
+
 - (void)getCapabilitiesOfServer:(NSString *)account completion:(void (^)(NSString *account, OCCapabilities *capabilities, NSString *message, NSInteger errorCode))completion;
 
 - (void)getNotificationServer:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfNotifications, NSString *message, NSInteger errorCode))completion;
@@ -106,9 +108,6 @@
 
 - (void)getSharePermissionsFileSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions;
 - (void)getSharePermissionsFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-// External Sites
-- (void)getExternalSitesServerSuccessFailure:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Notification
 - (void)setNotificationServerSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;

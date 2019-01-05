@@ -1481,53 +1481,44 @@
 #pragma mark ===== External Sites =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getExternalSitesServer
+- (void)getExternalSitesServer:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfExternalSites, NSString *message, NSInteger errorCode))completion
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getExternalSitesServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
+    [communication getExternalSitesServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccessFailure:listOfExternalSites:message:errorCode:)])
-                [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
-        
-        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccessFailure:listOfExternalSites:message:errorCode:)])
-            [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:listOfExternalSites message:nil errorCode:0];
-        
-        [self complete];
+        completion(account, listOfExternalSites, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccessFailure:listOfExternalSites:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
-
+        
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        [self complete];
+        completion(account, nil, message, errorCode);
     }];
-
 }
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Middleware Ping =====
 #pragma --------------------------------------------------------------------------------------------

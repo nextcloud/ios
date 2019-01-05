@@ -220,7 +220,6 @@
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
-#define actionGetExternalSitesServer                    @"getExternalSitesServer"
 #define actionMiddlewarePing                            @"middlewarePing"
 #define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
