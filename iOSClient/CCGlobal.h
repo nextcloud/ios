@@ -218,7 +218,6 @@
 
 // Metadata.Net ACTION
 #define actionGetUserAndGroup                           @"getUserAndGroup"
-#define actionGetUserProfile                            @"getUserProfile"
 #define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionMiddlewarePing                            @"middlewarePing"
 #define actionSearch                                    @"search"

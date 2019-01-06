@@ -260,12 +260,68 @@ class NCService: NSObject, OCNetworkingDelegate {
             return
         }
         
-        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
-            return
-        }
-        
-        metadataNet.action = actionGetUserProfile
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.getUserProfile(appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
+            
+            if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+                
+                // Update User (+ userProfile.id) & active account & account network
+                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!) else {
+                    self.appDelegate.messageNotification("Accopunt", description: "Internal error : account not found on DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                    return
+                }
+                
+                let user = tableAccount.user
+                let url = tableAccount.url
+                
+                self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
+                
+                // Call func thath required the userdID
+                self.appDelegate.activeFavorites.listingFavorites()
+                self.appDelegate.activeMedia.searchPhotoVideo()
+                NCFunctionMain.sharedInstance.synchronizeOffline()
+                
+                DispatchQueue.global(qos: .default).async {
+                    
+                    let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-avatar.png"
+                    
+                    guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                        }
+                        return
+                    }
+                    
+                    DispatchQueue.main.async {
+                        
+                        guard let image = UIImage(data: imageData) else {
+                            try? FileManager.default.removeItem(atPath: fileNamePath)
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                            return
+                        }
+                        
+                        if let data = image.pngData() {
+                            try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                        }
+                        
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    }
+                }
+                
+            } else {
+                
+                var error = ""
+                if let message = message {
+                    error = "Get user profile failure error \(errorCode) \(message)"
+                } else {
+                    error = "Get user profile failure error \(errorCode)"
+                }
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+            }
+            
+        })
     }
     
     private func requestActivityServer() {
@@ -325,74 +381,5 @@ class NCService: NSObject, OCNetworkingDelegate {
         }, failure: { (message, errorCode) in
             //
         })
-    }
-    
-    //MARK: -
-    //MARK: Delegate Service API NC
-    
-    func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
-        
-        // Check Active Account
-        if (metadataNet.account != appDelegate.activeAccount) {
-            return
-        }
-        
-        if (errorCode == 0) {
-            
-            // Update User (+ userProfile.id) & active account & account network
-            guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!) else {
-                appDelegate.messageNotification("Accopunt", description: "Internal error : account not found on DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
-                return
-            }
-            
-            let user = tableAccount.user
-            let url = tableAccount.url
-            
-            appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
-            
-            // Call func thath required the userdID
-            appDelegate.activeFavorites.listingFavorites()
-            appDelegate.activeMedia.searchPhotoVideo()
-            NCFunctionMain.sharedInstance.synchronizeOffline()
-            
-            DispatchQueue.global(qos: .default).async {
-                
-                let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-avatar.png"
-                
-                guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
-                    }
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    
-                    guard let image = UIImage(data: imageData) else {
-                        try? FileManager.default.removeItem(atPath: fileNamePath)
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
-                        return
-                    }
-                
-                    if let data = image.pngData() {
-                        try? data.write(to: URL(fileURLWithPath: fileNamePath))
-                    }
-                
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
-                }
-            }
-            
-        } else {
-            
-            var error = ""
-            if let message = message {
-                error = "Get user profile failure error \(errorCode) \(message)"
-            } else {
-                error = "Get user profile failure error \(errorCode)"
-            }
-            
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
-        }
     }
 }
