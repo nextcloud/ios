@@ -230,6 +230,8 @@ class NCService: NSObject, OCNetworkingDelegate {
                                 for item in items! as! [OCSharedDto]  {
                                     self.appDelegate.sharesID.setObject(item, forKey: NSString(string: String(item.idRemoteShared)))
                                 }
+                                
+                                self.appDelegate.activeMain.tableView.reloadData()
                             }
                         }
                     })
