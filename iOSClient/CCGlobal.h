@@ -220,9 +220,7 @@
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionMiddlewarePing                            @"middlewarePing"
-#define actionShareWith                                 @"shareWith"
 #define actionUnShare                                   @"unShare"
-#define actionUpdateShare                               @"updateShare"
 
 #define actionGetEndToEndPublicKeys                     @"getEndToEndPublicKeys"
 #define actionGetEndToEndPrivateKeyCipher               @"getEndToEndPrivateKeyCipher"
