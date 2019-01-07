@@ -257,19 +257,22 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         }
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.createNewRichdocuments(withFileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", success: { (url) in
-            if url != nil && url!.count > 0 {
-
-                self.dismiss(animated: true, completion: {
-                    let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", completion: { (account, url, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                if url != nil && url!.count > 0 {
                     
-                    self.appDelegate.activeMain.shouldPerformSegue(metadata)
-                })                
+                    self.dismiss(animated: true, completion: {
+                        let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
+                        
+                        self.appDelegate.activeMain.shouldPerformSegue(metadata)
+                    })
+                }
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
-        }, failure: { (message, errorCode) in
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
     }
     
@@ -285,27 +288,30 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         indicator.color = NCBrandColor.sharedInstance.brand
         indicator.startAnimating()
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.geTemplatesRichdocuments(withTypeTemplate: typeTemplate, success: { (listOfTemplate) in
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.geTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
             
-            self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
-            
-            // default: template empty
-            for template: NCRichDocumentTemplate in self.listOfTemplate {
-                if template.preview == "" {
-                    self.selectTemplate = template
-                    self.fileNameExtension = template.extension
-                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+            self.indicator.stopAnimating()
+
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
+                
+                // default: template empty
+                for template: NCRichDocumentTemplate in self.listOfTemplate {
+                    if template.preview == "" {
+                        self.selectTemplate = template
+                        self.fileNameExtension = template.extension
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    }
                 }
+                
+                self.collectionView.reloadData()
+                
+            } else if errorCode != 0 {
+                
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
-            
-            self.indicator.stopAnimating()
-            self.collectionView.reloadData()
-            
-        }, failure: { (message, errorCode) in
-            self.indicator.stopAnimating()
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
     }
     

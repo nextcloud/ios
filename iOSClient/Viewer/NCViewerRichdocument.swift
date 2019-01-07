@@ -110,28 +110,30 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         
         if serverUrl != nil && metadata != nil {
             
-            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-            ocNetworking?.createAssetRichdocuments(withFileName: metadata!.fileName, serverUrl: serverUrl, success: { (url) in
+            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+            ocNetworking?.createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
                 
-                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
-                self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
-                
-            }, failure: { (message, errorCode) in
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                if (errorCode == 0) {
+                    let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
+                    self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+                } else {
+                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                }
             })
         }
     }
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        ocNetworking?.createAssetRichdocuments(withFileName: metadata.fileName, serverUrl: serverUrl, success: { (url) in
-
-            let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
-            self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
             
-        }, failure: { (message, errorCode) in
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            if (errorCode == 0) {
+                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
+                self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+            } else {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            }
         })
     }
     

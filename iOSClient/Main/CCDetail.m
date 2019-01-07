@@ -217,18 +217,23 @@
             [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view];
             
             if ([self.metadataDetail.url isEqualToString:@""]) {
-                OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-                
-                [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+                OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+                [ocNetworking createLinkRichdocumentsWithAccount:appDelegate.activeAccount fileID:self.metadataDetail.fileID completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
                     
-                    [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
-                    
-                } failure:^(NSString *message, NSInteger errorCode) {
-                    
-                    [[NCUtility sharedInstance] stopActivityIndicator];
-                    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                    [self.navigationController popViewControllerAnimated:YES];
+                    if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                        
+                        [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
+
+                    } else {
+                        
+                        [[NCUtility sharedInstance] stopActivityIndicator];
+                        if (errorCode != 0) {
+                            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        }
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }
                 }];
+                
             } else {
                 
                 [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:self.metadataDetail.url detail:self];
