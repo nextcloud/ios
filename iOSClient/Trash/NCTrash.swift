@@ -456,23 +456,21 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     @objc func loadListingTrash() {
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, completion: { (account, item, message, errorCode) in
             
             self.refreshControl.endRefreshing()
 
-            NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
-            NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.loadDatasource()
+            if (errorCode == 0 && account == self.appDelegate.activeAccount) {
+                
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+                
+            } else if (errorCode != 0) {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
             
-        }, failure: { (message, errorCode) in
-            
-            self.refreshControl.endRefreshing()
-            print("error " + message!)
+            self.loadDatasource()
         })
     }
     

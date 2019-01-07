@@ -1122,7 +1122,7 @@
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readShareServerWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
+- (void)readShareWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1507,7 +1507,7 @@
 #pragma mark ===== External Sites =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getExternalSitesServer:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfExternalSites, NSString *message, NSInteger errorCode))completion
+- (void)getExternalSitesWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfExternalSites, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1590,7 +1590,7 @@
 #pragma mark ===== Notification =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getNotificationServer:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfNotifications, NSString *message, NSInteger errorCode))completion
+- (void)getNotificationWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfNotifications, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1631,7 +1631,7 @@
     }];
 }
 
-- (void)setNotificationServer:(NSString *)account serverUrl:(NSString *)serverUrl type:(NSString *)type completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)setNotificationWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl type:(NSString *)type completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1794,7 +1794,7 @@
 #pragma mark =====  User Profile =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getUserProfile:(NSString *)account completion:(void (^)(NSString *account, OCUserProfile *userProfile, NSString *message, NSInteger errorCode))completion
+- (void)getUserProfileWithAccount:(NSString *)account completion:(void (^)(NSString *account, OCUserProfile *userProfile, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1836,7 +1836,7 @@
 #pragma mark ===== Capabilities =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getCapabilitiesOfServer:(NSString *)account completion:(void (^)(NSString *account, OCCapabilities *capabilities, NSString *message, NSInteger errorCode))completion
+- (void)getCapabilitiesWithAccount:(NSString *)account completion:(void (^)(NSString *account, OCCapabilities *capabilities, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2259,64 +2259,60 @@
 #pragma mark =====  Trash =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)listingTrash:(NSString *)serverUrl path:(NSString *)path account:(NSString *)account success:(void(^)(NSArray *items))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)listingTrashWithAccount:(NSString *)account path:(NSString *)path serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication listingTrash:[serverUrl stringByAppendingString:path] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:account]) {
-            
-            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-            
-        } else {
-            
-            // Check items > 0
-            if ([items count] == 0) {
+        // Check items > 0
+        if ([items count] == 0) {
                 
 #ifndef EXTENSION
-                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
                 
-                [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
-                failure(NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
+            completion(account, nil, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
                 
-            } else {
+        } else {
                 
-                NSMutableArray *listTrash = [NSMutableArray new];
+            NSMutableArray *listTrash = [NSMutableArray new];
                 
-                //OCFileDto *itemDtoFolder = [items objectAtIndex:0];
+            //OCFileDto *itemDtoFolder = [items objectAtIndex:0];
 
-                if ([items count] > 1) {
-                    for (NSUInteger i=1; i < [items count]; i++) {
+            if ([items count] > 1) {
+                for (NSUInteger i=1; i < [items count]; i++) {
                         
-                        OCFileDto *itemDto = [items objectAtIndex:i];
-                        tableTrash *trash = [tableTrash new];
+                    OCFileDto *itemDto = [items objectAtIndex:i];
+                    tableTrash *trash = [tableTrash new];
                         
-                        trash.account = account;
-                        trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
-                        trash.directory = itemDto.isDirectory;
-                        trash.fileID = itemDto.ocId;
-                        trash.fileName = itemDto.fileName;
-                        trash.filePath = itemDto.filePath;
-                        trash.size = itemDto.size;
-                        trash.trashbinFileName = itemDto.trashbinFileName;
-                        trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
-                        trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
+                    trash.account = account;
+                    trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
+                    trash.directory = itemDto.isDirectory;
+                    trash.fileID = itemDto.ocId;
+                    trash.fileName = itemDto.fileName;
+                    trash.filePath = itemDto.filePath;
+                    trash.size = itemDto.size;
+                    trash.trashbinFileName = itemDto.trashbinFileName;
+                    trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
+                    trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
 
-                        [CCUtility insertTypeFileIconName:trash.trashbinFileName metadata:(tableMetadata *)trash];
+                    [CCUtility insertTypeFileIconName:trash.trashbinFileName metadata:(tableMetadata *)trash];
 
-                        [listTrash addObject:trash];
-                    }
+                    [listTrash addObject:trash];
                 }
-                
-                success(listTrash);
             }
+                
+            completion(account, listTrash, nil, 0);
         }
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -2336,7 +2332,7 @@
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
-        failure(message, errorCode);
+        completion(account, nil,message, errorCode);
     }];
 }
 

@@ -2081,7 +2081,7 @@
 - (void)openWindowShare:(tableMetadata *)metadata
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking readShareServerWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
+    [ocNetworking readShareWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
         
         [_hud hideHud];
         

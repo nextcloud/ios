@@ -58,7 +58,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.getCapabilitiesOfServer(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
+        ocNetworking?.getCapabilitiesWithAccount(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
             
             if (errorCode == 0 && self.appDelegate.activeAccount == account!) {
                 
@@ -118,7 +118,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                 // Read Notification
                 if (capabilities!.isNotificationServerEnabled) {
                     
-                    ocNetworking?.getNotificationServer(account!, completion: { (account, listOfNotifications, message, errorCode) in
+                    ocNetworking?.getNotificationWithAccount(account!, completion: { (account, listOfNotifications, message, errorCode) in
                         
                         if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
                             
@@ -190,7 +190,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                 // Read External Sites
                 if (capabilities!.isExternalSitesServerEnabled) {
                     
-                    ocNetworking?.getExternalSitesServer(account!, completion: { (account, listOfExternalSites, message, errorCode) in
+                    ocNetworking?.getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
                         
                         if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
                             
@@ -222,7 +222,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                     
                     self.appDelegate.sharesID.removeAllObjects()
                     
-                    ocNetworking?.readShareServer(withAccount: account!, completion: { (account, items, message, errorCode) in
+                    ocNetworking?.readShare(withAccount: account!, completion: { (account, items, message, errorCode) in
                         
                         if errorCode == 0 && account! == self.appDelegate.activeAccount {
                             
@@ -261,7 +261,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.getUserProfile(appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
+        ocNetworking?.getUserProfile(withAccount: appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
             
             if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
                 
