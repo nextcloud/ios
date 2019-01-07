@@ -1243,37 +1243,43 @@
 }
 */
 
-- (void)share
+- (void)shareWithAccount:(NSString *)account fileName:(NSString *)fileName password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-        
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication shareFileOrFolderByServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:[_metadataNet.fileName encodeString:NSUTF8StringEncoding] andPassword:[_metadataNet.password encodeString:NSUTF8StringEncoding] andPermission:_metadataNet.sharePermission andHideDownload:_metadataNet.hideDownload onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+    [communication shareFileOrFolderByServer:[tableAccount.url stringByAppendingString:@"/"] andFileOrFolderPath:[fileName encodeString:NSUTF8StringEncoding] andPassword:[password encodeString:NSUTF8StringEncoding] andPermission:permission andHideDownload:hideDownload onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+        
+        completion(account, nil, 0);
         
         //[self readShareServer];
         
     } failureRequest :^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
-        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
-
+        
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        [self complete];
+        completion(account, message, errorCode);
     }];
 }
 
@@ -1292,19 +1298,18 @@
                 
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
-        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
-
+        
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
@@ -1332,17 +1337,16 @@
         [appDelegate messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
 #endif
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
-        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
 
         // Request trusted certificated
@@ -1373,17 +1377,16 @@
         [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
 #endif
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
-        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
         
         // Request trusted certificated
@@ -1410,17 +1413,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
-        if ([self.delegate respondsToSelector:@selector(getUserAndGroupFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate getUserAndGroupFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate getUserAndGroupFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
         
         // Request trusted certificated
@@ -1459,17 +1461,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message = @"";
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getSharePermissionsFileFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate getSharePermissionsFileFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
         
         // Request trusted certificated

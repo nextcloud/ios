@@ -220,7 +220,6 @@
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionMiddlewarePing                            @"middlewarePing"
-#define actionShare                                     @"share"
 #define actionShareWith                                 @"shareWith"
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"

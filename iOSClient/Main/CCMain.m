@@ -1922,42 +1922,33 @@
     [self tableViewReloadData];
 }
 
-- (void)shareFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [_hud hideHud];
-
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-    else
-        [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-
-    if (_shareOC)
-        [_shareOC reloadData];
-    
-    [self tableViewReloadData];
-}
-
 - (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    NSString *fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
     
-    metadataNet.action = actionShare;
-    metadataNet.fileID = metadata.fileID;
-    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
-    metadataNet.fileNameView = metadata.fileNameView;
-    metadataNet.hideDownload = hideDownload;
-    metadataNet.sharePermission = permission;
-    metadataNet.password = password;
-    metadataNet.selector = selectorShare;
-    metadataNet.serverUrl = serverUrl;
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking shareWithAccount:appDelegate.activeAccount fileName:fileName password:password permission:permission hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-
+        [_hud hideHud];
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            
+            
+        } else if (errorCode != 0) {
+            
+            if (errorCode == kOCErrorServerUnauthorized)
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            else
+                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+        if (_shareOC)
+            [_shareOC reloadData];
+        
+        [self tableViewReloadData];
+    }];
+    
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
