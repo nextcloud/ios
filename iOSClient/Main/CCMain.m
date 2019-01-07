@@ -1773,13 +1773,13 @@
     
     // Creeate folder Networking
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking createFolder:fileNameFolder serverUrl:serverUrl account:appDelegate.activeAccount success:^(NSString *account, NSString *fileID, NSDate *date) {
-
-        if ([account isEqualToString:appDelegate.activeAccount]) {
+    [ocNetworking createFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode) {
+       
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             // Delete Temp Dir
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
-
+            
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameFolder];
             
             if (_metadataFolder.e2eEncrypted) {
@@ -1798,25 +1798,25 @@
                 
                 [self readFolder:self.serverUrl];
             }
+            
+        } else if (errorCode == 0) {
+            
+            // Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized)
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            else
+                [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            
+            // Delete Temp Dir
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
+            
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+            
+            // We are in directory fail ?
+            CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:fileNameFolder]];
+            if (vc)
+                [vc.navigationController popViewControllerAnimated:YES];
         }
-        
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-        else
-            [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        
-        // Delete Temp Dir
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
-        
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
-        
-        // We are in directory fail ?
-        CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:fileNameFolder]];
-        if (vc)
-            [vc.navigationController popViewControllerAnimated:YES];
     }];
 }
 

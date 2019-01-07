@@ -462,10 +462,12 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     func createFolder(with fileName: String) {
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.createFolder(fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, success: { (account, fileID, date) in
-            self.loadDatasource(withLoadFolder: true)
-        }, failure: { (account, message, errorCode) in
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        ocNetworking?.createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, fileID, date, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                self.loadDatasource(withLoadFolder: true)
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
         })
     }
     

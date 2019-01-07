@@ -63,7 +63,7 @@
 
 - (void)deleteFileOrFolder:(NSString *)path account:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
-- (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, NSString *fileID, NSDate *date))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
+- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion;
 
 - (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo account:(NSString *)account success:(void (^)(NSString *account))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
 

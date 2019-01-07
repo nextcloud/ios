@@ -961,11 +961,11 @@
 #pragma mark ===== Create Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, NSString *fileID, NSDate *date))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure
+- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     NSString *path = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
@@ -984,7 +984,7 @@
         NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
         NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
             
-        success(account, fileID, date);
+        completion(account, fileID, date, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
 
@@ -1006,7 +1006,7 @@
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:path fileID:@"" action:k_activityDebugActionCreateFolder selector:@"" note:NSLocalizedString(@"_not_possible_create_folder_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:tableAccount.url];
 
-        failure(account, message, errorCode);
+        completion(account, nil, nil, message, errorCode);
 
     } errorBeforeRequest:^(NSError *error) {
         
@@ -1021,7 +1021,7 @@
                 message = NSLocalizedString(@"_unknow_response_server_", nil);
         }
         
-        failure(account, message, error.code);
+        completion(account, nil, nil, message, error.code);
     }];
 }
 

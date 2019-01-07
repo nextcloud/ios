@@ -343,15 +343,16 @@
 - (void)createFolder:(NSString *)fileNameFolder
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking createFolder:fileNameFolder serverUrl:_serverUrl account:activeAccount success:^(NSString *account, NSString *fileID, NSDate *date) {
-        [self readFolder];
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-        
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        }]];
-        
-        [self presentViewController:alertController animated:YES completion:nil];
+    [ocNetworking createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode) {
+       
+        if (errorCode == 0 && [account isEqualToString:activeAccount]) {
+            [self readFolder];
+        } else if (errorCode != 0) {
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }]];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
     }];
 }
 

@@ -41,50 +41,52 @@ extension FileProviderExtension {
         let serverUrl = tableDirectory.serverUrl
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.account, success: { (account, fileID, date) in
+        ocNetworking?.createFolder(withAccount: providerData.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, fileID, date, message, errorCode) in
             
-            let metadata = tableMetadata()
-            
-            metadata.account = account!
-            metadata.directory = true
-            metadata.fileID = fileID!
-            metadata.fileName = directoryName
-            metadata.fileNameView = directoryName
-            metadata.serverUrl = serverUrl
-            metadata.typeFile = k_metadataTypeFile_directory
-            
-            // METADATA
-            guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            // DIRECTORY
-            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadataDB)
-            if parentItemIdentifier != nil {
+            if errorCode == 0 && account == self.providerData.account {
                 
-                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!, providerData: self.providerData)
+                let metadata = tableMetadata()
                 
-                self.providerData.queueTradeSafe.sync(flags: .barrier) {
-                    self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                    self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                metadata.account = account!
+                metadata.directory = true
+                metadata.fileID = fileID!
+                metadata.fileName = directoryName
+                metadata.fileNameView = directoryName
+                metadata.serverUrl = serverUrl
+                metadata.typeFile = k_metadataTypeFile_directory
+                
+                // METADATA
+                guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem))
+                    return
                 }
-
-                self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-
-                completionHandler(item, nil)
                 
+                // DIRECTORY
+                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem))
+                    return
+                }
+                
+                let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadataDB)
+                if parentItemIdentifier != nil {
+                    
+                    let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!, providerData: self.providerData)
+                    
+                    self.providerData.queueTradeSafe.sync(flags: .barrier) {
+                        self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                        self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                    }
+                    
+                    self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                    
+                    completionHandler(item, nil)
+                    
+                } else {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem))
+                }
             } else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
-            
-        }, failure: { (account, errorMessage, errorCode) in
-            completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
     
