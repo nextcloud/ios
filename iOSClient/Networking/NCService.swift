@@ -222,7 +222,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                     
                     self.appDelegate.sharesID.removeAllObjects()
                     
-                    ocNetworking?.readShareServer(account!, completion: { (account, items, message, errorCode) in
+                    ocNetworking?.readShareServer(withAccount: account!, completion: { (account, items, message, errorCode) in
                         
                         if errorCode == 0 && account! == self.appDelegate.activeAccount {
                             
@@ -331,23 +331,22 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.getActivityServer(appDelegate.activeAccount, success: { (account, listOfActivity) in
-            
-            NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: account!)
-            if (self.appDelegate.activeActivity != nil) {
-                self.appDelegate.activeActivity.reloadDatasource()
-            }
-            
-        }, failure: { (account, message, errorCode) in
-            
-            var error = ""
-            if let message = message {
-                error = "Get Activity Server failure error \(errorCode) \(message)"
+        ocNetworking?.getActivityWithAccount(appDelegate.activeAccount, completion: { (account, listOfActivity, message, errorCode) in
+            if errorCode == 0 {
+                NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: account!)
+                if (self.appDelegate.activeActivity != nil) {
+                    self.appDelegate.activeActivity.reloadDatasource()
+                }
             } else {
-                error = "Get Activity Server failure error \(errorCode)"
+                var error = ""
+                if let message = message {
+                    error = "Get Activity Server failure error \(errorCode) \(message)"
+                } else {
+                    error = "Get Activity Server failure error \(errorCode)"
+                }
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
             }
-            
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
         })
     }
     

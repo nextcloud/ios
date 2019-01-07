@@ -1122,7 +1122,7 @@
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readShareServer:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
+- (void)readShareServerWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1469,11 +1469,11 @@
 #pragma mark ===== Activity =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getActivityServer:(NSString *)account success:(void(^)(NSString *account, NSArray *listOfActivity))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure
+- (void)getActivityWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -1483,7 +1483,7 @@
     
     [communication getActivityServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
-        success(account, listOfActivity);
+        completion(account, listOfActivity, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -1499,7 +1499,7 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        failure(account, message, errorCode);
+        completion(account, nil, message, errorCode);
     }];
 }
 

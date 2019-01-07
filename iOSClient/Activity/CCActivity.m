@@ -148,10 +148,10 @@
 - (void)getActivity
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking getActivityServer:appDelegate.activeAccount success:^(NSString *account, NSArray *listOfActivity) {
-        [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:account];
-        [self reloadDatasource];
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [ocNetworking getActivityWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode) {
+        if (errorCode == 0) {
+            [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:account];
+        }
         [self reloadDatasource];
     }];
 }
