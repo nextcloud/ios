@@ -656,35 +656,6 @@
 #pragma mark ==== Search Photo/Video ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    isSearchMode = NO;
-    
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount] || errorCode != 0) {
-        
-        [self reloadDatasource:nil action:k_action_NULL];
-        
-    } else {
-    
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            // Clear all Hardcoded new foto/video from CCNetworking
-            [self.addMetadatasFromUpload removeAllObjects];
-            
-            [[NCManageDatabase sharedInstance] createTablePhotos:metadatas account:appDelegate.activeAccount];
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadDatasource:nil action:k_action_NULL];
-            });
-            
-            // Update date
-            [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
-            // Save etag
-            [saveEtagForStartDirectory setObject:metadataNet.etag forKey:metadataNet.serverUrl];
-        });
-    }
-}
-
 - (void)searchPhotoVideo
 {
     // test
@@ -706,19 +677,31 @@
             isSearchMode = YES;
             [self editingModeNO];
             
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-            
-            metadataNet.action = actionSearch;
-            metadataNet.contentType = @[@"image/%", @"video/%"];
-            metadataNet.date = [NSDate distantPast];
-            metadataNet.fileName = @"";
-            metadataNet.etag = metadata.etag;
-            metadataNet.depth = @"infinity";
-            metadataNet.priority = NSOperationQueuePriorityHigh;
-            metadataNet.selector = selectorSearchContentType;
-            metadataNet.serverUrl = startDirectory;
-            
-            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+            [ocNetworking searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] date:[NSDate distantPast] depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+               
+                if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
+                    
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        
+                        // Clear all Hardcoded new foto/video from CCNetworking
+                        [self.addMetadatasFromUpload removeAllObjects];
+                        
+                        [[NCManageDatabase sharedInstance] createTablePhotos:metadatas account:account];
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self reloadDatasource:nil action:k_action_NULL];
+                        });
+                        
+                        // Update date
+                        [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
+                        // Save etag
+                        [saveEtagForStartDirectory setObject:metadata.etag forKey:metadata.serverUrl];
+                    });
+                    
+                } else {
+                    [self reloadDatasource:nil action:k_action_NULL];
+                }
+            }];
             
         } else {
             [self reloadDatasource:nil action:k_action_NULL];

@@ -1337,19 +1337,27 @@
 {
     NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    metadataNet.action = actionSearch;
-    metadataNet.contentType = nil;
-    metadataNet.date = nil;
-    metadataNet.fileName = _searchFileName;
-    metadataNet.etag = @"";
-    metadataNet.depth = @"infinity";
-    metadataNet.priority = NSOperationQueuePriorityHigh;
-    metadataNet.selector = selectorSearchFiles;
-    metadataNet.serverUrl = startDirectory;
-    
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking searchWithAccount:appDelegate.activeAccount fileName:_searchFileName serverUrl:startDirectory contentType:nil date:nil depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+       
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
+            [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
+            
+        } else {
+            
+            // Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            } else if (errorCode != 0) {
+                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            }
+            
+            _searchFileName = @"";
+        }
+        
+    }];
     
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
@@ -1400,29 +1408,6 @@
     [self cancelSearchBar];
     
     [self readFolder:_serverUrl];
-}
-
-- (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-    
-        _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
-        [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
-        
-    } else {
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-        else
-            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        
-        _searchFileName = @"";
-    }
 }
 
 - (void)cancelSearchBar
