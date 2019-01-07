@@ -400,12 +400,12 @@
                 CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
 
                 OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-                [ocNetworking downloadPreviewWithMetadata:metadata withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
-                    
+                [ocNetworking downloadPreviewWithAccount:appDelegate.activeAccount metadata:metadata withWidth:width andHeight:height completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+
                     self.navigationItem.titleView = nil;
                     self.title = metadata.fileNameView;
                     
-                    if ([metadata.account isEqualToString:appDelegate.activeAccount] && errorCode == 0) {
+                    if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                         [self.photoBrowser reloadData];
                     }
                 }];
