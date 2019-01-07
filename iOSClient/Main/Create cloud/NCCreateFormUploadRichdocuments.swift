@@ -317,14 +317,16 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     
     func getImage(template: NCRichDocumentTemplate, indexPath: IndexPath) {
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
-        
-        ocNetworking?.downloadFile(template.preview, fileNameLocalPath: fileNameLocalPath, success: {
-            self.collectionView.reloadItems(at: [indexPath])
-        }, failure: { (message, errorCode) in
-            print("\(errorCode)")
+
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        ocNetworking?.download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                self.collectionView.reloadItems(at: [indexPath])
+            } else {
+                print("\(errorCode)")
+            }
         })
     }
 }

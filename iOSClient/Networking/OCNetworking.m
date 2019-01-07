@@ -250,9 +250,14 @@
 #pragma mark ===== download =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (NSURLSessionTask *)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void (^)(int64_t length, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (NSURLSessionTask *)downloadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication completion:(void (^)(NSString *account, int64_t length, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
 {
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, 0, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSURLSessionTask *sessionTask = [communication downloadFileSession:fileNameServerUrl toDestiny:fileNameLocalPath defaultPriority:YES onCommunication:communication progress:^(NSProgress *progress) {
@@ -284,9 +289,9 @@
         
         NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
         if (etag == nil) {
-            failure(@"Internal error", k_CCErrorInternalError);
+            completion(account, 0, nil, nil, NSLocalizedString(@"Internal error", nil), k_CCErrorInternalError);
         } else {
-            success(totalUnitCount, etag, date);
+            completion(account, totalUnitCount, etag, date, nil, 0);
         }
         
     } failureRequest:^(NSURLResponse *response, NSError *error) {
@@ -306,24 +311,29 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        failure(message, errorCode);
+        completion(account, 0, nil, nil, message, errorCode);
     }];
     
     return sessionTask;
 }
 
-- (NSURLSessionTask *)downloadFile:(NSString *)url fileNameLocalPath:(NSString *)fileNameLocalPath success:(void (^)())success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (NSURLSessionTask *)downloadWithAccount:(NSString *)account url:(NSString *)url fileNameLocalPath:(NSString *)fileNameLocalPath completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
     
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+
     NSURLSessionTask *sessionTask = [communication downloadFileSession:url toDestiny:fileNameLocalPath defaultPriority:YES onCommunication:communication progress:^(NSProgress *progress) {
         //float percent = roundf (progress.fractionCompleted * 100);
     } successRequest:^(NSURLResponse *response, NSURL *filePath) {
         
-        success();
+        completion(account, nil, 0);
         
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         
@@ -342,7 +352,7 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        failure(message, errorCode);
+        completion(account, message, errorCode);
     }];
     
     return sessionTask;
@@ -353,9 +363,14 @@
 #pragma mark ===== upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (NSURLSessionTask *)uploadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void(^)(NSString *fileID, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication completion:(void(^)(NSString *account, NSString *fileID, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
 {    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSURLSessionTask *sessionTask = [communication uploadFileSession:fileNameLocalPath toDestiny:fileNameServerUrl onCommunication:communication progress:^(NSProgress *progress) {
@@ -368,7 +383,7 @@
         NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
         NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
         
-        success(fileID, etag, date);
+        completion(account, fileID, etag, date, nil, 0);
         
     } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
         
@@ -387,10 +402,10 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        failure(message, errorCode);
+        completion(account, nil, nil, nil, message, errorCode);
         
     } failureBeforeRequest:^(NSError *error) {
-        failure(@"", error.code);
+        completion(account, nil, nil, nil, error.description, error.code);
     }];
     
     return sessionTask;
@@ -443,13 +458,14 @@
 
 - (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
      
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+
     if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
         
         completion(account, nil, 0);

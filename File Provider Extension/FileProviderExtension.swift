@@ -238,37 +238,41 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
             
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        let task = ocNetworking?.downloadFileNameServerUrl(metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        let task = ocNetworking?.download(withAccount: providerData.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), completion: { (account, lenght, etag, date, message, errorCode) in
+            
+            if errorCode == 0 && account == self.providerData.account {
                 
-            // remove Task
-            self.outstandingDownloadTasks.removeValue(forKey: url)
-            
-            // update DB Local
-            metadata.date = date! as NSDate
-            metadata.etag = etag!
-            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-            NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
-            
-            // Update DB Metadata
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-
-            completionHandler(nil)
-            return
-                    
-        }, failure: { (errorMessage, errorCode) in
+                // remove Task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
                 
-            // remove task
-            self.outstandingDownloadTasks.removeValue(forKey: url)
-            
-            if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
-                completionHandler(NSFileProviderError(.noSuchItem))
+                // update DB Local
+                metadata.date = date! as NSDate
+                metadata.etag = etag!
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
+                
+                // Update DB Metadata
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                
+                completionHandler(nil)
+                return
+                
             } else {
-                completionHandler(NSFileProviderError(.serverUnreachable))
+                
+                // remove task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
+                
+                if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+                    completionHandler(NSFileProviderError(.noSuchItem))
+                } else {
+                    completionHandler(NSFileProviderError(.serverUnreachable))
+                }
+                return
             }
-            return
-        })
             
+        })
+       
         // Add and register task
         if task != nil {
             outstandingDownloadTasks[url] = task
