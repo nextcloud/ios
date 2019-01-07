@@ -257,8 +257,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         }
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", completion: { (account, url, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", completion: { (account, url, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -288,8 +288,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         indicator.color = NCBrandColor.sharedInstance.brand
         indicator.startAnimating()
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.geTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.geTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
             
             self.indicator.stopAnimating()
 
@@ -319,8 +319,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
 
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])

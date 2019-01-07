@@ -604,7 +604,7 @@
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    OCnetworking *ocNetworking = [OCnetworking new];
     [ocNetworking downloadPreviewWithAccount:appDelegate.activeAccount metadata:metadata withWidth:width andHeight:height completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         counterThumbnail--;
@@ -670,7 +670,7 @@
     
     NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    OCnetworking *ocNetworking = [OCnetworking new];
     [ocNetworking readFileWithAccount:appDelegate.activeAccount serverUrl:startDirectory fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
 
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {

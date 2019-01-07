@@ -303,7 +303,7 @@
 {
     id operation;
    
-    operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withUserID:_activeUserID withPassword:_activePassword withUrl:_activeUrl];
+    operation = [OCnetworking new];
     
     [operation setQueuePriority:metadataNet.priority];
     

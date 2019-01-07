@@ -28,7 +28,7 @@ import Foundation
     func endToEndInitializeSuccess()
 }
 
-class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
+class NCEndToEndInitialize : NSObject  {
 
     @objc weak var delegate: NCEndToEndInitializeDelegate?
 

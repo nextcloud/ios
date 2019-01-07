@@ -392,8 +392,8 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
-    
+    OCnetworking *ocNetworking = [OCnetworking new];
+
     [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair];
 
     NSString *pushToken = [CCUtility getPushNotificationToken];
@@ -423,7 +423,7 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    OCnetworking *ocNetworking = [OCnetworking new];
     [ocNetworking unsubscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0) {
@@ -1143,6 +1143,7 @@
 
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
 {
+    /*
     id operation;
     
     operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withUserID:_activeUserID withPassword:_activePassword withUrl:_activeUrl];
@@ -1150,6 +1151,7 @@
     [operation setQueuePriority:metadataNet.priority];
     
     [netQueue addOperation:operation];
+    */
 }
 
 #pragma --------------------------------------------------------------------------------------------

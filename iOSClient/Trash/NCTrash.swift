@@ -456,8 +456,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     @objc func loadListingTrash() {
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, completion: { (account, item, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, completion: { (account, item, message, errorCode) in
             
             self.refreshControl.endRefreshing()
 
@@ -483,8 +483,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         let fileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
                 self.loadDatasource()
@@ -496,8 +496,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func emptyTrash() {
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
             } else if errorCode != 0 {
@@ -515,8 +515,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
 
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
             
             if errorCode == 0 {
                 
@@ -533,8 +533,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
                 
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (account, message, errorCode) in
+        let ocNetworking = OCnetworking.init()
+        ocNetworking.downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount && CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
                 self.collectionView.reloadItems(at: [indexPath])
             }

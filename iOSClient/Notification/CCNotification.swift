@@ -23,7 +23,7 @@
 
 import UIKit
 
-class CCNotification: UITableViewController, OCNetworkingDelegate {
+class CCNotification: UITableViewController {
 
     var resultSearchController = UISearchController()
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -84,8 +84,8 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
 
                 tableView.setEditing(false, animated: true)
 
-                let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-                ocNetworking?.setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
+                let ocNetworking = OCnetworking.init()
+                ocNetworking.setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
                     
                     if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
                         
@@ -129,8 +129,8 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                             
                             tableView.setEditing(false, animated: true)
 
-                            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-                            ocNetworking?.setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (actionNotification as! OCNotificationsAction).link, type: (actionNotification as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
+                            let ocNetworking = OCnetworking.init()
+                            ocNetworking.setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (actionNotification as! OCNotificationsAction).link, type: (actionNotification as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
                                 
                                 if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
                                     

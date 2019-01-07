@@ -28,7 +28,7 @@
 
 @protocol CCPeekPopDelegate;
 
-@interface CCPeekPop : UIViewController <OCNetworkingDelegate>
+@interface CCPeekPop : UIViewController
 
 @property (nonatomic, weak) id <CCPeekPopDelegate> delegate;
 

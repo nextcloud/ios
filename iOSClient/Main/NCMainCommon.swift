@@ -846,7 +846,7 @@ class NCMainCommon: NSObject {
         var completionErrorCode: Int = 0
         var completionMessage = ""
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
+        let ocNetworking = OCnetworking.init()
         
         for metadata in metadatas {
             
@@ -854,7 +854,7 @@ class NCMainCommon: NSObject {
             
             let path = metadata.serverUrl + "/" + metadata.fileName
             
-            ocNetworking?.deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
+            ocNetworking.deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
                 
                 if account == self.appDelegate.activeAccount {
                     
@@ -1169,8 +1169,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             
-            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-            ocNetworking?.downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, message, errorCode) in
+            let ocNetworking = OCnetworking.init()
+            ocNetworking.downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, message, errorCode) in
               
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     if CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
