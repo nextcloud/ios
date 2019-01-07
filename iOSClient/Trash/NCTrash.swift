@@ -486,15 +486,13 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, account: appDelegate.activeAccount, success: { (account) in
-
-            NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
-            
-            self.loadDatasource()
-            
-        }, failure: { (account, message, errorCode) in
-            
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        ocNetworking?.moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
+                self.loadDatasource()
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
         })
     }
     
@@ -525,7 +523,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
 
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.deleteFileOrFolder(path, account:appDelegate.activeAccount, completion: { (account, message, errorCode) in
+        ocNetworking?.deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
             
             if errorCode == 0 {
                 

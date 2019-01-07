@@ -854,7 +854,7 @@ class NCMainCommon: NSObject {
             
             let path = metadata.serverUrl + "/" + metadata.fileName
             
-            ocNetworking?.deleteFileOrFolder(path, account:appDelegate.activeAccount, completion: { (account, message, errorCode) in
+            ocNetworking?.deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
                 
                 if account == self.appDelegate.activeAccount {
                     

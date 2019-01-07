@@ -61,11 +61,11 @@
 
 - (void)searchWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl contentType:(NSArray *)contentType date:(NSDate *)date depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion;
 
-- (void)deleteFileOrFolder:(NSString *)path account:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)deleteFileOrFolderWithAccount:(NSString *)account path:(NSString *)path completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
 - (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion;
 
-- (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo account:(NSString *)account success:(void (^)(NSString *account))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
+- (void)moveFileOrFolderWithAccount:(NSString *)account fileName:(NSString *)fileName fileNameTo:(NSString *)fileNameTo completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
 - (void)readShareServer:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
 

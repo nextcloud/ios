@@ -34,7 +34,7 @@ extension FileProviderExtension {
         let path = metadata.serverUrl + "/" + metadata.fileName
 
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.deleteFileOrFolder(path, account: providerData.account, completion: { (account, message, errorCode) in
+        ocNetworking?.deleteFileOrFolder(withAccount: providerData.account, path: path, completion: { (account, message, errorCode) in
             if errorCode == 0 || errorCode == 404 {
                 self.deleteFileSystem(for: metadata, serverUrl: metadata.serverUrl, itemIdentifier: itemIdentifier)
             }

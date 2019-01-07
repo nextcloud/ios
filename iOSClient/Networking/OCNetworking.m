@@ -1029,7 +1029,7 @@
 #pragma mark =====  Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolder:(NSString *)path account:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)deleteFileOrFolderWithAccount:(NSString *)account path:(NSString *)path completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {    
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1074,11 +1074,11 @@
 #pragma mark ===== Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo account:(NSString *)account success:(void (^)(NSString *account))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure
+- (void)moveFileOrFolderWithAccount:(NSString *)account fileName:(NSString *)fileName fileNameTo:(NSString *)fileNameTo completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -1088,7 +1088,7 @@
     
     [communication moveFileOrFolder:fileName toDestiny:fileNameTo onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
 
-        success(account);
+        completion(account, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -1098,7 +1098,7 @@
         
         NSString *message = [CCError manageErrorOC:response.statusCode error:error];
         
-        failure(account, message, error.code);
+        completion(account, message, error.code);
         
     } errorBeforeRequest:^(NSError *error) {
         
@@ -1114,7 +1114,7 @@
             message = NSLocalizedString(@"_unknow_response_server_", nil);
         }
         
-        failure(account, message, error.code);
+        completion(account, message, error.code);
     }];
 }
 
