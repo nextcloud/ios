@@ -821,7 +821,7 @@
 #pragma mark ===== Setting Favorite =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingFavorite:(NSString *)fileName account:(NSString *)account favorite:(BOOL)favorite completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)settingFavoriteWithAccount:(NSString *)account fileName:(NSString *)fileName favorite:(BOOL)favorite completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -865,11 +865,11 @@
 #pragma mark ===== Listing Favorites =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, NSArray *metadatas))success failure:(void (^)(NSString* account, NSString *message, NSInteger errorCode))failure
+- (void)listingFavoritesWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -878,9 +878,8 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
-    NSString *folder = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
     
-    [communication listingFavorites:path folder:folder withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    [communication listingFavorites:path folder:@"" withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
@@ -932,7 +931,7 @@
             }
                 
             dispatch_async(dispatch_get_main_queue(), ^{
-                success(account, metadatas);
+                completion(account, metadatas, nil, 0);
             });
         });
         
@@ -954,10 +953,7 @@
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionListingFavorites selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:tableAccount.url];
-
-        failure(account, message, errorCode);
+        completion(account, nil, message, errorCode);
     }];
 }
 

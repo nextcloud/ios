@@ -170,13 +170,12 @@
     NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:appDelegate.activeUrl];
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking settingFavorite:fileNameServerUrl account:appDelegate.activeAccount favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [ocNetworking settingFavoriteWithAccount:appDelegate.activeAccount fileName:fileNameServerUrl favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
-        } else {
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+        } else if (errorCode == kOCErrorServerUnauthorized) {
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
         }
     }];
 }
@@ -192,9 +191,9 @@
         return;
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking listingFavorites:@"" account:appDelegate.activeAccount success:^(NSString *account, NSArray *metadatas) {
+    [ocNetworking listingFavoritesWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
         
-        if ([account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             NSString *father = @"";
             NSMutableArray *filesEtag = [NSMutableArray new];
@@ -237,9 +236,6 @@
             
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
         }
-        
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-        NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
     }];
 }
 

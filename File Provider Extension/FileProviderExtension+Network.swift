@@ -68,8 +68,8 @@ extension FileProviderExtension {
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: self.providerData.accountUrl)
 
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.settingFavorite(fileNamePath, account: providerData.account, favorite: favorite, completion: { (account, message, errorCode) in
-            if errorCode == 0 {
+        ocNetworking?.settingFavorite(withAccount: providerData.account, fileName: fileNamePath, favorite: favorite, completion: { (account, message, errorCode) in
+            if errorCode == 0 && account == self.providerData.account {
                 // Change DB
                 metadata.favorite = favorite
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
