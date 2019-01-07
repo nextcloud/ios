@@ -19,13 +19,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC" userLabel="labelTitle">
-                        <rect key="frame" x="65" y="13" width="38" height="18"/>
+                        <rect key="frame" x="65" y="13" width="484" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ" userLabel="labelInfoFile">
-                        <rect key="frame" x="65" y="31" width="31" height="15"/>
+                        <rect key="frame" x="65" y="31" width="484" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.63921568627450975" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -86,10 +86,12 @@
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="5" secondAttribute="bottom" constant="-10" id="CGn-pQ-QmD"/>
                     <constraint firstItem="jy6-cx-LK4" firstAttribute="bottom" secondItem="5" secondAttribute="bottom" constant="5" id="MNe-PS-i7m"/>
                     <constraint firstItem="jy6-cx-LK4" firstAttribute="trailing" secondItem="5" secondAttribute="trailing" constant="5" id="Ooq-nL-VC8"/>
+                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="8" id="Z0z-bK-Qhh"/>
                     <constraint firstItem="5" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="asW-ir-Cfb"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="13" id="d78-LV-sUw"/>
                     <constraint firstItem="dhS-83-mLd" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="eA9-jd-n75"/>
                     <constraint firstAttribute="trailing" secondItem="dhS-83-mLd" secondAttribute="trailing" constant="13" id="j62-Bl-LTq"/>
+                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="p7I-KN-FVZ" secondAttribute="trailing" constant="8" id="mBK-VJ-KZG"/>
                     <constraint firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="13.5" id="ofO-Ef-6wt"/>
                 </constraints>
             </tableViewCellContentView>
