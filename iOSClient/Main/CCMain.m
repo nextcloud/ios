@@ -1216,7 +1216,6 @@
         // Enable change user
         [_imageTitleHome setUserInteractionEnabled:YES];
         
-        _loadingFolder = NO;
         [self tableViewReloadData];
     }
     
@@ -1274,26 +1273,29 @@
     [self tableViewReloadData];
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking readFolder:serverUrl depth:@"1" account:appDelegate.activeAccount success:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder) {
+    [ocNetworking readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
-        [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
-        
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+        if (errorCode == 0) {
+            
+            [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
+            
+        } else {
+            
+            // Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+                
+            } else {
+                
+                [self tableViewReloadData];
+                [_imageTitleHome setUserInteractionEnabled:YES];
+                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+            }
+        }
         
         _loadingFolder = NO;
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            
-            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-       
-        } else {
-        
-            [self tableViewReloadData];
-            [_imageTitleHome setUserInteractionEnabled:YES];
-            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
-        }
     }];
 }
 

@@ -148,36 +148,39 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 if self.providerData.listServerUrlEtag[serverUrl] == nil || self.providerData.listServerUrlEtag[serverUrl] != metadata!.etag || metadatasFromDB == nil {
                     
-                    ocNetworking?.readFolder(serverUrl, depth: "1", account: self.providerData.account, success: { (account, metadatas, metadataFolder) in
+                    ocNetworking?.readFolder(withAccount: self.providerData.account, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
                         
-                        if metadataFolder != nil {
-                            // Update directory etag
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder!.etag, fileID: metadataFolder!.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.providerData.account)
-                            // Save etag for this serverUrl
-                            self.providerData.listServerUrlEtag[serverUrl] = metadataFolder!.etag
-                        }
-                        
-                        if metadatas != nil {
+                        if errorCode == 0 && account == self.providerData.account {
                             
-                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.providerData.account, serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
-                            
-                            NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: self.providerData.account) 
-
-                            let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.providerData.account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
-                            
-                            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
-                            if metadatasInDownload != nil {
-                                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                            if metadataFolder != nil {
+                                // Update directory etag
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder!.etag, fileID: metadataFolder!.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.providerData.account)
+                                // Save etag for this serverUrl
+                                self.providerData.listServerUrlEtag[serverUrl] = metadataFolder!.etag
                             }
+                            
+                            if metadatas != nil {
+                                
+                                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.providerData.account, serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
+                                
+                                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: self.providerData.account)
+                                
+                                let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.providerData.account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
+                                
+                                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
+                                if metadatasInDownload != nil {
+                                    _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                                }
+                            }
+                            
+                            metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.providerData.account, serverUrl), sorted: "fileName", ascending: true)
+                            
+                            self.selectFirstPageItems(metadatasFromDB, observer: observer)
+                            
+                        } else if errorCode != 0 {
+                            
+                            self.selectFirstPageItems(metadatasFromDB, observer: observer)
                         }
-                        
-                        metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.providerData.account, serverUrl), sorted: "fileName", ascending: true)
-                        
-                        self.selectFirstPageItems(metadatasFromDB, observer: observer)
-                        
-                    }, failure: { (account, errorMessage, errorCode) in
-                        
-                        self.selectFirstPageItems(metadatasFromDB, observer: observer)
                     })
                     
                 } else {

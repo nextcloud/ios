@@ -42,8 +42,8 @@
 @property (nonatomic, assign) BOOL isExecuting;
 @property (nonatomic, assign) BOOL isFinished;
 
-- (void)checkServer:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
-- (void)serverStatus:(NSString *)serverUrl success:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+- (void)checkServerUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion;
+- (void)serverStatusUrl:(NSString *)serverUrl completion:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode))completion;
 
 - (NSURLSessionTask *)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void (^)(int64_t length, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
@@ -53,9 +53,9 @@
 
 //- (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
 - (void)downloadPreviewWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
-- (void)downloadPreviewTrashWithFileID:(NSString *)fileID fileName:(NSString *)fileName account:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
-- (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
+- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion;
 
 - (void)readFile:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *account, tableMetadata *metadata))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure;
 

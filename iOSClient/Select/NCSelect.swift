@@ -475,9 +475,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         collectionView.reloadData()
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: nil, withUserID: nil, withPassword: nil, withUrl: nil)
-        ocNetworking?.readFolder(serverUrl, depth: "1", account: appDelegate.activeAccount, success: { (account, metadatas, metadataFolder) in
+        ocNetworking?.readFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
             
-            if account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
             
                 self.metadataFolder = metadataFolder
                 
@@ -492,20 +492,15 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     
                     _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
                 }
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.networkInProgress = false
-                self.loadDatasource(withLoadFolder: false)
-            }
-            
-        }, failure: { (account, message, errorCode) in
-                        
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.networkInProgress = false
-                self.loadDatasource(withLoadFolder: false)
+                
+            } else if errorCode != 0 {
+                
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.networkInProgress = false
+                    self.loadDatasource(withLoadFolder: false)
+                }
             }
         })
     }

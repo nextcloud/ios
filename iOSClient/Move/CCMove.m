@@ -298,44 +298,42 @@
 - (void)readFolder
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder) {
+    [ocNetworking readFolderWithAccount:activeAccount serverUrl:_serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
-        if ([account isEqualToString:activeAccount]) {
-        
+        if (errorCode == 0 && [account isEqualToString:activeAccount]) {
+            
             // Update directory etag
             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
             [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
-        
+            
             NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
-        
+            
             // insert in Database
             (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
             // reinsert metadatas in Download
             if (metadatasInDownload) {
                 (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
             }
+            
+        } else if (errorCode != 0) {
+            
+            self.move.enabled = NO;
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            
+            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            }]];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
         }
-     
+        
         _loadingFolder = NO;
         
         [self.tableView reloadData];
         
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-        
-        _loadingFolder = NO;
-        self.move.enabled = NO;
-        
-        [self.tableView reloadData];
-        
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-        
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        }]];
-        
-        [self presentViewController:alertController animated:YES completion:nil];
     }];
-
+    
     _loadingFolder = YES;
     [self.tableView reloadData];
 }

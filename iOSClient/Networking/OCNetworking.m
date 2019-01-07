@@ -132,7 +132,7 @@
 #pragma mark ===== Server =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)checkServer:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)checkServerUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -141,7 +141,7 @@
         
     [communication checkServer:serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        success();
+        completion(nil, 0);
             
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -157,11 +157,11 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
     
-        failure(message, errorCode);
+        completion(message, errorCode);
     }];
 }
 
-- (void)serverStatus:(NSString *)serverUrl success:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)serverStatusUrl:(NSString *)serverUrl completion:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode))completion
 {
     NSString *urlTest = [serverUrl stringByAppendingString:k_serverStatus];
     
@@ -200,7 +200,7 @@
                 else
                     message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
                 
-                failure(message, errorCode);
+                completion(nil, 0, 0, 0, message, errorCode);
                 
             } else {
                 
@@ -216,7 +216,7 @@
                 NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
                 
                 if (error) {
-                    failure(error.description, error.code);
+                    completion(nil, 0, 0, 0, error.description, error.code);
                     return;
                 }
                 
@@ -237,7 +237,7 @@
                     versionMicro = [arrayVersion[2] integerValue];
                 }
                 
-                success(serverProductName, versionMajor, versionMicro, versionMinor);
+                completion(serverProductName, versionMajor, versionMicro, versionMinor, nil, 0);
             }
         });
         
@@ -441,7 +441,7 @@
 }
 */
 
-- (void)downloadPreviewTrashWithFileID:(NSString *)fileID fileName:(NSString *)fileName account:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
@@ -528,11 +528,11 @@
 #pragma mark ===== Read Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder))success failure:(void (^)(NSString *account, NSString *message, NSInteger errorCode))failure
+- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        failure(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -550,7 +550,7 @@
                 
             [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
-            failure(account, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
+            completion(account, nil, nil, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
 
         } else {
                 
@@ -615,7 +615,7 @@
                 }
                     
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    success(account, metadatas, metadataFolder);
+                    completion(account, metadatas, metadataFolder, nil, 0);
                 });
             });
         }
@@ -641,7 +641,7 @@
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:tableAccount.url];
 
-        failure(account, message, errorCode);
+        completion(account, nil, nil, message, errorCode);
     }];
 }
 
