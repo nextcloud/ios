@@ -404,13 +404,16 @@
     self.pnDeviceIdentifierSignature = nil;
     self.pnPublicKey = nil;
     
-    [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey) {
-        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
-        self.pnDeviceIdentifier = deviceIdentifier;
-        self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
-        self.pnPublicKey = publicKey;
-    } failure:^(NSString *message, NSInteger errorCode) {
-        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+    [ocNetworking subscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey completion:^(NSString *account, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:self.activeAccount]) {
+            NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+            self.pnDeviceIdentifier = deviceIdentifier;
+            self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
+            self.pnPublicKey = publicKey;
+        } else if (errorCode != 0) {
+            NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+        }
     }];
 }
 
@@ -420,12 +423,14 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
-
-    [ocNetworking unsubscribingPushNotificationServer:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey success:^{
-        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
-    } failure:^(NSString *message, NSInteger errorCode) {
-        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking unsubscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+       
+        if (errorCode == 0) {
+            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+        } else {
+            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+        }
     }];
 }
 

@@ -1673,11 +1673,16 @@
 #pragma mark ===== Push Notification =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)subscribingPushNotificationServer:(NSString *)url pushToken:(NSString *)pushToken Hash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey success:(void(^)(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)subscribingPushNotificationWithAccount:(NSString *)account url:(NSString *)url pushToken:(NSString *)pushToken Hash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey completion:(void(^)(NSString *account, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode))completion
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
@@ -1691,14 +1696,13 @@
         [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServerProxy fileID:@"" action:k_activityDebugActionSubscribingPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServerProxy fileID:@"" action:k_activityDebugActionSubscribingPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:@""];
             
-            success(deviceIdentifier, signature, publicKey);
+            completion(account, deviceIdentifier, signature, publicKey, nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
            
             NSString *message;
-
             NSInteger errorCode = response.statusCode;
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
@@ -1710,15 +1714,14 @@
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServerProxy fileID:@"" action:k_activityDebugActionSubscribingPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServerProxy fileID:@"" action:k_activityDebugActionSubscribingPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:@""];
             
-            failure(message, errorCode);
+            completion(account, nil, nil, nil, message, errorCode);
         }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
@@ -1730,29 +1733,33 @@
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
 
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionSubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionSubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:@""];
         
-        failure(message, errorCode);
+        completion(account, nil, nil, nil, message, errorCode);
     }];
 }
 
-- (void)unsubscribingPushNotificationServer:(NSString *)url deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure {
+- (void)unsubscribingPushNotificationWithAccount:(NSString *)account url:(NSString *)url deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey completion:(void (^)(NSString *account ,NSString *message, NSInteger errorCode))completion {
+    
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication unsubscribingNextcloudServerPush:url onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
 
         [communication unsubscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
-            success();
+            completion(account, nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)  {
             
             NSString *message;
-            
             NSInteger errorCode = response.statusCode;
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
@@ -1764,15 +1771,14 @@
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:@""];
             
-            failure(message, errorCode);
+            completion(account, message, errorCode);
         }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
 
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
@@ -1784,9 +1790,9 @@
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:@""];
         
-        failure(message, errorCode);
+        completion(account, message, errorCode);
     }];
 }
 
