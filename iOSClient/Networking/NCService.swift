@@ -355,13 +355,9 @@ class NCService: NSObject, OCNetworkingDelegate {
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
-        
-        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
-            return
-        }
-        
-        metadataNet.action = actionMiddlewarePing
-        metadataNet.serverUrl = NCBrandOptions.sharedInstance.middlewarePingUrl
+
+        //metadataNet.action = actionMiddlewarePing
+        //metadataNet.serverUrl = NCBrandOptions.sharedInstance.middlewarePingUrl
         
         //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }

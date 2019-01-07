@@ -1402,19 +1402,21 @@
     }];
 }
 
-- (void)getUserAndGroup
+- (void)getUserGroupWithAccount:(NSString *)account searchString:(NSString *)searchString completion:(void (^)(NSString *account, NSArray *item, NSString *message, NSInteger errorCode))completion
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication searchUsersAndGroupsWith:_metadataNet.optionAny forPage:1 with:50 ofServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer) {
+    [communication searchUsersAndGroupsWith:searchString forPage:1 with:50 ofServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer) {
         
-        if([self.delegate respondsToSelector:@selector(getUserAndGroupSuccess:items:)])
-            [self.delegate getUserAndGroupSuccess:_metadataNet items:itemList];
-        
-        [self complete];
+        completion(account, itemList, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -1434,35 +1436,25 @@
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        [self complete];
+        completion(account, nil, message, errorCode);
     }];
 }
 
-- (void)getSharePermissionsFile
+- (void)getSharePermissionsFileWithAccount:(NSString *)account fileNamePath:(NSString *)fileNamePath completion:(void (^)(NSString *account, NSString *permissions, NSString *message, NSInteger errorCode))completion
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, 0, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
     
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getSharePermissionsFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(getSharePermissionsFileFailure:message:errorCode:)])
-                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
+    [communication getSharePermissionsFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
         
-        if([self.delegate respondsToSelector:@selector(getSharePermissionsFileSuccess:permissions:)])
-            [self.delegate getSharePermissionsFileSuccess:_metadataNet permissions:permissions];
-        
-        [self complete];
+        completion(account, permissions, nil ,0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -1482,7 +1474,7 @@
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        [self complete];
+        completion(account, nil, message, errorCode);
     }];
 }
 

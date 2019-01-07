@@ -2015,42 +2015,27 @@
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
-- (void)getUserAndGroupSuccess:(CCMetadataNet *)metadataNet items:(NSArray *)items
-{
-    [_hud hideHud];
-    
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (_shareOC)
-        [_shareOC reloadUserAndGroup:items];
-}
-
-- (void)getUserAndGroupFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [_hud hideHud];
-    
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-    else
-        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-}
-
 - (void)getUserAndGroup:(NSString *)find
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    metadataNet.action = actionGetUserAndGroup;
-    metadataNet.optionAny = find;
-    metadataNet.selector = selectorGetUserAndGroup;
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking getUserGroupWithAccount:appDelegate.activeAccount searchString:find completion:^(NSString *account, NSArray *item, NSString *message, NSInteger errorCode) {
         
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        [_hud hideHud];
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            if (_shareOC)
+                [_shareOC reloadUserAndGroup:item];
+            
+        } else if (errorCode != 0) {
+            
+            if (errorCode == kOCErrorServerUnauthorized)
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            else
+                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+
+    }];
     
     [_hud visibleIndeterminateHud];
 }

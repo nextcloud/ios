@@ -217,11 +217,6 @@
 #define selectorUploadFile                              @"uploadFile"
 
 // Metadata.Net ACTION
-#define actionGetUserAndGroup                           @"getUserAndGroup"
-#define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
-#define actionMiddlewarePing                            @"middlewarePing"
-#define actionUnShare                                   @"unShare"
-
 #define actionGetEndToEndPublicKeys                     @"getEndToEndPublicKeys"
 #define actionGetEndToEndPrivateKeyCipher               @"getEndToEndPrivateKeyCipher"
 #define actionSignEndToEndPublicKey                     @"signEndToEndPublicKey"

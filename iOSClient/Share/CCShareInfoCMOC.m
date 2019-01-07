@@ -125,13 +125,54 @@ const PERMISSION_ALL = 31;
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
-    [_hud visibleHudTitle:@"" mode:MBProgressHUDModeIndeterminate color:nil];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    metadataNet.action = actionGetSharePermissionsFile;
-    metadataNet.fileName = _metadata.fileName;
-    metadataNet.serverUrl = _metadata.serverUrl;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking getSharePermissionsFileWithAccount:appDelegate.activeAccount fileNamePath:[NSString stringWithFormat:@"%@/%@", _metadata.serverUrl, _metadata.fileName] completion:^(NSString *account, NSString *permissions, NSString *message, NSInteger errorCode) {
+        
+        [_hud hideHud];
+
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && permissions != nil) {
+            
+            NSInteger iPermissions = [permissions integerValue];
+            
+            // ------------------------------------------------------------------
+            
+            XLFormRowDescriptor *rowCreate = [self.form formRowWithTag:@"create"];
+            XLFormRowDescriptor *rowRead = [self.form formRowWithTag:@"read"];
+            XLFormRowDescriptor *rowChange = [self.form formRowWithTag:@"change"];
+            XLFormRowDescriptor *rowDelete = [self.form formRowWithTag:@"delete"];
+            XLFormRowDescriptor *rowShare = [self.form formRowWithTag:@"share"];
+            
+            // ------------------------------------------------------------------
+            
+            if ([UtilsFramework isPermissionToCanCreate:iPermissions]) rowCreate.value = @1;
+            else rowCreate.value = @0;
+            
+            if ([UtilsFramework isPermissionToRead:iPermissions]) rowRead.value = @1;
+            else rowRead.value = @0;
+            
+            if ([UtilsFramework isPermissionToCanChange:iPermissions]) rowChange.value = @1;
+            else rowChange.value = @0;
+            
+            if ([UtilsFramework isPermissionToCanDelete:iPermissions]) rowDelete.value = @1;
+            else rowDelete.value = @0;
+            
+            if ([UtilsFramework isPermissionToCanShare:iPermissions]) rowShare.value = @1;
+            else rowShare.value = @0;
+            
+            // -----------------------------------------------------------------
+            
+            [self.tableView reloadData];
+            
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+    }];
+    
+    [_hud visibleHudTitle:@"" mode:MBProgressHUDModeIndeterminate color:nil];
 
     [self initializeForm];
 }
@@ -142,50 +183,9 @@ const PERMISSION_ALL = 31;
 
 - (void)getSharePermissionsFileSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions
 {
-    [_hud hideHud];
-
-    if (permissions == nil)
-        return;
+   
     
-    NSInteger iPermissions = [permissions integerValue];
-
-    // ------------------------------------------------------------------
     
-    XLFormRowDescriptor *rowCreate = [self.form formRowWithTag:@"create"];
-    XLFormRowDescriptor *rowRead = [self.form formRowWithTag:@"read"];
-    XLFormRowDescriptor *rowChange = [self.form formRowWithTag:@"change"];
-    XLFormRowDescriptor *rowDelete = [self.form formRowWithTag:@"delete"];
-    XLFormRowDescriptor *rowShare = [self.form formRowWithTag:@"share"];
-    
-    // ------------------------------------------------------------------
-    
-    if ([UtilsFramework isPermissionToCanCreate:iPermissions]) rowCreate.value = @1;
-    else rowCreate.value = @0;
-        
-    if ([UtilsFramework isPermissionToRead:iPermissions]) rowRead.value = @1;
-    else rowRead.value = @0;
-
-    if ([UtilsFramework isPermissionToCanChange:iPermissions]) rowChange.value = @1;
-    else rowChange.value = @0;
-
-    if ([UtilsFramework isPermissionToCanDelete:iPermissions]) rowDelete.value = @1;
-    else rowDelete.value = @0;
-
-    if ([UtilsFramework isPermissionToCanShare:iPermissions]) rowShare.value = @1;
-    else rowShare.value = @0;
-
-    // -----------------------------------------------------------------
-    
-    [self.tableView reloadData];
-}
-
-- (void)getSharePermissionsFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-{
-    [_hud hideHud];
-
-    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

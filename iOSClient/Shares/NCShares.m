@@ -141,41 +141,42 @@
 #pragma mark ==== unShare <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)unShareSuccess:(CCMetadataNet *)metadataNet
-{
-    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:metadataNet.account];
-    
-    appDelegate.sharesLink = result[0];
-    appDelegate.sharesUserAndGroup = result[1];
-    
-    [self reloadDatasource];
-}
-
 - (void)removeShares:(tableMetadata *)metadata tableShare:(tableShare *)tableShare
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
- 
-    metadataNet.action = actionUnShare;
-    metadataNet.fileID = metadata.fileID;
-    metadataNet.fileName = metadata.fileName;
-    metadataNet.fileNameView = metadata.fileNameView;
-    metadataNet.selector = selectorUnshare;
-    metadataNet.serverUrl = tableShare.serverUrl;
+    NSString *shareString;
     
     // Unshare Link
     if (tableShare.shareLink.length > 0) {
-   
-        metadataNet.share = tableShare.shareLink;
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        
+        shareString = tableShare.shareLink;
     }
     
     // Unshare User&Group
     NSArray *shareUserAndGroup = [tableShare.shareUserAndGroup componentsSeparatedByString:@","];
     for (NSString *share in shareUserAndGroup) {
-        
-        metadataNet.share = [share stringByReplacingOccurrencesOfString:@" " withString:@""];
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        shareString = [share stringByReplacingOccurrencesOfString:@" " withString:@""];
     }
+    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
+    [ocNetworking unshareAccount:appDelegate.activeAccount shareID:[shareString integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            NSArray *result = [[NCManageDatabase sharedInstance] unShare:shareString fileName:metadata.fileName serverUrl:metadata.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:account];
+            
+            appDelegate.sharesLink = result[0];
+            appDelegate.sharesUserAndGroup = result[1];
+            
+            [self reloadDatasource];
+            
+        } else if (errorCode != 0) {
+            
+            if (errorCode == kOCErrorServerUnauthorized)
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            else
+                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+    }];
 }
 
 #pragma mark -
