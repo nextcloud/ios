@@ -294,13 +294,16 @@
         cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         
         OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-        [ocNetworking readFile:table.fileName serverUrl:table.serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
-        
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            [self reloadDatasource];
+        [ocNetworking readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
             
-        } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-            NSLog(@"[LOG] Read file failure error %d, %@", (int)errorCode, message);
+            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [self reloadDatasource];
+                
+            } else {
+                
+            }
         }];
     }
     

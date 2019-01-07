@@ -207,26 +207,25 @@
 - (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking readFile:fileName serverUrl:serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+    [ocNetworking readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            BOOL withDownload = NO;
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                
+                BOOL withDownload = NO;
+                
+                if ([selector isEqualToString:selectorReadFileWithDownload])
+                    withDownload = YES;
+                
+                //Add/Update Metadata
+                tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                
+                if (addMetadata)
+                    [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:appDelegate.activeAccount withDownload:withDownload];
+            });
             
-            if ([selector isEqualToString:selectorReadFileWithDownload])
-                withDownload = YES;
-            
-            //Add/Update Metadata
-            tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-            
-            if (addMetadata)
-                [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:appDelegate.activeAccount withDownload:withDownload];
-        });
-
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-
-        // File not present, remove it
-        if (errorCode == 404) {
+        } else if (errorCode == 404) {
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];

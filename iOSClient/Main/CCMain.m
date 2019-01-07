@@ -1133,23 +1133,20 @@
     });
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking readFile:nil serverUrl:_serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
+    [ocNetworking readFileWithAccount:appDelegate.activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+       
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
         
-        if ([account isEqualToString:appDelegate.activeAccount]) {
-            
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
             
             // Change etag, read folder
             if ([metadata.etag isEqualToString:directory.etag] == NO) {
                 [self readFolder:metadata.serverUrl];
             }
-        }
-        
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized)
+            
+        } else if (errorCode == kOCErrorServerUnauthorized) {
             [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+        }
     }];
 }
 
@@ -1526,59 +1523,61 @@
         
         // Verify if exists the fileName TO
         OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-        [ocNetworking readFile:fileNameNew serverUrl:metadata.serverUrl account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
+        [ocNetworking readFileWithAccount:appDelegate.activeAccount serverUrl:metadata.serverUrl fileName:fileNameNew completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
             
-            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-            }];
-            [alert addAction:ok];
-            [self presentViewController:alert animated:YES completion:nil];
-            
-        } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-            
-            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
-            NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, fileNameNew];
-
-            [ocNetworking moveFileOrFolder:fileNamePath fileNameTo:fileNameToPath account:appDelegate.activeAccount success:^(NSString *account) {
+            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                 
-                // Rename metadata
-                (void) [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew fileID:metadata.fileID];
+                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) { }];
+                [alert addAction:ok];
+                [self presentViewController:alert animated:YES completion:nil];
                 
-                if (metadata.directory) {
+            } else if (errorCode != 0) {
+                
+                NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
+                NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, fileNameNew];
+                
+                [ocNetworking moveFileOrFolder:fileNamePath fileNameTo:fileNameToPath account:appDelegate.activeAccount success:^(NSString *account) {
                     
-                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
-                    NSString *serverUrlTo = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:fileNameNew];
+                    // Rename metadata
+                    (void) [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew fileID:metadata.fileID];
                     
-                    tableDirectory *directoryTable = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
-                    if (directoryTable == nil) {
-                        [appDelegate messageNotification:@"_rename_" description:@"Internal error, ServerUrl not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-                        return;
+                    if (metadata.directory) {
+                        
+                        NSString *serverUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
+                        NSString *serverUrlTo = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:fileNameNew];
+                        
+                        tableDirectory *directoryTable = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
+                        if (directoryTable == nil) {
+                            [appDelegate messageNotification:@"_rename_" description:@"Internal error, ServerUrl not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+                            return;
+                        }
+                        
+                        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
+                        
+                    } else {
+                        
+                        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:fileNameNew etag:nil];
+                        
+                        // Move file system
+                        
+                        NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName];
+                        NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], fileNameNew];
+                        
+                        [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
+                        
+                        NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileName];
+                        NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:fileNameNew];
+                        
+                        [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
                     }
                     
-                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
                     
-                } else {
-                    
-                    [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:fileNameNew etag:nil];
-                    
-                    // Move file system
-                    
-                    NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName];
-                    NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], fileNameNew];
-                    
-                    [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
-                    
-                    NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileName];
-                    NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:fileNameNew];
-                    
-                    [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
-                }
-                
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
-
-            } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-                [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            }];
+                } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+                    [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                }];
+            }
         }];
     }
 }
@@ -1590,48 +1589,67 @@
 - (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:nil withUserID:nil withPassword:nil withUrl:nil];
-    [ocNetworking readFile:metadata.fileName serverUrl:serverUrlTo account:appDelegate.activeAccount success:^(NSString *account, tableMetadata *metadata) {
-    
-        UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-        }];
-        [alert addAction:ok];
-        [self presentViewController:alert animated:YES completion:nil];
+    [ocNetworking readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrlTo fileName:metadata.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
         
-        // End Select Table View
-        [self tableViewSelect:NO];
-        
-        // reload Datasource
-        [self readFileReloadFolder];
-        
-    } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-    
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
-        NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
-        
-        [ocNetworking moveFileOrFolder:fileNamePath fileNameTo:fileNameToPath account:appDelegate.activeAccount success:^(NSString *account) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [_hud hideHud];
+            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            }];
+            [alert addAction:ok];
+            [self presentViewController:alert animated:YES completion:nil];
             
-            if (metadata.directory) {
-                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] account:account];
-            }
+            // End Select Table View
+            [self tableViewSelect:NO];
             
-            [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadata.fileID serverUrlTo:serverUrlTo];
+            // reload Datasource
+            [self readFileReloadFolder];
             
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:account];
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];
+        } else if (errorCode != 0) {
             
-            // next
-            [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
+            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
+            NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
             
-            if ([_selectedFileIDsMetadatas count] > 0) {
+            [ocNetworking moveFileOrFolder:fileNamePath fileNameTo:fileNameToPath account:appDelegate.activeAccount success:^(NSString *account) {
                 
-                NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
+                [_hud hideHud];
                 
-                [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrlTo numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
+                if (metadata.directory) {
+                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] account:account];
+                }
                 
-            } else {
+                [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadata.fileID serverUrlTo:serverUrlTo];
+                
+                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:account];
+                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];
+                
+                // next
+                [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
+                
+                if ([_selectedFileIDsMetadatas count] > 0) {
+                    
+                    NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
+                    
+                    [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrlTo numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
+                    
+                } else {
+                    
+                    // End Select Table View
+                    [self tableViewSelect:NO];
+                    
+                    // reload Datasource
+                    if (_isSearchMode)
+                        [self readFolder:metadata.serverUrl];
+                    else
+                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+                }
+                
+            } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
+                
+                [_hud hideHud];
+                
+                if (message && errorCode != kOCErrorServerUnauthorized)
+                    [appDelegate messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                 
                 // End Select Table View
                 [self tableViewSelect:NO];
@@ -1640,27 +1658,11 @@
                 if (_isSearchMode)
                     [self readFolder:metadata.serverUrl];
                 else
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
-            }
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:nil action:k_action_NULL];
+            }];
             
-        } failure:^(NSString *account, NSString *message, NSInteger errorCode) {
-            
-            [_hud hideHud];
-            
-            if (message && errorCode != kOCErrorServerUnauthorized)
-                [appDelegate messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            
-            // End Select Table View
-            [self tableViewSelect:NO];
-            
-            // reload Datasource
-            if (_isSearchMode)
-                [self readFolder:metadata.serverUrl];
-            else
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:nil action:k_action_NULL];
-        }];
-        
-        [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+            [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+        }
     }];
 }
 

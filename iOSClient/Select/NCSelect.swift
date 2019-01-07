@@ -496,12 +496,10 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             } else if errorCode != 0 {
                 
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.networkInProgress = false
-                    self.loadDatasource(withLoadFolder: false)
-                }
             }
+            
+            self.networkInProgress = false
+            self.loadDatasource(withLoadFolder: false)
         })
     }
     
