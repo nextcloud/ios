@@ -99,7 +99,7 @@
 
 - (void)listingTrashWithAccount:(NSString *)account path:(NSString *)path serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
 
-- (void)emptyTrash:(void (^)(NSString *message, NSInteger errorCode))completion;
+- (void)emptyTrashWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
 @end
 
