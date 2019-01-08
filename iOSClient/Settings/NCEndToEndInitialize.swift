@@ -89,10 +89,10 @@ class NCEndToEndInitialize : NSObject  {
                 return
             }
             
-            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+            //let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
             
-            metadataNet.action = actionSignEndToEndPublicKey;
-            metadataNet.key = csr;
+            //metadataNet.action = actionSignEndToEndPublicKey;
+            //metadataNet.key = csr;
             
             //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
@@ -216,6 +216,7 @@ class NCEndToEndInitialize : NSObject  {
                     return
                 }
                 
+                /*
                 let metadataNet: CCMetadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)
 
                 metadataNet.action = actionStoreEndToEndPrivateKeyCipher
@@ -223,7 +224,8 @@ class NCEndToEndInitialize : NSObject  {
                 metadataNet.keyCipher = privateKeyChiper
                 metadataNet.password = e2ePassphrase
                     
-                //self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                */
             }
             
             alertController.addAction(OKAction)

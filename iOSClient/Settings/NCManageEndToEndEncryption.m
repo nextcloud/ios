@@ -314,9 +314,9 @@
 {
     [self deselectFormRow:sender];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
-    metadataNet.action = actionDeleteEndToEndPublicKey;
+    //metadataNet.action = actionDeleteEndToEndPublicKey;
     //[appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
@@ -324,9 +324,9 @@
 {
     [self deselectFormRow:sender];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
-    metadataNet.action = actionDeleteEndToEndPrivateKey;
+    //metadataNet.action = actionDeleteEndToEndPrivateKey;
     //[appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 

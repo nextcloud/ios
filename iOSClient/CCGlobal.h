@@ -187,42 +187,21 @@
 // Search
 #define k_minCharsSearch                                2
 
-// Metadata.Net SELECTOR
+// Selector
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
-#define selectorGetUserAndGroup                         @"getUserAndGroup"
 #define selectorLoadFileView                            @"loadFileView"
-#define selectorLoadModelView                           @"loadModelView"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"
-#define selectorMove                                    @"move"
 #define selectorOpenIn                                  @"openIn"
-#define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
-#define selectorReadFileReloadFolder                    @"readFileReloadFolder"
 #define selectorReadFolder                              @"readFolder"
 #define selectorReadFolderWithDownload                  @"readFolderWithDownload"
-#define selectorReadShare                               @"readShare"
-#define selectorRename                                  @"rename"
 #define selectorSave                                    @"save"
-#define selectorShare                                   @"share"
-#define selectorSearchFiles                             @"searchFiles"
-#define selectorSearchContentType                       @"searchContentType"
-#define selectorUnshare                                 @"unshare"
-#define selectorUpdateShare                             @"updateShare"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
-
-// Metadata.Net ACTION
-#define actionGetEndToEndPublicKeys                     @"getEndToEndPublicKeys"
-#define actionGetEndToEndPrivateKeyCipher               @"getEndToEndPrivateKeyCipher"
-#define actionSignEndToEndPublicKey                     @"signEndToEndPublicKey"
-#define actionStoreEndToEndPrivateKeyCipher             @"storeEndToEndPrivateKeyCipher"
-#define actionDeleteEndToEndPublicKey                   @"deleteEndToEndPublicKey"
-#define actionDeleteEndToEndPrivateKey                  @"deleteEndToEndPrivateKey"
-#define actionGetEndToEndServerPublicKey                @"getEndToEndServerPublicKey"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
