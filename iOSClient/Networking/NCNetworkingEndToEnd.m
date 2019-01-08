@@ -290,10 +290,6 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ============================
-#pragma --------------------------------------------------------------------------------------------
-
 - (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID error:(NSError **)error
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -356,6 +352,7 @@
     *fileID = returnFileID;
     *error = returnError;
 }
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2EE End-to-End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
