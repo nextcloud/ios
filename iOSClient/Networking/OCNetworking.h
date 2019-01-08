@@ -30,6 +30,11 @@
 
 + (OCnetworking *)sharedManager;
 
+#pragma mark ===== OCCommunication =====
+
+- (OCCommunication *)sharedOCCommunication;
+- (OCCommunication *)sharedOCCommunicationExtensionDownload;
+
 #pragma mark ===== Server =====
 
 - (void)checkServerUrl:(NSString *)serverUrl user:(NSString *)user userID:(NSString *)userID password:(NSString *)password completion:(void (^)(NSString *message, NSInteger errorCode))completion;

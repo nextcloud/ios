@@ -44,10 +44,6 @@
 
 + (CCNetworking *)sharedNetworking;
 
-// Sessions
-- (OCCommunication *)sharedOCCommunication;
-- (OCCommunication *)sharedOCCommunicationExtensionDownload;
-
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
 - (NSArray *)getUploadTasksExtensionSession;
 

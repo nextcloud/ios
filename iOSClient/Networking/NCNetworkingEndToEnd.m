@@ -22,9 +22,11 @@
 //
 
 #import "NCNetworkingEndToEnd.h"
+#import "OCNetworking.h"
 #import "CCUtility.h"
 #import "CCCertificate.h"
 #import "NCBridgeSwift.h"
+
 
 /*********************************************************************************
  
@@ -59,8 +61,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -93,7 +95,7 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -127,8 +129,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -161,8 +163,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -195,8 +197,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -229,8 +231,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -263,8 +265,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -292,8 +294,8 @@
 
 - (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID error:(NSError **)error
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     __block NSString *returnFileID = nil;
 
@@ -360,8 +362,8 @@
 
 - (NSError *)markEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -439,8 +441,8 @@
 
 - (NSError *)deletemarkEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -518,8 +520,8 @@
 
 - (NSError *)getEndToEndMetadata:(NSString **)metadata fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     __block NSString *returnMetadata = nil;
     
@@ -548,8 +550,8 @@
 
 - (NSError *)deleteEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -608,8 +610,8 @@
 
 - (NSError *)storeEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -668,8 +670,8 @@
 
 - (NSError *)updateEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -728,8 +730,8 @@
 
 - (NSError *)lockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url 
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -759,8 +761,8 @@
 
 - (NSError *)unlockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID token:(NSString  *)token user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url 
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);

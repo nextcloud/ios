@@ -42,13 +42,103 @@
     }
 }
 
+- (id)init
+{
+    self = [super init];
+    
+    [self sharedOCCommunication];
+    
+    return self;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== OCCommunication =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (OCCommunication *)sharedOCCommunication
+{
+    static OCCommunication* sharedOCCommunication = nil;
+    
+    if (sharedOCCommunication == nil)
+    {
+        // Network
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        configuration.allowsCellularAccess = YES;
+        configuration.discretionary = NO;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxConcurrentOperation;
+        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        
+        OCURLSessionManager *networkSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configuration];
+        [networkSessionManager.operationQueue setMaxConcurrentOperationCount: k_maxConcurrentOperation];
+        networkSessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        
+        // Download
+        NSURLSessionConfiguration *configurationDownload = [NSURLSessionConfiguration defaultSessionConfiguration];
+        configurationDownload.allowsCellularAccess = YES;
+        configurationDownload.discretionary = NO;
+        configurationDownload.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
+        configurationDownload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        configurationDownload.timeoutIntervalForRequest = k_timeout_upload;
+        
+        OCURLSessionManager *downloadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationDownload];
+        [downloadSessionManager.operationQueue setMaxConcurrentOperationCount:k_maxHTTPConnectionsPerHost];
+        [downloadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
+            return NSURLSessionAuthChallengePerformDefaultHandling;
+        }];
+        
+        // Upload
+        NSURLSessionConfiguration *configurationUpload = [NSURLSessionConfiguration defaultSessionConfiguration];
+        configurationUpload.allowsCellularAccess = YES;
+        configurationUpload.discretionary = NO;
+        configurationUpload.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
+        configurationUpload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        configurationUpload.timeoutIntervalForRequest = k_timeout_upload;
+        
+        OCURLSessionManager *uploadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationUpload];
+        [uploadSessionManager.operationQueue setMaxConcurrentOperationCount:k_maxHTTPConnectionsPerHost];
+        [uploadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
+            return NSURLSessionAuthChallengePerformDefaultHandling;
+        }];
+        
+        sharedOCCommunication = [[OCCommunication alloc] initWithUploadSessionManager:uploadSessionManager andDownloadSessionManager:downloadSessionManager andNetworkSessionManager:networkSessionManager];
+    }
+    
+    return sharedOCCommunication;
+}
+
+- (OCCommunication *)sharedOCCommunicationExtensionDownload
+{
+    static OCCommunication *sharedOCCommunicationExtensionDownload = nil;
+    
+    if (sharedOCCommunicationExtensionDownload == nil)
+    {
+        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session_extension];
+        config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
+        config.HTTPMaximumConnectionsPerHost = 1;
+        config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        config.timeoutIntervalForRequest = k_timeout_upload;
+        config.sessionSendsLaunchEvents = YES;
+        [config setAllowsCellularAccess:YES];
+        
+        OCURLSessionManager *sessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:config];
+        [sessionManager.operationQueue setMaxConcurrentOperationCount:1];
+        [sessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
+            return NSURLSessionAuthChallengePerformDefaultHandling;
+        }];
+        
+        sharedOCCommunicationExtensionDownload = [[OCCommunication alloc] initWithUploadSessionManager:nil andDownloadSessionManager:sessionManager andNetworkSessionManager:nil];
+    }
+    
+    return sharedOCCommunicationExtensionDownload;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Server =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)checkServerUrl:(NSString *)serverUrl user:(NSString *)user userID:(NSString *)userID password:(NSString *)password completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -238,7 +328,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -331,7 +421,7 @@
         completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -448,7 +538,7 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     NSString *fileNamePath;
 
@@ -519,7 +609,7 @@
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -572,7 +662,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -606,7 +696,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -650,7 +740,7 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -782,7 +872,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -828,7 +918,7 @@
         
     } else {
         
-        OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+        OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
         
         [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
         [communication setUserAgent:[CCUtility getUserAgent]];
@@ -869,7 +959,7 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -957,7 +1047,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -997,7 +1087,7 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1099,7 +1189,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1137,7 +1227,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1172,7 +1262,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1208,7 +1298,7 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1242,7 +1332,7 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1276,7 +1366,7 @@
         completion(account, 0, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1314,8 +1404,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1348,8 +1438,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1419,8 +1509,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1453,8 +1543,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1487,8 +1577,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1521,8 +1611,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1559,8 +1649,8 @@
         completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1622,8 +1712,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1677,8 +1767,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1712,8 +1802,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
         
@@ -1745,8 +1835,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
         
@@ -1778,8 +1868,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1818,8 +1908,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1892,8 +1982,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCnetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
