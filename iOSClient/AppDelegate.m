@@ -1138,11 +1138,6 @@
     });
 }
 
-- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
-{
-    
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Process Load Download/Upload < k_timerProcess seconds > =====
 #pragma --------------------------------------------------------------------------------------------

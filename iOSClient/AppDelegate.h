@@ -173,7 +173,6 @@
 - (void)changeTheming:(UIViewController *)vc;
 
 // Task Networking
-- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 - (void)loadAutoDownloadUpload;
 
 // Maintenance Mode

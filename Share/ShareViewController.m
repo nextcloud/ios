@@ -299,17 +299,6 @@
     }
 }
 
-- (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
-{
-    id operation;
-   
-    operation = [OCnetworking new];
-    
-    [operation setQueuePriority:metadataNet.priority];
-    
-    [_networkingOperationQueue addOperation:operation];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Lock Password =====
 #pragma --------------------------------------------------------------------------------------------

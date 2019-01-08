@@ -46,26 +46,20 @@ class NCEndToEndInitialize : NSObject  {
         // Clear all keys 
         CCUtility.clearAllKeysEnd(toEnd: appDelegate.activeAccount)
         
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
-        metadataNet.action = actionGetEndToEndPublicKeys
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        //metadataNet.action = actionGetEndToEndPublicKeys
     }
     
     func getPrivateKeyCipher() {
         
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
-        metadataNet.action = actionGetEndToEndPrivateKeyCipher
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        //metadataNet.action = actionGetEndToEndPrivateKeyCipher
     }
     
     func getPublicKeyServer() {
         
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
-        metadataNet.action = actionGetEndToEndServerPublicKey
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        //metadataNet.action = actionGetEndToEndServerPublicKey
     }
     
     // --------------------------------------------------------------------------------------------
@@ -100,7 +94,7 @@ class NCEndToEndInitialize : NSObject  {
             metadataNet.action = actionSignEndToEndPublicKey;
             metadataNet.key = csr;
             
-            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
         case 409:
             appDelegate.messageNotification("E2E get publicKey", description: "forbidden: the user can't access the public keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -229,7 +223,7 @@ class NCEndToEndInitialize : NSObject  {
                 metadataNet.keyCipher = privateKeyChiper
                 metadataNet.password = e2ePassphrase
                     
-                self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                //self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
             alertController.addAction(OKAction)
