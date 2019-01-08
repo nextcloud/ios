@@ -604,8 +604,7 @@
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    OCnetworking *ocNetworking = [OCnetworking new];
-    [ocNetworking downloadPreviewWithAccount:appDelegate.activeAccount metadata:metadata withWidth:width andHeight:height completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [[OCnetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:metadata withWidth:width andHeight:height completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         counterThumbnail--;
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
@@ -670,8 +669,7 @@
     
     NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
     
-    OCnetworking *ocNetworking = [OCnetworking new];
-    [ocNetworking readFileWithAccount:appDelegate.activeAccount serverUrl:startDirectory fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+    [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:startDirectory fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
 
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
@@ -679,7 +677,7 @@
                 isSearchMode = YES;
                 [self editingModeNO];
                 
-                [ocNetworking searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] date:[NSDate distantPast] depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+                [[OCnetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] date:[NSDate distantPast] depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
                     
                     if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
                         

@@ -238,8 +238,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
             
-        let ocNetworking = OCnetworking.init()
-        let task = ocNetworking.download(withAccount: providerData.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), completion: { (account, lenght, etag, date, message, errorCode) in
+        let task = OCnetworking.sharedManager().download(withAccount: providerData.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), completion: { (account, lenght, etag, date, message, errorCode) in
             
             if errorCode == 0 && account == self.providerData.account {
                 

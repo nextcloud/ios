@@ -30,7 +30,9 @@
 
 @class tableMetadata;
 
-@interface OCnetworking : NSObject <CCNetworkingDelegate>
+@interface OCnetworking : NSObject <NSURLSessionDelegate>
+
++ (OCnetworking *)sharedManager;
 
 #pragma mark ===== Server =====
 

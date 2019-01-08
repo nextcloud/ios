@@ -169,8 +169,7 @@
 {
     NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:appDelegate.activeUrl];
     
-    OCnetworking *ocNetworking = [OCnetworking new];
-    [ocNetworking settingFavoriteWithAccount:appDelegate.activeAccount fileName:fileNameServerUrl favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [[OCnetworking sharedManager] settingFavoriteWithAccount:appDelegate.activeAccount fileName:fileNameServerUrl favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
@@ -190,8 +189,7 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    OCnetworking *ocNetworking = [OCnetworking new];
-    [ocNetworking listingFavoritesWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+    [[OCnetworking sharedManager] listingFavoritesWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             

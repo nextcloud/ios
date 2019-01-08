@@ -110,8 +110,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         
         if serverUrl != nil && metadata != nil {
             
-            let ocNetworking = OCnetworking.init()
-            ocNetworking.createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+            OCnetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
                 
                 if (errorCode == 0) {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
@@ -125,8 +124,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
-        let ocNetworking = OCnetworking.init()
-        ocNetworking.createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+        OCnetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
             
             if (errorCode == 0) {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"

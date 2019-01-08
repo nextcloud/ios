@@ -31,6 +31,17 @@
 
 @implementation OCnetworking
 
++ (OCnetworking *)sharedManager {
+    static OCnetworking *sharedManager;
+    @synchronized(self)
+    {
+        if (!sharedManager) {
+            sharedManager = [OCnetworking new];
+        }
+        return sharedManager;
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Server =====
 #pragma --------------------------------------------------------------------------------------------
@@ -80,8 +91,7 @@
     [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    //NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self.delegate delegateQueue:nil];
-    NSURLSession *session;
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         

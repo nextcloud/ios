@@ -147,8 +147,7 @@
 
 - (void)getActivity
 {
-    OCnetworking *ocNetworking = [OCnetworking new];
-    [ocNetworking getActivityWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode) {
+    [[OCnetworking sharedManager] getActivityWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
             [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:account];
         }

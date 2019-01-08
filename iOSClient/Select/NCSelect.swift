@@ -461,8 +461,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     func createFolder(with fileName: String) {
         
-        let ocNetworking = OCnetworking.init()
-        ocNetworking.createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, fileID, date, message, errorCode) in
+        OCnetworking.sharedManager().createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, fileID, date, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.loadDatasource(withLoadFolder: true)
             } else if errorCode != 0 {
@@ -476,8 +475,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         networkInProgress = true
         collectionView.reloadData()
         
-        let ocNetworking = OCnetworking.init()
-        ocNetworking.readFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
+        OCnetworking.sharedManager().readFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
             

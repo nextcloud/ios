@@ -217,8 +217,7 @@
             [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view];
             
             if ([self.metadataDetail.url isEqualToString:@""]) {
-                OCnetworking *ocNetworking = [OCnetworking new];
-                [ocNetworking createLinkRichdocumentsWithAccount:appDelegate.activeAccount fileID:self.metadataDetail.fileID completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
+                [[OCnetworking sharedManager] createLinkRichdocumentsWithAccount:appDelegate.activeAccount fileID:self.metadataDetail.fileID completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
                     
                     if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                         
@@ -399,8 +398,7 @@
                 CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
                 CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
 
-                OCnetworking *ocNetworking = [OCnetworking new];
-                [ocNetworking downloadPreviewWithAccount:appDelegate.activeAccount metadata:metadata withWidth:width andHeight:height completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+                [[OCnetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:metadata withWidth:width andHeight:height completion:^(NSString *account, NSString *message, NSInteger errorCode) {
 
                     self.navigationItem.titleView = nil;
                     self.title = metadata.fileNameView;

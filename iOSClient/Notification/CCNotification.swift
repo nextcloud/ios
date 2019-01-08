@@ -84,8 +84,7 @@ class CCNotification: UITableViewController {
 
                 tableView.setEditing(false, animated: true)
 
-                let ocNetworking = OCnetworking.init()
-                ocNetworking.setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
+                OCnetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
                     
                     if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
                         
@@ -129,8 +128,7 @@ class CCNotification: UITableViewController {
                             
                             tableView.setEditing(false, animated: true)
 
-                            let ocNetworking = OCnetworking.init()
-                            ocNetworking.setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (actionNotification as! OCNotificationsAction).link, type: (actionNotification as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
+                            OCnetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (actionNotification as! OCNotificationsAction).link, type: (actionNotification as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
                                 
                                 if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
                                     

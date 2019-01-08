@@ -126,8 +126,7 @@ const PERMISSION_ALL = 31;
     
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
-    OCnetworking *ocNetworking = [OCnetworking new];
-    [ocNetworking getSharePermissionsFileWithAccount:appDelegate.activeAccount fileNamePath:[NSString stringWithFormat:@"%@/%@", _metadata.serverUrl, _metadata.fileName] completion:^(NSString *account, NSString *permissions, NSString *message, NSInteger errorCode) {
+    [[OCnetworking sharedManager] getSharePermissionsFileWithAccount:appDelegate.activeAccount fileNamePath:[NSString stringWithFormat:@"%@/%@", _metadata.serverUrl, _metadata.fileName] completion:^(NSString *account, NSString *permissions, NSString *message, NSInteger errorCode) {
         
         [_hud hideHud];
 
