@@ -314,20 +314,28 @@
 {
     [self deselectFormRow:sender];
     
-    //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    //metadataNet.action = actionDeleteEndToEndPublicKey;
-    //[appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPublicKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            [appDelegate messageNotification:@"E2E delete publicKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+        } else {
+            [appDelegate messageNotification:@"E2E delete publicKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        }
+    }];
 }
 
 - (void)deletePrivateKey:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
-    //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    //metadataNet.action = actionDeleteEndToEndPrivateKey;
-    //[appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPrivateKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            [appDelegate messageNotification:@"E2E delete privateKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+        } else {
+            [appDelegate messageNotification:@"E2E delete privateKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        }
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -340,26 +348,6 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
 
     [self initializeForm];
-}
-
-- (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
-{
-    [appDelegate messageNotification:@"E2E delete privateKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
-}
-
-- (void)deleteEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [appDelegate messageNotification:@"E2E delete privateKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-}
-
-- (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
-{
-    [appDelegate messageNotification:@"E2E delete publicKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
-}
-
-- (void)deleteEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [appDelegate messageNotification:@"E2E delete publicKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 }
 
 #pragma --------------------------------------------------------------------------------------------
