@@ -1877,6 +1877,7 @@
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (void)readSharedSuccess:(CCMetadataNet *)metadataNet items:(NSDictionary *)items openWindow:(BOOL)openWindow
 {
     [_hud hideHud];
@@ -1921,6 +1922,7 @@
 
     [self tableViewReloadData];
 }
+*/
 
 - (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
 {

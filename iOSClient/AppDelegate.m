@@ -1143,15 +1143,7 @@
 
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
 {
-    /*
-    id operation;
     
-    operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withUserID:_activeUserID withPassword:_activePassword withUrl:_activeUrl];
-        
-    [operation setQueuePriority:metadataNet.priority];
-    
-    [netQueue addOperation:operation];
-    */
 }
 
 #pragma --------------------------------------------------------------------------------------------

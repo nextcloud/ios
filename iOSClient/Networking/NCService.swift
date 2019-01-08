@@ -355,11 +355,6 @@ class NCService: NSObject {
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
-
-        //metadataNet.action = actionMiddlewarePing
-        //metadataNet.serverUrl = NCBrandOptions.sharedInstance.middlewarePingUrl
-        
-        //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
     private func requestServerStatus() {

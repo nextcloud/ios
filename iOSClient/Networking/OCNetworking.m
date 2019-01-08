@@ -151,7 +151,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== download =====
+#pragma mark ===== download / upload =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (NSURLSessionTask *)downloadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication completion:(void (^)(NSString *account, int64_t length, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
@@ -262,11 +262,6 @@
     return sessionTask;
 }
 
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== upload =====
-#pragma --------------------------------------------------------------------------------------------
-
 - (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication completion:(void(^)(NSString *account, NSString *fileID, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
 {    
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
@@ -314,137 +309,9 @@
     
     return sessionTask;
 }
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== downloadThumbnail / downloadPreview =====
-#pragma --------------------------------------------------------------------------------------------
-
-/*
-- (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
-{
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
-
-    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
-        
-        completion(nil, 0);
-        
-    } else {
-        
-        OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-        
-        [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-        [communication setUserAgent:[CCUtility getUserAgent]];
-        
-        [communication getRemoteThumbnailByServer:_activeUrl ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:_activeUrl] withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
-            
-            [thumbnail writeToFile:file atomically:YES];
-            
-            completion(nil, 0);
-            
-        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-            
-            NSString *message;
-
-            NSInteger errorCode = response.statusCode;
-            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-                errorCode = error.code;
-            
-            // Error
-            if (errorCode == 503)
-                message = NSLocalizedString(@"_server_error_retry_", nil);
-            else
-                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-            
-            completion(message, errorCode);
-        }];
-    }
-}
-*/
-
-- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-     
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
-
-    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
-        
-        completion(account, nil, 0);
-        
-    } else {
-        
-        OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-        
-        [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-        [communication setUserAgent:[CCUtility getUserAgent]];
-        
-        [communication getRemotePreviewTrashByServer:tableAccount.url ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
-            
-            [preview writeToFile:file atomically:YES];
-            
-            completion(account, nil, 0);
-            
-        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-            
-            NSString *message;
-            
-            NSInteger errorCode = response.statusCode;
-            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-                errorCode = error.code;
-            
-            // Error
-            if (errorCode == 503)
-                message = NSLocalizedString(@"_server_error_retry_", nil);
-            else
-                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-            
-            completion(account, message, errorCode);
-        }];
-    }
-}
-
-- (void)downloadPreviewWithAccount:(NSString *)account metadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
-    
-    [communication getRemotePreviewByServer:tableAccount.url ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:tableAccount.url] withWidth:width andHeight:height andA:1 andMode:@"cover" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
-
-        [preview writeToFile:file atomically:YES];
-            
-        completion(account, nil, 0);
-            
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-            
-        NSString *message;
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-            
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-            
-        completion(account, message, errorCode);
-    }];
-}
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Read Folder =====
+#pragma mark ===== WebDav =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion
@@ -564,10 +431,6 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== ReadFile =====
-#pragma --------------------------------------------------------------------------------------------
-
 - (void)readFileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
@@ -635,9 +498,140 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Search =====
-#pragma --------------------------------------------------------------------------------------------
+- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    NSString *path = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
+    
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication createFolder:path onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        NSDictionary *fields = [response allHeaderFields];
+        
+        NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+        NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
+        
+        completion(account, fileID, date, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        if (([fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory]))
+            message = nil;
+        else
+            message = [CCError manageErrorOC:response.statusCode error:error];
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        completion(account, nil, nil, message, errorCode);
+        
+    } errorBeforeRequest:^(NSError *error) {
+        
+        NSString *message;
+        
+        if (([fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory]))
+            message = nil;
+        else {
+            if (error.code == OCErrorForbidenCharacters)
+                message = NSLocalizedString(@"_forbidden_characters_from_server_", nil);
+            else
+                message = NSLocalizedString(@"_unknow_response_server_", nil);
+        }
+        
+        completion(account, nil, nil, message, error.code);
+    }];
+}
+
+- (void)deleteFileOrFolderWithAccount:(NSString *)account path:(NSString *)path completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication deleteFileOrFolder:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        completion(account, nil, 0);
+        
+    } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, message, errorCode);
+    }];
+}
+
+- (void)moveFileOrFolderWithAccount:(NSString *)account fileName:(NSString *)fileName fileNameTo:(NSString *)fileNameTo completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication moveFileOrFolder:fileName toDestiny:fileNameTo onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        completion(account, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        NSString *message = [CCError manageErrorOC:response.statusCode error:error];
+        
+        completion(account, message, error.code);
+        
+    } errorBeforeRequest:^(NSError *error) {
+        
+        NSString *message;
+        
+        if (error.code == OCErrorMovingTheDestinyAndOriginAreTheSame) {
+            message = NSLocalizedString(@"_error_folder_destiny_is_the_same_", nil);
+        } else if (error.code == OCErrorMovingFolderInsideHimself) {
+            message = NSLocalizedString(@"_error_folder_destiny_is_the_same_", nil);
+        } else if (error.code == OCErrorMovingDestinyNameHaveForbiddenCharacters) {
+            message = NSLocalizedString(@"_forbidden_characters_from_server_", nil);
+        } else {
+            message = NSLocalizedString(@"_unknow_response_server_", nil);
+        }
+        
+        completion(account, message, error.code);
+    }];
+}
 
 - (void)searchWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl contentType:(NSArray *)contentType date:(NSDate *)date depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
 {
@@ -724,10 +718,227 @@
         completion(account, nil, message, errorCode);
     }];
 }
-     
+
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Setting Favorite =====
+#pragma mark ===== downloadPreview =====
 #pragma --------------------------------------------------------------------------------------------
+
+/*
+ - (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
+ {
+ NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
+ 
+ if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
+ 
+ completion(nil, 0);
+ 
+ } else {
+ 
+ OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+ 
+ [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+ [communication setUserAgent:[CCUtility getUserAgent]];
+ 
+ [communication getRemoteThumbnailByServer:_activeUrl ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:_activeUrl] withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
+ 
+ [thumbnail writeToFile:file atomically:YES];
+ 
+ completion(nil, 0);
+ 
+ } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+ 
+ NSString *message;
+ 
+ NSInteger errorCode = response.statusCode;
+ if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+ errorCode = error.code;
+ 
+ // Error
+ if (errorCode == 503)
+ message = NSLocalizedString(@"_server_error_retry_", nil);
+ else
+ message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+ 
+ completion(message, errorCode);
+ }];
+ }
+ }
+ */
+
+- (void)downloadPreviewWithAccount:(NSString *)account metadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
+    
+    [communication getRemotePreviewByServer:tableAccount.url ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:tableAccount.url] withWidth:width andHeight:height andA:1 andMode:@"cover" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        
+        [preview writeToFile:file atomically:YES];
+        
+        completion(account, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, message, errorCode);
+    }];
+}
+
+- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
+        
+        completion(account, nil, 0);
+        
+    } else {
+        
+        OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+        
+        [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+        [communication setUserAgent:[CCUtility getUserAgent]];
+        
+        [communication getRemotePreviewTrashByServer:tableAccount.url ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+            
+            [preview writeToFile:file atomically:YES];
+            
+            completion(account, nil, 0);
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            
+            NSString *message;
+            
+            NSInteger errorCode = response.statusCode;
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedString(@"_server_error_retry_", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+            completion(account, message, errorCode);
+        }];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Favorite =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)listingFavoritesWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSString *path = [tableAccount.url stringByAppendingString:k_dav];
+    
+    [communication listingFavorites:path folder:@"" withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        
+        NSMutableArray *metadatas = [NSMutableArray new];
+        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
+        
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
+        
+        // Order by fileNamePath
+        items = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            
+            OCFileDto *record1 = obj1, *record2 = obj2;
+            
+            NSString *path1 = [[record1.filePath stringByAppendingString:record1.fileName] lowercaseString];
+            NSString *path2 = [[record2.filePath stringByAppendingString:record2.fileName] lowercaseString];
+            
+            return [path1 compare:path2];
+            
+        }];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            for(OCFileDto *itemDto in items) {
+                
+                NSString *serverUrl;
+                BOOL isFolderEncrypted;
+                
+                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                
+                // Skip hidden files
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
+                    continue;
+                
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, tableAccount.userID]];
+                NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
+                if ([serverPath hasSuffix:@"/"])
+                    serverPath = [serverPath substringToIndex:[serverPath length] - 1];
+                serverUrl = [CCUtility stringAppendServerUrl:[tableAccount.url stringByAppendingString:k_webDAV] addFileName:serverPath];
+                
+                if (itemDto.isDirectory) {
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                }
+                
+                isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
+                
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted]];
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(account, metadatas, nil, 0);
+            });
+        });
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
 
 - (void)settingFavoriteWithAccount:(NSString *)account fileName:(NSString *)fileName favorite:(BOOL)favorite completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
@@ -766,246 +977,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Listing Favorites =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)listingFavoritesWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *path = [tableAccount.url stringByAppendingString:k_dav];
-    
-    [communication listingFavorites:path folder:@"" withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
-        
-        NSMutableArray *metadatas = [NSMutableArray new];
-        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-
-        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
-        
-        // Order by fileNamePath
-        items = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-                
-            OCFileDto *record1 = obj1, *record2 = obj2;
-                
-            NSString *path1 = [[record1.filePath stringByAppendingString:record1.fileName] lowercaseString];
-            NSString *path2 = [[record2.filePath stringByAppendingString:record2.fileName] lowercaseString];
-                
-            return [path1 compare:path2];
-                
-        }];
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-           
-            for(OCFileDto *itemDto in items) {
-                    
-                NSString *serverUrl;
-                BOOL isFolderEncrypted;
-                    
-                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
-                    
-                // Skip hidden files
-                if (fileName.length > 0) {
-                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
-                        continue;
-                } else
-                    continue;
-                
-                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, tableAccount.userID]];
-                NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
-                if ([serverPath hasSuffix:@"/"])
-                    serverPath = [serverPath substringToIndex:[serverPath length] - 1];
-                serverUrl = [CCUtility stringAppendServerUrl:[tableAccount.url stringByAppendingString:k_webDAV] addFileName:serverPath];
-                    
-                if (itemDto.isDirectory) {
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
-                }
-                    
-                isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
-                    
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted]];
-            }
-                
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completion(account, metadatas, nil, 0);
-            });
-        });
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
-        
-        NSString *message;
-
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Create Folder =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    NSString *path = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
-
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication createFolder:path onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        NSDictionary *fields = [response allHeaderFields];
-            
-        NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-        NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
-            
-        completion(account, fileID, date, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-
-        NSString *message;
-        
-        if (([fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory]))
-            message = nil;
-        else
-            message = [CCError manageErrorOC:response.statusCode error:error];
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-
-        completion(account, nil, nil, message, errorCode);
-
-    } errorBeforeRequest:^(NSError *error) {
-        
-        NSString *message;
-    
-        if (([fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory]))
-            message = nil;
-        else {
-            if (error.code == OCErrorForbidenCharacters)
-                message = NSLocalizedString(@"_forbidden_characters_from_server_", nil);
-            else
-                message = NSLocalizedString(@"_unknow_response_server_", nil);
-        }
-        
-        completion(account, nil, nil, message, error.code);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Delete =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)deleteFileOrFolderWithAccount:(NSString *)account path:(NSString *)path completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
-{    
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication deleteFileOrFolder:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        completion(account, nil, 0);
-        
-    } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message;
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        
-        completion(account, message, errorCode);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Move =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)moveFileOrFolderWithAccount:(NSString *)account fileName:(NSString *)fileName fileNameTo:(NSString *)fileNameTo completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication moveFileOrFolder:fileName toDestiny:fileNameTo onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-
-        completion(account, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        NSString *message = [CCError manageErrorOC:response.statusCode error:error];
-        
-        completion(account, message, error.code);
-        
-    } errorBeforeRequest:^(NSError *error) {
-        
-        NSString *message;
-        
-        if (error.code == OCErrorMovingTheDestinyAndOriginAreTheSame) {
-            message = NSLocalizedString(@"_error_folder_destiny_is_the_same_", nil);
-        } else if (error.code == OCErrorMovingFolderInsideHimself) {
-            message = NSLocalizedString(@"_error_folder_destiny_is_the_same_", nil);
-        } else if (error.code == OCErrorMovingDestinyNameHaveForbiddenCharacters) {
-            message = NSLocalizedString(@"_forbidden_characters_from_server_", nil);
-        } else {
-            message = NSLocalizedString(@"_unknow_response_server_", nil);
-        }
-        
-        completion(account, message, error.code);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Shared =====
+#pragma mark ===== Share =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)readShareWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
@@ -1322,7 +1294,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Activity =====
+#pragma mark ===== API =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)getActivityWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
@@ -1359,10 +1331,6 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== External Sites =====
-#pragma --------------------------------------------------------------------------------------------
-
 - (void)getExternalSitesWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfExternalSites, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
@@ -1396,10 +1364,6 @@
         completion(account, nil, message, errorCode);
     }];
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Middleware Ping =====
-#pragma --------------------------------------------------------------------------------------------
 
 /*
 - (void)middlewarePing
@@ -1437,10 +1401,6 @@
     
 }
 */
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Notification =====
-#pragma --------------------------------------------------------------------------------------------
 
 - (void)getNotificationWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfNotifications, NSString *message, NSInteger errorCode))completion
 {
@@ -1507,6 +1467,74 @@
         }
         
         completion(account, message, errorCode);
+    }];
+}
+
+- (void)getCapabilitiesWithAccount:(NSString *)account completion:(void (^)(NSString *account, OCCapabilities *capabilities, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getCapabilitiesOfServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
+        
+        completion(account, capabilities, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
+
+- (void)getUserProfileWithAccount:(NSString *)account completion:(void (^)(NSString *account, OCUserProfile *userProfile, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getUserProfileServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
+        
+        completion(account, userProfile, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, message, errorCode);
     }];
 }
 
@@ -1625,324 +1653,6 @@
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
         completion(account, message, errorCode);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  User Profile =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getUserProfileWithAccount:(NSString *)account completion:(void (^)(NSString *account, OCUserProfile *userProfile, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getUserProfileServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
-        
-        completion(account, userProfile, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Capabilities =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getCapabilitiesWithAccount:(NSString *)account completion:(void (^)(NSString *account, OCCapabilities *capabilities, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getCapabilitiesOfServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
-        
-        completion(account, capabilities, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== End-to-End Encryption =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getEndToEndPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getEndToEndPublicKeys:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
-        
-        completion(account, publicKey, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-- (void)getEndToEndPrivateKeyCipherWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *privateKeyChiper, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getEndToEndPrivateKeyCipher:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKeyChiper, NSString *redirectedServer) {
-        
-        completion(account, privateKeyChiper, nil, 0);
-
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-- (void)signEndToEndPublicKeyWithAccount:(NSString *)account publicKey:(NSString *)publicKey completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication signEndToEndPublicKey:[tableAccount.url stringByAppendingString:@"/"] publicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
-        
-        completion(account, publicKey, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-- (void)storeEndToEndPrivateKeyCipherWithAccount:(NSString *)account privateKeyChiper:(NSString *)privateKeyChiper completion:(void (^)(NSString *account, NSString *privateKey, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication storeEndToEndPrivateKeyCipher:[tableAccount.url stringByAppendingString:@"/"] privateKeyChiper:[CCUtility URLEncodeStringFromString:privateKeyChiper] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
-        
-        completion(account, privateKey, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-- (void)deleteEndToEndPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication deleteEndToEndPublicKey:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        completion(account, nil ,0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, message, errorCode);
-    }];
-}
-
-- (void)deleteEndToEndPrivateKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication deleteEndToEndPrivateKey:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        completion(account, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, message, errorCode);
-    }];
-}
-
-- (void)getEndToEndServerPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    }
-    
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getEndToEndServerPublicKey:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
-        
-        completion(account, publicKey, nil, 0);
-                
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = @"";
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
     }];
 }
 
@@ -2164,7 +1874,6 @@
         completion(account, nil,message, errorCode);
     }];
 }
-
 
 - (void)emptyTrashWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
