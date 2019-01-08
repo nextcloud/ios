@@ -171,7 +171,6 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
-    
 #endif
     
     self.form = form;

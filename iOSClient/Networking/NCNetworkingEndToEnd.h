@@ -37,10 +37,9 @@
 - (void)deleteEndToEndPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 - (void)deleteEndToEndPrivateKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 - (void)getEndToEndServerPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion;
+- (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID error:(NSError **)error;
 
 // ===== End-to-End Encryption =====
-
-- (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID error:(NSError **)error;
 
 - (NSError *)markEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
 - (NSError *)deletemarkEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
