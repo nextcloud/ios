@@ -178,7 +178,7 @@ extension FileProviderExtension {
         
         let tableMetadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d OR status == %d)", providerData.account, k_upload_session_extension, k_metadataStatusInUpload, k_metadataStatusUploading), sorted: "fileName", ascending: true)
         
-        if (tableMetadatas == nil || (tableMetadatas!.count < Int(k_maxConcurrentOperationDownloadUpload))) {
+        if (tableMetadatas == nil || (tableMetadatas!.count < Int(k_maxConcurrentOperation))) {
             
             guard let metadataForUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", providerData.account, k_upload_session_extension, k_metadataStatusWaitUpload)) else {
                 return

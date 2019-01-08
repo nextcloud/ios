@@ -65,9 +65,6 @@
 // Notification
 @property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
 
-// Network Operation
-@property (nonatomic, strong) NSOperationQueue *netQueue;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 

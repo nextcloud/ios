@@ -168,8 +168,7 @@
 
 // ConcurrentOperation
 #define k_maxHTTPConnectionsPerHost                     5
-#define k_maxConcurrentOperation                        10
-#define k_maxConcurrentOperationDownloadUpload          5
+#define k_maxConcurrentOperation                        5
 
 // Max Size Operation
 #define k_maxSizeOperationUpload                        524288000   // 500 MB

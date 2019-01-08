@@ -185,8 +185,6 @@
 
 - (IBAction)move:(UIBarButtonItem *)sender
 {
-    [_networkingOperationQueue cancelAllOperations];
- 
     if ([self.delegate respondsToSelector:@selector(dismissMove)])
         [self.delegate dismissMove];
     
@@ -521,7 +519,6 @@
     viewController.hideMoveutton = self.hideMoveutton;
     viewController.selectFile = self.selectFile;
     viewController.type = self.type;
-    viewController.networkingOperationQueue = self.networkingOperationQueue;
 
     viewController.passMetadata = metadata;
     viewController.serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:nomeDir];

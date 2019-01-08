@@ -90,10 +90,6 @@
     _filesName = [[NSMutableArray alloc] init];
     _hud = [[CCHud alloc] initWithView:self.navigationController.view];
     
-    _networkingOperationQueue = [NSOperationQueue new];
-    _networkingOperationQueue.name = k_queue;
-    _networkingOperationQueue.maxConcurrentOperationCount = 1;
-    
     [CCNetworking sharedNetworking].delegate = self;
         
     [self.shareTable registerNib:[UINib nibWithNibName:@"CCCellShareExt" bundle:nil] forCellReuseIdentifier:@"ShareExtCell"];
@@ -198,7 +194,6 @@
     viewController.tintColor = tintColor;
     viewController.barTintColor = barTintColor;
     viewController.tintColorTitle = tintColor;
-    viewController.networkingOperationQueue = _networkingOperationQueue;
     // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
 

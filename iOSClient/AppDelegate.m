@@ -119,11 +119,6 @@
     [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
 #endif
     
-    // Operation Queue OC Networking
-    _netQueue = [[NSOperationQueue alloc] init];
-    _netQueue.name = k_queue;
-    _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
-       
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
@@ -1152,7 +1147,7 @@
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     BOOL isE2EE = false;
     
-    long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperationDownloadUpload;
+    long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperation;
     
     // Detect E2EE
     NSString *saveserverUrl = @"";

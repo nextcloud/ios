@@ -23,12 +23,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "AFURLSessionManager.h"
-#import "TWMessageBarManager.h"
+//#import "AFURLSessionManager.h"
 #import "CCNetworking.h"
-#import "CCError.h"
-
-@class tableMetadata;
 
 @interface OCnetworking : NSObject <NSURLSessionDelegate>
 
@@ -104,8 +100,7 @@
 
 @end
 
-
-
 @interface OCURLSessionManager : AFURLSessionManager
 
 @end
+

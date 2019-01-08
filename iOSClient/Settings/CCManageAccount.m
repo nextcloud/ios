@@ -216,11 +216,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate.netQueue cancelAllOperations];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
-    });
+    [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -231,11 +227,7 @@
 {    
     [self deselectFormRow:sender];
     
-    [appDelegate.netQueue cancelAllOperations];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-    });
+    [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -245,8 +237,6 @@
 - (void)deleteAccount:(NSString *)account
 {
     [appDelegate unsubscribingNextcloudServerPushNotification];
-    
-    [appDelegate.netQueue cancelAllOperations];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
@@ -303,23 +293,18 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
-    [appDelegate.netQueue cancelAllOperations];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-        if (tableAccount) {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+    if (tableAccount) {
         
-            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
  
-            // Init home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+        // Init home
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
             
-            [self UpdateForm];
+        [self UpdateForm];
             
-            [appDelegate subscribingNextcloudServerPushNotification];
-        }
-    });
+        [appDelegate subscribingNextcloudServerPushNotification];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

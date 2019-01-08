@@ -2335,36 +2335,27 @@
 
 - (void)changeDefaultAccount:(CCMenuItem *)sender
 {
-    [appDelegate.netQueue cancelAllOperations];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-
-        // LOGOUT
+    // LOGOUT
         
-        [appDelegate unsubscribingNextcloudServerPushNotification];
+    [appDelegate unsubscribingNextcloudServerPushNotification];
         
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
-        if (tableAccount) {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
+    if (tableAccount) {
             
-            // LOGIN
+        // LOGIN
             
-            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
     
-            // go to home sweet home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+        // go to home sweet home
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
             
-            [appDelegate subscribingNextcloudServerPushNotification];
-        }
-    });
+        [appDelegate subscribingNextcloudServerPushNotification];
+    }
 }
 
 - (void)addNewAccount:(CCMenuItem *)sender
 {
-    [appDelegate.netQueue cancelAllOperations];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
-    });
+    [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
