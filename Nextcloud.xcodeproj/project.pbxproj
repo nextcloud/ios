@@ -1312,6 +1312,7 @@
 		F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadFileText.swift; sourceTree = "<group>"; };
 		F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadScanDocument.swift; sourceTree = "<group>"; };
 		F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadRichdocuments.storyboard; sourceTree = "<group>"; };
+		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E9C41520F4CA870040CF18 /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
 		F7E9C41820F4CA870040CF18 /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
 		F7EC9CBA21185F2000F1C5CE /* CCMedia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMedia.h; sourceTree = "<group>"; };
@@ -3116,6 +3117,7 @@
 				ko,
 				"es-419",
 				"pt-PT",
+				"ja-JP",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -3816,6 +3818,7 @@
 				F7320934201B812F008A0888 /* ko */,
 				F732093B201B81E4008A0888 /* es-419 */,
 				F70A07C8205285FB00DC1231 /* pt-PT */,
+				F7E45E6D21E75BF200579249 /* ja-JP */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
