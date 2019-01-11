@@ -148,8 +148,14 @@
 - (void)getActivity
 {
     [[OCnetworking sharedManager] getActivityWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode) {
-        if (errorCode == 0) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:account];
+        } else if (errorCode == kOCErrorServerUnauthorized) {
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+        } else if (errorCode != 0) {
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         [self reloadDatasource];
     }];

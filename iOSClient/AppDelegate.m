@@ -405,7 +405,7 @@
             self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
             self.pnPublicKey = publicKey;
         } else if (errorCode != 0) {
-            NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+            NSLog(@"[LOG] Subscribed to Push Notification server & proxy error.");
         }
     }];
 }
@@ -421,7 +421,7 @@
         if (errorCode == 0) {
             NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
         } else {
-            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy error.");
         }
     }];
 }

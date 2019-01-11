@@ -672,6 +672,7 @@
     [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:startDirectory fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
 
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
             if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
                 
                 isSearchMode = YES;
@@ -679,6 +680,8 @@
                 
                 [[OCnetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] date:[NSDate distantPast] depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
                     
+                    isSearchMode = NO;
+
                     if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
                         
                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{

@@ -525,8 +525,6 @@
     
     // Actuate `Peek` feedback (weak boom)
     AudioServicesPlaySystemSound(1519);
-    
-    [_imageTitleHome setUserInteractionEnabled:NO];
 }
 
 - (void)setTitle
@@ -921,14 +919,9 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [_imageTitleHome setUserInteractionEnabled:NO];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-        
-        [_imageTitleHome setUserInteractionEnabled:YES];
     });
     
     [appDelegate subscribingNextcloudServerPushNotification];
@@ -1145,6 +1138,10 @@
             
         } else if (errorCode == kOCErrorServerUnauthorized) {
             [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+        } else if (errorCode != 0) {
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
     }];
 }
@@ -1209,9 +1206,6 @@
         // reload
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
         
-        // Enable change user
-        [_imageTitleHome setUserInteractionEnabled:YES];
-        
         [self tableViewReloadData];
     }
     
@@ -1248,7 +1242,6 @@
 {
     // init control
     if (!serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode) {
-        
         [refreshControl endRefreshing];
         return;
     }
@@ -1258,7 +1251,7 @@
         
         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
             
-        _searchFileName = @"";                          // forced reload searchg
+        _searchFileName = @""; // forced reload searchg
         
         [self updateSearchResultsForSearchController:self.searchController];
         
@@ -1266,28 +1259,19 @@
     }
     
     _loadingFolder = YES;
+
     [self tableViewReloadData];
     
     [[OCnetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0) {
-            
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
-            
-        } else {
-            
-            // Unauthorized
-            if (errorCode == kOCErrorServerUnauthorized) {
-                
-                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-                
-            } else {
-                
-                [self tableViewReloadData];
-                [_imageTitleHome setUserInteractionEnabled:YES];
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
-            }
+        } else if (errorCode == kOCErrorServerUnauthorized) {
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+        } else if (errorCode != 0) {
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         _loadingFolder = NO;
@@ -1343,9 +1327,10 @@
             
         } else {
             
-            // Unauthorized
             if (errorCode == kOCErrorServerUnauthorized) {
                 [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
             } else if (errorCode != 0) {
                 [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             }
@@ -1519,7 +1504,7 @@
         }
         
         // Verify if exists the fileName TO
-        [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:metadata.serverUrl fileName:fileNameNew completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+        [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:metadata.serverUrl fileName:fileNameNew completion:^(NSString *account, tableMetadata *metadataReadFile, NSString *message, NSInteger errorCode) {
             
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                 
@@ -1530,51 +1515,60 @@
                 
             } else if (errorCode != 0) {
                 
-                NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
-                NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, fileNameNew];
+                if (errorCode == kOCErrorServerUnauthorized) {
+                    [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+                } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                    [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+                } else if (errorCode == kOCErrorServerPathNotFound) {
                 
-                [[OCnetworking sharedManager] moveFileOrFolderWithAccount:appDelegate.activeAccount fileName:fileNamePath fileNameTo:fileNameToPath completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-                   
-                    if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-                        // Rename metadata
-                        (void) [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew fileID:metadata.fileID];
-                        
-                        if (metadata.directory) {
+                    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
+                    NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, fileNameNew];
+                    
+                    [[OCnetworking sharedManager] moveFileOrFolderWithAccount:appDelegate.activeAccount fileName:fileNamePath fileNameTo:fileNameToPath completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+                       
+                        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                            // Rename metadata
+                            (void) [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew fileID:metadata.fileID];
                             
-                            NSString *serverUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
-                            NSString *serverUrlTo = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:fileNameNew];
-                            
-                            tableDirectory *directoryTable = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
-                            if (directoryTable == nil) {
-                                [appDelegate messageNotification:@"_rename_" description:@"Internal error, ServerUrl not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-                                return;
+                            if (metadata.directory) {
+                                
+                                NSString *serverUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
+                                NSString *serverUrlTo = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:fileNameNew];
+                                
+                                tableDirectory *directoryTable = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
+                                if (directoryTable == nil) {
+                                    [appDelegate messageNotification:@"_rename_" description:@"Internal error, ServerUrl not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+                                    return;
+                                }
+                                
+                                [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
+                                
+                            } else {
+                                
+                                [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:fileNameNew etag:nil];
+                                
+                                // Move file system
+                                
+                                NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName];
+                                NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], fileNameNew];
+                                
+                                [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
+                                
+                                NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileName];
+                                NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:fileNameNew];
+                                
+                                [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
                             }
                             
-                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
+                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
                             
-                        } else {
-                            
-                            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:fileNameNew etag:nil];
-                            
-                            // Move file system
-                            
-                            NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName];
-                            NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], fileNameNew];
-                            
-                            [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
-                            
-                            NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileName];
-                            NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:fileNameNew];
-                            
-                            [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
+                        } else if (errorCode != 0) {
+                            [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                         }
-                        
-                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
-                        
-                    } else if (errorCode != 0) {
-                        [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                    }
-                }];
+                    }];
+                } else {
+                    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                }
             }
         }];
     }
@@ -1586,7 +1580,7 @@
 
 - (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrlTo fileName:metadata.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+    [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrlTo fileName:metadata.fileName completion:^(NSString *account, tableMetadata *metadataReadFile, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
@@ -1604,34 +1598,54 @@
             
         } else if (errorCode != 0) {
             
-            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
-            NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+            } else if (errorCode == kOCErrorServerPathNotFound) {
             
-            [[OCnetworking sharedManager] moveFileOrFolderWithAccount:appDelegate.activeAccount fileName:fileNamePath fileNameTo:fileNameToPath completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-                
-                [_hud hideHud];
-                
-                if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-                
-                    if (metadata.directory) {
-                        [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] account:account];
-                    }
+                NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
+                NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
+            
+                [[OCnetworking sharedManager] moveFileOrFolderWithAccount:appDelegate.activeAccount fileName:fileNamePath fileNameTo:fileNameToPath completion:^(NSString *account, NSString *message, NSInteger errorCode) {
                     
-                    [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadata.fileID serverUrlTo:serverUrlTo];
+                    [_hud hideHud];
                     
-                    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:account];
-                    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];
+                    if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                     
-                    // next
-                    [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
-                    
-                    if ([_selectedFileIDsMetadatas count] > 0) {
+                        if (metadata.directory) {
+                            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] account:account];
+                        }
                         
-                        NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
+                        [[NCManageDatabase sharedInstance] moveMetadataWithFileID:metadata.fileID serverUrlTo:serverUrlTo];
                         
-                        [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrlTo numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
+                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:account];
+                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];
                         
-                    } else {
+                        // next
+                        [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
+                        
+                        if ([_selectedFileIDsMetadatas count] > 0) {
+                            
+                            NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
+                            
+                            [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrlTo numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
+                            
+                        } else {
+                            
+                            // End Select Table View
+                            [self tableViewSelect:NO];
+                            
+                            // reload Datasource
+                            if (_isSearchMode)
+                                [self readFolder:metadata.serverUrl];
+                            else
+                                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+                        }
+                        
+                    } else if (errorCode != 0) {
+                        
+                        [appDelegate messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                         
                         // End Select Table View
                         [self tableViewSelect:NO];
@@ -1640,26 +1654,14 @@
                         if (_isSearchMode)
                             [self readFolder:metadata.serverUrl];
                         else
-                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:nil action:k_action_NULL];
                     }
-                    
-                } else if (errorCode != 0) {
-                    
-                    if (message && errorCode != kOCErrorServerUnauthorized)
-                        [appDelegate messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                    
-                    // End Select Table View
-                    [self tableViewSelect:NO];
-                    
-                    // reload Datasource
-                    if (_isSearchMode)
-                        [self readFolder:metadata.serverUrl];
-                    else
-                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:nil action:k_action_NULL];
-                }
-            }];
-            
-            [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+                }];
+                
+                [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+            } else {
+                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            }
         }
     }];
 }
@@ -1795,24 +1797,20 @@
                 
                 [self readFolder:self.serverUrl];
             }
-            
-        } else if (errorCode == 0) {
-            
-            // Unauthorized
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        
+        } else {
             
             // Delete Temp Dir
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
-            
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
             
-            // We are in directory fail ?
-            CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:fileNameFolder]];
-            if (vc)
-                [vc.navigationController popViewControllerAnimated:YES];
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+            } else if (errorCode != 0) {
+                [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            }
         }
     }];
 }
@@ -2146,6 +2144,7 @@
     NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
     
     [[OCnetworking sharedManager] settingFavoriteWithAccount:appDelegate.activeAccount fileName:fileNameServerUrl favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
         if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
             
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
@@ -2185,6 +2184,10 @@
             
         } else if (errorCode == kOCErrorServerUnauthorized) {
             [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+        } else if (errorCode != 0) {
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
     }];
 }

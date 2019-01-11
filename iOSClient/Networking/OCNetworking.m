@@ -520,10 +520,6 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        // Request trusted certificated
-        //if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-        //    [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:tableAccount.url];
 

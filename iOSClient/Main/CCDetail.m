@@ -226,6 +226,7 @@
                     } else {
                         
                         [[NCUtility sharedInstance] stopActivityIndicator];
+                        
                         if (errorCode != 0) {
                             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                         }
