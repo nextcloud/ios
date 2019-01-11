@@ -59,7 +59,7 @@ class NCService: NSObject {
         
         OCnetworking.sharedManager().getCapabilitiesWithAccount(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
             
-            if (errorCode == 0 && self.appDelegate.activeAccount == account!) {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 // Update capabilities db
                 NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: account!)
@@ -119,7 +119,7 @@ class NCService: NSObject {
                     
                     OCnetworking.sharedManager().getNotificationWithAccount(account!, completion: { (account, listOfNotifications, message, errorCode) in
                         
-                        if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
                             
                             DispatchQueue.global(qos: .default).async {
                                 
@@ -194,7 +194,7 @@ class NCService: NSObject {
                     
                     OCnetworking.sharedManager().getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
                         
-                        if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
                             
                             NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
                             for externalSites in listOfExternalSites! {
@@ -226,7 +226,7 @@ class NCService: NSObject {
                     
                     OCnetworking.sharedManager().readShare(withAccount: account!, completion: { (account, items, message, errorCode) in
                         
-                        if errorCode == 0 && account! == self.appDelegate.activeAccount {
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
                             
                             if items != nil {
                                 for item in items! as! [OCSharedDto]  {
@@ -265,7 +265,7 @@ class NCService: NSObject {
         
         OCnetworking.sharedManager().getUserProfile(withAccount: appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
             
-            if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 // Update User (+ userProfile.id) & active account & account network
                 guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!) else {
@@ -333,7 +333,7 @@ class NCService: NSObject {
         }
         
         OCnetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, completion: { (account, listOfActivity, message, errorCode) in
-            if errorCode == 0 {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: account!)
                 if (self.appDelegate.activeActivity != nil) {
                     self.appDelegate.activeActivity.reloadDatasource()

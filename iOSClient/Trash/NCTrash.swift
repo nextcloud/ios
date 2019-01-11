@@ -461,10 +461,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             self.refreshControl.endRefreshing()
 
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                
                 NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-                
+                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])                
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }

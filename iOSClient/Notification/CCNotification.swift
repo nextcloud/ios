@@ -86,7 +86,7 @@ class CCNotification: UITableViewController {
 
                 OCnetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
                     
-                    if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+                    if errorCode == 0 && account == self.appDelegate.activeAccount {
                         
                         let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
                         
@@ -100,7 +100,7 @@ class CCNotification: UITableViewController {
                             self.viewClose()
                         }
                         
-                    } else if (errorCode != 0) {
+                    } else if errorCode != 0 {
                         self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }
                 })
@@ -127,7 +127,7 @@ class CCNotification: UITableViewController {
 
                             OCnetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (actionNotification as! OCNotificationsAction).link, type: (actionNotification as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
                                 
-                                if (errorCode == 0 && account! == self.appDelegate.activeAccount) {
+                                if errorCode == 0 && account == self.appDelegate.activeAccount {
                                     
                                     let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
                                     
@@ -141,7 +141,7 @@ class CCNotification: UITableViewController {
                                         self.viewClose()
                                     }
                                     
-                                } else if (errorCode != 0) {
+                                } else if errorCode != 0 {
                                     self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                                 }
                             })
