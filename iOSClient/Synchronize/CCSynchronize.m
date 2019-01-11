@@ -191,7 +191,7 @@
         } else {
         
             // Folder not present, remove it
-            if (errorCode == 404) {
+            if (errorCode == kOCErrorServerPathNotFound) {
                 [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:serverUrl account:account];
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
             }
@@ -223,7 +223,7 @@
                     [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:appDelegate.activeAccount withDownload:withDownload];
             });
             
-        } else if (errorCode == 404) {
+        } else if (errorCode == kOCErrorServerPathNotFound) {
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];

@@ -34,7 +34,7 @@ extension FileProviderExtension {
         let path = metadata.serverUrl + "/" + metadata.fileName
 
         OCnetworking.sharedManager().deleteFileOrFolder(withAccount: providerData.account, path: path, completion: { (account, message, errorCode) in
-            if errorCode == 0 || errorCode == 404 {
+            if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                 self.deleteFileSystem(for: metadata, serverUrl: metadata.serverUrl, itemIdentifier: itemIdentifier)
             }
         })

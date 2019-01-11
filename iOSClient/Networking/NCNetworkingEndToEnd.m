@@ -801,7 +801,7 @@
     
     // get Metadata for select updateEndToEndMetadata or storeEndToEndMetadata
     error = [self getEndToEndMetadata:&metadata fileID:directory.fileID user:user userID:userID password:password url:url];
-    if (error.code != 404 && error != nil) {
+    if (error.code != kOCErrorServerPathNotFound && error != nil) {
         return error;
     }
     
@@ -820,7 +820,7 @@
     // send Metadata
     if (error == nil)
         error = [self updateEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl fileID:directory.fileID unlock:NO user:user userID:userID password:password url:url];
-    else if (error.code == 404)
+    else if (error.code == kOCErrorServerPathNotFound)
         error = [self storeEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl fileID:directory.fileID unlock:NO user:user userID:userID password:password url:url];
     
     return error;
