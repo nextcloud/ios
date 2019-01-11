@@ -133,7 +133,7 @@
         
         [CCUtility setIntro:YES];
         if (appDelegate.activeAccount.length == 0) {
-            [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
+            [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
         }
     
     } else {
@@ -145,7 +145,7 @@
         
         } else {
             if (appDelegate.activeAccount.length == 0) {
-                [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
+                [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
             }
         }
     }
@@ -159,7 +159,7 @@
             {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     if (appDelegate.activeAccount.length == 0) {
-                        [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
+                        [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
                     }
                 });
             }
@@ -167,7 +167,7 @@
             
         case k_intro_signup:
             {
-                [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_signup];
+                [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_signup];
             }
             break;
     }

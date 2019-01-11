@@ -462,7 +462,9 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])                
+                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+            } else if errorCode == kOCErrorServerUnauthorized {
+                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {
@@ -486,6 +488,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
                 self.loadDatasource()
+            } else if errorCode == kOCErrorServerUnauthorized {
+                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {
@@ -499,6 +503,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         OCNetworking.sharedManager().emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
+            } else if errorCode == kOCErrorServerUnauthorized {
+                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {

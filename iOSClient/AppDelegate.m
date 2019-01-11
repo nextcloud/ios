@@ -293,7 +293,7 @@
 #pragma mark ===== Login =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
+- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
 {
     BOOL loginWebFlow = NO;
     
@@ -310,7 +310,7 @@
                 _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:delegate];
+                    [_activeLoginWeb open:viewController];
                 });
             }
             return;
@@ -341,7 +341,7 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:delegate];
+                    [_activeLoginWeb open:viewController];
                 });
             }
             
@@ -354,7 +354,7 @@
                 _activeLogin.loginType = loginType;
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [delegate presentViewController:_activeLogin animated:YES completion:nil];
+                    [viewController presentViewController:_activeLogin animated:YES completion:nil];
                 });
             }
         }

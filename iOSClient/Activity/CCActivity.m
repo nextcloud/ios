@@ -151,7 +151,7 @@
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:account];
         } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            [appDelegate openLoginView:self delegate:appDelegate.activeMain loginType:k_login_Modify_Password selector:k_intro_login];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {

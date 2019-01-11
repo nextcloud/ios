@@ -216,7 +216,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
+    [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -227,7 +227,7 @@
 {    
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+    [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -272,7 +272,7 @@
         if ([listAccount count] > 0)
             [self ChangeDefaultAccount:listAccount[0]];
         else {
-            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+            [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
     }]];
     
@@ -316,7 +316,7 @@
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     if (listAccount.count == 0) {
-        [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+        [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         return;
     }
     

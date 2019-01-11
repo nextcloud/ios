@@ -140,7 +140,7 @@
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 
 // Login View
-- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
+- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
 
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
