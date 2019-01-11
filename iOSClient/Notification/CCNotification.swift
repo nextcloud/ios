@@ -100,11 +100,8 @@ class CCNotification: UITableViewController {
                             self.viewClose()
                         }
                         
-                    } else {
-                        
-                        if (errorCode != 0) {
-                            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                        }
+                    } else if (errorCode != 0) {
+                        self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }
                 })
             }
@@ -144,11 +141,8 @@ class CCNotification: UITableViewController {
                                         self.viewClose()
                                     }
                                     
-                                } else {
-                                    
-                                    if (errorCode != 0) {
-                                        self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                                    }
+                                } else if (errorCode != 0) {
+                                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                                 }
                             })
                         }

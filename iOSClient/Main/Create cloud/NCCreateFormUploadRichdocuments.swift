@@ -321,7 +321,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])
-            } else {
+            } else if errorCode != 0 {
                 print("\(errorCode)")
             }
         })

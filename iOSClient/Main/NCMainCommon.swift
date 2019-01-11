@@ -858,7 +858,7 @@ class NCMainCommon: NSObject {
                     
                     count += 1
 
-                    if errorCode == 0 || errorCode == 404 {
+                    if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                         
                         do {
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))

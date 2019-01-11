@@ -460,12 +460,12 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             self.refreshControl.endRefreshing()
 
-            if (errorCode == 0 && account == self.appDelegate.activeAccount) {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
                 
-            } else if (errorCode != 0) {
+            } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
             
@@ -513,15 +513,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
 
         OCnetworking.sharedManager().deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
-            
-            if errorCode == 0 {
-                
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
-                
                 self.loadDatasource()
-                
-            } else {
-                
+            } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
         })

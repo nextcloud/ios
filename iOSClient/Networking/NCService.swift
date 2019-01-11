@@ -159,14 +159,17 @@ class NCService: NSObject {
                             
                         } else {
                             
-                            var error = ""
-                            if let message = message {
-                                error = "Get Notification Server failure error \(errorCode) \(message)"
-                            } else {
-                                error = "Get Notification Server failure error \(errorCode)"
+                            if errorCode != 0 {
+                                
+                                var error = ""
+                                if let message = message {
+                                    error = "Get Notification Server failure error \(errorCode) \(message)"
+                                } else {
+                                    error = "Get Notification Server failure error \(errorCode)"
+                                }
+                                
+                                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: self.appDelegate.activeUrl)
                             }
-                            
-                            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: self.appDelegate.activeUrl)
                             
                             // Update Main NavigationBar
                             if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
@@ -198,7 +201,7 @@ class NCService: NSObject {
                                 NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
                             }
                             
-                        } else {
+                        } else if errorCode != 0 {
                             
                             var error = ""
                             if let message = message {
@@ -206,7 +209,7 @@ class NCService: NSObject {
                             } else {
                                 error = "Get external site failure error \(errorCode)"
                             }
-                            
+                                
                             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
                         }
                     })
@@ -236,9 +239,8 @@ class NCService: NSObject {
                     })
                 }
                 
-            } else {
+            } else if errorCode != 0 {
                 
-                // Change Theming color
                 self.appDelegate.settingThemingColorBrand()
                 
                 var error = ""
@@ -247,8 +249,10 @@ class NCService: NSObject {
                 } else {
                     error = "Get Capabilities failure error \(errorCode)"
                 }
-                
                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+            } else {
+                // Change Theming color
+                self.appDelegate.settingThemingColorBrand()
             }
         })
     }
@@ -307,7 +311,7 @@ class NCService: NSObject {
                     }
                 }
                 
-            } else {
+            } else if errorCode != 0 {
                 
                 var error = ""
                 if let message = message {
@@ -334,7 +338,7 @@ class NCService: NSObject {
                 if (self.appDelegate.activeActivity != nil) {
                     self.appDelegate.activeActivity.reloadDatasource()
                 }
-            } else {
+            } else if errorCode != 0 {
                 var error = ""
                 if let message = message {
                     error = "Get Activity Server failure error \(errorCode) \(message)"
