@@ -60,7 +60,7 @@
 
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector
 {
-    [[OCnetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
@@ -205,7 +205,7 @@
 
 - (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
-    [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             

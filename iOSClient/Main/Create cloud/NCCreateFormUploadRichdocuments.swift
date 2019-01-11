@@ -257,7 +257,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         }
         
-        OCnetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", completion: { (account, url, message, errorCode) in
+        OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", completion: { (account, url, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -287,7 +287,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         indicator.color = NCBrandColor.sharedInstance.brand
         indicator.startAnimating()
         
-        OCnetworking.sharedManager().geTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
+         OCNetworking.sharedManager().geTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
             
             self.indicator.stopAnimating()
 
@@ -317,7 +317,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
 
-        OCnetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])

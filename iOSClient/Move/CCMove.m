@@ -277,7 +277,7 @@
 
 - (void)readFile
 {
-    [[OCnetworking sharedManager] readFileWithAccount:activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] readFileWithAccount:activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, _serverUrl]];
             if ([metadata.etag isEqualToString:directory.etag] == NO) {
@@ -294,7 +294,7 @@
 
 - (void)readFolder
 {
-    [[OCnetworking sharedManager] readFolderWithAccount:activeAccount serverUrl:_serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] readFolderWithAccount:activeAccount serverUrl:_serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             
@@ -338,7 +338,7 @@
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
-    [[OCnetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             [self readFolder];

@@ -40,7 +40,7 @@ extension FileProviderExtension {
         
         let serverUrl = tableDirectory.serverUrl
         
-        OCnetworking.sharedManager().createFolder(withAccount: providerData.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, fileID, date, message, errorCode) in
+        OCNetworking.sharedManager().createFolder(withAccount: providerData.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, fileID, date, message, errorCode) in
             
             if errorCode == 0 && account == self.providerData.account {
                 
@@ -149,7 +149,7 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        OCnetworking.sharedManager().moveFileOrFolder(withAccount:  providerData.account, fileName: fileNameFrom, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().moveFileOrFolder(withAccount:  providerData.account, fileName: fileNameFrom, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
             
             if errorCode == 0 && account == self.providerData.account {
                 
@@ -204,7 +204,7 @@ extension FileProviderExtension {
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         
-        OCnetworking.sharedManager().moveFileOrFolder(withAccount: providerData.account, fileName: fileNamePathFrom, fileNameTo: fileNamePathTo, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().moveFileOrFolder(withAccount: providerData.account, fileName: fileNamePathFrom, fileNameTo: fileNamePathTo, completion: { (account, message, errorCode) in
             
             if errorCode == 0 && account == self.providerData.account {
                 

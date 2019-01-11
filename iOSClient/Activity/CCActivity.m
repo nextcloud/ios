@@ -147,7 +147,7 @@
 
 - (void)getActivity
 {
-    [[OCnetworking sharedManager] getActivityWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] getActivityWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode) {
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:account];
         } else if (errorCode == kOCErrorServerUnauthorized) {

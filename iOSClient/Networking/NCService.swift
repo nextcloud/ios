@@ -57,7 +57,7 @@ class NCService: NSObject {
             return
         }
         
-        OCnetworking.sharedManager().getCapabilitiesWithAccount(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
+        OCNetworking.sharedManager().getCapabilitiesWithAccount(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -117,7 +117,7 @@ class NCService: NSObject {
                 // Read Notification
                 if (capabilities!.isNotificationServerEnabled) {
                     
-                    OCnetworking.sharedManager().getNotificationWithAccount(account!, completion: { (account, listOfNotifications, message, errorCode) in
+                    OCNetworking.sharedManager().getNotificationWithAccount(account!, completion: { (account, listOfNotifications, message, errorCode) in
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             
@@ -192,7 +192,7 @@ class NCService: NSObject {
                 // Read External Sites
                 if (capabilities!.isExternalSitesServerEnabled) {
                     
-                    OCnetworking.sharedManager().getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
+                    OCNetworking.sharedManager().getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             
@@ -224,7 +224,7 @@ class NCService: NSObject {
                     
                     self.appDelegate.sharesID.removeAllObjects()
                     
-                    OCnetworking.sharedManager().readShare(withAccount: account!, completion: { (account, items, message, errorCode) in
+                    OCNetworking.sharedManager().readShare(withAccount: account!, completion: { (account, items, message, errorCode) in
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             
@@ -263,7 +263,7 @@ class NCService: NSObject {
             return
         }
         
-        OCnetworking.sharedManager().getUserProfile(withAccount: appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
+        OCNetworking.sharedManager().getUserProfile(withAccount: appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -332,7 +332,7 @@ class NCService: NSObject {
             return
         }
         
-        OCnetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, completion: { (account, listOfActivity, message, errorCode) in
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, completion: { (account, listOfActivity, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: account!)
                 if (self.appDelegate.activeActivity != nil) {
@@ -360,7 +360,7 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
 
-        OCnetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, message, errorCode) in
+        OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, message, errorCode) in
             if errorCode == 0 {
                 if serverProductName == "owncloud" {
                     self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))

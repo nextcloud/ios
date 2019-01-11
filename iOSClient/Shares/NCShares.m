@@ -157,7 +157,7 @@
         shareString = [share stringByReplacingOccurrencesOfString:@" " withString:@""];
     }
     
-    [[OCnetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:[shareString integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:[shareString integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
@@ -293,7 +293,7 @@
         
         cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         
-        [[OCnetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+        [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
             
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                 

@@ -33,7 +33,7 @@ extension FileProviderExtension {
         
         let path = metadata.serverUrl + "/" + metadata.fileName
 
-        OCnetworking.sharedManager().deleteFileOrFolder(withAccount: providerData.account, path: path, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().deleteFileOrFolder(withAccount: providerData.account, path: path, completion: { (account, message, errorCode) in
             if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                 self.deleteFileSystem(for: metadata, serverUrl: metadata.serverUrl, itemIdentifier: itemIdentifier)
             }
@@ -66,7 +66,7 @@ extension FileProviderExtension {
         
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: self.providerData.accountUrl)
 
-        OCnetworking.sharedManager().settingFavorite(withAccount: providerData.account, fileName: fileNamePath, favorite: favorite, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().settingFavorite(withAccount: providerData.account, fileName: fileNamePath, favorite: favorite, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.providerData.account {
                 // Change DB
                 metadata.favorite = favorite

@@ -397,7 +397,7 @@
     self.pnDeviceIdentifierSignature = nil;
     self.pnPublicKey = nil;
 
-    [[OCnetworking sharedManager] subscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey completion:^(NSString *account, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] subscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey completion:^(NSString *account, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:self.activeAccount]) {
             NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
@@ -406,6 +406,8 @@
             self.pnPublicKey = publicKey;
         } else if (errorCode != 0) {
             NSLog(@"[LOG] Subscribed to Push Notification server & proxy error.");
+        } else {
+            NSLog(@"[LOG] It has been changed user during OCNetworking. error.");
         }
     }];
 }
@@ -416,7 +418,7 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    [[OCnetworking sharedManager] unsubscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] unsubscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0) {
             NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");

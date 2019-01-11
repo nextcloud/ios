@@ -295,8 +295,6 @@ class NCEndToEndInitialize : NSObject  {
                 }
             }
         })
-        
     }
-    
     
 }

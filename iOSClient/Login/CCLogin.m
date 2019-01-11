@@ -169,7 +169,7 @@
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    [[OCnetworking sharedManager] serverStatusUrl:self.baseUrl.text completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] serverStatusUrl:self.baseUrl.text completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0) {
             
@@ -296,7 +296,7 @@
         self.login.enabled = NO;
         [self.activity startAnimating];
 
-        [[OCnetworking sharedManager] checkServerUrl:[NSString stringWithFormat:@"%@%@", url, k_webDAV] user:user userID:user password:password completion:^(NSString *message, NSInteger errorCode) {
+        [[OCNetworking sharedManager] checkServerUrl:[NSString stringWithFormat:@"%@%@", url, k_webDAV] user:user userID:user password:password completion:^(NSString *message, NSInteger errorCode) {
             
             if (errorCode == 0) {
                 

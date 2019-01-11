@@ -26,9 +26,9 @@
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 
-@interface OCnetworking : NSObject <NSURLSessionDelegate>
+@interface OCNetworking : NSObject <NSURLSessionDelegate>
 
-+ (OCnetworking *)sharedManager;
++ (OCNetworking *)sharedManager;
 
 #pragma mark ===== OCCommunication =====
 
