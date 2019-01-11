@@ -169,6 +169,8 @@ class NCService: NSObject {
                                 }
                                 
                                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: self.appDelegate.activeUrl)
+                            } else {
+                                print("[LOG] It has been changed user during networking process, error.")
                             }
                             
                             // Update Main NavigationBar
@@ -211,6 +213,8 @@ class NCService: NSObject {
                             }
                                 
                             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+                        } else {
+                            print("[LOG] It has been changed user during networking process, error.")
                         }
                     })
                    
@@ -251,6 +255,7 @@ class NCService: NSObject {
                 }
                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
             } else {
+                print("[LOG] It has been changed user during networking process, error.")
                 // Change Theming color
                 self.appDelegate.settingThemingColorBrand()
             }
@@ -321,8 +326,9 @@ class NCService: NSObject {
                 }
                 
                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
-            
         })
     }
     
@@ -347,6 +353,8 @@ class NCService: NSObject {
                 }
                 
                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
         })
     }

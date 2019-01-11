@@ -271,6 +271,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
                 }
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
         })
     }
@@ -307,8 +309,9 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
                 self.collectionView.reloadData()
                 
             } else if errorCode != 0 {
-                
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
         })
     }
@@ -323,6 +326,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
                 self.collectionView.reloadItems(at: [indexPath])
             } else if errorCode != 0 {
                 print("\(errorCode)")
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
         })
     }

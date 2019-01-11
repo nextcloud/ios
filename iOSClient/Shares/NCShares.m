@@ -174,6 +174,8 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }
@@ -294,12 +296,9 @@
         cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         
         [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
-            
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-                
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [self reloadDatasource];
-                
             } 
         }];
     }

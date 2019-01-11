@@ -1142,6 +1142,8 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }
@@ -1272,6 +1274,8 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
         
         _loadingFolder = NO;
@@ -1333,6 +1337,8 @@
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
             } else if (errorCode != 0) {
                 [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            } else {
+                NSLog(@"[LOG] It has been changed user during networking process, error.");
             }
             
             _searchFileName = @"";
@@ -1564,11 +1570,15 @@
                             
                         } else if (errorCode != 0) {
                             [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        } else {
+                            NSLog(@"[LOG] It has been changed user during networking process, error.");
                         }
                     }];
                 } else {
                     [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                 }
+            } else {
+                NSLog(@"[LOG] It has been changed user during networking process, error.");
             }
         }];
     }
@@ -1655,6 +1665,8 @@
                             [self readFolder:metadata.serverUrl];
                         else
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:nil action:k_action_NULL];
+                    } else {
+                        NSLog(@"[LOG] It has been changed user during networking process, error.");
                     }
                 }];
                 
@@ -1662,6 +1674,8 @@
             } else {
                 [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             }
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }
@@ -1810,6 +1824,8 @@
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
             } else if (errorCode != 0) {
                 [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            } else {
+                NSLog(@"[LOG] It has been changed user during networking process, error.");
             }
         }
     }];
@@ -2188,6 +2204,8 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }

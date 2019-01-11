@@ -168,6 +168,8 @@ const PERMISSION_ALL = 31;
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             
             [self dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
     

@@ -465,6 +465,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])                
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
             
             self.loadDatasource()
@@ -486,6 +488,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.loadDatasource()
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
         })
     }
@@ -497,6 +501,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
             self.loadDatasource()
         })
@@ -516,6 +522,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.loadDatasource()
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
         })
     }

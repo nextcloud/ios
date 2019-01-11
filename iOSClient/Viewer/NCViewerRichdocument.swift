@@ -116,6 +116,8 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
                 } else if errorCode != 0 {
                     self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                } else {
+                    print("[LOG] It has been changed user during networking process, error.")
                 }
             })
         }
@@ -129,6 +131,8 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
         })
     }

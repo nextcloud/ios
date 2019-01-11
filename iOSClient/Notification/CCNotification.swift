@@ -102,6 +102,8 @@ class CCNotification: UITableViewController {
                         
                     } else if errorCode != 0 {
                         self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    } else {
+                        print("[LOG] It has been changed user during networking process, error.")
                     }
                 })
             }
@@ -143,6 +145,8 @@ class CCNotification: UITableViewController {
                                     
                                 } else if errorCode != 0 {
                                     self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                                } else {
+                                    print("[LOG] It has been changed user during networking process, error.")
                                 }
                             })
                         }

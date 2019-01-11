@@ -407,7 +407,7 @@
         } else if (errorCode != 0) {
             NSLog(@"[LOG] Subscribed to Push Notification server & proxy error.");
         } else {
-            NSLog(@"[LOG] It has been changed user during OCNetworking. error.");
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }
@@ -422,8 +422,10 @@
        
         if (errorCode == 0) {
             NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
-        } else {
+        } else if (errorCode != 0) {
             NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy error.");
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }

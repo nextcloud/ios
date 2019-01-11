@@ -707,8 +707,18 @@
                 }];
                 
             } else {
+                if (errorCode != 0) {
+                    NSLog(@"[LOG] Search error.");
+                } else {
+                    NSLog(@"[LOG] It has been changed user during networking process, error.");
+                }
+                
                 [self reloadDatasource:nil action:k_action_NULL];
             }
+        } else if (errorCode != 0) {
+            NSLog(@"[LOG] Read file error.");
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }

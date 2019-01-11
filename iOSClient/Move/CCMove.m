@@ -285,7 +285,6 @@
             }
         } else {
             [self readFolder];
-
         }
     }];
 }
@@ -322,6 +321,8 @@
             }]];
             
             [self presentViewController:alertController animated:YES completion:nil];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
         
         _loadingFolder = NO;
@@ -343,10 +344,11 @@
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             [self readFolder];
         } else if (errorCode != 0) {
-            
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }]];
             [self presentViewController:alertController animated:YES completion:nil];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }
