@@ -1133,9 +1133,9 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
-        // Remove icon B/N
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
-        
+        // Create preview
+        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
+
         // Copy photo or video in the photo album for auto upload
         if ([metadata.assetLocalIdentifier length] > 0 && ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload] || [metadata.sessionSelector isEqualToString:selectorUploadFile])) {
             
