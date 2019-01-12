@@ -99,7 +99,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
             }
             
             if message.body as! String == "share" {
-                appDelegate.activeMain.openWindowShare(self.detail.metadataDetail)
+                appDelegate.activeMain.readShare(withAccount: appDelegate.activeAccount, openWindow: true, metadata: self.detail.metadataDetail)
             }
         }
     }

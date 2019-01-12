@@ -83,7 +83,6 @@
 
 - (void)readShareWithAccount:(NSString *)account openWindow:(BOOL)openWindow metadata:(tableMetadata *)metadata;
 
-- (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
 

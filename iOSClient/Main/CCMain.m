@@ -1913,7 +1913,7 @@
                     
                     [_shareOC reloadData];
                     
-                } else {
+                } else if (metadata) {
                     
                     // Apriamo la view
                     _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
@@ -1933,6 +1933,10 @@
             [self tableViewReloadData];
         }
     }];
+    
+    if (openWindow) {
+        [_hud visibleIndeterminateHud];
+    }
 }
 
 - (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
@@ -1945,7 +1949,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            
+            [self readShareWithAccount:account openWindow:YES metadata:metadata];
             
         } else if (errorCode != 0) {
             
@@ -1980,6 +1984,8 @@
                 appDelegate.sharesUserAndGroup = result[1];
             }
             
+            [self readShareWithAccount:account openWindow:YES metadata:metadata];
+            
         } else if (errorCode != 0) {
             
             if (errorCode == kOCErrorServerUnauthorized)
@@ -2005,7 +2011,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            
+            [self readShareWithAccount:account openWindow:YES metadata:metadata];
             
         } else if (errorCode != 0) {
             
@@ -2059,7 +2065,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            
+            [self readShareWithAccount:account openWindow:YES metadata:metadata];
             
         } else if (errorCode != 0) {
             
@@ -2078,53 +2084,6 @@
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
-- (void)openWindowShare:(tableMetadata *)metadata
-{
-    [[OCNetworking sharedManager] readShareWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
-        
-        [_hud hideHud];
-        
-        if ([account isEqualToString:appDelegate.activeAccount]) {
-        
-            for (OCSharedDto *item in items)
-                [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
-            
-            NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:account];
-            if (result) {
-                appDelegate.sharesLink = result[0];
-                appDelegate.sharesUserAndGroup = result[1];
-            }
-            
-            // Notify Shares View
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
-            
-            if (_shareOC) {
-                
-                [_shareOC reloadData];
-                
-            } else {
-                
-                // Apriamo la view
-                _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
-                
-                _shareOC.delegate = self;
-                _shareOC.metadata = metadata;
-                _shareOC.serverUrl = metadata.serverUrl;
-                
-                _shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
-                _shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
-                
-                [_shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
-                [self presentViewController:_shareOC animated:YES completion:nil];
-            }
-            
-            [self tableViewReloadData];
-        }
-    }];
-
-    [_hud visibleIndeterminateHud];
-}
-
 - (void)tapActionShared:(UITapGestureRecognizer *)tapGesture
 {
     CGPoint location = [tapGesture locationInView:self.tableView];
@@ -2133,7 +2092,7 @@
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata)
-        [self openWindowShare:metadata];
+        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:metadata];
 }
 
 - (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
@@ -3316,7 +3275,7 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        [self openWindowShare:self.metadata];
+                                        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
                                     }];
         }
         
@@ -3506,7 +3465,7 @@
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
-                                            [self openWindowShare:self.metadata];
+                                            [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
                                         }];
         }
         

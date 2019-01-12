@@ -333,7 +333,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                     }
                     self.loadDatasource()
                 }
-                if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
+                if item.value as? Int == 1 { self.appDelegate.activeMain.readShare(withAccount: self.appDelegate.activeAccount, openWindow: true, metadata: metadata) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
