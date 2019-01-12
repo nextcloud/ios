@@ -1931,6 +1931,13 @@
             }
             
             [self tableViewReloadData];
+            
+        } else if (errorCode != 0) {
+            
+            if (errorCode == kOCErrorServerUnauthorized)
+                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
+            else
+                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
     }];
     
