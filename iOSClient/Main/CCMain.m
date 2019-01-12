@@ -1885,52 +1885,55 @@
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
 
-/*
-- (void)readSharedSuccess:(CCMetadataNet *)metadataNet items:(NSDictionary *)items openWindow:(BOOL)openWindow
+- (void)readShareWithAccount:(NSString *)account openWindow:(BOOL)openWindow metadata:(tableMetadata *)metadata
 {
-    [_hud hideHud];
-    
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items activeUrl:appDelegate.activeUrl account:metadataNet.account];
-    if (result) {
-        appDelegate.sharesLink = result[0];
-        appDelegate.sharesUserAndGroup = result[1];
-    }
-    
-    // Notify Shares View
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
-    
-    if (openWindow) {
-            
-        if (_shareOC) {
-                
-            [_shareOC reloadData];
-                
-        } else {
-            
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
-            
-            // Apriamo la view
-            _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
-            
-            _shareOC.delegate = self;
-            _shareOC.metadata = metadata;
-            _shareOC.serverUrl = metadataNet.serverUrl;
-            
-            _shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
-            _shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
-            
-            [_shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
-            [self presentViewController:_shareOC animated:YES completion:nil];
-        }
-    }
+    [[OCNetworking sharedManager] readShareWithAccount:account completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
+        
+        [_hud hideHud];
 
-    [self tableViewReloadData];
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            [appDelegate.sharesID removeAllObjects];
+            
+            for (OCSharedDto *item in items)
+                [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+            
+            NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
+            if (result) {
+                appDelegate.sharesLink = result[0];
+                appDelegate.sharesUserAndGroup = result[1];
+            }
+            
+            // Notify Shares View
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            
+            if (openWindow) {
+                
+                if (_shareOC) {
+                    
+                    [_shareOC reloadData];
+                    
+                } else {
+                    
+                    // Apriamo la view
+                    _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
+                    
+                    _shareOC.delegate = self;
+                    _shareOC.metadata = metadata;
+                    _shareOC.serverUrl = metadata.serverUrl;
+                    
+                    _shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
+                    _shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
+                    
+                    [_shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
+                    [self presentViewController:_shareOC animated:YES completion:nil];
+                }
+            }
+            
+            [self tableViewReloadData];
+        }
+    }];
 }
-*/
 
 - (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
 {

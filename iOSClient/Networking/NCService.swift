@@ -226,21 +226,7 @@ class NCService: NSObject {
                 // Read Share
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
-                    self.appDelegate.sharesID.removeAllObjects()
-                    
-                    OCNetworking.sharedManager().readShare(withAccount: account!, completion: { (account, items, message, errorCode) in
-                        
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            
-                            if items != nil {
-                                for item in items! as! [OCSharedDto]  {
-                                    self.appDelegate.sharesID.setObject(item, forKey: NSString(string: String(item.idRemoteShared)))
-                                }
-                                
-                                self.appDelegate.activeMain.tableView.reloadData()
-                            }
-                        }
-                    })
+                    self.appDelegate.activeMain.readShare(withAccount: account, openWindow: false, metadata: nil)
                 }
                 
             } else if errorCode != 0 {
