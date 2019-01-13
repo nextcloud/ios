@@ -220,7 +220,7 @@
                 NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
                 
                 if (error) {
-                    completion(nil, 0, 0, 0, error.description, error.code);
+                    completion(nil, 0, 0, 0, NSLocalizedString(@"_no_nextcloud_found_", nil), k_CCErrorInternalError);
                     return;
                 }
                 

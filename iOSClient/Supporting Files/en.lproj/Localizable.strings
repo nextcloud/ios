@@ -672,6 +672,7 @@
 "_webdav_locked_"                       = "WebDAV Locked: Trying to access locked resource";
 "_error_user_not_available_"            = "The user is no longer available";
 "_server_response_error_"               = "Server response content error";
+"_no_nextcloud_found_"                  = "Nextcloud server not found";
 
 // BKPasscode
 
