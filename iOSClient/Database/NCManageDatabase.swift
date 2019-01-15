@@ -1754,6 +1754,20 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
+    @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+        
+        if (results.count > 0) {
+            return tableMetadata.init(value: results[0])
+        } else {
+            return nil
+        }
+    }
+    
     @objc func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
         
         let realm = try! Realm()
