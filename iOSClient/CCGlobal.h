@@ -253,7 +253,7 @@
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
 // E2EE
-#define k_max_filesize_E2E                              524288000   // 500 MB
+#define k_max_filesize_E2EE                             524288000   // 500 MB
 
 // Flow Version
 #define k_flow_version_available                        12
