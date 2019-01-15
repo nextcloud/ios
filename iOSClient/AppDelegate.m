@@ -1155,7 +1155,7 @@
     
     // Detect E2EE
     NSString *saveserverUrl = @"";
-    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d", self.activeAccount, k_metadataStatusNormal] sorted:nil ascending:NO];
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:nil ascending:NO];
     for (tableMetadata *metadata in metadatasForE2EE) {
         if (![saveserverUrl isEqualToString:metadata.serverUrl]) {
             saveserverUrl = metadata.serverUrl;
@@ -1178,8 +1178,8 @@
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
-    NSArray *metadatasDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:nil ascending:true];
-    NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
+    NSArray *metadatasDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:nil ascending:true];
+    NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
     
     // Counter
     counterDownload = [metadatasDownload count];
@@ -1199,7 +1199,7 @@
     
     while (counterDownload < maxConcurrentOperationDownloadUpload) {
         
-        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
+        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusWaitDownload]];
         if (metadataForDownload) {
             
             metadataForDownload.status = k_metadataStatusInDownload;
@@ -1222,7 +1222,7 @@
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload]];
         if (metadataForUpload) {
             
             if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
@@ -1249,7 +1249,7 @@
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUpload, k_metadataStatusWaitUpload]];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload]];
         if (metadataForUpload) {
             
             metadataForUpload.status = k_metadataStatusInUpload;
@@ -1267,7 +1267,7 @@
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error k_maxErrorAutoUploadAll after STOP (100)
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %i", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %i", selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:nil ascending:NO];
     NSInteger errorCount = [metadatas count];
     
     if (errorCount >= k_maxErrorAutoUploadAll) {
@@ -1284,7 +1284,7 @@
                 break;
             }
             
-            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
+            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
             if (metadataForUpload) {
                 
                 metadataForUpload.status = k_metadataStatusInUpload;
@@ -1304,7 +1304,7 @@
     //
     if (counterDownload+counterUpload < maxConcurrentOperationDownloadUpload+1) {
         
-        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", _activeAccount, k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
         for (tableMetadata *metadata in metadatas) {
             
             if (metadata.status == k_metadataStatusDownloadError)
@@ -1318,7 +1318,7 @@
     
     // Verify internal error download (lost task)
     //
-    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
     for (tableMetadata *metadata in matadatasInDownloading) {
         
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
@@ -1345,7 +1345,7 @@
     
     // Verify internal error upload (lost task)
     //
-    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasUploading) {
         
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
@@ -1372,7 +1372,7 @@
     
     // Upload in pending
     //
-    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d AND sessionTaskIdentifier == 0", self.activeAccount, k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
+    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasInUpload) {
         if ([self.sessionPendingStatusInUpload containsObject:metadata.fileID]) {
             metadata.status = k_metadataStatusWaitUpload;
