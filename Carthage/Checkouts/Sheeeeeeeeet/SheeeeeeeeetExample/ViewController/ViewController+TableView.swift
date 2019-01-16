@@ -6,8 +6,16 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
+/*
+ 
+ These extensions are only used by the example app, to setup
+ the main view controller's table view handling.
+ 
+ */
+
 import UIKit
 import Sheeeeeeeeet
+
 
 // MARK: - UITableViewDataSource
 

@@ -7,8 +7,9 @@ class MockActionSheet: ActionSheet {
     var handleTapInvokeItems = [ActionSheetItem]()
     var prepareForPresentationInvokeCount = 0
     var refreshInvokeCount = 0
-    var refreshButtonsVisibilityInvokeCount = 0
-    var refreshHeaderVisibilityInvokeCount = 0
+    var refreshButtonsInvokeCount = 0
+    var refreshItemsInvokeCount = 0
+    var refreshHeaderInvokeCount = 0
     var reloadDataInvokeCount = 0
     
     override func dismiss(completion: @escaping () -> ()) {
@@ -27,14 +28,19 @@ class MockActionSheet: ActionSheet {
         refreshInvokeCount += 1
     }
     
-    override func refreshButtonsVisibility() {
-        super.refreshButtonsVisibility()
-        refreshButtonsVisibilityInvokeCount += 1
+    override func refreshButtons() {
+        super.refreshButtons()
+        refreshButtonsInvokeCount += 1
     }
     
-    override func refreshHeaderVisibility() {
-        super.refreshHeaderVisibility()
-        refreshHeaderVisibilityInvokeCount += 1
+    override func refreshItems() {
+        super.refreshItems()
+        refreshItemsInvokeCount += 1
+    }
+    
+    override func refreshHeader() {
+        super.refreshHeader()
+        refreshHeaderInvokeCount += 1
     }
     
     override func reloadData() {

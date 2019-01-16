@@ -74,8 +74,8 @@ class ActionSheetItemTests: QuickSpec {
     
     override func spec() {
         
-        func createItem() -> MockActionSheetItem {
-            return MockActionSheetItem(title: "foo", subtitle: "bar", value: true, image: UIImage())
+        func createItem(subtitle: String? = nil) -> MockActionSheetItem {
+            return MockActionSheetItem(title: "foo", subtitle: subtitle, value: true, image: UIImage())
             
         }
         
@@ -125,9 +125,14 @@ class ActionSheetItemTests: QuickSpec {
         
         describe("cell style") {
             
-            it("is default") {
-                let item = createItem()
+            it("is default if no subtitle is set") {
+                let item = createItem(subtitle: nil)
                 expect(item.cellStyle).to(equal(.default))
+            }
+            
+            it("is value1 if subtitle is set") {
+                let item = createItem(subtitle: "bar")
+                expect(item.cellStyle).to(equal(.value1))
             }
         }
         

@@ -21,4 +21,13 @@ class CustomPhotoPickerViewController: TLPhotosPickerViewController {
             self?.dismissCompletion?()
         }
     }
+    /*
+    override func maxCheck() -> Bool {
+        let imageCount = self.selectedAssets.filter{ $0.phAsset?.mediaType == .image }.count
+        let videoCount = self.selectedAssets.filter{ $0.phAsset?.mediaType == .video }.count
+        if imageCount > 3 || videoCount > 1 {
+            return true
+        }
+        return false
+    }*/
 }

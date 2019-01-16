@@ -34,20 +34,15 @@ open class ActionSheetAppearance {
         groupMargins = copy.groupMargins
         
         backgroundColor = copy.backgroundColor
-        itemsBackgroundColor = copy.itemsBackgroundColor ?? backgroundColor
-        buttonsSeparatorColor = copy.buttonsSeparatorColor ?? backgroundColor
-        
         separatorColor = copy.separatorColor
+        itemsBackgroundColor = copy.itemsBackgroundColor ?? backgroundColor
         itemsSeparatorColor = copy.itemsSeparatorColor ?? separatorColor
+        buttonsSeparatorColor = copy.buttonsSeparatorColor ?? backgroundColor
         buttonsSeparatorColor = copy.buttonsSeparatorColor ?? separatorColor
         
-        item = ActionSheetItemAppearance(copy: copy.item)
         popover = ActionSheetPopoverAppearance(copy: copy.popover)
         
-        cancelButton = ActionSheetCancelButtonAppearance(copy: copy.cancelButton)
-        dangerButton = ActionSheetDangerButtonAppearance(copy: copy.dangerButton)
-        okButton = ActionSheetOkButtonAppearance(copy: copy.okButton)
-        
+        item = ActionSheetItemAppearance(copy: copy.item)
         collectionItem = ActionSheetCollectionItemAppearance(copy: copy.collectionItem)
         customItem = ActionSheetCustomItemAppearance(copy: copy.customItem)
         linkItem = ActionSheetLinkItemAppearance(copy: copy.linkItem)
@@ -55,6 +50,10 @@ open class ActionSheetAppearance {
         multiSelectToggleItem = ActionSheetMultiSelectToggleItemAppearance(copy: copy.multiSelectToggleItem)
         selectItem = ActionSheetSelectItemAppearance(copy: copy.selectItem)
         singleSelectItem = ActionSheetSingleSelectItemAppearance(copy: copy.singleSelectItem)
+        
+        cancelButton = ActionSheetCancelButtonAppearance(copy: copy.cancelButton)
+        dangerButton = ActionSheetDangerButtonAppearance(copy: copy.dangerButton)
+        okButton = ActionSheetOkButtonAppearance(copy: copy.okButton)
         
         sectionMargin = ActionSheetSectionMarginAppearance(copy: copy.sectionMargin)
         sectionTitle = ActionSheetSectionTitleAppearance(copy: copy.sectionTitle)
@@ -80,72 +79,31 @@ open class ActionSheetAppearance {
     
     public static var standard = ActionSheetAppearance()
     
-    public lazy var item: ActionSheetItemAppearance = {
-        return ActionSheetItemAppearance()
-    }()
-    
-    public lazy var popover: ActionSheetPopoverAppearance = {
-        return ActionSheetPopoverAppearance(width: 300)
-    }()
-    
-    
-    // MARK: - Buttons
-    
-    public lazy var cancelButton: ActionSheetCancelButtonAppearance = {
-        return ActionSheetCancelButtonAppearance(copy: item)
-    }()
-    
-    public lazy var dangerButton: ActionSheetDangerButtonAppearance = {
-        return ActionSheetDangerButtonAppearance(copy: item)
-    }()
-    
-    public lazy var okButton: ActionSheetOkButtonAppearance = {
-        return ActionSheetOkButtonAppearance(copy: item)
-    }()
+    public lazy var popover = ActionSheetPopoverAppearance(width: 300)
     
     
     // MARK: - Items
     
-    public lazy var collectionItem: ActionSheetCollectionItemAppearance = {
-        return ActionSheetCollectionItemAppearance(copy: item)
-    }()
+    public lazy var item = ActionSheetItemAppearance()
+    public lazy var collectionItem = ActionSheetCollectionItemAppearance(copy: item)
+    public lazy var customItem = ActionSheetCustomItemAppearance(copy: item)
+    public lazy var linkItem = ActionSheetLinkItemAppearance(copy: item)
+    public lazy var multiSelectItem = ActionSheetMultiSelectItemAppearance(copy: selectItem)
+    public lazy var multiSelectToggleItem = ActionSheetMultiSelectToggleItemAppearance(copy: item)
+    public lazy var selectItem = ActionSheetSelectItemAppearance(copy: item)
+    public lazy var singleSelectItem = ActionSheetSingleSelectItemAppearance(copy: selectItem)
     
-    public lazy var customItem: ActionSheetCustomItemAppearance = {
-        return ActionSheetCustomItemAppearance(copy: item)
-    }()
     
-    public lazy var linkItem: ActionSheetLinkItemAppearance = {
-        return ActionSheetLinkItemAppearance(copy: item)
-    }()
+    // MARK: - Buttons
     
-    public lazy var multiSelectItem: ActionSheetMultiSelectItemAppearance = {
-        return ActionSheetMultiSelectItemAppearance(copy: selectItem)
-    }()
-    
-    public lazy var multiSelectToggleItem: ActionSheetMultiSelectToggleItemAppearance = {
-        return ActionSheetMultiSelectToggleItemAppearance(copy: item)
-    }()
-    
-    public lazy var selectItem: ActionSheetSelectItemAppearance = {
-        return ActionSheetSelectItemAppearance(copy: item)
-    }()
-    
-    public lazy var singleSelectItem: ActionSheetSingleSelectItemAppearance = {
-        return ActionSheetSingleSelectItemAppearance(copy: selectItem)
-    }()
+    public lazy var cancelButton = ActionSheetCancelButtonAppearance(copy: item)
+    public lazy var dangerButton = ActionSheetDangerButtonAppearance(copy: item)
+    public lazy var okButton = ActionSheetOkButtonAppearance(copy: item)
     
     
     // MARK: - Titles
     
-    public lazy var sectionMargin: ActionSheetSectionMarginAppearance = {
-        return ActionSheetSectionMarginAppearance(copy: item)
-    }()
-    
-    public lazy var sectionTitle: ActionSheetSectionTitleAppearance = {
-        return ActionSheetSectionTitleAppearance(copy: item)
-    }()
-    
-    public lazy var title: ActionSheetTitleAppearance = {
-        return ActionSheetTitleAppearance(copy: item)
-    }()
+    public lazy var sectionMargin = ActionSheetSectionMarginAppearance(copy: item)
+    public lazy var sectionTitle = ActionSheetSectionTitleAppearance(copy: item)
+    public lazy var title = ActionSheetTitleAppearance(copy: item)
 }

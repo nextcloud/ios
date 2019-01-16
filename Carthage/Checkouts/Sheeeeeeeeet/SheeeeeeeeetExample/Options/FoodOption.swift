@@ -6,7 +6,12 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
-// This enum is only used to populate our example sheets.
+/*
+ 
+ This enum is used to create food action sheet options, that
+ are presented in the example action sheets.
+ 
+ */
 
 import Sheeeeeeeeet
 

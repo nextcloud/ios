@@ -6,6 +6,13 @@
 //  Copyright © 2018 Jonas Ullström. All rights reserved.
 //
 
+/*
+ 
+ This file contains food option extensions, that can be used
+ to create action sheet items in the example app.
+ 
+ */
+
 import Sheeeeeeeeet
 
 extension FoodOption {

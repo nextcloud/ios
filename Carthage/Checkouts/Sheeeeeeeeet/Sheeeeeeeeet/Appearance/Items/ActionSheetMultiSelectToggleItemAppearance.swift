@@ -19,9 +19,9 @@ open class ActionSheetMultiSelectToggleItemAppearance: ActionSheetItemAppearance
     
     public override init(copy: ActionSheetItemAppearance) {
         super.init(copy: copy)
-        guard let copy = copy as? ActionSheetMultiSelectToggleItemAppearance else { return }
-        deselectAllTextColor = copy.deselectAllTextColor
-        selectAllTextColor = copy.selectAllTextColor
+        let copy = copy as? ActionSheetMultiSelectToggleItemAppearance
+        deselectAllTextColor = copy?.deselectAllTextColor
+        selectAllTextColor = copy?.selectAllTextColor
     }
     
     

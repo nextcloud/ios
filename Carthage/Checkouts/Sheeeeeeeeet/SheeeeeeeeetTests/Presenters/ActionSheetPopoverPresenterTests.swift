@@ -6,8 +6,6 @@
 //  Copyright © 2018 Daniel Saidi. All rights reserved.
 //
 
-//  TODO: Write more tests
-
 import Quick
 import Nimble
 @testable import Sheeeeeeeeet

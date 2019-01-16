@@ -6,6 +6,8 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
+//  TODO: Improve these tests, since much logic has changed.
+
 import Quick
 import Nimble
 @testable import Sheeeeeeeeet
@@ -100,32 +102,6 @@ class ActionSheetTests: QuickSpec {
         }
         
         
-        // MARK: - Header Properties
-        
-        describe("header view") {
-            
-            it("refreshes the sheet when set") {
-                let sheet = createSheet()
-                expect(sheet.refreshInvokeCount).to(equal(0))
-                sheet.headerView = UIView()
-                
-                expect(sheet.refreshInvokeCount).to(equal(1))
-            }
-        }
-        
-        describe("header view container") {
-            
-            it("gets clear background color when set") {
-                let sheet = createSheet()
-                let view = UIView()
-                view.backgroundColor = .red
-                sheet.headerViewContainer = view
-                
-                expect(view.backgroundColor).to(equal(.clear))
-            }
-        }
-        
-        
         // MARK: - Item Properties
         
         describe("items height") {
@@ -164,10 +140,11 @@ class ActionSheetTests: QuickSpec {
         
         describe("item table view") {
             
-            it("is correctly setup when set") {
+            it("is correctly setup when view is loaded") {
                 let sheet = createSheet()
                 let view = createTableView()
                 sheet.itemsTableView = view
+                sheet.viewDidLoad()
                 
                 expect(view.delegate).to(be(sheet.itemHandler))
                 expect(view.dataSource).to(be(sheet.itemHandler))
@@ -216,10 +193,11 @@ class ActionSheetTests: QuickSpec {
         
         describe("button table view") {
             
-            it("is correctly setup when set") {
+            it("is correctly setup when view is loaded") {
                 let sheet = createSheet()
                 let view = createTableView()
                 sheet.buttonsTableView = view
+                sheet.viewDidLoad()
                 
                 expect(view.delegate).to(be(sheet.buttonHandler))
                 expect(view.dataSource).to(be(sheet.buttonHandler))
@@ -329,8 +307,6 @@ class ActionSheetTests: QuickSpec {
                 sheet.itemsTableView = itemsView
                 sheet.buttonsTableView = buttonsView
                 sheet.stackView = stackView
-                sheet.refreshButtonsVisibilityInvokeCount = 0
-                sheet.refreshHeaderVisibilityInvokeCount = 0
             }
             
             context("sheet") {
@@ -362,8 +338,7 @@ class ActionSheetTests: QuickSpec {
                 
                 it("refreshes header visibility") {
                     sheet.refresh()
-                    
-                    expect(sheet.refreshHeaderVisibilityInvokeCount).to(equal(1))
+                    expect(sheet.refreshHeaderInvokeCount).to(equal(1))
                 }
                 
                 it("adds header view to header container") {
@@ -371,7 +346,6 @@ class ActionSheetTests: QuickSpec {
                     sheet.headerView = header
                     expect(header.constraints.count).to(equal(0))
                     sheet.refresh()
-                    
                     expect(headerViewContainer.subviews.count).to(equal(1))
                     expect(headerViewContainer.subviews[0]).to(be(header))
                     expect(header.translatesAutoresizingMaskIntoConstraints).to(beFalse())
@@ -381,15 +355,13 @@ class ActionSheetTests: QuickSpec {
             context("header visibility") {
                 
                 it("hides header container if header view is nil") {
-                    sheet.refreshHeaderVisibility()
-                    
+                    sheet.refreshHeader()
                     expect(headerViewContainer.isHidden).to(beTrue())
                 }
                 
                 it("shows header container if header view is nil") {
                     sheet.headerView = UIView(frame: .zero)
-                    sheet.refreshHeaderVisibility()
-                    
+                    sheet.refreshHeader()
                     expect(headerViewContainer.isHidden).to(beFalse())
                 }
             }
@@ -431,8 +403,7 @@ class ActionSheetTests: QuickSpec {
                 
                 it("refreshes buttons visibility") {
                     sheet.refresh()
-                    
-                    expect(sheet.refreshButtonsVisibilityInvokeCount).to(equal(1))
+                    expect(sheet.refreshButtonsInvokeCount).to(equal(1))
                 }
                 
                 it("applies appearances to all buttons") {
@@ -469,15 +440,13 @@ class ActionSheetTests: QuickSpec {
             context("button visibility") {
                 
                 it("hides buttons if sheet has no buttons") {
-                    sheet.refreshButtonsVisibility()
-                    
+                    sheet.refreshButtons()
                     expect(buttonsView.isHidden).to(beTrue())
                 }
                 
                 it("shows buttons if sheet has buttons") {
                     sheet.setup(items: [MockActionSheetButton(title: "foo", value: true)])
-                    sheet.refreshButtonsVisibility()
-                    
+                    sheet.refreshButtons()
                     expect(buttonsView.isHidden).to(beFalse())
                 }
             }
@@ -513,7 +482,6 @@ class ActionSheetTests: QuickSpec {
                 let item = createItem("")
                 item.tapBehavior = .dismiss
                 sheet.handleTap(on: item)
-
 //                expect(count).toEventually(equal(1), time)        TODO
 //                expect(sheet.dismissInvokeCount).to(equal(1))     TODO
             }

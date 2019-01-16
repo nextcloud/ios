@@ -23,11 +23,6 @@ import UIKit
 open class ActionSheetPopoverPresenter: NSObject, ActionSheetPresenter {
     
     
-    // MARK: - Initialization
-    
-    deinit { print("\(type(of: self)) deinit") }
-    
-    
     // MARK: - Properties
     
     open var events = ActionSheetPresenterEvents()

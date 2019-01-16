@@ -32,12 +32,14 @@ open class ActionSheetMultiSelectItem: ActionSheetSelectItem {
     
     public init(
         title: String,
+        subtitle: String? = nil,
         isSelected: Bool,
         group: String = "",
         value: Any? = nil,
         image: UIImage? = nil) {
         super.init(
             title: title,
+            subtitle: subtitle,
             isSelected: isSelected,
             group: group,
             value: value,

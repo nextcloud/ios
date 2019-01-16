@@ -46,6 +46,7 @@ open class ActionSheetItem: NSObject {
         self.tapBehavior = tapBehavior
         self.appearance = ActionSheetItemAppearance(copy: appearance)
         super.init()
+        if subtitle != nil { self.cellStyle = .value1}
     }
     
     

@@ -22,8 +22,6 @@ open class ActionSheetStandardPresenter: ActionSheetPresenter {
     
     public init() {}
     
-    deinit { print("\(type(of: self)) deinit") }
-    
     
     // MARK: - Properties
     

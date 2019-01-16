@@ -9,11 +9,11 @@
 /*
  
  To make the example easier to overview, the view controller
- has been split up into extension files.
+ has been split up into multiple files.
  
- Action sheet appearance is setup by `AppDelegate` using the
- `DemoAppearance` class. You can play around with it to view
- how sheets and items are affected by appearance changes.
+ The action sheet appearance is setup by `AppDelegate`, with
+ the `AppDelegate+Appearance` extension. You can play around
+ with it to see how it affects the example sheets and items.
  
  */
 

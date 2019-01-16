@@ -33,6 +33,7 @@ open class ActionSheetSelectItem: ActionSheetItem {
     
     public init(
         title: String,
+        subtitle: String? = nil,
         isSelected: Bool,
         group: String = "",
         value: Any? = nil,
@@ -42,6 +43,7 @@ open class ActionSheetSelectItem: ActionSheetItem {
         self.group = group
         super.init(
             title: title,
+            subtitle: subtitle,
             value: value,
             image: image,
             tapBehavior: tapBehavior)
@@ -69,7 +71,8 @@ open class ActionSheetSelectItem: ActionSheetItem {
     open override func applyAppearance(to cell: UITableViewCell) {
         super.applyAppearance(to: cell)
         guard let appearance = selectAppearance else { return }
-        cell.accessoryView = isSelected ? UIImageView(image: appearance.selectedIcon) : nil
+        let accessoryImage = isSelected ? appearance.selectedIcon : appearance.unselectedIcon
+        cell.accessoryView = UIImageView(image: accessoryImage)
         cell.accessoryView?.tintColor = isSelected ? appearance.selectedIconTintColor : appearance.tintColor
         cell.tintColor = isSelected ? appearance.selectedTintColor : appearance.tintColor
         cell.textLabel?.textColor = isSelected ? appearance.selectedTextColor : appearance.textColor

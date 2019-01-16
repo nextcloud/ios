@@ -6,6 +6,13 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
+/*
+ 
+ This class is used as data source and delegate for the item
+ and button table views of the action sheet class.
+ 
+ */
+
 import UIKit
 
 open class ActionSheetItemHandler: NSObject {
