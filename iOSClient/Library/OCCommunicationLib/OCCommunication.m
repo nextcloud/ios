@@ -1394,6 +1394,17 @@
                     capabilities.externalSiteV1 = [externalSitesArray componentsJoinedByString:@","];
                 }
                 
+                // ACTIVITY
+                
+                NSDictionary *activityDic = [capabilitiesDict valueForKey:@"activity"];
+                if (activityDic) {
+                    NSArray *activityArray = [activityDic valueForKey:@"apiv2"];
+                    if (activityArray) {
+                        capabilities.isActivityV2Enabled = YES;
+                        capabilities.activityV2 = [activityArray componentsJoinedByString:@","];
+                    }
+                }
+
                 // NOTIFICATION
                 
                 NSDictionary *notificationDic = [capabilitiesDict valueForKey:@"notifications"];

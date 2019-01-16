@@ -44,7 +44,6 @@ class NCService: NSObject {
         
         self.requestUserProfile()
         self.requestServerCapabilities()
-        self.requestActivityServer()
         self.requestServerStatus()
     }
 
@@ -229,6 +228,29 @@ class NCService: NSObject {
                     self.appDelegate.activeMain.readShare(withAccount: account, openWindow: false, metadata: nil)
                 }
                 
+                if (capabilities!.isActivityV2Enabled) {
+                    
+                    OCNetworking.sharedManager().getActivityWithAccount(account!, completion: { (account, listOfActivity, message, errorCode) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: account!)
+                            if (self.appDelegate.activeActivity != nil) {
+                                self.appDelegate.activeActivity.reloadDatasource()
+                            }
+                        } else if errorCode != 0 {
+                            var error = ""
+                            if let message = message {
+                                error = "Get Activity Server failure error \(errorCode) \(message)"
+                            } else {
+                                error = "Get Activity Server failure error \(errorCode)"
+                            }
+                            
+                            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+                        } else {
+                            print("[LOG] It has been changed user during networking process, error.")
+                        }
+                    })
+                }
+                
             } else if errorCode != 0 {
                 
                 self.appDelegate.settingThemingColorBrand()
@@ -312,33 +334,6 @@ class NCService: NSObject {
                 }
                 
                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
-            }
-        })
-    }
-    
-    private func requestActivityServer() {
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-        
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, completion: { (account, listOfActivity, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: account!)
-                if (self.appDelegate.activeActivity != nil) {
-                    self.appDelegate.activeActivity.reloadDatasource()
-                }
-            } else if errorCode != 0 {
-                var error = ""
-                if let message = message {
-                    error = "Get Activity Server failure error \(errorCode) \(message)"
-                } else {
-                    error = "Get Activity Server failure error \(errorCode)"
-                }
-                
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }

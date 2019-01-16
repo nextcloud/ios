@@ -87,4 +87,8 @@
 @property (nonatomic, strong) NSArray *richdocumentsMimetypes;
 @property (nonatomic) BOOL richdocumentsDirectEditing;
 
+// Activity
+@property (nonatomic) BOOL isActivityV2Enabled;
+@property (nonatomic, strong) NSString *activityV2;
+
 @end
