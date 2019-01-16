@@ -1680,7 +1680,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Manage Mobile Editor OCS API =====
+#pragma mark ===== Manage Mobile Editor OCS API =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)createLinkRichdocumentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion
@@ -1821,7 +1821,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Trash =====
+#pragma mark ===== Trash =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)listingTrashWithAccount:(NSString *)account path:(NSString *)path serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
