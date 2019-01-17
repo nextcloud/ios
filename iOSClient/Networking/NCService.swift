@@ -232,7 +232,7 @@ class NCService: NSObject {
                     
                     OCNetworking.sharedManager().getActivityWithAccount(account!, completion: { (account, listOfActivity, message, errorCode) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity], account: account!)
+                            NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
                             //if (self.appDelegate.activeActivity != nil) {
                             //    self.appDelegate.activeActivity.reloadDatasource()
                             //}

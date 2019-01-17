@@ -568,7 +568,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableActivity.init(value:$0) })
     }
 
-    @objc func addActivityServer(_ listOfActivity: [OCActivity], account: String) {
+    @objc func addActivity(_ listOfActivity: [OCActivity], account: String) {
     
         let realm = try! Realm()
 
@@ -589,9 +589,25 @@ class NCManageDatabase: NSObject {
                         }
                         
                         addObject.idActivity = Double(activity.idActivity)
+                        addObject.app = activity.app
+                        addObject.type = activity.type
+                        addObject.user = activity.user
+                        addObject.subject = activity.subject
+                        for record in activity.subject_rich {
+                            addObject.subject_rich.append(record as! String)
+                        }
+                        addObject.message = activity.message
+                        for record in activity.message_rich {
+                            addObject.message_rich.append(record as! String)
+                        }
+                        addObject.icon = activity.icon
                         addObject.link = activity.link
-                        addObject.note = activity.subject
-                        addObject.type = k_activityTypeInfo
+                        addObject.object_type = activity.object_type
+                        addObject.object_id = Double(activity.object_id)
+                        addObject.object_name = activity.object_name
+                        for record in activity.previews {
+                            addObject.previews.append(record as! String)
+                        }
 
                         realm.add(addObject)
                     }
