@@ -441,6 +441,8 @@
 		F7C40C162199BA780004137E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40C112199BA620004137E /* RealmSwift.framework */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
+		F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C9555221F0C4CA0024296E /* NCActivity.storyboard */; };
+		F7C9555521F0C5470024296E /* NCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9555421F0C5470024296E /* NCActivity.swift */; };
 		F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */; };
 		F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBE20E7E3FE002CC65E /* PKCircleProgressView.m */; };
 		F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC120E7E3FE002CC65E /* PKCircleView.m */; };
@@ -1199,6 +1201,8 @@
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
 		F7C742D01E7BD35B00D9C973 /* Share.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Share.entitlements; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
+		F7C9555221F0C4CA0024296E /* NCActivity.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCActivity.storyboard; sourceTree = "<group>"; };
+		F7C9555421F0C5470024296E /* NCActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivity.swift; sourceTree = "<group>"; };
 		F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+PKDownloadButton.m"; sourceTree = "<group>"; };
 		F7CA1EBD20E7E3FE002CC65E /* PKBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKBorderedButton.h; sourceTree = "<group>"; };
 		F7CA1EBE20E7E3FE002CC65E /* PKCircleProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCircleProgressView.m; sourceTree = "<group>"; };
@@ -2323,6 +2327,8 @@
 		F7A321621E9E37960069AD1B /* Activity */ = {
 			isa = PBXGroup;
 			children = (
+				F7C9555221F0C4CA0024296E /* NCActivity.storyboard */,
+				F7C9555421F0C5470024296E /* NCActivity.swift */,
 				F7A321631E9E37960069AD1B /* CCActivity.h */,
 				F7A321641E9E37960069AD1B /* CCActivity.m */,
 			);
@@ -3233,6 +3239,7 @@
 				F7B2DEF11F976859007CF4D2 /* english.txt in Resources */,
 				F7F54D051E5B14C800E19C62 /* VideoOverlay@3x.png in Resources */,
 				F7F54D011E5B14C700E19C62 /* UIBarButtonItemGrid@2x.png in Resources */,
+				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
 				F7F54CE71E5B14C700E19C62 /* ImageError@3x.png in Resources */,
 				F7D423461F0596AC009C9782 /* Reader-Mark-N@3x.png in Resources */,
 				F7F54CE61E5B14C700E19C62 /* ImageError@2x.png in Resources */,
@@ -3722,6 +3729,7 @@
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
+				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7D4238B1F0596C6009C9782 /* ThumbsViewController.m in Sources */,
 				F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F7D423811F0596C6009C9782 /* ReaderMainToolbar.m in Sources */,

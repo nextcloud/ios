@@ -39,7 +39,6 @@
 @property (nonatomic, strong) NSString *object_type;
 @property NSInteger object_id;
 @property (nonatomic, strong) NSString *object_name;
-@property (nonatomic, strong) NSArray *objects;
 @property (nonatomic, strong) NSArray *previews;
 
 @end

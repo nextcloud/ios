@@ -930,6 +930,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"GET";
     
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&previews=true"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     

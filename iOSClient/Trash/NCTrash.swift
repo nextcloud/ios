@@ -71,7 +71,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
-      
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText

@@ -1932,9 +1932,6 @@
                     if ([data valueForKey:@"object_name"] && ![[data valueForKey:@"object_name"] isEqual:[NSNull null]])
                         activity.object_name = [data valueForKey:@"object_name"];
                     
-                    if ([data valueForKey:@"objects"] && ![[data valueForKey:@"objects"] isEqual:[NSNull null]])
-                        activity.objects = [data valueForKey:@"objects"];
-                    
                     if ([data valueForKey:@"previews"] && ![[data valueForKey:@"previews"] isEqual:[NSNull null]])
                         activity.previews = [data valueForKey:@"previews"];
                     
