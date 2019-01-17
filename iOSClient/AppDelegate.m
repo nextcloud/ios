@@ -1515,18 +1515,9 @@
     
     if (([actualVersion compare:@"2.22.9" options:NSNumericSearch] == NSOrderedAscending)) {
         
-        NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl != ''"] sorted:@"account" ascending:NO];
-
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
         [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:nil];
         [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:nil];
-
-        for (tableDirectory *directory in directories) {
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:directory.e2eEncrypted favorite:directory.favorite fileID:directory.fileID permissions:directory.permissions serverUrl:directory.serverUrl account:directory.account];
-            [[NCManageDatabase sharedInstance] setLockOfflineDirectoryWithServerUrl:directory.serverUrl account:directory.account lock:directory.lock offline:directory.offline];
-        }
-        
-        [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
     }
     
     return YES;
