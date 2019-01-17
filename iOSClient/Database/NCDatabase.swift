@@ -64,13 +64,22 @@ class tableActivity: Object {
     @objc dynamic var account = ""
     @objc dynamic var action = "Activity"
     @objc dynamic var date = NSDate()
-    @objc dynamic var file = ""
-    @objc dynamic var fileID = ""
     @objc dynamic var idActivity: Double = 0
+    @objc dynamic var app = ""
+    @objc dynamic var type = ""
+    @objc dynamic var user = ""
+    @objc dynamic var subject = ""
+    let subject_rich = List<String>()
+    @objc dynamic var message = ""
+    let message_rich = List<String>()
+    @objc dynamic var icon = ""
     @objc dynamic var link = ""
+    @objc dynamic var object_type = ""
+    @objc dynamic var object_id: Double = 0
+    @objc dynamic var object_name = ""
+    let previews = List<String>()
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
-    @objc dynamic var type = ""
     @objc dynamic var verbose: Bool = false
 }
 

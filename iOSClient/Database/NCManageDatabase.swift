@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 39,
+            schemaVersion: 40,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -88,7 +88,8 @@ class NCManageDatabase: NSObject {
             // 36 : Version 2.22.8.14
             // 37 : Version 2.22.8.14
             // 38 : Version 2.22.8.20
-            // 39 : Version 2.22.9.3
+            // 39 : Version 2.22.9.1
+            // 40 : Version 2.22.9.3
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -603,6 +604,7 @@ class NCManageDatabase: NSObject {
     
     @objc func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
 
+        /*
         guard let tableAccount = self.getAccountActive() else {
             return
         }
@@ -646,6 +648,7 @@ class NCManageDatabase: NSObject {
         }
         
         print("[LOG] " + note)
+        */
     }
     
     //MARK: -

@@ -1937,7 +1937,6 @@
                     
                     [listOfActivity addObject:activity];
                 }
-                
                 successRequest(response, listOfActivity, request.redirectedServer);
 
             } else {

@@ -184,7 +184,7 @@
         [CCUtility setActivityVerboseHigh:[[rowDescriptor.value valueData] boolValue]];
         
         // Clear Date read Activity for force reload datasource
-        appDelegate.activeActivity.storeDateFirstActivity = nil;
+        //appDelegate.activeActivity.storeDateFirstActivity = nil;
     }
     
     if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {
@@ -267,7 +267,7 @@
         if ([activity.type isEqual: k_activityTypeSuccess]) type = @"Success";
         if ([activity.type isEqual: k_activityTypeFailure]) type = @"Failure";
         
-        actionFile = [[NSString stringWithFormat:@"%@ %@", activity.action, activity.file] stringByPaddingToLength:100 withString:@" " startingAtIndex:0];
+        actionFile = [[NSString stringWithFormat:@"%@ %@", activity.action, activity.app] stringByPaddingToLength:100 withString:@" " startingAtIndex:0];
         
         if (activity.idActivity == 0) note = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
         else note = activity.note;
@@ -315,7 +315,7 @@
     
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
         
-    [appDelegate.activeActivity reloadDatasource];
+    //[appDelegate.activeActivity reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------

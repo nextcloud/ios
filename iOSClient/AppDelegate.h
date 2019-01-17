@@ -30,7 +30,6 @@
 #import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
-#import "CCActivity.h"
 #import "CCDetail.h"
 #import "CCMain.h"
 #import "CCMedia.h"
@@ -116,7 +115,6 @@
 @property (nonatomic, strong) CCMedia *activeMedia;
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCSettings *activeSettings;
-@property (nonatomic, retain) CCActivity *activeActivity;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) CCLoginWeb *activeLoginWeb;

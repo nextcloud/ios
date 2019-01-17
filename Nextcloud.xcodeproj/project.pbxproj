@@ -394,7 +394,6 @@
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
 		F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3214F1E9E2A070069AD1B /* CCFavorites.m */; };
-		F7A321651E9E37960069AD1B /* CCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321641E9E37960069AD1B /* CCActivity.m */; };
 		F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */; };
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
 		F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377141EB2364A002856D3 /* Crashlytics.framework */; };
@@ -1130,8 +1129,6 @@
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
 		F7A3214E1E9E2A070069AD1B /* CCFavorites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavorites.h; sourceTree = "<group>"; };
 		F7A3214F1E9E2A070069AD1B /* CCFavorites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCFavorites.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		F7A321631E9E37960069AD1B /* CCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCActivity.h; sourceTree = "<group>"; };
-		F7A321641E9E37960069AD1B /* CCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCActivity.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7A3218A1E9E42B30069AD1B /* CCMenuAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMenuAccount.h; sourceTree = "<group>"; };
 		F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenuAccount.m; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
@@ -2329,8 +2326,6 @@
 			children = (
 				F7C9555221F0C4CA0024296E /* NCActivity.storyboard */,
 				F7C9555421F0C5470024296E /* NCActivity.swift */,
-				F7A321631E9E37960069AD1B /* CCActivity.h */,
-				F7A321641E9E37960069AD1B /* CCActivity.m */,
 			);
 			path = Activity;
 			sourceTree = "<group>";
@@ -3551,7 +3546,6 @@
 				F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */,
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
 				F7A5541F204EF8AF008468EC /* TOScrollBar.m in Sources */,
-				F7A321651E9E37960069AD1B /* CCActivity.m in Sources */,
 				F7FB1D3E215E191D00D669EA /* NCViewerDocumentWeb.swift in Sources */,
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
