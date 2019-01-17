@@ -1881,12 +1881,12 @@
                     
                     OCActivity *activity = [OCActivity new];
                     
-                    if ([data valueForKey:@"id"] && ![[data valueForKey:@"id"] isEqual:[NSNull null]])
-                        activity.idActivity = [[data valueForKey:@"id"] integerValue];
+                    if ([data valueForKey:@"activity_id"] && ![[data valueForKey:@"activity_id"] isEqual:[NSNull null]])
+                        activity.idActivity = [[data valueForKey:@"activity_id"] integerValue];
                     
-                    if ([data valueForKey:@"date"] && ![[data valueForKey:@"date"] isEqual:[NSNull null]]) {
+                    if ([data valueForKey:@"datetime"] && ![[data valueForKey:@"datetime"] isEqual:[NSNull null]]) {
                         
-                        NSString *dateString = [data valueForKey:@"date"];
+                        NSString *dateString = [data valueForKey:@"datetime"];
                         
                         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
                         NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
@@ -1896,14 +1896,47 @@
                         activity.date = [dateFormatter dateFromString:dateString];
                     }
                     
-                    if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
-                        activity.link = [data valueForKey:@"link"];
+                    if ([data valueForKey:@"app"] && ![[data valueForKey:@"app"] isEqual:[NSNull null]])
+                        activity.app = [data valueForKey:@"app"];
+                    
+                    if ([data valueForKey:@"type"] && ![[data valueForKey:@"type"] isEqual:[NSNull null]])
+                        activity.type = [data valueForKey:@"type"];
+                    
+                    if ([data valueForKey:@"user"] && ![[data valueForKey:@"user"] isEqual:[NSNull null]])
+                        activity.user = [data valueForKey:@"user"];
+                    
+                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]])
+                        activity.subject = [data valueForKey:@"subject"];
+                    
+                    if ([data valueForKey:@"subject_rich"] && ![[data valueForKey:@"subject_rich"] isEqual:[NSNull null]])
+                        activity.subject_rich = [data valueForKey:@"subject_rich"];
                     
                     if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
                         activity.message = [data valueForKey:@"message"];
                     
-                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]])
-                        activity.subject = [data valueForKey:@"subject"];
+                    if ([data valueForKey:@"message_rich"] && ![[data valueForKey:@"message_rich"] isEqual:[NSNull null]])
+                        activity.message_rich = [data valueForKey:@"message_rich"];
+                    
+                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]])
+                        activity.icon = [data valueForKey:@"icon"];
+                    
+                    if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
+                        activity.link = [data valueForKey:@"link"];
+                    
+                    if ([data valueForKey:@"object_type"] && ![[data valueForKey:@"object_type"] isEqual:[NSNull null]])
+                        activity.object_type = [data valueForKey:@"object_type"];
+                    
+                    if ([data valueForKey:@"object_id"] && ![[data valueForKey:@"object_id"] isEqual:[NSNull null]])
+                        activity.object_id = [[data valueForKey:@"object_id"] integerValue];
+                    
+                    if ([data valueForKey:@"object_name"] && ![[data valueForKey:@"object_name"] isEqual:[NSNull null]])
+                        activity.object_name = [data valueForKey:@"object_name"];
+                    
+                    if ([data valueForKey:@"objects"] && ![[data valueForKey:@"objects"] isEqual:[NSNull null]])
+                        activity.objects = [data valueForKey:@"objects"];
+                    
+                    if ([data valueForKey:@"previews"] && ![[data valueForKey:@"previews"] isEqual:[NSNull null]])
+                        activity.previews = [data valueForKey:@"previews"];
                     
                     [listOfActivity addObject:activity];
                 }
