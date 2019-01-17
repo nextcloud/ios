@@ -1896,9 +1896,6 @@
                         activity.date = [dateFormatter dateFromString:dateString];
                     }
                     
-                    if ([data valueForKey:@"file"] && ![[data valueForKey:@"file"] isEqual:[NSNull null]])
-                        activity.file = [data valueForKey:@"file"];
-                    
                     if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
                         activity.link = [data valueForKey:@"link"];
                     
