@@ -33,9 +33,6 @@
         
         self.idActivity = 0;
         self.date = [NSDate date];
-        self.link = @"";
-        self.message = @"";
-        self.subject = @"";
     }
     
     return self;

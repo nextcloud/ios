@@ -350,6 +350,8 @@
         if (withDB) {
             
             [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreviews class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:appDelegate.activeAccount];

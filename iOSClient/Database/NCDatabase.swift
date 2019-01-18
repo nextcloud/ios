@@ -69,18 +69,49 @@ class tableActivity: Object {
     @objc dynamic var type = ""
     @objc dynamic var user = ""
     @objc dynamic var subject = ""
-    let subject_rich = List<String>()
-    @objc dynamic var message = ""
-    let message_rich = List<String>()
+    @objc dynamic var subjectRich = ""
+    let subjectRichItem = List<tableActivitySubjectRich>()
     @objc dynamic var icon = ""
     @objc dynamic var link = ""
-    @objc dynamic var object_type = ""
-    @objc dynamic var object_id: Double = 0
-    @objc dynamic var object_name = ""
-    let previews = List<String>()
+    @objc dynamic var objectType = ""
+    @objc dynamic var objectID: Double = 0
+    @objc dynamic var objectName = ""
+    @objc dynamic var previews = ""
+    let previewsItem = List<tableActivityPreviews>()
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
     @objc dynamic var verbose: Bool = false
+}
+
+class tableActivitySubjectRich: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var idActivity: Double = 0
+    @objc dynamic var id = ""
+    @objc dynamic var key = ""
+    @objc dynamic var link = ""
+    @objc dynamic var name = ""
+    @objc dynamic var path = ""
+    @objc dynamic var type = ""
+    
+    override static func primaryKey() -> String {
+        return "id"
+    }
+}
+
+class tableActivityPreviews : Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var idActivity: Double = 0
+    @objc dynamic var id = ""
+    @objc dynamic var link = ""
+    @objc dynamic var name = ""
+    @objc dynamic var path = ""
+    @objc dynamic var type = ""
+    
+    override static func primaryKey() -> String {
+        return "id"
+    }
 }
 
 class tableCapabilities: Object {

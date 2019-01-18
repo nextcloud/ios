@@ -580,36 +580,55 @@ class NCManageDatabase: NSObject {
                     if realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity).first == nil {
                         
                         // Add new Activity
-                        let addObject = tableActivity()
-                
-                        addObject.account = account
+                        let addObjectActivity = tableActivity()
+                        
+                        addObjectActivity.account = account
                 
                         if let date = activity.date {
-                            addObject.date = date as NSDate
+                            addObjectActivity.date = date as NSDate
                         }
                         
-                        addObject.idActivity = Double(activity.idActivity)
-                        addObject.app = activity.app
-                        addObject.type = activity.type
-                        addObject.user = activity.user
-                        addObject.subject = activity.subject
-                        for record in activity.subject_rich {
-                            addObject.subject_rich.append(record as! String)
-                        }
-                        addObject.message = activity.message
-                        for record in activity.message_rich {
-                            addObject.message_rich.append(record as! String)
-                        }
-                        addObject.icon = activity.icon
-                        addObject.link = activity.link
-                        addObject.object_type = activity.object_type
-                        addObject.object_id = Double(activity.object_id)
-                        addObject.object_name = activity.object_name
-                        for record in activity.previews {
-                            addObject.previews.append(record as! String)
-                        }
+                        addObjectActivity.idActivity = Double(activity.idActivity)
+                        addObjectActivity.app = activity.app
+                        addObjectActivity.type = activity.type
+                        addObjectActivity.user = activity.user
+                        addObjectActivity.subject = activity.subject
+                        
+                        if activity.subject_rich.count > 0 {
+                            addObjectActivity.subjectRich = activity.subject_rich[0] as! String
+                            if activity.subject_rich.count > 1 {
+                                let dict = activity.subject_rich[1] as! [String:AnyObject]
+                                for (key, value) in dict {
+                                    
+                                    let addObjectActivitySubjectRich = tableActivitySubjectRich()
+                                    let record = value as! [String:AnyObject]
+                                    addObjectActivitySubjectRich.account = account
+                                    addObjectActivitySubjectRich.id = account + String(activity.idActivity) + key
+                                    addObjectActivitySubjectRich.key = key
+                                    addObjectActivitySubjectRich.idActivity = Double(activity.idActivity)
+                                    addObjectActivitySubjectRich.link = record["link"] as? String ?? ""
+                                    addObjectActivitySubjectRich.name = record["name"] as? String ?? ""
+                                    addObjectActivitySubjectRich.path = record["path"] as? String ?? ""
+                                    addObjectActivitySubjectRich.type = record["type"] as? String ?? ""
 
-                        realm.add(addObject)
+                                    realm.add(addObjectActivitySubjectRich, update: true)
+                                }
+                            }
+                        }
+                        
+                        addObjectActivity.icon = activity.icon
+                        addObjectActivity.link = activity.link
+                        addObjectActivity.objectType = activity.object_type
+                        addObjectActivity.objectID = Double(activity.object_id)
+                        addObjectActivity.objectName = activity.object_name
+                        
+                        /*
+                        for record in activity.previews {
+                            addObjectActivity.previews.append(record as! String)
+                        }
+                        */
+                        
+                        realm.add(addObjectActivity)
                     }
                 }
             }

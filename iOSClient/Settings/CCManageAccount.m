@@ -240,6 +240,8 @@
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreviews class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
