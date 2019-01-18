@@ -28,7 +28,7 @@ import Foundation
     func dismissFormUploadAssets()
 }
 
-class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
+class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEditorDelegate {
     
     var serverUrl : String = ""
     var titleServerUrl : String?
@@ -105,6 +105,25 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         
         section.addFormRow(row)
+
+        // Section Photo Editor only for one photo
+
+        if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image {
+            
+            section = XLFormSectionDescriptor.formSection()
+            form.addFormSection(section)
+
+            row = XLFormRowDescriptor(tag: "ButtonPhotoEditor", rowType: XLFormRowDescriptorTypeButton, title: NSLocalizedString("_modify_photo_", comment: ""))
+            row.action.formSelector = #selector(photoEditor(_:))
+            
+            let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "modifyPhoto")!, multiplier:1, color: NCBrandColor.sharedInstance.icon) as UIImage
+            row.cellConfig["imageView.image"] = imageFolder
+            row.cellConfig["textLabel.textColor"] = UIColor.black
+            row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.left.rawValue
+            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+            
+            section.addFormRow(row)
+        }
         
         // Section Mode filename
         
@@ -373,4 +392,31 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         self.present(navigationController, animated: true, completion: nil)
     }
     
+    @objc func photoEditor(_ sender: XLFormRowDescriptor) {
+        
+        self.deselectFormRow(sender)
+        
+        let requestOptions = PHImageRequestOptions()
+        requestOptions.resizeMode = PHImageRequestOptionsResizeMode.exact
+        requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+        requestOptions.isSynchronous = true
+        
+        PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: PHImageManagerMaximumSize, contentMode: PHImageContentMode.default, options: requestOptions, resultHandler: { (image, info) in
+            
+            let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
+
+            photoEditor.image = image
+            self.present(photoEditor, animated: true, completion: nil)
+        })
+    }
+    
+    // MARK: - Photo Editor Delegate
+
+    func doneEditing(image: UIImage) {
+        //imageView.image = image
+    }
+    
+    func canceledEditing() {
+        print("Canceled")
+    }
 }

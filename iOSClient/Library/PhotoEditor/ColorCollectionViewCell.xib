@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ColorCollectionViewCell" id="gTV-IL-0wX" customClass="ColorCollectionViewCell" customModule="Photo_Editor" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ncL-uU-y1P">
+                        <rect key="frame" x="40" y="40" width="20" height="20"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="1NF-oX-6Ag"/>
+                            <constraint firstAttribute="width" constant="20" id="LcG-gU-6ME"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="ncL-uU-y1P" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="1QZ-sk-wr6"/>
+                <constraint firstItem="ncL-uU-y1P" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="8F5-g3-Cfh"/>
+            </constraints>
+            <size key="customSize" width="100" height="99"/>
+            <connections>
+                <outlet property="colorView" destination="ncL-uU-y1P" id="7PV-0E-mnW"/>
+            </connections>
+            <point key="canvasLocation" x="59" y="78"/>
+        </collectionViewCell>
+    </objects>
+</document>

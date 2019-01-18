@@ -519,6 +519,7 @@
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
 "_maintain_original_filename_"      = "Maintain original filename";
+"_modify_photo_"                    = "Modify photo";
 
 // Notification
 
