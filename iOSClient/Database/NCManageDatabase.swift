@@ -577,59 +577,49 @@ class NCManageDatabase: NSObject {
             
                 for activity in listOfActivity {
                     
-                    if realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity).first == nil {
-                        
-                        // Add new Activity
-                        let addObjectActivity = tableActivity()
-                        
-                        addObjectActivity.account = account
-                
-                        if let date = activity.date {
-                            addObjectActivity.date = date as NSDate
-                        }
-                        
-                        addObjectActivity.idActivity = Double(activity.idActivity)
-                        addObjectActivity.app = activity.app
-                        addObjectActivity.type = activity.type
-                        addObjectActivity.user = activity.user
-                        addObjectActivity.subject = activity.subject
-                        
-                        if activity.subject_rich.count > 0 {
-                            addObjectActivity.subjectRich = activity.subject_rich[0] as! String
-                            if activity.subject_rich.count > 1 {
-                                let dict = activity.subject_rich[1] as! [String:AnyObject]
-                                for (key, value) in dict {
-                                    
-                                    let addObjectActivitySubjectRich = tableActivitySubjectRich()
-                                    let record = value as! [String:AnyObject]
-                                    addObjectActivitySubjectRich.account = account
-                                    addObjectActivitySubjectRich.id = account + String(activity.idActivity) + key
-                                    addObjectActivitySubjectRich.key = key
-                                    addObjectActivitySubjectRich.idActivity = Double(activity.idActivity)
-                                    addObjectActivitySubjectRich.link = record["link"] as? String ?? ""
-                                    addObjectActivitySubjectRich.name = record["name"] as? String ?? ""
-                                    addObjectActivitySubjectRich.path = record["path"] as? String ?? ""
-                                    addObjectActivitySubjectRich.type = record["type"] as? String ?? ""
+                    let addObjectActivity = tableActivity()
+                    
+                    addObjectActivity.account = account
+                    addObjectActivity.idActivity = Double(activity.idActivity)
+                    addObjectActivity.id = account + String(activity.idActivity)
+            
+                    if let date = activity.date {
+                        addObjectActivity.date = date as NSDate
+                    }
+                    
+                    addObjectActivity.app = activity.app
+                    addObjectActivity.type = activity.type
+                    addObjectActivity.user = activity.user
+                    addObjectActivity.subject = activity.subject
+                    
+                    if activity.subject_rich.count > 0 {
+                        addObjectActivity.subjectRich = activity.subject_rich[0] as! String
+                        if activity.subject_rich.count > 1 {
+                            let dict = activity.subject_rich[1] as! [String:AnyObject]
+                            for (key, value) in dict {
+                                let addObjectActivitySubjectRich = tableActivitySubjectRich()
+                                let dict = value as! [String:AnyObject]
+                                addObjectActivitySubjectRich.account = account
+                                addObjectActivitySubjectRich.id = account + String(activity.idActivity) + key
+                                addObjectActivitySubjectRich.key = key
+                                addObjectActivitySubjectRich.idActivity = Double(activity.idActivity)
+                                addObjectActivitySubjectRich.link = dict["link"] as? String ?? ""
+                                addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
+                                addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
+                                addObjectActivitySubjectRich.type = dict["type"] as? String ?? ""
 
-                                    realm.add(addObjectActivitySubjectRich, update: true)
-                                }
+                                realm.add(addObjectActivitySubjectRich, update: true)
                             }
                         }
-                        
-                        addObjectActivity.icon = activity.icon
-                        addObjectActivity.link = activity.link
-                        addObjectActivity.objectType = activity.object_type
-                        addObjectActivity.objectID = Double(activity.object_id)
-                        addObjectActivity.objectName = activity.object_name
-                        
-                        /*
-                        for record in activity.previews {
-                            addObjectActivity.previews.append(record as! String)
-                        }
-                        */
-                        
-                        realm.add(addObjectActivity)
                     }
+                    
+                    addObjectActivity.icon = activity.icon
+                    addObjectActivity.link = activity.link
+                    addObjectActivity.objectType = activity.object_type
+                    addObjectActivity.objectID = Double(activity.object_id)
+                    addObjectActivity.objectName = activity.object_name
+                    
+                    realm.add(addObjectActivity, update: true)
                 }
             }
         } catch let error {

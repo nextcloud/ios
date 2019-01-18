@@ -62,6 +62,7 @@ class tableAccount: Object {
 class tableActivity: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var id = ""
     @objc dynamic var action = "Activity"
     @objc dynamic var date = NSDate()
     @objc dynamic var idActivity: Double = 0
@@ -76,11 +77,13 @@ class tableActivity: Object {
     @objc dynamic var objectType = ""
     @objc dynamic var objectID: Double = 0
     @objc dynamic var objectName = ""
-    @objc dynamic var previews = ""
-    let previewsItem = List<tableActivityPreviews>()
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
     @objc dynamic var verbose: Bool = false
+    
+    override static func primaryKey() -> String {
+        return "id"
+    }
 }
 
 class tableActivitySubjectRich: Object {
@@ -89,21 +92,6 @@ class tableActivitySubjectRich: Object {
     @objc dynamic var idActivity: Double = 0
     @objc dynamic var id = ""
     @objc dynamic var key = ""
-    @objc dynamic var link = ""
-    @objc dynamic var name = ""
-    @objc dynamic var path = ""
-    @objc dynamic var type = ""
-    
-    override static func primaryKey() -> String {
-        return "id"
-    }
-}
-
-class tableActivityPreviews : Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var idActivity: Double = 0
-    @objc dynamic var id = ""
     @objc dynamic var link = ""
     @objc dynamic var name = ""
     @objc dynamic var path = ""
