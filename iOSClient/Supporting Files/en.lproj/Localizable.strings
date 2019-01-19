@@ -654,7 +654,7 @@
 "_server_down_"                         = "Could not establish contact with server";
 "_time_out_"                            = "Timeout, try again";
 "_unknow_response_server_"              = "Unexpected response from server";
-"_user_autentication_required_"         = "User autentication required";
+"_user_autentication_required_"         = "User authentication required";
 "_file_directory_locked_"               = "File or directory locked";
 "_ssl_certificate_untrusted_"           = "The certificate for this server is invalid";
 "_internal_server_"                     = "Internal server error";
