@@ -30,11 +30,11 @@ import Foundation
 
 class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEditorDelegate {
     
-    var serverUrl : String = ""
-    var titleServerUrl : String?
-    var assets: NSMutableArray = []
-    var cryptated : Bool = false
-    var session : String = ""
+    var serverUrl: String = ""
+    var titleServerUrl: String?
+    var assets = NSMutableArray()
+    var cryptated: Bool = false
+    var session: String = ""
     weak var delegate: createFormUploadAssetsDelegate?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -406,6 +406,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
             let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
 
             photoEditor.image = image
+            photoEditor.photoEditorDelegate = self
+            photoEditor.hiddenControls = [.save, .share, .sticker]
+            
             self.present(photoEditor, animated: true, completion: nil)
         })
     }
@@ -413,7 +416,19 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
     // MARK: - Photo Editor Delegate
 
     func doneEditing(image: UIImage) {
-        //imageView.image = image
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(imageSaved(_:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    @objc func imageSaved(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
+        if let asset = fetchResult.firstObject {
+            self.assets = NSMutableArray(array: [asset])
+        }
+
+        print("done")
     }
     
     func canceledEditing() {
