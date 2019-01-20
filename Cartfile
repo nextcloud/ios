@@ -1,6 +1,6 @@
 github "tilltue/TLPhotoPicker"
 github "kishikawakatsumi/UICKeyChainStore"
-github "danielsaidi/Sheeeeeeeeet"
+github "danielsaidi/Sheeeeeeeeet" == 1.2.2
 github "sgr-ksmt/PDFGenerator" ~> 2.1
 github "MortimerGoro/MGSwipeTableCell"
 github "dzenbot/DZNEmptyDataSet"

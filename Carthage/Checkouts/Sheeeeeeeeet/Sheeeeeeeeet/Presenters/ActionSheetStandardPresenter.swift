@@ -8,8 +8,9 @@
 
 /*
  
- This presenter will present action sheets as regular iPhone
- action sheets, from the bottom of the screen.
+ This presenter presents action sheets as regular iOS action
+ sheets, which are presented with a slide-in from the bottom
+ of the screen.
  
  */
 
@@ -28,7 +29,9 @@ open class ActionSheetStandardPresenter: ActionSheetPresenter {
     public var events = ActionSheetPresenterEvents()
     public var isDismissableWithTapOnBackground = true
     
-    private var actionSheet: ActionSheet?
+    var actionSheet: ActionSheet?
+    var animationDelay: TimeInterval = 0
+    var animationDuration: TimeInterval = 0.3
     
     
     // MARK: - ActionSheetPresenter
@@ -53,6 +56,7 @@ open class ActionSheetStandardPresenter: ActionSheetPresenter {
     open func present(sheet: ActionSheet, in vc: UIViewController, completion: @escaping () -> ()) {
         actionSheet = sheet
         addActionSheetView(from: sheet, to: vc.view)
+        addBackgroundViewTapAction(to: sheet.backgroundView)
         presentBackgroundView()
         presentActionSheet(completion: completion)
     }
@@ -71,7 +75,6 @@ open class ActionSheetStandardPresenter: ActionSheetPresenter {
     open func addActionSheetView(from sheet: ActionSheet, to view: UIView) {
         sheet.view.frame = view.frame
         view.addSubview(sheet.view)
-        addBackgroundViewTapAction(to: sheet.backgroundView)
     }
 
     open func addBackgroundViewTapAction(to view: UIView?) {
@@ -86,7 +89,12 @@ open class ActionSheetStandardPresenter: ActionSheetPresenter {
     }
     
     open func animate(_ animation: @escaping () -> (), completion: (() -> ())?) {
-        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut], animations: animation) { _ in completion?() }
+        guard animationDuration >= 0 else { return }
+        UIView.animate(
+            withDuration: animationDuration,
+            delay: animationDelay,
+            options: [.curveEaseOut],
+            animations: animation) { _ in completion?() }
     }
     
     open func presentActionSheet(completion: @escaping () -> ()) {
@@ -106,8 +114,7 @@ open class ActionSheetStandardPresenter: ActionSheetPresenter {
 
     open func removeActionSheet(completion: @escaping () -> ()) {
         guard let view = actionSheet?.stackView else { return }
-        let frame = view.frame
-        let animation = { view.frame.origin.y += frame.height + 100 }
+        let animation = { view.frame.origin.y += view.frame.height + 100 }
         animate(animation) { completion() }
     }
 

@@ -19,6 +19,14 @@ import UIKit
 open class ActionSheetTitle: ActionSheetItem {
     
     
+    // MARK: - Deprecated - Remove in 1.4.0 ****************
+    @available(*, deprecated, message: "applyAppearance will be removed in 1.4.0. Use the new appearance model instead.")
+    open override func applyAppearance(_ appearance: ActionSheetAppearance) {
+        self.appearance = ActionSheetTitleAppearance(copy: appearance.title)
+    }
+    // MARK: - Deprecated - Remove in 1.4.0 ****************
+    
+    
     // MARK: - Initialization
     
     public init(title: String) {
@@ -28,13 +36,18 @@ open class ActionSheetTitle: ActionSheetItem {
     
     // MARK: - Functions
     
-    open override func applyAppearance(_ appearance: ActionSheetAppearance) {
-        self.appearance = ActionSheetTitleAppearance(copy: appearance.title)
+    open override func cell(for tableView: UITableView) -> ActionSheetItemCell {
+        return ActionSheetTitleCell(style: cellStyle, reuseIdentifier: cellReuseIdentifier)
     }
+}
+
+
+// MARK: -
+
+open class ActionSheetTitleCell: ActionSheetItemCell {
     
-    open override func applyAppearance(to cell: UITableViewCell) {
-        super.applyAppearance(to: cell)
-        cell.selectionStyle = .none
-        cell.textLabel?.textAlignment = .center
+    open override func refresh() {
+        super.refresh()
+        textLabel?.textAlignment = .center
     }
 }

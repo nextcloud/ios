@@ -14,73 +14,39 @@ class ActionSheetSingleSelectItemTests: QuickSpec {
     
     override func spec() {
         
-        func getItem(isSelected: Bool = false, group: String = "") -> ActionSheetSingleSelectItem {
-            return ActionSheetSingleSelectItem(title: "foo", isSelected: isSelected, group: group, value: true, image: UIImage())
-        }
-        
-        describe("when created") {
+        describe("cell") {
             
-            it("applies provided values") {
-                let item = ActionSheetSingleSelectItem(title: "foo", isSelected: true, group: "my group", value: true, image: UIImage(), tapBehavior: .none)
-                expect(item.title).to(equal("foo"))
-                expect(item.isSelected).to(beTrue())
-                expect(item.group).to(equal("my group"))
-                expect(item.value as? Bool).to(equal(true))
-                expect(item.image).toNot(beNil())
-                expect(item.tapBehavior).to(equal(ActionSheetItem.TapBehavior.none))
-            }
-            
-            it("applies provided selection state") {
-                expect(getItem(isSelected: true).isSelected).to(beTrue())
-                expect(getItem(isSelected: false).isSelected).to(beFalse())
+            it("is of correct type") {
+                let item = ActionSheetSingleSelectItem(title: "foo", isSelected: false)
+                let cell = item.cell(for: UITableView())
+                
+                expect(cell is ActionSheetSingleSelectItemCell).to(beTrue())
+                expect(cell.reuseIdentifier).to(equal(item.cellReuseIdentifier))
             }
         }
         
-        describe("tap behavior") {
-            
-            it("is dismiss by default") {
-                let item = getItem()
-                expect(item.tapBehavior).to(equal(ActionSheetItem.TapBehavior.dismiss))
-            }
-        }
         
-        describe("when tapped") {
+        describe("handling tap") {
             
-            var sheet: ActionSheet!
-            
-            beforeEach {
-                sheet = ActionSheet(items: [
-                    getItem(isSelected: true, group: "foo"),
-                    getItem(isSelected: false, group: "foo"),
-                    getItem(isSelected: true, group: "bar"),
-                    getItem(isSelected: false, group: "bar"),
-                    getItem(isSelected: true, group: "baz"),
-                    getItem(isSelected: false, group: "baz")
-                    ], action: { _, _ in })
-            }
-            
-            it("selects unselected item") {
-                let item = getItem(isSelected: false)
-                item.handleTap(in: sheet)
-                expect(item.isSelected).to(beTrue())
-            }
-            
-            it("does not deselect selected item") {
-                let item = getItem(isSelected: true)
-                item.handleTap(in: sheet)
-                expect(item.isSelected).to(beTrue())
-            }
-            
-            it("does not affect sheet items in other groups") {
-                let item = getItem(isSelected: false, group: "baz")
-                item.handleTap(in: sheet)
-                let items = sheet.items.compactMap { $0 as? ActionSheetSingleSelectItem }
-                expect(items[0].isSelected).to(beTrue())
-                expect(items[1].isSelected).to(beFalse())
-                expect(items[2].isSelected).to(beTrue())
-                expect(items[3].isSelected).to(beFalse())
-                expect(items[4].isSelected).to(beFalse())
-                expect(items[5].isSelected).to(beFalse())
+            it("deselects other single select items in the same group") {
+                let item1 = ActionSheetSingleSelectItem(title: "foo", isSelected: false, group: "group 1")
+                let item2 = ActionSheetSingleSelectItem(title: "bar", isSelected: false, group: "group 2")
+                let item3 = ActionSheetSingleSelectItem(title: "baz", isSelected: false, group: "group 1")
+                let items = [item1, item2, item3]
+                let sheet = ActionSheet(items: items) { (_, _) in }
+                
+                item1.handleTap(in: sheet)
+                expect(item1.isSelected).to(beTrue())
+                expect(item2.isSelected).to(beFalse())
+                expect(item3.isSelected).to(beFalse())
+                item2.handleTap(in: sheet)
+                expect(item1.isSelected).to(beTrue())
+                expect(item2.isSelected).to(beTrue())
+                expect(item3.isSelected).to(beFalse())
+                item3.handleTap(in: sheet)
+                expect(item1.isSelected).to(beFalse())
+                expect(item2.isSelected).to(beTrue())
+                expect(item3.isSelected).to(beTrue())
             }
         }
     }

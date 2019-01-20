@@ -29,8 +29,35 @@
  you want to use your own models in a controlled way. If you
  have a podcast app, you could have a `SleepTimerActionSheet`
  that automatically sets up its `SleepTimerTime` options and
- streamlines how you work with a sleep timer. This is a good
- way to setup the base action sheet for specific use cases.
+ streamlines how you work with a sleep timer.
+ 
+ 
+ ## Appearance
+ 
+ Customizing the appearance of the various action sheet item
+ types in Sheeeeeeeeet (as well as of your own custom items),
+ is mainly done using the iOS appearance proxy for each item
+ cell type. For instance, to change the title text color for
+ all `ActionSheetSelectItem` instances (including subclasses),
+ type `ActionSheetSelectItem.appearance().titleColor`. It is
+ also possible to set these properties for each item as well.
+ 
+ While most appearance is modified on a cell level, some are
+ not. For instance, some views in `Views` have apperances of
+ their own (e.g. `ActionSheetHeaderView.cornerRadius`). This
+ means that you can change more than cell appearance. Have a
+ look at the readme for more info on what you can customize.
+ 
+ Action sheet insets, margins and widths are not part of the
+ appearance model, but have to be changed for each sheet. If
+ you want to change these values for each sheet in youer app,
+ I recommend subclassing `ActionSheet` and set these values.
+ 
+ Neither item heights are part of the appearance model. Item
+ heights are instead changed by setting the static height of
+ each item type, e.g. `ActionSheetTitleItem.height = 20`. It
+ is not part of the cell appearance model since an item must
+ know about the height before it creates any cells.
  
  
  ## Presentation
@@ -38,16 +65,7 @@
  You can inject a custom presenter if you want to change how
  the sheet is presented and dismissed. The default presenter
  for iPhone devices is `ActionSheetStandardPresenter`, while
- iPad devices most often get an `ActionSheetPopoverPresenter`.
- 
- 
- ## Appearance
- 
- To change the global appearance for all action sheets, just
- modify the `ActionSheetAppearance.standard` to look the way
- you want. To change the appearance of a single action sheet,
- modify its `appearance` property. To change the appearances
- of single items, modify their `customAppearance` property.
+ iPad devices (most often) use `ActionSheetPopoverPresenter`.
  
  
  ## Handling item selections
@@ -55,7 +73,7 @@
  The `selectAction` is triggered when a user taps an item in
  the action sheet. It provides you with the action sheet and
  the selected item. It is very important to use `[weak self]`
- in this block, to avoid memory leaks.
+ in these action closures, to avoid memory leaks.
  
  
  ## Handling item taps
@@ -71,13 +89,14 @@ import UIKit
 open class ActionSheet: UIViewController {
     
     
-    // MARK: - Deprecated Members
-    
-    @available(*, deprecated, message: "setupItemsAndButtons(with:) is deprecated and will be removed shortly. Use `setup(items:)` instead")
+    // MARK: - Deprecated - Remove in 1.4.0 ****************
+    @available(*, deprecated, message: "appearance will be removed in 1.4.0. Use the new appearance model instead")
+    public var appearance = ActionSheetAppearance(copy: .standard)
+    @available(*, deprecated, message: "setupItemsAndButtons(with:) will be removed in 1.4.0. Use `setup(items:)` instead")
     open func setupItemsAndButtons(with items: [ActionSheetItem]) { setup(items: items) }
-    
-    @available(*, deprecated, message: "itemSelectAction is deprecated and will be removed in shortly. Use `selectAction` instead")
+    @available(*, deprecated, message: "itemSelectAction will be removed in 1.4.0. Use `selectAction` instead")
     open var itemSelectAction: SelectAction { return selectAction }
+    // MARK: - Deprecated - Remove in 1.4.0 ****************
     
     
     // MARK: - Initialization
@@ -101,7 +120,9 @@ open class ActionSheet: UIViewController {
     
     // MARK: - Setup
     
-    open func setup() {}
+    open func setup() {
+        preferredContentSize.width = preferredPopoverWidth
+    }
     
     open func setup(items: [ActionSheetItem]) {
         self.items = items.filter { !($0 is ActionSheetButton) }
@@ -138,13 +159,21 @@ open class ActionSheet: UIViewController {
     
     // MARK: - Appearance
     
-    public var appearance = ActionSheetAppearance(copy: .standard)
+    public var minimumContentInsets = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
+    public var preferredPopoverWidth: CGFloat = 300
+    public var sectionMargins: CGFloat = 15
     
     
     // MARK: - Outlets
     
-    @IBOutlet weak var backgroundView: UIView?
+    @IBOutlet weak var backgroundView: ActionSheetBackgroundView?
     @IBOutlet weak var stackView: UIStackView?
+    @IBOutlet weak var headerViewContainer: ActionSheetHeaderView?
+    @IBOutlet weak var headerViewContainerHeight: NSLayoutConstraint?
+    @IBOutlet weak var itemsTableView: ActionSheetItemTableView?
+    @IBOutlet weak var itemsTableViewHeight: NSLayoutConstraint?
+    @IBOutlet weak var buttonsTableView: ActionSheetButtonTableView?
+    @IBOutlet weak var buttonsTableViewHeight: NSLayoutConstraint?
     
     @IBOutlet weak var topMargin: NSLayoutConstraint?
     @IBOutlet weak var leftMargin: NSLayoutConstraint?
@@ -156,10 +185,6 @@ open class ActionSheet: UIViewController {
     
     open var headerView: UIView?
     
-    @IBOutlet weak var headerViewContainer: UIView?
-    
-    @IBOutlet weak var headerViewContainerHeight: NSLayoutConstraint?
-    
     
     // MARK: - Item Properties
     
@@ -169,10 +194,6 @@ open class ActionSheet: UIViewController {
     
     public lazy var itemHandler = ActionSheetItemHandler(actionSheet: self, itemType: .items)
     
-    @IBOutlet weak var itemsTableView: ActionSheetTableView?
-    
-    @IBOutlet weak var itemsTableViewHeight: NSLayoutConstraint?
-    
     
     // MARK: - Button Properties
     
@@ -181,10 +202,6 @@ open class ActionSheet: UIViewController {
     public var buttonsHeight: CGFloat { return totalHeight(for: buttons) }
     
     public lazy var buttonHandler = ActionSheetItemHandler(actionSheet: self, itemType: .buttons)
-    
-    @IBOutlet weak var buttonsTableView: ActionSheetTableView?
-    
-    @IBOutlet weak var buttonsTableViewHeight: NSLayoutConstraint?
     
     
     // MARK: - Presentation Functions
@@ -207,11 +224,11 @@ open class ActionSheet: UIViewController {
     // MARK: - Refresh Functions
     
     open func refresh() {
-        applyRoundCorners()
+        applyLegacyAppearance()
         refreshHeader()
         refreshItems()
         refreshButtons()
-        stackView?.spacing = appearance.groupMargins
+        stackView?.spacing = sectionMargins
         presenter.refreshActionSheet()
     }
     
@@ -224,17 +241,13 @@ open class ActionSheet: UIViewController {
     }
     
     open func refreshItems() {
-        items.forEach { $0.applyAppearance(appearance) }
-        itemsTableView?.backgroundColor = appearance.itemsBackgroundColor
-        itemsTableView?.separatorColor = appearance.itemsSeparatorColor
+        items.forEach { $0.applyAppearance(appearance) }    // TODO: Deprecated - Remove in 1.4.0
         itemsTableViewHeight?.constant = itemsHeight
     }
     
     open func refreshButtons() {
         buttonsTableView?.isHidden = buttons.count == 0
-        buttons.forEach { $0.applyAppearance(appearance) }
-        buttonsTableView?.backgroundColor = appearance.buttonsBackgroundColor
-        buttonsTableView?.separatorColor = appearance.buttonsSeparatorColor
+        buttons.forEach { $0.applyAppearance(appearance) }  // TODO: Deprecated - Remove in 1.4.0
         buttonsTableViewHeight?.constant = buttonsHeight
     }
     
@@ -248,8 +261,13 @@ open class ActionSheet: UIViewController {
     }
     
     open func margin(at margin: ActionSheetMargin) -> CGFloat {
-        let minimum = appearance.contentInset
-        return margin.value(in: view.superview, minimum: minimum)
+        let view: UIView! = self.view.superview ?? self.view
+        switch margin {
+        case .top: return margin.value(in: view, minimum: minimumContentInsets.top)
+        case .left: return margin.value(in: view, minimum: minimumContentInsets.left)
+        case .right: return margin.value(in: view, minimum: minimumContentInsets.right)
+        case .bottom: return margin.value(in: view, minimum: minimumContentInsets.bottom)
+        }
     }
 
     open func reloadData() {
@@ -263,18 +281,6 @@ open class ActionSheet: UIViewController {
 
 private extension ActionSheet {
     
-    func applyRoundCorners() {
-        applyRoundCorners(to: headerView)
-        applyRoundCorners(to: headerViewContainer)
-        applyRoundCorners(to: itemsTableView)
-        applyRoundCorners(to: buttonsTableView)
-    }
-
-    func applyRoundCorners(to view: UIView?) {
-        view?.clipsToBounds = true
-        view?.layer.cornerRadius = appearance.cornerRadius
-    }
-    
     func setup(_ tableView: UITableView?, with handler: ActionSheetItemHandler) {
         tableView?.delegate = handler
         tableView?.dataSource = handler
@@ -285,6 +291,7 @@ private extension ActionSheet {
     }
     
     func totalHeight(for items: [ActionSheetItem]) -> CGFloat {
-        return items.reduce(0) { $0 + $1.appearance.height }
+        let height = items.reduce(0) { $0 + $1.height }
+        return height
     }
 }

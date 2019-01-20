@@ -6,8 +6,6 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
-//  TODO: Improve these tests, since much logic has changed.
-
 import Quick
 import Nimble
 @testable import Sheeeeeeeeet
@@ -16,121 +14,237 @@ class ActionSheetTests: QuickSpec {
     
     override func spec() {
         
-        func createButton(_ title: String) -> ActionSheetButton {
-            return ActionSheetOkButton(title: title)
-        }
-        
-        func createItem(_ title: String) -> ActionSheetItem {
-            return ActionSheetItem(title: title)
-        }
+        var sheet: MockActionSheet!
         
         func createSheet(_ items: [ActionSheetItem] = []) -> MockActionSheet {
             return MockActionSheet(items: items, action: { _, _ in })
         }
         
-        func createTableView() -> ActionSheetTableView {
-            return ActionSheetTableView(frame: .zero)
-        }
-        
         
         // MARK: - Initialization
         
-        describe("when initialized with parameters") {
+        describe("created instance") {
             
-            it("applies provided items") {
-                let item1 = createItem("foo")
-                let item2 = createItem("bar")
-                let sheet = createSheet([item1, item2])
+            context("default behavior") {
                 
-                expect(sheet.items.count).to(equal(2))
-                expect(sheet.items[0]).to(be(item1))
-                expect(sheet.items[1]).to(be(item2))
-            }
-
-            it("separates provided items and buttons") {
-                let button = createButton("Sheeeeeeeeet")
-                let item1 = createItem("foo")
-                let item2 = createItem("bar")
-                let sheet = createSheet([button, item1, item2])
-
-                expect(sheet.items.count).to(equal(2))
-                expect(sheet.items[0]).to(be(item1))
-                expect(sheet.items[1]).to(be(item2))
-                expect(sheet.buttons.count).to(equal(1))
-                expect(sheet.buttons[0]).to(be(button))
-            }
-
-            it("applies default presenter if none is provided") {
-                let sheet = createSheet()
-                let isStandard = sheet.presenter is ActionSheetStandardPresenter
-                let isPopover = sheet.presenter is ActionSheetPopoverPresenter
-                let isValid = isStandard || isPopover
+                it("use default presenter") {
+                    sheet = createSheet()
+                    let isStandard = sheet.presenter is ActionSheetStandardPresenter
+                    let isPopover = sheet.presenter is ActionSheetPopoverPresenter
+                    let isValid = isStandard || isPopover
+                    
+                    expect(isValid).to(beTrue())
+                }
                 
-                expect(isValid).to(beTrue())
-            }
-
-            it("applies provided presenter") {
-                let presenter = ActionSheetPopoverPresenter()
-                let sheet = MockActionSheet(items: [], presenter: presenter, action: { _, _ in })
+                it("applies no items and buttons") {
+                    sheet = createSheet()
+                    
+                    expect(sheet.items.count).to(equal(0))
+                    expect(sheet.buttons.count).to(equal(0))
+                }
                 
-                expect(sheet.presenter).to(be(presenter))
             }
-
-            it("applies provided action") {
+            
+            context("custom properties") {
+                
+                it("uses provided presenter") {
+                    let presenter = ActionSheetPopoverPresenter()
+                    sheet = MockActionSheet(items: [], presenter: presenter, action: { _, _ in })
+                    
+                    expect(sheet.presenter).to(be(presenter))
+                }
+                
+                it("sets up provided items and buttons") {
+                    let items = [ActionSheetItem(title: "foo")]
+                    sheet = createSheet(items)
+                    
+                    expect(sheet.setupItemsInvokeCount).to(equal(1))
+                    expect(sheet.setupItemsInvokeItems[0]).to(be(items))
+                }
+            }
+            
+            it("uses provided action") {
                 var counter = 0
-                let sheet = MockActionSheet(items: []) { _, _  in counter += 1 }
-                sheet.selectAction(sheet, createItem("foo"))
+                sheet = MockActionSheet(items: []) { _, _  in counter += 1 }
+                sheet.selectAction(sheet, ActionSheetItem(title: "foo"))
                 
                 expect(counter).to(equal(1))
             }
         }
         
         
-        // MARK: - Properties
-
-        describe("appearance") {
+        describe("setup") {
             
-            it("is initially a copy of standard appearance") {
-                let original = ActionSheetAppearance.standard.popover.width
-                ActionSheetAppearance.standard.popover.width = -1
-                let sheet = createSheet()
-                let appearance = sheet.appearance
-                ActionSheetAppearance.standard.popover.width = original
+            beforeEach {
+                sheet = createSheet()
+            }
+            
+            it("applies default preferred popover width") {
+                sheet.setup()
                 
-                expect(appearance.popover.width).to(equal(-1))
+                expect(sheet.preferredContentSize.width).to(equal(300))
+            }
+            
+            it("applies custom preferred popover width") {
+                sheet.preferredPopoverWidth = 200
+                sheet.setup()
+                
+                expect(sheet.preferredContentSize.width).to(equal(200))
             }
         }
         
         
-        // MARK: - Item Properties
+        describe("setup items") {
+            
+            beforeEach {
+                sheet = createSheet()
+            }
+            
+            it("applies empty collection") {
+                sheet.setup(items: [])
+                
+                expect(sheet.items.count).to(equal(0))
+                expect(sheet.buttons.count).to(equal(0))
+            }
+            
+            it("separates items and buttons") {
+                let item1 = ActionSheetItem(title: "foo")
+                let item2 = ActionSheetItem(title: "bar")
+                let button = ActionSheetOkButton(title: "baz")
+                sheet.setup(items: [button, item1, item2])
+                
+                expect(sheet.items.count).to(equal(2))
+                expect(sheet.items[0]).to(be(item1))
+                expect(sheet.items[1]).to(be(item2))
+                expect(sheet.buttons.count).to(equal(1))
+                expect(sheet.buttons[0]).to(be(button))
+            }
+            
+            it("reloads data") {
+                sheet.reloadDataInvokeCount = 0
+                sheet.setup(items: [])
+                
+                expect(sheet.reloadDataInvokeCount).to(equal(1))
+            }
+        }
+        
+        
+        describe("loading view") {
+            
+            var itemsTableView: ActionSheetItemTableView!
+            var buttonsTableView: ActionSheetButtonTableView!
+            
+            beforeEach {
+                sheet = createSheet()
+                itemsTableView = ActionSheetItemTableView(frame: .zero)
+                buttonsTableView = ActionSheetButtonTableView(frame: .zero)
+                sheet.itemsTableView = itemsTableView
+                sheet.buttonsTableView = buttonsTableView
+                sheet.viewDidLoad()
+            }
+            
+            it("sets up action sheet") {
+                expect(sheet.setupInvokeCount).to(equal(1))
+            }
+            
+            it("sets up items table view") {
+                expect(itemsTableView.delegate).to(be(sheet.itemHandler))
+                expect(itemsTableView.dataSource).to(be(sheet.itemHandler))
+                expect(itemsTableView.alwaysBounceVertical).to(beFalse())
+                expect(itemsTableView.estimatedRowHeight).to(equal(44))
+                expect(itemsTableView.rowHeight).to(equal(UITableView.automaticDimension))
+                expect(itemsTableView.cellLayoutMarginsFollowReadableWidth).to(beFalse())
+            }
+            
+            it("sets up buttons table view") {
+                expect(buttonsTableView.delegate).to(be(sheet.buttonHandler))
+                expect(buttonsTableView.dataSource).to(be(sheet.buttonHandler))
+                expect(itemsTableView.alwaysBounceVertical).to(beFalse())
+                expect(buttonsTableView.estimatedRowHeight).to(equal(44))
+                expect(buttonsTableView.rowHeight).to(equal(UITableView.automaticDimension))
+                expect(buttonsTableView.cellLayoutMarginsFollowReadableWidth).to(beFalse())
+            }
+        }
+        
+        
+        describe("laying out subviews") {
+            
+            it("refreshes sheet") {
+                sheet = createSheet()
+                sheet.viewDidLayoutSubviews()
+                
+                expect(sheet.refreshInvokeCount).to(equal(1))
+            }
+        }
+        
+        
+        describe("minimum content insets") {
+            
+            it("has correct default value") {
+                sheet = createSheet()
+                let expected = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
+                
+                expect(sheet.minimumContentInsets).to(equal(expected))
+            }
+        }
+        
+        
+        describe("preferred popover width") {
+            
+            it("has correct default value") {
+                sheet = createSheet()
+                let expected: CGFloat = 300
+                
+                expect(sheet.preferredPopoverWidth).to(equal(expected))
+            }
+        }
+        
+        
+        describe("section margins") {
+            
+            it("has correct default value") {
+                sheet = createSheet()
+                let expected: CGFloat = 15
+                
+                expect(sheet.sectionMargins).to(equal(expected))
+            }
+        }
+        
         
         describe("items height") {
             
-            it("is sum of all item appearances") {
-                let item1 = createItem("foo")
-                let item2 = createItem("bar")
-                let item3 = createButton("baz")
-                item1.appearance.height = 100
-                item2.appearance.height = 110
-                item3.appearance.height = 120
-                let sheet = createSheet([item1, item2, item3])
+            beforeEach {
+                ActionSheetItem.height = 100
+                ActionSheetSingleSelectItem.height = 110
+                ActionSheetMultiSelectItem.height = 120
+                ActionSheetOkButton.height = 120
+            }
+            
+            it("is sum of all items") {
+                let item1 = ActionSheetItem(title: "foo")
+                let item2 = ActionSheetSingleSelectItem(title: "bar", isSelected: true)
+                let item3 = ActionSheetMultiSelectItem(title: "baz", isSelected: false)
+                let button = ActionSheetOkButton(title: "ok")
+                sheet = createSheet([item1, item2, item3, button])
                 
-                expect(sheet.itemsHeight).to(equal(210))
+                expect(sheet.itemsHeight).to(equal(330))
             }
         }
+        
         
         describe("item handler") {
             
             it("has correct item type") {
-                let sheet = createSheet()
+                sheet = createSheet()
+                
                 expect(sheet.itemHandler.itemType).to(equal(.items))
             }
             
             it("has correct items") {
-                let item1 = createItem("foo")
-                let item2 = createItem("bar")
-                let item3 = createButton("baz")
-                let sheet = createSheet([item1, item2, item3])
+                let item1 = ActionSheetItem(title: "foo")
+                let item2 = ActionSheetItem(title: "bar")
+                let button = ActionSheetOkButton(title: "ok")
+                sheet = createSheet([item1, item2, button])
                 
                 expect(sheet.itemHandler.items.count).to(equal(2))
                 expect(sheet.itemHandler.items[0]).to(be(item1))
@@ -138,93 +252,64 @@ class ActionSheetTests: QuickSpec {
             }
         }
         
-        describe("item table view") {
+        
+        describe("items height") {
             
-            it("is correctly setup when view is loaded") {
-                let sheet = createSheet()
-                let view = createTableView()
-                sheet.itemsTableView = view
-                sheet.viewDidLoad()
+            beforeEach {
+                ActionSheetItem.height = 100
+                ActionSheetOkButton.height = 110
+                ActionSheetDangerButton.height = 120
+                ActionSheetCancelButton.height = 130
+            }
+            
+            it("is sum of all items") {
+                let item = ActionSheetItem(title: "foo")
+                let button1 = ActionSheetOkButton(title: "ok")
+                let button2 = ActionSheetDangerButton(title: "ok")
+                let button3 = ActionSheetCancelButton(title: "ok")
+                sheet = createSheet([item, button1, button2, button3])
                 
-                expect(view.delegate).to(be(sheet.itemHandler))
-                expect(view.dataSource).to(be(sheet.itemHandler))
-                expect(view.estimatedRowHeight).to(equal(44))
-                expect(view.rowHeight).to(equal(UITableView.automaticDimension))
-                expect(view.cellLayoutMarginsFollowReadableWidth).to(beFalse())
+                expect(sheet.buttonsHeight).to(equal(360))
             }
         }
         
         
-        // MARK: - Button Properties
-        
-        describe("buttons height") {
-            
-            it("is sum of all button appearances") {
-                let item1 = createItem("foo")
-                let item2 = createButton("bar")
-                let item3 = createButton("baz")
-                item1.appearance.height = 100
-                item2.appearance.height = 110
-                item3.appearance.height = 120
-                let sheet = createSheet([item1, item2, item3])
-                
-                expect(sheet.buttonsHeight).to(equal(230))
-            }
-        }
-        
-        describe("button handler") {
+        describe("item handler") {
             
             it("has correct item type") {
-                let sheet = createSheet()
+                sheet = createSheet()
+                
                 expect(sheet.buttonHandler.itemType).to(equal(.buttons))
             }
             
             it("has correct items") {
-                let item1 = createItem("foo")
-                let item2 = createButton("bar")
-                let item3 = createButton("baz")
-                let sheet = createSheet([item1, item2, item3])
+                let item = ActionSheetItem(title: "foo")
+                let button1 = ActionSheetOkButton(title: "ok")
+                let button2 = ActionSheetOkButton(title: "ok")
+                sheet = createSheet([item, button1, button2])
                 
                 expect(sheet.buttonHandler.items.count).to(equal(2))
-                expect(sheet.buttonHandler.items[0]).to(be(item2))
-                expect(sheet.buttonHandler.items[1]).to(be(item3))
+                expect(sheet.buttonHandler.items[0]).to(be(button1))
+                expect(sheet.buttonHandler.items[1]).to(be(button2))
             }
         }
         
-        describe("button table view") {
-            
-            it("is correctly setup when view is loaded") {
-                let sheet = createSheet()
-                let view = createTableView()
-                sheet.buttonsTableView = view
-                sheet.viewDidLoad()
-                
-                expect(view.delegate).to(be(sheet.buttonHandler))
-                expect(view.dataSource).to(be(sheet.buttonHandler))
-                expect(view.estimatedRowHeight).to(equal(44))
-                expect(view.rowHeight).to(equal(UITableView.automaticDimension))
-                expect(view.cellLayoutMarginsFollowReadableWidth).to(beFalse())
-            }
-        }
-        
-        
-        // MARK: - Presentation Functions
         
         context("presentation") {
             
             var presenter: MockActionSheetPresenter!
             
-            func createSheet() -> MockActionSheet {
+            beforeEach {
                 presenter = MockActionSheetPresenter()
-                return MockActionSheet(items: [], presenter: presenter, action: { _, _ in })
+                sheet = createSheet()
+                sheet.presenter = presenter
             }
             
             describe("when dismissed") {
                 
-                it("dismisses itself by calling presenter") {
+                it("it calls presenter") {
                     var counter = 0
                     let completion = { counter += 1 }
-                    let sheet = createSheet()
                     sheet.dismiss(completion: completion)
                     presenter.dismissInvokeCompletions[0]()
                     
@@ -236,16 +321,14 @@ class ActionSheetTests: QuickSpec {
             describe("when presented from view") {
                 
                 it("refreshes itself") {
-                    let sheet = createSheet()
                     sheet.present(in: UIViewController(), from: UIView())
                     
                     expect(sheet.refreshInvokeCount).to(equal(1))
                 }
                 
-                it("presents itself by calling presenter") {
+                it("calls presenter") {
                     var counter = 0
                     let completion = { counter += 1 }
-                    let sheet = createSheet()
                     let vc = UIViewController()
                     let view = UIView()
                     sheet.present(in: vc, from: view, completion: completion)
@@ -261,16 +344,14 @@ class ActionSheetTests: QuickSpec {
             describe("when presented from bar button item") {
                 
                 it("refreshes itself") {
-                    let sheet = createSheet()
                     sheet.present(in: UIViewController(), from: UIBarButtonItem())
                     
                     expect(sheet.refreshInvokeCount).to(equal(1))
                 }
                 
-                it("presents itself by calling presenter") {
+                it("calls presenter") {
                     var counter = 0
                     let completion = { counter += 1 }
-                    let sheet = createSheet()
                     let vc = UIViewController()
                     let item = UIBarButtonItem()
                     sheet.present(in: vc, from: item, completion: completion)
@@ -285,191 +366,153 @@ class ActionSheetTests: QuickSpec {
         }
         
         
-        // MARK: - Refresh Functions
-        
-        describe("when refreshing") {
+        describe("refreshing") {
             
-            var sheet: MockActionSheet!
-            var headerViewContainer: UIView!
-            var itemsView: ActionSheetTableView!
-            var buttonsView: ActionSheetTableView!
+            var presenter: MockActionSheetPresenter!
             var stackView: UIStackView!
             
             beforeEach {
+                presenter = MockActionSheetPresenter()
+                stackView = UIStackView()
                 sheet = createSheet()
-                sheet.appearance.groupMargins = 123
-                sheet.appearance.cornerRadius = 90
-                headerViewContainer = UIView(frame: .zero)
-                itemsView = createTableView()
-                buttonsView = createTableView()
-                stackView = UIStackView(frame: .zero)
-                sheet.headerViewContainer = headerViewContainer
-                sheet.itemsTableView = itemsView
-                sheet.buttonsTableView = buttonsView
                 sheet.stackView = stackView
+                sheet.presenter = presenter
+                sheet.refresh()
             }
             
-            context("sheet") {
-                
-                it("applies round corners") {
-                    sheet.refresh()
-                    
-                    expect(headerViewContainer.layer.cornerRadius).to(equal(90))
-                    expect(itemsView.layer.cornerRadius).to(equal(90))
-                    expect(buttonsView.layer.cornerRadius).to(equal(90))
-                }
-                
-                it("applies stack view spacing") {
-                    sheet.refresh()
-                    
-                    expect(sheet.stackView?.spacing).to(equal(123))
-                }
-                
-                it("asks presenter to refresh sheet") {
-                    let presenter = MockActionSheetPresenter()
-                    let sheet = MockActionSheet(items: [], presenter: presenter) { (_, _) in }
-                    sheet.refresh()
-                    
-                    expect(presenter.refreshActionSheetInvokeCount).to(equal(1))
-                }
+            it("refreshes header") {
+                expect(sheet.refreshHeaderInvokeCount).to(equal(1))
             }
             
-            context("header") {
-                
-                it("refreshes header visibility") {
-                    sheet.refresh()
-                    expect(sheet.refreshHeaderInvokeCount).to(equal(1))
-                }
-                
-                it("adds header view to header container") {
-                    let header = UIView(frame: .zero)
-                    sheet.headerView = header
-                    expect(header.constraints.count).to(equal(0))
-                    sheet.refresh()
-                    expect(headerViewContainer.subviews.count).to(equal(1))
-                    expect(headerViewContainer.subviews[0]).to(be(header))
-                    expect(header.translatesAutoresizingMaskIntoConstraints).to(beFalse())
-                }
+            it("refreshes items") {
+                expect(sheet.refreshItemsInvokeCount).to(equal(1))
             }
             
-            context("header visibility") {
-                
-                it("hides header container if header view is nil") {
-                    sheet.refreshHeader()
-                    expect(headerViewContainer.isHidden).to(beTrue())
-                }
-                
-                it("shows header container if header view is nil") {
-                    sheet.headerView = UIView(frame: .zero)
-                    sheet.refreshHeader()
-                    expect(headerViewContainer.isHidden).to(beFalse())
-                }
+            it("refreshes buttons") {
+                expect(sheet.refreshButtonsInvokeCount).to(equal(1))
             }
             
-            context("items") {
-                
-                it("applies appearances to all items") {
-                    let item1 = MockActionSheetItem(title: "foo")
-                    let item2 = MockActionSheetItem(title: "foo")
-                    sheet.setup(items: [item1, item2])
-                    sheet.refresh()
-                    
-                    expect(item1.applyAppearanceInvokeCount).to(equal(1))
-                    expect(item2.applyAppearanceInvokeCount).to(equal(1))
-                    expect(item1.applyAppearanceInvokeAppearances[0]).to(be(sheet.appearance))
-                    expect(item2.applyAppearanceInvokeAppearances[0]).to(be(sheet.appearance))
-                }
-                
-                it("applies background color") {
-                    sheet.appearance.itemsBackgroundColor = .yellow
-                    let view = createTableView()
-                    sheet.itemsTableView = view
-                    sheet.refresh()
-                    
-                    expect(view.backgroundColor).to(equal(.yellow))
-                }
-                
-                it("applies separator color") {
-                    sheet.appearance.itemsSeparatorColor = .yellow
-                    let view = createTableView()
-                    sheet.itemsTableView = view
-                    sheet.refresh()
-
-                    expect(view.separatorColor).to(equal(.yellow))
-                }
+            it("applies stack view spacing") {
+                expect(stackView.spacing).to(equal(15))
             }
             
-            context("buttons") {
-                
-                it("refreshes buttons visibility") {
-                    sheet.refresh()
-                    expect(sheet.refreshButtonsInvokeCount).to(equal(1))
-                }
-                
-                it("applies appearances to all buttons") {
-                    let item1 = MockActionSheetButton(title: "foo", value: true)
-                    let item2 = MockActionSheetButton(title: "foo", value: true)
-                    sheet.setup(items: [item1, item2])
-                    sheet.refresh()
-                    
-                    expect(item1.applyAppearanceInvokeCount).to(equal(1))
-                    expect(item2.applyAppearanceInvokeCount).to(equal(1))
-                    expect(item1.applyAppearanceInvokeAppearances[0]).to(be(sheet.appearance))
-                    expect(item2.applyAppearanceInvokeAppearances[0]).to(be(sheet.appearance))
-                }
-                
-                it("applies background color") {
-                    sheet.appearance.buttonsBackgroundColor = .yellow
-                    let view = createTableView()
-                    sheet.buttonsTableView = view
-                    sheet.refresh()
-                    
-                    expect(view.backgroundColor).to(equal(.yellow))
-                }
-                
-                it("applies separator color") {
-                    sheet.appearance.buttonsSeparatorColor = .yellow
-                    let view = createTableView()
-                    sheet.buttonsTableView = view
-                    sheet.refresh()
-                    
-                    expect(view.separatorColor).to(equal(.yellow))
-                }
-            }
-            
-            context("button visibility") {
-                
-                it("hides buttons if sheet has no buttons") {
-                    sheet.refreshButtons()
-                    expect(buttonsView.isHidden).to(beTrue())
-                }
-                
-                it("shows buttons if sheet has buttons") {
-                    sheet.setup(items: [MockActionSheetButton(title: "foo", value: true)])
-                    sheet.refreshButtons()
-                    expect(buttonsView.isHidden).to(beFalse())
-                }
+            it("calls presenter to refresh itself") {
+                expect(presenter.refreshActionSheetInvokeCount).to(equal(1))
             }
         }
         
         
-        // MARK: - Protected Functions
+        describe("refreshing header") {
+            
+            var container: ActionSheetHeaderView!
+            var height: NSLayoutConstraint!
+            
+            beforeEach {
+                container = ActionSheetHeaderView()
+                height = NSLayoutConstraint()
+                sheet = createSheet()
+                sheet.headerViewContainer = container
+                sheet.headerViewContainerHeight = height
+            }
+            
+            it("refreshes correctly if header view is nil") {
+                sheet.refreshHeader()
+                
+                expect(container.isHidden).to(beTrue())
+                expect(container.subviews.count).to(equal(0))
+                expect(height.constant).to(equal(0))
+            }
+            
+            it("refreshes correctly if header view is set") {
+                let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 200))
+                sheet.headerView = view
+                sheet.refreshHeader()
+                
+                expect(container.isHidden).to(beFalse())
+                expect(container.subviews.count).to(equal(1))
+                expect(container.subviews[0]).to(be(view))
+                expect(height.constant).to(equal(200))
+            }
+        }
+        
+        
+        describe("refreshing items") {
+            
+            var height: NSLayoutConstraint!
+            
+            beforeEach {
+                height = NSLayoutConstraint()
+                sheet = createSheet()
+                sheet.itemsTableViewHeight = height
+                ActionSheetItem.height = 12
+                ActionSheetOkButton.height = 13
+            }
+            
+            it("refreshes correctly if no items are set") {
+                sheet.refreshItems()
+                
+                expect(height.constant).to(equal(0))
+            }
+            
+            it("refreshes correctly if items are set") {
+                let item1 = ActionSheetItem(title: "foo")
+                let item2 = ActionSheetItem(title: "foo")
+                let button = ActionSheetOkButton(title: "foo")
+                sheet.setup(items: [item1, item2, button])
+                sheet.refreshItems()
+                
+                expect(height.constant).to(equal(24))
+            }
+        }
+        
+        
+        describe("refreshing buttons") {
+            
+            var height: NSLayoutConstraint!
+            
+            beforeEach {
+                height = NSLayoutConstraint()
+                sheet = createSheet()
+                sheet.buttonsTableViewHeight = height
+                ActionSheetItem.height = 12
+                ActionSheetOkButton.height = 13
+            }
+            
+            it("refreshes correctly if no items are set") {
+                sheet.refreshButtons()
+                
+                expect(height.constant).to(equal(0))
+            }
+            
+            it("refreshes correctly if items are set") {
+                let item = ActionSheetItem(title: "foo")
+                let button1 = ActionSheetOkButton(title: "foo")
+                let button2 = ActionSheetOkButton(title: "foo")
+                sheet.setup(items: [item, button1, button2])
+                sheet.refreshButtons()
+                
+                expect(height.constant).to(equal(26))
+            }
+        }
+        
         
         describe("handling tap on item") {
             
-            it("reloads data") {
-                let sheet = createSheet()
+            beforeEach {
+                sheet = createSheet()
                 sheet.reloadDataInvokeCount = 0
-                sheet.handleTap(on: createItem(""))
+            }
+            
+            it("reloads data") {
+                sheet.handleTap(on: ActionSheetItem(title: ""))
                 
                 expect(sheet.reloadDataInvokeCount).to(equal(1))
             }
             
             it("calls select action without dismiss if item has none tap action") {
                 var count = 0
-                let sheet = MockActionSheet(items: []) { (_, _) in count += 1 }
-                let item = createItem("")
-                item.tapBehavior = .none
+                sheet = MockActionSheet { (_, _) in count += 1 }
+                let item = ActionSheetItem(title: "", tapBehavior: .none)
                 sheet.handleTap(on: item)
                 
                 expect(count).to(equal(1))
@@ -478,34 +521,49 @@ class ActionSheetTests: QuickSpec {
             
             it("calls select action after dismiss if item has dismiss tap action") {
                 var count = 0
-                let sheet = MockActionSheet(items: []) { (_, _) in count += 1 }
-                let item = createItem("")
-                item.tapBehavior = .dismiss
+                sheet = MockActionSheet { (_, _) in count += 1 }
+                let item = ActionSheetItem(title: "", tapBehavior: .dismiss)
                 sheet.handleTap(on: item)
-//                expect(count).toEventually(equal(1), time)        TODO
-//                expect(sheet.dismissInvokeCount).to(equal(1))     TODO
+                
+                expect(count).to(equal(1))
+                expect(sheet.dismissInvokeCount).to(equal(1))
             }
         }
         
+        
         describe("margin at position") {
             
-            it("uses apperance if no superview value exists") {
+            beforeEach {
+                sheet = createSheet()
+            }
+            
+            it("ignores custom edge margins with smaller value than the default ones") {
                 let sheet = createSheet()
-                sheet.appearance.contentInset = 80
+                sheet.minimumContentInsets = UIEdgeInsets(top: -1, left: -1, bottom: -1, right: -1)
                 
-                expect(sheet.margin(at: .top)).to(equal(80))
-                expect(sheet.margin(at: .left)).to(equal(80))
-                expect(sheet.margin(at: .right)).to(equal(80))
-                expect(sheet.margin(at: .bottom)).to(equal(80))
+                expect(sheet.margin(at: .top)).to(equal(sheet.view.safeAreaInsets.top))
+                expect(sheet.margin(at: .left)).to(equal(sheet.view.safeAreaInsets.left))
+                expect(sheet.margin(at: .right)).to(equal(sheet.view.safeAreaInsets.right))
+                expect(sheet.margin(at: .bottom)).to(equal(sheet.view.safeAreaInsets.bottom))
+            }
+
+            it("uses custom edge margins with greated value than the default ones") {
+                let sheet = createSheet()
+                sheet.minimumContentInsets = UIEdgeInsets(top: 111, left: 222, bottom: 333, right: 444)
+                
+                expect(sheet.margin(at: .top)).to(equal(111))
+                expect(sheet.margin(at: .left)).to(equal(222))
+                expect(sheet.margin(at: .bottom)).to(equal(333))
+                expect(sheet.margin(at: .right)).to(equal(444))
             }
         }
         
         describe("reloading data") {
             
             it("reloads both table views") {
-                let view1 = MockTableView(frame: .zero)
-                let view2 = MockTableView(frame: .zero)
-                let sheet = createSheet()
+                let view1 = MockItemTableView(frame: .zero)
+                let view2 = MockButtonTableView(frame: .zero)
+                sheet = createSheet()
                 sheet.itemsTableView = view1
                 sheet.buttonsTableView = view2
                 sheet.reloadData()

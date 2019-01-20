@@ -11,5 +11,5 @@ before_install:
 
 script:
   - set -o pipefail && xcodebuild -project "Sheeeeeeeeet.xcodeproj" -scheme "Sheeeeeeeeet" -sdk "iphonesimulator" | xcpretty -c
-  - pod lib lint
+  - pod lib lint --allow-warnings
   - fastlane test

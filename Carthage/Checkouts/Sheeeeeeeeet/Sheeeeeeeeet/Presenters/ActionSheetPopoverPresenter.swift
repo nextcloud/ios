@@ -8,8 +8,8 @@
 
 /*
  
- This presenter will present action sheets as popovers, just
- as a regular UIAlertController is displayed on the iPad.
+ This presenter presents action sheets in a popover, just as
+ regular UIAlertControllers are displayed on an iPad.
  
  Since popovers have an arrow that should use the same color
  as the rest of the popover view, this presenter will remove
@@ -28,8 +28,8 @@ open class ActionSheetPopoverPresenter: NSObject, ActionSheetPresenter {
     open var events = ActionSheetPresenterEvents()
     open var isDismissableWithTapOnBackground = true
     
-    private var actionSheet: ActionSheet?
-    private weak var popover: UIPopoverPresentationController?
+    var actionSheet: ActionSheet?
+    weak var popover: UIPopoverPresentationController?
     
     
     // MARK: - ActionSheetPresenter
@@ -59,16 +59,7 @@ open class ActionSheetPopoverPresenter: NSObject, ActionSheetPresenter {
         guard let sheet = actionSheet else { return }
         sheet.headerViewContainer?.isHidden = true
         sheet.buttonsTableView?.isHidden = true
-        refreshPopoverAppearance(for: sheet)
-    }
-    
-    
-    // MARK: - Protected Functions
-    
-    open func refreshPopoverAppearance(for sheet: ActionSheet) {
-        let width = sheet.appearance.popover.width
-        let height = sheet.itemsHeight
-        sheet.preferredContentSize = CGSize(width: width, height: height)
+        sheet.preferredContentSize.height = sheet.itemsHeight
         popover?.backgroundColor = sheet.itemsTableView?.backgroundColor
     }
 }
@@ -92,7 +83,6 @@ extension ActionSheetPopoverPresenter: UIPopoverPresentationControllerDelegate {
 extension ActionSheetPopoverPresenter {
     
     func popover(for sheet: ActionSheet, in vc: UIViewController) -> UIPopoverPresentationController? {
-        sheet.modalPresentationStyle = .popover
         let popover = sheet.popoverPresentationController
         popover?.delegate = self
         return popover
@@ -100,9 +90,9 @@ extension ActionSheetPopoverPresenter {
     
     func setupSheetForPresentation(_ sheet: ActionSheet) {
         self.actionSheet = sheet
-        sheet.headerView = nil
         sheet.items = popoverItems(for: sheet)
         sheet.buttons = []
+        sheet.modalPresentationStyle = .popover
     }
 }
 

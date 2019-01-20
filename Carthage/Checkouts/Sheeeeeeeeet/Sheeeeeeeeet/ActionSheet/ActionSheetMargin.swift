@@ -9,10 +9,10 @@
 import UIKit
 
 public enum ActionSheetMargin {
+    
     case top, left, right, bottom
     
-    func value(in view: UIView?) -> CGFloat? {
-        guard let view = view else { return nil }
+    func value(in view: UIView) -> CGFloat {
         if #available(iOS 11.0, *) {
             let insets = view.safeAreaInsets
             switch self {
@@ -22,12 +22,11 @@ public enum ActionSheetMargin {
             case .bottom: return insets.bottom
             }
         } else {
-            return nil
+            return 0
         }
     }
     
-    func value(in view: UIView?, minimum: CGFloat) -> CGFloat {
-        guard let value = self.value(in: view) else { return minimum }
-        return max(value, minimum)
+    func value(in view: UIView, minimum: CGFloat) -> CGFloat {
+        return max(value(in: view), minimum)
     }
 }

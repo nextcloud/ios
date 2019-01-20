@@ -11,6 +11,17 @@ class MockActionSheet: ActionSheet {
     var refreshItemsInvokeCount = 0
     var refreshHeaderInvokeCount = 0
     var reloadDataInvokeCount = 0
+    var setupInvokeCount = 0
+    var setupItemsInvokeCount = 0
+    var setupItemsInvokeItems = [[ActionSheetItem]]()
+    
+    
+    private var _presentingViewController: UIViewController?
+    override var presentingViewController: UIViewController? {
+        get { return _presentingViewController }
+        set { _presentingViewController = newValue }
+    }
+    
     
     override func dismiss(completion: @escaping () -> ()) {
         super.dismiss { completion() }
@@ -46,5 +57,16 @@ class MockActionSheet: ActionSheet {
     override func reloadData() {
         super.reloadData()
         reloadDataInvokeCount += 1
+    }
+    
+    override func setup() {
+        super.setup()
+        setupInvokeCount += 1
+    }
+    
+    override func setup(items: [ActionSheetItem]) {
+        super.setup(items: items)
+        setupItemsInvokeCount += 1
+        setupItemsInvokeItems.append(items)
     }
 }

@@ -14,21 +14,35 @@ class ActionSheetLinkItemTests: QuickSpec {
     
     override func spec() {
         
-        let item = ActionSheetLinkItem(title: "foo", value: true, image: UIImage())
-        
-        describe("when created") {
+        describe("cell") {
             
-            it("applies provided values") {
-                expect(item.title).to(equal("foo"))
-                expect(item.value as? Bool).to(equal(true))
-                expect(item.image).toNot(beNil())
+            it("is of correct type") {
+                let item = ActionSheetLinkItem(title: "foo")
+                let cell = item.cell(for: UITableView())
+                
+                expect(cell is ActionSheetLinkItemCell).to(beTrue())
+                expect(cell.reuseIdentifier).to(equal(item.cellReuseIdentifier))
             }
         }
+    }
+}
+
+
+class ActionSheetLinkItemCellTests: QuickSpec {
+    
+    override func spec() {
         
-        describe("tap behavior") {
+        describe("refreshing") {
             
-            it("is dismiss") {
-                expect(item.tapBehavior).to(equal(ActionSheetItem.TapBehavior.dismiss))
+            it("applies accessory view with link icon") {
+                let item = ActionSheetLinkItem(title: "foo")
+                let cell = item.cell(for: UITableView()) as? ActionSheetLinkItemCell
+                cell?.linkIcon = UIImage()
+                cell?.refresh()
+                let imageView = cell?.accessoryView as? UIImageView
+                
+                expect(imageView?.image).toNot(beNil())
+                expect(imageView?.image).to(be(cell?.linkIcon))
             }
         }
     }

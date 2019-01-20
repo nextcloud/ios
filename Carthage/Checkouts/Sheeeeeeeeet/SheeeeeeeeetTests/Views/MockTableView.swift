@@ -9,8 +9,27 @@
 import UIKit
 import Sheeeeeeeeet
 
-class MockTableView: ActionSheetTableView {
+class MockItemTableView: ActionSheetItemTableView {
 
+    var deselectRowInvokeCount = 0
+    var deselectRowInvokePaths = [IndexPath]()
+    var deselectRowInvokeAnimated = [Bool]()
+    var reloadDataInvokeCount = 0
+    
+    override func deselectRow(at indexPath: IndexPath, animated: Bool) {
+        deselectRowInvokeCount += 1
+        deselectRowInvokePaths.append(indexPath)
+        deselectRowInvokeAnimated.append(animated)
+    }
+    
+    override func reloadData() {
+        super.reloadData()
+        reloadDataInvokeCount += 1
+    }
+}
+
+class MockButtonTableView: ActionSheetButtonTableView {
+    
     var deselectRowInvokeCount = 0
     var deselectRowInvokePaths = [IndexPath]()
     var deselectRowInvokeAnimated = [Bool]()

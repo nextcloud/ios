@@ -10,37 +10,33 @@ import Quick
 import Nimble
 import Sheeeeeeeeet
 
-class ActionSheetCancelButtonTests: ActionSheetItemTests {
+class ActionSheetCancelButtonTests: QuickSpec {
     
     override func spec() {
         
-        let item = ActionSheetCancelButton(title: "foo")
+        var item: ActionSheetCancelButton!
         
-        describe("when created") {
-            
-            it("applies provided values") {
-                expect(item.title).to(equal("foo"))
-            }
+        beforeEach {
+            item = ActionSheetCancelButton(title: "cancel")
+        }
+        
+        
+        describe("created instance") {
             
             it("is correctly setup") {
+                expect(item.title).to(equal("cancel"))
                 expect(item.value as? ActionSheetButton.ButtonType).to(equal(.cancel))
-                expect(item.isCancelButton).to(beTrue())
             }
         }
         
-        describe("applying appearance") {
+        
+        describe("cell") {
             
-            it("applies standard copy if no custom appearance is set") {
-                item.applyAppearance(ActionSheetAppearance.standard)
-                expect(self.compare(item.appearance, ActionSheetAppearance.standard.cancelButton)).to(beTrue())
-            }
-            
-            it("applies custom appearance if set") {
-                let standard = ActionSheetAppearance.standard
-                let custom = ActionSheetAppearance(copy: standard)
-                item.customAppearance = custom.cancelButton
-                item.applyAppearance(standard)
-                expect(item.appearance).to(be(custom.cancelButton))
+            it("is of correct type") {
+                let cell = item.cell(for: UITableView())
+                
+                expect(cell is ActionSheetCancelButtonCell).to(beTrue())
+                expect(cell.reuseIdentifier).to(equal(item.cellReuseIdentifier))
             }
         }
     }
