@@ -34,7 +34,7 @@ class NCManageDatabase: NSObject {
         
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         
-        let configCompact = Realm.Configuration(
+        var configCompact = Realm.Configuration(
             
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
             
@@ -47,6 +47,13 @@ class NCManageDatabase: NSObject {
             return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
         })
         
+        // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
+        if NCBrandOptions.sharedInstance.use_database_encryption {
+            if let keyData = Data(base64Encoded: NCBrandOptions.sharedInstance.databaseEncryptionKey) {
+                configCompact.encryptionKey = keyData
+            }
+        }
+        
         do {
             // Realm is compacted on the first open if the configuration block conditions were met.
             _ = try Realm(configuration: configCompact)
@@ -54,7 +61,7 @@ class NCManageDatabase: NSObject {
             // handle error compacting or opening Realm
         }
         
-        let config = Realm.Configuration(
+        var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
             schemaVersion: 41,
@@ -113,6 +120,14 @@ class NCManageDatabase: NSObject {
                 */
         })
 
+        
+        // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
+        if NCBrandOptions.sharedInstance.use_database_encryption {
+            if let keyData = Data(base64Encoded: NCBrandOptions.sharedInstance.databaseEncryptionKey) {
+                config.encryptionKey = keyData
+            }
+        }
+        
         Realm.Configuration.defaultConfiguration = config
         _ = try! Realm()
     }

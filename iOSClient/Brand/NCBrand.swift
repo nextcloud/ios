@@ -90,6 +90,10 @@ class NCBrandColor: NSObject {
     // Capabilities Group
     @objc public let capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
     
+    // Database key encryption key 64byte AES-256+SHA2
+    @objc public var databaseEncryptionKey:             String = "LdFNb00N+ywBuNGJRjCUuDt1zIXK/PX82ZNHWochfu1is8TorIERQi1aJsAMLC3rK2BB0uMjh2kNZ9Dcwx/G5Q=="
+
+    
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public let use_default_auto_upload:           Bool = false
@@ -98,7 +102,8 @@ class NCBrandColor: NSObject {
     @objc public let use_themingLogo:                   Bool = false     
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
-    
+    @objc public let use_database_encryption:           Bool = false
+
     @objc public let disable_intro:                     Bool = false
     @objc public let disable_request_login_url:         Bool = false
     @objc public let disable_multiaccount:              Bool = false
