@@ -36,7 +36,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
     var cryptated: Bool = false
     var session: String = ""
     weak var delegate: createFormUploadAssetsDelegate?
-    
+    let requestOptions = PHImageRequestOptions()
+    var imagePreview: UIImage?
+    let targetSizeImagePreview = CGSize(width:100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @objc convenience init(serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
@@ -55,7 +57,18 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         self.session = session
         self.delegate = delegate
         
-        self.initializeForm()
+        requestOptions.resizeMode = PHImageRequestOptionsResizeMode.exact
+        requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+        requestOptions.isSynchronous = true
+        
+        if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image {
+            PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, info) in
+                self.imagePreview = image
+                self.initializeForm()
+            })
+        } else {
+            self.initializeForm()
+        }
     }
     
     //MARK: XLFormDescriptorDelegate
@@ -67,6 +80,24 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
+        
+        // Section Photo Editor only for one photo
+        
+        if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image && self.imagePreview != nil {
+            
+            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_modify_photo_", comment: ""))
+            form.addFormSection(section)
+            
+            row = XLFormRowDescriptor(tag: "ButtonPhotoEditor", rowType: XLFormRowDescriptorTypeButton, title: NSLocalizedString("_modify_photo_", comment: ""))
+            row.action.formSelector = #selector(photoEditor(_:))
+            
+            row.cellConfig["imageView.image"] = self.imagePreview
+            row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.brandElement
+            row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
+            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+            
+            section.addFormRow(row)
+        }
         
         // Section: Destination Folder
         
@@ -106,25 +137,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         section.addFormRow(row)
 
-        // Section Photo Editor only for one photo
-
-        if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image {
-            
-            section = XLFormSectionDescriptor.formSection()
-            form.addFormSection(section)
-
-            row = XLFormRowDescriptor(tag: "ButtonPhotoEditor", rowType: XLFormRowDescriptorTypeButton, title: NSLocalizedString("_modify_photo_", comment: ""))
-            row.action.formSelector = #selector(photoEditor(_:))
-            
-            let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "modifyPhoto")!, multiplier:1, color: NCBrandColor.sharedInstance.icon) as UIImage
-            row.cellConfig["imageView.image"] = imageFolder
-            row.cellConfig["textLabel.textColor"] = UIColor.black
-            row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.left.rawValue
-            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-            
-            section.addFormRow(row)
-        }
-        
         // Section Mode filename
         
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_mode_filename_", comment: ""))
@@ -396,11 +408,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         self.deselectFormRow(sender)
         
-        let requestOptions = PHImageRequestOptions()
-        requestOptions.resizeMode = PHImageRequestOptionsResizeMode.exact
-        requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
-        requestOptions.isSynchronous = true
-        
         PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: PHImageManagerMaximumSize, contentMode: PHImageContentMode.default, options: requestOptions, resultHandler: { (image, info) in
             
             let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
@@ -427,8 +434,13 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         if let asset = fetchResult.firstObject {
             self.assets = NSMutableArray(array: [asset])
         }
-
-        print("done")
+        
+        // Preview
+        PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, info) in
+            let row : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonPhotoEditor")!
+            row.cellConfig["imageView.image"] = image
+            self.updateFormRow(row)
+        })
     }
     
     func canceledEditing() {
