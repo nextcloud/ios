@@ -118,6 +118,10 @@ class NCManageDatabase: NSObject {
                     }
                 }
                 */
+                
+                if oldSchemaVersion < 41 {
+                    migration.deleteData(forType: tableActivity.className())
+                }
         })
 
         
