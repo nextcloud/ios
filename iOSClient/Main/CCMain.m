@@ -3531,7 +3531,7 @@
                                     }];
         }
         
-        if ([NCUtility.sharedInstance isEditImage:self.metadata.fileNameView] != nil && !_metadataFolder.e2eEncrypted && self.metadata.session == k_metadataStatusNormal) {
+        if ([NCUtility.sharedInstance isEditImage:self.metadata.fileNameView] != nil && !_metadataFolder.e2eEncrypted && self.metadata.status == k_metadataStatusNormal) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_modify_photo_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
