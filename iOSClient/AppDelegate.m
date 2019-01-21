@@ -1512,14 +1512,7 @@
             }
         });
     }
-    
-    if (([actualVersion compare:@"2.22.9" options:NSNumericSearch] == NSOrderedAscending)) {
-        
-        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
-        [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:nil];
-        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:nil];
-    }
-    
+
     return YES;
 }
 

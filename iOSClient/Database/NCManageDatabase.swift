@@ -121,6 +121,9 @@ class NCManageDatabase: NSObject {
                 
                 if oldSchemaVersion < 41 {
                     migration.deleteData(forType: tableActivity.className())
+                    migration.deleteData(forType: tableMetadata.className())
+                    migration.deleteData(forType: tablePhotos.className())
+                    migration.deleteData(forType: tableDirectory.className())
                 }
         })
 
