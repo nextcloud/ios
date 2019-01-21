@@ -51,7 +51,7 @@
             return NSLocalizedString(@"_not_possible_connect_to_server_", nil);
             break;
         case kCFURLErrorUserAuthenticationRequired:     // -1013
-            return NSLocalizedString(@"_user_autentication_required_", nil);
+            return NSLocalizedString(@"_user_authentication_required_", nil);
             break;
         case kCFURLErrorSecureConnectionFailed:         // -1200
             return NSLocalizedString(@"_ssl_connection_error_", nil);
