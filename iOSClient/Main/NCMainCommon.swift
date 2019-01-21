@@ -24,7 +24,7 @@
 import Foundation
 import TLPhotoPicker
 
-class NCMainCommon: NSObject {
+class NCMainCommon: NSObject, PhotoEditorDelegate {
     
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
@@ -33,6 +33,7 @@ class NCMainCommon: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let operationQueueReloadDatasource = OperationQueue.main
+    var metadata: tableMetadata?
     
     //MARK: -
     
@@ -908,6 +909,60 @@ class NCMainCommon: NSObject {
         self.reloadDatasource(ServerUrl: serverUrl, fileID: nil, action: k_action_NULL)
         self.appDelegate.activeMedia.reloadDatasource(nil, action: Int(k_action_NULL))
     }
+    
+    @objc func editPhoto(_ metadata: tableMetadata, viewController: UIViewController) {
+        guard let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView) else {
+            return
+        }
+        guard let image = UIImage(contentsOfFile: path) else {
+            return
+        }
+        
+        self.metadata = metadata
+
+        let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
+        
+        photoEditor.image = image
+        photoEditor.photoEditorDelegate = self
+        photoEditor.hiddenControls = [.save, .share, .sticker]
+        
+        viewController.present(photoEditor, animated: true, completion: nil)
+    }
+    
+    func doneEditing(image: UIImage) {
+        guard let metadata = self.metadata else {
+            return
+        }
+        guard let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView) else {
+            return
+        }
+        guard let filetype = NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) else {
+            return
+        }
+        if filetype == "PNG" {
+            do {
+                try image.pngData()?.write(to: path.url, options: .atomic)
+            } catch { return }
+        } else if filetype == "JPG" {
+            let imageData = image.jpegData(compressionQuality: 1)
+            do {
+                try imageData?.write(to: path.url)
+            } catch { return }
+        }
+        // write icon
+        CCGraphics.createNewImage(from: metadata.fileNameView, fileID: metadata.fileID, extension: filetype, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+
+        // upload
+        metadata.session = k_upload_session
+        metadata.sessionSelector = selectorUploadFile
+        metadata.status = Int(k_metadataStatusWaitUpload)
+        
+        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+    }
+    
+    func canceledEditing() {
+        print("Canceled")
+    }
 }
     
 //MARK: -
@@ -1025,6 +1080,12 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             // Synchronized
             if selector == selectorDownloadSynchronize {
                 appDelegate.updateApplicationIconBadgeNumber()
+                return
+            }
+            
+            // Modify Photo
+            if selector == selectorDownloadEditPhoto {
+                NCMainCommon.sharedInstance.editPhoto(metadata, viewController: appDelegate.activeMain)
                 return
             }
             

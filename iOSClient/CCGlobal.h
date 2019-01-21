@@ -189,6 +189,7 @@
 
 // Selector
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
+#define selectorDownloadEditPhoto                       @"downloadEditPhoto"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"

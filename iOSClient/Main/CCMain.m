@@ -3531,6 +3531,23 @@
                                     }];
         }
         
+        if ([NCUtility.sharedInstance isEditImage:self.metadata.fileNameView] != nil && !_metadataFolder.e2eEncrypted && self.metadata.session == k_metadataStatusNormal) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_modify_photo_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        self.metadata.session = k_download_session;
+                                        self.metadata.sessionError = @"";
+                                        self.metadata.sessionSelector = selectorDownloadEditPhoto;
+                                        self.metadata.status = k_metadataStatusWaitDownload;
+                                        (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+                                        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                                    }];
+        }
+        
         if (!_metadataFolder.e2eEncrypted) {
             
             NSString *title;
