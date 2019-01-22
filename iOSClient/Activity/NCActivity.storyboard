@@ -76,12 +76,12 @@
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="fcO-YL-MuT" secondAttribute="trailing" constant="5" id="1pG-qk-inI"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="5" id="CRN-18-SeU"/>
-                                                <constraint firstItem="KpO-no-BMl" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" constant="50" id="Geo-dG-qcV"/>
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="8" id="Q2v-si-0w5"/>
                                                 <constraint firstAttribute="bottom" secondItem="KpO-no-BMl" secondAttribute="bottom" id="ULe-Tt-dBj"/>
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="faC-by-km5"/>
                                                 <constraint firstItem="KpO-no-BMl" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" id="l0Y-89-eTm"/>
                                                 <constraint firstAttribute="trailing" secondItem="KpO-no-BMl" secondAttribute="trailing" id="vWj-9H-JLc"/>
+                                                <constraint firstItem="KpO-no-BMl" firstAttribute="top" secondItem="fcO-YL-MuT" secondAttribute="bottom" constant="29.666666666666668" id="z1e-vv-qJb"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="zo1-7W-YZr"/>
                                             </constraints>
                                         </tableViewCellContentView>

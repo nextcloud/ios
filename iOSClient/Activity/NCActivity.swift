@@ -106,14 +106,14 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 30
+        return 50
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 30))
         view.backgroundColor = UIColor.white
-        let label = UILabel(frame: CGRect(x: 5, y: 0, width: tableView.bounds.width - 30, height: 30))
+        let label = UILabel(frame: CGRect(x: 35, y: 0, width: tableView.bounds.width - 35, height: 30))
         label.font = UIFont.boldSystemFont(ofSize: 18)
         label.textColor = UIColor.black
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
