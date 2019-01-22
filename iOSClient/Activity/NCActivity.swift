@@ -23,6 +23,7 @@
 
 import Foundation
 import UIKit
+import SwiftRichString
 
 class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
@@ -152,11 +153,15 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 let keys = subject.keyTags()
                 for key in keys {
                     if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.activeAccount, idActivity: tableActivity.idActivity, key: key) {
-                        subject = subject.replacingOccurrences(of: "{\(key)}", with: result.name)
+                        subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                     }
                 }
                 
-                cell.subject.text = subject
+                let normal = Style { $0.font = UIFont.systemFont(ofSize: 17)}
+                let bold = Style { $0.font = SystemFonts.Helvetica_Bold.font(size: 17) }
+                let myGroup = StyleGroup(base: normal, ["bold": bold])
+                
+                cell.subject.attributedText = subject.set(style: myGroup)
             }
             
             return cell

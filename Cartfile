@@ -11,3 +11,4 @@ github "jdg/MBProgressHUD" ~> 1.1.0
 github "realm/realm-cocoa"
 github "SVGKit/SVGKit" "2.x"
 github "WeTransfer/WeScan" == 0.9.1
+github "malcommac/SwiftRichString"

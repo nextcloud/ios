@@ -406,6 +406,7 @@
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F78AA20521F783E900D0F205 /* SwiftRichString.framework */; };
 		F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD3F21903CC20088454D /* NCGridCell.swift */; };
 		F78ACD4221903CE00088454D /* NCListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4121903CE00088454D /* NCListCell.swift */; };
 		F78ACD4421903CF20088454D /* NCListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4321903CF20088454D /* NCListCell.xib */; };
@@ -1166,6 +1167,7 @@
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
 		F78316861C0CB3CA00C43975 /* CCShareUserOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareUserOC.h; sourceTree = "<group>"; };
 		F78316871C0CB3CA00C43975 /* CCShareUserOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareUserOC.m; sourceTree = "<group>"; };
+		F78AA20521F783E900D0F205 /* SwiftRichString.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftRichString.framework; path = Carthage/Build/iOS/SwiftRichString.framework; sourceTree = "<group>"; };
 		F78ACD3F21903CC20088454D /* NCGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCGridCell.swift; sourceTree = "<group>"; };
 		F78ACD4121903CE00088454D /* NCListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCListCell.swift; sourceTree = "<group>"; };
 		F78ACD4321903CF20088454D /* NCListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCListCell.xib; sourceTree = "<group>"; };
@@ -1525,6 +1527,7 @@
 				F72D0FFD210B6638009C96B7 /* GoogleToolboxForMac.framework in Frameworks */,
 				F72D0FF9210B6638009C96B7 /* Protobuf.framework in Frameworks */,
 				F72D0FFB210B6638009C96B7 /* FirebaseCore.framework in Frameworks */,
+				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7C40BE321998C060004137E /* PDFGenerator.framework in Frameworks */,
 				F72D1000210B6638009C96B7 /* FirebaseInstanceID.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
@@ -2985,6 +2988,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F78AA20521F783E900D0F205 /* SwiftRichString.framework */,
 				F72E0B9C21AD60BC00898D7B /* WeScan.framework */,
 				F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */,
 				F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */,
@@ -3448,6 +3452,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjack.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjackSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WeScan.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
 			);
 			outputPaths = (
 			);
