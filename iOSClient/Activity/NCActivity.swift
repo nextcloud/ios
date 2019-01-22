@@ -22,10 +22,11 @@
 //
 
 import Foundation
+import UIKit
 
 class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
-    @IBOutlet fileprivate weak var tableView: UITableView!
+    @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -33,8 +34,11 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         super.viewDidLoad()
     
         // empty Data Source
-        self.tableView.emptyDataSetDelegate = self;
-        self.tableView.emptyDataSetSource = self;
+        tableView.emptyDataSetDelegate = self;
+        tableView.emptyDataSetSource = self;
+        
+        tableView.estimatedRowHeight = 120
+        tableView.tableFooterView = UIView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,16 +53,67 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return 1
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as! UITableViewCell
-        return cell
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as? TableViewCell {
+            return cell
+        }
+        
+        return UITableViewCell()
+    }
+}
+
+class CollectionViewCell: UICollectionViewCell {
+    
+    @IBOutlet weak var imageView: UIImageView!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
     }
     
-    
+}
 
+class TableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    @IBOutlet weak var collectionView: UICollectionView!
+    var imageArray = [String] ()
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        
+        imageArray = ["1.jpeg","2.jpeg","3.jpeg","4.jpeg","5.jpeg","6.jpeg","7.jpeg","8.jpeg","9.jpeg","10.jpeg"]
+        
+        // Initialization code
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
+        let size = CGSize(width: 120, height: 120)
+        return size
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+      
+        if let cell: CollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? CollectionViewCell {
+            let randomNumber = Int(arc4random_uniform(UInt32(imageArray.count)))
+            cell.imageView.image = UIImage(named: imageArray[randomNumber])
+            return cell
+        }
+        
+        return UICollectionViewCell()
+    }
 }
