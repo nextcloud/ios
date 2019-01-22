@@ -39,6 +39,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         
         tableView.estimatedRowHeight = 120
         tableView.tableFooterView = UIView()
+        
+        self.title = NSLocalizedString("_activity_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,14 +54,33 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         //loadListingTrash()
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+    // MARK: DZNEmpty
+    
+    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
+        return NCBrandColor.sharedInstance.backgroundView
     }
     
+    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "activityNoRecord"), multiplier: 2, color: NCBrandColor.sharedInstance.graySoft)
+    }
+    
+    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        let text = "\n"+NSLocalizedString("_no_activity_", comment: "")
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
+    }
+
+    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 0
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as? TableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? activityTableViewCell {
             return cell
         }
         
@@ -67,19 +88,11 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
 }
 
-class CollectionViewCell: UICollectionViewCell {
-    
-    @IBOutlet weak var imageView: UIImageView!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
-}
 
-class TableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     @IBOutlet weak var collectionView: UICollectionView!
+    
     var imageArray = [String] ()
     
     override func awakeFromNib() {
@@ -108,7 +121,7 @@ class TableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
       
-        if let cell: CollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? CollectionViewCell {
+        if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? activityCollectionViewCell {
             let randomNumber = Int(arc4random_uniform(UInt32(imageArray.count)))
             cell.imageView.image = UIImage(named: imageArray[randomNumber])
             return cell
@@ -116,4 +129,14 @@ class TableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
         
         return UICollectionViewCell()
     }
+}
+
+class activityCollectionViewCell: UICollectionViewCell {
+    
+    @IBOutlet weak var imageView: UIImageView!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+    
 }
