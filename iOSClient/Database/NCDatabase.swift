@@ -74,6 +74,7 @@ class tableActivity: Object {
     let subjectRichItem = List<tableActivitySubjectRich>()
     @objc dynamic var icon = ""
     @objc dynamic var link = ""
+    @objc dynamic var message = ""
     @objc dynamic var objectType = ""
     @objc dynamic var objectID: Double = 0
     @objc dynamic var objectName = ""

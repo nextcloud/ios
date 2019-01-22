@@ -30,11 +30,12 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xNG-sf-PnA">
-                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                    <rect key="frame" x="5" y="0.0" width="25" height="25"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="50" id="Lbv-yi-vAh"/>
-                                                        <constraint firstAttribute="height" constant="50" id="TML-VJ-2i3"/>
+                                                        <constraint firstAttribute="width" constant="25" id="Lbv-yi-vAh"/>
+                                                        <constraint firstAttribute="height" constant="25" id="TML-VJ-2i3"/>
                                                     </constraints>
+                                                    <directionalEdgeInsets key="directionalLayoutMargins" top="8" leading="8" bottom="8" trailing="8"/>
                                                 </imageView>
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KpO-no-BMl">
                                                     <rect key="frame" x="0.0" y="50.000000000000007" width="375" height="69.666666666666686"/>
@@ -54,7 +55,7 @@
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J5b-2X-AsF">
-                                                                        <rect key="frame" x="0.0" y="37" width="50" height="50"/>
+                                                                        <rect key="frame" x="0.0" y="34.999999999999993" width="50" height="50"/>
                                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                     </imageView>
                                                                 </subviews>
@@ -65,20 +66,30 @@
                                                         </collectionViewCell>
                                                     </cells>
                                                 </collectionView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fcO-YL-MuT">
+                                                    <rect key="frame" x="38" y="0.0" width="332" height="20.333333333333332"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="xNG-sf-PnA" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" id="CRN-18-SeU"/>
+                                                <constraint firstAttribute="trailing" secondItem="fcO-YL-MuT" secondAttribute="trailing" constant="5" id="1pG-qk-inI"/>
+                                                <constraint firstItem="xNG-sf-PnA" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="5" id="CRN-18-SeU"/>
                                                 <constraint firstItem="KpO-no-BMl" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" constant="50" id="Geo-dG-qcV"/>
+                                                <constraint firstItem="fcO-YL-MuT" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="8" id="Q2v-si-0w5"/>
                                                 <constraint firstAttribute="bottom" secondItem="KpO-no-BMl" secondAttribute="bottom" id="ULe-Tt-dBj"/>
+                                                <constraint firstItem="fcO-YL-MuT" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="faC-by-km5"/>
                                                 <constraint firstItem="KpO-no-BMl" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" id="l0Y-89-eTm"/>
                                                 <constraint firstAttribute="trailing" secondItem="KpO-no-BMl" secondAttribute="trailing" id="vWj-9H-JLc"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="zo1-7W-YZr"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
                                             <outlet property="collectionView" destination="KpO-no-BMl" id="xvR-CA-cZx"/>
                                             <outlet property="icon" destination="xNG-sf-PnA" id="hxb-Vr-oQX"/>
+                                            <outlet property="subject" destination="fcO-YL-MuT" id="L4q-rj-l04"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

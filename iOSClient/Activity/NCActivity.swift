@@ -88,12 +88,45 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         tableView.reloadData()
     }
     
+    // MARK: TableView
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return sectionDate.count
     }
-        
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return datasource.count
+        let startDate = sectionDate[section]
+        let endDate: Date = {
+            let components = DateComponents(day: 1, second: -1)
+            return Calendar.current.date(byAdding: components, to: startDate)!
+        }()
+        
+        let results = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
+        return results.count
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 30))
+        view.backgroundColor = UIColor.white
+        let label = UILabel(frame: CGRect(x: 5, y: 0, width: tableView.bounds.width - 30, height: 30))
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.textColor = UIColor.black
+        label.text = CCUtility.getTitleSectionDate(sectionDate[section])
+        view.addSubview(label)
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -112,6 +145,19 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                     }
                 }
             }
+            if tableActivity.subjectRich.count > 0 {
+                
+                var subject = tableActivity.subjectRich
+                
+                let keys = subject.keyTags()
+                for key in keys {
+                    if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.activeAccount, idActivity: tableActivity.idActivity, key: key) {
+                        subject = subject.replacingOccurrences(of: "{\(key)}", with: result.name)
+                    }
+                }
+                
+                cell.subject.text = subject
+            }
             
             return cell
         }
@@ -120,12 +166,12 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
 }
 
-
 class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var icon: UIImageView!
-    
+    @IBOutlet weak var subject: UILabel!
+
     var imageArray = [String] ()
     
     override func awakeFromNib() {
@@ -172,4 +218,19 @@ class activityCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
     }
     
+}
+
+// MARK: Extension
+
+extension String
+{
+    func keyTags() -> [String] {
+        if let regex = try? NSRegularExpression(pattern: "\\{[a-z0-9]+\\}", options: .caseInsensitive) {
+            let string = self as NSString
+            return regex.matches(in: self, options: [], range: NSRange(location: 0, length: string.length)).map {
+                string.substring(with: $0.range).replacingOccurrences(of: "[\\{\\}]", with: "", options: .regularExpression)
+            }
+        }
+        return []
+    }
 }

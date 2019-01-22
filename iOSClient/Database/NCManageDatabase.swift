@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 41,
+            schemaVersion: 42,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -98,6 +98,7 @@ class NCManageDatabase: NSObject {
             // 39 : Version 2.22.9.1
             // 40 : Version 2.22.9.3
             // 41 : Version 2.22.9.4
+            // 42 : Version 2.22.9.5
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -638,6 +639,7 @@ class NCManageDatabase: NSObject {
                     
                     addObjectActivity.icon = activity.icon
                     addObjectActivity.link = activity.link
+                    addObjectActivity.message = activity.message
                     addObjectActivity.objectType = activity.object_type
                     addObjectActivity.objectID = Double(activity.object_id)
                     addObjectActivity.objectName = activity.object_name
@@ -648,6 +650,16 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
+    }
+    
+    @objc func getActivitySubjectRich(account: String, idActivity: Double, key: String) -> tableActivitySubjectRich? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableActivitySubjectRich.self).filter("account = %@ && idActivity == %d && key = %@", account, idActivity, key).first
+        
+        return results.map { tableActivitySubjectRich.init(value:$0) }
     }
     
     @objc func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
