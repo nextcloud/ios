@@ -29,6 +29,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var datasource = [tableActivity]()
+    var sectionDate = [Date]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,8 +52,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
     
-        //loadDatasource()
-        //loadListingTrash()
+        loadDatasource()
     }
     
     // MARK: DZNEmpty
@@ -74,13 +75,44 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         return true
     }
     
+    func loadDatasource() {
+        datasource = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
+        for tableActivity in datasource {
+            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
+                continue
+            }
+            if !sectionDate.contains(date) {
+                sectionDate.append(date)
+            }
+        }
+        tableView.reloadData()
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sectionDate.count
+    }
+        
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return datasource.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? activityTableViewCell {
+            
+            let tableActivity = datasource[indexPath.row]
+            
+            if tableActivity.icon.count > 0 {
+                DispatchQueue.global().async {
+                    let encodedString = tableActivity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                    if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
+                        DispatchQueue.main.async {
+                            cell.icon.image = UIImage(data: data)
+                        }
+                    }
+                }
+            }
+            
             return cell
         }
         
@@ -92,6 +124,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var icon: UIImageView!
     
     var imageArray = [String] ()
     
