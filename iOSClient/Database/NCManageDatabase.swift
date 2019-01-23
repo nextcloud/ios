@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 42,
+            schemaVersion: 43,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -99,6 +99,7 @@ class NCManageDatabase: NSObject {
             // 40 : Version 2.22.9.3
             // 41 : Version 2.22.9.4
             // 42 : Version 2.22.9.5
+            // 43 : Version 2.22.9.5
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -624,6 +625,23 @@ class NCManageDatabase: NSObject {
 
                                 realm.add(addObjectActivitySubjectRich, update: true)
                             }
+                        }
+                    }
+                    
+                    if activity.previews.count > 0 {
+                        for case let activityPreview as [String:AnyObject] in activity.previews {
+                            let addObjectActivityPreview = tableActivityPreview()
+                            addObjectActivityPreview.account = account
+                            addObjectActivityPreview.idActivity = Double(activity.idActivity)
+                            addObjectActivityPreview.fileId = activityPreview["fileId"] as! Double
+                            addObjectActivityPreview.id = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
+                            addObjectActivityPreview.source = activityPreview["source"] as? String ?? ""
+                            addObjectActivityPreview.link = activityPreview["link"] as? String ?? ""
+                            addObjectActivityPreview.mimeType = activityPreview["mimeType"] as? String ?? ""
+                            addObjectActivityPreview.view = activityPreview["view"] as? String ?? ""
+                            addObjectActivityPreview.isMimeTypeIcon = activityPreview["isMimeTypeIcon"] as! Bool
+                            
+                            realm.add(addObjectActivityPreview, update: true)
                         }
                     }
                     

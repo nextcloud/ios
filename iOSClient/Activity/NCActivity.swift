@@ -137,7 +137,9 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? activityTableViewCell {
             
             let tableActivity = datasource[indexPath.row]
-            
+
+            cell.idActivity = tableActivity.idActivity
+
             // icon
             if tableActivity.icon.count > 0 {
                 let fileNameIcon = (tableActivity.icon as NSString).lastPathComponent
@@ -221,18 +223,14 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
-
-    var imageArray = [String] ()
+    
+    var idActivity: Double = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         collectionView.delegate = self
         collectionView.dataSource = self
-        
-        imageArray = ["1.jpeg","2.jpeg","3.jpeg","4.jpeg","5.jpeg","6.jpeg","7.jpeg","8.jpeg","9.jpeg","10.jpeg"]
-        
-        // Initialization code
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
@@ -251,8 +249,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
       
         if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? activityCollectionViewCell {
-            let randomNumber = Int(arc4random_uniform(UInt32(imageArray.count)))
-            cell.imageView.image = UIImage(named: imageArray[randomNumber])
+            //cell.imageView.image = UIImage(named: imageArray[randomNumber])
             return cell
         }
         

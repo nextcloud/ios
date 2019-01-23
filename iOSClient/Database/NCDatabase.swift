@@ -103,6 +103,23 @@ class tableActivitySubjectRich: Object {
     }
 }
 
+class tableActivityPreview: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var idActivity: Double = 0
+    @objc dynamic var id = ""
+    @objc dynamic var source = ""
+    @objc dynamic var link = ""
+    @objc dynamic var mimeType = ""
+    @objc dynamic var fileId: Double = 0
+    @objc dynamic var view = ""
+    @objc dynamic var isMimeTypeIcon: Bool = false
+
+    override static func primaryKey() -> String {
+        return "id"
+    }
+}
+
 class tableCapabilities: Object {
     
     @objc dynamic var account = ""
