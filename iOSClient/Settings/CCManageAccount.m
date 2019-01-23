@@ -326,7 +326,7 @@
     pickerAccount.rowDescriptor.selectorOptions = listAccount;
     pickerAccount.rowDescriptor.value = appDelegate.activeAccount;
     
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-avatar.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl], appDelegate.activeUser];
 
     UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
     if (avatar) {

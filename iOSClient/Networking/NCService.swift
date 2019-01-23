@@ -299,7 +299,7 @@ class NCService: NSObject {
                 DispatchQueue.global(qos: .default).async {
                     
                     let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-avatar.png"
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
                     guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
                         DispatchQueue.main.async {

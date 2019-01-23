@@ -929,6 +929,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
+    since = 0;
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json&since=%ld", (long)since]];
     //serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&previews=true"]];
     

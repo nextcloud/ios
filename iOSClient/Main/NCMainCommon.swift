@@ -723,7 +723,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             if metadata.account != appDelegate.activeAccount {
                 let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account))
                 if tableAccount != nil {
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(tableAccount?.user, activeUrl: tableAccount?.url) + "-avatar.png"
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(tableAccount!.user, activeUrl: tableAccount!.url) + "-" + tableAccount!.user + ".png"
                     var avatar = UIImage.init(contentsOfFile: fileNamePath)
                     if avatar != nil {
                         let avatarImageView = CCAvatar.init(image: avatar, borderColor: UIColor.black, borderWidth: 0.5)

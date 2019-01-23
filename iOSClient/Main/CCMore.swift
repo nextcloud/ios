@@ -230,7 +230,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     @objc func changeUserProfile() {
      
-        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar.png"
+        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
         var quota: String = ""
         
         if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
