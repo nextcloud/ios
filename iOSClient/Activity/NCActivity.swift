@@ -139,6 +139,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             let tableActivity = datasource[indexPath.row]
 
             cell.idActivity = tableActivity.idActivity
+            cell.account = tableActivity.account
 
             // icon
             if tableActivity.icon.count > 0 {
@@ -225,12 +226,22 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     @IBOutlet weak var subject: UILabel!
     
     var idActivity: Double = 0
+    var account: String = ""
+    var datasource = [tableActivityPreview]()
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        loadDatasource()
+    }
+    
+    func loadDatasource() {
+        print(idActivity)
+        datasource = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
+        collectionView.reloadData()
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
