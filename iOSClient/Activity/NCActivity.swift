@@ -41,6 +41,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         tableView.emptyDataSetSource = self;
         
         tableView.estimatedRowHeight = 120
+        tableView.allowsSelection = false
+        tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
         
         self.title = NSLocalizedString("_activity_", comment: "")
@@ -114,8 +116,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 30))
         view.backgroundColor = UIColor.white
-        let label = UILabel(frame: CGRect(x: 35, y: 0, width: tableView.bounds.width - 35, height: 30))
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        let label = UILabel(frame: CGRect(x: 55, y: 0, width: tableView.bounds.width - 55, height: 30))
+        label.font = UIFont.boldSystemFont(ofSize: 17)
         label.textColor = UIColor.black
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         view.addSubview(label)
@@ -136,6 +138,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             
             let tableActivity = datasource[indexPath.row]
             
+            // icon
             if tableActivity.icon.count > 0 {
                 DispatchQueue.global().async {
                     let encodedString = tableActivity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
@@ -146,6 +149,21 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                     }
                 }
             }
+    
+            // avatar
+            if tableActivity.user.count > 0 {
+                DispatchQueue.global().async {
+                    let url = self.appDelegate.activeUrl + k_avatar + tableActivity.user + "/100"
+                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                    if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
+                        DispatchQueue.main.async {
+                            cell.avatar.image = UIImage(data: data)
+                        }
+                    }
+                }
+            }
+            
+            // subject
             if tableActivity.subjectRich.count > 0 {
                 
                 var subject = tableActivity.subjectRich
@@ -157,11 +175,16 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                     }
                 }
                 
-                let normal = Style { $0.font = UIFont.systemFont(ofSize: 17)}
-                let bold = Style { $0.font = SystemFonts.Helvetica_Bold.font(size: 17) }
-                let myGroup = StyleGroup(base: normal, ["bold": bold])
+                let normal = Style { $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize) }
+                let bold = Style { $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize, weight: .bold) }
+                let date = Style { $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize - 3)
+                    $0.color = UIColor.lightGray
+                }
                 
-                cell.subject.attributedText = subject.set(style: myGroup)
+                subject = subject + "\n" + "<date>" + CCUtility.dateDiff(tableActivity.date as Date) + "</date>"
+                cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
+                
+                //
             }
             
             return cell
@@ -175,6 +198,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
 
     var imageArray = [String] ()

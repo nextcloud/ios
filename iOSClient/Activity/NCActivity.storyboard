@@ -18,40 +18,39 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="X49-xg-JXO">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="X49-xg-JXO">
                                 <rect key="frame" x="0.0" y="44" width="375" height="734"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="120" id="ggj-aE-fnh" customClass="activityTableViewCell" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="120"/>
+                                        <rect key="frame" x="0.0" y="1" width="375" height="120"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ggj-aE-fnh" id="i35-U4-bEk">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="119.66666666666667"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xNG-sf-PnA">
-                                                    <rect key="frame" x="5" y="0.0" width="25" height="25"/>
+                                                    <rect key="frame" x="20" y="0.0" width="25" height="25"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="25" id="Lbv-yi-vAh"/>
                                                         <constraint firstAttribute="height" constant="25" id="TML-VJ-2i3"/>
                                                     </constraints>
-                                                    <directionalEdgeInsets key="directionalLayoutMargins" top="8" leading="8" bottom="8" trailing="8"/>
                                                 </imageView>
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KpO-no-BMl">
-                                                    <rect key="frame" x="0.0" y="50.000000000000007" width="375" height="69.666666666666686"/>
+                                                    <rect key="frame" x="0.0" y="38.000000000000007" width="375" height="81.666666666666686"/>
                                                     <color key="backgroundColor" red="0.59999999999999998" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="nnU-ds-wda">
-                                                        <size key="itemSize" width="374" height="100"/>
+                                                        <size key="itemSize" width="374" height="86"/>
                                                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                                         <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                                     </collectionViewFlowLayout>
                                                     <cells>
                                                         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="uIN-z5-7vk" customClass="activityCollectionViewCell" customModule="Nextcloud" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="-15" width="374" height="100"/>
+                                                            <rect key="frame" x="0.0" y="-2" width="374" height="86"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="100"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="86"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J5b-2X-AsF">
@@ -67,26 +66,44 @@
                                                     </cells>
                                                 </collectionView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fcO-YL-MuT">
-                                                    <rect key="frame" x="38" y="0.0" width="332" height="20.333333333333332"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <rect key="frame" x="90" y="0.0" width="275" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="LQ8-cO-794" userLabel="avatar" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
+                                                    <rect key="frame" x="55" y="0.0" width="25" height="25"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="25" id="OKz-e8-DzD"/>
+                                                        <constraint firstAttribute="height" constant="25" id="fwd-J4-5uY"/>
+                                                    </constraints>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                            <integer key="value" value="1"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                            <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
+                                                </imageView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="fcO-YL-MuT" secondAttribute="trailing" constant="5" id="1pG-qk-inI"/>
-                                                <constraint firstItem="xNG-sf-PnA" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="5" id="CRN-18-SeU"/>
-                                                <constraint firstItem="fcO-YL-MuT" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="8" id="Q2v-si-0w5"/>
+                                                <constraint firstAttribute="trailing" secondItem="fcO-YL-MuT" secondAttribute="trailing" constant="10" id="1pG-qk-inI"/>
+                                                <constraint firstItem="LQ8-cO-794" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="3fU-rp-D7s"/>
+                                                <constraint firstItem="xNG-sf-PnA" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="20" id="CRN-18-SeU"/>
+                                                <constraint firstItem="fcO-YL-MuT" firstAttribute="leading" secondItem="LQ8-cO-794" secondAttribute="trailing" constant="10" id="MOQ-dS-mwp"/>
                                                 <constraint firstAttribute="bottom" secondItem="KpO-no-BMl" secondAttribute="bottom" id="ULe-Tt-dBj"/>
+                                                <constraint firstItem="LQ8-cO-794" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="10" id="aqp-Wu-9Hk"/>
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="faC-by-km5"/>
                                                 <constraint firstItem="KpO-no-BMl" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" id="l0Y-89-eTm"/>
                                                 <constraint firstAttribute="trailing" secondItem="KpO-no-BMl" secondAttribute="trailing" id="vWj-9H-JLc"/>
-                                                <constraint firstItem="KpO-no-BMl" firstAttribute="top" secondItem="fcO-YL-MuT" secondAttribute="bottom" constant="29.666666666666668" id="z1e-vv-qJb"/>
+                                                <constraint firstItem="KpO-no-BMl" firstAttribute="top" secondItem="fcO-YL-MuT" secondAttribute="bottom" constant="20" id="z1e-vv-qJb"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="zo1-7W-YZr"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
+                                            <outlet property="avatar" destination="LQ8-cO-794" id="2PE-uD-pug"/>
                                             <outlet property="collectionView" destination="KpO-no-BMl" id="xvR-CA-cZx"/>
                                             <outlet property="icon" destination="xNG-sf-PnA" id="hxb-Vr-oQX"/>
                                             <outlet property="subject" destination="fcO-YL-MuT" id="L4q-rj-l04"/>
@@ -117,4 +134,7 @@
             <point key="canvasLocation" x="-330.39999999999998" y="139.65517241379311"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="avatar" width="25" height="25"/>
+    </resources>
 </document>
