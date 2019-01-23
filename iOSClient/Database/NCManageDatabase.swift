@@ -582,16 +582,6 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Activity
 
-    @objc func getActivity(predicate: NSPredicate) -> [tableActivity] {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-        
-        return Array(results.map { tableActivity.init(value:$0) })
-    }
-
     @objc func addActivity(_ listOfActivity: [OCActivity], account: String) {
     
         let realm = try! Realm()
@@ -652,6 +642,17 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getActivity(predicate: NSPredicate) -> [tableActivity] {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+        
+        return Array(results.map { tableActivity.init(value:$0) })
+    }
+    
+    
     @objc func getActivitySubjectRich(account: String, idActivity: Double, key: String) -> tableActivitySubjectRich? {
         
         let realm = try! Realm()
@@ -660,6 +661,18 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableActivitySubjectRich.self).filter("account = %@ && idActivity == %d && key = %@", account, idActivity, key).first
         
         return results.map { tableActivitySubjectRich.init(value:$0) }
+    }
+    
+    @objc func getActivityLastIdActivity(account: String) -> Double {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        if let entities = realm.objects(tableActivity.self).filter("account = %@", account).max(by: { $0.idActivity < $1.idActivity }) {
+            return entities.idActivity
+        }
+        
+        return 0
     }
     
     @objc func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {

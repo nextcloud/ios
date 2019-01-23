@@ -925,11 +925,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 #pragma mark - Get Activity
 
-- (void) getActivityServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
     
-    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json&since=%ld", (long)since]];
     //serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&previews=true"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
