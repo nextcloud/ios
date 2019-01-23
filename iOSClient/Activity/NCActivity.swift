@@ -134,7 +134,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? activityTableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? activityTableViewCell {
             
             let tableActivity = datasource[indexPath.row]
 
@@ -207,8 +207,6 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 
                 subject = subject + "\n" + "<date>" + CCUtility.dateDiff(tableActivity.date as Date) + "</date>"
                 cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
-                
-                //
             }
             
             return cell
@@ -235,18 +233,13 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         
         collectionView.delegate = self
         collectionView.dataSource = self
-        
-        self.collectionView.register(UINib.init(nibName: "activityCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "Cell")
-
-        loadDatasource()
     }
     
-    func loadDatasource() {
-        print(idActivity)
-        datasource = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
+    override func prepareForReuse() {
+        super.prepareForReuse()
         collectionView.reloadData()
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
         let size = CGSize(width: 120, height: 120)
         return size
@@ -257,12 +250,15 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        datasource = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
+        return 1//datasource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
       
-        if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? activityCollectionViewCell {
+        if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell {
+            
+            
             //cell.imageView.image = UIImage(named: imageArray[randomNumber])
             return cell
         }
@@ -278,7 +274,6 @@ class activityCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-    
 }
 
 // MARK: Extension
