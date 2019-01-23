@@ -221,6 +221,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     @IBOutlet weak var collectionView: UICollectionView!
+    
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
@@ -235,6 +236,8 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         collectionView.delegate = self
         collectionView.dataSource = self
         
+        self.collectionView.register(UINib.init(nibName: "activityCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "Cell")
+
         loadDatasource()
     }
     
