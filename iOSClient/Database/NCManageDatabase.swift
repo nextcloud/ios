@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 43,
+            schemaVersion: 41,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -97,9 +97,8 @@ class NCManageDatabase: NSObject {
             // 38 : Version 2.22.8.20
             // 39 : Version 2.22.9.1
             // 40 : Version 2.22.9.3
-            // 41 : Version 2.22.9.4
-            // 42 : Version 2.22.9.5
-            // 43 : Version 2.22.9.5
+            // 41 : Version 2.22.9.5
+            
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -595,8 +594,8 @@ class NCManageDatabase: NSObject {
                     let addObjectActivity = tableActivity()
                     
                     addObjectActivity.account = account
-                    addObjectActivity.idActivity = Double(activity.idActivity)
-                    addObjectActivity.id = account + String(activity.idActivity)
+                    addObjectActivity.idActivity = activity.idActivity
+                    addObjectActivity.idPrimaryKey = account + String(activity.idActivity)
             
                     if let date = activity.date {
                         addObjectActivity.date = date as NSDate
@@ -615,9 +614,10 @@ class NCManageDatabase: NSObject {
                                 let addObjectActivitySubjectRich = tableActivitySubjectRich()
                                 let dict = value as! [String:AnyObject]
                                 addObjectActivitySubjectRich.account = account
-                                addObjectActivitySubjectRich.id = account + String(activity.idActivity) + key
+                                addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + key
                                 addObjectActivitySubjectRich.key = key
-                                addObjectActivitySubjectRich.idActivity = Double(activity.idActivity)
+                                addObjectActivitySubjectRich.idActivity = activity.idActivity
+                                addObjectActivitySubjectRich.id = dict["id"] as? String ?? ""
                                 addObjectActivitySubjectRich.link = dict["link"] as? String ?? ""
                                 addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
                                 addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
@@ -632,9 +632,9 @@ class NCManageDatabase: NSObject {
                         for case let activityPreview as [String:AnyObject] in activity.previews {
                             let addObjectActivityPreview = tableActivityPreview()
                             addObjectActivityPreview.account = account
-                            addObjectActivityPreview.idActivity = Double(activity.idActivity)
-                            addObjectActivityPreview.fileId = activityPreview["fileId"] as! Double
-                            addObjectActivityPreview.id = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
+                            addObjectActivityPreview.idActivity = activity.idActivity
+                            addObjectActivityPreview.fileId = activityPreview["fileId"] as! Int
+                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
                             addObjectActivityPreview.source = activityPreview["source"] as? String ?? ""
                             addObjectActivityPreview.link = activityPreview["link"] as? String ?? ""
                             addObjectActivityPreview.mimeType = activityPreview["mimeType"] as? String ?? ""
@@ -649,7 +649,7 @@ class NCManageDatabase: NSObject {
                     addObjectActivity.link = activity.link
                     addObjectActivity.message = activity.message
                     addObjectActivity.objectType = activity.object_type
-                    addObjectActivity.objectID = Double(activity.object_id)
+                    addObjectActivity.objectId = activity.object_id
                     addObjectActivity.objectName = activity.object_name
                     
                     realm.add(addObjectActivity, update: true)
@@ -670,8 +670,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableActivity.init(value:$0) })
     }
     
-    
-    @objc func getActivitySubjectRich(account: String, idActivity: Double, key: String) -> tableActivitySubjectRich? {
+    @objc func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -681,7 +680,17 @@ class NCManageDatabase: NSObject {
         return results.map { tableActivitySubjectRich.init(value:$0) }
     }
     
-    @objc func getActivityPreview(account: String, idActivity: Double) -> [tableActivityPreview] {
+    @objc func getActivitySubjectRich(account: String, idActivity: Int, id: String) -> tableActivitySubjectRich? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableActivitySubjectRich.self).filter("account = %@ && idActivity == %d && id == %@", account, idActivity, id).first
+        
+        return results.map { tableActivitySubjectRich.init(value:$0) }
+    }
+    
+    @objc func getActivityPreview(account: String, idActivity: Int) -> [tableActivityPreview] {
         
         let realm = try! Realm()
         realm.refresh()
@@ -691,7 +700,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableActivityPreview.init(value:$0) })
     }
     
-    @objc func getActivityLastIdActivity(account: String) -> Double {
+    @objc func getActivityLastIdActivity(account: String) -> Int {
         
         let realm = try! Realm()
         realm.refresh()

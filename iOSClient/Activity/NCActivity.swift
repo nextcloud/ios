@@ -218,15 +218,17 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
 class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     @IBOutlet weak var collectionView: UICollectionView!
     
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
     
-    var idActivity: Double = 0
+    var idActivity: Int = 0
     var account: String = ""
-    var datasource = [tableActivityPreview]()
+    var tableActivityPreviews = [tableActivityPreview]()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -239,9 +241,9 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         super.prepareForReuse()
         collectionView.reloadData()
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
-        let size = CGSize(width: 120, height: 120)
+        let size = CGSize(width: 50, height: 50)
         return size
     }
     
@@ -250,16 +252,38 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        datasource = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
-        return 1//datasource.count
+        tableActivityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
+        return tableActivityPreviews.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
       
         if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell {
             
+            let activityPreview = tableActivityPreviews[indexPath.row]
+            if activityPreview.view == "trashbin" {
+                
+                if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: String(activityPreview.fileId)) {
+
+                    if activityPreview.mimeType == "dir" {
+                        
+                    } else {
+                        
+                        if CCUtility.fileProviderStorageIconExists(String(activityPreview.fileId), fileNameView: activitySubjectRich.name) {
+                            // carica
+                        } else {
+                            OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: String(activityPreview.fileId), fileName: activitySubjectRich.name, completion: { (account, message, errorCode) in
+                                if errorCode == 0 && account == self.appDelegate.activeAccount && CCUtility.fileProviderStorageIconExists(String(activityPreview.fileId), fileNameView: activitySubjectRich.name) {
+                                    // carica
+                                } else {
+                                    // default icon
+                                }
+                            })
+                        }
+                    }
+                }
+            }
             
-            //cell.imageView.image = UIImage(named: imageArray[randomNumber])
             return cell
         }
         

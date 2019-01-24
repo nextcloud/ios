@@ -62,10 +62,10 @@ class tableAccount: Object {
 class tableActivity: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var id = ""
+    @objc dynamic var idPrimaryKey = ""
     @objc dynamic var action = "Activity"
     @objc dynamic var date = NSDate()
-    @objc dynamic var idActivity: Double = 0
+    @objc dynamic var idActivity: Int = 0
     @objc dynamic var app = ""
     @objc dynamic var type = ""
     @objc dynamic var user = ""
@@ -76,21 +76,22 @@ class tableActivity: Object {
     @objc dynamic var link = ""
     @objc dynamic var message = ""
     @objc dynamic var objectType = ""
-    @objc dynamic var objectID: Double = 0
+    @objc dynamic var objectId: Int = 0
     @objc dynamic var objectName = ""
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
     @objc dynamic var verbose: Bool = false
     
     override static func primaryKey() -> String {
-        return "id"
+        return "idPrimaryKey"
     }
 }
 
 class tableActivitySubjectRich: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var idActivity: Double = 0
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var idPrimaryKey = ""
     @objc dynamic var id = ""
     @objc dynamic var key = ""
     @objc dynamic var link = ""
@@ -99,24 +100,24 @@ class tableActivitySubjectRich: Object {
     @objc dynamic var type = ""
     
     override static func primaryKey() -> String {
-        return "id"
+        return "idPrimaryKey"
     }
 }
 
 class tableActivityPreview: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var idActivity: Double = 0
-    @objc dynamic var id = ""
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var idActivity: Int = 0
     @objc dynamic var source = ""
     @objc dynamic var link = ""
     @objc dynamic var mimeType = ""
-    @objc dynamic var fileId: Double = 0
+    @objc dynamic var fileId: Int = 0
     @objc dynamic var view = ""
     @objc dynamic var isMimeTypeIcon: Bool = false
 
     override static func primaryKey() -> String {
-        return "id"
+        return "idPrimaryKey"
     }
 }
 
