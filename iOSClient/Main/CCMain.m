@@ -565,12 +565,9 @@
             self.navigationItem.titleView = _imageTitleHome;
             
         } else {
-        
-            if (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder] == NO) {
             
-                self.navigationItem.title = _titleMain;
-                self.navigationItem.titleView = nil;
-            }
+            self.navigationItem.title = _titleMain;
+            self.navigationItem.titleView = nil;
         }
     }
 }
