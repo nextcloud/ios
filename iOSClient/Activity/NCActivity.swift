@@ -242,7 +242,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         collectionView.reloadData()
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = CGSize(width: 50, height: 50)
         return size
     }
@@ -259,6 +259,8 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
       
         if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell {
+            
+            cell.imageView.image = nil
             
             let activityPreview = tableActivityPreviews[indexPath.row]
             if activityPreview.view == "trashbin" {
