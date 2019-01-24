@@ -30,7 +30,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var datasource = [tableActivity]()
+    var activities = [tableActivity]()
     var sectionDate = [Date]()
 
     override func viewDidLoad() {
@@ -79,8 +79,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func loadDatasource() {
-        datasource = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
-        for tableActivity in datasource {
+        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
+        for tableActivity in activities {
             guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
                 continue
             }
@@ -136,14 +136,14 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? activityTableViewCell {
             
-            let tableActivity = datasource[indexPath.row]
+            let activity = activities[indexPath.row]
 
-            cell.idActivity = tableActivity.idActivity
-            cell.account = tableActivity.account
+            cell.idActivity = activity.idActivity
+            cell.account = activity.account
 
             // icon
-            if tableActivity.icon.count > 0 {
-                let fileNameIcon = (tableActivity.icon as NSString).lastPathComponent
+            if activity.icon.count > 0 {
+                let fileNameIcon = (activity.icon as NSString).lastPathComponent
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
@@ -151,7 +151,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                     }
                 } else {
                     DispatchQueue.global().async {
-                        let encodedString = tableActivity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                        let encodedString = activity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
                             DispatchQueue.main.async {
                                 do {
@@ -165,15 +165,15 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             }
     
             // avatar
-            if tableActivity.user.count > 0 {
-                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableActivity.user + ".png"
+            if activity.user.count > 0 {
+                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + activity.user + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                         cell.avatar.image = image
                     }
                 } else {
                     DispatchQueue.global().async {
-                        let url = self.appDelegate.activeUrl + k_avatar + tableActivity.user + "/128"
+                        let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
                         let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
                             DispatchQueue.main.async {
@@ -188,13 +188,13 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             }
             
             // subject
-            if tableActivity.subjectRich.count > 0 {
+            if activity.subjectRich.count > 0 {
                 
-                var subject = tableActivity.subjectRich
+                var subject = activity.subjectRich
                 
                 let keys = subject.keyTags()
                 for key in keys {
-                    if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.activeAccount, idActivity: tableActivity.idActivity, key: key) {
+                    if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.activeAccount, idActivity: activity.idActivity, key: key) {
                         subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                     }
                 }
@@ -205,7 +205,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                     $0.color = UIColor.lightGray
                 }
                 
-                subject = subject + "\n" + "<date>" + CCUtility.dateDiff(tableActivity.date as Date) + "</date>"
+                subject = subject + "\n" + "<date>" + CCUtility.dateDiff(activity.date as Date) + "</date>"
                 cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
             }
             
@@ -228,7 +228,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     
     var idActivity: Int = 0
     var account: String = ""
-    var tableActivityPreviews = [tableActivityPreview]()
+    var activityPreviews = [tableActivityPreview]()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -237,10 +237,12 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         collectionView.dataSource = self
     }
     
+    /*
     override func prepareForReuse() {
         super.prepareForReuse()
         collectionView.reloadData()
     }
+    */
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = CGSize(width: 50, height: 50)
@@ -252,8 +254,8 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        tableActivityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
-        return tableActivityPreviews.count
+        activityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
+        return activityPreviews.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -262,7 +264,8 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             
             cell.imageView.image = nil
             
-            let activityPreview = tableActivityPreviews[indexPath.row]
+            let activityPreview = activityPreviews[indexPath.row]
+            
             if activityPreview.view == "trashbin" {
                 
                 let fileID = String(activityPreview.fileId)
