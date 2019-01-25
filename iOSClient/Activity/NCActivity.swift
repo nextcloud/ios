@@ -126,7 +126,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         label.textAlignment = .center
         label.layer.cornerRadius = 10
         label.layer.masksToBounds = true
-        label.layer.backgroundColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.8).cgColor
+        label.layer.backgroundColor = UIColor(red: 220.0/255.0, green: 220.0/255.0, blue: 220.0/255.0, alpha: 0.8).cgColor
         
         view.addSubview(label)
         return view

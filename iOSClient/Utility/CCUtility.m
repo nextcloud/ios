@@ -942,6 +942,8 @@
 + (NSString *)getTitleSectionDate:(NSDate *)date
 {
     NSString * title;
+    NSDate *today = [NSDate date];
+    NSDate *yesterday = [today dateByAddingTimeInterval: -86400.0];
     
     if ([date isEqualToDate:[CCUtility datetimeWithOutTime:[NSDate distantPast]]]) {
         
@@ -951,8 +953,11 @@
         
         title = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterFullStyle timeStyle:0];
         
-        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:[NSDate date]]])
+        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:today]])
             title = [NSString stringWithFormat:NSLocalizedString(@"_today_", nil)];
+        
+        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:yesterday]])
+            title = [NSString stringWithFormat:NSLocalizedString(@"_yesterday_", nil)];
     }
     
     return title;
