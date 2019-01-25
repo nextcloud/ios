@@ -25,42 +25,12 @@ import Foundation
 import UIKit
 import SwiftRichString
 
-class activityDatasource: NSObject {
-    
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-    var sectionDate = [Date]()
-    
-    override init() {
-        
-        var row = 0
-        var sec = 0
-        
-        let activities: [tableActivity] = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
-        
-        for tableActivity in activities {
-            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
-                continue
-            }
-            if !sectionDate.contains(date) {
-                sectionDate.append(date)
-                sec += 1
-                row = 0
-            } else {
-                row += 1
-            }
-        }
-    }
-}
-    
 class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var datasource = activityDatasource()
     var activities = [tableActivity]()
-    
     var sectionDate = [Date]()
 
     override func viewDidLoad() {
@@ -166,11 +136,21 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? activityTableViewCell {
             
-            let activity = activities[indexPath.row]
+            //
+            let startDate = sectionDate[indexPath.section]
+            let endDate: Date = {
+                let components = DateComponents(day: 1, second: -1)
+                return Calendar.current.date(byAdding: components, to: startDate)!
+            }()
+            
+            let results = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
+            //
+            
+            let activity = results[indexPath.row]
 
             cell.idActivity = activity.idActivity
             cell.account = activity.account
-
+            
             // icon
             if activity.icon.count > 0 {
                 let fileNameIcon = (activity.icon as NSString).lastPathComponent
@@ -239,6 +219,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
             }
             
+            cell.collectionView.reloadData()
+
             return cell
         }
         
@@ -266,7 +248,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         collectionView.delegate = self
         collectionView.dataSource = self
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = CGSize(width: 50, height: 50)
         return size
