@@ -22,11 +22,11 @@
                                 <rect key="frame" x="0.0" y="44" width="375" height="734"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tableCell" rowHeight="130" id="ggj-aE-fnh" customClass="activityTableViewCell" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="20" width="375" height="130"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tableCell" rowHeight="120" id="ggj-aE-fnh" customClass="activityTableViewCell" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="20" width="375" height="120"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ggj-aE-fnh" id="i35-U4-bEk">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="129.66666666666666"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="119.66666666666667"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fcO-YL-MuT">
@@ -95,7 +95,7 @@
                                                 <constraint firstItem="LQ8-cO-794" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="3fU-rp-D7s"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" constant="5" id="4EB-59-y1Y"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="20" id="CRN-18-SeU"/>
-                                                <constraint firstAttribute="bottom" secondItem="KpO-no-BMl" secondAttribute="bottom" constant="30" id="ULe-Tt-dBj"/>
+                                                <constraint firstAttribute="bottom" secondItem="KpO-no-BMl" secondAttribute="bottom" constant="20" id="ULe-Tt-dBj"/>
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="48" id="am5-CT-0kZ" userLabel="Subject.leading = Icon.trailing + 50"/>
                                                 <constraint firstItem="LQ8-cO-794" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="10" id="aqp-Wu-9Hk"/>
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" constant="5" id="faC-by-km5"/>
@@ -108,6 +108,7 @@
                                         <connections>
                                             <outlet property="avatar" destination="LQ8-cO-794" id="2PE-uD-pug"/>
                                             <outlet property="collectionView" destination="KpO-no-BMl" id="xvR-CA-cZx"/>
+                                            <outlet property="collectionViewHeightConstraint" destination="deQ-wc-jNT" id="nAT-iS-UjK"/>
                                             <outlet property="icon" destination="xNG-sf-PnA" id="hxb-Vr-oQX"/>
                                             <outlet property="subject" destination="fcO-YL-MuT" id="L4q-rj-l04"/>
                                             <outlet property="subjectTrailingConstraint" destination="am5-CT-0kZ" id="PeK-M5-hHW"/>

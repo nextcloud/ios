@@ -261,10 +261,12 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
     var idActivity: Int = 0
     var account: String = ""
     var activityPreviews = [tableActivityPreview]()
+    var numActivityPreview = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -274,8 +276,11 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = CGSize(width: 50, height: 50)
-        return size
+        if numActivityPreview == 0 {
+            return CGSize(width: 0, height: 0)
+        } else {
+            return CGSize(width: 50, height: 50)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -292,6 +297,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         activityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
+        numActivityPreview = activityPreviews.count
         return activityPreviews.count
     }
     
