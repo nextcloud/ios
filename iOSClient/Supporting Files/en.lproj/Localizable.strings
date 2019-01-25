@@ -268,6 +268,7 @@
 "_tutorial_autoupload_view_"                = "You can enable auto uploads from \"Settings\"";
 "_no_date_"                                 = "No date";
 "_today_"                                   = "Today";
+"_yesterday_"                               = "Yesterday";
 "_time_"                                    = "Time: %@\n\n%@";
 "_location_not_enabled_"                    = "Location Services not enabled";
 "_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\"";

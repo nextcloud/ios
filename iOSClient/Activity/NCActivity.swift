@@ -111,21 +111,27 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
+        return 60
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 30))
-        view.backgroundColor = UIColor.white
-        let label = UILabel(frame: CGRect(x: 55, y: 0, width: tableView.bounds.width - 55, height: 30))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
+        view.backgroundColor = .clear
+        
+        let label = UILabel(frame: CGRect(x: 50, y: 10, width: tableView.bounds.width - 100, height: 20))
         label.font = UIFont.boldSystemFont(ofSize: 17)
         label.textColor = UIColor.black
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
+        label.textAlignment = .center
+        label.layer.cornerRadius = 10
+        label.layer.masksToBounds = true
+        label.layer.backgroundColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.8).cgColor
+        
         view.addSubview(label)
         return view
     }
-    
+
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
