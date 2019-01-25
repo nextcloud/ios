@@ -127,7 +127,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        return 120
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -242,6 +242,13 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
             }
             
+            // CollectionView
+            cell.activityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: activity.account, idActivity: activity.idActivity)
+            if cell.activityPreviews.count == 0 {
+                cell.collectionViewHeightConstraint.constant = 0
+            } else {
+                cell.collectionViewHeightConstraint.constant = 60
+            }
             cell.collectionView.reloadData()
 
             return cell
@@ -291,7 +298,6 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        activityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: account, idActivity: idActivity)
         return activityPreviews.count
     }
     
