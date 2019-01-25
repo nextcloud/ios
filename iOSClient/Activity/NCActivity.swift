@@ -25,12 +25,42 @@ import Foundation
 import UIKit
 import SwiftRichString
 
+class activityDatasource: NSObject {
+    
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    var sectionDate = [Date]()
+    
+    override init() {
+        
+        var row = 0
+        var sec = 0
+        
+        let activities: [tableActivity] = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
+        
+        for tableActivity in activities {
+            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
+                continue
+            }
+            if !sectionDate.contains(date) {
+                sectionDate.append(date)
+                sec += 1
+                row = 0
+            } else {
+                row += 1
+            }
+        }
+    }
+}
+    
 class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var datasource = activityDatasource()
     var activities = [tableActivity]()
+    
     var sectionDate = [Date]()
 
     override func viewDidLoad() {
@@ -40,7 +70,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         tableView.emptyDataSetDelegate = self;
         tableView.emptyDataSetSource = self;
         
-        tableView.estimatedRowHeight = 120
+        //tableView.estimatedRowHeight = 120
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
@@ -236,14 +266,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         collectionView.delegate = self
         collectionView.dataSource = self
     }
-    
-    /*
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        collectionView.reloadData()
-    }
-    */
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = CGSize(width: 50, height: 50)
         return size
