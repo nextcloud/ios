@@ -316,8 +316,6 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                                     if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)) {
                                         cell.imageView.image = image
                                     }
-                                } else {
-                                    print(errorCode)
                                 }
                             })
                         }
@@ -337,7 +335,6 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                         }
                     }
                 } else {
-                    
                 }
             }
             
