@@ -148,16 +148,23 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
             // icon
             if activity.icon.count > 0 {
+                
                 let fileNameIcon = (activity.icon as NSString).lastPathComponent
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
+                
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                    
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                         cell.icon.image = image
                     }
+                    
                 } else {
+                    
                     DispatchQueue.global().async {
+                        
                         let encodedString = activity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
+                            
                             DispatchQueue.main.async {
                                 do {
                                     try data.write(to: fileNameLocalPath.url, options: .atomic)
@@ -207,7 +214,14 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             if activity.subjectRich.count > 0 {
                 
                 var subject = activity.subjectRich
-                let keys = keyTags(text: subject)
+                var keys = [String]()
+                
+                if let regex = try? NSRegularExpression(pattern: "\\{[a-z0-9]+\\}", options: .caseInsensitive) {
+                    let string = subject as NSString
+                    keys = regex.matches(in: subject, options: [], range: NSRange(location: 0, length: string.length)).map {
+                        string.substring(with: $0.range).replacingOccurrences(of: "[\\{\\}]", with: "", options: .regularExpression)
+                    }
+                }
                 
                 for key in keys {
                     if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.activeAccount, idActivity: activity.idActivity, key: key) {
@@ -234,18 +248,6 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         }
         
         return UITableViewCell()
-    }
-    
-    // MARK: Utility
-    
-    func keyTags(text: String) -> [String] {
-        if let regex = try? NSRegularExpression(pattern: "\\{[a-z0-9]+\\}", options: .caseInsensitive) {
-            let string = text as NSString
-            return regex.matches(in: text, options: [], range: NSRange(location: 0, length: string.length)).map {
-                string.substring(with: $0.range).replacingOccurrences(of: "[\\{\\}]", with: "", options: .regularExpression)
-            }
-        }
-        return []
     }
 }
 
@@ -274,6 +276,10 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = CGSize(width: 50, height: 50)
         return size
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 20
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
