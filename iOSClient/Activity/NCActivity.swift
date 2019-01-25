@@ -306,18 +306,33 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                         cell.imageView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                         
                     } else {
+                        
                         if CCUtility.fileProviderStorageIconExists(fileID, fileNameView: activitySubjectRich.name) {
+                            
                             if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)) {
                                 cell.imageView.image = image
                             }
+                            
                         } else {
-                            OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: fileID, fileName: fileName, completion: { (account, message, errorCode) in
-                                if errorCode == 0 && account == self.appDelegate.activeAccount && CCUtility.fileProviderStorageIconExists(fileID, fileNameView: fileName) {
-                                    if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)) {
-                                        cell.imageView.image = image
-                                    }
+                            
+                            let fileNamePath = CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)!
+                            
+                            if FileManager.default.fileExists(atPath: fileNamePath) {
+                                
+                                if let image = UIImage(contentsOfFile: fileNamePath) {
+                                    cell.imageView.image = image
                                 }
-                            })
+                                
+                            } else {
+                            
+                                OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: fileID, fileName: fileName, completion: { (account, message, errorCode) in
+                                    if errorCode == 0 && account == self.appDelegate.activeAccount && CCUtility.fileProviderStorageIconExists(fileID, fileNameView: fileName) {
+                                        if let image = UIImage(contentsOfFile: fileNamePath) {
+                                            cell.imageView.image = image
+                                        }
+                                    }
+                                })
+                            }
                         }
                     }
                 }
@@ -334,14 +349,30 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                             }
                         }
                     }
+                    
                 } else {
-                    /*
-                    OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, metadata: nil, withWidth: 0, andHeight: 0, path: activityPreview.source, completion: { (account, message, errorCode) in
-                        if errorCode == 0 {
+                    
+                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileID) {
+                    
+                        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
+                        
+                        if FileManager.default.fileExists(atPath: fileNamePath) {
                             
+                            if let image = UIImage(contentsOfFile: fileNamePath) {
+                                cell.imageView.image = image
+                            }
+                            
+                        } else {
+                            
+                            OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, serverPath: activityPreview.source, fileNamePath: fileNamePath, completion: { (account, message, errorCode) in
+                                if errorCode == 0 {
+                                    if let image = UIImage(contentsOfFile: fileNamePath) {
+                                        cell.imageView.image = image
+                                    }
+                                }
+                            })
                         }
-                    })
-                    */
+                    }
                 }
             }
             
