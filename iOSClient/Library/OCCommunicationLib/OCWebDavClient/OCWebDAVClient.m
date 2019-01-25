@@ -791,12 +791,16 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     return operation;
 }
 
-- (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString *)serverPath ofFilePath:(NSString*)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
+- (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString *)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode path:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
     
     _requestMethod = @"GET";
     
-    NSString *query = [NSString stringWithFormat:@"/index.php/core/preview.png?file=%@&x=%d&y=%d&a=%d&mode=%@", filePath, (int)fileWidth, (int)fileHeight, (int)a, mode];
-    serverPath = [serverPath stringByAppendingString:query];
+    if (path.length > 0) {
+        serverPath = path;
+    } else {
+        NSString *query = [NSString stringWithFormat:@"/index.php/core/preview.png?file=%@&x=%d&y=%d&a=%d&mode=%@", filePath, (int)fileWidth, (int)fileHeight, (int)a, mode];
+        serverPath = [serverPath stringByAppendingString:query];
+    }
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     

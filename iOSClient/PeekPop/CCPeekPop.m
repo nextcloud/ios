@@ -98,7 +98,7 @@
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:_metadata withWidth:width andHeight:height completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:_metadata withWidth:width andHeight:height path:@""  completion:^(NSString *account, NSString *message, NSInteger errorCode) {
      
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
