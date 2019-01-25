@@ -150,6 +150,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             cell.idActivity = activity.idActivity
             cell.account = activity.account
             cell.avatar.image = nil
+            cell.avatar.isHidden = true
 
             // icon
             if activity.icon.count > 0 {
@@ -184,6 +185,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 } else {
                 
                     cell.subjectTrailingConstraint.constant = 50
+                    cell.avatar.isHidden = false
                     
                     let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + activity.user + ".png"
                     if FileManager.default.fileExists(atPath: fileNameLocalPath) {
