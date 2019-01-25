@@ -92,19 +92,22 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
     // MARK: TableView
 
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sectionDate.count
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func getTableActivitiesFromSection(_ section: Int) -> [tableActivity] {
         let startDate = sectionDate[section]
         let endDate: Date = {
             let components = DateComponents(day: 1, second: -1)
             return Calendar.current.date(byAdding: components, to: startDate)!
         }()
         
-        let results = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
-        return results.count
+        return NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sectionDate.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return getTableActivitiesFromSection(section).count
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -135,16 +138,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? activityTableViewCell {
             
-            //
-            let startDate = sectionDate[indexPath.section]
-            let endDate: Date = {
-                let components = DateComponents(day: 1, second: -1)
-                return Calendar.current.date(byAdding: components, to: startDate)!
-            }()
-            
-            let results = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
-            //
-            
+            let results = getTableActivitiesFromSection(indexPath.section)
             let activity = results[indexPath.row]
 
             cell.idActivity = activity.idActivity
