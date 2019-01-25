@@ -335,11 +335,13 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                         }
                     }
                 } else {
+                    /*
                     OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, metadata: nil, withWidth: 0, andHeight: 0, path: activityPreview.source, completion: { (account, message, errorCode) in
                         if errorCode == 0 {
                             
                         }
                     })
+                    */
                 }
             }
             

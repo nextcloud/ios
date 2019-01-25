@@ -861,7 +861,7 @@
  }
  */
 
-- (void)downloadPreviewWithAccount:(NSString *)account metadata:(tableMetadata *)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height path:(NSString *)path completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewWithAccount:(NSString *)account metadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -873,15 +873,46 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSString *filePath = @"";
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
     
-    filePath = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:tableAccount.url];
-    
-    [communication getRemotePreviewByServer:tableAccount.url ofFilePath:filePath withWidth:width andHeight:height andA:1 andMode:@"cover" path:path  onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+    [communication getRemotePreviewByServer:tableAccount.url ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:tableAccount.url] withWidth:width andHeight:height andA:1 andMode:@"cover" path:@"" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
         
-        NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
-
         [preview writeToFile:file atomically:YES];
+        
+        completion(account, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, message, errorCode);
+    }];
+}
+
+- (void)downloadPreviewWithAccount:(NSString *)account serverPath:(NSString *)serverPath fileNamePath:(NSString *)fileNamePath completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getRemotePreviewByServer:tableAccount.url ofFilePath:@"" withWidth:0 andHeight:0 andA:0 andMode:@"" path:serverPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        
+        [preview writeToFile:fileNamePath atomically:YES];
         
         completion(account, nil, 0);
         
