@@ -219,7 +219,10 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                     }
                 }
                 
-                let normal = Style { $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize) }
+                let normal = Style {
+                    $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize)
+                    $0.lineSpacing = 1.5
+                }
                 let bold = Style { $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize, weight: .bold) }
                 let date = Style { $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize - 3)
                     $0.color = UIColor.lightGray
