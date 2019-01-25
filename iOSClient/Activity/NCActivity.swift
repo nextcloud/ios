@@ -150,7 +150,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
             cell.idActivity = activity.idActivity
             cell.account = activity.account
-            
+            cell.avatar.image = nil
+
             // icon
             if activity.icon.count > 0 {
                 let fileNameIcon = (activity.icon as NSString).lastPathComponent
@@ -176,21 +177,31 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
             // avatar
             if activity.user.count > 0 {
-                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + activity.user + ".png"
-                if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        cell.avatar.image = image
-                    }
+                
+                if activity.user == appDelegate.activeUserID {
+                    
+                    cell.subjectTrailingConstraint.constant = 10
+                    
                 } else {
-                    DispatchQueue.global().async {
-                        let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
-                        let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                        if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
-                            DispatchQueue.main.async {
-                                do {
-                                    try data.write(to: fileNameLocalPath.url, options: .atomic)
-                                } catch { return }
-                                cell.avatar.image = UIImage(data: data)
+                
+                    cell.subjectTrailingConstraint.constant = 50
+                    
+                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + activity.user + ".png"
+                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            cell.avatar.image = image
+                        }
+                    } else {
+                        DispatchQueue.global().async {
+                            let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
+                            let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                            if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
+                                DispatchQueue.main.async {
+                                    do {
+                                        try data.write(to: fileNameLocalPath.url, options: .atomic)
+                                    } catch { return }
+                                    cell.avatar.image = UIImage(data: data)
+                                }
                             }
                         }
                     }
@@ -237,7 +248,8 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
-    
+    @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
+
     var idActivity: Int = 0
     var account: String = ""
     var activityPreviews = [tableActivityPreview]()
@@ -294,6 +306,8 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                                     if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)) {
                                         cell.imageView.image = image
                                     }
+                                } else {
+                                    print(errorCode)
                                 }
                             })
                         }
@@ -301,10 +315,19 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                 }
                 
             } else {
-                if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 100, rewrite: false) {
-                    if let image = UIImage(contentsOfFile: imageNamePath) {
-                        cell.imageView.image = image
+                
+                if activityPreview.isMimeTypeIcon {
+                    DispatchQueue.global().async {
+                        if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 100, rewrite: false) {
+                            DispatchQueue.main.async {
+                                if let image = UIImage(contentsOfFile: imageNamePath) {
+                                    cell.imageView.image = image
+                                }
+                            }
+                        }
                     }
+                } else {
+                    
                 }
             }
             

@@ -30,7 +30,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fcO-YL-MuT">
-                                                    <rect key="frame" x="90" y="0.0" width="275" height="19.666666666666668"/>
+                                                    <rect key="frame" x="88" y="0.0" width="277" height="19.666666666666668"/>
                                                     <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -95,8 +95,8 @@
                                                 <constraint firstItem="LQ8-cO-794" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="3fU-rp-D7s"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" constant="5" id="4EB-59-y1Y"/>
                                                 <constraint firstItem="xNG-sf-PnA" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="20" id="CRN-18-SeU"/>
-                                                <constraint firstItem="fcO-YL-MuT" firstAttribute="leading" secondItem="LQ8-cO-794" secondAttribute="trailing" constant="10" id="MOQ-dS-mwp"/>
                                                 <constraint firstAttribute="bottom" secondItem="KpO-no-BMl" secondAttribute="bottom" id="ULe-Tt-dBj"/>
+                                                <constraint firstItem="fcO-YL-MuT" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="48" id="am5-CT-0kZ" userLabel="Subject.leading = Icon.trailing + 50"/>
                                                 <constraint firstItem="LQ8-cO-794" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="10" id="aqp-Wu-9Hk"/>
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="faC-by-km5"/>
                                                 <constraint firstItem="KpO-no-BMl" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="50" id="l0Y-89-eTm"/>
@@ -110,6 +110,7 @@
                                             <outlet property="collectionView" destination="KpO-no-BMl" id="xvR-CA-cZx"/>
                                             <outlet property="icon" destination="xNG-sf-PnA" id="hxb-Vr-oQX"/>
                                             <outlet property="subject" destination="fcO-YL-MuT" id="L4q-rj-l04"/>
+                                            <outlet property="subjectTrailingConstraint" destination="am5-CT-0kZ" id="PeK-M5-hHW"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
