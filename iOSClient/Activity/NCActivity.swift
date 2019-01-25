@@ -40,7 +40,6 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         tableView.emptyDataSetDelegate = self;
         tableView.emptyDataSetSource = self;
         
-        //tableView.estimatedRowHeight = 120
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
@@ -125,7 +124,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return 90
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -344,37 +343,6 @@ class activityCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-    }
-}
-
-// MARK: Utility
-
-// MARK: - Get Image from url
-
-func getDataFromUrl(url: URL, completion: @escaping (_ data: Data?, _  response: URLResponse?, _ error: Error?) -> Void) {
-    URLSession.shared.dataTask(with: url) {
-        (data, response, error) in
-        completion(data, response, error)
-        }.resume()
-}
-
-func downloadImage(url: URL) {
-    
-    print("Download Started")
-    getDataFromUrl(url: url) { (data, response, error)  in
-        guard let data = data, error == nil else { return }
-        let fileName = response?.suggestedFilename ?? url.lastPathComponent
-        print("Download Finished")
-        DispatchQueue.main.async() { () -> Void in
-            
-            do {
-                let pathFileName = CCUtility.getDirectoryUserData() + "/" + fileName
-                try data.write(to: URL(fileURLWithPath: pathFileName), options: .atomic)
-                
-            } catch {
-                print(error)
-            }
-        }
     }
 }
 
