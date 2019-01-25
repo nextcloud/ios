@@ -132,7 +132,7 @@ class NCService: NSObject {
                                 for notification in listOfNotifications! {
                                     let id = (notification as! OCNotifications).idNotification
                                     if let icon = (notification as! OCNotifications).icon {
-                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false)
+                                        _ = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false)
                                     }
                                     new = new + String(describing: id)
                                 }

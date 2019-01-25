@@ -270,10 +270,10 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             cell.imageView.image = nil
             
             let activityPreview = activityPreviews[indexPath.row]
-            
+            let fileID = String(activityPreview.fileId)
+
+            // Trashbin
             if activityPreview.view == "trashbin" {
-                
-                let fileID = String(activityPreview.fileId)
                 
                 if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileID) {
 
@@ -284,7 +284,6 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                         cell.imageView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                         
                     } else {
-                        
                         if CCUtility.fileProviderStorageIconExists(fileID, fileNameView: activitySubjectRich.name) {
                             if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)) {
                                 cell.imageView.image = image
@@ -295,35 +294,6 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                                     if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)) {
                                         cell.imageView.image = image
                                     }
-                                } else {
-                                    
-                                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 25, rewrite: false)
-                                    
-                                    /*
-                                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + (activityPreview.source as NSString).lastPathComponent
-                                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                            cell.avatar.image = image
-                                        }
-                                    } else {
-                                        DispatchQueue.global().async {
-                                            let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
-                                            let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                                            if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
-                                                DispatchQueue.main.async {
-                                                    do {
-                                                        try data.write(to: fileNameLocalPath.url, options: .atomic)
-                                                    } catch { return }
-                                                    cell.avatar.image = UIImage(data: data)
-                                                }
-                                            }
-                                        }
-                                    }
-                                    */
-                                    
-                                    
-                                    
-                                    // default icon
                                 }
                             })
                         }
