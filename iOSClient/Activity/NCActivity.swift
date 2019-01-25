@@ -207,8 +207,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             if activity.subjectRich.count > 0 {
                 
                 var subject = activity.subjectRich
+                let keys = keyTags(text: subject)
                 
-                let keys = subject.keyTags()
                 for key in keys {
                     if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.activeAccount, idActivity: activity.idActivity, key: key) {
                         subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
@@ -234,6 +234,18 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         }
         
         return UITableViewCell()
+    }
+    
+    // MARK: Utility
+    
+    func keyTags(text: String) -> [String] {
+        if let regex = try? NSRegularExpression(pattern: "\\{[a-z0-9]+\\}", options: .caseInsensitive) {
+            let string = text as NSString
+            return regex.matches(in: text, options: [], range: NSRange(location: 0, length: string.length)).map {
+                string.substring(with: $0.range).replacingOccurrences(of: "[\\{\\}]", with: "", options: .regularExpression)
+            }
+        }
+        return []
     }
 }
 
@@ -342,20 +354,5 @@ class activityCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-    }
-}
-
-// MARK: Extension
-
-extension String
-{
-    func keyTags() -> [String] {
-        if let regex = try? NSRegularExpression(pattern: "\\{[a-z0-9]+\\}", options: .caseInsensitive) {
-            let string = self as NSString
-            return regex.matches(in: self, options: [], range: NSRange(location: 0, length: string.length)).map {
-                string.substring(with: $0.range).replacingOccurrences(of: "[\\{\\}]", with: "", options: .regularExpression)
-            }
-        }
-        return []
     }
 }
