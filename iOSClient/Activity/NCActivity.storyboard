@@ -58,7 +58,7 @@
                                                     </constraints>
                                                 </imageView>
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KpO-no-BMl">
-                                                    <rect key="frame" x="0.0" y="39.666666666666657" width="375" height="50"/>
+                                                    <rect key="frame" x="50" y="39.666666666666657" width="325" height="50"/>
                                                     <color key="backgroundColor" red="0.59999999999999998" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="50" id="deQ-wc-jNT"/>
@@ -99,7 +99,7 @@
                                                 <constraint firstAttribute="bottom" secondItem="KpO-no-BMl" secondAttribute="bottom" id="ULe-Tt-dBj"/>
                                                 <constraint firstItem="LQ8-cO-794" firstAttribute="leading" secondItem="xNG-sf-PnA" secondAttribute="trailing" constant="10" id="aqp-Wu-9Hk"/>
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" id="faC-by-km5"/>
-                                                <constraint firstItem="KpO-no-BMl" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" id="l0Y-89-eTm"/>
+                                                <constraint firstItem="KpO-no-BMl" firstAttribute="leading" secondItem="i35-U4-bEk" secondAttribute="leading" constant="50" id="l0Y-89-eTm"/>
                                                 <constraint firstAttribute="trailing" secondItem="KpO-no-BMl" secondAttribute="trailing" id="vWj-9H-JLc"/>
                                                 <constraint firstItem="KpO-no-BMl" firstAttribute="top" secondItem="fcO-YL-MuT" secondAttribute="bottom" constant="20" id="z1e-vv-qJb"/>
                                             </constraints>

@@ -296,10 +296,44 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                                         cell.imageView.image = image
                                     }
                                 } else {
+                                    
+                                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 25, rewrite: false)
+                                    
+                                    /*
+                                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + (activityPreview.source as NSString).lastPathComponent
+                                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                            cell.avatar.image = image
+                                        }
+                                    } else {
+                                        DispatchQueue.global().async {
+                                            let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
+                                            let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                                            if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
+                                                DispatchQueue.main.async {
+                                                    do {
+                                                        try data.write(to: fileNameLocalPath.url, options: .atomic)
+                                                    } catch { return }
+                                                    cell.avatar.image = UIImage(data: data)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    */
+                                    
+                                    
+                                    
                                     // default icon
                                 }
                             })
                         }
+                    }
+                }
+                
+            } else {
+                if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 100, rewrite: false) {
+                    if let image = UIImage(contentsOfFile: imageNamePath) {
+                        cell.imageView.image = image
                     }
                 }
             }
@@ -317,6 +351,37 @@ class activityCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+    }
+}
+
+// MARK: Utility
+
+// MARK: - Get Image from url
+
+func getDataFromUrl(url: URL, completion: @escaping (_ data: Data?, _  response: URLResponse?, _ error: Error?) -> Void) {
+    URLSession.shared.dataTask(with: url) {
+        (data, response, error) in
+        completion(data, response, error)
+        }.resume()
+}
+
+func downloadImage(url: URL) {
+    
+    print("Download Started")
+    getDataFromUrl(url: url) { (data, response, error)  in
+        guard let data = data, error == nil else { return }
+        let fileName = response?.suggestedFilename ?? url.lastPathComponent
+        print("Download Finished")
+        DispatchQueue.main.async() { () -> Void in
+            
+            do {
+                let pathFileName = CCUtility.getDirectoryUserData() + "/" + fileName
+                try data.write(to: URL(fileURLWithPath: pathFileName), options: .atomic)
+                
+            } catch {
+                print(error)
+            }
+        }
     }
 }
 

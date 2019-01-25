@@ -168,15 +168,15 @@ class NCUtility: NSObject {
         return (k_layout_list, "fileName", true, "none", true)
     }
     
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool) -> String? {
         
         var fileNamePNG = ""
         
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return
+            return nil
         }
         guard let iconURL = URL(string: svgUrlString) else {
-            return
+            return nil
         }
         
         if fileName == nil {
@@ -190,7 +190,7 @@ class NCUtility: NSObject {
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
             guard let imageData = try? Data(contentsOf:iconURL) else {
-                return
+                return nil
             }
             
             if let image = UIImage.init(data: imageData) {
@@ -212,14 +212,14 @@ class NCUtility: NSObject {
                 }
                 
                 guard let pngImageData = newImage.pngData() else {
-                    return
+                    return nil
                 }
                 CCUtility.write(pngImageData, fileNamePath: imageNamePath)
                 
             } else {
                 
                 guard let svgImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
-                    return
+                    return nil
                 }
                 
                 if width != nil {
@@ -228,15 +228,19 @@ class NCUtility: NSObject {
                 }
                 
                 guard let image: UIImage = svgImage.uiImage else {
-                    return
+                    return nil
                 }
                 guard let pngImageData = image.pngData() else {
-                    return
+                    return nil
                 }
                 
                 CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                
+                return imageNamePath
             }
         }
+        
+        return imageNamePath
     }
     
     @objc func startActivityIndicator(view: UIView) {

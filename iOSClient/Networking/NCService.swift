@@ -69,7 +69,7 @@ class NCService: NSObject {
                     
                     // Download Logo
                     let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true)
+                    _ = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true)
                     
                     // Download Theming Background
                     DispatchQueue.global().async {
