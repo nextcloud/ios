@@ -387,18 +387,38 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             let url = appDelegate.activeUrl + k_webDAV + "/" + activitySubjectRich.path
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
+            NCUtility.sharedInstance.startActivityIndicator(view: self)
+            
             let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
                 
                 if account == self.appDelegate.activeAccount && errorCode == 0 {
+                    
                     let serverUrl = (url as NSString).deletingLastPathComponent
                     let fileName = (url as NSString).lastPathComponent
+                    
                     OCNetworking.sharedManager()?.readFile(withAccount: activityPreview.account, serverUrl: serverUrl, fileName: fileName, completion: { (account, metadata, message, errorCode) in
+                        
+                        NCUtility.sharedInstance.stopActivityIndicator()
+
                         if account == self.appDelegate.activeAccount && errorCode == 0 {
+                            
+                            // move from id to oc:id + instanceid
+                            do {
+                                let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
+                                let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.fileID
+                                try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                            } catch {
+                                print(error)
+                            }
+                            
                             if let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata!) {
                                 self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
                             }
                         }
                     })
+                    
+                } else {
+                    NCUtility.sharedInstance.stopActivityIndicator()
                 }
             })
         }
