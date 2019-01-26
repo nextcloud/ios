@@ -408,7 +408,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
 
                         if account == self.appDelegate.activeAccount && errorCode == 0 {
                             
-                            // move from id to oc:id + instanceid
+                            // move from id to oc:id + instanceid (fileID)
                             do {
                                 let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
                                 let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.fileID
