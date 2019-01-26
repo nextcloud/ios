@@ -380,9 +380,17 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
 
         if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
             
-            let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId))
+            guard let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
+                return
+            }
             
-            print("xc")
+            let url = appDelegate.activeUrl + "/" + activitySubjectRich.path
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
+            
+            let task = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+                
+                print("")
+            })
         }
     }
 }
