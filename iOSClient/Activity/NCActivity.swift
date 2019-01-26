@@ -384,6 +384,12 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                 return
             }
             
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID CONTAINS %@", activitySubjectRich.id)) {
+                
+                self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
+                return
+            }
+            
             let url = appDelegate.activeUrl + k_webDAV + "/" + activitySubjectRich.path
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
