@@ -373,6 +373,18 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         
         return UICollectionViewCell()
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let activityPreview = activityPreviews[indexPath.row]
+
+        if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
+            
+            let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId))
+            
+            print("xc")
+        }
+    }
 }
 
 class activityCollectionViewCell: UICollectionViewCell {
