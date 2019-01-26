@@ -384,12 +384,14 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                 return
             }
             
-            let url = appDelegate.activeUrl + "/" + activitySubjectRich.path
+            let url = appDelegate.activeUrl + k_webDAV + "/" + activitySubjectRich.path
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
             let task = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
                 
-                print("")
+                if account == self.appDelegate.activeAccount && errorCode == 0 {
+                    
+                }
             })
         }
     }
