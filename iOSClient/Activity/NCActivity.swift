@@ -387,10 +387,18 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             let url = appDelegate.activeUrl + k_webDAV + "/" + activitySubjectRich.path
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
-            let task = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+            let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
                 
                 if account == self.appDelegate.activeAccount && errorCode == 0 {
-                    
+                    let serverUrl = (url as NSString).deletingLastPathComponent
+                    let fileName = (url as NSString).lastPathComponent
+                    OCNetworking.sharedManager()?.readFile(withAccount: activityPreview.account, serverUrl: serverUrl, fileName: fileName, completion: { (account, metadata, message, errorCode) in
+                        if account == self.appDelegate.activeAccount && errorCode == 0 {
+                            if let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata!) {
+                                self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
+                            }
+                        }
+                    })
                 }
             })
         }
