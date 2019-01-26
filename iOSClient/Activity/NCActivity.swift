@@ -319,41 +319,11 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             // Trashbin
             if activityPreview.view == "trashbin" {
                 
-                if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileID) {
-
-                    let fileName = activitySubjectRich.name
-                    
-                    if activityPreview.mimeType == "dir" {
-                        
-                        cell.imageView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                        
-                    } else {
-                        
-                        if CCUtility.fileProviderStorageIconExists(fileID, fileNameView: activitySubjectRich.name) {
-                            
-                            if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)) {
+                DispatchQueue.global().async {
+                    if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 100, rewrite: false) {
+                        DispatchQueue.main.async {
+                            if let image = UIImage(contentsOfFile: imageNamePath) {
                                 cell.imageView.image = image
-                            }
-                            
-                        } else {
-                            
-                            let fileNamePath = CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileName)!
-                            
-                            if FileManager.default.fileExists(atPath: fileNamePath) {
-                                
-                                if let image = UIImage(contentsOfFile: fileNamePath) {
-                                    cell.imageView.image = image
-                                }
-                                
-                            } else {
-                            
-                                OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: fileID, fileName: fileName, completion: { (account, message, errorCode) in
-                                    if errorCode == 0 && account == self.appDelegate.activeAccount && CCUtility.fileProviderStorageIconExists(fileID, fileNameView: fileName) {
-                                        if let image = UIImage(contentsOfFile: fileNamePath) {
-                                            cell.imageView.image = image
-                                        }
-                                    }
-                                })
                             }
                         }
                     }
