@@ -31,6 +31,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var scrollToFileID = ""
+    var scrollToIndexPath: IndexPath?
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -110,7 +111,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if scrollToFileID != "" {
             for item in 0...datasource.count-1 {
                 if datasource[item].fileID.contains(scrollToFileID) {
-                    collectionView.scrollToItem(at: IndexPath(item: item, section: 0), at: .top, animated: true)
+                    scrollToIndexPath = IndexPath(item: item, section: 0)
+                    collectionView.scrollToItem(at: scrollToIndexPath!, at: .top, animated: true)
                 }
             }
         }
@@ -576,6 +578,18 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     // MARK: COLLECTIONVIEW METHODS
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        
+        if scrollToIndexPath != nil {
+            if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
+                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
+                UIView.animate(withDuration: 0.5, animations: {
+                    cell.backgroundColor = .white
+                })
+            }
+        }
+    }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
