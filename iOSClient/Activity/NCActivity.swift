@@ -116,14 +116,17 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
         view.backgroundColor = .clear
         
-        let label = UILabel(frame: CGRect(x: 50, y: 10, width: tableView.bounds.width - 100, height: 20))
-        label.font = UIFont.boldSystemFont(ofSize: 17)
-        label.textColor = UIColor.black
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = .white
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
-        label.layer.cornerRadius = 10
+        label.layer.cornerRadius = 11
         label.layer.masksToBounds = true
-        label.layer.backgroundColor = UIColor(red: 220.0/255.0, green: 220.0/255.0, blue: 220.0/255.0, alpha: 0.8).cgColor
+        label.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
+        let widthFrame = label.intrinsicContentSize.width + 30
+        let xFrame = tableView.bounds.width / 2 - widthFrame / 2
+        label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
         
         view.addSubview(label)
         return view
@@ -388,10 +391,14 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                 return
             }
             
-            let url = appDelegate.activeUrl + k_webDAV + "/" + activitySubjectRich.path
+            var pathComponents = activityPreview.link.components(separatedBy: "?")
+            pathComponents = pathComponents[1].components(separatedBy: "&")
+            var url = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
+            url = appDelegate.activeUrl + k_webDAV + url + "/" + activitySubjectRich.name
+            
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
-            NCUtility.sharedInstance.startActivityIndicator(view: self)
+            NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!)
             
             let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
                 
