@@ -54,7 +54,17 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
     
-        loadDatasource()
+        // datasource
+        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
+        for tableActivity in activities {
+            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
+                continue
+            }
+            if !sectionDate.contains(date) {
+                sectionDate.append(date)
+            }
+        }
+        tableView.reloadData()
     }
     
     // MARK: DZNEmpty
@@ -68,26 +78,13 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_no_activity_", comment: "")
+        let text = "\n" + NSLocalizedString("_no_activity_", comment: "")
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
 
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
-    }
-    
-    func loadDatasource() {
-        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
-        for tableActivity in activities {
-            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
-                continue
-            }
-            if !sectionDate.contains(date) {
-                sectionDate.append(date)
-            }
-        }
-        tableView.reloadData()
     }
     
     // MARK: TableView
@@ -332,6 +329,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             } else {
                 
                 if activityPreview.isMimeTypeIcon {
+                    
                     DispatchQueue.global().async {
                         if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 100, rewrite: false) {
                             DispatchQueue.main.async {
