@@ -30,6 +30,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
+    var scrollToFileID = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -101,6 +102,18 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         loadDatasource()
         loadListingTrash()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if scrollToFileID != "" {
+            for item in 0...datasource.count-1 {
+                if datasource[item].fileID.contains(scrollToFileID) {
+                    collectionView.scrollToItem(at: IndexPath(item: item, section: 0), at: .top, animated: true)
+                }
+            }
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

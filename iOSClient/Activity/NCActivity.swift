@@ -389,7 +389,11 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                 }
             }
             if (responder as? UIViewController)!.navigationController != nil {
-                (responder as? UIViewController)!.navigationController?.performSegue(withIdentifier: "segueTrash", sender: self)
+                
+                if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
+                    viewController.scrollToFileID = String(activityPreview.fileId)
+                    (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
+                }
             }
             
             return
