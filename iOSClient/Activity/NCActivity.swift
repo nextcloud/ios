@@ -379,6 +379,22 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
         
         let activityPreview = activityPreviews[indexPath.row]
 
+        if activityPreview.view == "trashbin" {
+            
+            var responder: UIResponder? = collectionView
+            while !(responder is UIViewController) {
+                responder = responder?.next
+                if nil == responder {
+                    break
+                }
+            }
+            if (responder as? UIViewController)!.navigationController != nil {
+                (responder as? UIViewController)!.navigationController?.performSegue(withIdentifier: "segueTrash", sender: self)
+            }
+            
+            return
+        }
+        
         if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
             
             guard let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
