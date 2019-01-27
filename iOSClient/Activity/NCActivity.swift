@@ -429,6 +429,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                     })
                     
                 } else {
+                    
                     NCUtility.sharedInstance.stopActivityIndicator()
                 }
             })
