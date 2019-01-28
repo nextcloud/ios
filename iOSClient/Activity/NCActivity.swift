@@ -146,6 +146,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             
             let results = getTableActivitiesFromSection(indexPath.section)
             let activity = results[indexPath.row]
+            var orderKeysId = [String]()
 
             cell.idActivity = activity.idActivity
             cell.account = activity.account
@@ -231,6 +232,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 
                 for key in keys {
                     if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.activeAccount, idActivity: activity.idActivity, key: key) {
+                        orderKeysId.append(result.id)
                         subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                     }
                 }
@@ -249,7 +251,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             }
             
             // CollectionView
-            cell.activityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: activity.account, idActivity: activity.idActivity)
+            cell.activityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
             if cell.activityPreviews.count == 0 {
                 cell.collectionViewHeightConstraint.constant = 0
             } else {
@@ -319,8 +321,10 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             // Trashbin
             if activityPreview.view == "trashbin" {
                 
+                let source = activityPreview.source
+                
                 DispatchQueue.global().async {
-                    if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 100, rewrite: false) {
+                    if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) {
                         DispatchQueue.main.async {
                             if let image = UIImage(contentsOfFile: imageNamePath) {
                                 cell.imageView.image = image
@@ -333,8 +337,10 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                 
                 if activityPreview.isMimeTypeIcon {
                     
+                    let source = activityPreview.source
+
                     DispatchQueue.global().async {
-                        if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: activityPreview.source, fileName: nil, width: 100, rewrite: false) {
+                        if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) {
                             DispatchQueue.main.async {
                                 if let image = UIImage(contentsOfFile: imageNamePath) {
                                     cell.imageView.image = image

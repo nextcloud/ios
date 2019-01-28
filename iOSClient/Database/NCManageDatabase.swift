@@ -690,14 +690,20 @@ class NCManageDatabase: NSObject {
         return results.map { tableActivitySubjectRich.init(value:$0) }
     }
     
-    @objc func getActivityPreview(account: String, idActivity: Int) -> [tableActivityPreview] {
+    @objc func getActivityPreview(account: String, idActivity: Int, orderKeysId: [String]) -> [tableActivityPreview] {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableActivityPreview.self).filter("account = %@ && idActivity == %d", account, idActivity)
+        var results = [tableActivityPreview]()
         
-        return Array(results.map { tableActivityPreview.init(value:$0) })
+        for id in orderKeysId {
+            if let result = realm.objects(tableActivityPreview.self).filter("account = %@ && idActivity == %d && fileId == %d", account, idActivity, Int(id) ?? 0).first {
+                results.append(result)
+            }
+        }
+        
+        return results
     }
     
     @objc func getActivityLastIdActivity(account: String) -> Int {
