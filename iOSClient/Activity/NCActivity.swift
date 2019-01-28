@@ -412,9 +412,18 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             }
             
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID CONTAINS %@", activitySubjectRich.id)) {
-                
-                self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
-                return
+                if let filePath = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView) {
+                    do {
+                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+                        let fileSize = attr[FileAttributeKey.size] as! UInt64
+                        if fileSize > 0 {
+                            self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
+                            return
+                        }
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
             }
             
             var pathComponents = activityPreview.link.components(separatedBy: "?")
@@ -440,13 +449,11 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                         if account == self.appDelegate.activeAccount && errorCode == 0 {
                             
                             // move from id to oc:id + instanceid (fileID)
-                            do {
-                                let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                                let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.fileID
-                                try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                            } catch {
-                                print(error)
-                            }
+                            
+                            let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
+                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.fileID
+                            
+                            CCUtility.moveFile(atPath: atPath, toPath: toPath)
                             
                             if let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata!) {
                                 self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
