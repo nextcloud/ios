@@ -607,23 +607,25 @@ class NCManageDatabase: NSObject {
                     addObjectActivity.subject = activity.subject
                     
                     if activity.subject_rich.count > 0 {
-                        addObjectActivity.subjectRich = activity.subject_rich[0] as! String
+                        addObjectActivity.subjectRich = activity.subject_rich[0] as? String ?? ""
                         if activity.subject_rich.count > 1 {
-                            let dict = activity.subject_rich[1] as! [String:AnyObject]
-                            for (key, value) in dict {
-                                let addObjectActivitySubjectRich = tableActivitySubjectRich()
-                                let dict = value as! [String:AnyObject]
-                                addObjectActivitySubjectRich.account = account
-                                addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + key
-                                addObjectActivitySubjectRich.key = key
-                                addObjectActivitySubjectRich.idActivity = activity.idActivity
-                                addObjectActivitySubjectRich.id = dict["id"] as? String ?? ""
-                                addObjectActivitySubjectRich.link = dict["link"] as? String ?? ""
-                                addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
-                                addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
-                                addObjectActivitySubjectRich.type = dict["type"] as? String ?? ""
+                            if let dict = activity.subject_rich[1] as? [String:AnyObject] {
+                                for (key, value) in dict {
+                                    let addObjectActivitySubjectRich = tableActivitySubjectRich()
+                                    if let dict = value as? [String:AnyObject] {
+                                        addObjectActivitySubjectRich.account = account
+                                        addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + key
+                                        addObjectActivitySubjectRich.key = key
+                                        addObjectActivitySubjectRich.idActivity = activity.idActivity
+                                        addObjectActivitySubjectRich.id = dict["id"] as? String ?? ""
+                                        addObjectActivitySubjectRich.link = dict["link"] as? String ?? ""
+                                        addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
+                                        addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
+                                        addObjectActivitySubjectRich.type = dict["type"] as? String ?? ""
 
-                                realm.add(addObjectActivitySubjectRich, update: true)
+                                        realm.add(addObjectActivitySubjectRich, update: true)
+                                    }
+                                }
                             }
                         }
                     }
@@ -633,13 +635,13 @@ class NCManageDatabase: NSObject {
                             let addObjectActivityPreview = tableActivityPreview()
                             addObjectActivityPreview.account = account
                             addObjectActivityPreview.idActivity = activity.idActivity
-                            addObjectActivityPreview.fileId = activityPreview["fileId"] as! Int
+                            addObjectActivityPreview.fileId = activityPreview["fileId"] as? Int ?? 0
                             addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
                             addObjectActivityPreview.source = activityPreview["source"] as? String ?? ""
                             addObjectActivityPreview.link = activityPreview["link"] as? String ?? ""
                             addObjectActivityPreview.mimeType = activityPreview["mimeType"] as? String ?? ""
                             addObjectActivityPreview.view = activityPreview["view"] as? String ?? ""
-                            addObjectActivityPreview.isMimeTypeIcon = activityPreview["isMimeTypeIcon"] as! Bool
+                            addObjectActivityPreview.isMimeTypeIcon = activityPreview["isMimeTypeIcon"] as? Bool ?? false
                             
                             realm.add(addObjectActivityPreview, update: true)
                         }
