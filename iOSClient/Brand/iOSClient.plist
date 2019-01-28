@@ -50,7 +50,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>6</string>
+	<string>7</string>
 	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
 	<true/>
 	<key>Fabric</key>
