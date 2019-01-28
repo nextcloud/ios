@@ -109,10 +109,12 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         super.viewDidAppear(animated)
         
         if scrollToFileID != "" {
-            for item in 0...datasource.count-1 {
-                if datasource[item].fileID.contains(scrollToFileID) {
-                    scrollToIndexPath = IndexPath(item: item, section: 0)
-                    collectionView.scrollToItem(at: scrollToIndexPath!, at: .top, animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                for item in 0...self.datasource.count-1 {
+                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
+                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
+                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
+                    }
                 }
             }
         }
