@@ -158,20 +158,6 @@ class NCService: NSObject {
                             
                         } else {
                             
-                            if errorCode != 0 {
-                                
-                                var error = ""
-                                if let message = message {
-                                    error = "Get Notification Server failure error \(errorCode) \(message)"
-                                } else {
-                                    error = "Get Notification Server failure error \(errorCode)"
-                                }
-                                
-                                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: self.appDelegate.activeUrl)
-                            } else {
-                                print("[LOG] It has been changed user during networking process, error.")
-                            }
-                            
                             // Update Main NavigationBar
                             if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
                                 self.appDelegate.activeMain.setUINavigationBarDefault()
@@ -202,19 +188,7 @@ class NCService: NSObject {
                                 NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
                             }
                             
-                        } else if errorCode != 0 {
-                            
-                            var error = ""
-                            if let message = message {
-                                error = "Get external site failure error \(errorCode) \(message)"
-                            } else {
-                                error = "Get external site failure error \(errorCode)"
-                            }
-                                
-                            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
-                        } else {
-                            print("[LOG] It has been changed user during networking process, error.")
-                        }
+                        } 
                     })
                    
                 } else {
@@ -236,18 +210,7 @@ class NCService: NSObject {
                             //if (self.appDelegate.activeActivity != nil) {
                             //    self.appDelegate.activeActivity.reloadDatasource()
                             //}
-                        } else if errorCode != 0 {
-                            var error = ""
-                            if let message = message {
-                                error = "Get Activity Server failure error \(errorCode) \(message)"
-                            } else {
-                                error = "Get Activity Server failure error \(errorCode)"
-                            }
-                            
-                            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
-                        } else {
-                            print("[LOG] It has been changed user during networking process, error.")
-                        }
+                        } 
                     })
                 }
                 
@@ -255,13 +218,6 @@ class NCService: NSObject {
                 
                 self.appDelegate.settingThemingColorBrand()
                 
-                var error = ""
-                if let message = message {
-                    error = "Get Capabilities failure error \(errorCode) \(message)"
-                } else {
-                    error = "Get Capabilities failure error \(errorCode)"
-                }
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
                 // Change Theming color
@@ -326,15 +282,10 @@ class NCService: NSObject {
                 
             } else if errorCode != 0 {
                 
-                var error = ""
-                if let message = message {
-                    error = "Get user profile failure error \(errorCode) \(message)"
-                } else {
-                    error = "Get user profile failure error \(errorCode)"
-                }
-                
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: "")
+                print("Get user profile failure error")
+               
             } else {
+                
                 print("[LOG] It has been changed user during networking process, error.")
             }
         })

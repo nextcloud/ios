@@ -520,9 +520,6 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:tableAccount.url];
-
         completion(account, nil, nil, message, errorCode);
     }];
 }
@@ -1622,9 +1619,6 @@
         
         [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
-            // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServerProxy fileID:@"" action:k_activityDebugActionSubscribingPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:@""];
-            
             completion(account, deviceIdentifier, signature, publicKey, nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -1639,10 +1633,7 @@
                 message = NSLocalizedString(@"_server_error_retry_", nil);
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-            
-            // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServerProxy fileID:@"" action:k_activityDebugActionSubscribingPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:@""];
-            
+                        
             completion(account, nil, nil, nil, message, errorCode);
         }];
         

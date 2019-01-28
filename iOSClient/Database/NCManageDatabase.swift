@@ -720,55 +720,6 @@ class NCManageDatabase: NSObject {
         return 0
     }
     
-    @objc func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
-
-        /*
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
-        var noteReplacing : String = ""
-        
-        if let activeUrl = activeUrl {
-            noteReplacing = note.replacingOccurrences(of: "\(activeUrl)\(k_webDAV)", with: "")
-        }
-        
-        noteReplacing = note.replacingOccurrences(of: "\(k_domain_session_queue).", with: "")
-
-        let realm = try! Realm()
-
-        if realm.isInWriteTransaction {
-        
-            print("[LOG] Could not write to database, addActivityClient is already in write transaction")
-            
-        } else {
-            
-            do {
-                try realm.write {
-                
-                    // Add new Activity
-                    let addObject = tableActivity()
-                
-                    addObject.account = tableAccount.account
-                    addObject.action = action
-                    addObject.file = file
-                    addObject.fileID = fileID
-                    addObject.note = noteReplacing
-                    addObject.selector = selector
-                    addObject.type = type
-                    addObject.verbose = verbose
-                
-                    realm.add(addObject)
-                }
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-            }
-        }
-        
-        print("[LOG] " + note)
-        */
-    }
-    
     //MARK: -
     //MARK: Table Capabilities
     

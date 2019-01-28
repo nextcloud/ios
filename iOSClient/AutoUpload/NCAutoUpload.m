@@ -450,20 +450,11 @@
 {
     @synchronized(self) {
         
-        if ([[NCManageDatabase sharedInstance] addMetadata:metadata] != nil) {
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         
-            [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-        
-        } else {
-    
-            [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-        }
-    
         // Add asset in table Photo Library
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
-            if (![[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.activeAccount]) {
-                [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-            }
+            (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.activeAccount];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -493,10 +484,7 @@
             (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:autoUploadPath account:appDelegate.activeAccount];
         
     } else {
-        
-        // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:autoUploadPath fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedString(@"_not_possible_create_folder_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
-        
+       
         if ([selector isEqualToString:selectorUploadAutoUploadAll])
             [appDelegate messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 
@@ -517,9 +505,6 @@
                 (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:folderPathName account:appDelegate.activeAccount];
                 
             } else {
-                
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:folderPathName fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
                 
                 if ([selector isEqualToString:selectorUploadAutoUploadAll])
                     [appDelegate messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
