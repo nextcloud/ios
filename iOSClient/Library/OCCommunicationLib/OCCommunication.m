@@ -2995,6 +2995,8 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
+    path = [path encodeString:NSUTF8StringEncoding];
+
     [request listTrash:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         OCXMLParser *parser = [OCXMLParser new];
