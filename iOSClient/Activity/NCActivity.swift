@@ -30,6 +30,9 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    private let refreshControl = UIRefreshControl()
+
     var activities = [tableActivity]()
     var sectionDate = [Date]()
 
@@ -43,6 +46,14 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
+        
+        // Add Refresh Control
+        tableView.refreshControl = refreshControl
+        
+        // Configure Refresh Control
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+        refreshControl.addTarget(self, action: #selector(loadActivity), for: .valueChanged)
         
         self.title = NSLocalizedString("_activity_", comment: "")
     }
@@ -257,6 +268,21 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         }
         
         return UITableViewCell()
+    }
+    
+    // MARK: NC API
+    
+    @objc func loadActivity() {
+        
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: Int(NCManageDatabase.sharedInstance.getActivityLastIdActivity(account: self.appDelegate.activeAccount)), completion: { (account, listOfActivity, message, errorCode) in
+            
+            self.refreshControl.endRefreshing()
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
+                self.tableView.reloadData()
+            }
+        })
     }
 }
 
