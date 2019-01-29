@@ -614,10 +614,16 @@ class NCManageDatabase: NSObject {
                                     let addObjectActivitySubjectRich = tableActivitySubjectRich()
                                     if let dict = value as? [String:AnyObject] {
                                         addObjectActivitySubjectRich.account = account
-                                        addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + key
+                                        switch dict["id"] {
+                                        case is String:
+                                            addObjectActivitySubjectRich.id = dict["id"] as? String ?? ""
+                                        case is Int:
+                                            addObjectActivitySubjectRich.id = String(dict["id"] as? Int ?? 0)
+                                        default: addObjectActivitySubjectRich.id = ""
+                                        }
+                                        addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + addObjectActivitySubjectRich.id
                                         addObjectActivitySubjectRich.key = key
                                         addObjectActivitySubjectRich.idActivity = activity.idActivity
-                                        addObjectActivitySubjectRich.id = dict["id"] as? String ?? ""
                                         addObjectActivitySubjectRich.link = dict["link"] as? String ?? ""
                                         addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
                                         addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
