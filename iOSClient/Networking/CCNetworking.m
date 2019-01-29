@@ -987,10 +987,11 @@
              
              NSString *fileID = metadata.fileID;
              NSString *account = metadata.account;
+             NSString *serverUrl = metadata.serverUrl;
              
              dispatch_async(dispatch_get_main_queue(), ^{
                  if ([self.delegate respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
-                     [self.delegate uploadStart:fileID account:account task:uploadTask serverUrl:metadata.serverUrl];
+                     [self.delegate uploadStart:fileID account:account task:uploadTask serverUrl:serverUrl];
                  }
              });
          }
