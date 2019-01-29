@@ -47,13 +47,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             return
         }
         
-        let account = dic["account"] as! NSString
-        let fileID = dic["fileID"] as! NSString
-        let serverUrl = dic["serverUrl"] as! String
-        let status = dic["status"] as! Int
-        let progress = dic["progress"] as! CGFloat
-        let totalBytes = dic["totalBytes"] as! Double
-        let totalBytesExpected = dic["totalBytesExpected"] as! Double
+        let account = dic["account"] as? NSString ?? ""
+        let fileID = dic["fileID"] as? NSString ?? ""
+        let serverUrl = dic["serverUrl"] as? String ?? ""
+        let status = dic["status"] as? Int ?? Int(k_taskIdentifierDone)
+        let progress = dic["progress"] as? CGFloat ?? 0
+        let totalBytes = dic["totalBytes"] as? Double ?? 0
+        let totalBytesExpected = dic["totalBytesExpected"] as? Double ?? 0
         
         if (account != self.appDelegate.activeAccount! as NSString) && !(viewController is CCTransfers) {
             return
