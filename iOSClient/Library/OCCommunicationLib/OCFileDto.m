@@ -40,6 +40,7 @@
         self.etag = @"";
         self.permissions = @"";
         self.ocId = @"";
+        self.id = 0;
         self.trashbinFileName = @"";
         self.trashbinOriginalLocation = @"";
     }

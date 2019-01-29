@@ -199,7 +199,8 @@ NSString *OCCWebDAVURIKey           = @"uri";
         
     } else if ([elementName isEqualToString:@"oc:id"]) {
         _currentFile.ocId = _xmlChars;
-        
+    } else if ([elementName isEqualToString:@"oc:fileid"]) {
+        _currentFile.id = (double)[_xmlChars doubleValue];
     } else if ([elementName hasSuffix:@":getetag"] && [_xmlChars length]) {
         
         //ETAG

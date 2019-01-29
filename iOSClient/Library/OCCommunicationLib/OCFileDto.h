@@ -46,6 +46,7 @@
 @property (nonatomic, copy) NSString *etag;
 @property (nonatomic, copy) NSString *permissions;
 @property (nonatomic, copy) NSString *ocId;
+@property double id;
 @property BOOL isFavorite;
 @property BOOL isEncrypted;
 @property (nonatomic, copy) NSString *trashbinFileName;
