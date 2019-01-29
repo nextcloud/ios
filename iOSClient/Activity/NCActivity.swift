@@ -152,6 +152,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             cell.account = activity.account
             cell.avatar.image = nil
             cell.avatar.isHidden = true
+            cell.subjectTrailingConstraint.constant = 10
 
             // icon
             if activity.icon.count > 0 {
@@ -184,33 +185,26 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             }
     
             // avatar
-            if activity.user.count > 0 {
+            if activity.user.count > 0 && activity.user != appDelegate.activeUserID {
                 
-                if activity.user == appDelegate.activeUserID {
-                    
-                    cell.subjectTrailingConstraint.constant = 10
-                    
+                cell.subjectTrailingConstraint.constant = 50
+                cell.avatar.isHidden = false
+                
+                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + activity.user + ".png"
+                if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                        cell.avatar.image = image
+                    }
                 } else {
-                
-                    cell.subjectTrailingConstraint.constant = 50
-                    cell.avatar.isHidden = false
-                    
-                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + activity.user + ".png"
-                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            cell.avatar.image = image
-                        }
-                    } else {
-                        DispatchQueue.global().async {
-                            let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
-                            let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                            if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
-                                DispatchQueue.main.async {
-                                    do {
-                                        try data.write(to: fileNameLocalPath.url, options: .atomic)
-                                    } catch { return }
-                                    cell.avatar.image = UIImage(data: data)
-                                }
+                    DispatchQueue.global().async {
+                        let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
+                        let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                        if let data = try? Data(contentsOf: URL(string: encodedString!)!) {
+                            DispatchQueue.main.async {
+                                do {
+                                    try data.write(to: fileNameLocalPath.url, options: .atomic)
+                                } catch { return }
+                                cell.avatar.image = UIImage(data: data)
                             }
                         }
                     }
