@@ -284,7 +284,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
     @objc func loadActivity() {
         
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: Int(NCManageDatabase.sharedInstance.getActivityLastIdActivity(account: self.appDelegate.activeAccount)), limit:100, completion: { (account, listOfActivity, message, errorCode) in
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: Int(NCManageDatabase.sharedInstance.getActivityLastIdActivity(account: self.appDelegate.activeAccount)), limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
             
             self.refreshControl.endRefreshing()
             

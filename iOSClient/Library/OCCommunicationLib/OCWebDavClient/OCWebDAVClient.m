@@ -929,7 +929,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 #pragma mark - Get Activity
 
-- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
     

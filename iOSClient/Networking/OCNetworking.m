@@ -1352,7 +1352,7 @@
 #pragma mark ===== API =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getActivityWithAccount:(NSString *)account since:(NSInteger)since limit:(NSInteger)limit completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
+- (void)getActivityWithAccount:(NSString *)account since:(NSInteger)since limit:(NSInteger)limit link:(NSString *)link completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
 {
     BOOL previews = false;
 
@@ -1371,7 +1371,7 @@
         previews = true;
     }
     
-    [communication getActivityServer:[tableAccount.url stringByAppendingString:@"/"] since:since limit:limit previews:previews onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
+    [communication getActivityServer:[tableAccount.url stringByAppendingString:@"/"] since:since limit:limit previews:previews link:link onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
         completion(account, listOfActivity, nil, 0);
         
