@@ -65,17 +65,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
     
-        // datasource
-        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
-        for tableActivity in activities {
-            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
-                continue
-            }
-            if !sectionDate.contains(date) {
-                sectionDate.append(date)
-            }
-        }
-        tableView.reloadData()
+        loadDataSource()
     }
     
     // MARK: DZNEmpty
@@ -100,6 +90,20 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
     // MARK: TableView
 
+    func loadDataSource() {
+        
+        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
+        for tableActivity in activities {
+            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
+                continue
+            }
+            if !sectionDate.contains(date) {
+                sectionDate.append(date)
+            }
+        }
+        tableView.reloadData()
+    }
+    
     func getTableActivitiesFromSection(_ section: Int) -> [tableActivity] {
         let startDate = sectionDate[section]
         let endDate: Date = {
@@ -280,7 +284,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                self.tableView.reloadData()
+                
+                self.loadDataSource()
             }
         })
     }
