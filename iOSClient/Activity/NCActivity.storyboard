@@ -118,6 +118,7 @@
                                 <connections>
                                     <outlet property="dataSource" destination="nhT-TJ-YvX" id="4jS-6C-FKt"/>
                                     <outlet property="delegate" destination="nhT-TJ-YvX" id="ab1-4g-bMH"/>
+                                    <outlet property="prefetchDataSource" destination="nhT-TJ-YvX" id="317-AD-uQe"/>
                                 </connections>
                             </tableView>
                         </subviews>

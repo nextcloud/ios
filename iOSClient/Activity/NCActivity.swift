@@ -25,7 +25,7 @@ import Foundation
 import UIKit
 import SwiftRichString
 
-class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, UITableViewDataSourcePrefetching, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet weak var tableView: UITableView!
 
@@ -46,8 +46,6 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
-        
-        // Add Refresh Control
         tableView.refreshControl = refreshControl
         
         // Configure Refresh Control
@@ -153,6 +151,14 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        print("")
+    }
+    
+    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        print("")
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
