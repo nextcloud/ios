@@ -579,7 +579,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  *
  */
 
-- (void) getActivityServer:(NSString * _Nonnull)serverPath since:(NSInteger)since onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
+- (void) getActivityServer:(NSString * _Nonnull)serverPath since:(NSInteger)since limit:(NSInteger)limit onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 ///-----------------------------------
 /// @name Get the list of External sites

@@ -154,11 +154,11 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        print("")
+        print("prefetchRowsAt \(indexPaths)")
     }
     
     func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        print("")
+        print("cancelPrefetchingForRowsAt \(indexPaths)")
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -284,7 +284,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
     @objc func loadActivity() {
         
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: Int(NCManageDatabase.sharedInstance.getActivityLastIdActivity(account: self.appDelegate.activeAccount)), completion: { (account, listOfActivity, message, errorCode) in
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: Int(NCManageDatabase.sharedInstance.getActivityLastIdActivity(account: self.appDelegate.activeAccount)), limit:100, completion: { (account, listOfActivity, message, errorCode) in
             
             self.refreshControl.endRefreshing()
             
