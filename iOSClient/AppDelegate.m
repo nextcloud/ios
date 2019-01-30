@@ -1510,6 +1510,14 @@
             }
         });
     }
+    
+    if ([actualVersion isEqualToString:@"2.22.9"]) {
+        if (([actualBuild compare:@"8" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:nil];
+        }
+    }
 
     return YES;
 }
