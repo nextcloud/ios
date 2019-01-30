@@ -1367,7 +1367,7 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
-    if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_12_0) {
+    if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_15_0) {
         previews = true;
     }
     

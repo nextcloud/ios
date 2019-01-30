@@ -204,12 +204,9 @@ class NCService: NSObject {
                 
                 if (capabilities!.isActivityV2Enabled) {
                     
-                    OCNetworking.sharedManager().getActivityWithAccount(account!, since: Int(NCManageDatabase.sharedInstance.getActivityLastIdActivity(account: self.appDelegate.activeAccount)), limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
+                    OCNetworking.sharedManager().getActivityWithAccount(account!, since: 0, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                            //if (self.appDelegate.activeActivity != nil) {
-                            //    self.appDelegate.activeActivity.reloadDatasource()
-                            //}
                         } 
                     })
                 }
