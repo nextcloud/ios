@@ -43,4 +43,4 @@ If you need assistance or want to ask a question about the iOS app, you are welc
 
 Do you want try the last version in development of Nextcloud iOS ? Simple, follow this simple step
 
-[https://testflight.apple.com/join/GjNbfo2a] 
+[Apple TestFlight](https://testflight.apple.com/join/GjNbfo2a)
