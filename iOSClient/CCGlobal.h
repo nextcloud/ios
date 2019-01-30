@@ -292,6 +292,7 @@
 #define k_layout_view_offline                           @"LayoutOffline"
 
 // Nextcloud version
+#define k_nextcloud_version_12_0                        12
 #define k_nextcloud_version_15_0                        15
 
 // -----------------------------------------------------------------------------------------------------------
