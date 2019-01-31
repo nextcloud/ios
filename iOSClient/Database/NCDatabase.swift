@@ -236,7 +236,6 @@ class tableLocalFile: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
-    @objc dynamic var id: Double = 0
     @objc dynamic var offline: Bool = false
     @objc dynamic var size: Double = 0
     

@@ -1548,7 +1548,7 @@
                                 
                             } else {
                                 
-                                [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID id:metadata.id date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:fileNameNew etag:nil];
+                                [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:fileNameNew etag:nil];
                                 
                                 // Move file system
                                 

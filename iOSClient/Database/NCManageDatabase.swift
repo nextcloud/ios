@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 42,
+            schemaVersion: 43,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -98,7 +98,7 @@ class NCManageDatabase: NSObject {
             // 39 : Version 2.22.9.1
             // 40 : Version 2.22.9.3
             // 41 : Version 2.22.9.5
-            // 42 : Version 2.22.9.10
+            // 42,43 : Version 2.22.9.10
             
 
             migrationBlock: { migration, oldSchemaVersion in
@@ -1436,7 +1436,6 @@ class NCManageDatabase: NSObject {
                 addObject.exifLongitude = "-1"
                 addObject.fileID = metadata.fileID
                 addObject.fileName = metadata.fileName
-                addObject.id = metadata.id
                 addObject.size = metadata.size
             
                 realm.add(addObject, update: true)
@@ -1462,7 +1461,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(fileID: String, id: Double, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
+    @objc func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
         
         let realm = try! Realm()
 
@@ -1491,9 +1490,6 @@ class NCManageDatabase: NSObject {
                 }
                 if let etag = etag {
                     result.etag = etag
-                }
-                if id > 0 {
-                    result.id = id
                 }
             }
         } catch let error {
