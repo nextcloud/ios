@@ -158,7 +158,6 @@ class tableDirectory: Object {
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
-    @objc dynamic var id: Double = 0
     @objc dynamic var lock: Bool = false
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
@@ -258,7 +257,6 @@ class tableMetadata: Object {
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
-    @objc dynamic var id: Double = 0
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
@@ -289,7 +287,6 @@ class tablePhotos: Object {
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
-    @objc dynamic var id: Double = 0
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
