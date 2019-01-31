@@ -484,7 +484,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                 self.metadataFolder = metadataFolder
                 
                 // Update directory etag
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, id: metadataFolder?.id ?? 0, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
                 NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
                 

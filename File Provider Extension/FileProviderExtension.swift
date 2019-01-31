@@ -249,7 +249,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, id: metadata.id, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
                 
                 // Update DB Metadata
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)

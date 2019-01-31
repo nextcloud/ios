@@ -61,7 +61,7 @@ extension FileProviderExtension {
                 }
                 
                 // DIRECTORY
-                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
+                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, id: 0, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -155,7 +155,7 @@ extension FileProviderExtension {
                 
                 if metadataFrom.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account!)
-                    _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: account!)
+                    _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, id: 0, permissions: nil, serverUrl: serverUrlTo, account: account!)
                 }
                 
                 NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
@@ -216,7 +216,7 @@ extension FileProviderExtension {
                 
                 if metadata.directory {
                     
-                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted, account: account!)
+                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, id: 0, encrypted: directoryTable.e2eEncrypted, account: account!)
                     
                 } else {
                     
@@ -226,7 +226,7 @@ extension FileProviderExtension {
                     _ = self.providerData.moveFile(CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: itemName))
                     _ = self.providerData.moveFile(CCUtility.getDirectoryProviderStorageIconFileID(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageIconFileID(itemIdentifier.rawValue, fileNameView: itemName))
                     
-                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
+                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, id: metadata.id, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
                 }
                 
                 guard let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {

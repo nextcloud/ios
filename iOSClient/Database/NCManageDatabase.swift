@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 41,
+            schemaVersion: 42,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -98,6 +98,7 @@ class NCManageDatabase: NSObject {
             // 39 : Version 2.22.9.1
             // 40 : Version 2.22.9.3
             // 41 : Version 2.22.9.5
+            // 42 : Version 2.22.9.10
             
 
             migrationBlock: { migration, oldSchemaVersion in
@@ -120,7 +121,7 @@ class NCManageDatabase: NSObject {
                 }
                 */
                 
-                if oldSchemaVersion < 41 {
+                if oldSchemaVersion < 42 {
                     migration.deleteData(forType: tableActivity.className())
                     migration.deleteData(forType: tableMetadata.className())
                     migration.deleteData(forType: tablePhotos.className())
@@ -883,7 +884,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, fileID: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, fileID: String?, id: Double, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -903,6 +904,7 @@ class NCManageDatabase: NSObject {
         if let fileID = fileID {
             addObject.fileID = fileID
         }
+        addObject.id = id
         if let permissions = permissions {
             addObject.permissions = permissions
         }
@@ -944,7 +946,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, fileID: String?, encrypted: Bool, account: String) {
+    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, fileID: String?, id: Double, encrypted: Bool, account: String) {
         
         let realm = try! Realm()
 
@@ -965,6 +967,9 @@ class NCManageDatabase: NSObject {
                 }
                 if let fileID = fileID {
                     directory.fileID = fileID
+                }
+                if id > 0 {
+                    directory.id = id
                 }
                 if let serverUrlTo = serverUrlTo {
                     directory.serverUrl = serverUrlTo
@@ -1431,6 +1436,7 @@ class NCManageDatabase: NSObject {
                 addObject.exifLongitude = "-1"
                 addObject.fileID = metadata.fileID
                 addObject.fileName = metadata.fileName
+                addObject.id = metadata.id
                 addObject.size = metadata.size
             
                 realm.add(addObject, update: true)
@@ -1456,7 +1462,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
+    @objc func setLocalFile(fileID: String, id: Double, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
         
         let realm = try! Realm()
 
@@ -1467,7 +1473,7 @@ class NCManageDatabase: NSObject {
                     realm.cancelWrite()
                     return
                 }
-                
+            
                 if let date = date {
                     result.date = date
                 }
@@ -1485,6 +1491,9 @@ class NCManageDatabase: NSObject {
                 }
                 if let etag = etag {
                     result.etag = etag
+                }
+                if id > 0 {
+                    result.id = id
                 }
             }
         } catch let error {

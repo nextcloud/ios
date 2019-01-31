@@ -298,7 +298,7 @@
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             
             // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID id:metadataFolder.id encrypted:metadataFolder.e2eEncrypted account:activeAccount];
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
             [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
             

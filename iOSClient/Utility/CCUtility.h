@@ -217,7 +217,7 @@
 
 // ===== CCMetadata =====
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID id:(double)id serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
 
 + (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted;
 

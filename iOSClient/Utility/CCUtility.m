@@ -1171,7 +1171,7 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID id:(double)id serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
 {
     tableMetadata *metadata = [tableMetadata new];
     
@@ -1182,6 +1182,7 @@
     metadata.fileID = fileID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
+    metadata.id = id;
     metadata.serverUrl = serverUrl;
     metadata.size = size;
     metadata.status = status;
@@ -1218,6 +1219,7 @@
     metadata.fileNameView = fileNameView;
     metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
+    metadata.id = itemDto.id;
     metadata.permissions = itemDto.permissions;
     metadata.serverUrl = serverUrl;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;

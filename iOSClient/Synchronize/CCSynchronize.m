@@ -79,7 +79,7 @@
             
             // Add metadata and update etag Directory
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:account];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID id:metadataFolder.id encrypted:metadataFolder.e2eEncrypted account:account];
             
             // reload folder ../ *
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
