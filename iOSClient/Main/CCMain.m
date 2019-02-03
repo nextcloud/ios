@@ -3946,7 +3946,7 @@
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || _metadataFolder == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder]) {
         return [CCCellMain new];
     }
     
