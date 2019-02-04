@@ -556,11 +556,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 if let cell = self.collectionView.cellForItem(at: indexPath) {
-                    if self.collectionView.collectionViewLayout == self.listLayout {
+                    if cell is NCTrashListCell {
                         (cell as! NCTrashListCell).imageItem.image = image
-                    } else {
+                    } else if cell is NCGridCell {
                         (cell as! NCGridCell).imageItem.image = image
-
                     }
                 }
             }

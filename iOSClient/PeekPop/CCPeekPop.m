@@ -102,8 +102,6 @@
      
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
-            
             _imagePreview.image = image;
             _imagePreview.contentMode = UIViewContentModeScaleToFill;
             
