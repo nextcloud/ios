@@ -276,11 +276,6 @@
             
             [metadatas addObject:metadata];
         }
-        
-        // The document file required always a reload 
-        if (metadata.hasPreview == 1 && [metadata.typeFile isEqualToString:k_metadataTypeFile_document]) {
-             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
-        }
     }
     
     if ([metadatas count])

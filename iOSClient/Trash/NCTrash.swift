@@ -552,9 +552,17 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
                 
-        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (account, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount && CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
-                self.collectionView.reloadItems(at: [indexPath])
+        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                if let cell = self.collectionView.cellForItem(at: indexPath) {
+                    if self.collectionView.collectionViewLayout == self.listLayout {
+                        (cell as! NCTrashListCell).imageItem.image = image
+                    } else {
+                        (cell as! NCGridCell).imageItem.image = image
+
+                    }
+                }
             }
         })
     }

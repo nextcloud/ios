@@ -46,7 +46,7 @@ extension FileProviderExtension {
                     let width = NCUtility.sharedInstance.getScreenWidthForPreview()
                     let height = NCUtility.sharedInstance.getScreenHeightForPreview()
                     
-                    OCNetworking.sharedManager().downloadPreview(withAccount: providerData.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, message, errorCode) in
+                    OCNetworking.sharedManager().downloadPreview(withAccount: providerData.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, preview, message, errorCode) in
                        
                         if errorCode == 0 && account == self.providerData.account {
                             do {

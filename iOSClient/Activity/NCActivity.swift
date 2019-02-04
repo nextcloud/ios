@@ -394,11 +394,9 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                             
                         } else {
                             
-                            OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, serverPath: activityPreview.source, fileNamePath: fileNamePath, completion: { (account, message, errorCode) in
+                            OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, serverPath: activityPreview.source, fileNamePath: fileNamePath, completion: { (account, image, message, errorCode) in
                                 if errorCode == 0 {
-                                    if let image = UIImage(contentsOfFile: fileNamePath) {
-                                        cell.imageView.image = image
-                                    }
+                                    cell.imageView.image = image
                                 }
                             })
                         }

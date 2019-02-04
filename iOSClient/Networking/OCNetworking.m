@@ -858,11 +858,11 @@
  }
  */
 
-- (void)downloadPreviewWithAccount:(NSString *)account metadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewWithAccount:(NSString *)account metadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *account, UIImage *image, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -876,7 +876,7 @@
         
         [preview writeToFile:file atomically:YES];
         
-        completion(account, nil, 0);
+        completion(account, [UIImage imageWithData:preview], nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -891,15 +891,15 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        completion(account, message, errorCode);
+        completion(account, nil, message, errorCode);
     }];
 }
 
-- (void)downloadPreviewWithAccount:(NSString *)account serverPath:(NSString *)serverPath fileNamePath:(NSString *)fileNamePath completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewWithAccount:(NSString *)account serverPath:(NSString *)serverPath fileNamePath:(NSString *)fileNamePath completion:(void (^)(NSString *account,  UIImage *image, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -911,7 +911,7 @@
         
         [preview writeToFile:fileNamePath atomically:YES];
         
-        completion(account, nil, 0);
+        completion(account, [UIImage imageWithData:preview], nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -926,23 +926,23 @@
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        completion(account, message, errorCode);
+        completion(account, nil, message, errorCode);
     }];
 }
 
-- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account,  UIImage *image, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
         
-        completion(account, nil, 0);
+        completion(account, [UIImage imageWithContentsOfFile:file], nil, 0);
         
     } else {
         
@@ -955,7 +955,7 @@
             
             [preview writeToFile:file atomically:YES];
             
-            completion(account, nil, 0);
+            completion(account, [UIImage imageWithData:preview], nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
@@ -971,7 +971,7 @@
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
-            completion(account, message, errorCode);
+            completion(account, nil, message, errorCode);
         }];
     }
 }

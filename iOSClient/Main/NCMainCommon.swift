@@ -220,7 +220,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
         }
         
         // Download preview
-        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: collectionView, indexPath: indexPath, forceDownload: false)
+        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: collectionView, indexPath: indexPath)
         
         // Share
         let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
@@ -482,7 +482,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             cell.labelTitle.text = metadata.fileNameView
             
             // Download preview
-            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, serverUrl: serverUrl, view: tableView, indexPath: indexPath, forceDownload: false)
+            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: tableView, indexPath: indexPath)
             
             // Share
             let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
@@ -1227,20 +1227,24 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         }
     }
     
-    @objc func downloadThumbnail(with metadata: tableMetadata, serverUrl: String, view: Any, indexPath: IndexPath, forceDownload: Bool) {
+    @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         
-        if metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || forceDownload) {
+        if metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             
-            OCNetworking.sharedManager().downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, message, errorCode) in
+            OCNetworking.sharedManager().downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     if CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
                         if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            (view as! UICollectionView).reloadItems(at: [indexPath])
+                            if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
+                                (cell as! NCListCell).imageItem.image = image
+                            }
                         }
                         if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            (view as! UITableView).reloadRows(at: [indexPath], with: UITableView.RowAnimation.none)
+                            if let cell = (view as! UITableView).cellForRow(at: indexPath) {
+                                (cell as! CCCellMain).file.image = image
+                            }
                         }
                     }
                 }
