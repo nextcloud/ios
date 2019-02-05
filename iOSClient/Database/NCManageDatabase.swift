@@ -184,10 +184,10 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getThreadConfined(_ table: Object) -> Any {
+    @objc func getThreadConfined(_ object: Object) -> Any {
      
         // id tradeReference = [[NCManageDatabase sharedInstance] getThreadConfined:metadata];
-        return ThreadSafeReference(to: table)
+        return ThreadSafeReference(to: object)
     }
     
     @objc func putThreadConfined(_ tableRef: Any) -> Object? {
@@ -198,9 +198,9 @@ class NCManageDatabase: NSObject {
         return realm.resolve(tableRef as! ThreadSafeReference<Object>)
     }
     
-    @objc func isTableInvalidated(_ table: Object) -> Bool {
+    @objc func isTableInvalidated(_ object: Object) -> Bool {
      
-        return table.isInvalidated
+        return object.isInvalidated
     }
     
     //MARK: -
@@ -1706,6 +1706,11 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(serverUrl: serverUrl, account: account)
         
         return tableMetadata.init(value: metadata)
+    }
+    
+    @objc func copyMetadata(_ object: tableMetadata) -> tableMetadata? {
+        
+        return tableMetadata.init(value: object)
     }
     
     @objc func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int, status: Int, predicate: NSPredicate) {
