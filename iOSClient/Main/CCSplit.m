@@ -133,7 +133,7 @@
         
         [CCUtility setIntro:YES];
         if (appDelegate.activeAccount.length == 0) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
+            [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
     
     } else {

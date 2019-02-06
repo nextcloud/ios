@@ -345,6 +345,17 @@
                 });
             }
             
+        } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
+            
+            _activeLoginWeb = [CCLoginWeb new];
+            _activeLoginWeb.delegate = delegate;
+            _activeLoginWeb.loginType = loginType;
+            _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+            
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [_activeLoginWeb open:viewController];
+            });
+            
         } else {
             
             if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
