@@ -204,9 +204,12 @@
     
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
         
-        NSString *fileName = [[NCUtility sharedInstance] createFileName:[self.filesName objectAtIndex:0] serverUrl:self.serverUrl account:self.activeAccount];
+        NSString *fileName = [self.filesName objectAtIndex:0];
+        NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.activeAccount];
+        NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
+        NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
         
-        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, fileName] fileNameLocalPath:[NSTemporaryDirectory() stringByAppendingString:[self.filesName objectAtIndex:0]] progress:^(NSProgress *progress) {
+        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:fileNameServer fileNameLocalPath:fileNameLocal progress:^(NSProgress *progress) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud progress:progress.fractionCompleted];
@@ -220,7 +223,7 @@
 
             if (errorCode == 0) {
                 
-                [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:[self.filesName objectAtIndex:0]] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
+                [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameForUpload]];
                 
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
                 [self performSelector:@selector(selectPost) withObject:nil];
