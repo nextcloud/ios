@@ -3649,10 +3649,6 @@
         return;
     }
     
-    // Remove optimization for encrypted directory
-    if (_metadataFolder.e2eEncrypted)
-        _dateReadDataSource = nil;
-    
     // Controllo data lettura Data Source
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
     if (tableDirectory == nil) {
@@ -3664,6 +3660,10 @@
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, k_serverUrl_root]];
     else
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tableDirectory.fileID]];
+    
+    // Remove optimization for encrypted directory
+    if (_metadataFolder.e2eEncrypted)
+        _dateReadDataSource = nil;
 
     NSDate *dateDateRecordDirectory = tableDirectory.dateReadDirectory;
     
