@@ -1249,7 +1249,11 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         }
                         if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
                             if let cell = (view as! UITableView).cellForRow(at: indexPath) {
-                                (cell as! CCCellMain).file.image = image
+                                if cell is CCCellMainTransfer {
+                                    (cell as! CCCellMainTransfer).file.image = image
+                                } else if cell is CCCellMain {
+                                    (cell as! CCCellMain).file.image = image
+                                }
                             }
                         }
                     }

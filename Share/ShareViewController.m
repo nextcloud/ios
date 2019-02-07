@@ -225,6 +225,20 @@
                 
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameForUpload]];
                 
+                tableMetadata *metadata = [tableMetadata new];
+                
+                metadata.account = self.activeAccount;
+                metadata.date = date;
+                metadata.etag = etag;
+                metadata.fileID = fileID;
+                metadata.fileName = fileNameForUpload;
+                metadata.fileNameView = fileNameForUpload;
+                metadata.serverUrl = self.serverUrl;
+                (void)[CCUtility insertTypeFileIconName:fileNameForUpload metadata:metadata];
+                
+                metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+                
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
                 [self performSelector:@selector(selectPost) withObject:nil];
                 
