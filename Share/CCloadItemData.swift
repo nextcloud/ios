@@ -88,9 +88,6 @@ class CCloadItemData: NSObject {
                                         print("item as url: \(String(describing: item))")
                                         
                                         let fileName = url.lastPathComponent
-                                        // OLD fileName with date
-                                        //let pathExtention = URL(fileURLWithPath: url.lastPathComponent).pathExtension
-                                        //let fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
                                         let filenamePath = directory + fileName
                                         
                                         do {

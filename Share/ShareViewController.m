@@ -84,14 +84,11 @@
             [CCUtility setTitleServerUrlExt:NSLocalizedString(@"_home_", nil)];
         }
     }
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
     
-    _filesName = [[NSMutableArray alloc] init];
-    _hud = [[CCHud alloc] initWithView:self.navigationController.view];
+    self.filesName = [[NSMutableArray alloc] init];
     
-    [CCNetworking sharedNetworking].delegate = self;
-        
+    self.hud = [[CCHud alloc] initWithView:self.navigationController.view];
+    
     [self.shareTable registerNib:[UINib nibWithNibName:@"CCCellShareExt" bundle:nil] forCellReuseIdentifier:@"ShareExtCell"];
     
     [self navigationBarToolBar];
@@ -205,32 +202,46 @@
 {
     if ([self.filesName count] > 0) {
     
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
+        
         NSString *fileName = [[NCUtility sharedInstance] createFileName:[self.filesName objectAtIndex:0] serverUrl:self.serverUrl account:self.activeAccount];
         
-        tableMetadata *metadataForUpload = [tableMetadata new];
+        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, fileName] fileNameLocalPath:[NSTemporaryDirectory() stringByAppendingString:[self.filesName objectAtIndex:0]] progress:^(NSProgress *progress) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.hud progress:progress.fractionCompleted];
+            });
+            
+        } completion:^(NSString *account, NSString *fileID, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode) {
+            
+            [self.hud hideHud];
+            
+            [self.filesName removeObject:fileName];
+
+            if (errorCode == 0) {
+                
+                [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:[self.filesName objectAtIndex:0]] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
+                
+                [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+                [self performSelector:@selector(selectPost) withObject:nil];
+                
+            } else {
+                
+                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               [alert dismissViewControllerAnimated:YES completion:nil];
+                                                               [self closeShareViewController];
+                                                           }];
+                [alert addAction:ok];
+                [self presentViewController:alert animated:YES completion:nil];
+            }
+        }];
         
-        metadataForUpload.account = self.activeAccount;
-        metadataForUpload.date = [NSDate new];
-        metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:self.activeAccount serverUrl:self.serverUrl fileNameView:fileName directory:false];
-        metadataForUpload.fileName = fileName;
-        metadataForUpload.fileNameView = fileName;
-        metadataForUpload.serverUrl = self.serverUrl;
-        metadataForUpload.session = k_upload_session_foreground;
-        metadataForUpload.sessionSelector = selectorUploadFile;
-        metadataForUpload.status = k_metadataStatusWaitUpload;
+    } else {
         
-        // Prepare file and directory
-        [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:[self.filesName objectAtIndex:0]] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:fileName]];
-        [self.filesName replaceObjectAtIndex:0 withObject:fileName];
-        
-        // Add Medtadata for upload
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-        [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
-        
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
-    }
-    else
         [self closeShareViewController];
+    }
 }
 
 - (void)cancelPost
@@ -242,56 +253,6 @@
     }
     
     [self closeShareViewController];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ======================= NetWorking ==================================
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)triggerProgressTask:(NSNotification *)notification
-{
-    NSDictionary *dict = notification.userInfo;
-    float progress = [[dict valueForKey:@"progress"] floatValue];
-
-    [self.hud progress:progress];
-}
-
-- (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
-{    
-    [self.hud hideHud];
-
-    if (errorCode == 0) {
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-        
-        [self.filesName removeObject:metadata.fileName];
-        [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-        
-        [self performSelector:@selector(selectPost) withObject:nil afterDelay:0.1];
-        
-    } else {
-        
-        // remove file
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileID] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
-        
-        // message error
-        if (errorCode != kCFURLErrorCancelled) {
-            
-            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:errorMessage preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * action) {
-                                                           [alert dismissViewControllerAnimated:YES completion:nil];
-                                                           [self closeShareViewController];
-                                                       }];
-            [alert addAction:ok];
-            [self presentViewController:alert animated:YES completion:nil];
-        }
-        else
-            [self closeShareViewController];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

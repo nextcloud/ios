@@ -35,7 +35,7 @@
 #import "CCError.h"
 #import "CCHud.h"
 
-@interface ShareViewController : UIViewController <UITableViewDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, CCMoveDelegate>
+@interface ShareViewController : UIViewController <UITableViewDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCMoveDelegate>
 
 @property (nonatomic, strong) NSString *activeAccount;
 @property (nonatomic, strong) NSString *activeUrl;
