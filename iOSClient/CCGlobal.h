@@ -35,6 +35,11 @@
 //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
 //DispatchQueue.global().async
 
+
+//NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
+//NSDictionary *languageDic = [NSLocale componentsFromLocaleIdentifier:language];
+//NSString *languageCode = [languageDic objectForKey:@"kCFLocaleLanguageCodeKey"];
+
 //#if targetEnvironment(simulator)
 //#endif
 

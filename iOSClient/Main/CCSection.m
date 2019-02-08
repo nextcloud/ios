@@ -184,8 +184,14 @@
         if ([obj1 isKindOfClass:[NSString class]] && [obj1 containsString: k_metadataTypeFile_directory]) return NSOrderedAscending;
         if ([obj2 isKindOfClass:[NSString class]] && [obj2 containsString: k_metadataTypeFile_directory]) return NSOrderedDescending;
         
-        if (ascending) return [obj1 compare:obj2];
-        else return [obj2 compare:obj1];
+        // Sort with Locale
+        if ([obj1 isKindOfClass:[NSDate class]]) {
+            if (ascending) return [obj1 compare:obj2];
+            else return [obj2 compare:obj1];
+        } else {
+            if (ascending) return [obj1 compare:obj2 options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1 length]) locale:[NSLocale currentLocale]];
+            else return [obj2 compare:obj1 options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj2 length]) locale:[NSLocale currentLocale]];
+        }
     }];
     
     /*
