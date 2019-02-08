@@ -32,8 +32,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let operationQueueReloadDatasource = OperationQueue.main
     var metadata: tableMetadata?
+    lazy var operationQueueReloadDatasource: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "Reload main datasource queue"
+        queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
     
     //MARK: -
     
