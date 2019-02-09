@@ -79,7 +79,7 @@ class NCEndToEndInitialize : NSObject  {
                         
                         if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                             
-                            CCUtility.setEndToEndPublicKey(account, publicKey: csr)
+                            CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
                             
                             // Request PrivateKey chiper to Server
                             self.getPrivateKeyCipher()
