@@ -38,3 +38,9 @@ Easy starting points are also reviewing [pull requests](https://github.com/nextc
 ## Support
 
 If you need assistance or want to ask a question about the iOS app, you are welcome to [ask for support](https://help.nextcloud.com/c/clients/ios) in our forums or the [IRC-Channel](https://webchat.freenode.net/?channels=nextcloud-mobile). If you have found a bug, feel free to [open a new Issue on GitHub](https://github.com/nextcloud/ios/issues). Keep in mind, that this repository only manages the iOS app. If you find bugs or have problems with the server/backend, you should ask the [Nextcloud server team](https://github.com/nextcloud/server) for help!
+
+## TestFlight 
+
+Do you want try the last version in development of Nextcloud iOS ? Simple, follow this simple step
+
+[Apple TestFlight](https://testflight.apple.com/join/GjNbfo2a)
