@@ -787,19 +787,24 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             return
         }
         
-        DispatchQueue.main.async {
-            if self.appDelegate.activeMain != nil && ServerUrl != nil && self.appDelegate.activeMain.serverUrl == ServerUrl {
-                self.operationQueueReloadDatasource.addOperation {
+       
+        if self.appDelegate.activeMain != nil && ServerUrl != nil && self.appDelegate.activeMain.serverUrl == ServerUrl {
+            self.operationQueueReloadDatasource.addOperation {
+                DispatchQueue.main.async {
                     self.appDelegate.activeMain.reloadDatasource(ServerUrl, fileID: fileID, action: Int(action))
                 }
             }
-            if self.appDelegate.activeFavorites != nil && self.appDelegate.activeFavorites.viewIfLoaded?.window != nil {
-                self.operationQueueReloadDatasource.addOperation {
+        }
+        if self.appDelegate.activeFavorites != nil && self.appDelegate.activeFavorites.viewIfLoaded?.window != nil {
+            self.operationQueueReloadDatasource.addOperation {
+                DispatchQueue.main.async {
                     self.appDelegate.activeFavorites.reloadDatasource(fileID, action: Int(action))
                 }
             }
-            if self.appDelegate.activeTransfers != nil && self.appDelegate.activeTransfers.viewIfLoaded?.window != nil {
-                self.operationQueueReloadDatasource.addOperation {
+        }
+        if self.appDelegate.activeTransfers != nil && self.appDelegate.activeTransfers.viewIfLoaded?.window != nil {
+            self.operationQueueReloadDatasource.addOperation {
+                DispatchQueue.main.async {
                     self.appDelegate.activeTransfers.reloadDatasource(fileID, action: Int(action))
                 }
             }
