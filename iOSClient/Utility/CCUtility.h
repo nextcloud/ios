@@ -39,21 +39,10 @@
 
 // ===== KeyChainStore =====
 
-// ADMIN
-
-+ (void)adminRemoveIntro;
-+ (void)adminRemovePasscode;
-+ (void)adminRemoveVersion;
-
 // GET/SET
 
 + (void)deleteAllChainStore;
 + (void)storeAllChainInService;
-
-+ (NSString *)getUUID;
-
-+ (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
-+ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode;
 
 + (NSString *)getVersion;
 + (NSString *)setVersion;

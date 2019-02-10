@@ -63,54 +63,7 @@
     }
 }
 
-#pragma ------------------------------ ADMIN
-
-+ (void)adminRemoveIntro
-{
-    NSString *version = [self getVersion];
-    [UICKeyChainStore setString:nil forKey:version service:k_serviceShareKeyChain];
-}
-
-+ (void)adminRemovePasscode
-{
-    NSString *uuid = [self getUUID];
-    [UICKeyChainStore setString:nil forKey:uuid service:k_serviceShareKeyChain];
-}
-
-+ (void)adminRemoveVersion
-{
-    [UICKeyChainStore setString:@"0.0" forKey:@"version" service:k_serviceShareKeyChain];
-}
-
 #pragma ------------------------------ GET/SET
-
-+ (NSString *)getUUID
-{
-#if TARGET_OS_SIMULATOR
-    NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:k_UUID_SIM];
-    return [deviceId UUIDString];
-#else
-    NSString *uuid = [[UIDevice currentDevice] identifierForVendor].UUIDString;
-    return uuid;
-#endif
-}
-
-+ (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
-{
-    if (!uuid) return @"";
-    
-    NSString *passcode = [UICKeyChainStore stringForKey:uuid service:k_serviceShareKeyChain];
-    
-    if (!passcode)
-        passcode = @"";
-    
-    return passcode;
-}
-
-+ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode
-{
-    [UICKeyChainStore setString:passcode forKey:uuid service:k_serviceShareKeyChain];
-}
 
 + (NSString *)getVersion
 {
