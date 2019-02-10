@@ -202,7 +202,6 @@
 
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
-    [self logUser];
     
     // Store review
     if ([[NCUtility sharedInstance] isSimulatorOrTestFlight] == false) {
@@ -1435,16 +1434,6 @@
     }
     
     return YES;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Crashlytics =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void) logUser
-{
-    if (self.activeAccount.length > 0)
-        [CrashlyticsKit setUserName:self.activeAccount];
 }
 
 #pragma --------------------------------------------------------------------------------------------
