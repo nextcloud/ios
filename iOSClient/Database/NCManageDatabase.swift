@@ -621,11 +621,11 @@ class NCManageDatabase: NSObject {
                                             addObjectActivitySubjectRich.id = String(dict["id"] as? Int ?? 0)
                                         default: addObjectActivitySubjectRich.id = ""
                                         }
-                                        addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + addObjectActivitySubjectRich.id
+                                        addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
+                                        addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + addObjectActivitySubjectRich.id + addObjectActivitySubjectRich.name
                                         addObjectActivitySubjectRich.key = key
                                         addObjectActivitySubjectRich.idActivity = activity.idActivity
                                         addObjectActivitySubjectRich.link = dict["link"] as? String ?? ""
-                                        addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
                                         addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
                                         addObjectActivitySubjectRich.type = dict["type"] as? String ?? ""
 
