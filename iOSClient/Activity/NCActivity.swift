@@ -308,7 +308,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             return
         } else {
             loadingIdActivity = idActivity
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: true)
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
         OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
@@ -492,7 +492,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
-            NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: false)
+            NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             
             let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
                 

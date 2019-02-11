@@ -243,7 +243,7 @@ class NCUtility: NSObject {
         return imageNamePath
     }
     
-    @objc func startActivityIndicator(view: UIView, bottom: Bool) {
+    @objc func startActivityIndicator(view: UIView, bottom: CGFloat) {
     
         activityIndicator.color = NCBrandColor.sharedInstance.brand
         activityIndicator.hidesWhenStopped = true
@@ -255,10 +255,9 @@ class NCUtility: NSObject {
         let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
         view.addConstraint(horizontalConstraint)
         
-        
         var verticalConstant: CGFloat = 0
-        if bottom {
-            verticalConstant = (view.frame.size.height / 2) - 50
+        if bottom > 0 {
+            verticalConstant = (view.frame.size.height / 2) - bottom
         }
         
         let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalConstant)

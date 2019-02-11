@@ -214,7 +214,7 @@
         // RichDocument
         if ([[NCViewerRichdocument sharedInstance] isRichDocument:self.metadataDetail]) {
             
-            [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:false];
+            [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
             
             if ([self.metadataDetail.url isEqualToString:@""]) {
                 [[OCNetworking sharedManager] createLinkRichdocumentsWithAccount:appDelegate.activeAccount fileID:self.metadataDetail.fileID completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
