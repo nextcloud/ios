@@ -35,6 +35,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
     var activities = [tableActivity]()
     var sectionDate = [Date]()
+    
+    var loadingIdActivity: Int = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +53,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadActivity), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(loadActivityRefreshing), for: .valueChanged)
         
         self.title = NSLocalizedString("_activity_", comment: "")
     }
@@ -154,11 +156,25 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        
         print("prefetchRowsAt \(indexPaths)")
+        
+        let section = indexPaths.last?.section ?? 0
+        let row = indexPaths.last?.row ?? 0
+        
+        let lastSection = self.sectionDate.count - 1
+        let lastRow = getTableActivitiesFromSection(section).count - 1
+        
+        if section == lastSection && row > lastRow - 1 {
+            let results = getTableActivitiesFromSection(section)
+            let activity = results[lastRow]
+            
+            loadActivity(idActivity: activity.idActivity)
+        }
     }
     
     func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        print("cancelPrefetchingForRowsAt \(indexPaths)")
+        //print("cancelPrefetchingForRowsAt \(indexPaths)")
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -282,17 +298,31 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     
     // MARK: NC API
     
-    @objc func loadActivity() {
+    @objc func loadActivityRefreshing() {
+        loadActivity(idActivity: 0)
+    }
+
+    @objc func loadActivity(idActivity: Int) {
         
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: 0, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
+        if loadingIdActivity > 0 {
+            return
+        } else {
+            loadingIdActivity = idActivity
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: true)
+        }
+        
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
             
             self.refreshControl.endRefreshing()
+            NCUtility.sharedInstance.stopActivityIndicator()
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
                 
                 self.loadDataSource()
             }
+            
+            self.loadingIdActivity = 0
         })
     }
 }
@@ -462,7 +492,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
             
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
-            NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!)
+            NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: false)
             
             let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
                 
