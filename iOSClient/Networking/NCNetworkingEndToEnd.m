@@ -156,11 +156,11 @@
     }];
 }
 
-- (void)storeEndToEndPrivateKeyCipherWithAccount:(NSString *)account privateKeyChiper:(NSString *)privateKeyChiper completion:(void (^)(NSString *account, NSString *privateKey, NSString *message, NSInteger errorCode))completion
+- (void)storeEndToEndPrivateKeyCipherWithAccount:(NSString *)account privateKeyString:(NSString *)privateKeyString privateKeyChiper:(NSString *)privateKeyChiper completion:(void (^)(NSString *account, NSString *privateKeyString, NSString *privateKey, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+        completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -170,7 +170,7 @@
     
     [communication storeEndToEndPrivateKeyCipher:[tableAccount.url stringByAppendingString:@"/"] privateKeyChiper:[CCUtility URLEncodeStringFromString:privateKeyChiper] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
         
-        completion(account, privateKeyChiper, nil, 0);
+        completion(account, privateKeyString, privateKeyChiper, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -186,7 +186,7 @@
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         }
         
-        completion(account, nil, message, errorCode);
+        completion(account, nil, nil, message, errorCode);
     }];
 }
 

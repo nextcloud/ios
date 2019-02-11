@@ -219,20 +219,20 @@ class NCEndToEndInitialize : NSObject  {
                     
                     let OKAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
                         
-                        var privateKey: NSString?
+                        var privateKeyString: NSString?
                         
-                        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKey) else {
+                        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
                             
                             self.appDelegate.messageNotification("E2E privateKey", description: "Serious internal error to create PrivateKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                             
                             return
                         }
                         
-                        NCNetworkingEndToEnd.sharedManager()?.storePrivateKeyCipher(withAccount: account, privateKeyChiper: privateKeyChiper, completion: { (account, privateKey, message, errorCode) in
+                        NCNetworkingEndToEnd.sharedManager()?.storePrivateKeyCipher(withAccount: account, privateKeyString: privateKeyString! as String, privateKeyChiper: privateKeyChiper, completion: { (account, privateKeyString, privateKey, message, errorCode) in
                             
                             if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                                 
-                                CCUtility.setEndToEndPrivateKey(account, privateKey: privateKey)
+                                CCUtility.setEndToEndPrivateKey(account, privateKey: privateKeyString! as String)
                                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
                                 
                                 // request publicKey Server()
