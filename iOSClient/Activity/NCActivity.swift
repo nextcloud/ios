@@ -36,7 +36,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     var activities = [tableActivity]()
     var sectionDate = [Date]()
     
-    var loadingIdActivity: Int = 0
+    var loadingActivity = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -156,8 +156,6 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     }
     
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
-        print("prefetchRowsAt \(indexPaths)")
         
         let section = indexPaths.last?.section ?? 0
         let row = indexPaths.last?.row ?? 0
@@ -304,17 +302,17 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
     @objc func loadActivity(idActivity: Int) {
         
-        if loadingIdActivity > 0 {
+        if loadingActivity {
             return
         } else {
-            loadingIdActivity = idActivity
+            loadingActivity = true
+        }
+        
+        if idActivity > 0 {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
         OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
-            
-            self.refreshControl.endRefreshing()
-            NCUtility.sharedInstance.stopActivityIndicator()
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
@@ -322,7 +320,10 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 self.loadDataSource()
             }
             
-            self.loadingIdActivity = 0
+            self.refreshControl.endRefreshing()
+            NCUtility.sharedInstance.stopActivityIndicator()
+            
+            self.loadingActivity = false
         })
     }
 }
