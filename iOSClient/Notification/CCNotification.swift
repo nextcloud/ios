@@ -207,7 +207,7 @@ class CCNotification: UITableViewController {
             //
             cell.date.text = CCUtility.dateDiff(notification.date)
             cell.subject.text = notification.subject
-            cell.message.text = notification.message
+            cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         }
         
         return cell
