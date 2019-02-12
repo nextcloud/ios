@@ -28,7 +28,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
-    var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
     var serverUrl = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -105,7 +104,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
-        self.navigationItem.title = titleCurrentFolder
+        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
         (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
         
@@ -181,71 +180,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func tapOrderHeader(sender: Any) {
-        
-        var menuView: DropdownMenu?
-        var selectedIndexPath = [IndexPath()]
-        
-        let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameAZ"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_a_z_", comment: ""))
-        let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameZA"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_z_a_", comment: ""))
-        let item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortDateMoreRecent"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_date_more_recent_", comment: ""))
-        let item4 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortDateLessRecent"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_date_less_recent_", comment: ""))
-        let item5 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortSmallest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_smallest_", comment: ""))
-        let item6 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortLargest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_largest_", comment: ""))
-        
-        switch datasourceSorted {
-        case "fileName":
-            if datasourceAscending == true { item1.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 0)) }
-            if datasourceAscending == false { item2.style = .highlight; selectedIndexPath.append(IndexPath(row: 1, section: 0)) }
-        case "date":
-            if datasourceAscending == false { item3.style = .highlight; selectedIndexPath.append(IndexPath(row: 2, section: 0)) }
-            if datasourceAscending == true { item4.style = .highlight; selectedIndexPath.append(IndexPath(row: 3, section: 0)) }
-        case "size":
-            if datasourceAscending == true { item5.style = .highlight; selectedIndexPath.append(IndexPath(row: 4, section: 0)) }
-            if datasourceAscending == false { item6.style = .highlight; selectedIndexPath.append(IndexPath(row: 5, section: 0)) }
-        default:
-            ()
-        }
-        
-        let item7 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByAlphabetic"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_alphabetic_no_", comment: ""))
-        let item8 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByFile"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_typefile_no_", comment: ""))
-        let item9 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByDate"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_date_no_", comment: ""))
-        
-        switch datasourceGroupBy {
-        case "alphabetic":
-            item7.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 1))
-        case "typefile":
-            item8.style = .highlight; selectedIndexPath.append(IndexPath(row: 1, section: 1))
-        case "date":
-            item9.style = .highlight; selectedIndexPath.append(IndexPath(row: 2, section: 1))
-        default:
-            ()
-        }
-        
-        let item10 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "foldersOnTop"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_directory_on_top_no_", comment: ""))
-        
-        if datasourceDirectoryOnTop {
-            item10.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 2))
-        }
-        
-        let sectionOrder = DropdownSection(sectionIdentifier: "", items: [item1, item2, item3, item4, item5, item6])
-        let sectionGroupBy = DropdownSection(sectionIdentifier: "", items: [item7, item8, item9])
-        let sectionFolderOnTop = DropdownSection(sectionIdentifier: "", items: [item10])
-        
-        menuView = DropdownMenu(navigationController: self.navigationController!, sections: [sectionOrder, sectionGroupBy, sectionFolderOnTop], selectedIndexPath: selectedIndexPath)
-        menuView?.token = "tapOrderHeaderMenu"
-        menuView?.delegate = self
-        menuView?.rowHeight = 45
-        menuView?.sectionHeaderHeight = 8
-        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
-        menuView?.tableView.alwaysBounceVertical = false
-        menuView?.tableViewBackgroundColor = UIColor.white
-        
-        let header = (sender as? UIButton)?.superview
-        let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
-        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
-        menuView?.topOffsetY = CGFloat(menuOffsetY)
-        
-        menuView?.showMenu()
+    
     }
     
     func tapMoreHeader(sender: Any) {
@@ -309,61 +244,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     // MARK: DROP-DOWN-MENU
 
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
-        
-        if dropdownMenu.token == "tapOrderHeaderMenu" {
-            
-            switch indexPath.section {
-            
-                    case 0: switch indexPath.row {
-                        
-                    case 0: datasourceSorted = "fileName"; datasourceAscending = true
-                    case 1: datasourceSorted = "fileName"; datasourceAscending = false
-                        
-                    case 2: datasourceSorted = "date"; datasourceAscending = false
-                    case 3: datasourceSorted = "date"; datasourceAscending = true
-                        
-                    case 4: datasourceSorted = "size"; datasourceAscending = true
-                    case 5: datasourceSorted = "size"; datasourceAscending = false
-                
-                    default: ()
-                    }
-                
-            case 1: switch indexPath.row {
-                
-                    case 0:
-                        if datasourceGroupBy == "alphabetic" {
-                            datasourceGroupBy = "none"
-                        } else {
-                            datasourceGroupBy = "alphabetic"
-                        }
-                    case 1:
-                        if datasourceGroupBy == "typefile" {
-                            datasourceGroupBy = "none"
-                        } else {
-                            datasourceGroupBy = "typefile"
-                        }
-                    case 2:
-                        if datasourceGroupBy == "date" {
-                            datasourceGroupBy = "none"
-                        } else {
-                            datasourceGroupBy = "date"
-                        }
-                
-                    default: ()
-                        }
-                    case 2:
-                        if datasourceDirectoryOnTop {
-                            datasourceDirectoryOnTop = false
-                        } else {
-                            datasourceDirectoryOnTop = true
-                        }
-                    default: ()
-                    }
-            
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
-
-            loadDatasource()
-        }
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
         
@@ -446,17 +326,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 header.delegate = self
                 
                 header.setStatusButton(count: sectionDatasource.allFileID.count)
-                header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
-                if datasourceGroupBy == "none" {
-                    header.labelSection.isHidden = true
-                    header.labelSectionHeightConstraint.constant = 0
-                } else {
-                    header.labelSection.isHidden = false
-                    header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
-                    header.labelSectionHeightConstraint.constant = sectionHeaderHeight
-                }
-         
+                header.buttonOrder.isHidden = true
+                header.labelSection.isHidden = false
+                header.buttonMore.isHidden = false
+                
+                header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                header.labelSectionHeightConstraint.constant = sectionHeaderHeight
+                
                 return header
             
             } else {
