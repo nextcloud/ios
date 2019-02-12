@@ -37,6 +37,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var isEditMode = false
     private var selectFileID = [String]()
     
+    private var filterTypeFileImage = false;
+    private var filterTypeFileVideo = false;
+    
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
     private var typeLayout = ""
@@ -403,39 +406,25 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     // MARK: DATASOURCE
     @objc func loadDatasource() {
         
-        var fileIDs = [String]()
-        sectionDatasource = CCSectionDataSourceMetadata()
-
-        if serverUrl == "" {
-        
-            if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true) {
-                for directory: tableDirectory in directories {
-                    fileIDs.append(directory.fileID)
-                }
-            }
-          
-            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true) {
-                for file: tableLocalFile in files {
-                    fileIDs.append(file.fileID)
-                }
-            }
-            
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND fileID IN %@", appDelegate.activeAccount, fileIDs), sorted: datasourceSorted, ascending: datasourceAscending)  {
-
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
-            }
-            
-        } else {
-        
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl), sorted: datasourceSorted, ascending: datasourceAscending)  {
-                
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
-            }
+        if appDelegate.activeAccount.count == 0 {
+            return
         }
         
-        self.refreshControl.endRefreshing()
+        let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+        let date = Calendar.current.date(byAdding: .day, value: -30, to: Date())
         
-        collectionView.reloadData()
+        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], date: date, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], account: account!)
+                
+                self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: account!)
+                self.collectionView.reloadData()
+
+            }
+        })
+                
+        self.refreshControl.endRefreshing()
     }
     
     // MARK: COLLECTIONVIEW METHODS
