@@ -27,8 +27,6 @@ import Sheeeeeeeeet
 class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
-
-    var serverUrl = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
@@ -41,11 +39,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
-    private var typeLayout = ""
-    private var datasourceSorted = ""
-    private var datasourceAscending = true
-    private var datasourceGroupBy = ""
-    private var datasourceDirectoryOnTop = false
+    private var typeLayout = k_layout_grid
     
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -106,8 +100,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
-        
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
@@ -164,7 +156,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 })
             })
             typeLayout = k_layout_list
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -175,7 +166,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 })
             })
             typeLayout = k_layout_grid
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
     
@@ -368,11 +358,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         if section == 0 {
-            if datasourceGroupBy == "none" {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
-            } else {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
-            }
+            return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
         } else {
             return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
         }
