@@ -681,7 +681,9 @@
                 isSearchMode = YES;
                 [self editingModeNO];
                 
-                [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] date:[NSDate distantPast] depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+                NSDate *date = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-30 toDate:[NSDate date] options:0];
+                
+                [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] date:date depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
                     
                     isSearchMode = NO;
 
