@@ -54,8 +54,6 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
         refreshControl.addTarget(self, action: #selector(loadActivityRefreshing), for: .valueChanged)
-        
-        self.title = NSLocalizedString("_activity_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -65,6 +63,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
     
+        self.title = NSLocalizedString("_activity_", comment: "")
+
         loadDataSource()
     }
     
@@ -92,6 +92,8 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
     func loadDataSource() {
         
+        sectionDate.removeAll()
+    
         activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
         for tableActivity in activities {
             guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {

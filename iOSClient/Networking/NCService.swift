@@ -144,14 +144,13 @@ class NCService: NSObject {
                                 DispatchQueue.main.async {
                                     
                                     if (new != old) {
-                                        
                                         self.appDelegate.listOfNotifications = NSMutableArray.init(array: sortedListOfNotifications)
                                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
-                                        
-                                        // Update Main NavigationBar
-                                        if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
-                                            self.appDelegate.activeMain.setUINavigationBarDefault()
-                                        }
+                                    }
+                                    
+                                    // Update Main NavigationBar
+                                    if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
+                                        self.appDelegate.activeMain.setUINavigationBarDefault()
                                     }
                                 }
                             }
