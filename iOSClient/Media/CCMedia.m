@@ -680,10 +680,8 @@
                 
                 isSearchMode = YES;
                 [self editingModeNO];
-                
-                NSDate *date = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-30 toDate:[NSDate date] options:0];
-                
-                [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] dateLastModified:@[date] depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+                                
+                [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] lteDateLastModified:[NSDate date] gteDateLastModified: [NSDate distantPast] depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
                     
                     isSearchMode = NO;
 

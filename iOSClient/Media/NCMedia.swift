@@ -323,9 +323,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
-        let date = Calendar.current.date(byAdding: .day, value: -30, to: Date())
+        //let date = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
         
-        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], dateLastModified: [date], depth: "infinity", completion: { (account, metadatas, message, errorCode) in
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd HH:mm"
+        let date2 = formatter.date(from: "2019/01/29 00:00")!
+
+        
+        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: Date(), gteDateLastModified: date2, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], account: account!)

@@ -266,7 +266,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [self mr_listPath:path depth:depth withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSArray *)dateLastModified contentType:(NSArray *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth lteDateLastModified:(NSString *)lteDateLastModified gteDateLastModified:(NSString *)gteDateLastModified contentType:(NSArray *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
     NSString *body = @"";
     NSString *whereType = @"";
@@ -278,15 +278,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_search];
     
-    if (contentType && dateLastModified) {
-        
-        NSString *operator = @"";
-
-        if (dateLastModified.count == 1) {
-            operator = @"gte";
-        } else {
-            operator = @"eq";
-        }
+    if (contentType && lteDateLastModified && gteDateLastModified) {
         
         body = [NSString stringWithFormat: @""
         "<?xml version=\"1.0\"?>"
@@ -322,9 +314,15 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
         
         body = [NSString stringWithFormat: @"%@%@</d:or><d:or>", body, whereType];
         
-        for (NSString *date in dateLastModified) {
-            whereDate = [NSString stringWithFormat: @"%@<d:%@><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:%@>", whereDate, operator, date, operator];
+        whereDate = [NSString stringWithFormat: @"%@<d:and><d:lte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:lte><d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte></d:and>", whereDate, lteDateLastModified, gteDateLastModified];
+        
+        /*
+        if (gteDateLastModified != nil && lteDateLastModified == nil) {
+            whereDate = [NSString stringWithFormat: @"%@<d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte>", whereDate, gteDateLastModified];
+        } else if (gteDateLastModified != nil && lteDateLastModified != nil) {
+            whereDate = [NSString stringWithFormat: @"%@<d:and><d:lte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:lte><d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte></d:and>", whereDate, lteDateLastModified, gteDateLastModified];
         }
+        */
         
         body = [NSString stringWithFormat: @"%@%@</d:or></d:and></d:where></d:basicsearch></d:searchrequest>", body, whereDate];
         
