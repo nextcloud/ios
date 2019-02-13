@@ -208,7 +208,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     
     //MARK: -
     
-    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, typeLayout: String, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, source: UIViewController) -> UICollectionViewCell {
+    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, source: UIViewController) {
         
         var image: UIImage?
         var imagePreview = false
@@ -238,10 +238,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
         }
         
-        if typeLayout == k_layout_list {
+        if cell is NCListCell {
             
-            // LIST
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            let cell = cell as! NCListCell
+           
             cell.delegate = source as? NCListCellDelegate
             
             cell.fileID = metadata.fileID
@@ -344,12 +344,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 cell.separator.isHidden = false
             }
             
-            return cell
+        } else if cell is NCGridCell {
             
-        } else {
-            
-            // GRID
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
+            let cell = cell as! NCGridCell
+
             cell.delegate = source as? NCGridCellDelegate
             
             cell.fileID = metadata.fileID
@@ -446,7 +444,24 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 cell.imageSelect.isHidden = true
                 cell.backgroundView = nil
             }
-            return cell
+            
+        } else if cell is NCGridMediaCell {
+            
+            let cell = cell as! NCGridMediaCell
+            
+            cell.fileID = metadata.fileID
+            cell.indexPath = indexPath
+            cell.imageStatus.image = nil
+            cell.imageLocal.image = nil
+            cell.imageFavorite.image = nil
+            
+            cell.imageItem.image = image
+            if imagePreview == false {
+                let width = cell.imageItem.image!.size.width * 2
+                //let scale = UIScreen.main.scale
+                cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
+                cell.imageItem.contentMode = .center
+            }
         }
     }
     
