@@ -271,7 +271,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSString *body = @"";
     NSString *whereType = @"";
     NSString *whereDate = @"";
-        
+    
     NSParameterAssert(success);
     
     _requestMethod = @"SEARCH";
@@ -279,6 +279,14 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_search];
     
     if (contentType && dateLastModified) {
+        
+        NSString *operator = @"";
+
+        if (dateLastModified.count == 1) {
+            operator = @"gte";
+        } else {
+            operator = @"eq";
+        }
         
         body = [NSString stringWithFormat: @""
         "<?xml version=\"1.0\"?>"
@@ -315,7 +323,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
         body = [NSString stringWithFormat: @"%@%@</d:or><d:or>", body, whereType];
         
         for (NSString *date in dateLastModified) {
-            whereDate = [NSString stringWithFormat: @"%@<d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte>", whereDate, date];
+            whereDate = [NSString stringWithFormat: @"%@<d:%@><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:%@>", whereDate, operator, date, operator];
         }
         
         body = [NSString stringWithFormat: @"%@%@</d:or></d:and></d:where></d:basicsearch></d:searchrequest>", body, whereDate];
