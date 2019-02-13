@@ -462,6 +462,32 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
                 cell.imageItem.contentMode = .center
             }
+            
+            // image Local
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+            if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+                if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
+                else { cell.imageLocal.image = UIImage.init(named: "local") }
+            }
+            
+            // image Favorite
+            if metadata.favorite {
+                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+            }
+            
+            if isEditMode {
+                cell.imageSelect.isHidden = false
+                if selectFileID.contains(metadata.fileID) {
+                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
+                    cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
+                } else {
+                    cell.imageSelect.isHidden = true
+                    cell.backgroundView = nil
+                }
+            } else {
+                cell.imageSelect.isHidden = true
+                cell.backgroundView = nil
+            }
         }
     }
     
