@@ -72,14 +72,13 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.alwaysBounceVertical = true
 
         listLayout = NCListLayout()
+        
         gridLayout = NCGridLayout()
+        gridLayout.heightLabelPlusButton = 0
+        gridLayout.preferenceWidth = 80
         
         // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        collectionView.refreshControl = refreshControl
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText

@@ -65,9 +65,9 @@ class NCListLayout: UICollectionViewFlowLayout {
 
 class NCGridLayout: UICollectionViewFlowLayout {
     
-    let heightLabelPlusButton: CGFloat = 45
-    let preferenceWidth: CGFloat = 110
-    let marginLeftRight: CGFloat = 1
+    var heightLabelPlusButton: CGFloat = 45
+    var preferenceWidth: CGFloat = 110
+    var marginLeftRight: CGFloat = 1
     
     override init() {
         super.init()
