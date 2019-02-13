@@ -39,12 +39,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
-    private var typeLayout = k_layout_grid
-    
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     
-    private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
     
     private var actionSheet: ActionSheet?
@@ -59,7 +56,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         super.viewDidLoad()
         
         // Cell
-        collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header
@@ -71,12 +67,13 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         collectionView.alwaysBounceVertical = true
 
-        listLayout = NCListLayout()
-        
         gridLayout = NCGridLayout()
         gridLayout.heightLabelPlusButton = 0
         gridLayout.preferenceWidth = 80
-        
+        gridLayout.sectionInset = UIEdgeInsets(top: 10, left: 1, bottom: 10, right: 1)
+
+        collectionView.collectionViewLayout = gridLayout
+
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
         
@@ -102,12 +99,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
-        
-        if typeLayout == k_layout_list {
-            collectionView.collectionViewLayout = listLayout
-        } else {
-            collectionView.collectionViewLayout = gridLayout
-        }
         
         loadDatasource()
     }
@@ -145,27 +136,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func tapSwitchHeader(sender: Any) {
         
-        if collectionView.collectionViewLayout == gridLayout {
-            // list layout
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
-                    self.collectionView.reloadData()
-                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
-                })
-            })
-            typeLayout = k_layout_list
-        } else {
-            // grid layout
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { (_) in
-                    self.collectionView.reloadData()
-                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
-                })
-            })
-            typeLayout = k_layout_grid
-        }
+        UIView.animate(withDuration: 0.0, animations: {
+            self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + 10
+            self.collectionView.collectionViewLayout.invalidateLayout()
+        })
     }
     
     func tapOrderHeader(sender: Any) {
@@ -448,15 +422,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         let cell: UICollectionViewCell
         
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         }
         
-        if typeLayout == k_layout_grid {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-        } else {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-        }
-        
+        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+      
         NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, source: self)
         
         return cell
