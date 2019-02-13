@@ -729,7 +729,7 @@
     }];
 }
 
-- (void)searchWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl contentType:(NSArray *)contentType date:(NSDate *)date depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
+- (void)searchWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl contentType:(NSArray *)contentType dateLastModified:(NSArray *)dateLastModified depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -743,18 +743,19 @@
 
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
     NSString *folder = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
-    NSString *dateLastModified;
+    NSMutableArray *dateString = [NSMutableArray new];
     
-    if (date) {
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-        [dateFormatter setLocale:enUSPOSIXLocale];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
-        
-        dateLastModified = [dateFormatter stringFromDate:date];
+    if (dateLastModified) {
+        for(NSDate *date in dateLastModified) {
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+            [dateFormatter setLocale:enUSPOSIXLocale];
+            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+            [dateString addObject:[dateFormatter stringFromDate:date]];
+        }
     }
  
-    [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", fileName] depth:depth dateLastModified:dateLastModified contentType:contentType withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", fileName] depth:depth dateLastModified:dateString contentType:contentType withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];

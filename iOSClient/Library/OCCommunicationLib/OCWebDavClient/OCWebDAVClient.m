@@ -266,7 +266,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [self mr_listPath:path depth:depth withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSString *)dateLastModified contentType:(NSArray *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSArray *)dateLastModified contentType:(NSArray *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
     NSString *body = @"";
     NSString *whereType = @"";
@@ -311,7 +311,18 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
             whereType = [NSString stringWithFormat: @"%@<d:like><d:prop><d:getcontenttype/></d:prop><d:literal>%@</d:literal></d:like>", whereType, type];
         }
         
-        body = [NSString stringWithFormat: @"%@%@</d:or><d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte></d:and></d:where></d:basicsearch></d:searchrequest>", body, whereType, dateLastModified];
+        body = [NSString stringWithFormat: @"%@%@"
+                "</d:or>"
+                    "<d:gte>"
+                        "<d:prop>"
+                            "<d:getlastmodified/>"
+                        "</d:prop>"
+                        "<d:literal>%@</d:literal>"
+                    "</d:gte>"
+                    "</d:and>"
+                "</d:where>"
+            "</d:basicsearch>"
+        "</d:searchrequest>", body, whereType, [dateLastModified objectAtIndex:0]];
         
     } else {
         

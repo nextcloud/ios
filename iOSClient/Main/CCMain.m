@@ -1319,7 +1319,7 @@
 {
     NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
-    [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:_searchFileName serverUrl:startDirectory contentType:nil date:nil depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:_searchFileName serverUrl:startDirectory contentType:nil dateLastModified:nil depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
