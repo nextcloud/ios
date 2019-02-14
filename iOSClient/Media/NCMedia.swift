@@ -49,6 +49,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
+    
+    private var addWidth: CGFloat = 10
 
     private let refreshControl = UIRefreshControl()
     
@@ -136,8 +138,20 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func tapSwitchHeader(sender: Any) {
         
+        let itemSizeStart = self.gridLayout.itemSize
+        
         UIView.animate(withDuration: 0.0, animations: {
-            self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + 10
+            
+            if self.gridLayout.numItems == 1 && self.addWidth > 0 {
+                self.addWidth = -10
+            } else if itemSizeStart.width < 50 {
+                self.addWidth = 10
+            }
+            
+            repeat {
+                self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + self.addWidth
+            } while (self.gridLayout.itemSize == itemSizeStart)
+            
             self.collectionView.collectionViewLayout.invalidateLayout()
         })
     }
@@ -340,11 +354,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
                 
-                if collectionView.collectionViewLayout == gridLayout {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                } else {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                }
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGridChange"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
                 
                 header.delegate = self
                 

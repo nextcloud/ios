@@ -68,6 +68,7 @@ class NCGridLayout: UICollectionViewFlowLayout {
     var heightLabelPlusButton: CGFloat = 45
     var preferenceWidth: CGFloat = 110
     var marginLeftRight: CGFloat = 1
+    var numItems: Int = 0
     
     override init() {
         super.init()
@@ -89,7 +90,7 @@ class NCGridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-                let numItems: Int = Int(collectionView.frame.width / preferenceWidth)
+                self.numItems = Int(collectionView.frame.width / preferenceWidth)
                 let itemWidth: CGFloat = (collectionView.frame.width - (marginLeftRight * 2) - CGFloat(numItems)) / CGFloat(numItems)
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
                 return CGSize(width: itemWidth, height: itemHeight)
