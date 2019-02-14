@@ -355,7 +355,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
                 
                 header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGridChange"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                
+                header.viewLabelSection.backgroundColor = .clear
+
                 header.delegate = self
                 
                 header.setStatusButton(count: sectionDatasource.allFileID.count)
@@ -384,6 +385,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
                 
+                header.backgroundColor = .clear
                 header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
                 
                 return header
