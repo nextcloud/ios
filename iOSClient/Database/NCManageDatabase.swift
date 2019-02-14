@@ -1973,7 +1973,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func createTablePhotos(_ metadatas: [tableMetadata], account: String) {
+    @objc func createTablePhotos(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) {
 
         let realm = try! Realm()
         realm.refresh()
@@ -1981,7 +1981,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 // DELETE ALL
-                let results = realm.objects(tablePhotos.self).filter("account = %@", account)
+                let results = realm.objects(tablePhotos.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
                 realm.delete(results)
                 // INSERT ALL
                 let photos = Array(metadatas.map { tablePhotos.init(value:$0) })

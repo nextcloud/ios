@@ -51,6 +51,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private let footerHeight: CGFloat = 50
     
     private var addWidth: CGFloat = 10
+    
+    private var readLastdays = 30
 
     private let refreshControl = UIRefreshControl()
     
@@ -309,7 +311,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search() {
+    func search(_ lteDate: Date, gteDate: Date) {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -317,17 +319,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
 
-        //let date = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
-        let date2 = formatter.date(from: "2019/01/29 00:00")!
-
-        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: Date(), gteDateLastModified: date2, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
+        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], account: account!)
-                
+               
+                NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                 self.loadDatasource()
             }
             
@@ -348,6 +344,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: self.appDelegate.activeAccount)
             } else {
                 self.sectionDatasource = CCSectionDataSourceMetadata()
+                
+                let gteDate = Calendar.current.date(byAdding: .day, value: -self.readLastdays, to: Date())!
+                self.search(Date(), gteDate: gteDate)
             }
         
             DispatchQueue.main.async {

@@ -692,7 +692,7 @@
                             // Clear all Hardcoded new foto/video from CCNetworking
                             [self.addMetadatasFromUpload removeAllObjects];
                             
-                            [[NCManageDatabase sharedInstance] createTablePhotos:metadatas account:account];
+                           // [[NCManageDatabase sharedInstance] createTablePhotos:metadatas account:account];
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [self reloadDatasource:nil action:k_action_NULL];
