@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2014-2016, Deusty, LLC
+// Copyright (c) 2010-2018, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -12,17 +12,16 @@
 // * Neither the name of Deusty nor the names of its contributors may be used
 //   to endorse or promote products derived from this software without specific
 //   prior written permission of Deusty, LLC.
-//
-//  Created by Pavel Kunc on 18/04/2015.
-//
 
 @import XCTest;
-#import <Expecta/Expecta.h>
-#import "DDLog.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 @interface DDTestLogger : NSObject <DDLogger>
 @end
+
 @implementation DDTestLogger
+@synthesize logFormatter;
+- (void)logMessage:(nonnull DDLogMessage *)logMessage {}
 @end
 
 @interface DDLogTests : XCTestCase
@@ -36,8 +35,8 @@
 @implementation DDLogTests
 
 - (void)setUp {
-    [DDLog removeAllLoggers];
     [super setUp];
+    [DDLog removeAllLoggers];
 }
 
 - (void)tearDown {
@@ -49,47 +48,47 @@
 #pragma mark - Logger management
 
 - (void)testAddLoggerAddsNewLoggerWithDDLogLevelAll {
-    DDTestLogger *logger = [DDTestLogger new];
+    __auto_type logger = [DDTestLogger new];
     [DDLog addLogger:logger];
-    expect([DDLog allLoggers]).haveACountOf(1);
+    XCTAssertEqual([DDLog allLoggers].count, 1);
 }
 
 - (void)testAddLoggerWithLevelAddLoggerWithSpecifiedLevelMask {
-    DDTestLogger *logger = [DDTestLogger new];
+    __auto_type logger = [DDTestLogger new];
     [DDLog addLogger:logger withLevel:DDLogLevelDebug | DDLogLevelError];
-    expect([DDLog allLoggers]).haveACountOf(1);
+    XCTAssertEqual([DDLog allLoggers].count, 1);
 }
 
 - (void)testRemoveLoggerRemovesExistingLogger {
-    DDTestLogger *logger = [DDTestLogger new];
+    __auto_type logger = [DDTestLogger new];
     [DDLog addLogger:logger];
     [DDLog addLogger:[DDTestLogger new]];
     [DDLog removeLogger:logger];
-    expect([DDLog allLoggers]).haveACountOf(1);
-    expect([[DDLog allLoggers] firstObject]).notTo.beIdenticalTo(logger);
+    XCTAssertEqual([DDLog allLoggers].count, 1);
+    XCTAssertFalse([[DDLog allLoggers] firstObject] == logger);
 }
 
 - (void)testRemoveAllLoggersRemovesAllLoggers {
     [DDLog addLogger:[DDTestLogger new]];
     [DDLog addLogger:[DDTestLogger new]];
     [DDLog removeAllLoggers];
-    expect([DDLog allLoggers]).to.beEmpty();
+    XCTAssertEqual([DDLog allLoggers].count, 0);
 }
 
 - (void)testAllLoggersReturnsAllLoggers {
     [DDLog addLogger:[DDTestLogger new]];
     [DDLog addLogger:[DDTestLogger new]];
-    expect([DDLog allLoggers]).haveACountOf(2);
+    XCTAssertEqual([DDLog allLoggers].count, 2);
 }
 
 - (void)testAllLoggersWithLevelReturnsAllLoggersWithLevel {
     [DDLog addLogger:[DDTestLogger new]];
     [DDLog addLogger:[DDTestLogger new] withLevel:DDLogLevelDebug];
     [DDLog addLogger:[DDTestLogger new] withLevel:DDLogLevelInfo];
-    expect([DDLog allLoggersWithLevel]).haveACountOf(3);
-    expect([[[DDLog allLoggersWithLevel] firstObject] level]).to.equal(DDLogLevelAll);
-    expect([[DDLog allLoggersWithLevel][1] level]).to.equal(DDLogLevelDebug);
-    expect([[DDLog allLoggersWithLevel][2] level]).to.equal(DDLogLevelInfo);
+    XCTAssertEqual([DDLog allLoggersWithLevel].count, 3);
+    XCTAssertEqual([[[DDLog allLoggersWithLevel] firstObject] level], DDLogLevelAll);
+    XCTAssertEqual([[DDLog allLoggersWithLevel][1] level], DDLogLevelDebug);
+    XCTAssertEqual([[DDLog allLoggersWithLevel][2] level], DDLogLevelInfo);
 }
 
 @end

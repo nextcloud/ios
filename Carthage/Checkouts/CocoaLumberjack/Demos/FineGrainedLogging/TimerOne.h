@@ -1,5 +1,11 @@
-#import <Cocoa/Cocoa.h>
+//
+//  TimerOne.h
+//  FineGrainedLogging
+//
+//  CocoaLumberjack Demos
+//
 
+#import <Cocoa/Cocoa.h>
 
 @interface TimerOne : NSObject
 {

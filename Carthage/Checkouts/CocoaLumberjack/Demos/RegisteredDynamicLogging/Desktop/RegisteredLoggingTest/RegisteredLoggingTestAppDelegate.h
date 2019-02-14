@@ -1,5 +1,11 @@
-#import <Cocoa/Cocoa.h>
+//
+//  RegisteredLoggingTestAppDelegate.h
+//  RegisteredLoggingTest
+//
+//  CocoaLumberjack Demos
+//
 
+#import <Cocoa/Cocoa.h>
 
 @interface RegisteredLoggingTestAppDelegate : NSObject <NSApplicationDelegate> {
     NSWindow *__unsafe_unretained window;

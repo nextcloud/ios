@@ -2,7 +2,7 @@
 //  main.m
 //  CoreDataLogger
 //
-//  Created by Robbie Hanson on 3/30/11.
+//  CocoaLumberjack Demos
 //
 
 #import <Cocoa/Cocoa.h>

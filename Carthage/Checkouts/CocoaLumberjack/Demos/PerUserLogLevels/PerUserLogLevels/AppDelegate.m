@@ -1,3 +1,10 @@
+//
+//  AppDelegate.m
+//  PerUserLogLevels
+//
+//  CocoaLumberjack Demos
+//
+
 #import "AppDelegate.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 

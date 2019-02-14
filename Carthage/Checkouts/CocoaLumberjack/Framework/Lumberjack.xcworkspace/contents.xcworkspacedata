@@ -7,31 +7,41 @@
    <FileRef
       location = "group:../Documentation">
    </FileRef>
-   <FileRef
-      location = "group:../CocoaLumberjack.podspec">
-   </FileRef>
-   <FileRef
-      location = "group:../CHANGELOG.md">
-   </FileRef>
-   <FileRef
-      location = "group:../LICENSE.txt">
-   </FileRef>
-   <FileRef
-      location = "group:../LumberjackLogo.png">
-   </FileRef>
-   <FileRef
-      location = "group:../README.md">
-   </FileRef>
-   <FileRef
-      location = "group:../uncrustify.cfg">
-   </FileRef>
+   <Group
+      location = "container:.."
+      name = "Pod">
+      <FileRef
+         location = "group:CHANGELOG.md">
+      </FileRef>
+      <FileRef
+         location = "group:CocoaLumberjack.podspec">
+      </FileRef>
+      <FileRef
+         location = "group:Dangerfile">
+      </FileRef>
+      <FileRef
+         location = "group:Gemfile">
+      </FileRef>
+      <FileRef
+         location = "group:LICENSE">
+      </FileRef>
+      <FileRef
+         location = "group:LumberjackLogo.png">
+      </FileRef>
+      <FileRef
+         location = "group:README.md">
+      </FileRef>
+      <FileRef
+         location = "group:uncrustify.cfg">
+      </FileRef>
+   </Group>
    <FileRef
       location = "group:../Lumberjack.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../Tests/CocoaLumberjack Tests.xcodeproj">
+      location = "group:../Tests/Tests.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../Tests/Pods/Pods.xcodeproj">
+      location = "group:../Integration/Integration.xcodeproj">
    </FileRef>
 </Workspace>

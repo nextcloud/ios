@@ -1,5 +1,11 @@
-#import "LogEntry.h"
+//
+//  LogEntry.m
+//  CoreDataLogger
+//
+//  CocoaLumberjack Demos
+//
 
+#import "LogEntry.h"
 
 @implementation LogEntry
 

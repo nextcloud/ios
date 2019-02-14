@@ -2,8 +2,7 @@
 //  AppDelegate.h
 //  CaptureASL
 //
-//  Created by Ernesto Rivera on 2014/03/20.
-//
+//  CocoaLumberjack Demos
 //
 
 #import <UIKit/UIKit.h>

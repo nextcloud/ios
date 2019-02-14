@@ -1,9 +1,12 @@
-#import "PerformanceTesting.h"
-#import "DDLog.h"
-#import "DDASLLogger.h"
-#import "DDTTYLogger.h"
-#import "DDFileLogger.h"
+//
+//  PerformanceTesting.m
+//  Benchmarking
+//
+//  CocoaLumberjack Demos
+//
 
+#import "PerformanceTesting.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 #import "BaseNSLogging.h"
 #import "StaticLogging.h"
@@ -407,8 +410,8 @@ static DDFileLogger *fileLogger = nil;
 	
 	NSFileHandle *csvResultsFile = [NSFileHandle fileHandleForWritingAtPath:csvResultsPath];
 	
-	NSString *csvRsults = [self csvResults];
-	[csvResultsFile writeData:[csvRsults dataUsingEncoding:NSUTF8StringEncoding]];
+	NSString *csvResults = [self csvResults];
+	[csvResultsFile writeData:[csvResults dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	NSLog(@"CSV results file written to:\n%@", csvResultsPath);
 }

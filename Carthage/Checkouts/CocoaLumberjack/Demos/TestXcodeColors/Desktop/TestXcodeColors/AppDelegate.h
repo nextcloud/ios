@@ -1,5 +1,11 @@
-#import <Cocoa/Cocoa.h>
+//
+//  AppDelegate.h
+//  TestXcodeColors
+//
+//  CocoaLumberjack Demos
+//
 
+#import <Cocoa/Cocoa.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 

@@ -1,6 +1,12 @@
+//
+//  CoreDataLogger.h
+//  CoreDataLogger
+//
+//  CocoaLumberjack Demos
+//
+
 #import <Foundation/Foundation.h>
 #import <CocoaLumberjack/DDAbstractDatabaseLogger.h>
-
 
 @interface CoreDataLogger : DDAbstractDatabaseLogger <DDLogger>
 {
