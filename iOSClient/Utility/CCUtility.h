@@ -39,21 +39,10 @@
 
 // ===== KeyChainStore =====
 
-// ADMIN
-
-+ (void)adminRemoveIntro;
-+ (void)adminRemovePasscode;
-+ (void)adminRemoveVersion;
-
 // GET/SET
 
 + (void)deleteAllChainStore;
 + (void)storeAllChainInService;
-
-+ (NSString *)getUUID;
-
-+ (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
-+ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode;
 
 + (NSString *)getVersion;
 + (NSString *)setVersion;
@@ -190,7 +179,6 @@
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)removeFileAtPath:(NSString *)atPath;
-+ (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
 + (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
@@ -208,6 +196,9 @@
 
 + (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
 
++ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
@@ -215,9 +206,9 @@
 
 // ===== CCMetadata =====
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted;
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted;
 
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata;
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;

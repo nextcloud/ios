@@ -63,54 +63,7 @@
     }
 }
 
-#pragma ------------------------------ ADMIN
-
-+ (void)adminRemoveIntro
-{
-    NSString *version = [self getVersion];
-    [UICKeyChainStore setString:nil forKey:version service:k_serviceShareKeyChain];
-}
-
-+ (void)adminRemovePasscode
-{
-    NSString *uuid = [self getUUID];
-    [UICKeyChainStore setString:nil forKey:uuid service:k_serviceShareKeyChain];
-}
-
-+ (void)adminRemoveVersion
-{
-    [UICKeyChainStore setString:@"0.0" forKey:@"version" service:k_serviceShareKeyChain];
-}
-
 #pragma ------------------------------ GET/SET
-
-+ (NSString *)getUUID
-{
-#if TARGET_OS_SIMULATOR
-    NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:k_UUID_SIM];
-    return [deviceId UUIDString];
-#else
-    NSString *uuid = [[UIDevice currentDevice] identifierForVendor].UUIDString;
-    return uuid;
-#endif
-}
-
-+ (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
-{
-    if (!uuid) return @"";
-    
-    NSString *passcode = [UICKeyChainStore stringForKey:uuid service:k_serviceShareKeyChain];
-    
-    if (!passcode)
-        passcode = @"";
-    
-    return passcode;
-}
-
-+ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode
-{
-    [UICKeyChainStore setString:passcode forKey:uuid service:k_serviceShareKeyChain];
-}
 
 + (NSString *)getVersion
 {
@@ -490,7 +443,7 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
 
     NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
@@ -557,7 +510,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Varius =====
+#pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
 
 + (NSString *)getUserAgent
@@ -569,27 +522,30 @@
 
 + (NSString *)dateDiff:(NSDate *) convertedDate
 {
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setFormatterBehavior:NSDateFormatterBehavior10_4];
-    [df setDateFormat:@"EEE, dd MMM yy HH:mm:ss VVVV"];
-    //NSDate *convertedDate = [df dateFromString:origDate];
-    //NSDate *convertedDate = [NSDate dateWithTimeIntervalSince1970:origDate];
     NSDate *todayDate = [NSDate date];
     double ti = [convertedDate timeIntervalSinceDate:todayDate];
     ti = ti * -1;
     if (ti < 60) {
+        // This minute
         return NSLocalizedString(@"_less_a_minute_", nil);
     } else if (ti < 3600) {
+        // This hour
         int diff = round(ti / 60);
         return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
     } else if (ti < 86400) {
+        // This day
         int diff = round(ti / 60 / 60);
         return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
-    } else if (ti < 2629743) {
+    } else if (ti < 86400 * 30) {
+        // This month
         int diff = round(ti / 60 / 60 / 24);
         return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
     } else {
-        return NSLocalizedString(@"_over_30_days_", nil);
+        // Older than one month
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        [df setFormatterBehavior:NSDateFormatterBehavior10_4];
+        [df setDateStyle:NSDateFormatterMediumStyle];
+        return [df stringFromDate:convertedDate];
     }
 }
 
@@ -939,6 +895,8 @@
 + (NSString *)getTitleSectionDate:(NSDate *)date
 {
     NSString * title;
+    NSDate *today = [NSDate date];
+    NSDate *yesterday = [today dateByAddingTimeInterval: -86400.0];
     
     if ([date isEqualToDate:[CCUtility datetimeWithOutTime:[NSDate distantPast]]]) {
         
@@ -948,8 +906,11 @@
         
         title = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterFullStyle timeStyle:0];
         
-        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:[NSDate date]]])
+        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:today]])
             title = [NSString stringWithFormat:NSLocalizedString(@"_today_", nil)];
+        
+        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:yesterday]])
+            title = [NSString stringWithFormat:NSLocalizedString(@"_yesterday_", nil)];
     }
     
     return title;
@@ -976,22 +937,6 @@
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:atPath]) {
         [[NSFileManager defaultManager] removeItemAtPath:atPath error:nil];
-    }
-}
-
-+ (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
-{
-    NSString *file;
-    NSString *dir;
-    
-    dir = [self getDirectoryActiveUser:activeUser activeUrl:activeUrl];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dir];
-    
-    while (file = [enumerator nextObject]) {
-        
-        if ([file rangeOfString:@"ID_UPLOAD_"].location != NSNotFound)
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dir, file] error:nil];
     }
 }
 
@@ -1116,6 +1061,32 @@
     [data writeToFile:fileNamePath atomically:YES];
 }
 
++ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl
+{
+    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
+    
+    for (NSString *currentCharacter in arrayForbiddenCharacters) {
+        account = [account stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    }
+    
+    for (NSString *currentCharacter in arrayForbiddenCharacters) {
+        serverUrl = [serverUrl stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    }
+    
+    return [[account stringByAppendingString:serverUrl] lowercaseString];
+}
+
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
+{
+    NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileNameView] lowercaseString];
+    
+    if (directory) {
+        return [metadataID stringByAppendingString:@"-dir"];
+    }
+    
+    return metadataID;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1153,18 +1124,18 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
 {
     tableMetadata *metadata = [tableMetadata new];
     
     metadata.account = account;
     metadata.date = date;
     metadata.directory = directory;
-    metadata.directoryID = directoryID;
     metadata.etag = etag;
     metadata.fileID = fileID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
+    metadata.serverUrl = serverUrl;
     metadata.size = size;
     metadata.status = status;
     metadata.url = url;
@@ -1174,7 +1145,7 @@
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted
 {
     tableMetadata *metadata = [tableMetadata new];
     NSString *fileNameView;
@@ -1191,19 +1162,19 @@
     
     metadata.account = activeAccount;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
-    metadata.e2eEncrypted = itemDto.isEncrypted;
     metadata.directory = itemDto.isDirectory;
+    metadata.e2eEncrypted = itemDto.isEncrypted;
+    metadata.etag = itemDto.etag;
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
-    metadata.directoryID = directoryID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileNameView;
     metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
-    metadata.etag = itemDto.etag;
-    metadata.size = itemDto.size;
+    metadata.serverUrl = serverUrl;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+    metadata.size = itemDto.size;
     metadata.status = k_metadataStatusNormal;
     metadata.typeFile = @"";
     

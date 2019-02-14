@@ -57,7 +57,7 @@
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
-    [_baseUrl setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_baseUrl setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
     [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
     [self.baseUrl setDelegate:self];
     
@@ -66,7 +66,7 @@
     _user.textColor = [NCBrandColor sharedInstance].customerText;
     _user.tintColor = [NCBrandColor sharedInstance].customerText;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
-    [_user setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_user setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.user setDelegate:self];
 
@@ -75,22 +75,22 @@
     _password.textColor = [NCBrandColor sharedInstance].customerText;
     _password.tintColor = [NCBrandColor sharedInstance].customerText;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
-    [_password setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+    [_password setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
     [self.toggleVisiblePassword setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"visiblePassword"] multiplier:2 color:[UIColor whiteColor]] forState:UIControlStateNormal];
     
     // Login
-    [self.login setTitle:[NSLocalizedString(@"_login_", nil) uppercaseString] forState:UIControlStateNormal] ;
+    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal] ;
     self.login.backgroundColor = [NCBrandColor sharedInstance].customerText;
     self.login.tintColor = [UIColor blackColor];
-//    self.login.layer.cornerRadius = 3;
-//    self.login.clipsToBounds = YES;
+    self.login.layer.cornerRadius = 20;
+    self.login.clipsToBounds = YES;
     
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.loginTypeView setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forState:UIControlStateNormal];
 
     // Brand
     if ([NCBrandOptions sharedInstance].disable_request_login_url) {
@@ -169,52 +169,54 @@
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:@"" withUserID:@"" withPassword:@"" withUrl:nil];
-    [ocNetworking serverStatus:self.baseUrl.text success:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor) {
+    [[OCNetworking sharedManager] serverStatusUrl:self.baseUrl.text delegate:self completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode) {
         
-        [self.activity stopAnimating];
-        self.login.enabled = YES;
-        
-        // Login Flow
-        if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
+        if (errorCode == 0) {
             
-            appDelegate.activeLoginWeb = [CCLoginWeb new];
-            appDelegate.activeLoginWeb.loginType = _loginType;
-            appDelegate.activeLoginWeb.delegate = self;
-            appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
+            [self.activity stopAnimating];
+            self.login.enabled = YES;
             
-            [appDelegate.activeLoginWeb open:self];
-        }
-        
-        // NO Login Flow available
-        if (versionMajor < k_flow_version_available) {
+            // Login Flow
+            if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
+                
+                appDelegate.activeLoginWeb = [CCLoginWeb new];
+                appDelegate.activeLoginWeb.loginType = _loginType;
+                appDelegate.activeLoginWeb.delegate = self;
+                appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
+                
+                [appDelegate.activeLoginWeb open:self];
+            }
             
-            [self.loginTypeView setHidden:YES];
-            
-            _imageUser.hidden = NO;
-            _user.hidden = NO;
-            _imagePassword.hidden = NO;
-            _password.hidden = NO;
-            
-            [_user becomeFirstResponder];
-        }
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        [self.activity stopAnimating];
-        self.login.enabled = YES;
-        
-        if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+            // NO Login Flow available
+            if (versionMajor < k_flow_version_available) {
+                
+                [self.loginTypeView setHidden:YES];
+                
+                _imageUser.hidden = NO;
+                _user.hidden = NO;
+                _imagePassword.hidden = NO;
+                _password.hidden = NO;
+                
+                [_user becomeFirstResponder];
+            }
             
         } else {
             
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            [self.activity stopAnimating];
+            self.login.enabled = YES;
             
-            [alertController addAction:okAction];
-            [self presentViewController:alertController animated:YES completion:nil];
+            if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+                
+            } else {
+                
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                
+                [alertController addAction:okAction];
+                [self presentViewController:alertController animated:YES completion:nil];
+            }
         }
     }];
 }
@@ -290,67 +292,69 @@
         NSString *url = self.baseUrl.text;
         NSString *user = self.user.text;
         NSString *password = self.password.text;
-        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:user withUserID:user withPassword:password withUrl:nil];
-
+        
         self.login.enabled = NO;
         [self.activity startAnimating];
 
-        [ocNetworking checkServer:[NSString stringWithFormat:@"%@%@", url, k_webDAV] success:^{
+        [[OCNetworking sharedManager] checkServerUrl:[NSString stringWithFormat:@"%@%@", url, k_webDAV] user:user userID:user password:password completion:^(NSString *message, NSInteger errorCode) {
             
-            [self.activity stopAnimating];
-            
-            // account
-            NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
-            
-            if (_loginType == k_login_Modify_Password) {
+            if (errorCode == 0) {
                 
-                // Change Password
-                tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:password];
+                [self.activity stopAnimating];
                 
-                // Setting appDelegate active account
-                [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
+                // account
+                NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
                 
-                [self.delegate loginSuccess:_loginType];
-                
-                [self dismissViewControllerAnimated:YES completion:nil];
+                if (_loginType == k_login_Modify_Password) {
+                    
+                    // Change Password
+                    tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:password];
+                    
+                    // Setting appDelegate active account
+                    [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
+                    
+                    [self.delegate loginSuccess:_loginType];
+                    
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                    
+                } else {
+                    
+                    // STOP Intro
+                    [CCUtility setIntro:YES];
+                    
+                    // LOGOUT
+                    [appDelegate unsubscribingNextcloudServerPushNotification];
+                    
+                    [[NCManageDatabase sharedInstance] deleteAccount:account];
+                    [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];
+                    
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+                    
+                    // Setting appDelegate active account
+                    [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+                    
+                    [self.delegate loginSuccess:_loginType];
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                        [self dismissViewControllerAnimated:YES completion:nil];
+                    });
+                }
                 
             } else {
-
-                // STOP Intro
-                [CCUtility setIntro:YES];
                 
-                // LOGOUT
-                [appDelegate unsubscribingNextcloudServerPushNotification];
+                self.login.enabled = YES;
+                [self.activity stopAnimating];
                 
-                [[NCManageDatabase sharedInstance] deleteAccount:account];
-                [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];
-                
-                tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-                
-                // Setting appDelegate active account
-                [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
-                
-                [self.delegate loginSuccess:_loginType];
-                
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [self dismissViewControllerAnimated:YES completion:nil];
-                });
-            }
-            
-        } failure:^(NSString *message, NSInteger errorCode) {
-            
-            self.login.enabled = YES;
-            [self.activity stopAnimating];
-            
-            if (errorCode != NSURLErrorServerCertificateUntrusted) {
-                
-                NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
-                
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                
-                [alertController addAction:okAction];
-                [self presentViewController:alertController animated:YES completion:nil];
+                if (errorCode != NSURLErrorServerCertificateUntrusted) {
+                    
+                    NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
+                    
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    
+                    [alertController addAction:okAction];
+                    [self presentViewController:alertController animated:YES completion:nil];
+                }
             }
         }];
     }

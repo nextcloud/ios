@@ -8,16 +8,13 @@
 
 /*
  
- Action sheet presenters are used by Sheeeeeeeeet to present
- action sheets in different ways, e.g. with a default bottom
- slide, showing a popover from the tapped view etc.
+ Action sheet presenters are used to present and dismiss any
+ action sheet in different ways, for instance with a default
+ slide-in, showing the sheet in a popover etc.
  
- When implementing this protocol, `present(in:from:)` is the
- standard way to present an action sheet, while `dismiss` is
- the standard way to dismiss it.
- 
- `isDismissableWithTapOnBackground` is used to specify if an
- action sheet can be dismissed by tapping on the background.
+ Instead of a delegate, the presenter protocol uses an event
+ property that has events that you can subscribe to, by just
+ setting the action blocks in the event struct.
  
  */
 

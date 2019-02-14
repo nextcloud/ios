@@ -6,7 +6,12 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
-// This enum is only used to populate our example table view.
+/*
+ 
+ This enum is used by the example app, to populate the table
+ view in the main example view controller.
+ 
+ */
 
 import UIKit
 

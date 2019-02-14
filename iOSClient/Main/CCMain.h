@@ -75,12 +75,14 @@
 
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;
+- (void)tableViewReloadData;
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID action:(NSInteger)action;
 
-- (void)openWindowShare:(tableMetadata *)metadata;
+- (void)readShareWithAccount:(NSString *)account openWindow:(BOOL)openWindow metadata:(tableMetadata *)metadata;
+
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
 

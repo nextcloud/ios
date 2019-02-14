@@ -71,7 +71,7 @@ class NCCreateMenuAdd: NSObject {
          items.append(itemSectionMargin)
          */
         
-        if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes() {
+        if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
                 items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
                 items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))

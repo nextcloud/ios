@@ -1,6 +1,6 @@
 github "tilltue/TLPhotoPicker"
 github "kishikawakatsumi/UICKeyChainStore"
-github "danielsaidi/Sheeeeeeeeet"
+github "danielsaidi/Sheeeeeeeeet" == 1.2.2
 github "sgr-ksmt/PDFGenerator" ~> 2.1
 github "MortimerGoro/MGSwipeTableCell"
 github "dzenbot/DZNEmptyDataSet"
@@ -10,4 +10,5 @@ github "ChangbaDevs/KTVHTTPCache" ~> 1.1.7
 github "jdg/MBProgressHUD" ~> 1.1.0
 github "realm/realm-cocoa"
 github "SVGKit/SVGKit" "2.x"
-github "WeTransfer/WeScan" >= 0.9
+github "WeTransfer/WeScan" == 0.9.1
+github "malcommac/SwiftRichString"

@@ -6,6 +6,12 @@
 //  Copyright © 2016 Daniel Saidi. All rights reserved.
 //
 
+/*
+ 
+ This extension is used to create colors in the example app.
+ 
+ */
+
 import UIKit
 
 

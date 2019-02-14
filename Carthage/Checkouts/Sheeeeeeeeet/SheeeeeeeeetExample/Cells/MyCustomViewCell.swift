@@ -6,6 +6,13 @@
 //  Copyright © 2018 Daniel Saidi. All rights reserved.
 //
 
+/*
+ 
+ This cell is used by the example app, as the custom view in
+ the `CustomActionSheet` example action sheet.
+ 
+ */
+
 import Sheeeeeeeeet
 
 class MyCustomViewCell: ActionSheetItemCell, ActionSheetCustomItemCell {

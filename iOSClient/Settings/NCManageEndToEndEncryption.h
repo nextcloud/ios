@@ -28,7 +28,7 @@
 
 @class NCEndToEndInitialize;
 
-@interface NCManageEndToEndEncryption : XLFormViewController <BKPasscodeViewControllerDelegate, OCNetworkingDelegate>
+@interface NCManageEndToEndEncryption : XLFormViewController <BKPasscodeViewControllerDelegate>
 
 @property (nonatomic, strong) NCEndToEndInitialize *endToEndInitialize;
 

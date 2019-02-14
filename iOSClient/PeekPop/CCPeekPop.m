@@ -76,19 +76,14 @@
     
     UIPreviewAction *previewAction1 = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-        
-        if (serverUrl) {
+        _metadata.session = k_download_session;
+        _metadata.sessionError = @"";
+        _metadata.sessionSelector = selectorOpenIn;
+        _metadata.status = k_metadataStatusWaitDownload;
             
-            _metadata.session = k_download_session;
-            _metadata.sessionError = @"";
-            _metadata.sessionSelector = selectorOpenIn;
-            _metadata.status = k_metadataStatusWaitDownload;
-            
-            // Add Metadata for Download
-            (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-        }
+        // Add Metadata for Download
+        (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
+        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     }];
     
     return @[previewAction1];
@@ -103,13 +98,9 @@
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    [ocNetworking downloadPreviewWithMetadata:_metadata serverUrl:appDelegate.activeMain.serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
-        
-        if (errorCode == 0) {
-            
-            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
+    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:_metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
+     
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             _imagePreview.image = image;
             _imagePreview.contentMode = UIViewContentModeScaleToFill;
@@ -118,7 +109,12 @@
             
         } else {
             
-            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            if (errorCode != 0)  {
+                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            } else {
+                NSLog(@"[LOG] It has been changed user during networking process, error.");
+            }
+            
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     }];

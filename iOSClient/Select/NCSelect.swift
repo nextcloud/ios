@@ -50,13 +50,11 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
     var serverUrl = ""
-    var directoryID = ""
     // -------------------------------------------------------------
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var serverUrlPush = ""
-    private var directoryIDPush = ""
     private var metadataPush: tableMetadata?
     private var metadataFolder: tableMetadata?
     
@@ -463,12 +461,14 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     func createFolder(with fileName: String) {
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-
-        ocNetworking?.createFolder(fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, success: { (fileID, date) in
-            self.loadDatasource(withLoadFolder: true)
-        }, failure: { (message, errorCode) in
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        OCNetworking.sharedManager().createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, fileID, date, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                self.loadDatasource(withLoadFolder: true)
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
         })
     }
     
@@ -477,37 +477,32 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         networkInProgress = true
         collectionView.reloadData()
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.readFolder(serverUrl, depth: "1", account: appDelegate.activeAccount, success: { (metadatas, metadataFolder, directoryID) in
+        OCNetworking.sharedManager().readFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
             
-            self.metadataFolder = metadataFolder
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
             
-            // Update directory etag
-            NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted)
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide), clearDateReadDirectoryID: directoryID)
-            NCManageDatabase.sharedInstance.setDateReadDirectory(directoryID: directoryID!)
-            
-            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: self.serverUrl)
-            
-            if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID!, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
+                self.metadataFolder = metadataFolder
                 
-                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload, serverUrl: self.serverUrl)
+                // Update directory etag
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
+                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
+                
+                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
+                
+                if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
+                    
+                    _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
+                }
+                
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.networkInProgress = false
-                self.loadDatasource(withLoadFolder: false)
-            }
-            
-        }, failure: { (message, errorCode) in
-                        
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.networkInProgress = false
-                self.loadDatasource(withLoadFolder: false)
-            }
+            self.networkInProgress = false
+            self.loadDatasource(withLoadFolder: false)
         })
     }
     
@@ -517,26 +512,25 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         sectionDatasource = CCSectionDataSourceMetadata()
         var predicate: NSPredicate?
         
-        if directoryID == "" {
+        if serverUrl == "" {
             
             serverUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)
-            directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) ?? ""
         }
         
         if includeDirectoryE2EEncryption {
             
             if includeImages {
-                predicate = NSPredicate(format: "directoryID == %@ AND (directory == true OR typeFile == 'image')", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR typeFile == 'image')", appDelegate.activeAccount, serverUrl)
             } else {
-                predicate = NSPredicate(format: "directoryID == %@ AND directory == true", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", appDelegate.activeAccount, serverUrl)
             }
             
         } else {
             
             if includeImages {
-                predicate = NSPredicate(format: "directoryID == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", appDelegate.activeAccount, serverUrl)
             } else {
-                predicate = NSPredicate(format: "directoryID == %@ AND e2eEncrypted == false AND directory == true", directoryID)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", appDelegate.activeAccount, serverUrl)
             }
         }
         
@@ -677,18 +671,11 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         if metadata.directory {
             
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                return
-            }
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName) else {
-                return
-            }
-            guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
+            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else {
                 return
             }
             
             self.serverUrlPush = serverUrlPush
-            self.directoryIDPush = directoryIDPush
             self.metadataPush = metadata
             
             performSegueDirectoryWithControlPasscode(controlPasscode: true)
@@ -704,7 +691,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
         
-        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", directoryIDPush))  else {
+        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrlPush))  else {
             return
         }
         
@@ -753,7 +740,6 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         visualController.titleCurrentFolder = metadataPush!.fileNameView
         visualController.serverUrl = serverUrlPush
-        visualController.directoryID = directoryIDPush
         
         self.navigationController?.pushViewController(visualController, animated: true)
     }

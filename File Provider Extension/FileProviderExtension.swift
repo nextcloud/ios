@@ -118,20 +118,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         if identifier == .rootContainer {
             
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, providerData.homeServerUrl)) {
+            let metadata = tableMetadata()
                     
-                let metadata = tableMetadata()
-                    
-                metadata.account = providerData.account
-                metadata.directory = true
-                metadata.directoryID = directory.directoryID
-                metadata.fileID = NSFileProviderItemIdentifier.rootContainer.rawValue
-                metadata.fileName = ""
-                metadata.fileNameView = ""
-                metadata.typeFile = k_metadataTypeFile_directory
-                    
-                return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue), providerData: providerData)
-            }
+            metadata.account = providerData.account
+            metadata.directory = true
+            metadata.fileID = NSFileProviderItemIdentifier.rootContainer.rawValue
+            metadata.fileName = ""
+            metadata.fileNameView = ""
+            metadata.serverUrl = providerData.homeServerUrl
+            metadata.typeFile = k_metadataTypeFile_directory
+            
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue), providerData: providerData)
             
         } else {
             
@@ -145,9 +142,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             return item
-        }
-        
-        throw NSFileProviderError(.noSuchItem)
+        }        
     }
     
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
@@ -219,7 +214,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
-            
+        
         // Error ? reUpload when touch
         if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
             
@@ -232,7 +227,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
             
         // is Upload [Office 365 !!!]
-        if metadata.fileID.contains(metadata.directoryID + metadata.fileName) {
+        if metadata.fileID == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false)! {
             completionHandler(nil)
             return
         }
@@ -242,43 +237,41 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             completionHandler(nil)
             return
         }
+        
+        let task = OCNetworking.sharedManager().download(withAccount: providerData.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtensionDownload(), completion: { (account, lenght, etag, date, message, errorCode) in
             
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
-        }
-                        
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        let task = ocNetworking?.downloadFileNameServerUrl(serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
+            if errorCode == 0 && account == self.providerData.account {
                 
-            // remove Task
-            self.outstandingDownloadTasks.removeValue(forKey: url)
-            
-            // update DB Local
-            metadata.date = date! as NSDate
-            metadata.etag = etag!
-            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-            NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
-            
-            // Update DB Metadata
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-
-            completionHandler(nil)
-            return
-                    
-        }, failure: { (errorMessage, errorCode) in
+                // remove Task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
                 
-            // remove task
-            self.outstandingDownloadTasks.removeValue(forKey: url)
-            
-            if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
-                completionHandler(NSFileProviderError(.noSuchItem))
+                // update DB Local
+                metadata.date = date! as NSDate
+                metadata.etag = etag!
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
+                
+                // Update DB Metadata
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                
+                completionHandler(nil)
+                return
+                
             } else {
-                completionHandler(NSFileProviderError(.serverUnreachable))
+                
+                // remove task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
+                
+                if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+                    completionHandler(NSFileProviderError(.noSuchItem))
+                } else {
+                    completionHandler(NSFileProviderError(.serverUnreachable))
+                }
+                return
             }
-            return
-        })
             
+        })
+       
         // Add and register task
         if task != nil {
             outstandingDownloadTasks[url] = task

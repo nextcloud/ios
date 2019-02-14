@@ -68,6 +68,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
 
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
@@ -254,23 +256,24 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
             fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         }
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
-            return
-        }
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.createNewRichdocuments(withFileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", success: { (url) in
-            if url != nil && url!.count > 0 {
-
-                self.dismiss(animated: true, completion: {
-                    let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), directoryID: directoryID, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
+        OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: "\(selectTemplate.templateID)", completion: { (account, url, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                if url != nil && url!.count > 0 {
                     
-                    self.appDelegate.activeMain.shouldPerformSegue(metadata)
-                })                
+                    self.dismiss(animated: true, completion: {
+                        let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
+                        
+                        self.appDelegate.activeMain.shouldPerformSegue(metadata)
+                    })
+                }
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
-        }, failure: { (message, errorCode) in
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
     }
     
@@ -286,39 +289,46 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         indicator.color = NCBrandColor.sharedInstance.brand
         indicator.startAnimating()
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.geTemplatesRichdocuments(withTypeTemplate: typeTemplate, success: { (listOfTemplate) in
+         OCNetworking.sharedManager().geTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
             
-            self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
-            
-            // default: template empty
-            for template: NCRichDocumentTemplate in self.listOfTemplate {
-                if template.preview == "" {
-                    self.selectTemplate = template
-                    self.fileNameExtension = template.extension
+            self.indicator.stopAnimating()
+
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                self.listOfTemplate = listOfTemplate as! [NCRichDocumentTemplate]
+                
+                // default: template empty
+                for template: NCRichDocumentTemplate in self.listOfTemplate {
+                    if template.preview == "" {
+                        self.selectTemplate = template
+                        self.fileNameExtension = template.extension
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    }
                 }
+                
+                self.collectionView.reloadData()
+                
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
             }
-            
-            self.indicator.stopAnimating()
-            self.collectionView.reloadData()
-            
-        }, failure: { (message, errorCode) in
-            self.indicator.stopAnimating()
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
     }
     
     func getImage(template: NCRichDocumentTemplate, indexPath: IndexPath) {
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
-        
-        ocNetworking?.downloadFile(template.preview, fileNameLocalPath: fileNameLocalPath, success: {
-            self.collectionView.reloadItems(at: [indexPath])
-        }, failure: { (message, errorCode) in
-            print("\(errorCode)")
+
+        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                self.collectionView.reloadItems(at: [indexPath])
+            } else if errorCode != 0 {
+                print("\(errorCode)")
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
         })
     }
 }

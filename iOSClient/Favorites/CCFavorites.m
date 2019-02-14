@@ -165,44 +165,22 @@
 #pragma mark ===== Favorite =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)addFavoriteFolder:(NSString *)serverUrl
-{
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID) return;
-    
-    NSString *selector;
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    metadataNet.action = actionReadFolder;
-    metadataNet.depth = @"1";
-    metadataNet.directoryID = directoryID;
-    
-    if ([CCUtility getFavoriteOffline])
-        selector = selectorReadFolderWithDownload;
-    else
-        selector = selectorReadFolder;
-    
-    metadataNet.selector = selector;
-    metadataNet.serverUrl = serverUrl;
-    
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:[CCSynchronize sharedSynchronize] metadataNet:metadataNet];
-}
-
 - (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if(!serverUrl)
-        return;
-    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
+    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:appDelegate.activeUrl];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking settingFavorite:fileNameServerUrl favorite:favorite completion:^(NSString *message, NSInteger errorCode) {
-        if (errorCode == 0) {
+    [[OCNetworking sharedManager] settingFavoriteWithAccount:appDelegate.activeAccount fileName:fileNameServerUrl favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_MOD];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
+        } else if (errorCode == kOCErrorServerUnauthorized) {
+            [appDelegate openLoginView:self delegate:appDelegate.activeMain loginType:k_login_Modify_Password selector:k_intro_login];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+        } else if (errorCode != 0) {
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }
@@ -217,54 +195,60 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking listingFavorites:@"" account:appDelegate.activeAccount success:^(NSArray *metadatas) {
+    [[OCNetworking sharedManager] listingFavoritesWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
         
-        NSString *father = @"";
-        NSMutableArray *filesEtag = [NSMutableArray new];
-        
-        for (tableMetadata *metadata in metadatas) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            // insert for test NOT favorite
-            [filesEtag addObject:metadata.fileID];
+            NSString *father = @"";
+            NSMutableArray *filesEtag = [NSMutableArray new];
             
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            if (!serverUrl)
-                continue;
-            NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-            
-            if (![serverUrlSon containsString:father]) {
+            for (tableMetadata *metadata in metadatas) {
                 
-                if (metadata.directory) {
-                                        
-                    if ([CCUtility getFavoriteOffline])
-                        [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
-                    else
-                        [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder];
+                // insert for test NOT favorite
+                [filesEtag addObject:metadata.fileID];
+                
+                NSString *serverUrl = metadata.serverUrl;
+                NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+                
+                if (![serverUrlSon containsString:father]) {
                     
-                } else {
+                    if (metadata.directory) {
+                        
+                        if ([CCUtility getFavoriteOffline])
+                            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
+                        else
+                            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder];
+                        
+                    } else {
+                        
+                        if ([CCUtility getFavoriteOffline])
+                            [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
+                        else
+                            [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile];
+                    }
                     
-                    if ([CCUtility getFavoriteOffline])
-                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
-                    else
-                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile];
+                    father = serverUrlSon;
                 }
-                
-                father = serverUrlSon;
             }
+            
+            // Verify remove favorite
+            NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
+            
+            for (tableMetadata *metadata in allRecordFavorite)
+                if (![filesEtag containsObject:metadata.fileID])
+                    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+            
+        } else if (errorCode == kOCErrorServerUnauthorized) {
+            [appDelegate openLoginView:self delegate:appDelegate.activeMain loginType:k_login_Modify_Password selector:k_intro_login];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+        } else if (errorCode != 0) {
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
-        
-        // Verify remove favorite
-        NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", appDelegate.activeAccount] sorted:nil ascending:NO];
-        
-        for (tableMetadata *metadata in allRecordFavorite)
-            if (![filesEtag containsObject:metadata.fileID])
-                [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
     }];
 }
 
@@ -296,7 +280,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     if (metadata)
-        [appDelegate.activeMain openWindowShare:metadata];
+        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:metadata];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -389,16 +373,15 @@
 - (void)actionDelete:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
-        tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+        tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
         
-        [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_DEL];
+        [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:metadata.serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_DEL];
         }];
     }]];
     
@@ -406,7 +389,7 @@
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_MOD];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
         }]];
     }
     
@@ -479,7 +462,7 @@
     // Share
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
         
-        [appDelegate.activeMain openWindowShare:metadata];
+        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:metadata];
     }];
     
     // NO Directory
@@ -492,8 +475,6 @@
                 [self openIn:metadata];
             } else {
                 
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                
                 metadata.session = k_download_session;
                 metadata.sessionError = @"";
                 metadata.sessionSelector = selectorOpenIn;
@@ -503,7 +484,7 @@
                 tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume];
                 
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
             }
         }];
     }
@@ -563,10 +544,7 @@
         
     } else {
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-        
-        if (directoryID)
-            recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, _serverUrl] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
     
     sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
@@ -597,12 +575,7 @@
         return [CCCellMain new];
     }
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (serverUrl == nil) {
-        return [CCCellMain new];
-    }
-    
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
     if (directory == nil) {
         return [CCCellMain new];
     }
@@ -681,44 +654,40 @@
     if (self.metadata.directory == NO) {
         
         // File do not exists
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
-        
-        if (serverUrl) {
+        if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
             
-            if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
-            
-                [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
+            [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:self.metadata.serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
                             
-            } else {
+        } else {
             
-                tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.metadata.serverUrl]];
                 
-                if (tableDirectory.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
+            if (tableDirectory.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
                     
-                    [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
                     
+            } else {
+                    
+                if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
+                        
+                    [self shouldPerformSegue:self.metadata];
+                        
                 } else {
-                    
-                    if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
                         
-                        [self shouldPerformSegue:self.metadata];
+                    self.metadata.session = k_download_session;
+                    self.metadata.sessionError = @"";
+                    self.metadata.sessionSelector = selectorLoadFileView;
+                    self.metadata.status = k_metadataStatusWaitDownload;
                         
-                    } else {
+                    // Add Metadata for Download
+                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+                    [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
                         
-                        self.metadata.session = k_download_session;
-                        self.metadata.sessionError = @"";
-                        self.metadata.sessionSelector = selectorLoadFileView;
-                        self.metadata.status = k_metadataStatusWaitDownload;
-                        
-                        // Add Metadata for Download
-                        tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                        [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
-                        
-                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:self.metadata.fileID action:k_action_MOD];
-                    }
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
                 }
             }
         }
+        
     }
     
     // Directory
@@ -730,15 +699,10 @@
 {
     CCFavorites *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCFavorites"];
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID];
+    vc.serverUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
+    vc.titleViewControl = self.metadata.fileNameView;
     
-    if (serverUrl) {
-        
-        vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
-        vc.titleViewControl = self.metadata.fileNameView;
-    
-        [self.navigationController pushViewController:vc animated:YES];
-    }
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

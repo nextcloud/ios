@@ -6,6 +6,9 @@
 //  Copyright © 2018 Daniel Saidi. All rights reserved.
 //
 
+//  This file contains an internal function that can be used
+//  to add subviews in a way that lets them fill the parent.
+
 import UIKit
 
 extension UIView {

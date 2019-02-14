@@ -386,12 +386,7 @@
         
         if (metadata.directory) {
         
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            if (!serverUrl)
-                continue;
-            
-            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-
+            NSString *serverUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
             NSString *serverUrlBeginWith = serverUrl;
             
             if (![serverUrl hasSuffix:@"/"])
@@ -400,7 +395,7 @@
             NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (serverUrl == %@ OR serverUrl BEGINSWITH %@)", appDelegate.activeAccount, serverUrl, serverUrlBeginWith] sorted:@"serverUrl" ascending:true];
             
             for (tableDirectory *directory in directories)
-                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:nil directoryID:directory.directoryID];
+                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:directory.serverUrl account:appDelegate.activeAccount];
         } 
     }
     
@@ -427,7 +422,7 @@
         break;
         case 5: {
             
-            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
             
             NSString *versionServer = capabilities.versionString;
             
@@ -523,7 +518,7 @@
             if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode) {
                 
                 [CCUtility setBlockCode:@""];
-                [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
+                [[NCManageDatabase sharedInstance] setAllDirectoryUnLockWithAccount:appDelegate.activeAccount];
                 [appDelegate.activeMain.tableView reloadData];
             }
             
@@ -532,7 +527,7 @@
                 
                 // disable passcode
                 [CCUtility setBlockCode:@""];
-                [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
+                [[NCManageDatabase sharedInstance] setAllDirectoryUnLockWithAccount:appDelegate.activeAccount];
                 [appDelegate.activeMain.tableView reloadData];
                 
                 [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];

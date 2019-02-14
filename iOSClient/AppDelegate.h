@@ -30,7 +30,6 @@
 #import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
-#import "CCActivity.h"
 #import "CCDetail.h"
 #import "CCMain.h"
 #import "CCMedia.h"
@@ -64,9 +63,6 @@
 
 // Notification
 @property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
-
-// Network Operation
-@property (nonatomic, strong) NSOperationQueue *netQueue;
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
@@ -119,7 +115,6 @@
 @property (nonatomic, strong) CCMedia *activeMedia;
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCSettings *activeSettings;
-@property (nonatomic, retain) CCActivity *activeActivity;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
@@ -129,6 +124,8 @@
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
 @property (nonatomic, strong) NSMutableArray *filterFileID;
+
+@property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
 
 @property (nonatomic, strong) NSString *pnDeviceIdentifier;
 @property (nonatomic, strong) NSString *pnDeviceIdentifierSignature;
@@ -141,7 +138,7 @@
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 
 // Login View
-- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
+- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
 
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
@@ -171,7 +168,6 @@
 - (void)changeTheming:(UIViewController *)vc;
 
 // Task Networking
-- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 - (void)loadAutoDownloadUpload;
 
 // Maintenance Mode

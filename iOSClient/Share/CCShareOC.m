@@ -73,12 +73,13 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
  
-#if TARGET_OS_SIMULATOR
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"hideDownload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_share_link_hide_download_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
-#endif
-    
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_15_0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"hideDownload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_share_link_hide_download_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [section addFormRow:row];
+    }
+        
     // Expiration date
     
     section = [XLFormSectionDescriptor formSection];
@@ -507,7 +508,7 @@
     [self.tableView endEditing:YES];
     
     // reload delegate
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID] fileID:self.metadata.fileID action:k_action_MOD];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -529,7 +530,7 @@
 
 - (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission
 {
-    [self.delegate shareUserAndGroup:user shareeType:shareeType permission:permission metadata:self.metadata directoryID:self.metadata.directoryID serverUrl:self.serverUrl];
+    [self.delegate shareUserAndGroup:user shareeType:shareeType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
 }
 
 - (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload

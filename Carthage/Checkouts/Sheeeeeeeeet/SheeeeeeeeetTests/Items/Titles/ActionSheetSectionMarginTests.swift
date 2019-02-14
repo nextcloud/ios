@@ -14,27 +14,31 @@ class ActionSheetSectionMarginTests: QuickSpec {
     
     override func spec() {
         
-        let item = ActionSheetSectionMargin()
+        var item: ActionSheetSectionMargin!
         
-        describe("when created") {
+        beforeEach {
+            item = ActionSheetSectionMargin()
+        }
+        
+        
+        describe("instance") {
             
-            it("applies provided values") {
+            it("is correctly configured") {
                 expect(item.title).to(equal(""))
                 expect(item.value).to(beNil())
                 expect(item.image).to(beNil())
-            }
-            
-            it("applies non-provided values") {
                 expect(item.tapBehavior).to(equal(ActionSheetItem.TapBehavior.none))
             }
         }
         
-        describe("applying appearance to cell") {
+        
+        describe("cell") {
             
-            it("is correctly configures cell") {
-                let cell = UITableViewCell()
-                item.applyAppearance(to: cell)
-                expect(cell.selectionStyle).to(equal(UITableViewCell.SelectionStyle.none))
+            it("is of correct type") {
+                let cell = item.cell(for: UITableView())
+                
+                expect(cell is ActionSheetSectionMarginCell).to(beTrue())
+                expect(cell.reuseIdentifier).to(equal(item.cellReuseIdentifier))
             }
         }
     }

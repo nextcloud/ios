@@ -791,7 +791,7 @@ typedef enum {
  *
  */
 
-- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode onCommunication:(OCCommunication *)sharedOCComunication
+- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode path:(NSString *)path onCommunication:(OCCommunication *)sharedOCComunication
                                    successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest
                                    failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
@@ -875,7 +875,7 @@ typedef enum {
  *
  */
 
-- (void) getActivityServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 #pragma mark -  External Sites
 

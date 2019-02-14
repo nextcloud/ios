@@ -82,9 +82,7 @@ class FileProviderData: NSObject {
         } else if account != activeAccount.account {
             assert(false, "change user")
         }
-        
-        CCNetworking.shared().settingAccount()
-        
+                
         return true
     }
     
@@ -120,7 +118,7 @@ class FileProviderData: NSObject {
     
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
         
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata.directoryID))  {
+        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {
@@ -164,7 +162,7 @@ class FileProviderData: NSObject {
         
         var updateWorkingSet = false
         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
         
         // (ADD)
         for (identifier, _) in listFavoriteIdentifierRank {

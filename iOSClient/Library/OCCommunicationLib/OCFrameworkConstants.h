@@ -59,7 +59,7 @@
 #define k_url_acces_remote_subscribing_nextcloud_server_api @"/ocs/v2.php/apps/notifications/api/v2/push"
 
 //Url to access to Remote Activity API
-#define k_url_acces_remote_activity_api @"ocs/v2.php/cloud/activity"
+#define k_url_acces_remote_activity_api @"ocs/v2.php/apps/activity/api/v2/activity/all"
 
 //Url to access to External sites API
 #define k_url_acces_external_sites_api @"ocs/v2.php/apps/external/api/v1"

@@ -14,7 +14,6 @@ platform :ios do
     test
     version = version_bump_podspec(path: "Sheeeeeeeeet.podspec", version_number: options[:name])
     increment_version_number(version_number: version)
-    increment_build_number(build_number: `date "+%y%m%d%H%M"`)
 
     git_commit(
       path: [
@@ -28,7 +27,7 @@ platform :ios do
     add_git_tag(tag: version)
     push_git_tags()
     push_to_git_remote()
-    pod_push()
+#pod_push()
   end
 
   

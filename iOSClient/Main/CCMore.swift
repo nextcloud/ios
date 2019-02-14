@@ -133,7 +133,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
 #endif
         
         // ITEM : Trash
-        let capabilities = NCManageDatabase.sharedInstance.getCapabilites()
+        let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount)
         if capabilities != nil && capabilities!.versionMajor >= Int(k_trash_version_available) {
             
             item = OCExternalSites.init()
@@ -146,7 +146,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // ITEM : External
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
         
-            listExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites()
+            listExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(account: appDelegate.activeAccount)
             
             if listExternalSite != nil {
                 
@@ -230,7 +230,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     @objc func changeUserProfile() {
      
-        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar.png"
+        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
         var quota: String = ""
         
         if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
@@ -429,7 +429,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.activeAccount)
                 
-                self.appDelegate.openLoginView(self, loginType: Int(k_login_Add_Forced), selector: Int(k_intro_login))
+                self.appDelegate.openLoginView(self, delegate: self, loginType: Int(k_login_Add_Forced), selector: Int(k_intro_login)) 
             }
             
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in

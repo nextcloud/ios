@@ -239,6 +239,19 @@ open class TLPhotosPickerViewController: UIViewController {
             initPhotoLibrary()
         }
     }
+    
+    open func maxCheck() -> Bool {
+        if self.configure.singleSelectedMode {
+            self.selectedAssets.removeAll()
+            self.orderUpdateCells()
+        }
+        if let max = self.configure.maxSelectedAssets, max <= self.selectedAssets.count {
+            self.delegate?.didExceedMaximumNumberOfSelection(picker: self)
+            self.didExceedMaximumNumberOfSelection?(self)
+            return true
+        }
+        return false
+    }
 }
 
 // MARK: - UI & UI Action
@@ -419,18 +432,6 @@ extension TLPhotosPickerViewController {
         return true
     }
     
-    fileprivate func maxCheck() -> Bool {
-        if self.configure.singleSelectedMode {
-            self.selectedAssets.removeAll()
-            self.orderUpdateCells()
-        }
-        if let max = self.configure.maxSelectedAssets, max <= self.selectedAssets.count {
-            self.delegate?.didExceedMaximumNumberOfSelection(picker: self)
-            self.didExceedMaximumNumberOfSelection?(self)
-            return true
-        }
-        return false
-    }
     fileprivate func focusFirstCollection() {
         if self.focusedCollection == nil, let collection = self.collections.first {
             self.focusedCollection = collection

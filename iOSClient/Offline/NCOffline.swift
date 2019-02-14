@@ -29,7 +29,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
     var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
-    var directoryID = ""
+    var serverUrl = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
@@ -306,9 +306,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
             return
         }
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
         
         if !isEditMode {
             
@@ -330,13 +327,13 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             actionSheet = ActionSheet(items: items) { sheet, item in
                 if item.value as? Int == 0 {
                     if metadata.directory {
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!, offline: false)
+                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
                     } else {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
                     }
                     self.loadDatasource()
                 }
-                if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
+                if item.value as? Int == 1 { self.appDelegate.activeMain.readShare(withAccount: self.appDelegate.activeAccount, openWindow: true, metadata: metadata) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
@@ -428,10 +425,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         var items = [ActionSheetItem]()
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, serverUrl)) else {
+        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
             return
         }
         
@@ -440,7 +434,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         actionSheet = ActionSheet(items: items) { sheet, item in
             if item is ActionSheetDangerButton {
-                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
+                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
                     self.loadDatasource()
                 }
             }
@@ -460,7 +454,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         var fileIDs = [String]()
         sectionDatasource = CCSectionDataSourceMetadata()
 
-        if directoryID == "" {
+        if serverUrl == "" {
         
             if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
@@ -481,7 +475,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
         } else {
         
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: datasourceSorted, ascending: datasourceAscending)  {
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl), sorted: datasourceSorted, ascending: datasourceAscending)  {
                 
                 sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
             }
@@ -591,11 +585,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-        }
         
-        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, metadataFolder: nil, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, source: self)
+        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, source: self)
         
         return cell
     }
@@ -656,14 +647,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadataPush!.directoryID) else {
+        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else {
             return
         }
-        let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadataPush!.fileName)
-        guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
-            return
-        }
-        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", directoryIDPush))  else {
+        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrlPush))  else {
             return
         }
         
@@ -698,7 +685,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
         
-        ncOffline.directoryID = directoryIDPush
+        ncOffline.serverUrl = serverUrlPush
         ncOffline.titleCurrentFolder = metadataPush!.fileNameView
         
         self.navigationController?.pushViewController(ncOffline, animated: true)

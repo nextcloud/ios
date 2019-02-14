@@ -34,7 +34,6 @@
 #import "CCError.h"
 
 @class tableMetadata;
-@class CCMetadataNet;
 
 @protocol CCNetworkingDelegate;
 
@@ -44,73 +43,32 @@
 
 + (CCNetworking *)sharedNetworking;
 
-- (void)settingAccount;
-
-// Sessions
-- (OCCommunication *)sharedOCCommunication;
-- (OCCommunication *)sharedOCCommunicationExtensionDownload;
+#pragma mark ===== Session =====
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
 - (NSArray *)getUploadTasksExtensionSession;
-
 - (void)invalidateAndCancelAllSession;
 
-// Download
+#pragma mark ===== Download =====
+
 - (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
-// Upload
+#pragma mark ===== Upload =====
+
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 @end
 
 @protocol CCNetworkingDelegate <NSObject>
 
+#pragma mark ===== Download delegate =====
+
 @optional - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl;
 @optional  - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
+#pragma mark ===== Upload delegate =====
+
 @optional - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
 @optional - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
-
-@end
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  CCMetadataNet =====
-#pragma --------------------------------------------------------------------------------------------
-
-@interface CCMetadataNet : NSObject <NSCopying>
-
-@property (nonatomic, strong) NSString *account;
-@property (nonatomic, strong) NSString *action;
-@property (nonatomic, strong) NSArray *contentType;
-@property (nonatomic, strong) NSDate *date;
-@property (nonatomic, weak) id delegate;
-@property (nonatomic, strong) NSString *depth;
-@property BOOL directory;
-@property (nonatomic, strong) NSString *directoryID;
-@property (nonatomic, strong) NSString *directoryIDTo;
-@property (nonatomic, strong) NSString *encryptedMetadata;
-@property (nonatomic, strong) NSString *etag;
-@property (nonatomic, strong) NSString *expirationTime;
-@property (nonatomic, strong) NSString *fileID;
-@property (nonatomic, strong) NSString *fileName;
-@property (nonatomic, strong) NSString *fileNameTo;
-@property (nonatomic, strong) NSString *fileNameView;
-@property BOOL hideDownload;
-@property (nonatomic, strong) NSString *key;
-@property (nonatomic, strong) NSString *keyCipher;
-@property (nonatomic, strong) id optionAny;
-@property (nonatomic, strong) NSString *optionString;
-@property (nonatomic, strong) NSString *password;
-@property NSInteger priority;
-@property (nonatomic, strong) NSString *serverUrl;
-@property (nonatomic, strong) NSString *serverUrlTo;
-@property (nonatomic, strong) NSString *selector;
-@property (nonatomic, strong) NSString *share;
-@property NSInteger shareeType;
-@property NSInteger sharePermission;
-@property double size;
-
-- (id)initWithAccount:(NSString *)withAccount;
-- (id)copyWithZone:(NSZone *)zone;
 
 @end

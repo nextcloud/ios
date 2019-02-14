@@ -119,11 +119,6 @@
     [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
 #endif
     
-    // Operation Queue OC Networking
-    _netQueue = [[NSOperationQueue alloc] init];
-    _netQueue.name = k_queue;
-    _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
-       
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
@@ -135,6 +130,9 @@
     // Filter fileID
     self.filterFileID = [NSMutableArray new];
 
+    // Upload Pending In Upload (crash)
+    self.sessionPendingStatusInUpload = [NSMutableArray new];
+    
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];
     
@@ -204,7 +202,6 @@
 
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
-    [self logUser];
     
     // Store review
     if ([[NCUtility sharedInstance] isSimulatorOrTestFlight] == false) {
@@ -258,7 +255,7 @@
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
-    }
+    }    
 }
 
 //
@@ -295,7 +292,7 @@
 #pragma mark ===== Login =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
+- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
 {
     BOOL loginWebFlow = NO;
     
@@ -312,7 +309,7 @@
                 _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:delegate];
+                    [_activeLoginWeb open:viewController];
                 });
             }
             return;
@@ -343,9 +340,20 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:delegate];
+                    [_activeLoginWeb open:viewController];
                 });
             }
+            
+        } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
+            
+            _activeLoginWeb = [CCLoginWeb new];
+            _activeLoginWeb.delegate = delegate;
+            _activeLoginWeb.loginType = loginType;
+            _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+            
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [_activeLoginWeb open:viewController];
+            });
             
         } else {
             
@@ -356,7 +364,7 @@
                 _activeLogin.loginType = loginType;
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [delegate presentViewController:_activeLogin animated:YES completion:nil];
+                    [viewController presentViewController:_activeLogin animated:YES completion:nil];
                 });
             }
         }
@@ -376,7 +384,6 @@
     self.activePassword = activePassword;
     
     // Setting Account to CCNetworking
-    [[CCNetworking sharedNetworking] settingAccount];
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
 }
 
@@ -390,8 +397,6 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
-    
     [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair];
 
     NSString *pushToken = [CCUtility getPushNotificationToken];
@@ -401,14 +406,19 @@
     self.pnDeviceIdentifier = nil;
     self.pnDeviceIdentifierSignature = nil;
     self.pnPublicKey = nil;
-    
-    [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey) {
-        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
-        self.pnDeviceIdentifier = deviceIdentifier;
-        self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
-        self.pnPublicKey = publicKey;
-    } failure:^(NSString *message, NSInteger errorCode) {
-        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+
+    [[OCNetworking sharedManager] subscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey completion:^(NSString *account, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:self.activeAccount]) {
+            NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+            self.pnDeviceIdentifier = deviceIdentifier;
+            self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
+            self.pnPublicKey = publicKey;
+        } else if (errorCode != 0) {
+            NSLog(@"[LOG] Subscribed to Push Notification server & proxy error.");
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
+        }
     }];
 }
 
@@ -418,12 +428,15 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
-
-    [ocNetworking unsubscribingPushNotificationServer:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey success:^{
-        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
-    } failure:^(NSString *message, NSInteger errorCode) {
-        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+    [[OCNetworking sharedManager] unsubscribingPushNotificationWithAccount:self.activeAccount url:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+       
+        if (errorCode == 0) {
+            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+        } else if (errorCode != 0) {
+            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy error.");
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
+        }
     }];
 }
 
@@ -665,14 +678,13 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
-    // Test Maintenance
-    if (self.maintenanceMode)
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status = %d OR status == %d OR status == %d)", self.activeAccount, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
-        NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d)", self.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+        NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status = %d OR status == %d OR status == %d", k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
+        NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
 
         NSInteger total = counterDownload + counterUpload;
         
@@ -904,7 +916,7 @@
     
     if ([NCBrandOptions sharedInstance].use_themingColor) {
         
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
 
         [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
             
@@ -1135,42 +1147,29 @@
     });
 }
 
-- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
-{
-    id operation;
-    
-    operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withUserID:_activeUserID withPassword:_activePassword withUrl:_activeUrl];
-        
-    [operation setQueuePriority:metadataNet.priority];
-    
-    [netQueue addOperation:operation];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Process Load Download/Upload < k_timerProcess seconds > =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)loadAutoDownloadUpload
-{    
+{
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
     tableMetadata *metadataForUpload, *metadataForDownload;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     BOOL isE2EE = false;
-
-    long maxConcurrentOperationDownload = k_maxConcurrentOperationDownload;
-    long maxConcurrentOperationUpload = k_maxConcurrentOperationUpload;
-
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
+    
+    long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperation;
     
     // Detect E2EE
-    NSString *saveDirectoryID = @"";
-    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d", self.activeAccount, k_metadataStatusNormal] sorted:nil ascending:NO];
+    NSString *saveserverUrl = @"";
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:nil ascending:NO];
     for (tableMetadata *metadata in metadatasForE2EE) {
-        if (![saveDirectoryID isEqualToString:metadata.directoryID]) {
-            saveDirectoryID = metadata.directoryID;
-            if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]] != nil) {
+        if (![saveserverUrl isEqualToString:metadata.serverUrl]) {
+            saveserverUrl = metadata.serverUrl;
+            if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1", metadata.account, metadata.serverUrl]] != nil) {
                 isE2EE = true;
                 break;
             }
@@ -1184,14 +1183,13 @@
     
     // E2EE : only 1 operation
     if (isE2EE) {
-        maxConcurrentOperationDownload = 1;
-        maxConcurrentOperationUpload = 1;
+        maxConcurrentOperationDownloadUpload = 1;
     }
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
-    NSArray *metadatasDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:nil ascending:true];
-    NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
+    NSArray *metadatasDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:nil ascending:true];
+    NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
     
     // Counter
     counterDownload = [metadatasDownload count];
@@ -1204,14 +1202,14 @@
     for (tableMetadata *metadata in metadatasUpload) {
         sizeUpload = sizeUpload + metadata.size;
     }
-  
+    
     NSLog(@"%@", [NSString stringWithFormat:@"[LOG] -PROCESS-AUTO-UPLOAD- | Download %ld - %@ | Upload %ld - %@", counterDownload, [CCUtility transformedSize:sizeDownload], counterUpload, [CCUtility transformedSize:sizeUpload]]);
-
+    
     // ------------------------- <selector Download> -------------------------
     
-    while (counterDownload < maxConcurrentOperationDownload) {
+    while (counterDownload < maxConcurrentOperationDownloadUpload) {
         
-        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
+        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusWaitDownload] sorted:@"session" ascending:YES];
         if (metadataForDownload) {
             
             metadataForDownload.status = k_metadataStatusInDownload;
@@ -1225,16 +1223,16 @@
             break;
         }
     }
-  
+    
     // ------------------------- <selector Upload> -------------------------
     
-    while (counterUpload < maxConcurrentOperationUpload) {
+    while (counterUpload < maxConcurrentOperationDownloadUpload) {
         
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
         if (metadataForUpload) {
             
             if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
@@ -1255,13 +1253,13 @@
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUpload < maxConcurrentOperationUpload) {
-
+    while (counterUpload < maxConcurrentOperationDownloadUpload) {
+        
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUpload, k_metadataStatusWaitUpload]];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
         if (metadataForUpload) {
             
             metadataForUpload.status = k_metadataStatusInUpload;
@@ -1275,28 +1273,26 @@
             break;
         }
     }
-  
+    
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error k_maxErrorAutoUploadAll after STOP (100)
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %i", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %i", selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:nil ascending:NO];
     NSInteger errorCount = [metadatas count];
     
     if (errorCount >= k_maxErrorAutoUploadAll) {
         
         [self messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
         
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutoUpload selector:selectorUploadAutoUploadAll note:@"_too_errors_automatic_all_" type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-
     } else {
         
-        while (counterUpload < maxConcurrentOperationUpload) {
-
+        while (counterUpload < maxConcurrentOperationDownloadUpload) {
+            
             if (sizeUpload > k_maxSizeOperationUpload) {
                 break;
             }
             
-            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
+            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
             if (metadataForUpload) {
                 
                 metadataForUpload.status = k_metadataStatusInUpload;
@@ -1314,9 +1310,9 @@
     
     // No Download/upload available ? --> remove errors for retry
     //
-    if (counterDownload+counterUpload == 0) {
+    if (counterDownload+counterUpload < maxConcurrentOperationDownloadUpload+1) {
         
-        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", _activeAccount, k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
         for (tableMetadata *metadata in metadatas) {
             
             if (metadata.status == k_metadataStatusDownloadError)
@@ -1328,9 +1324,9 @@
         }
     }
     
-    // Verify internal error (lost task)
+    // Verify internal error download (lost task)
     //
-    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
     for (tableMetadata *metadata in matadatasInDownloading) {
         
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
@@ -1355,8 +1351,10 @@
         }];
     }
     
-    NSArray *metadatasInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
-    for (tableMetadata *metadata in metadatasInUploading) {
+    // Verify internal error upload (lost task)
+    //
+    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasUploading) {
         
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
         
@@ -1378,6 +1376,21 @@
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
+    }
+    
+    // Upload in pending
+    //
+    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasInUpload) {
+        if ([self.sessionPendingStatusInUpload containsObject:metadata.fileID]) {
+            metadata.status = k_metadataStatusWaitUpload;
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        } else {
+            [self.sessionPendingStatusInUpload addObject:metadata.fileID];
+        }
+    }
+    if (metadatasInUpload.count == 0) {
+        [self.sessionPendingStatusInUpload removeAllObjects];
     }
     
     // Start Timer
@@ -1421,16 +1434,6 @@
     }
     
     return YES;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Crashlytics =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void) logUser
-{
-    if (self.activeAccount.length > 0)
-        [CrashlyticsKit setUserName:self.activeAccount];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1508,6 +1511,14 @@
         });
     }
     
+    if ([actualVersion isEqualToString:@"2.22.9"]) {
+        if (([actualBuild compare:@"8" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:nil];
+        }
+    }
+
     return YES;
 }
 

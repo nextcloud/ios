@@ -1,18 +1,119 @@
 # Release Notes
 
+
+## 1.2.2
+
+This hotfix adds two new properties to `ActionSheetSelectItem`, that can be used
+to style the selected fonts: `selectedTitleFont` and `selectedSubtitleFont`.
+
+
+## 1.2.1
+
+This hotfix fixes a font bug in the title item and color bugs in the select item. 
+
+
+## 1.2.0
+
+This is a huge update, that completely rewrites how action sheet appearances are
+handled. Instead of the old appearance model, Sheeeeeeeeet now relies on the iOS
+appearance proxy model as much as possible.
+
+The old appearance model is still around, but has been marked as deprecated, and
+will be removed in `1.4.0`. Make sure that you switch over to the new appearance
+model as soon as possible. Have a look at the example app and [here][Appearance]
+to see how you should customize the action sheet appearance from now on.
+
+In short, item appearance customizations are handled in three different ways now:
+
+* Item appearances such as colors and fonts, are customized with cell properties,
+for instance: `ActionSheetSelectItemCell.appearance().titleColor = .green`.
+* Item heights are now customized by setting the `height` property of every item
+type you want to customize, for instance: `ActionSheetTitle.height = 22`.
+* Action sheet margins, insets etc. are now customized by setting the properties
+of each `ActionSheet` instance. If you want to change the default values for all
+action sheets in your app, you have to subclass `ActionSheet`.
+
+All built-in action sheet items now have their own cells. Your custom items only
+have to use custom cells if you want to apply custom item appearances to them.
+
+Sheeeeeeeeet now contains several new views, which are used by the action sheets:
+
+  * `ActionSheetTableView`
+  * `ActionSheetItemTableView`
+  * `ActionSheetButtonTableView`
+  * `ActionSheetBackgroundView`
+  * `ActionSheetStackView`
+
+The new classes make it easy to modify the appearance of these views, since they
+have appearance properties as well. For instance, to change the corner radius of
+the table views, just type: `ActionSheetTableView.appearance().cornerRadius = 8`.
+
+`ActionSheet` has two new extensions: 
+  * `items<T>(ofType:)`
+  * `scrollToFirstSelectedItem(at:)`
+
+This new version has also rebuilt all unit tests from scratch. They are now more
+robust and easier to maintain.
+
+
+## 1.1.0
+
+This version increases the action sheet integrity by restricting what you can do
+with it. This involves some breaking changes, but they should not affect you. If
+you think any new rule is bad or affect you, please let me know.
+
+
+**New Features**
+
+@sebbo176 has added support for subtitles in the various select items, which now
+also changes the cell style of an item if the subtitle is set. He has also added
+an unselected icon to the select items, which means that you can now have images
+for unselected items as well (e.g. an unchecked checkbox).
+
+
+**Breaking Changes - ActionSheet:**
+
+* The `items` and `buttons` properties are now `internal(set)`, which means that
+they can only be set with `init(...)` or with `setup(items:)`. This protects the
+integrity of the item and button separation logic.
+
+* The code no longer contains any `didSet` events, since these events called the
+same functionality many times. Call `refresh` if you change any outlets manually
+from now on.
+
+* Since the `didSet` events have been removed, `refreshHeaderVisibility` is only
+called once and has therefore been moved into `refreshHeader`.
+
+* Since the `didSet` events have been removed, `refreshButtonsVisibility` is now
+only called once and has therefore been moved into `refreshButtons`.
+
+* A small delay in `handleTap(on:)`, that should not be needed, has been removed.
+Let me know if it causes any side-effects.
+
+
+
+## 1.0.3
+
+This version removes a debug print that I used to ensure that action sheets were
+properly deinitialized after being dismissed.
+
+
+
 ## 1.0.2
 
-This version adds new background color properties to the action sheet appearance,
-to make it possible to set the background color of the table views.
+This version adds new background color properties to the action sheet appearance
+class. They can be used to set the background color of an entire sheet.
 
 This version fixes a bug, where the background color behind an action sheet went
 black when the action sheet was presented in a split view.
+
 
 
 ## 1.0.1
 
 This version fixes a bug, where the presenters incorrectly updated the scrolling
 behavior of the action sheet when rotating the device.
+
 
 
 ## 1.0.0
@@ -26,13 +127,13 @@ instead of manual calculations, which means that popover scrolling etc. works by
 how the constraints are setup, instead of relying on manual calculations.
 
 This should result in much more robust action sheets, but it requires testing on
-a wide range of devices and orientations before it can be released as a 1.0.
+a wide range of devices and orientations, so please let me know if there are any
+issues with this approach.
 
 `IMPORTANT` The button item values have changed. Insted of `true` and `nil` they
 now have a strong `ButtonType` value. You can still create custom buttons with a
 custom value, though. You can also use the new `isOkButton` and `isCancelButton`
 extensions to quickly see if a user tapped "OK" or "Cancel".
-
 
 ### Breaking changes
 
@@ -50,7 +151,6 @@ so changing your code to the new standard should be easy.
 * `ActionSheetItem.handleTap(in:)` no longer has a `cell` parameter
 * `ActionSheetStandardPresenter` is renamed to `ActionSheetStandardPresenter`
 
-
 ### New features
 
 * `ActionSheetAppearance` has new properties, which adds new way to style sheets.
@@ -58,14 +158,12 @@ so changing your code to the new standard should be easy.
 to `ActionSheetItem`. They can be used to quickly check if a cancel or ok button
 was tapped, instead of having to check if the item can be cast to a button type. 
 
-
 ### Bug fixes
 
 * The big presentation adjustments solves the scrolling issues that occured with
 popovers and many items.
 * The `hideSeparator()` function is adjusted to behave correctly when the device
 is rotated.
-
 
 ### Deprecated logic
 
@@ -334,3 +432,6 @@ Select items can now have a separate select tint color for the left icon.
 
 We have added a subtitle to the section title item and clarified the examples by
 moving action sheets into their own separate classes.
+
+
+[Appearance]: https://github.com/danielsaidi/Sheeeeeeeeet/blob/master/Readmes/Appearance.md

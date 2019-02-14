@@ -37,7 +37,7 @@
 
 @class tableMetadata;
 
-@interface CCMedia: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate>
+@interface CCMedia: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) tableMetadata *metadata;

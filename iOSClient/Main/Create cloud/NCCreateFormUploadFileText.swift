@@ -170,11 +170,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
         }
         
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
-            return
-        }
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave))
-        
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, self.serverUrl, fileNameSave))
         if (metadata != nil) {
             
             let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
@@ -183,7 +179,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID)
+                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -192,12 +188,12 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
-            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
+            let fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!
+            dismissAndUpload(fileNameSave, fileID: fileID, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
         
         self.dismiss(animated: true, completion: {
             
@@ -210,10 +206,10 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 
                 metadataForUpload.account = self.appDelegate.activeAccount
                 metadataForUpload.date = NSDate()
-                metadataForUpload.directoryID = directoryID
                 metadataForUpload.fileID = fileID
                 metadataForUpload.fileName = fileNameSave
                 metadataForUpload.fileNameView = fileNameSave
+                metadataForUpload.serverUrl = serverUrl
                 metadataForUpload.session = k_upload_session
                 metadataForUpload.sessionSelector = selectorUploadFile
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)

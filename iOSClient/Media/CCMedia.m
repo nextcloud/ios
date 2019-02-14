@@ -33,7 +33,6 @@
 
     NSMutableArray *selectedMetadatas;
     CCSectionDataSourceMetadata *sectionDataSource;
-    NSString *saveDirectoryID, *saveServerUrl;
     
     BOOL filterTypeFileImage;
     BOOL filterTypeFileVideo;
@@ -515,14 +514,17 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    //NSDictionary *dict = notification.userInfo;
-    //float progress = [[dict valueForKey:@"progress"] floatValue];
 }
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     if (errorCode == 0) {
         
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        if (metadata == nil || metadata.account != appDelegate.activeAccount) {
+            return;
+        }
+
         NSIndexPath *indexPath;
         BOOL existsIcon = NO;
         
@@ -597,24 +599,19 @@
 
 - (void)downloadThumbnail:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
-    if (![saveDirectoryID isEqualToString:metadata.directoryID]) {
-        saveDirectoryID = metadata.directoryID;
-        saveServerUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        if (!saveServerUrl)
-            return;
-    }
-    
     counterThumbnail++;
     
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:saveServerUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
+        
         counterThumbnail--;
-        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
-            [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+            UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
+            imageView.image = image;
         }
     }];
 }
@@ -638,30 +635,6 @@
             [self searchPhotoVideo];
         }
     }
-    
-    /*
-    if ([type isEqualToString:@"automaticUploadFolder"]) {
-        
-        if (title == nil) {
-            [appDelegate messageNotification:@"_error_" description:@"_media_error_select_folder_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-            return;
-        }
-        
-        NSString *serverUrl = [NSURL URLWithString:serverUrlTo].URLByDeletingLastPathComponent.absoluteString;
-        if ([[serverUrl substringFromIndex:[serverUrl length] - 1] isEqualToString:@"/"])
-            serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-
-        // Clear data (old) Auto Upload
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
-        
-        // Settings new folder Automatatic upload
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:title];
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
-        
-        // Clear data new Auto Upload
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
-    }
-    */
 }
 
 - (void)selectStartDirectoryPhotosTab
@@ -686,35 +659,6 @@
 #pragma mark ==== Search Photo/Video ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    isSearchMode = NO;
-    
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount] || errorCode != 0) {
-        
-        [self reloadDatasource:nil action:k_action_NULL];
-        
-    } else {
-    
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            // Clear all Hardcoded new foto/video from CCNetworking
-            [self.addMetadatasFromUpload removeAllObjects];
-            
-            [[NCManageDatabase sharedInstance] createTablePhotos:metadatas];
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadDatasource:nil action:k_action_NULL];
-            });
-            
-            // Update date
-            [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
-            // Save etag
-            [saveEtagForStartDirectory setObject:metadataNet.etag forKey:metadataNet.serverUrl];
-        });
-    }
-}
-
 - (void)searchPhotoVideo
 {
     // test
@@ -727,35 +671,60 @@
     // account.dateSearchContentTypeImageVideo
     
     NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    [ocNetworking readFile:nil serverUrl:startDirectory account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
-        
-        if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
+    [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:startDirectory fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            isSearchMode = YES;
-            [self editingModeNO];
-            
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-            
-            metadataNet.action = actionSearch;
-            metadataNet.contentType = @[@"image/%", @"video/%"];
-            metadataNet.date = [NSDate distantPast];
-            metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory];
-            metadataNet.fileName = @"";
-            metadataNet.etag = metadata.etag;
-            metadataNet.depth = @"infinity";
-            metadataNet.priority = NSOperationQueuePriorityHigh;
-            metadataNet.selector = selectorSearchContentType;
-            metadataNet.serverUrl = startDirectory;
-            
-            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-            
+            if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
+                
+                isSearchMode = YES;
+                [self editingModeNO];
+                
+                NSDate *date = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-30 toDate:[NSDate date] options:0];
+                
+                [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:@"" serverUrl:startDirectory contentType:@[@"image/%", @"video/%"] date:date depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
+                    
+                    isSearchMode = NO;
+
+                    if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
+                        
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                            
+                            // Clear all Hardcoded new foto/video from CCNetworking
+                            [self.addMetadatasFromUpload removeAllObjects];
+                            
+                            [[NCManageDatabase sharedInstance] createTablePhotos:metadatas account:account];
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self reloadDatasource:nil action:k_action_NULL];
+                            });
+                            
+                            // Update date
+                            [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
+                            // Save etag
+                            [saveEtagForStartDirectory setObject:metadata.etag forKey:metadata.serverUrl];
+                        });
+                        
+                    } else {
+                        [self reloadDatasource:nil action:k_action_NULL];
+                    }
+                }];
+                
+            } else {
+                if (errorCode != 0) {
+                    NSLog(@"[LOG] Search error.");
+                } else {
+                    NSLog(@"[LOG] It has been changed user during networking process, error.");
+                }
+                
+                [self reloadDatasource:nil action:k_action_NULL];
+            }
+        } else if (errorCode != 0) {
+            NSLog(@"[LOG] Read file error.");
         } else {
-            [self reloadDatasource:nil action:k_action_NULL];
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
     }];
 }
 
@@ -802,7 +771,7 @@
     
     CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
     
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload account:appDelegate.activeAccount];
     sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
     
     if (withReloadData) {

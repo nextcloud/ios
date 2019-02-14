@@ -310,11 +310,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             fileNameSave = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
         }
         
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
-            return
-        }
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave))
-        
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, self.serverUrl, fileNameSave))
         if (metadata != nil) {
             
             let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
@@ -323,8 +319,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave), clearDateReadDirectoryID: directoryID)
-                self.dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", self.appDelegate.activeAccount, self.serverUrl, fileNameSave))
+                self.dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -333,12 +329,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
-            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
+            dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
         
         guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
@@ -392,10 +387,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         metadataForUpload.account = self.appDelegate.activeAccount
         metadataForUpload.date = NSDate()
-        metadataForUpload.directoryID = directoryID
         metadataForUpload.fileID = fileID
         metadataForUpload.fileName = fileNameSave
         metadataForUpload.fileNameView = fileNameSave
+        metadataForUpload.serverUrl = serverUrl
         metadataForUpload.session = k_upload_session
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
@@ -509,6 +504,19 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
         let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
         
+        /* V 1.0
+        if (results.doesUserPreferEnhancedImage && results.enhancedImage != nil) {
+            do {
+                try results.enhancedImage!.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            } catch { }
+        } else {
+            do {
+                try results.scannedImage.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            } catch { }
+        }
+        */
+        
+        // 0.9.1
         do {
             try results.scannedImage.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
         } catch { }

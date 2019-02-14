@@ -164,7 +164,6 @@
     viewController.tintColor = [NCBrandColor sharedInstance].brandText;
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
-    viewController.networkingOperationQueue = appDelegate.netQueue;
     // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
     
@@ -173,18 +172,16 @@
 
 -(void)upload
 {
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal];
-    NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload directoryID:directoryID];
-    NSString *fileID = [directoryID stringByAppendingString:appDelegate.fileNameUpload];
+    NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload serverUrl:serverUrlLocal account:appDelegate.activeAccount];
     
     tableMetadata *metadataForUpload = [tableMetadata new];
     
     metadataForUpload.account = appDelegate.activeAccount;
     metadataForUpload.date = [NSDate new];
-    metadataForUpload.directoryID = directoryID;
-    metadataForUpload.fileID = fileID;
+    metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrlLocal fileNameView:fileName directory:false];
     metadataForUpload.fileName = fileName;
     metadataForUpload.fileNameView = fileName;
+    metadataForUpload.serverUrl = serverUrlLocal;
     metadataForUpload.session = k_upload_session;
     metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;
@@ -196,7 +193,7 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal fileID:fileID action:k_action_NULL];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal fileID:metadataForUpload.fileID action:k_action_NULL];
 
     [self dismissViewControllerAnimated:YES completion:nil];
 }

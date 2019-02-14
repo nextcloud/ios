@@ -6,6 +6,13 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
+/*
+ 
+ These extensions are only used by the example app, to alert
+ which options a user selects in the example action sheets.
+ 
+ */
+
 import UIKit
 import Sheeeeeeeeet
 

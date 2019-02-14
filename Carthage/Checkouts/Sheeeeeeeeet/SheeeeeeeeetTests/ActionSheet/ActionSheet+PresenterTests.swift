@@ -8,7 +8,7 @@ class ActionSheet_PresenterTests: QuickSpec {
         
         describe("default presenter") {
             
-            func getDifferentIdiom() -> UIUserInterfaceIdiom {
+            func getReversedIdiom() -> UIUserInterfaceIdiom {
                 switch UIDevice.current.userInterfaceIdiom {
                 case .phone: return .pad
                 case .pad: return .phone
@@ -26,7 +26,7 @@ class ActionSheet_PresenterTests: QuickSpec {
             }
             
             it("is different from other idioms") {
-                let idiom = getDifferentIdiom()
+                let idiom = getReversedIdiom()
                 let idiomPresenter = idiom.defaultPresenter
                 let defaultPresenter = ActionSheet.defaultPresenter
                 let isSameKind = type(of: defaultPresenter) == type(of: idiomPresenter)

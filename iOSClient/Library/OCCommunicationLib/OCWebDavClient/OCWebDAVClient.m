@@ -217,7 +217,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 	NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_webdav];
     
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:getcontenttype/><nc:is-encrypted/><nc:has-preview/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:getetag/><oc:fileid/><permissions xmlns=\"http://owncloud.org/ns\"/><D:getcontenttype/><nc:is-encrypted/><nc:has-preview/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     
@@ -236,7 +236,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_webdav];
     
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:getcontenttype/><nc:is-encrypted/><nc:has-preview/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:getetag/><oc:fileid/><permissions xmlns=\"http://owncloud.org/ns\"/><D:getcontenttype/><nc:is-encrypted/><nc:has-preview/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     
@@ -709,7 +709,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     } else if (permissions > 0) {
         self.postStringForShare = [NSString stringWithFormat:@"permissions=%ld",(long)permissions];
     } else {
-        self.postStringForShare = [NSString stringWithFormat:@"hidedownload=%i",hideDownload];
+        if (hideDownload) self.postStringForShare = [NSString stringWithFormat:@"hideDownload=true"];
+        else self.postStringForShare = [NSString stringWithFormat:@"hideDownload=false"];
     }
     
     [request setHTTPBody:[_postStringForShare dataUsingEncoding:NSUTF8StringEncoding]];
@@ -790,12 +791,16 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     return operation;
 }
 
-- (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString *)serverPath ofFilePath:(NSString*)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
+- (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString *)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode path:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
     
     _requestMethod = @"GET";
     
-    NSString *query = [NSString stringWithFormat:@"/index.php/core/preview.png?file=%@&x=%d&y=%d&a=%d&mode=%@", filePath, (int)fileWidth, (int)fileHeight, (int)a, mode];
-    serverPath = [serverPath stringByAppendingString:query];
+    if (path.length > 0) {
+        serverPath = path;
+    } else {
+        NSString *query = [NSString stringWithFormat:@"/index.php/core/preview.png?file=%@&x=%d&y=%d&a=%d&mode=%@", filePath, (int)fileWidth, (int)fileHeight, (int)a, mode];
+        serverPath = [serverPath stringByAppendingString:query];
+    }
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     
@@ -924,11 +929,14 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 #pragma mark - Get Activity
 
-- (void) getActivityServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
     
-    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json&since=%ld&limit=%ld", (long)since, (long)limit]];
+    if (previews) {
+        serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&previews=true"]];
+    }
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     

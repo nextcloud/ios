@@ -216,18 +216,7 @@
 {
     [self deselectFormRow:sender];
     
-    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
-    
-    if (transferInprogress > 0) {
-        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
-        return;
-    }
-    
-    [appDelegate.netQueue cancelAllOperations];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
-    });
+    [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -238,18 +227,7 @@
 {    
     [self deselectFormRow:sender];
     
-    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
-    
-    if (transferInprogress > 0) {
-        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
-        return;
-    }
-    
-    [appDelegate.netQueue cancelAllOperations];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-    });
+    [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -258,19 +236,11 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
-
-    if (transferInprogress > 0) {
-        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
-        return;
-    }
-    
     [appDelegate unsubscribingNextcloudServerPushNotification];
-    
-    [appDelegate.netQueue cancelAllOperations];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
@@ -303,7 +273,7 @@
         if ([listAccount count] > 0)
             [self ChangeDefaultAccount:listAccount[0]];
         else {
-            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+            [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
     }]];
     
@@ -324,30 +294,18 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
-    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
-    
-    if (transferInprogress > 0) {
-        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
-        return;
-    }
-    
-    [appDelegate.netQueue cancelAllOperations];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-        if (tableAccount) {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+    if (tableAccount) {
         
-            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
  
-            // Init home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+        // Init home
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
             
-            [self UpdateForm];
+        [self UpdateForm];
             
-            [appDelegate subscribingNextcloudServerPushNotification];
-        }
-    });
+        [appDelegate subscribingNextcloudServerPushNotification];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -359,7 +317,7 @@
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     if (listAccount.count == 0) {
-        [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+        [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         return;
     }
     
@@ -368,7 +326,7 @@
     pickerAccount.rowDescriptor.selectorOptions = listAccount;
     pickerAccount.rowDescriptor.value = appDelegate.activeAccount;
     
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-avatar.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl], appDelegate.activeUser];
 
     UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
     if (avatar) {

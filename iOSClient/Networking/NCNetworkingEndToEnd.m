@@ -22,9 +22,11 @@
 //
 
 #import "NCNetworkingEndToEnd.h"
+#import "OCNetworking.h"
 #import "CCUtility.h"
 #import "CCCertificate.h"
 #import "NCBridgeSwift.h"
+
 
 /*********************************************************************************
  
@@ -49,13 +51,251 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ============================
+#pragma mark ===== End-to-End Encryption NETWORKING =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createEndToEndFolder:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID error:(NSError **)error
+- (void)getEndToEndPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
     
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getEndToEndPublicKeys:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
+        
+        completion(account, publicKey, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
+
+- (void)getEndToEndPrivateKeyCipherWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *privateKeyChiper, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getEndToEndPrivateKeyCipher:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKeyChiper, NSString *redirectedServer) {
+        
+        completion(account, privateKeyChiper, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
+
+- (void)signEndToEndPublicKeyWithAccount:(NSString *)account publicKey:(NSString *)publicKey completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication signEndToEndPublicKey:[tableAccount.url stringByAppendingString:@"/"] publicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
+        
+        completion(account, publicKey, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
+
+- (void)storeEndToEndPrivateKeyCipherWithAccount:(NSString *)account privateKeyString:(NSString *)privateKeyString privateKeyChiper:(NSString *)privateKeyChiper completion:(void (^)(NSString *account, NSString *privateKeyString, NSString *privateKey, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication storeEndToEndPrivateKeyCipher:[tableAccount.url stringByAppendingString:@"/"] privateKeyChiper:[CCUtility URLEncodeStringFromString:privateKeyChiper] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
+        
+        completion(account, privateKeyString, privateKeyChiper, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, nil, message, errorCode);
+    }];
+}
+
+- (void)deleteEndToEndPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication deleteEndToEndPublicKey:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        completion(account, nil ,0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, message, errorCode);
+    }];
+}
+
+- (void)deleteEndToEndPrivateKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication deleteEndToEndPrivateKey:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        completion(account, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, message, errorCode);
+    }];
+}
+
+- (void)getEndToEndServerPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getEndToEndServerPublicKey:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
+        
+        completion(account, publicKey, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = @"";
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
+
+- (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID error:(NSError **)error
+{
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     __block NSString *returnFileID = nil;
 
@@ -80,7 +320,7 @@
                 // MARK
                 [communication markEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:returnFileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
                     
-                    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
+                    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] account:account];
                     dispatch_semaphore_signal(semaphore);
                     
                 } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -91,7 +331,7 @@
                 
             } else {
                 
-                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
+                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] account:account];
                 dispatch_semaphore_signal(semaphore);
             }
             
@@ -114,6 +354,7 @@
     *fileID = returnFileID;
     *error = returnError;
 }
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2EE End-to-End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
@@ -121,8 +362,8 @@
 
 - (NSError *)markEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -200,8 +441,8 @@
 
 - (NSError *)deletemarkEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -279,8 +520,8 @@
 
 - (NSError *)getEndToEndMetadata:(NSString **)metadata fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     __block NSString *returnMetadata = nil;
     
@@ -309,8 +550,8 @@
 
 - (NSError *)deleteEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -369,8 +610,8 @@
 
 - (NSError *)storeEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -429,8 +670,8 @@
 
 - (NSError *)updateEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -489,8 +730,8 @@
 
 - (NSError *)lockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url 
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -520,8 +761,8 @@
 
 - (NSError *)unlockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID token:(NSString  *)token user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url 
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     __block NSError *returnError = nil;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -560,7 +801,7 @@
     
     // get Metadata for select updateEndToEndMetadata or storeEndToEndMetadata
     error = [self getEndToEndMetadata:&metadata fileID:directory.fileID user:user userID:userID password:password url:url];
-    if (error.code != 404 && error != nil) {
+    if (error.code != kOCErrorServerPathNotFound && error != nil) {
         return error;
     }
     
@@ -579,7 +820,7 @@
     // send Metadata
     if (error == nil)
         error = [self updateEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl fileID:directory.fileID unlock:NO user:user userID:userID password:password url:url];
-    else if (error.code == 404)
+    else if (error.code == kOCErrorServerPathNotFound)
         error = [self storeEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl fileID:directory.fileID unlock:NO user:user userID:userID password:password url:url];
     
     return error;

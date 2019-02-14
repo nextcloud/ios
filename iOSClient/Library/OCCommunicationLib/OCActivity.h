@@ -27,10 +27,19 @@
 
 @property NSInteger idActivity;
 @property (nonatomic, strong) NSDate *date;
-@property (nonatomic, strong) NSString *file;
-@property (nonatomic, strong) NSString *link;
-@property (nonatomic, strong) NSString *message;
+@property (nonatomic, strong) NSString *app;
+@property (nonatomic, strong) NSString *type;
+@property (nonatomic, strong) NSString *user;
 @property (nonatomic, strong) NSString *subject;
+@property (nonatomic, strong) NSArray *subject_rich;
+@property (nonatomic, strong) NSString *message;
+@property (nonatomic, strong) NSArray *message_rich;
+@property (nonatomic, strong) NSString *icon;
+@property (nonatomic, strong) NSString *link;
+@property (nonatomic, strong) NSString *object_type;
+@property NSInteger object_id;
+@property (nonatomic, strong) NSString *object_name;
+@property (nonatomic, strong) NSArray *previews;
 
 @end
 

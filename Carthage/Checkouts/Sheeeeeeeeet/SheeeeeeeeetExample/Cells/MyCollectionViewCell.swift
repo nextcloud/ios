@@ -6,6 +6,13 @@
 //  Copyright © 2018 Jonas Ullström. All rights reserved.
 //
 
+/*
+ 
+ This cell is used by the example app, to populate the cells
+ of the `CollectionActionSheet` example action sheet.
+ 
+ */
+
 import UIKit
 import Sheeeeeeeeet
 

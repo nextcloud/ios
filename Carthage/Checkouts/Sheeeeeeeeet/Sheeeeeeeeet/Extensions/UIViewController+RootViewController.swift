@@ -6,6 +6,9 @@
 //  Copyright © 2017 Daniel Saidi. All rights reserved.
 //
 
+//  This file contains internal util functions for resolving
+//  the root view controller for the current app.
+
 import UIKit
 
 extension UIViewController {

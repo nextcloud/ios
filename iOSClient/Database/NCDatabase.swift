@@ -62,16 +62,63 @@ class tableAccount: Object {
 class tableActivity: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var idPrimaryKey = ""
     @objc dynamic var action = "Activity"
     @objc dynamic var date = NSDate()
-    @objc dynamic var file = ""
-    @objc dynamic var fileID = ""
-    @objc dynamic var idActivity: Double = 0
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var app = ""
+    @objc dynamic var type = ""
+    @objc dynamic var user = ""
+    @objc dynamic var subject = ""
+    @objc dynamic var subjectRich = ""
+    let subjectRichItem = List<tableActivitySubjectRich>()
+    @objc dynamic var icon = ""
     @objc dynamic var link = ""
+    @objc dynamic var message = ""
+    @objc dynamic var objectType = ""
+    @objc dynamic var objectId: Int = 0
+    @objc dynamic var objectName = ""
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
-    @objc dynamic var type = ""
     @objc dynamic var verbose: Bool = false
+    
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+}
+
+class tableActivitySubjectRich: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var id = ""
+    @objc dynamic var key = ""
+    @objc dynamic var link = ""
+    @objc dynamic var name = ""
+    @objc dynamic var path = ""
+    @objc dynamic var type = ""
+    
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+}
+
+class tableActivityPreview: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var source = ""
+    @objc dynamic var link = ""
+    @objc dynamic var mimeType = ""
+    @objc dynamic var fileId: Int = 0
+    @objc dynamic var view = ""
+    @objc dynamic var isMimeTypeIcon: Bool = false
+
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
 }
 
 class tableCapabilities: Object {
@@ -202,7 +249,6 @@ class tableMetadata: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
@@ -212,6 +258,7 @@ class tableMetadata: Object {
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
+    @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
@@ -224,10 +271,6 @@ class tableMetadata: Object {
     override static func primaryKey() -> String {
         return "fileID"
     }
-    
-    override static func indexedProperties() -> [String] {
-        return ["directoryID"]
-    }
 }
 
 class tablePhotos: Object {
@@ -236,7 +279,6 @@ class tablePhotos: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
@@ -246,6 +288,7 @@ class tablePhotos: Object {
     @objc dynamic var hasPreview: Int = -1
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
+    @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""

@@ -45,6 +45,7 @@ class NCBrandColor: NSObject {
     @objc public var seperator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
+    @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
     @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let optionItem:            UIColor = UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
     @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
@@ -71,7 +72,7 @@ class NCBrandColor: NSObject {
     
     @objc public let brand:                             String = "Nextcloud"
     @objc public let mailMe:                            String = "ios@nextcloud.com"
-    @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2018"
+    @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2019"
     @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
     @objc public let loginBaseUrl:                      String = "https://cloud.nextcloud.com"
     @objc public let pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
@@ -89,15 +90,20 @@ class NCBrandColor: NSObject {
     // Capabilities Group
     @objc public let capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
     
+    // Database key encryption key 64byte AES-256+SHA2
+    @objc public var databaseEncryptionKey:             String = "LdFNb00N+ywBuNGJRjCUuDt1zIXK/PX82ZNHWochfu1is8TorIERQi1aJsAMLC3rK2BB0uMjh2kNZ9Dcwx/G5Q=="
+
+    
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public let use_default_auto_upload:           Bool = false
     @objc public let use_themingColor:                  Bool = true
     @objc public let use_themingBackground:             Bool = true
-    @objc public let use_themingLogo:                   Bool = true
+    @objc public let use_themingLogo:                   Bool = false     
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
-    
+    @objc public let use_database_encryption:           Bool = false
+
     @objc public let disable_intro:                     Bool = false
     @objc public let disable_request_login_url:         Bool = false
     @objc public let disable_multiaccount:              Bool = false

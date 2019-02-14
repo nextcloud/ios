@@ -271,6 +271,11 @@ public struct TLPHAsset {
     init(asset: PHAsset?) {
         self.phAsset = asset
     }
+
+    public static func asset(with localIdentifier: String) -> TLPHAsset? {
+        let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
+        return TLPHAsset(asset: fetchResult.firstObject)
+    }
 }
 
 extension TLPHAsset: Equatable {

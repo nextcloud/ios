@@ -1394,6 +1394,17 @@
                     capabilities.externalSiteV1 = [externalSitesArray componentsJoinedByString:@","];
                 }
                 
+                // ACTIVITY
+                
+                NSDictionary *activityDic = [capabilitiesDict valueForKey:@"activity"];
+                if (activityDic) {
+                    NSArray *activityArray = [activityDic valueForKey:@"apiv2"];
+                    if (activityArray) {
+                        capabilities.isActivityV2Enabled = YES;
+                        capabilities.activityV2 = [activityArray componentsJoinedByString:@","];
+                    }
+                }
+
                 // NOTIFICATION
                 
                 NSDictionary *notificationDic = [capabilitiesDict valueForKey:@"notifications"];
@@ -1529,7 +1540,7 @@
     return operation;
 }
 
-- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode path:(NSString * _Nonnull)path onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     filePath = [filePath encodeString:NSUTF8StringEncoding];
@@ -1537,7 +1548,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    OCHTTPRequestOperation *operation = [request getRemotePreviewByServer:serverPath ofFilePath:filePath withWidth:fileWidth andHeight:fileHeight andA:a andMode:mode onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    OCHTTPRequestOperation *operation = [request getRemotePreviewByServer:serverPath ofFilePath:filePath withWidth:fileWidth andHeight:fileHeight andA:a andMode:mode path:path onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         
@@ -1838,7 +1849,7 @@
 
 #pragma mark - Activity
 
-- (void) getActivityServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
 
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_activity_api];
@@ -1846,7 +1857,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request getActivityServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request getActivityServer:serverPath since:since limit:limit previews:previews link:link onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSMutableArray *listOfActivity = [NSMutableArray new];
@@ -1870,12 +1881,12 @@
                     
                     OCActivity *activity = [OCActivity new];
                     
-                    if ([data valueForKey:@"id"] && ![[data valueForKey:@"id"] isEqual:[NSNull null]])
-                        activity.idActivity = [[data valueForKey:@"id"] integerValue];
+                    if ([data valueForKey:@"activity_id"] && ![[data valueForKey:@"activity_id"] isEqual:[NSNull null]])
+                        activity.idActivity = [[data valueForKey:@"activity_id"] integerValue];
                     
-                    if ([data valueForKey:@"date"] && ![[data valueForKey:@"date"] isEqual:[NSNull null]]) {
+                    if ([data valueForKey:@"datetime"] && ![[data valueForKey:@"datetime"] isEqual:[NSNull null]]) {
                         
-                        NSString *dateString = [data valueForKey:@"date"];
+                        NSString *dateString = [data valueForKey:@"datetime"];
                         
                         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
                         NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
@@ -1885,21 +1896,47 @@
                         activity.date = [dateFormatter dateFromString:dateString];
                     }
                     
-                    if ([data valueForKey:@"file"] && ![[data valueForKey:@"file"] isEqual:[NSNull null]])
-                        activity.file = [data valueForKey:@"file"];
+                    if ([data valueForKey:@"app"] && ![[data valueForKey:@"app"] isEqual:[NSNull null]])
+                        activity.app = [data valueForKey:@"app"];
                     
-                    if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
-                        activity.link = [data valueForKey:@"link"];
+                    if ([data valueForKey:@"type"] && ![[data valueForKey:@"type"] isEqual:[NSNull null]])
+                        activity.type = [data valueForKey:@"type"];
                     
-                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
-                        activity.message = [data valueForKey:@"message"];
+                    if ([data valueForKey:@"user"] && ![[data valueForKey:@"user"] isEqual:[NSNull null]])
+                        activity.user = [data valueForKey:@"user"];
                     
                     if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]])
                         activity.subject = [data valueForKey:@"subject"];
                     
+                    if ([data valueForKey:@"subject_rich"] && ![[data valueForKey:@"subject_rich"] isEqual:[NSNull null]])
+                        activity.subject_rich = [data valueForKey:@"subject_rich"];
+                    
+                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
+                        activity.message = [data valueForKey:@"message"];
+                    
+                    if ([data valueForKey:@"message_rich"] && ![[data valueForKey:@"message_rich"] isEqual:[NSNull null]])
+                        activity.message_rich = [data valueForKey:@"message_rich"];
+                    
+                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]])
+                        activity.icon = [data valueForKey:@"icon"];
+                    
+                    if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
+                        activity.link = [data valueForKey:@"link"];
+                    
+                    if ([data valueForKey:@"object_type"] && ![[data valueForKey:@"object_type"] isEqual:[NSNull null]])
+                        activity.object_type = [data valueForKey:@"object_type"];
+                    
+                    if ([data valueForKey:@"object_id"] && ![[data valueForKey:@"object_id"] isEqual:[NSNull null]])
+                        activity.object_id = [[data valueForKey:@"object_id"] integerValue];
+                    
+                    if ([data valueForKey:@"object_name"] && ![[data valueForKey:@"object_name"] isEqual:[NSNull null]])
+                        activity.object_name = [data valueForKey:@"object_name"];
+                    
+                    if ([data valueForKey:@"previews"] && ![[data valueForKey:@"previews"] isEqual:[NSNull null]])
+                        activity.previews = [data valueForKey:@"previews"];
+                    
                     [listOfActivity addObject:activity];
                 }
-                
                 successRequest(response, listOfActivity, request.redirectedServer);
 
             } else {
@@ -2958,6 +2995,8 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
+    path = [path encodeString:NSUTF8StringEncoding];
+
     [request listTrash:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         OCXMLParser *parser = [OCXMLParser new];

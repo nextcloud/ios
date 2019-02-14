@@ -36,7 +36,6 @@
 @interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
-@property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;
 
 @property BOOL includeDirectoryE2EEncryption;
 @property BOOL includeImages;

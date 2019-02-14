@@ -52,7 +52,7 @@ class DragDropViewController: UIViewController {
         case grayScale
         case bn
     }
-    private var filter: typeFilter = typeFilter.grayScale
+    private var filter: typeFilter = typeFilter.original
     
     override var canBecomeFirstResponder: Bool { return true }
     
@@ -73,9 +73,10 @@ class DragDropViewController: UIViewController {
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
-        segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 0)
-        segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 1)
-        segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 2)
+        
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
         add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
         
@@ -134,14 +135,11 @@ class DragDropViewController: UIViewController {
         switch segmentControlFilter.selectedSegmentIndex
         {
         case 0:
-            // Grayscale
-            filter = typeFilter.grayScale
-        case 1:
-            // Original
-            filter = typeFilter.bn
-        case 2:
-            // Original
             filter = typeFilter.original
+        case 1:
+            filter = typeFilter.grayScale
+        case 2:
+            filter = typeFilter.bn
         default:
             break
         }

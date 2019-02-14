@@ -14,8 +14,8 @@ class ActionSheetItemHandlerTests: QuickSpec {
     
     override func spec() {
         
-        func tableView() -> MockTableView {
-            return MockTableView(frame: .zero)
+        func createTableView() -> MockItemTableView {
+            return MockItemTableView(frame: .zero)
         }
         
         var sheet: MockActionSheet!
@@ -32,6 +32,7 @@ class ActionSheetItemHandlerTests: QuickSpec {
             handler = ActionSheetItemHandler(actionSheet: sheet, itemType: .items)
         }
         
+        
         describe("configured with item type") {
             
             beforeEach {
@@ -46,6 +47,7 @@ class ActionSheetItemHandlerTests: QuickSpec {
             }
         }
         
+        
         describe("configured with button type") {
             
             beforeEach {
@@ -59,7 +61,8 @@ class ActionSheetItemHandlerTests: QuickSpec {
             }
         }
         
-        describe("as table view data source") {
+        
+        describe("when used as table view data source") {
             
             it("returns correct item at index") {
                 let path1 = IndexPath(row: 0, section: 0)
@@ -69,54 +72,55 @@ class ActionSheetItemHandlerTests: QuickSpec {
             }
             
             it("has correct section count") {
-                let sections = handler.numberOfSections(in: tableView())
+                let sections = handler.numberOfSections(in: createTableView())
                 expect(sections).to(equal(1))
             }
             
             it("has correct row count") {
-                let rows = handler.tableView(tableView(), numberOfRowsInSection: 0)
+                let rows = handler.tableView(createTableView(), numberOfRowsInSection: 0)
                 expect(rows).to(equal(2))
             }
             
             it("returns correct cell for existing item") {
                 let path = IndexPath(row: 0, section: 0)
-                item1.cell = UITableViewCell(frame: .zero)
-                let result = handler.tableView(tableView(), cellForRowAt: path)
+                item1.cell = ActionSheetItemCell(frame: .zero)
+                let result = handler.tableView(createTableView(), cellForRowAt: path)
                 expect(result).to(be(item1.cell))
             }
             
             it("returns fallback cell for existing item") {
                 let path = IndexPath(row: 1, section: 1)
-                let result = handler.tableView(tableView(), cellForRowAt: path)
+                let result = handler.tableView(createTableView(), cellForRowAt: path)
                 expect(result).toNot(beNil())
             }
             
             it("returns correct height for existing item") {
                 let path = IndexPath(row: 0, section: 0)
-                item1.appearance.height = 123
-                let result = handler.tableView(tableView(), heightForRowAt: path)
+                MockActionSheetItem.height = 123
+                let result = handler.tableView(createTableView(), heightForRowAt: path)
                 expect(result).to(equal(123))
             }
             
             it("returns zero height for existing item") {
                 let path = IndexPath(row: 1, section: 1)
-                let result = handler.tableView(tableView(), heightForRowAt: path)
+                let result = handler.tableView(createTableView(), heightForRowAt: path)
                 expect(result).to(equal(0))
             }
         }
         
-        describe("as table view delegate") {
+        
+        describe("when used as table view delegate") {
             
             it("does not deselect row for invalid path") {
                 let path = IndexPath(row: 1, section: 1)
-                let view = tableView()
+                let view = createTableView()
                 handler.tableView(view, didSelectRowAt: path)
                 expect(view.deselectRowInvokeCount).to(equal(0))
             }
             
             it("deselects row for valid path") {
                 let path = IndexPath(row: 0, section: 0)
-                let view = tableView()
+                let view = createTableView()
                 handler.tableView(view, didSelectRowAt: path)
                 expect(view.deselectRowInvokeCount).to(equal(1))
                 expect(view.deselectRowInvokePaths.count).to(equal(1))
@@ -128,13 +132,13 @@ class ActionSheetItemHandlerTests: QuickSpec {
             it("does not handle tap if missing action sheet") {
                 sheet = nil
                 let path = IndexPath(row: 0, section: 0)
-                handler.tableView(tableView(), didSelectRowAt: path)
+                handler.tableView(createTableView(), didSelectRowAt: path)
                 expect(item1.handleTapInvokeCount).to(equal(0))
             }
             
             it("handles item tap for existing action sheet") {
                 let path = IndexPath(row: 0, section: 0)
-                handler.tableView(tableView(), didSelectRowAt: path)
+                handler.tableView(createTableView(), didSelectRowAt: path)
                 expect(item1.handleTapInvokeCount).to(equal(1))
                 expect(item1.handleTapInvokeActionSheets.count).to(equal(1))
                 expect(item1.handleTapInvokeActionSheets[0]).to(be(sheet))
@@ -142,7 +146,7 @@ class ActionSheetItemHandlerTests: QuickSpec {
 
             it("handles sheet item tap for existing action sheet") {
                 let path = IndexPath(row: 0, section: 0)
-                handler.tableView(tableView(), didSelectRowAt: path)
+                handler.tableView(createTableView(), didSelectRowAt: path)
                 expect(sheet.handleTapInvokeCount).to(equal(1))
                 expect(sheet.handleTapInvokeItems.count).to(equal(1))
                 expect(sheet.handleTapInvokeItems[0]).to(be(item1))

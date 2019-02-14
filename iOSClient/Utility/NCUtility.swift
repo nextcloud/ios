@@ -33,14 +33,14 @@ class NCUtility: NSObject {
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
-    @objc func createFileName(_ fileName: String, directoryID: String) -> String {
+    @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
         var resultFileName = fileName
         var exitLoop = false
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND directoryID == %@", resultFileName, directoryID)) != nil {
+                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
@@ -120,7 +120,7 @@ class NCUtility: NSObject {
         return fileID as String
     }
     
-    func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
+    @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
         
         let scale = newWidth / image.size.width
         let newHeight = image.size.height * scale
@@ -168,15 +168,15 @@ class NCUtility: NSObject {
         return (k_layout_list, "fileName", true, "none", true)
     }
     
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool) -> String? {
         
         var fileNamePNG = ""
         
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return
+            return nil
         }
         guard let iconURL = URL(string: svgUrlString) else {
-            return
+            return nil
         }
         
         if fileName == nil {
@@ -190,7 +190,7 @@ class NCUtility: NSObject {
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
             guard let imageData = try? Data(contentsOf:iconURL) else {
-                return
+                return nil
             }
             
             if let image = UIImage.init(data: imageData) {
@@ -212,14 +212,14 @@ class NCUtility: NSObject {
                 }
                 
                 guard let pngImageData = newImage.pngData() else {
-                    return
+                    return nil
                 }
                 CCUtility.write(pngImageData, fileNamePath: imageNamePath)
                 
             } else {
                 
                 guard let svgImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
-                    return
+                    return nil
                 }
                 
                 if width != nil {
@@ -228,19 +228,23 @@ class NCUtility: NSObject {
                 }
                 
                 guard let image: UIImage = svgImage.uiImage else {
-                    return
+                    return nil
                 }
                 guard let pngImageData = image.pngData() else {
-                    return
+                    return nil
                 }
                 
                 CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                
+                return imageNamePath
             }
         }
+        
+        return imageNamePath
     }
     
-    @objc func startActivityIndicator(view: UIView) {
-        
+    @objc func startActivityIndicator(view: UIView, bottom: CGFloat) {
+    
         activityIndicator.color = NCBrandColor.sharedInstance.brand
         activityIndicator.hidesWhenStopped = true
             
@@ -250,8 +254,13 @@ class NCUtility: NSObject {
             
         let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
         view.addConstraint(horizontalConstraint)
-            
-        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: 0)
+        
+        var verticalConstant: CGFloat = 0
+        if bottom > 0 {
+            verticalConstant = (view.frame.size.height / 2) - bottom
+        }
+        
+        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalConstant)
         view.addConstraint(verticalConstraint)
 
         activityIndicator.startAnimating()
@@ -267,6 +276,19 @@ class NCUtility: NSObject {
             return false
         }
         return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
+    }
+    
+    @objc func isEditImage(_ fileName: NSString) -> String? {
+        switch fileName.pathExtension.uppercased() {
+        case "PNG":
+            return "PNG";
+        case "JPG":
+            return "JPG";
+        case "JPEG":
+            return "JPG"
+        default:
+            return nil
+        }
     }
 
 }

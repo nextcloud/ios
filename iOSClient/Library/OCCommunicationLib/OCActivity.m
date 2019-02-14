@@ -33,10 +33,19 @@
         
         self.idActivity = 0;
         self.date = [NSDate date];
-        self.file = @"";
-        self.link = @"";
+        self.app = @"";
+        self.type = @"";
+        self.user = @"";
         self.message = @"";
+        self.message_rich = [NSArray new];
+        self.icon = @"";
+        self.link = @"";
+        self.previews = [NSArray new];
         self.subject = @"";
+        self.subject_rich = [NSArray new];
+        self.object_type = @"";
+        self.object_id = 0;
+        self.object_name = @"";
     }
     
     return self;

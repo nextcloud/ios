@@ -34,7 +34,6 @@
 
 + (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage;
 
-+ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize;
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 
 + (UIColor *)colorFromHexString:(NSString *)hexString;

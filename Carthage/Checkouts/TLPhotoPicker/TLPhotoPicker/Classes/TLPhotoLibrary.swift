@@ -143,9 +143,7 @@ extension TLPhotoLibrary {
             options.merge(predicate: notVideoPredicate)
         }
         if configure.allowedLivePhotos == false {
-            let notLivePhotoPredicate = NSPredicate(format: "mediaType = %i OR mediaSubtype != %i",
-                                                    PHAssetMediaType.video.rawValue,
-                                                    PHAssetMediaSubtype.photoLive.rawValue)
+            let notLivePhotoPredicate = NSPredicate(format: "NOT ((mediaSubtype & %d) != 0)", PHAssetMediaSubtype.photoLive.rawValue)
             options.merge(predicate: notLivePhotoPredicate)
         }
         if let maxVideoDuration = configure.maxVideoDuration {

@@ -6,75 +6,107 @@
 //  Copyright © 2018 Daniel Saidi. All rights reserved.
 //
 
+/*
+ 
+ This extension isolates how the example app applies colors,
+ fonts etc to the example action sheets.
+ 
+ */
+
 import UIKit
 import Sheeeeeeeeet
 
 extension AppDelegate {
     
     func applyAppearance() {
+        applyViewAppearances()
+        applyColors()
+        applyFonts()
+        applyHeights()
+        applyIcons()
+        applySelectItemAppearances()
+        applySeparatorInsets()
+        applyPopoverWidth()
+    }
+}
+
+
+private extension AppDelegate {
+    
+    func applyViewAppearances() {
+//        ActionSheetBackgroundView.appearance().backgroundColor = .purple
+        ActionSheetHeaderView.appearance().cornerRadius = 10
+        ActionSheetTableView.appearance().cornerRadius = 10
+//        ActionSheetTableView.appearance().separatorLineColor = .purple
+//        ActionSheetItemTableView.appearance().cornerRadius = 20
+//        ActionSheetTableView.appearance(whenContainedInInstancesOf: [MultiSelectActionSheet.self]).cornerRadius = 20
+    }
+    
+    func applyColors() {
+        ActionSheetItemCell.appearance().titleColor = .darkText
+        ActionSheetItemCell.appearance().subtitleColor = .exampleBlue
+        ActionSheetItemCell.appearance().tintColor = .darkText
+//        ActionSheetItemCell.appearance().separatorColor = .red
+//        ActionSheetItemCell.appearance().backgroundColor = red
+//        ActionSheetItemCell.appearance(whenContainedInInstancesOf: [ActionSheetItemTableView.self]).backgroundColor = .purple
+        ActionSheetOkButtonCell.appearance().titleColor = .darkGray
+        ActionSheetCancelButtonCell.appearance().titleColor = .lightGray
+        ActionSheetDangerButtonCell.appearance().titleColor = .examplePink
+    }
+    
+    func applyFonts() {
+        ActionSheetItemCell.appearance().titleFont = .robotoRegular(size: 17)
+        ActionSheetItemCell.appearance().subtitleFont = .robotoRegular(size: 14)
+        ActionSheetLinkItemCell.appearance().titleFont = .robotoRegular(size: 17)
+        ActionSheetMultiSelectToggleItemCell.appearance().titleFont = .robotoMedium(size: 13)
+        ActionSheetSectionTitleCell.appearance().titleFont = .robotoMedium(size: 13)
+        ActionSheetTitleCell.appearance().titleFont = .robotoMedium(size: 15)
+        ActionSheetOkButtonCell.appearance().titleFont = .robotoBlack(size: 17)
+        ActionSheetDangerButtonCell.appearance().titleFont = .robotoMedium(size: 17)
+        ActionSheetCancelButtonCell.appearance().titleFont = .robotoRegular(size: 17)
+    }
+    
+    func applyHeights() {
+        ActionSheetSectionTitle.height = 20
+        ActionSheetSectionMargin.height = 20
+    }
+    
+    func applyIcons() {
+        ActionSheetLinkItemCell.appearance().linkIcon = UIImage(named: "ic_arrow_right")
+    }
+    
+    func applySelectItemAppearances() {
+        ActionSheetSelectItemCell.appearance().selectedIcon = UIImage(named: "ic_checkmark")
+        ActionSheetSelectItemCell.appearance().unselectedIcon = UIImage(named: "ic_empty")
+        ActionSheetSelectItemCell.appearance().selectedTintColor = .exampleBlue
+        ActionSheetSelectItemCell.appearance().selectedTitleColor = .exampleGreen
+        ActionSheetSelectItemCell.appearance().selectedIconColor = .examplePurple
         
-        let blue = UIColor(hex: 0x0FA2F5)
-        let green = UIColor(hex: 0x81c03f)
-        let pink = UIColor(hex: 0xec5f72)
-        let purple = UIColor(hex: 0xd9007b)
-        let red = UIColor(hex: 0xff3333)
+        ActionSheetSingleSelectItemCell.appearance().selectedTintColor = .exampleGreen
+        ActionSheetSingleSelectItemCell.appearance().selectedTitleFont = .robotoMedium(size: 35)
+        ActionSheetSingleSelectItemCell.appearance().selectedSubtitleFont = .robotoMedium(size: 25)
+        ActionSheetSingleSelectItemCell.appearance().selectedTitleColor = .examplePurple
+        ActionSheetSingleSelectItemCell.appearance().selectedIconColor = .exampleBlue
         
-        let robotoBlack = "Roboto-Black"
-        let robotoMedium = "Roboto-Medium"
-        let robotoRegular = "Roboto-Regular"
+        ActionSheetMultiSelectItemCell.appearance().tintColor = UIColor.darkText.withAlphaComponent(0.4)
+        ActionSheetMultiSelectItemCell.appearance().titleColor = UIColor.darkText.withAlphaComponent(0.4)
+        ActionSheetMultiSelectItemCell.appearance().selectedTintColor = .examplePurple
+        ActionSheetMultiSelectItemCell.appearance().selectedTitleColor = .exampleBlue
+        ActionSheetMultiSelectItemCell.appearance().selectedIconColor = .exampleGreen
         
-        let appearance = ActionSheetAppearance.standard
-        
-//        appearance.popover.width = 500
-        
-        appearance.item.font = UIFont(name: robotoRegular, size: 17)
-        appearance.item.textColor = .darkText
-        appearance.item.tintColor = .darkGray
-        appearance.item.subtitleFont = UIFont(name: robotoRegular, size: 14)
-        appearance.item.subtitleTextColor = blue
-        
-//        appearance.separatorColor = .red
-//        appearance.itemsSeparatorColor = .blue
-//        appearance.buttonsSeparatorColor = .green
-        
-        appearance.title.hideSeparator()
-        appearance.title.font = UIFont(name: robotoMedium, size: 15)
-        
-        appearance.sectionTitle.hideSeparator()
-        appearance.sectionTitle.font = UIFont(name: robotoMedium, size: 13)
-        appearance.sectionTitle.height = 20
-        
-        appearance.sectionMargin.height = 20
-        
-        appearance.selectItem.selectedIcon = UIImage(named: "ic_checkmark")
-        appearance.selectItem.selectedTintColor = blue
-        appearance.selectItem.selectedTextColor = green
-        appearance.selectItem.selectedIconTintColor = purple
-        
-        appearance.singleSelectItem.selectedIcon = UIImage(named: "ic_checkmark")
-        appearance.singleSelectItem.selectedTintColor = green
-        appearance.singleSelectItem.selectedTextColor = purple
-        appearance.singleSelectItem.selectedIconTintColor = blue
-        
-        appearance.multiSelectItem.selectedIcon = UIImage(named: "ic_checkmark")
-        appearance.multiSelectItem.selectedTintColor = purple
-        appearance.multiSelectItem.selectedTextColor = blue
-        appearance.multiSelectItem.selectedIconTintColor = green
-        
-        appearance.multiSelectToggleItem.hideSeparator()
-        appearance.multiSelectToggleItem.font = UIFont(name: robotoMedium, size: 13)
-        appearance.multiSelectToggleItem.selectAllTextColor = .lightGray
-        appearance.multiSelectToggleItem.deselectAllTextColor = red
-        
-        appearance.linkItem.linkIcon = UIImage(named: "ic_arrow_right")
-        
-        appearance.okButton.textColor = .darkGray
-        appearance.okButton.font = UIFont(name: robotoBlack, size: 17)
-        
-        appearance.dangerButton.textColor = pink
-        appearance.dangerButton.font = UIFont(name: robotoMedium, size: 17)
-        
-        appearance.cancelButton.textColor = .lightGray
-        appearance.cancelButton.font = UIFont(name: robotoMedium, size: 17)
+        ActionSheetMultiSelectToggleItemCell.appearance().selectAllSubtitleColor = .lightGray
+        ActionSheetMultiSelectToggleItemCell.appearance().deselectAllSubtitleColor = .exampleRed
+    }
+    
+    func applySeparatorInsets() {
+        ActionSheetItemCell.appearance().separatorInset = .zero
+        ActionSheetTitleCell.appearance().separatorInset = .hiddenSeparator
+        ActionSheetSectionTitleCell.appearance().separatorInset = .hiddenSeparator
+        ActionSheetSectionMarginCell.appearance().separatorInset = .hiddenSeparator
+        ActionSheetMultiSelectToggleItemCell.appearance().separatorInset = .hiddenSeparator
+    }
+    
+    func applyPopoverWidth() {
+//        ActionSheet.preferredPopoverWidth = 700
     }
 }

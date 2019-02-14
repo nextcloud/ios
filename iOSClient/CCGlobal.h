@@ -35,6 +35,10 @@
 //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
 //DispatchQueue.global().async
 
+//NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
+//NSDictionary *languageDic = [NSLocale componentsFromLocaleIdentifier:language];
+//NSString *languageCode = [languageDic objectForKey:@"kCFLocaleLanguageCodeKey"];
+
 //#if targetEnvironment(simulator)
 //#endif
 
@@ -64,11 +68,11 @@
 // Login Flow
 #define k_flowEndpoint                                  @"/index.php/login/flow"
 
+// Avatar
+#define k_avatar                                        @"/index.php/avatar/"
+
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
-
-// UUID
-#define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
 
 #define k_dismissAfterSecond                            4
 
@@ -95,8 +99,8 @@
 // define Nextcloud IOS
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
 
-// directoryID root
-#define k_directoryID_root                              @"00000000-0000-0000-0000-000000000000"
+// serverUrl root
+#define k_serverUrl_root                                @".."
 
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"
@@ -116,8 +120,8 @@
 #define k_download_session_foreground                   @"it.twsweb.Crypto-Cloud.download.sessionforeground"
 #define k_download_session_wwan                         @"it.twsweb.Crypto-Cloud.download.sessionwwan"
 #define k_upload_session                                @"it.twsweb.Crypto-Cloud.upload.session"
-#define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 #define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
+#define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 
 // Session Download Upload Extension
 #define k_download_session_extension                    @"com.nextcloud.download.session.extension"
@@ -168,9 +172,7 @@
 
 // ConcurrentOperation
 #define k_maxHTTPConnectionsPerHost                     5
-#define k_maxConcurrentOperation                        10
-#define k_maxConcurrentOperationDownload                5
-#define k_maxConcurrentOperationUpload                  5
+#define k_maxConcurrentOperation                        5
 
 // Max Size Operation
 #define k_maxSizeOperationUpload                        524288000   // 500 MB
@@ -189,61 +191,22 @@
 // Search
 #define k_minCharsSearch                                2
 
-// Metadata.Net SELECTOR
+// Selector
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
-#define selectorGetUserAndGroup                         @"getUserAndGroup"
+#define selectorDownloadEditPhoto                       @"downloadEditPhoto"
 #define selectorLoadFileView                            @"loadFileView"
-#define selectorLoadModelView                           @"loadModelView"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"
-#define selectorMove                                    @"move"
 #define selectorOpenIn                                  @"openIn"
-#define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
-#define selectorReadFileReloadFolder                    @"readFileReloadFolder"
 #define selectorReadFolder                              @"readFolder"
 #define selectorReadFolderWithDownload                  @"readFolderWithDownload"
-#define selectorReadShare                               @"readShare"
-#define selectorRename                                  @"rename"
 #define selectorSave                                    @"save"
-#define selectorShare                                   @"share"
-#define selectorSearchFiles                             @"searchFiles"
-#define selectorSearchContentType                       @"searchContentType"
-#define selectorUnshare                                 @"unshare"
-#define selectorUpdateShare                             @"updateShare"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
-
-// Metadata.Net ACTION
-#define actionGetActivityServer                         @"getActivityServer"
-#define actionGetCapabilities                           @"getCapabilitiesOfServer"
-#define actionGetUserAndGroup                           @"getUserAndGroup"
-#define actionGetUserProfile                            @"getUserProfile"
-#define actionGetNotificationServer                     @"getNotificationServer"
-#define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
-#define actionGetExternalSitesServer                    @"getExternalSitesServer"
-#define actionMiddlewarePing                            @"middlewarePing"
-#define actionMoveFileOrFolder                          @"moveFileOrFolder"
-#define actionReadFile                                  @"readFile"
-#define actionReadFolder                                @"readFolder"
-#define actionReadShareServer                           @"readShareServer"
-#define actionSearch                                    @"search"
-#define actionSetNotificationServer                     @"setNotificationServer"
-#define actionShare                                     @"share"
-#define actionShareWith                                 @"shareWith"
-#define actionUnShare                                   @"unShare"
-#define actionUpdateShare                               @"updateShare"
-
-#define actionGetEndToEndPublicKeys                     @"getEndToEndPublicKeys"
-#define actionGetEndToEndPrivateKeyCipher               @"getEndToEndPrivateKeyCipher"
-#define actionSignEndToEndPublicKey                     @"signEndToEndPublicKey"
-#define actionStoreEndToEndPrivateKeyCipher             @"storeEndToEndPrivateKeyCipher"
-#define actionDeleteEndToEndPublicKey                   @"deleteEndToEndPublicKey"
-#define actionDeleteEndToEndPrivateKey                  @"deleteEndToEndPrivateKey"
-#define actionGetEndToEndServerPublicKey                @"getEndToEndServerPublicKey"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
@@ -295,7 +258,7 @@
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
 // E2EE
-#define k_max_filesize_E2E                              524288000   // 500 MB
+#define k_max_filesize_E2EE                             524288000   // 500 MB
 
 // Flow Version
 #define k_flow_version_available                        12
@@ -328,6 +291,12 @@
 #define k_layout_view_richdocument                      @"LayoutRichdocument"
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
+
+// Nextcloud version
+#define k_nextcloud_version_12_0                        12
+#define k_nextcloud_version_13_0                        13
+#define k_nextcloud_version_14_0                        14
+#define k_nextcloud_version_15_0                        15
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

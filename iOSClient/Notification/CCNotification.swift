@@ -23,7 +23,7 @@
 
 import UIKit
 
-class CCNotification: UITableViewController, OCNetworkingDelegate {
+class CCNotification: UITableViewController {
 
     var resultSearchController = UISearchController()
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -84,14 +84,28 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
 
                 tableView.setEditing(false, animated: true)
 
-                let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
-                
-                metadataNet.action = actionSetNotificationServer
-                metadataNet.optionString = "\(notification.idNotification)"
-                metadataNet.optionAny = "DELETE"
-                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.optionString!)"
-
-                self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
+                    
+                    if errorCode == 0 && account == self.appDelegate.activeAccount {
+                        
+                        let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+                        
+                        if let index = listOfNotifications.index(where: {$0.idNotification == notification.idNotification})  {
+                            self.appDelegate.listOfNotifications.removeObject(at: index)
+                        }
+                        
+                        self.reloadDatasource()
+                        
+                        if self.appDelegate.listOfNotifications.count == 0 {
+                            self.viewClose()
+                        }
+                        
+                    } else if errorCode != 0 {
+                        self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    } else {
+                        print("[LOG] It has been changed user during networking process, error.")
+                    }
+                })
             }
             
             remove.backgroundColor = .red
@@ -113,14 +127,28 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                             
                             tableView.setEditing(false, animated: true)
 
-                            let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
-                            
-                            metadataNet.action = actionSetNotificationServer
-                            metadataNet.optionString = "\(notification.idNotification)"
-                            metadataNet.serverUrl =  (actionNotification as! OCNotificationsAction).link
-                            metadataNet.optionAny = (actionNotification as! OCNotificationsAction).type
-                            
-                            self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                            OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (actionNotification as! OCNotificationsAction).link, type: (actionNotification as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
+                                
+                                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                                    
+                                    let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+                                    
+                                    if let index = listOfNotifications.index(where: {$0.idNotification == notification.idNotification})  {
+                                        self.appDelegate.listOfNotifications.removeObject(at: index)
+                                    }
+                                    
+                                    self.reloadDatasource()
+                                    
+                                    if self.appDelegate.listOfNotifications.count == 0 {
+                                        self.viewClose()
+                                    }
+                                    
+                                } else if errorCode != 0 {
+                                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                                } else {
+                                    print("[LOG] It has been changed user during networking process, error.")
+                                }
+                            })
                         }
                     }
                 }
@@ -179,7 +207,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             //
             cell.date.text = CCUtility.dateDiff(notification.date)
             cell.subject.text = notification.subject
-            cell.message.text = notification.message
+            cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         }
         
         return cell
@@ -188,35 +216,6 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    // MARK: - Networking delegate
-
-    func setNotificationServerSuccessFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        // Check Active Account
-        if (metadataNet.account != appDelegate.activeAccount) {
-            return
-        }
-        
-        if (errorCode == 0) {
-            
-            let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
-            
-            if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.optionString)})  {
-                appDelegate.listOfNotifications.removeObject(at: index)
-            }
-            
-            reloadDatasource()
-            
-            if appDelegate.listOfNotifications.count == 0 {
-                viewClose()
-            }
-            
-        } else {
-            
-            appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        }
     }
     
     // MARK: - Get Image from url

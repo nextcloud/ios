@@ -35,6 +35,14 @@
     if (self) {
         
         self.hasPreview = -1;
+        self.filePath = @"";
+        self.fileName = @"";
+        self.etag = @"";
+        self.permissions = @"";
+        self.ocId = @"";
+        self.id = 0;
+        self.trashbinFileName = @"";
+        self.trashbinOriginalLocation = @"";
     }
     
     return self;

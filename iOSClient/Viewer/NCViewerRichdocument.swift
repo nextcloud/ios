@@ -99,7 +99,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
             }
             
             if message.body as! String == "share" {
-                appDelegate.activeMain.openWindowShare(self.detail.metadataDetail)
+                appDelegate.activeMain.readShare(withAccount: appDelegate.activeAccount, openWindow: true, metadata: self.detail.metadataDetail)
             }
         }
     }
@@ -110,28 +110,30 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         
         if serverUrl != nil && metadata != nil {
             
-            let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-            ocNetworking?.createAssetRichdocuments(withFileName: metadata!.fileName, serverUrl: serverUrl, success: { (url) in
-                
-                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
-                self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
-                
-            }, failure: { (message, errorCode) in
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                    let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
+                    self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+                } else if errorCode != 0 {
+                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                } else {
+                    print("[LOG] It has been changed user during networking process, error.")
+                }
             })
         }
     }
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        ocNetworking?.createAssetRichdocuments(withFileName: metadata.fileName, serverUrl: serverUrl, success: { (url) in
-
-            let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
-            self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
-            
-        }, failure: { (message, errorCode) in
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+        OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
+                self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
         })
     }
     
@@ -159,7 +161,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
      
     //MARK: -
     
-    @objc func isRichDocument( _ metadata: tableMetadata) -> Bool {
+    @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
         
         if appDelegate.reachability.isReachable() == false {
             return false
@@ -168,7 +170,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
             return false
         }
-        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes() else {
+        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: metadata.account) else {
             return false
         }
         

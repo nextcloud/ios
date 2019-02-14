@@ -14,29 +14,28 @@ class ActionSheetSectionTitleTests: QuickSpec {
     
     override func spec() {
         
-        let item = ActionSheetSectionTitle(title: "foo", subtitle: "bar")
+        var item: ActionSheetSectionTitle!
         
-        describe("when created") {
+        describe("instance") {
             
-            it("applies provided values") {
+            it("is correctly configured") {
+                item = ActionSheetSectionTitle(title: "foo", subtitle: "bar")
+                
                 expect(item.title).to(equal("foo"))
                 expect(item.subtitle).to(equal("bar"))
-                expect(item.value).to(beNil())
-                expect(item.image).to(beNil())
-            }
-            
-            it("applies non-provided values") {
-                expect(item.cellStyle).to(equal(UITableViewCell.CellStyle.value1))
                 expect(item.tapBehavior).to(equal(ActionSheetItem.TapBehavior.none))
             }
         }
         
-        describe("applying appearance to cell") {
+        
+        describe("cell") {
             
-            it("is correctly configures cell") {
-                let cell = UITableViewCell()
-                item.applyAppearance(to: cell)
-                expect(cell.selectionStyle).to(equal(UITableViewCell.SelectionStyle.none))
+            it("is of correct type") {
+                item = ActionSheetSectionTitle(title: "foo")
+                let cell = item.cell(for: UITableView())
+                
+                expect(cell is ActionSheetSectionTitleCell).to(beTrue())
+                expect(cell.reuseIdentifier).to(equal(item.cellReuseIdentifier))
             }
         }
     }
