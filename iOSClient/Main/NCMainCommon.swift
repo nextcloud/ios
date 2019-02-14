@@ -958,7 +958,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
         }
         
         self.reloadDatasource(ServerUrl: serverUrl, fileID: nil, action: k_action_NULL)
-        self.appDelegate.activeMedia.reloadDatasource(nil, action: Int(k_action_NULL))
+        self.appDelegate.activeMedia.loadDatasource()
     }
     
     @objc func editPhoto(_ metadata: tableMetadata, viewController: UIViewController) {
@@ -1213,7 +1213,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
                 }
                 if appDelegate.activeMedia != nil {
-                    appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
+                    //appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
                 }
             }
             
@@ -1241,7 +1241,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
                 }
                 if appDelegate.activeMedia.view.window != nil {
-                    appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
+                    //appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
                 }
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))

@@ -1958,6 +1958,20 @@ class NCManageDatabase: NSObject {
         
         return tableMetadata.init(value: result)
     }
+   
+    @objc func getTablePhotos(predicate: NSPredicate) -> [tableMetadata]? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tablePhotos.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+        
+        if (results.count > 0) {
+            return Array(results.map { tableMetadata.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
     
     @objc func createTablePhotos(_ metadatas: [tableMetadata], account: String) {
 

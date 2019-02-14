@@ -54,6 +54,12 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
     private let refreshControl = UIRefreshControl()
     
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+
+        appDelegate.activeMedia = self
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -303,6 +309,32 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
+    func search() {
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
+        let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+
+        //let date = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd HH:mm"
+        let date2 = formatter.date(from: "2019/01/29 00:00")!
+
+        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: Date(), gteDateLastModified: date2, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], account: account!)
+                
+                self.loadDatasource()
+            }
+            
+            self.refreshControl.endRefreshing()
+        })
+    }
+    
     // MARK: DATASOURCE
     @objc func loadDatasource() {
         
@@ -310,26 +342,18 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
-        //let date = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
-        let date2 = formatter.date(from: "2019/01/29 00:00")!
-
-        
-        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: Date(), gteDateLastModified: date2, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
+        DispatchQueue.global().async {
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], account: account!)
-                
-                self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: account!)
-                self.collectionView.reloadData()
-
+            if let metadatas = NCManageDatabase.sharedInstance.getTablePhotos(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))  {
+                self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: self.appDelegate.activeAccount)
+            } else {
+                self.sectionDatasource = CCSectionDataSourceMetadata()
             }
-        })
-                
-        self.refreshControl.endRefreshing()
+        
+            DispatchQueue.main.async {
+                self.collectionView?.reloadData()
+            }
+        }
     }
     
     // MARK: COLLECTIONVIEW METHODS

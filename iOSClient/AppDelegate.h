@@ -39,6 +39,7 @@
 
 @class CCLoginWeb;
 @class CCMore;
+@class NCMedia;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
@@ -112,7 +113,7 @@
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;
 @property (nonatomic, strong) CCFavorites *activeFavorites;
-@property (nonatomic, strong) CCMedia *activeMedia;
+@property (nonatomic, strong) NCMedia *activeMedia;
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
