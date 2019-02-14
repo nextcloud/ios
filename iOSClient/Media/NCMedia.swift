@@ -52,7 +52,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var addWidth: CGFloat = 10
     
-    private var readLastdays = 30
+    private var readRetry = 0
 
     private let refreshControl = UIRefreshControl()
     
@@ -90,7 +90,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
+        //refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
@@ -311,7 +311,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search(_ lteDate: Date, gteDate: Date) {
+    func search(_ lteDate: Date, gteDate: Date, reiteration: Bool) {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -323,8 +323,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                
-                NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
-                self.loadDatasource()
+                if metadatas != nil && metadatas!.count > 0 {
+                    NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                    self.loadDatasource()
+                } else if reiteration {
+                    let newGteDate = Calendar.current.date(byAdding: .day, value: -60, to: gteDate)!
+                    self.readRetry += 1
+                    self.search(lteDate, gteDate: newGteDate, reiteration: reiteration)
+                }
             }
             
             self.refreshControl.endRefreshing()
@@ -344,9 +350,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: self.appDelegate.activeAccount)
             } else {
                 self.sectionDatasource = CCSectionDataSourceMetadata()
-                
-                let gteDate = Calendar.current.date(byAdding: .day, value: -self.readLastdays, to: Date())!
-                self.search(Date(), gteDate: gteDate)
+                let gteDate = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+                self.search(Date(), gteDate: gteDate, reiteration: true)
             }
         
             DispatchQueue.main.async {
@@ -453,14 +458,12 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell: UICollectionViewCell
-        
+                
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         }
         
-        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
       
         NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, source: self)
         

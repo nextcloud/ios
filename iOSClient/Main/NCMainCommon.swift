@@ -1295,6 +1295,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                                     (cell as! NCListCell).imageItem.image = image
                                 } else if cell is NCGridCell {
                                     (cell as! NCGridCell).imageItem.image = image
+                                } else if cell is NCGridMediaCell {
+                                    (cell as! NCGridMediaCell).imageItem.image = image
                                 }
                             }
                         }
