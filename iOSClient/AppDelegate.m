@@ -1104,6 +1104,12 @@
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+    // Test Maintenance
+    if (self.activeAccount.length == 0 || self.maintenanceMode) {
+        completionHandler(UIBackgroundFetchResultNoData);
+        return;
+    }
+    
     NSLog(@"[LOG] Start perform Fetch With Completion Handler");
     
     // Verify new photo
@@ -1112,7 +1118,7 @@
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != ''"] sorted:nil ascending:NO];
         
         if ([records count] > 0) {
             completionHandler(UIBackgroundFetchResultNewData);
