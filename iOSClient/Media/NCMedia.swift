@@ -53,6 +53,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var addWidth: CGFloat = 10
     
     private var readRetry = 0
+    private var stepDays = -60
 
     private let refreshControl = UIRefreshControl()
     
@@ -311,7 +312,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search(_ lteDate: Date, gteDate: Date, reiteration: Bool) {
+    func search(lteDate: Date, gteDate: Date, reiteration: Bool) {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -327,9 +328,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                     self.loadDatasource()
                 } else if reiteration {
-                    let newGteDate = Calendar.current.date(byAdding: .day, value: -60, to: gteDate)!
+                    var newGteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: gteDate)!
+                    newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
                     self.readRetry += 1
-                    self.search(lteDate, gteDate: newGteDate, reiteration: reiteration)
+                    self.search(lteDate: lteDate, gteDate: newGteDate, reiteration: reiteration)
                 }
             }
             
@@ -350,8 +352,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: self.appDelegate.activeAccount)
             } else {
                 self.sectionDatasource = CCSectionDataSourceMetadata()
-                let gteDate = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
-                self.search(Date(), gteDate: gteDate, reiteration: true)
+                var gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: Date())!
+                gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
+                self.search(lteDate: Date(), gteDate: gteDate, reiteration: true)
             }
         
             DispatchQueue.main.async {
@@ -364,13 +367,13 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         //caused by user
-        print("SCROLL scrollViewDidEndDecelerating")
+        selectSearchSections()
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if (!decelerate) {
             //cause by user
-            print("SCROLL scrollViewDidEndDragging")
+            selectSearchSections()
         }
     }
     
@@ -489,7 +492,30 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         performSegue(withIdentifier: "segueDetail", sender: self)
     }
+
+    // MARK: Utility
     
+    func selectSearchSections() {
+        
+        let sections = NSMutableSet()
+        for item in collectionView.indexPathsForVisibleItems {
+            let date = sectionDatasource.sections.object(at: item.section) as! Date
+            sections.add(date)
+        }
+        let sortedSections = sections.sorted { (date1, date2) -> Bool in
+            (date1 as! Date).compare(date2 as! Date) == .orderedDescending
+        }
+        if sortedSections.count == 1 {
+            let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
+            let gteDate = sortedSections.first as! Date
+            search(lteDate: lteDate, gteDate: gteDate, reiteration: false)
+        } else if sortedSections.count > 1 {
+            let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
+            let gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
+            search(lteDate: lteDate, gteDate: gteDate, reiteration: false)
+        }
+    }
+
     // MARK: SEGUE
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

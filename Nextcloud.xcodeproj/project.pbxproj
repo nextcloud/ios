@@ -1666,7 +1666,6 @@
 				F78ACD4D219043E70088454D /* Layout */,
 				F78ACD3E21903BA20088454D /* Cell */,
 				F78ACD5921904E460088454D /* ActionSheetHeaderView */,
-				F76185582198A28E00A65DC4 /* NCPhotosPickerViewController */,
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
 				F70211FB1BAC56E9003FC03E /* CCMain.m */,
@@ -2365,6 +2364,7 @@
 				F7FAE9F12214208B000FA9E8 /* NCGridMediaCell.xib */,
 				F78ACD4121903CE00088454D /* NCListCell.swift */,
 				F78ACD4321903CF20088454D /* NCListCell.xib */,
+				F76185582198A28E00A65DC4 /* NCPhotosPickerViewController */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
