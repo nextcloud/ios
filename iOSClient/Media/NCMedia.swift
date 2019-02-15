@@ -53,7 +53,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var addWidth: CGFloat = 10
     
     private var readRetry = 1
-    private let stepDays = -60
+    private let stepDays = -30
     private var isDistantPast = false
 
     private let refreshControl = UIRefreshControl()
@@ -558,21 +558,29 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     func selectSearchSections() {
         
         let sections = NSMutableSet()
+        let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: self.appDelegate.activeAccount)
+        var gteDate: Date?
+        
         for item in collectionView.indexPathsForVisibleItems {
-            let date = sectionDatasource.sections.object(at: item.section) as! Date
-            sections.add(date)
+            if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: sectionDatasource) {
+                if let date = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: metadata.date as Date) {
+                    sections.add(date)
+                }
+            }
         }
         let sortedSections = sections.sorted { (date1, date2) -> Bool in
             (date1 as! Date).compare(date2 as! Date) == .orderedDescending
         }
-        if sortedSections.count == 1 {
+        
+        if sortedSections.count >= 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
-            let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.first as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: false)
-        } else if sortedSections.count > 1 {
-            let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
-            let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.last as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: false)
+            if lastDate == sortedSections.last as! Date {
+                gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.last as! Date)!
+                search(lteDate: lteDate, gteDate: gteDate!, activityIndicator: true)
+            } else {
+                gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
+                search(lteDate: lteDate, gteDate: gteDate!, activityIndicator: false)
+            }
         }
     }
 

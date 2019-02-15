@@ -2004,10 +2004,10 @@ class NCManageDatabase: NSObject {
         realm.refresh()
         
         if let entities = realm.objects(tablePhotos.self).filter("account = %@", account).max(by: { $0.date.compare($1.date as Date) == .orderedDescending }) {
-            return entities.date as Date
+            return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: entities.date as Date)!
         }
         
-        return Date()
+        return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
     }
     
     @objc func deletePhotos(fileID: String) {
