@@ -324,22 +324,25 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if newDays {
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+        if isDistantPast {
+            return
         }
         
-        if !newDays && (loadingSearch || isDistantPast)  {
+        if !newDays && loadingSearch {
             return
-        } else {
-            loadingSearch = true
         }
         
         if setDistantPast {
             isDistantPast = true
         }
         
-        let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+        if newDays {
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+        }
+        loadingSearch = true
 
+        let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+        
         OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
             
             self.loadingSearch = false
