@@ -55,6 +55,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var readRetry = 0
     private var stepDays = -60
 
+    var loadingSearch = false
+
     private let refreshControl = UIRefreshControl()
     
     required init?(coder aDecoder: NSCoder) {
@@ -312,10 +314,19 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search(lteDate: Date, gteDate: Date, reiteration: Bool) {
+    func search(lteDate: Date, gteDate: Date, reiteration: Bool, activityIndicator: Bool) {
         
         if appDelegate.activeAccount.count == 0 {
             return
+        }
+        
+        if loadingSearch {
+            return         } else {
+            loadingSearch = true
+        }
+        
+        if activityIndicator {
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
         let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
@@ -331,11 +342,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     var newGteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: gteDate)!
                     newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
                     self.readRetry += 1
-                    self.search(lteDate: lteDate, gteDate: newGteDate, reiteration: reiteration)
+                    self.search(lteDate: lteDate, gteDate: newGteDate, reiteration: reiteration, activityIndicator: activityIndicator)
                 }
             }
             
             self.refreshControl.endRefreshing()
+            NCUtility.sharedInstance.stopActivityIndicator()
+
+            self.loadingSearch = false
         })
     }
     
@@ -354,7 +368,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionDataSourceMetadata()
                 var gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: Date())!
                 gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
-                self.search(lteDate: Date(), gteDate: gteDate, reiteration: true)
+                self.search(lteDate: Date(), gteDate: gteDate, reiteration: true, activityIndicator: true)
             }
         
             DispatchQueue.main.async {
@@ -503,7 +517,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount) as Date? {
             if lastDate > dateSection {
                 let gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: lastDate)!
-                search(lteDate: lastDate, gteDate: gteDate, reiteration: true)
+                search(lteDate: lastDate, gteDate: gteDate, reiteration: true, activityIndicator: true)
             }
         }
     }
@@ -523,11 +537,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if sortedSections.count == 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = sortedSections.first as! Date
-            search(lteDate: lteDate, gteDate: gteDate, reiteration: false)
+            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false)
         } else if sortedSections.count > 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate, reiteration: false)
+            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false)
         }
     }
 
