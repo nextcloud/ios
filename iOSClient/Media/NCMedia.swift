@@ -54,7 +54,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var readRetry = 0
     private var stepDays = -60
-
+    
     var loadingSearch = false
 
     private let refreshControl = UIRefreshControl()
@@ -513,7 +513,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
         var dateSection = sectionDatasource.sections.object(at: section) as! Date
         dateSection = Calendar.current.date(byAdding: .day, value: -1, to: dateSection)!
-        print(dateSection)
+        
         if let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount) as Date? {
             if lastDate > dateSection {
                 let gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: lastDate)!
