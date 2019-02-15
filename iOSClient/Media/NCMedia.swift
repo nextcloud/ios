@@ -52,11 +52,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var addWidth: CGFloat = 10
     
-    private var readRetry = 0
+    private var readRetry = 1
     private let stepDays = -60
-    
-    public var fetchingDistantPast = false
-    public var fetchingInsert = -1
+    private var isDistantPast = false
 
     private let refreshControl = UIRefreshControl()
     private var loadingSearch = false
@@ -115,9 +113,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
-        // clear fetching variable
-        fetchingDistantPast = false
-        fetchingInsert = -1
+        // clear variable
+        isDistantPast = false
+        readRetry = 1
         
         loadDatasource()
     }
@@ -320,50 +318,57 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search(lteDate: Date, gteDate: Date, reiteration: Bool, activityIndicator: Bool, prefetching: Bool) {
+    func search(lteDate: Date, gteDate: Date) {
         
         if appDelegate.activeAccount.count == 0 {
             return
         }
         
-        if loadingSearch && prefetching == false {
+        if loadingSearch || isDistantPast {
             return
         } else {
             loadingSearch = true
         }
         
-        if activityIndicator {
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+        if gteDate == NSDate.distantPast {
+            isDistantPast = true
         }
         
         let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
 
         OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
             
+            self.loadingSearch = false
+
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-               
+                
+                let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: self.appDelegate.activeAccount)
+                var insertRecord = 0
+                
                 if metadatas != nil && metadatas!.count > 0 {
-                    self.readRetry = 0
-                    let insertCount = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
-                    if (prefetching) {
-                        self.fetchingInsert = insertCount
-                    }
+                    insertRecord = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                     self.loadDatasource()
-                } else if reiteration {
+                }
+                
+                if insertRecord > 0 {
+                    self.readRetry = 1
+                }
+                
+                if insertRecord == 0 && lastDate > gteDate  {
+                    
                     self.readRetry += 1
-                    var newGteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: gteDate)!
+                    let value = self.stepDays * self.readRetry
+                
+                    var newGteDate = Calendar.current.date(byAdding: .day, value: value, to: gteDate)!
                     newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
                     if self.readRetry == 3 {
                         newGteDate = NSDate.distantPast
                     }
-                    self.search(lteDate: lteDate, gteDate: newGteDate, reiteration: reiteration, activityIndicator: activityIndicator, prefetching: prefetching)
+                    self.search(lteDate: lteDate, gteDate: newGteDate)
                 }
             }
             
             self.refreshControl.endRefreshing()
-            NCUtility.sharedInstance.stopActivityIndicator()
-
-            self.loadingSearch = false
         })
     }
     
@@ -382,7 +387,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionDataSourceMetadata()
                 var gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: Date())!
                 gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
-                self.search(lteDate: Date(), gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: false)
+                self.search(lteDate: Date(), gteDate: gteDate)
             }
         
             DispatchQueue.main.async {
@@ -521,8 +526,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         performSegue(withIdentifier: "segueDetail", sender: self)
     }
     
+    
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
 
+        /*
         var section = indexPaths.last?.section ?? 0
         var gteDate = NSDate.distantPast
 
@@ -538,6 +545,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 search(lteDate: result.date as Date, gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: true)
             }
         }
+ */
     }
     
     // MARK: Utility
@@ -554,12 +562,12 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         if sortedSections.count == 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
-            let gteDate = sortedSections.first as! Date
-            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false, prefetching: false)
+            let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.first as! Date)!
+            search(lteDate: lteDate, gteDate: gteDate)
         } else if sortedSections.count > 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
-            let gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false, prefetching: false)
+            let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.last as! Date)!
+            search(lteDate: lteDate, gteDate: gteDate)
         }
     }
 

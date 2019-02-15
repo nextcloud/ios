@@ -1998,16 +1998,16 @@ class NCManageDatabase: NSObject {
         return differentInsert
     }
     
-    @objc func getTablePhotoLastDate(account: String) -> tablePhotos? {
+    @objc func getTablePhotoLastDate(account: String) -> Date {
         
         let realm = try! Realm()
         realm.refresh()
         
         if let entities = realm.objects(tablePhotos.self).filter("account = %@", account).max(by: { $0.date.compare($1.date as Date) == .orderedDescending }) {
-            return entities
+            return entities.date as Date
         }
         
-        return nil
+        return Date()
     }
     
     @objc func deletePhotos(fileID: String) {
