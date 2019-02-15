@@ -326,8 +326,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if loadingSearch {
-            return         } else {
+        if loadingSearch && prefetching == false {
+            return
+        } else {
             loadingSearch = true
         }
         
@@ -522,20 +523,19 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
 
-        let section = indexPaths.last?.section ?? 0
+        var section = indexPaths.last?.section ?? 0
         var gteDate = NSDate.distantPast
 
-        var dateSection = sectionDatasource.sections.object(at: section) as! Date
-        dateSection = Calendar.current.date(byAdding: .day, value: -1, to: dateSection)!
+        let dateSection = sectionDatasource.sections.object(at: section) as! Date
         
-        if let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount) as Date? {
-            if lastDate > dateSection && fetchingDistantPast == false {
+        if let result = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount)  {
+            if result.date as Date >= dateSection && fetchingDistantPast == false {
                 if fetchingInsert == 0 {
                     fetchingDistantPast = true
                 } else {
-                    gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: lastDate)!
+                    gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: result.date as Date)!
                 }
-                search(lteDate: lastDate, gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: true)
+                search(lteDate: result.date as Date, gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: true)
             }
         }
     }
