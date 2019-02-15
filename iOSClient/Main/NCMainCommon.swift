@@ -449,8 +449,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             
             let cell = cell as! NCGridMediaCell
             
-            cell.fileID = metadata.fileID
-            cell.indexPath = indexPath
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
@@ -1289,6 +1287,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     if CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
+                        
                         if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
                             if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
                                 if cell is NCListCell {
@@ -1300,6 +1299,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                                 }
                             }
                         }
+                        
                         if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
                             if let cell = (view as! UITableView).cellForRow(at: indexPath) {
                                 if cell is CCCellMainTransfer {
