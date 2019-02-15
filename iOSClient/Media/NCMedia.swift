@@ -53,12 +53,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var addWidth: CGFloat = 10
     
     private var readRetry = 0
-    private var stepDays = -60
+    private let stepDays = -60
     
-    var loadingSearch = false
+    public var fetchingDistantPast = false
+    public var fetchingInsert = -1
 
     private let refreshControl = UIRefreshControl()
-    
+    private var loadingSearch = false
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -112,6 +114,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
+        
+        // clear fetching variable
+        fetchingDistantPast = false
+        fetchingInsert = -1
         
         loadDatasource()
     }
@@ -338,6 +344,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 if metadatas != nil && metadatas!.count > 0 {
                     self.readRetry = 0
                     let insertCount = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                    if (prefetching) {
+                        self.fetchingInsert = insertCount
+                    }
                     self.loadDatasource()
                 } else if reiteration {
                     self.readRetry += 1
@@ -514,13 +523,18 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
 
         let section = indexPaths.last?.section ?? 0
+        var gteDate = NSDate.distantPast
 
         var dateSection = sectionDatasource.sections.object(at: section) as! Date
         dateSection = Calendar.current.date(byAdding: .day, value: -1, to: dateSection)!
         
         if let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount) as Date? {
-            if lastDate > dateSection {
-                let gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: lastDate)!
+            if lastDate > dateSection && fetchingDistantPast == false {
+                if fetchingInsert == 0 {
+                    fetchingDistantPast = true
+                } else {
+                    gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: lastDate)!
+                }
                 search(lteDate: lastDate, gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: true)
             }
         }
