@@ -318,7 +318,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search(lteDate: Date, gteDate: Date) {
+    func search(lteDate: Date, gteDate: Date, activityIndicator: Bool) {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -334,12 +334,19 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             isDistantPast = true
         }
         
+        if activityIndicator {
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+        }
+        
         let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
 
         OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
             
             self.loadingSearch = false
 
+            self.refreshControl.endRefreshing()
+            NCUtility.sharedInstance.stopActivityIndicator()
+            
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: self.appDelegate.activeAccount)
@@ -364,11 +371,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     if self.readRetry == 3 {
                         newGteDate = NSDate.distantPast
                     }
-                    self.search(lteDate: lteDate, gteDate: newGteDate)
+                    self.search(lteDate: lteDate, gteDate: newGteDate, activityIndicator: true)
                 }
             }
             
-            self.refreshControl.endRefreshing()
+           
         })
     }
     
@@ -387,7 +394,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionDataSourceMetadata()
                 var gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: Date())!
                 gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
-                self.search(lteDate: Date(), gteDate: gteDate)
+                self.search(lteDate: Date(), gteDate: gteDate, activityIndicator: false)
             }
         
             DispatchQueue.main.async {
@@ -563,11 +570,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if sortedSections.count == 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.first as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate)
+            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: true)
         } else if sortedSections.count > 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.last as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate)
+            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: true)
         }
     }
 
