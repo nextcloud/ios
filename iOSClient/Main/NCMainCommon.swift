@@ -456,9 +456,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             cell.imageItem.image = image
             if imagePreview == false {
                 let width = cell.imageItem.image!.size.width * 2
-                //let scale = UIScreen.main.scale
                 cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
-                cell.imageItem.contentMode = .center
             }
             
             // image Local
