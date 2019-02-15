@@ -373,9 +373,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     }
                     self.search(lteDate: lteDate, gteDate: newGteDate, activityIndicator: true)
                 }
-            }
-            
-           
+            }            
         })
     }
     
