@@ -1973,15 +1973,18 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func createTablePhotos(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) {
+    @objc func createTablePhotos(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> Int {
 
         let realm = try! Realm()
         realm.refresh()
+        
+        var differentInsert: Int = 0
         
         do {
             try realm.write {
                 // DELETE ALL
                 let results = realm.objects(tablePhotos.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
+                differentInsert = metadatas.count - results.count
                 realm.delete(results)
                 // INSERT ALL
                 let photos = Array(metadatas.map { tablePhotos.init(value:$0) })
@@ -1991,6 +1994,8 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             realm.cancelWrite()
         }
+        
+        return differentInsert
     }
     
     @objc func getTablePhotoLastDate(account: String) -> NSDate? {

@@ -314,7 +314,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search(lteDate: Date, gteDate: Date, reiteration: Bool, activityIndicator: Bool) {
+    func search(lteDate: Date, gteDate: Date, reiteration: Bool, activityIndicator: Bool, prefetching: Bool) {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -336,13 +336,17 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                
                 if metadatas != nil && metadatas!.count > 0 {
-                    NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                    self.readRetry = 0
+                    let insertCount = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                     self.loadDatasource()
                 } else if reiteration {
+                    self.readRetry += 1
                     var newGteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: gteDate)!
                     newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
-                    self.readRetry += 1
-                    self.search(lteDate: lteDate, gteDate: newGteDate, reiteration: reiteration, activityIndicator: activityIndicator)
+                    if self.readRetry == 3 {
+                        newGteDate = NSDate.distantPast
+                    }
+                    self.search(lteDate: lteDate, gteDate: newGteDate, reiteration: reiteration, activityIndicator: activityIndicator, prefetching: prefetching)
                 }
             }
             
@@ -368,7 +372,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionDataSourceMetadata()
                 var gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: Date())!
                 gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
-                self.search(lteDate: Date(), gteDate: gteDate, reiteration: true, activityIndicator: true)
+                self.search(lteDate: Date(), gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: false)
             }
         
             DispatchQueue.main.async {
@@ -517,7 +521,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount) as Date? {
             if lastDate > dateSection {
                 let gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: lastDate)!
-                search(lteDate: lastDate, gteDate: gteDate, reiteration: true, activityIndicator: true)
+                search(lteDate: lastDate, gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: true)
             }
         }
     }
@@ -537,11 +541,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if sortedSections.count == 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = sortedSections.first as! Date
-            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false)
+            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false, prefetching: false)
         } else if sortedSections.count > 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false)
+            search(lteDate: lteDate, gteDate: gteDate, reiteration: false, activityIndicator: false, prefetching: false)
         }
     }
 
