@@ -392,7 +392,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionDataSourceMetadata()
                 var gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: Date())!
                 gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
-                self.search(lteDate: Date(), gteDate: gteDate, activityIndicator: false)
+                self.search(lteDate: Date(), gteDate: gteDate, activityIndicator: true)
             }
         
             DispatchQueue.main.async {
@@ -568,11 +568,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if sortedSections.count == 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.first as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: true)
+            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: false)
         } else if sortedSections.count > 1 {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             let gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.last as! Date)!
-            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: true)
+            search(lteDate: lteDate, gteDate: gteDate, activityIndicator: false)
         }
     }
 
