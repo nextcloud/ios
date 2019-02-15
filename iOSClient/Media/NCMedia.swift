@@ -24,7 +24,7 @@
 import Foundation
 import Sheeeeeeeeet
 
-class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     
@@ -492,7 +492,22 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         performSegue(withIdentifier: "segueDetail", sender: self)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
 
+        let section = indexPaths.last?.section ?? 0
+
+        var dateSection = sectionDatasource.sections.object(at: section) as! Date
+        dateSection = Calendar.current.date(byAdding: .day, value: -1, to: dateSection)!
+        print(dateSection)
+        if let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount) as Date? {
+            if lastDate > dateSection {
+                let gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: lastDate)!
+                search(lteDate: lastDate, gteDate: gteDate, reiteration: true)
+            }
+        }
+    }
+    
     // MARK: Utility
     
     func selectSearchSections() {

@@ -1993,6 +1993,18 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getTablePhotoLastDate(account: String) -> NSDate? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        if let entities = realm.objects(tablePhotos.self).filter("account = %@", account).max(by: { $0.date.compare($1.date as Date) == .orderedDescending }) {
+            return entities.date
+        }
+        
+        return nil
+    }
+    
     @objc func deletePhotos(fileID: String) {
         
         let realm = try! Realm()
