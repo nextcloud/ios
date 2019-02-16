@@ -318,7 +318,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    func search(lteDate: Date, gteDate: Date, newDays: Bool, setDistantPast: Bool) {
+    func search(lteDate: Date, gteDate: Date, addPast: Bool, setDistantPast: Bool) {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -328,7 +328,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if !newDays && loadingSearch {
+        if !addPast && loadingSearch {
             return
         }
         
@@ -336,7 +336,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             isDistantPast = true
         }
         
-        if newDays {
+        if addPast {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         loadingSearch = true
@@ -363,7 +363,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     self.readRetry = 1
                 }
                 
-                if insertRecord == 0 && newDays  {
+                if insertRecord == 0 && addPast {
                     
                     self.readRetry += 1
                     let value = self.stepDays * self.readRetry
@@ -371,9 +371,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     var newGteDate = Calendar.current.date(byAdding: .day, value: value, to: gteDate)!
                     newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
                     if self.readRetry == 3 {
-                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, newDays: newDays, setDistantPast: true)
+                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
                     } else {
-                        self.search(lteDate: lteDate, gteDate: newGteDate, newDays: newDays, setDistantPast: false)
+                        self.search(lteDate: lteDate, gteDate: newGteDate, addPast: addPast, setDistantPast: false)
                     }
                 }
             }            
@@ -395,7 +395,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.sectionDatasource = CCSectionDataSourceMetadata()
                 var gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: Date())!
                 gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
-                self.search(lteDate: Date(), gteDate: gteDate, newDays: true, setDistantPast: false)
+                self.search(lteDate: Date(), gteDate: gteDate, addPast: true, setDistantPast: false)
             }
         
             DispatchQueue.main.async {
@@ -579,10 +579,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             if lastDate == sortedSections.last as! Date {
                 gteDate = Calendar.current.date(byAdding: .day, value: stepDays, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, newDays: true, setDistantPast: false)
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false)
             } else {
                 gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, newDays: false, setDistantPast: false)
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false)
             }
         }
     }
