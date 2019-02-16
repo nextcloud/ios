@@ -116,7 +116,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         isDistantPast = false
         readRetry = 0
         
-        loadDatasource()
+        loadDatasource(start: false)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -255,7 +255,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     } else {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
                     }
-                    self.loadDatasource()
+                    self.loadDatasource(start: false)
                 }
                 if item.value as? Int == 1 { self.appDelegate.activeMain.readShare(withAccount: self.appDelegate.activeAccount, openWindow: true, metadata: metadata) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
@@ -304,7 +304,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet = ActionSheet(items: items) { sheet, item in
             if item is ActionSheetDangerButton {
                 NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
-                    self.loadDatasource()
+                    self.loadDatasource(start: false)
                 }
             }
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
@@ -355,7 +355,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 if metadatas != nil && metadatas!.count > 0 {
                     insertRecord = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
-                    self.loadDatasource()
+                    self.loadDatasource(start: false)
                 }
                 
                 if insertRecord > 0 {
@@ -388,7 +388,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     // MARK: DATASOURCE
-    @objc func loadDatasource() {
+    @objc func loadDatasource(start: Bool) {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -396,13 +396,24 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         DispatchQueue.global().async {
             
-            if let metadatas = NCManageDatabase.sharedInstance.getTablePhotos(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))  {
+            self.sectionDatasource = CCSectionDataSourceMetadata()
+
+            let metadatas = NCManageDatabase.sharedInstance.getTablePhotos(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
                 self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: self.appDelegate.activeAccount)
-            } else {
-                self.sectionDatasource = CCSectionDataSourceMetadata()
-                var gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
-                gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? gteDate
-                self.search(lteDate: Date(), gteDate: gteDate, addPast: true, setDistantPast: false)
+            
+            if metadatas == nil || start {
+            
+                var gteDate: Date?
+                var addPast: Bool
+                
+                if metadatas != nil && start {
+                    gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
+                } else {
+                    gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
+                }
+                
+                gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate!) ?? gteDate
+                self.search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
             }
         
             DispatchQueue.main.async {
@@ -546,7 +557,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     func selectSearchSections() {
         
         let sections = NSMutableSet()
-        let lastDate = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: self.appDelegate.activeAccount)
+        let lastDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
         var gteDate: Date?
         
         for item in collectionView.indexPathsForVisibleItems {

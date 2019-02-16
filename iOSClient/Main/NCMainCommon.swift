@@ -954,7 +954,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
         }
         
         self.reloadDatasource(ServerUrl: serverUrl, fileID: nil, action: k_action_NULL)
-        self.appDelegate.activeMedia.loadDatasource()
     }
     
     @objc func editPhoto(_ metadata: tableMetadata, viewController: UIViewController) {
