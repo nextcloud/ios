@@ -24,7 +24,7 @@
 import Foundation
 import Sheeeeeeeeet
 
-class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     
@@ -324,7 +324,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if isDistantPast {
+        if addPast && isDistantPast {
             return
         }
         
@@ -532,28 +532,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         performSegue(withIdentifier: "segueDetail", sender: self)
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-
-        /*
-        var section = indexPaths.last?.section ?? 0
-        var gteDate = NSDate.distantPast
-
-        let dateSection = sectionDatasource.sections.object(at: section) as! Date
-        
-        if let result = NCManageDatabase.sharedInstance.getTablePhotoLastDate(account: appDelegate.activeAccount)  {
-            if result.date as Date >= dateSection && fetchingDistantPast == false {
-                if fetchingInsert == 0 {
-                    fetchingDistantPast = true
-                } else {
-                    gteDate = Calendar.current.date(byAdding: .day, value: self.stepDays, to: result.date as Date)!
-                }
-                search(lteDate: result.date as Date, gteDate: gteDate, reiteration: true, activityIndicator: true, prefetching: true)
-            }
-        }
- */
     }
     
     // MARK: Utility
