@@ -97,9 +97,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // empty Data Source
         collectionView.emptyDataSetDelegate = self;
         collectionView.emptyDataSetSource = self;
-        
-        // reload Data Source
-        collectionViewReloadDataSource()
+        collectionView.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
