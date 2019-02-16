@@ -368,17 +368,17 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     
                     switch self.readRetry {
                     case 1:
-                        var newGteDate = Calendar.current.date(byAdding: .day, value: -90, to: gteDate)!
-                        newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
-                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
+                        var gteDate = Calendar.current.date(byAdding: .day, value: -90, to: gteDate)!
+                        gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
+                        self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
                     case 2:
-                        var newGteDate = Calendar.current.date(byAdding: .day, value: -180, to: gteDate)!
-                        newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
-                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
+                        var gteDate = Calendar.current.date(byAdding: .day, value: -180, to: gteDate)!
+                        gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
+                        self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
                     case 3:
-                        var newGteDate = Calendar.current.date(byAdding: .day, value: -360, to: gteDate)!
-                        newGteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: newGteDate) ?? newGteDate
-                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
+                        var gteDate = Calendar.current.date(byAdding: .day, value: -360, to: gteDate)!
+                        gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
+                        self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
                     default:
                         self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
                     }
