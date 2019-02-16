@@ -394,16 +394,16 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        var gteDate: Date?
-        
         if self.sectionDatasource.allRecordsDataSource != nil {
-            gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
+            
+            let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
+            self.search(lteDate: Date(), gteDate: gteDate, addPast: true, setDistantPast: false)
+
         } else {
-            gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
+            
+            let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
+            self.search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
         }
-                
-        gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate!) ?? gteDate
-        self.search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
     }
     
     // MARK: COLLECTIONVIEW METHODS
