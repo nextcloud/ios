@@ -394,15 +394,15 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if self.sectionDatasource.allRecordsDataSource != nil {
-            
-            let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
-            self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
-
-        } else {
+        if self.sectionDatasource.allRecordsDataSource.count == 0 {
             
             let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
             self.search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
+            
+        } else {
+            
+            let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
+            self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
         }
     }
     
