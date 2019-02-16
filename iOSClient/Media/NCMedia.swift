@@ -351,18 +351,18 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                var insertRecord = 0
+                var differenceInsert: Int64 = 0
                 
                 if metadatas != nil && metadatas!.count > 0 {
-                    insertRecord = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                    differenceInsert = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                     self.collectionViewReloadDataSource()
                 }
                 
-                if insertRecord > 0 {
+                if differenceInsert != 0 {
                     self.readRetry = 0
                 }
                 
-                if insertRecord == 0 && addPast {
+                if differenceInsert == 0 && addPast {
                     
                     self.readRetry += 1
                     
