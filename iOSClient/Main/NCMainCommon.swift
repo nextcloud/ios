@@ -914,7 +914,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                         
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                        NCManageDatabase.sharedInstance.deletePhotos(fileID: metadata.fileID)
                         
                         if metadata.directory {
                             NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName), account: metadata.account)
@@ -1225,7 +1224,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                NCManageDatabase.sharedInstance.deletePhotos(fileID: fileID)
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_DEL))
             }

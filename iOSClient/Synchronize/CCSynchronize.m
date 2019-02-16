@@ -127,7 +127,6 @@
                     
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                     [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                    [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -227,7 +226,6 @@
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:fileID];
             
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
         }
