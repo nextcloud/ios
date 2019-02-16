@@ -95,8 +95,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;        
+        collectionView.emptyDataSetDelegate = self;
+        collectionView.emptyDataSetSource = self;
+        
+        // reload Data Source
+        collectionViewReloadDataSource()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -255,7 +258,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     } else {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
                     }
-                    self.loadDatasource()
+                    self.collectionViewReloadDataSource()
                 }
                 if item.value as? Int == 1 { self.appDelegate.activeMain.readShare(withAccount: self.appDelegate.activeAccount, openWindow: true, metadata: metadata) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
@@ -304,7 +307,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         actionSheet = ActionSheet(items: items) { sheet, item in
             if item is ActionSheetDangerButton {
                 NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
-                    self.loadDatasource()
+                    self.collectionViewReloadDataSource()
                 }
             }
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
@@ -355,11 +358,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 if metadatas != nil && metadatas!.count > 0 {
                     differenceInsert = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
-                    self.collectionViewReloadDataSource()
                 }
                 
                 if differenceInsert != 0 {
                     self.readRetry = 0
+                    self.collectionViewReloadDataSource()
                 }
                 
                 if differenceInsert == 0 && addPast {
@@ -396,7 +399,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if self.sectionDatasource.allRecordsDataSource != nil {
             
             let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
-            self.search(lteDate: Date(), gteDate: gteDate, addPast: true, setDistantPast: false)
+            self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
 
         } else {
             
