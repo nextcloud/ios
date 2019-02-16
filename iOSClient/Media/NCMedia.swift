@@ -387,7 +387,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         })
     }
     
-    // MARK: DATASOURCE
     @objc func loadDatasource() {
         
         if appDelegate.activeAccount.count == 0 {
