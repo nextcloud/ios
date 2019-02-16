@@ -479,6 +479,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
             } else {
                 
+                // LOADING AT END ...
+                let x1 = collectionView.contentSize.height
+                let x2 = collectionView.bounds.size.height
+                
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
                 footer.setTitleLabel(sectionDatasource: sectionDatasource)
