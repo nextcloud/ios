@@ -480,6 +480,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             } else {
                 
                 // LOADING AT END ...
+                // if in not fill load another search
                 let x1 = collectionView.contentSize.height
                 let x2 = collectionView.bounds.size.height
                 
