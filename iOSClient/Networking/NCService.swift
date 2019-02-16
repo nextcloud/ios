@@ -245,7 +245,7 @@ class NCService: NSObject {
                 
                 // Call func thath required the userdID
                 self.appDelegate.activeFavorites.listingFavorites()
-                self.appDelegate.activeMedia.loadDatasource(start: true)
+                self.appDelegate.activeMedia.loadDatasource()
                 NCFunctionMain.sharedInstance.synchronizeOffline()
                 
                 DispatchQueue.global(qos: .default).async {
