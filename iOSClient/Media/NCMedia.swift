@@ -83,6 +83,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         gridLayout.heightLabelPlusButton = 0
         gridLayout.preferenceWidth = 80
         gridLayout.sectionInset = UIEdgeInsets(top: 10, left: 1, bottom: 10, right: 1)
+        
+        gridLayout?.sectionHeadersPinToVisibleBounds = true
+
 
         collectionView.collectionViewLayout = gridLayout
 
