@@ -141,7 +141,13 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_tutorial_photo_view_", comment: "")
+        
+        var text = "\n" + NSLocalizedString("_tutorial_photo_view_", comment: "")
+
+        if loadingSearch {
+            text = "\n" + NSLocalizedString("_search_in_progress_", comment: "")
+        }
+        
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
@@ -406,6 +412,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
             self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
         }
+        
+        self.collectionView?.reloadData()
     }
     
     // MARK: COLLECTIONVIEW METHODS
