@@ -243,7 +243,10 @@ class NCService: NSObject {
                 
                 self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
                 
-                // SynchronizeOffline
+                // Call func thath required the userdID
+                self.appDelegate.activeFavorites.listingFavorites()
+                self.appDelegate.activeMedia.collectionViewReloadDataSource()
+                self.appDelegate.activeMedia.loadNetworkDatasource()
                 NCFunctionMain.sharedInstance.synchronizeOffline()
                 
                 DispatchQueue.global(qos: .default).async {
