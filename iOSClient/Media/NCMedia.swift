@@ -366,6 +366,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     differenceInsert = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                 }
                 
+                print("[LOG] Different Insert \(differenceInsert)]")
+
                 if differenceInsert != 0 {
                     self.readRetry = 0
                     self.collectionViewReloadDataSource()
@@ -380,18 +382,26 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                         var gteDate = Calendar.current.date(byAdding: .day, value: -90, to: gteDate)!
                         gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
                         self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
+                        print("[LOG] Media search 90 gg]")
                     case 2:
                         var gteDate = Calendar.current.date(byAdding: .day, value: -180, to: gteDate)!
                         gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
                         self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
+                        print("[LOG] Media search 180 gg]")
+
                     case 3:
                         var gteDate = Calendar.current.date(byAdding: .day, value: -360, to: gteDate)!
                         gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
                         self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
+                        print("[LOG] Media search 360 gg]")
+
                     default:
                         self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
+                        print("[LOG] Media search distant pass]")
                     }
                 }
+                
+                self.collectionView?.reloadData()
             }            
         })
     }
