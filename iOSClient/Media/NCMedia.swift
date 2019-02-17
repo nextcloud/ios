@@ -119,8 +119,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         isDistantPast = false
         readRetry = 0
         
-        collectionViewReloadDataSource()
         loadNetworkDatasource()
+        collectionViewReloadDataSource()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -408,8 +408,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
             self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
         }
-        
-        self.collectionView?.reloadData()
     }
     
     // MARK: COLLECTIONVIEW METHODS
