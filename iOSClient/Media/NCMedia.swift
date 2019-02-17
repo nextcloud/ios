@@ -97,7 +97,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // empty Data Source
         collectionView.emptyDataSetDelegate = self;
         collectionView.emptyDataSetSource = self;
-        collectionView.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -404,6 +403,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
             self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
         }
+        
+        collectionView.reloadData()
     }
     
     // MARK: COLLECTIONVIEW METHODS
@@ -434,6 +435,16 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        if kind == UICollectionView.elementKindSectionFooter {
+            
+            let sizeCollection = collectionView.bounds.size.height
+            let sizeContent = collectionView.contentSize.height
+            
+            if sizeContent <= sizeCollection {
+                selectSearchSections()
+            }
+        }
         
         if (indexPath.section == 0) {
             
@@ -478,11 +489,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 return header
                 
             } else {
-                
-                // LOADING AT END ...
-                // if in not fill load another search
-                let x1 = collectionView.contentSize.height
-                let x2 = collectionView.bounds.size.height
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
