@@ -80,17 +80,16 @@
                     <rect key="frame" x="0.0" y="113" width="375" height="50"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PVg-rp-dMy">
-                            <rect key="frame" x="10" y="18" width="355" height="14.5"/>
+                            <rect key="frame" x="172" y="18" width="31" height="14.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="trailing" secondItem="PVg-rp-dMy" secondAttribute="trailing" constant="10" id="Rup-Kj-YB9"/>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="leading" secondItem="NC1-5C-E5z" secondAttribute="leading" constant="10" id="VT2-KQ-3Rs"/>
+                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerX" secondItem="NC1-5C-E5z" secondAttribute="centerX" id="8mS-yv-Aux"/>
+                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerY" secondItem="NC1-5C-E5z" secondAttribute="centerY" id="R6D-jH-9TC"/>
                         <constraint firstAttribute="height" constant="50" id="eT3-4m-mJ6"/>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerY" secondItem="NC1-5C-E5z" secondAttribute="centerY" id="kJS-Jt-w50"/>
                     </constraints>
                 </view>
             </subviews>
