@@ -25,7 +25,7 @@
                                 <constraint firstAttribute="width" constant="25" id="D76-X9-Tw9"/>
                                 <constraint firstAttribute="height" constant="25" id="izT-Ru-XYG"/>
                             </constraints>
-                            <state key="normal" image="switchList"/>
+                            <state key="normal" image="switchGridChange"/>
                             <connections>
                                 <action selector="touchUpInsideSwitch:" destination="tys-A2-nDX" eventType="touchUpInside" id="iT8-1j-fib"/>
                             </connections>
@@ -36,7 +36,7 @@
                                 <constraint firstAttribute="width" constant="230" id="jvv-Ug-l3I"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <state key="normal" title="Sort by name (from A to Z)">
+                            <state key="normal">
                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                             </state>
                             <connections>
@@ -86,7 +86,6 @@
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="PVg-rp-dMy" secondAttribute="trailing" constant="10" id="Rup-Kj-YB9"/>
                         <constraint firstItem="PVg-rp-dMy" firstAttribute="leading" secondItem="NC1-5C-E5z" secondAttribute="leading" constant="10" id="VT2-KQ-3Rs"/>
@@ -95,7 +94,6 @@
                     </constraints>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="QBu-GJ-Y52" firstAttribute="leading" secondItem="pm7-uW-mZE" secondAttribute="leading" id="2Jt-JT-Jbi"/>
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="bottom" secondItem="NC1-5C-E5z" secondAttribute="bottom" id="35N-28-6Fp"/>
@@ -121,6 +119,6 @@
     </objects>
     <resources>
         <image name="moreBig" width="80" height="80"/>
-        <image name="switchList" width="25" height="25"/>
+        <image name="switchGridChange" width="25" height="25"/>
     </resources>
 </document>
