@@ -336,7 +336,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         if addPast {
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+            CCGraphics.addImage(toTitle: NSLocalizedString("_media_", comment: ""), colorTitle: NCBrandColor.sharedInstance.brandText, imageTitle: CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), multiplier: 2, color: NCBrandColor.sharedInstance.brandText), imageRight: false, navigationItem: self.navigationItem)
         }
         loadingSearch = true
 
@@ -347,7 +347,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             self.loadingSearch = false
 
             self.refreshControl.endRefreshing()
-            NCUtility.sharedInstance.stopActivityIndicator()
+            self.navigationItem.titleView = nil
+            self.navigationItem.title = NSLocalizedString("_media_", comment: "")
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -404,7 +405,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
         }
         
-        collectionView.reloadData()
+        self.collectionView?.reloadData()
     }
     
     // MARK: COLLECTIONVIEW METHODS
