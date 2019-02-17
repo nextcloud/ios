@@ -522,9 +522,16 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let key = sectionDatasource.sections.object(at: section)
-        let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
-        return datasource.count
+        
+        var numberOfItemsInSection: Int = 0
+        
+        if section < sectionDatasource.sections.count {
+            let key = sectionDatasource.sections.object(at: section)
+            let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
+            numberOfItemsInSection = datasource.count
+        }
+        
+        return numberOfItemsInSection
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
