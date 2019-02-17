@@ -80,15 +80,15 @@
                     <rect key="frame" x="0.0" y="113" width="375" height="50"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PVg-rp-dMy">
-                            <rect key="frame" x="172" y="18" width="31" height="14.5"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <rect key="frame" x="166.5" y="15.5" width="42.5" height="19.5"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerX" secondItem="NC1-5C-E5z" secondAttribute="centerX" id="8mS-yv-Aux"/>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerY" secondItem="NC1-5C-E5z" secondAttribute="centerY" id="R6D-jH-9TC"/>
+                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerX" secondItem="NC1-5C-E5z" secondAttribute="centerX" id="8mS-yv-Aux" userLabel="Label Section.centerX = centerX"/>
+                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerY" secondItem="NC1-5C-E5z" secondAttribute="centerY" id="R6D-jH-9TC" userLabel="Label Section.centerY = centerY"/>
                         <constraint firstAttribute="height" constant="50" id="eT3-4m-mJ6"/>
                     </constraints>
                 </view>

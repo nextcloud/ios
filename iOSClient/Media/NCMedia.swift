@@ -95,7 +95,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(loadNetworkDatasource), for: .valueChanged)
         
         // empty Data Source
         collectionView.emptyDataSetDelegate = self;
@@ -119,7 +119,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         isDistantPast = false
         readRetry = 0
         
-        loadDatasource()
+        collectionViewReloadDataSource()
+        loadNetworkDatasource()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -391,7 +392,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         })
     }
     
-    @objc func loadDatasource() {
+    @objc func loadNetworkDatasource() {
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -469,11 +470,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
                 header.labelSectionHeightConstraint.constant = sectionHeaderHeight
                 
-                header.labelSection.font = UIFont.boldSystemFont(ofSize: 16)
                 header.labelSection.textColor = .white
-                header.labelSection.textAlignment = .center
                 header.labelSection.layer.cornerRadius = 11
-                header.labelSection.layer.masksToBounds = true
                 header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
                 let widthFrame = header.labelSection.intrinsicContentSize.width + 30
                 let xFrame = collectionView.bounds.width / 2 - widthFrame / 2
