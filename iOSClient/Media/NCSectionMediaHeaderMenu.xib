@@ -25,7 +25,7 @@
                                 <constraint firstAttribute="width" constant="25" id="D76-X9-Tw9"/>
                                 <constraint firstAttribute="height" constant="25" id="izT-Ru-XYG"/>
                             </constraints>
-                            <state key="normal" image="switchGridChange"/>
+                            <state key="normal" image="switchList"/>
                             <connections>
                                 <action selector="touchUpInsideSwitch:" destination="tys-A2-nDX" eventType="touchUpInside" id="iT8-1j-fib"/>
                             </connections>
@@ -36,7 +36,7 @@
                                 <constraint firstAttribute="width" constant="230" id="jvv-Ug-l3I"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <state key="normal">
+                            <state key="normal" title="Sort by name (from A to Z)">
                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                             </state>
                             <connections>
@@ -79,20 +79,23 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-5C-E5z">
                     <rect key="frame" x="0.0" y="113" width="375" height="50"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PVg-rp-dMy">
-                            <rect key="frame" x="166.5" y="15.5" width="42.5" height="19.5"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PVg-rp-dMy">
+                            <rect key="frame" x="10" y="18" width="355" height="14.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
+                    <color key="backgroundColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerX" secondItem="NC1-5C-E5z" secondAttribute="centerX" id="8mS-yv-Aux" userLabel="Label Section.centerX = centerX"/>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerY" secondItem="NC1-5C-E5z" secondAttribute="centerY" id="R6D-jH-9TC" userLabel="Label Section.centerY = centerY"/>
+                        <constraint firstAttribute="trailing" secondItem="PVg-rp-dMy" secondAttribute="trailing" constant="10" id="Rup-Kj-YB9"/>
+                        <constraint firstItem="PVg-rp-dMy" firstAttribute="leading" secondItem="NC1-5C-E5z" secondAttribute="leading" constant="10" id="VT2-KQ-3Rs"/>
                         <constraint firstAttribute="height" constant="50" id="eT3-4m-mJ6"/>
+                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerY" secondItem="NC1-5C-E5z" secondAttribute="centerY" id="kJS-Jt-w50"/>
                     </constraints>
                 </view>
             </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="QBu-GJ-Y52" firstAttribute="leading" secondItem="pm7-uW-mZE" secondAttribute="leading" id="2Jt-JT-Jbi"/>
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="bottom" secondItem="NC1-5C-E5z" secondAttribute="bottom" id="35N-28-6Fp"/>
@@ -118,6 +121,6 @@
     </objects>
     <resources>
         <image name="moreBig" width="80" height="80"/>
-        <image name="switchGridChange" width="25" height="25"/>
+        <image name="switchList" width="25" height="25"/>
     </resources>
 </document>
