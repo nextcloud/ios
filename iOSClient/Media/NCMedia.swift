@@ -179,7 +179,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func tapOrderHeader(sender: Any) {
-    
     }
     
     func tapMoreHeader(sender: Any) {
@@ -188,11 +187,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if isEditMode {
             
-            //let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
-            //let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_selected_", comment: ""))
-            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_selected_", comment: ""))
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
             
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item2], selectedRow: -1)
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
+            
+            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
             menuView?.token = "tapMoreHeaderMenuSelect"
             
         } else {
@@ -229,58 +228,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.showMenu()
     }
     
+    
     func tapMoreListItem(with fileID: String, sender: Any) {
-        tapMoreGridItem(with: fileID, sender: sender)
     }
     
     func tapMoreGridItem(with fileID: String, sender: Any) {
-        
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
-            return
-        }
-        
-        if !isEditMode {
-            
-            var items = [ActionSheetItem]()
-            let appearanceDelete = ActionSheetItemAppearance.init()
-            appearanceDelete.textColor = UIColor.red
-            
-            // 0 == CCMore, 1 = first NCOffline ....
-            if (self == self.navigationController?.viewControllers[1]) {
-                items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
-            }
-            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
-
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
-            itemDelete.customAppearance = appearanceDelete
-            items.append(itemDelete)
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-            
-            actionSheet = ActionSheet(items: items) { sheet, item in
-                if item.value as? Int == 0 {
-                    if metadata.directory {
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
-                    } else {
-                        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
-                    }
-                    self.collectionViewReloadDataSource()
-                }
-                if item.value as? Int == 1 { self.appDelegate.activeMain.readShare(withAccount: self.appDelegate.activeAccount, openWindow: true, metadata: metadata) }
-                if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
-                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-            }
-            
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, fileID: metadata.fileID, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-            actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
-            
-            actionSheet?.present(in: self, from: sender as! UIButton)
-        } else {
-            
-            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
-            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
-            collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        }
     }
     
     // MARK: DROP-DOWN-MENU
@@ -288,11 +240,29 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
-        
+            
+            switch indexPath.section {
+                    
+            case 0:
+                isEditMode = true
+            case 1: break
+            case 2: break
+            case 3: break
+                   
+            default: ()
+            }
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
             
+            switch indexPath.section {
+                
+            case 0:
+                isEditMode = false
+            case 1: break
+           
+            default: ()
+            }
         }
     }
     
