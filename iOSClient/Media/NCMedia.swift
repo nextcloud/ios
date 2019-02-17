@@ -71,7 +71,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header
-        collectionView.register(UINib.init(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib.init(nibName: "NCSectionMediaHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
         collectionView.register(UINib.init(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
         
         // Footer
@@ -453,7 +453,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
                 
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGridChange"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
                 header.viewLabelSection.backgroundColor = .clear
 
                 header.delegate = self
