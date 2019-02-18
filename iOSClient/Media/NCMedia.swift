@@ -24,9 +24,13 @@
 import Foundation
 import Sheeeeeeeeet
 
-class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
-    @IBOutlet fileprivate weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    @IBOutlet weak var menuButtonMore: UIButton!
+    @IBOutlet weak var menuButtonSwitch: UIButton!
+    @IBOutlet weak var menuView: UIView!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
@@ -71,7 +75,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header
-        collectionView.register(UINib.init(nibName: "NCSectionMediaHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
         collectionView.register(UINib.init(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
         
         // Footer
@@ -83,7 +86,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         gridLayout.heightLabelPlusButton = 0
         gridLayout.preferenceWidth = 80
         gridLayout.sectionInset = UIEdgeInsets(top: 10, left: 1, bottom: 10, right: 1)
-        //gridLayout.sectionHeadersPinToVisibleBounds = true
+        gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
 
@@ -156,9 +159,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         return true
     }
     
-    // MARK: TAP EVENT
+    // MARK: IBAction
     
-    func tapSwitchHeader(sender: Any) {
+    @IBAction func touchUpInsideMenuButtonSwitch(_ sender: Any) {
         
         let itemSizeStart = self.gridLayout.itemSize
         
@@ -178,23 +181,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         })
     }
     
-    func tapOrderHeader(sender: Any) {
-    }
-    
-    func tapMoreHeader(sender: Any) {
+    @IBAction func touchUpInsideMenuButtonMore(_ sender: Any) {
         
         var menuView: DropdownMenu?
-        
-        if isEditMode {
-            
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
-            
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
-            
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
-            menuView?.token = "tapMoreHeaderMenuSelect"
-            
-        } else {
+
+        if !isEditMode {
             
             let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
             let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folderMedia"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_media_folder_", comment: ""))
@@ -211,7 +202,16 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videoyes"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_hide_", comment: ""))
             }
             menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0,item1,item2,item3], selectedRow: -1)
-            menuView?.token = "tapMoreHeaderMenu"
+            menuView?.token = "menuButtonMore"
+            
+        } else {
+            
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
+            
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
+            
+            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
+            menuView?.token = "menuButtonMoreSelect"
         }
         
         menuView?.delegate = self
@@ -228,18 +228,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.showMenu()
     }
     
-    
-    func tapMoreListItem(with fileID: String, sender: Any) {
-    }
-    
-    func tapMoreGridItem(with fileID: String, sender: Any) {
-    }
-    
     // MARK: DROP-DOWN-MENU
 
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
         
-        if dropdownMenu.token == "tapMoreHeaderMenu" {
+        if dropdownMenu.token == "menuButtonMore" {
             switch indexPath.row {
             case 0:
                 isEditMode = true
@@ -254,7 +247,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             }
         }
         
-        if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
+        if dropdownMenu.token == "menuButtonMoreSelect" {
             switch indexPath.section {
             case 0:
                 isEditMode = false
@@ -436,56 +429,24 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             }
         }
         
-        if (indexPath.section == 0) {
+        if kind == UICollectionView.elementKindSectionHeader {
             
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
-                
-                header.viewLabelSection.backgroundColor = .clear
-
-                header.delegate = self
-                
-                header.setStatusButton(count: sectionDatasource.allFileID.count)
-                
-                header.buttonOrder.isHidden = true
-                header.labelSection.isHidden = false
-                header.buttonMore.isHidden = false
-                
-                header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
-                header.labelSectionHeightConstraint.constant = sectionHeaderHeight
-                
-                return header
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
             
-            } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
-                
-                return footer
-            }
+            header.backgroundColor = .clear
+            header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+            
+            return header
             
         } else {
-        
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
-                
-                header.backgroundColor = .clear
-                header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
-                
-                return header
-                
-            } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
+            
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            
+            footer.setTitleLabel(sectionDatasource: sectionDatasource)
 
-                return footer
-            }
+            return footer
         }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {

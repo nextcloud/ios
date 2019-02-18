@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
-                                <rect key="frame" x="0.0" y="44" width="375" height="734"/>
+                                <rect key="frame" x="0.0" y="84" width="375" height="694"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="fF1-wd-0xN">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -33,24 +33,62 @@
                                     <outlet property="delegate" destination="EFX-fO-Oip" id="s3n-CL-8X2"/>
                                 </connections>
                             </collectionView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G50-oX-FLW" userLabel="menuView">
+                                <rect key="frame" x="0.0" y="44" width="375" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="BWR-lv-VfM"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LR-q9-gsg" userLabel="menuButtonMore">
+                                <rect key="frame" x="338" y="51.666666666666657" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="or7-4c-KqJ"/>
+                                    <constraint firstAttribute="height" constant="25" id="pn1-Jb-zyy"/>
+                                </constraints>
+                                <state key="normal" image="moreBig"/>
+                                <connections>
+                                    <action selector="touchUpInsideMenuButtonMore:" destination="EFX-fO-Oip" eventType="touchUpInside" id="Bma-8w-2u5"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OQ1-lf-7It" userLabel="menuButtonSwitch">
+                                <rect key="frame" x="12" y="51.666666666666657" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="25" id="ekW-sZ-OU6"/>
+                                    <constraint firstAttribute="width" constant="25" id="rTQ-C2-KxE"/>
+                                </constraints>
+                                <state key="normal" image="switchGridChange"/>
+                                <connections>
+                                    <action selector="touchUpInsideMenuButtonSwitch:" destination="EFX-fO-Oip" eventType="touchUpInside" id="yZN-9G-Cj2"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="1LR-q9-gsg" firstAttribute="centerY" secondItem="G50-oX-FLW" secondAttribute="centerY" id="1IG-0W-2Km"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="1bp-sm-u0X"/>
+                            <constraint firstItem="G50-oX-FLW" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="3ed-pX-rRh"/>
+                            <constraint firstItem="OQ1-lf-7It" firstAttribute="centerY" secondItem="G50-oX-FLW" secondAttribute="centerY" id="SQq-P5-U5X"/>
+                            <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="G50-oX-FLW" secondAttribute="trailing" id="Tfa-a7-aJb"/>
                             <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
                             <constraint firstItem="Meh-VD-wWh" firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="aNr-tf-2AH"/>
-                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="tji-wt-R7s"/>
+                            <constraint firstItem="1LR-q9-gsg" firstAttribute="trailing" secondItem="G50-oX-FLW" secondAttribute="trailing" constant="-12" id="hRt-cK-gXl"/>
+                            <constraint firstItem="G50-oX-FLW" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="mg3-LM-XZM"/>
+                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="G50-oX-FLW" secondAttribute="bottom" id="xKg-EU-lKl"/>
+                            <constraint firstItem="OQ1-lf-7It" firstAttribute="leading" secondItem="G50-oX-FLW" secondAttribute="leading" constant="12" id="yys-ji-8dV"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Meh-VD-wWh"/>
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
+                        <outlet property="menuButtonMore" destination="1LR-q9-gsg" id="6Yc-bd-p3W"/>
+                        <outlet property="menuButtonSwitch" destination="OQ1-lf-7It" id="G1t-eK-QCB"/>
+                        <outlet property="menuView" destination="G50-oX-FLW" id="9Rs-ip-Ybj"/>
                         <segue destination="rIl-hI-jAh" kind="showDetail" identifier="segueDetail" id="MHI-ti-PGq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JJ0-Le-6eT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="256.80000000000001" y="228.93553223388307"/>
+            <point key="canvasLocation" x="256.80000000000001" y="228.32512315270938"/>
         </scene>
         <!--CCDetailNC-->
         <scene sceneID="D5y-IR-BuC">
@@ -61,4 +99,8 @@
             <point key="canvasLocation" x="1080" y="228"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="moreBig" width="120" height="120"/>
+        <image name="switchGridChange" width="25" height="25"/>
+    </resources>
 </document>
