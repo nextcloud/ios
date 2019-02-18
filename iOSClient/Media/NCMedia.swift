@@ -240,25 +240,26 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
-            
-            switch indexPath.section {
-                    
+            switch indexPath.row {
             case 0:
                 isEditMode = true
             case 1: break
-            case 2: break
-            case 3: break
-                   
+            case 2:
+                filterTypeFileImage = !filterTypeFileImage
+                collectionViewReloadDataSource()
+            case 3:
+                filterTypeFileVideo = !filterTypeFileVideo
+                collectionViewReloadDataSource()
             default: ()
             }
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
-            
             switch indexPath.section {
-                
             case 0:
                 isEditMode = false
+                selectFileID.removeAll()
+                collectionView.reloadData()
             case 1: break
            
             default: ()
