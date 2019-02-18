@@ -249,12 +249,12 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         if dropdownMenu.token == "menuButtonMoreSelect" {
-            switch indexPath.section {
+            switch indexPath.row {
             case 0:
                 isEditMode = false
                 selectFileID.removeAll()
                 collectionView.reloadData()
-            case 1: break
+            case 1:
                 deleteItems()
             default: ()
             }
@@ -311,6 +311,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if metadatas.count > 0 {
             NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderFileID: "") { (errorCode, message) in
+                
+                self.isEditMode = false
+                self.selectFileID.removeAll()
+                self.collectionView.reloadData()
                 self.selectSearchSections()
             }
         }
