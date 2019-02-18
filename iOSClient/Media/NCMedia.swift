@@ -24,7 +24,7 @@
 import Foundation
 import Sheeeeeeeeet
 
-class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -260,6 +260,42 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     
+    // MARK: Select Directory
+    
+    func selectStartDirectoryPhotosTab() {
+        
+        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let viewController = navigationController.topViewController as! NCSelect
+        
+        viewController.delegate = self
+        viewController.hideButtonCreateFolder = true
+        viewController.includeDirectoryE2EEncryption = false
+        viewController.includeImages = false
+        viewController.layoutViewSelect = k_layout_view_move
+        viewController.selectFile = false
+        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
+        viewController.type = "mediaFolder"
+        
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        self.present(navigationController, animated: true, completion: nil)
+        
+    }
+    
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+        
+        let oldStartDirectoryMediaTabView = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+        
+        if serverUrl != oldStartDirectoryMediaTabView {
+            
+            // Save Start Directory
+            NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
+            //
+            NCManageDatabase.sharedInstance.clearTable(tablePhotos.self, account: appDelegate.activeAccount)
+            //
+            loadNetworkDatasource()
+        }
+    }
+    
     // MARK: NC API
     
     func deleteItem(with metadata: tableMetadata, sender: Any) {
@@ -389,6 +425,35 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         self.collectionView?.reloadData()
+    }
+    
+    func selectSearchSections() {
+        
+        let sections = NSMutableSet()
+        let lastDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
+        var gteDate: Date?
+        
+        for item in collectionView.indexPathsForVisibleItems {
+            if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: sectionDatasource) {
+                if let date = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: metadata.date as Date) {
+                    sections.add(date)
+                }
+            }
+        }
+        let sortedSections = sections.sorted { (date1, date2) -> Bool in
+            (date1 as! Date).compare(date2 as! Date) == .orderedDescending
+        }
+        
+        if sortedSections.count >= 1 {
+            let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
+            if lastDate == sortedSections.last as! Date {
+                gteDate = Calendar.current.date(byAdding: .day, value: -30, to: sortedSections.last as! Date)!
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false)
+            } else {
+                gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false)
+            }
+        }
     }
     
     // MARK: COLLECTIONVIEW METHODS
@@ -521,37 +586,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         performSegue(withIdentifier: "segueDetail", sender: self)
     }
     
-    // MARK: Utility
-    
-    func selectSearchSections() {
-        
-        let sections = NSMutableSet()
-        let lastDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
-        var gteDate: Date?
-        
-        for item in collectionView.indexPathsForVisibleItems {
-            if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: sectionDatasource) {
-                if let date = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: metadata.date as Date) {
-                    sections.add(date)
-                }
-            }
-        }
-        let sortedSections = sections.sorted { (date1, date2) -> Bool in
-            (date1 as! Date).compare(date2 as! Date) == .orderedDescending
-        }
-        
-        if sortedSections.count >= 1 {
-            let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
-            if lastDate == sortedSections.last as! Date {
-                gteDate = Calendar.current.date(byAdding: .day, value: -30, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false)
-            } else {
-                gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false)
-            }
-        }
-    }
-
     // MARK: SEGUE
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
