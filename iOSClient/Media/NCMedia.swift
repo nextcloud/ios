@@ -50,7 +50,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var actionSheet: ActionSheet?
     
-    private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
     
@@ -83,7 +82,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.alwaysBounceVertical = true
 
         gridLayout = NCGridLayout()
-        gridLayout.heightLabelPlusButton = 0
         gridLayout.preferenceWidth = 80
         gridLayout.sectionInset = UIEdgeInsets(top: 10, left: 1, bottom: 10, right: 1)
         gridLayout.sectionHeadersPinToVisibleBounds = true
@@ -109,6 +107,12 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        
+        menuView.backgroundColor = NCBrandColor.sharedInstance.brand
+        menuButtonSwitch.setImage(UIImage(named: "switchGridChange")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        menuButtonSwitch.tintColor = NCBrandColor.sharedInstance.brandText
+        menuButtonMore.setImage(UIImage(named: "moreBig")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        menuButtonMore.tintColor = NCBrandColor.sharedInstance.brandText
         
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
@@ -183,7 +187,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     @IBAction func touchUpInsideMenuButtonMore(_ sender: Any) {
         
-        var menuView: DropdownMenu?
+        var menu: DropdownMenu?
 
         if !isEditMode {
             
@@ -201,8 +205,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             } else {
                 item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videoyes"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_hide_", comment: ""))
             }
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0,item1,item2,item3], selectedRow: -1)
-            menuView?.token = "menuButtonMore"
+            menu = DropdownMenu(navigationController: self.navigationController!, items: [item0,item1,item2,item3], selectedRow: -1)
+            menu?.token = "menuButtonMore"
             
         } else {
             
@@ -210,22 +214,18 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
             
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
-            menuView?.token = "menuButtonMoreSelect"
+            menu = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
+            menu?.token = "menuButtonMoreSelect"
         }
         
-        menuView?.delegate = self
-        menuView?.rowHeight = 45
-        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
-        menuView?.tableView.alwaysBounceVertical = false
-        menuView?.tableViewBackgroundColor = UIColor.white
-        
-        let header = (sender as? UIButton)?.superview
-        let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
-        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
-        menuView?.topOffsetY = CGFloat(menuOffsetY)
-        
-        menuView?.showMenu()
+        menu?.delegate = self
+        menu?.rowHeight = 45
+        menu?.highlightColor = NCBrandColor.sharedInstance.brand
+        menu?.tableView.alwaysBounceVertical = false
+        menu?.tableViewBackgroundColor = UIColor.white
+        menu?.topOffsetY = menuView.bounds.height
+    
+        menu?.showMenu()
     }
     
     // MARK: DROP-DOWN-MENU
@@ -343,22 +343,23 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     
                     switch self.readRetry {
                     case 1:
-                        var gteDate = Calendar.current.date(byAdding: .day, value: -90, to: gteDate)!
-                        gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
-                        self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
-                        print("[LOG] Media search 90 gg]")
+                        if var gteDate = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
+                            gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 90 gg]")
+                        }
                     case 2:
-                        var gteDate = Calendar.current.date(byAdding: .day, value: -180, to: gteDate)!
-                        gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
-                        self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
-                        print("[LOG] Media search 180 gg]")
-
+                        if var gteDate = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
+                            gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 180 gg]")
+                        }
                     case 3:
-                        var gteDate = Calendar.current.date(byAdding: .day, value: -360, to: gteDate)!
-                        gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate)!
-                        self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
-                        print("[LOG] Media search 360 gg]")
-
+                        if var gteDate = Calendar.current.date(byAdding: .day, value: -360, to: gteDate) {
+                            gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 360 gg]")
+                        }
                     default:
                         self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
                         print("[LOG] Media search distant pass]")
@@ -450,11 +451,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        if section == 0 {
-            return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
-        }
+        return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
