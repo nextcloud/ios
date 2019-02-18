@@ -50,7 +50,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var actionSheet: ActionSheet?
     
-    private let sectionHeaderHeight: CGFloat = 20
+    private let sectionHeaderHeight: CGFloat = 50
     private let footerHeight: CGFloat = 50
     
     private var stepImageWidth: CGFloat = 10
@@ -83,7 +83,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
         gridLayout = NCGridMediaLayout()
         gridLayout.preferenceWidth = 80
-        gridLayout.sectionInset = UIEdgeInsets(top: 10, left: 1, bottom: 10, right: 1)
         gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
