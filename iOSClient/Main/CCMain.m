@@ -25,7 +25,6 @@
 
 #import "CCMain.h"
 #import "AppDelegate.h"
-#import "CCMedia.h"
 #import "CCSynchronize.h"
 #import "OCActivity.h"
 #import "OCNotifications.h"
