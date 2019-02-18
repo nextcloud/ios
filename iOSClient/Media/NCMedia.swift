@@ -46,14 +46,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     
-    private var gridLayout: NCGridLayout!
+    private var gridLayout: NCGridMediaLayout!
     
     private var actionSheet: ActionSheet?
     
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
     
-    private var addWidth: CGFloat = 10
+    private var stepImageWidth: CGFloat = 10
     
     private var readRetry = 0
     private var isDistantPast = false
@@ -81,7 +81,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         collectionView.alwaysBounceVertical = true
 
-        gridLayout = NCGridLayout()
+        gridLayout = NCGridMediaLayout()
         gridLayout.preferenceWidth = 80
         gridLayout.sectionInset = UIEdgeInsets(top: 10, left: 1, bottom: 10, right: 1)
         gridLayout.sectionHeadersPinToVisibleBounds = true
@@ -171,14 +171,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         UIView.animate(withDuration: 0.0, animations: {
             
-            if self.gridLayout.numItems == 1 && self.addWidth > 0 {
-                self.addWidth = -10
+            if self.gridLayout.numItems == 1 && self.stepImageWidth > 0 {
+                self.stepImageWidth = -10
             } else if itemSizeStart.width < 50 {
-                self.addWidth = 10
+                self.stepImageWidth = 10
             }
             
             repeat {
-                self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + self.addWidth
+                self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + self.stepImageWidth
             } while (self.gridLayout.itemSize == itemSizeStart)
             
             self.collectionView.collectionViewLayout.invalidateLayout()

@@ -108,3 +108,48 @@ class NCGridLayout: UICollectionViewFlowLayout {
         return proposedContentOffset
     }
 }
+
+class NCGridMediaLayout: UICollectionViewFlowLayout {
+    
+    var preferenceWidth: CGFloat = 110
+    var marginLeftRight: CGFloat = 1
+    var numItems: Int = 0
+    
+    override init() {
+        super.init()
+        
+        sectionHeadersPinToVisibleBounds = false
+        
+        minimumInteritemSpacing = 1
+        minimumLineSpacing = 1
+        
+        self.scrollDirection = .vertical
+        self.sectionInset = UIEdgeInsets(top: 0, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var itemSize: CGSize {
+        get {
+            if let collectionView = collectionView {
+                
+                self.numItems = Int(collectionView.frame.width / preferenceWidth)
+                let itemWidth: CGFloat = (collectionView.frame.width - (marginLeftRight * 2) - CGFloat(numItems)) / CGFloat(numItems)
+                let itemHeight: CGFloat = itemWidth
+                return CGSize(width: itemWidth, height: itemHeight)
+            }
+            
+            // Default fallback
+            return CGSize(width: 100, height: 100)
+        }
+        set {
+            super.itemSize = newValue
+        }
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
+}
