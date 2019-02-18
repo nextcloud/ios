@@ -255,7 +255,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 selectFileID.removeAll()
                 collectionView.reloadData()
             case 1: break
-           
+                deleteItems()
             default: ()
             }
         }
@@ -299,31 +299,21 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     // MARK: NC API
     
-    func deleteItem(with metadata: tableMetadata, sender: Any) {
+    func deleteItems() {
         
-        var items = [ActionSheetItem]()
+        var metadatas = [tableMetadata]()
         
-        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
-            return
-        }
-        
-        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        actionSheet = ActionSheet(items: items) { sheet, item in
-            if item is ActionSheetDangerButton {
-                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
-                    self.collectionViewReloadDataSource()
-                }
+        for fileID in selectFileID {
+            if let metadata = NCManageDatabase.sharedInstance.getTablePhoto(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+                metadatas.append(metadata)
             }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
         
-        let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, fileID: metadata.fileID, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-        actionSheet?.headerView = headerView
-        actionSheet?.headerView?.frame.size.height = 50
-        
-        actionSheet?.present(in: self, from: sender as! UIButton)
+        if metadatas.count > 0 {
+            NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderFileID: "") { (errorCode, message) in
+                self.selectSearchSections()
+            }
+        }
     }
     
     func search(lteDate: Date, gteDate: Date, addPast: Bool, setDistantPast: Bool) {
