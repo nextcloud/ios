@@ -314,7 +314,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 self.isEditMode = false
                 self.selectFileID.removeAll()
-                self.collectionView.reloadData()
                 self.selectSearchSections()
             }
         }
