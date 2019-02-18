@@ -165,6 +165,8 @@ class NCSectionHeader: UICollectionReusableView {
 class NCSectionMediaHeader: UICollectionReusableView {
     
     @IBOutlet weak var labelSection: UILabel!
+    @IBOutlet weak var labelLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var labelTrailingConstraint: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()
