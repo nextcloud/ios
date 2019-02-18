@@ -236,7 +236,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             switch indexPath.row {
             case 0:
                 isEditMode = true
-            case 1: break
+            case 1:
+                selectStartDirectoryPhotosTab()
             case 2:
                 filterTypeFileImage = !filterTypeFileImage
                 collectionViewReloadDataSource()
@@ -285,7 +286,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         let oldStartDirectoryMediaTabView = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
         
-        if serverUrl != oldStartDirectoryMediaTabView {
+        if serverUrl != nil && serverUrl != oldStartDirectoryMediaTabView {
             
             // Save Start Directory
             NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
