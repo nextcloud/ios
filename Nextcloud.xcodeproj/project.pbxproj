@@ -133,6 +133,7 @@
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
+		F739513A221B127F00D986C8 /* NCSectionMediaHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7395139221B127F00D986C8 /* NCSectionMediaHeader.xib */; };
 		F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */; };
 		F73B4EEF1F470D9100BBEE4B /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */; };
 		F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EB01F470D9100BBEE4B /* CMakeLists.txt */; };
@@ -797,6 +798,7 @@
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
 		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
 		F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCManageEndToEndEncryption.m; sourceTree = "<group>"; };
+		F7395139221B127F00D986C8 /* NCSectionMediaHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionMediaHeader.xib; sourceTree = "<group>"; };
 		F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Big5Freq.tab; sourceTree = "<group>"; };
 		F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CharDistribution.cpp; sourceTree = "<group>"; };
 		F73B4EAF1F470D9100BBEE4B /* CharDistribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharDistribution.h; sourceTree = "<group>"; };
@@ -2388,6 +2390,7 @@
 			isa = PBXGroup;
 			children = (
 				F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */,
+				F7395139221B127F00D986C8 /* NCSectionMediaHeader.xib */,
 				F78ACD55219047E90088454D /* NCSectionHeader.xib */,
 				F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */,
 				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
@@ -3348,6 +3351,7 @@
 				F7D4233C1F0596AC009C9782 /* Reader-Button-N@2x.png in Resources */,
 				F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */,
 				F7D423411F0596AC009C9782 /* Reader-Export.png in Resources */,
+				F739513A221B127F00D986C8 /* NCSectionMediaHeader.xib in Resources */,
 				F77B0F481D118A16002130FE /* synchronized.gif in Resources */,
 				F7D4233E1F0596AC009C9782 /* Reader-Email.png in Resources */,
 				F762CB981EACB84400B38484 /* icon-info@2x.png in Resources */,

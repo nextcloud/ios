@@ -74,7 +74,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header
-        collectionView.register(UINib.init(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
+        collectionView.register(UINib.init(nibName: "NCSectionMediaHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
         
         // Footer
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
@@ -431,17 +431,13 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if kind == UICollectionView.elementKindSectionHeader {
             
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionMediaHeader
             
-            header.backgroundColor = .clear
             header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
-            header.labelSection.font = UIFont.boldSystemFont(ofSize: 16)
             header.labelSection.textColor = .white
-            header.labelSection.textAlignment = .center
             header.labelSection.layer.cornerRadius = 11
             header.labelSection.layer.masksToBounds = true
             header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
-            let x = header.labelSection.intrinsicContentSize
             let widthFrame = header.labelSection.intrinsicContentSize.width + 30
             let xFrame = collectionView.bounds.width / 2 - widthFrame / 2
             header.labelSection.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
