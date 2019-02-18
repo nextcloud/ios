@@ -82,7 +82,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.alwaysBounceVertical = true
 
         gridLayout = NCGridMediaLayout()
-        gridLayout.preferenceWidth = 80
+        gridLayout.preferenceWidth = CGFloat(CCUtility.getMediaWidthImage())
         gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
@@ -181,6 +181,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + self.stepImageWidth
             } while (self.gridLayout.itemSize == itemSizeStart)
             
+            CCUtility.setMediaWidthImage(Int(self.gridLayout?.preferenceWidth ?? 80))
             self.collectionView.collectionViewLayout.invalidateLayout()
         })
     }

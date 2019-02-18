@@ -509,6 +509,23 @@
     return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
 }
 
++ (NSInteger)getMediaWidthImage
+{
+    NSString *width = [UICKeyChainStore stringForKey:@"mediaWidthImage" service:k_serviceShareKeyChain];
+    
+    if (width == nil) {
+        return 80;
+    } else {
+        return [width integerValue];
+    }
+}
+
++ (void)setMediaWidthImage:(NSInteger)width
+{
+    NSString *widthString = [@(width) stringValue];
+    [UICKeyChainStore setString:widthString forKey:@"mediaWidthImage" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

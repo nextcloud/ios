@@ -141,6 +141,9 @@
 + (void)setPushNotificationToken:(NSString *)token;
 + (NSString *)getPushNotificationToken;
 
++ (NSInteger)getMediaWidthImage;
++ (void)setMediaWidthImage:(NSInteger)width;
+
 // ===== Varius =====
 
 + (NSString *)getUserAgent;
