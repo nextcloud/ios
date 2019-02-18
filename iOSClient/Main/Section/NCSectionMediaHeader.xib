@@ -18,13 +18,15 @@
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LabelSectionHeader" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn" userLabel="Label Section">
                     <rect key="frame" x="109" y="15.5" width="158" height="19.5"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="158" id="q8E-Aw-w6I"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
             <constraints>
-                <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="110" id="0IB-hN-AIW"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="EFn-SN-cxu" secondAttribute="centerY" id="1Ld-Nt-Kpm"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="EFn-SN-cxu" secondAttribute="leading" constant="109" id="lwa-IO-uij"/>
             </constraints>
@@ -32,7 +34,7 @@
             <connections>
                 <outlet property="labelLeadingConstraint" destination="lwa-IO-uij" id="V9f-rn-jae"/>
                 <outlet property="labelSection" destination="gzy-cT-Gjn" id="yG6-wJ-CmI"/>
-                <outlet property="labelTrailingConstraint" destination="0IB-hN-AIW" id="oiw-Bk-hIe"/>
+                <outlet property="labelWidthConstraint" destination="q8E-Aw-w6I" id="3kq-Fd-E9d"/>
             </connections>
             <point key="canvasLocation" x="42.399999999999999" y="45.877061469265371"/>
         </collectionReusableView>

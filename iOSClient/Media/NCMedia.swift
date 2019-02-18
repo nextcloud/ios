@@ -132,6 +132,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.reloadData()
             self.actionSheet?.viewDidLayoutSubviews()
         }
     }
@@ -438,10 +439,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             header.labelSection.layer.cornerRadius = 11
             header.labelSection.layer.masksToBounds = true
             header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
-            let widthFrame = header.labelSection.intrinsicContentSize.width + 30
-            let xFrame = collectionView.bounds.width / 2 - widthFrame / 2
-            header.labelSection.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
-            
+            let width = header.labelSection.intrinsicContentSize.width + 30
+            let leading = collectionView.bounds.width / 2 - width / 2
+            header.labelWidthConstraint.constant = width
+            header.labelLeadingConstraint.constant = leading
+
             return header
             
         } else {
