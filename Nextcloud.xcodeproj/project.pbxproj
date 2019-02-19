@@ -3466,6 +3466,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjackSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WeScan.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/FastScroll.framework",
 			);
 			outputPaths = (
 			);

@@ -1,7 +1,13 @@
+//
+//  RegisteredLoggingTestAppDelegate.h
+//  RegisteredLoggingTest
+//
+//  CocoaLumberjack Demos
+//
+
 #import <UIKit/UIKit.h>
 
 @class RegisteredLoggingTestViewController;
-
 
 @interface RegisteredLoggingTestAppDelegate : NSObject <UIApplicationDelegate>
 

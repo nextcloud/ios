@@ -1,3 +1,10 @@
+//
+//  ViewController.h
+//  TextXcodeColors
+//
+//  CocoaLumberjack Demos
+//
+
 #import <UIKit/UIKit.h>
 
 @interface ViewController : UIViewController

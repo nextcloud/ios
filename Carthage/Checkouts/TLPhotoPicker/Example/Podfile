@@ -5,13 +5,4 @@ platform :ios, '9.1'
 
 target 'TLPhotoPicker_Example' do
     pod 'TLPhotoPicker', :path => '../'
-
-  target 'TLPhotoPicker_Tests' do
-    inherit! :search_paths
-
-    pod 'Quick'
-    pod 'Nimble'
-    pod 'FBSnapshotTestCase'
-    pod 'Nimble-Snapshots'
-  end
 end

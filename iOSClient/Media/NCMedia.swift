@@ -23,14 +23,15 @@
 
 import Foundation
 import Sheeeeeeeeet
+import FastScroll
 
 class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
-    @IBOutlet weak var collectionView: UICollectionView!
-    
+    @IBOutlet weak var collectionView : FastScrollCollectionView!
     @IBOutlet weak var menuButtonMore: UIButton!
     @IBOutlet weak var menuButtonSwitch: UIButton!
     @IBOutlet weak var menuView: UIView!
+    
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
@@ -98,6 +99,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // empty Data Source
         collectionView.emptyDataSetDelegate = self;
         collectionView.emptyDataSetSource = self;
+        
+        configFastScroll()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -485,16 +488,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
 
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        selectSearchSections()
-    }
-    
-    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if (!decelerate) {
-            selectSearchSections()
-        }
-    }
-    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionFooter {
@@ -619,5 +612,64 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 segueViewController.title = metadataPush!.fileNameView
             }
         }
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+
+extension NCMedia: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        collectionView.scrollViewDidScroll(scrollView)
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        collectionView.scrollViewWillBeginDragging(scrollView)
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        selectSearchSections()
+        collectionView.scrollViewDidEndDecelerating(scrollView)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if (!decelerate) {
+            selectSearchSections()
+        }
+        collectionView.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
+    }
+}
+
+// MARK: Helpers
+
+extension NCMedia {
+    
+    fileprivate func configFastScroll() {
+        
+        //bubble
+        collectionView.bubbleFocus = .dynamic
+        collectionView.bubbleTextSize = 14.0
+        collectionView.bubbleMarginRight = 50.0
+        collectionView.bubbleColor = UIColor(red: 38.0 / 255.0, green: 48.0 / 255.0, blue: 60.0 / 255.0, alpha: 1.0)
+        
+        //handle
+        collectionView.handleHeight = 40.0
+        collectionView.handleWidth = 40.0
+        collectionView.handleRadius = 20.0
+        collectionView.handleMarginRight = -20
+        collectionView.handleColor = NCBrandColor.sharedInstance.brand //UIColor(red: 38.0 / 255.0, green: 48.0 / 255.0, blue: 60.0 / 255.0, alpha: 1.0)
+        
+        //scrollbar
+        collectionView.scrollbarWidth = 0.0
+        collectionView.scrollbarMarginTop = 20.0
+        collectionView.scrollbarMarginBottom = 0.0
+        collectionView.scrollbarMarginRight = 10.0
+        
+        //callback action to display bubble name
+        /*
+        collectionView.bubbleNameForIndexPath = { indexPath in
+            let visibleSection: Section = self.data[indexPath.section]
+            return visibleSection.sectionTitle
+        }
+        */
     }
 }

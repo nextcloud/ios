@@ -2,7 +2,7 @@
 //  main.m
 //  NonArcTest
 //
-//  Created by Robbie Hanson on 11/9/11.
+//  CocoaLumberjack Demos
 //
 
 #import <Cocoa/Cocoa.h>

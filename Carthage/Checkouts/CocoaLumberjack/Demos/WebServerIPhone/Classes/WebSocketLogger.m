@@ -1,6 +1,12 @@
+//
+//  WebSocketLogger.m
+//  WebServerIPhone
+//
+//  CocoaLumberjack Demos
+//
+
 #import "WebSocketLogger.h"
 #import "HTTPLogging.h"
-
 
 @implementation WebSocketLogger
 

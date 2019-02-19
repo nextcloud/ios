@@ -158,6 +158,12 @@ open class TLPhotoCollectionViewCell: UICollectionViewCell {
         self.selectedView?.layer.cornerRadius = 15
         self.orderBgView?.layer.cornerRadius = 2
         self.videoIconImageView?.image = self.configure.videoIcon
+        if #available(iOS 11.0, *) {
+            self.imageView?.accessibilityIgnoresInvertColors = true
+            self.playerView?.accessibilityIgnoresInvertColors = true
+            self.livePhotoView?.accessibilityIgnoresInvertColors = true
+            self.videoIconImageView?.accessibilityIgnoresInvertColors = true
+        }
     }
     
     override open func prepareForReuse() {

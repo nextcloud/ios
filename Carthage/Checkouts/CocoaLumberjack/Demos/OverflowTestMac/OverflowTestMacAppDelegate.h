@@ -2,7 +2,7 @@
 //  OverflowTestMacAppDelegate.h
 //  OverflowTestMac
 //
-//  Created by Robbie Hanson on 5/10/10.
+//  CocoaLumberjack Demos
 //
 
 #import <Cocoa/Cocoa.h>

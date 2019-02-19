@@ -1,4 +1,10 @@
 //
+//  RegisteredLoggingTest-Prefix.pch
+//  RegisteredLoggingTest
+//
+//  CocoaLumberjack Demos
+//
+//
 // Prefix header for all source files of the 'RegisteredLoggingTest' target in the 'RegisteredLoggingTest' project
 //
 

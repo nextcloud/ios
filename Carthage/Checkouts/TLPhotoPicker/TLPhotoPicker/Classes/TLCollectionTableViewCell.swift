@@ -12,4 +12,10 @@ class TLCollectionTableViewCell: UITableViewCell {
     @IBOutlet var thumbImageView: UIImageView!
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var subTitleLabel: UILabel!
+    override func awakeFromNib() {
+        super.awakeFromNib()   
+        if #available(iOS 11.0, *) {
+            self.thumbImageView.accessibilityIgnoresInvertColors = true
+        }
+    }
 }

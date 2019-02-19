@@ -1,3 +1,10 @@
+//
+//  FineGrainedLoggingAppDelegate.m
+//  FineGrainedLogging
+//
+//  CocoaLumberjack Demos
+//
+
 #import "FineGrainedLoggingAppDelegate.h"
 
 #import "MYLog.h"

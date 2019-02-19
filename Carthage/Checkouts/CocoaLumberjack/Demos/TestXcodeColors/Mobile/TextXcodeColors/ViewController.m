@@ -1,5 +1,11 @@
-#import "ViewController.h"
+//
+//  ViewController.m
+//  TextXcodeColors
+//
+//  CocoaLumberjack Demos
+//
 
+#import "ViewController.h"
 
 @implementation ViewController
 

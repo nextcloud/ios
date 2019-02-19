@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2016, Deusty, LLC
+// Copyright (c) 2010-2018, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -21,14 +21,13 @@
 #import "DDLog.h"
 
 #import <pthread.h>
-#import <dispatch/dispatch.h>
 #import <objc/runtime.h>
-#import <mach/mach_host.h>
-#import <mach/host_info.h>
-#import <libkern/OSAtomic.h>
-#import <Availability.h>
+
 #if TARGET_OS_IOS
     #import <UIKit/UIDevice.h>
+    #import <UIKit/UIApplication.h>
+#elif !defined(DD_CLI) && __has_include(<AppKit/NSApplication.h>)
+    #import <AppKit/NSApplication.h>
 #endif
 
 
@@ -52,7 +51,7 @@
 // Specifies the maximum queue size of the logging thread.
 //
 // Since most logging is asynchronous, its possible for rogue threads to flood the logging queue.
-// That is, to issue an abundance of log statements faster than the logging thread can keepup.
+// That is, to issue an abundance of log statements faster than the logging thread can keep up.
 // Typically such a scenario occurs when log statements are added haphazardly within large loops,
 // but may also be possible if relatively slow loggers are being used.
 //
@@ -110,7 +109,7 @@ static void *const GlobalLoggingQueueIdentityKey = (void *)&GlobalLoggingQueueId
 static dispatch_queue_t _loggingQueue;
 
 // Individual loggers are executed concurrently per log statement.
-// Each logger has it's own associated queue, and a dispatch group is used for synchrnoization.
+// Each logger has it's own associated queue, and a dispatch group is used for synchronization.
 static dispatch_group_t _loggingGroup;
 
 // In order to prevent to queue from growing infinitely large,
@@ -143,7 +142,7 @@ static NSUInteger _numProcessors;
  * method may never be invoked if the class is not used.) The runtime sends the initialize message to
  * classes in a thread-safe manner. Superclasses receive this message before their subclasses.
  *
- * This method may also be called directly (assumably by accident), hence the safety mechanism.
+ * This method may also be called directly, hence the safety mechanism.
  **/
 + (void)initialize {
     static dispatch_once_t DDLogOnceToken;
@@ -181,24 +180,23 @@ static NSUInteger _numProcessors;
         self._loggers = [[NSMutableArray alloc] initWithCapacity:4];
         
 #if TARGET_OS_IOS
-        NSString *notificationName = @"UIApplicationWillTerminateNotification";
+        NSString *notificationName = UIApplicationWillTerminateNotification;
 #else
         NSString *notificationName = nil;
-        
-        // On Command Line Tool apps AppKit may not be avaliable
-#ifdef NSAppKitVersionNumber10_0
-        
+
+        // On Command Line Tool apps AppKit may not be available
+#if !defined(DD_CLI) && __has_include(<AppKit/NSApplication.h>)
         if (NSApp) {
-            notificationName = @"NSApplicationWillTerminateNotification";
+            notificationName = NSApplicationWillTerminateNotification;
         }
-        
 #endif
-        
+
         if (!notificationName) {
             // If there is no NSApp -> we are running Command Line Tool app.
             // In this case terminate notification wouldn't be fired, so we use workaround.
+            __weak __auto_type weakSelf = self;
             atexit_b (^{
-                [self applicationWillTerminate:nil];
+                [weakSelf applicationWillTerminate:nil];
             });
         }
         
@@ -343,7 +341,7 @@ static NSUInteger _numProcessors;
 
     // We are using a counting semaphore provided by GCD.
     // The semaphore is initialized with our DDLOG_MAX_QUEUE_SIZE value.
-    // Everytime we want to queue a log message we decrement this value.
+    // Every time we want to queue a log message we decrement this value.
     // If the resulting value is less than zero,
     // the semaphore function waits in FIFO order for a signal to occur before returning.
     //
@@ -353,16 +351,18 @@ static NSUInteger _numProcessors;
 
     dispatch_block_t logBlock = ^{
         dispatch_semaphore_wait(_queueSemaphore, DISPATCH_TIME_FOREVER);
+        // We're now sure we won't overflow the queue.
+        // It is time to queue our log message.
         @autoreleasepool {
             [self lt_log:logMessage];
         }
     };
 
-    // We've now sure we won't overflow the queue.
-    // It is time to queue our log message.
-
     if (asyncFlag) {
         dispatch_async(_loggingQueue, logBlock);
+    } else if (dispatch_get_specific(GlobalLoggingQueueIdentityKey)) {
+        // We've logged an error message while on the logging queue...
+        logBlock();
     } else {
         dispatch_sync(_loggingQueue, logBlock);
     }
@@ -843,7 +843,7 @@ static NSUInteger _numProcessors;
         
         dispatch_group_wait(_loggingGroup, DISPATCH_TIME_FOREVER);
     } else {
-        // Execute each logger serialy, each within its own queue.
+        // Execute each logger serially, each within its own queue.
         
         for (DDLoggerNode *loggerNode in self._loggers) {
             // skip the loggers that shouldn't write this message based on the log level
@@ -878,7 +878,7 @@ static NSUInteger _numProcessors;
 - (void)lt_flush {
     // All log statements issued before the flush method was invoked have now been executed.
     //
-    // Now we need to propogate the flush request to any loggers that implement the flush method.
+    // Now we need to propagate the flush request to any loggers that implement the flush method.
     // This is designed for loggers that buffer IO.
     
     NSAssert(dispatch_get_specific(GlobalLoggingQueueIdentityKey),
@@ -1004,114 +1004,6 @@ NSString * __nullable DDExtractFileNameWithoutExtension(const char *filePath, BO
 
 @implementation DDLogMessage
 
-// Can we use DISPATCH_CURRENT_QUEUE_LABEL ?
-// Can we use dispatch_get_current_queue (without it crashing) ?
-//
-// a) Compiling against newer SDK's (iOS 7+/OS X 10.9+) where DISPATCH_CURRENT_QUEUE_LABEL is defined
-//    on a (iOS 7.0+/OS X 10.9+) runtime version
-//
-// b) Systems where dispatch_get_current_queue is not yet deprecated and won't crash (< iOS 6.0/OS X 10.9)
-//
-//    dispatch_get_current_queue(void);
-//      __OSX_AVAILABLE_BUT_DEPRECATED(__MAC_10_6,__MAC_10_9,__IPHONE_4_0,__IPHONE_6_0)
-
-#if TARGET_OS_IOS
-
-// Compiling for iOS
-
-static BOOL _use_dispatch_current_queue_label;
-static BOOL _use_dispatch_get_current_queue;
-
-static void _dispatch_queue_label_init_once(void * __attribute__((unused)) context)
-{
-    _use_dispatch_current_queue_label = (UIDevice.currentDevice.systemVersion.floatValue >= 7.0f);
-    _use_dispatch_get_current_queue = (!_use_dispatch_current_queue_label && UIDevice.currentDevice.systemVersion.floatValue >= 6.1f);
-}
-
-static __inline__ __attribute__((__always_inline__)) void _dispatch_queue_label_init()
-{
-    static dispatch_once_t onceToken;
-    dispatch_once_f(&onceToken, NULL, _dispatch_queue_label_init_once);
-}
-
-  #define USE_DISPATCH_CURRENT_QUEUE_LABEL (_dispatch_queue_label_init(), _use_dispatch_current_queue_label)
-  #define USE_DISPATCH_GET_CURRENT_QUEUE   (_dispatch_queue_label_init(), _use_dispatch_get_current_queue)
-
-#elif TARGET_OS_WATCH || TARGET_OS_TV
-
-// Compiling for watchOS, tvOS
-
-  #define USE_DISPATCH_CURRENT_QUEUE_LABEL YES
-  #define USE_DISPATCH_GET_CURRENT_QUEUE   NO
-
-#else
-
-// Compiling for Mac OS X
-
-  #ifndef MAC_OS_X_VERSION_10_9
-    #define MAC_OS_X_VERSION_10_9            1090
-  #endif
-
-  #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9 // Mac OS X 10.9 or later required
-
-    #define USE_DISPATCH_CURRENT_QUEUE_LABEL YES
-    #define USE_DISPATCH_GET_CURRENT_QUEUE   NO
-
-  #else
-
-static BOOL _use_dispatch_current_queue_label;
-static BOOL _use_dispatch_get_current_queue;
-
-static void _dispatch_queue_label_init_once(void * __attribute__((unused)) context)
-{
-    _use_dispatch_current_queue_label = [NSTimer instancesRespondToSelector : @selector(tolerance)]; // OS X 10.9+
-    _use_dispatch_get_current_queue = !_use_dispatch_current_queue_label;                            // < OS X 10.9
-}
-
-static __inline__ __attribute__((__always_inline__)) void _dispatch_queue_label_init()
-{
-    static dispatch_once_t onceToken;
-    dispatch_once_f(&onceToken, NULL, _dispatch_queue_label_init_once);
-}
-
-    #define USE_DISPATCH_CURRENT_QUEUE_LABEL (_dispatch_queue_label_init(), _use_dispatch_current_queue_label)
-    #define USE_DISPATCH_GET_CURRENT_QUEUE   (_dispatch_queue_label_init(), _use_dispatch_get_current_queue)
-
-  #endif
-
-#endif /* if TARGET_OS_IOS */
-
-// Should we use pthread_threadid_np ?
-// With iOS 8+/OSX 10.10+ NSLog uses pthread_threadid_np instead of pthread_mach_thread_np
-
-#if TARGET_OS_IOS
-
-// Compiling for iOS
-
-  #ifndef kCFCoreFoundationVersionNumber_iOS_8_0
-    #define kCFCoreFoundationVersionNumber_iOS_8_0 1140.10
-  #endif
-
-  #define USE_PTHREAD_THREADID_NP                (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_8_0)
-
-#elif TARGET_OS_WATCH || TARGET_OS_TV
-
-// Compiling for watchOS, tvOS
-
-  #define USE_PTHREAD_THREADID_NP                YES
-
-#else
-
-// Compiling for Mac OS X
-
-  #ifndef kCFCoreFoundationVersionNumber10_10
-    #define kCFCoreFoundationVersionNumber10_10    1151.16
-  #endif
-
-  #define USE_PTHREAD_THREADID_NP                (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber10_10)
-
-#endif /* if TARGET_OS_IOS */
-
 - (instancetype)init {
     self = [super init];
     return self;
@@ -1145,12 +1037,11 @@ static __inline__ __attribute__((__always_inline__)) void _dispatch_queue_label_
         _options      = options;
         _timestamp    = timestamp ?: [NSDate new];
 
-        if (USE_PTHREAD_THREADID_NP) {
-            __uint64_t tid;
-            pthread_threadid_np(NULL, &tid);
+        __uint64_t tid;
+        if (pthread_threadid_np(NULL, &tid) == 0) {
             _threadID = [[NSString alloc] initWithFormat:@"%llu", tid];
         } else {
-            _threadID = [[NSString alloc] initWithFormat:@"%x", pthread_mach_thread_np(pthread_self())];
+            _threadID = @"missing threadId";
         }
         _threadName   = NSThread.currentThread.name;
 
@@ -1163,17 +1054,7 @@ static __inline__ __attribute__((__always_inline__)) void _dispatch_queue_label_
         }
         
         // Try to get the current queue's label
-        if (USE_DISPATCH_CURRENT_QUEUE_LABEL) {
-            _queueLabel = [[NSString alloc] initWithFormat:@"%s", dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL)];
-        } else if (USE_DISPATCH_GET_CURRENT_QUEUE) {
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            dispatch_queue_t currentQueue = dispatch_get_current_queue();
-            #pragma clang diagnostic pop
-            _queueLabel = [[NSString alloc] initWithFormat:@"%s", dispatch_queue_get_label(currentQueue)];
-        } else {
-            _queueLabel = @""; // iOS 6.x only
-        }
+        _queueLabel = [[NSString alloc] initWithFormat:@"%s", dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL)];
     }
     return self;
 }
@@ -1293,7 +1174,7 @@ static __inline__ __attribute__((__always_inline__)) void _dispatch_queue_label_
     //
     // globalLoggingQueue : The queue that all log messages go through before they arrive in our loggerQueue.
     //
-    // All log statements go through the serial gloabalLoggingQueue before they arrive at our loggerQueue.
+    // All log statements go through the serial globalLoggingQueue before they arrive at our loggerQueue.
     // Thus this method also goes through the serial globalLoggingQueue to ensure intuitive operation.
 
     // IMPORTANT NOTE:

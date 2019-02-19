@@ -1,9 +1,13 @@
+//
+//  Stuff.h
+//  GlobalLogLevel
+//
+//  CocoaLumberjack Demos
+//
+
 #import <Cocoa/Cocoa.h>
 
-
-@interface Stuff : NSObject {
-
-}
+@interface Stuff : NSObject
 
 + (void)doStuff;
 

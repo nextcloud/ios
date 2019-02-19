@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2014-2016, Deusty, LLC
+// Copyright (c) 2010-2018, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -12,13 +12,9 @@
 // * Neither the name of Deusty nor the names of its contributors may be used
 //   to endorse or promote products derived from this software without specific
 //   prior written permission of Deusty, LLC.
-//
-//  Created by Pavel Kunc on 18/04/2015.
-//
 
 @import XCTest;
-#import <Expecta/Expecta.h>
-#import "DDLog.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 static NSString * const kDefaultMessage = @"Log message";
 
@@ -27,7 +23,6 @@ static NSString * const kDefaultMessage = @"Log message";
 + (DDLogMessage *)test_messageWithMessage:(NSString *)message;
 + (DDLogMessage *)test_messageWithFunction:(NSString *)function options:(DDLogMessageOptions)options;
 + (DDLogMessage *)test_messageWithFile:(NSString *)file options:(DDLogMessageOptions)options;
-
 @end
 
 @implementation DDLogMessage (TestHelpers)
@@ -114,14 +109,13 @@ static NSString * const kDefaultMessage = @"Log message";
 
 - (void)tearDown {
     [super tearDown];
-
     self.message = nil;
 }
 
 #pragma mark - Message creation
 
 - (void)testInitSetsAllPassedParameters {
-    NSDate *referenceDate  = [NSDate dateWithTimeIntervalSince1970:0];
+    __auto_type referenceDate = [NSDate dateWithTimeIntervalSince1970:0];
     self.message =
         [[DDLogMessage alloc] initWithMessage:kDefaultMessage
                                         level:DDLogLevelDebug
@@ -133,102 +127,100 @@ static NSString * const kDefaultMessage = @"Log message";
                                           tag:NULL
                                          options:DDLogMessageCopyFile
                                          timestamp:referenceDate];
-
-    expect(self.message.message).to.equal(@"Log message");
-    expect(self.message.level).to.equal(DDLogLevelDebug);
-    expect(self.message.flag).to.equal(DDLogFlagError);
-    expect(self.message.context).to.equal(1);
-    expect(self.message.file).to.equal(@"DDLogMessageTests.m");
-    expect(self.message.function).to.equal(@"testInitSetsAllPassedParameters");
-    expect(self.message.line).to.equal(50);
-    expect(self.message.tag).to.equal(NULL);
-    expect(self.message.options).to.equal(DDLogMessageCopyFile);
-    expect(self.message.timestamp).to.equal(referenceDate);
+    XCTAssertEqualObjects(self.message.message, @"Log message");
+    XCTAssertEqual(self.message.level, DDLogLevelDebug);
+    XCTAssertEqual(self.message.flag, DDLogFlagError);
+    XCTAssertEqual(self.message.context, 1);
+    XCTAssertEqualObjects(self.message.file, @"DDLogMessageTests.m");
+    XCTAssertEqualObjects(self.message.function, @"testInitSetsAllPassedParameters");
+    XCTAssertEqual(self.message.line, 50);
+    XCTAssertEqualObjects(self.message.tag, NULL);
+    XCTAssertEqual(self.message.options, DDLogMessageCopyFile);
+    XCTAssertEqualObjects(self.message.timestamp, referenceDate);
 }
 
 - (void)testInitCopyMessageParameter {
-    NSMutableString *message = [NSMutableString stringWithString:@"Log message"];
+    __auto_type message = [NSMutableString stringWithString:@"Log message"];
     self.message = [DDLogMessage test_messageWithMessage:message];
     [message appendString:@" changed"];
-    expect(self.message.message).to.equal(@"Log message");
+    XCTAssertEqualObjects(self.message.message, @"Log message");
 }
 
 - (void)testInitSetsCurrentDateToTimestampIfItIsNotProvided {
-    expect(fabs([self.message.timestamp timeIntervalSinceNow])).to.beLessThanOrEqualTo(5);
+    XCTAssertLessThanOrEqual(fabs([self.message.timestamp timeIntervalSinceNow]), 5);
 }
 
 - (void)testInitSetsThreadIDToCurrentThreadID {
-    expect(self.message.threadID).notTo.beNil();
+    XCTAssertNotNil(self.message.threadID);
 }
 
 - (void)testInitSetsThreadNameToCurrentThreadName {
-    expect(self.message.threadName).to.equal(NSThread.currentThread.name);
+    XCTAssertEqualObjects(self.message.threadName, NSThread.currentThread.name);
 }
 
 - (void)testInitSetsFileNameToFilenameWithoutExtensionIfItHasExtension {
-    expect(self.message.fileName).to.equal(@"DDLogMessageTests");
+    XCTAssertEqualObjects(self.message.fileName, @"DDLogMessageTests");
 }
 
 - (void)testInitSetsFileNameToFilenameIfItHasNotExtension {
     self.message = [DDLogMessage test_messageWithFile:@"no-extenstion" options:(DDLogMessageOptions)0];
-    expect(self.message.fileName).to.equal(@"no-extenstion");
+    XCTAssertEqualObjects(self.message.fileName, @"no-extenstion");
 }
 
 //TODO: How to test this for different SDK versions? (pavel, Sat 18 Apr 15:35:46 2015)
 - (void)testInitSetsQueueLabelToQueueWeCurrentlyRun {
     // We're running on main thread
-    expect(self.message.queueLabel).to.equal(@"com.apple.main-thread");
+    XCTAssertEqualObjects(self.message.queueLabel, @"com.apple.main-thread");
 }
 
-
 - (void)testInitAssignsFileParameterWithoutCopyFileOption {
-    NSMutableString *file = [NSMutableString stringWithString:@"file"];
+    __auto_type file = [NSMutableString stringWithString:@"file"];
     self.message = [DDLogMessage test_messageWithFile:file options:(DDLogMessageOptions)0];
-    expect(self.message.file).to.equal(@"file");
+    XCTAssertEqualObjects(self.message.file, @"file");
     [file appendString:@"file"];
-    expect(self.message.file).to.equal(@"filefile");
+    XCTAssertEqualObjects(self.message.file, @"filefile");
 }
 
 - (void)testInitCopyFileParameterWithCopyFileOption {
-    NSMutableString *file = [NSMutableString stringWithString:@"file"];
+    __auto_type file = [NSMutableString stringWithString:@"file"];
     self.message = [DDLogMessage test_messageWithFile:file options:DDLogMessageCopyFile];
-    expect(self.message.file).to.equal(@"file");
+    XCTAssertEqualObjects(self.message.file, @"file");
     [file appendString:@"file"];
-    expect(self.message.file).to.equal(@"file");
+    XCTAssertEqualObjects(self.message.file, @"file");
 }
 
 - (void)testInitAssignFunctionParameterWithoutCopyFunctionOption {
-    NSMutableString *function = [NSMutableString stringWithString:@"function"];
+    __auto_type function = [NSMutableString stringWithString:@"function"];
     self.message = [DDLogMessage test_messageWithFunction:function options:(DDLogMessageOptions)0];
-    expect(self.message.function).to.equal(@"function");
+    XCTAssertEqualObjects(self.message.function, @"function");
     [function appendString:@"function"];
-    expect(self.message.function).to.equal(@"functionfunction");
+    XCTAssertEqualObjects(self.message.function, @"functionfunction");
 }
 
 - (void)testInitCopyFunctionParameterWithCopyFunctionOption {
-    NSMutableString *function = [NSMutableString stringWithString:@"function"];
+    __auto_type function = [NSMutableString stringWithString:@"function"];
     self.message = [DDLogMessage test_messageWithFunction:function options:DDLogMessageCopyFunction];
-    expect(self.message.function).to.equal(@"function");
+    XCTAssertEqualObjects(self.message.function, @"function");
     [function appendString:@"function"];
-    expect(self.message.function).to.equal(@"function");
+    XCTAssertEqualObjects(self.message.function, @"function");
 }
 
 - (void)testCopyWithZoneCreatesValidCopy {
-    DDLogMessage *copy = [self.message copy];
-    expect(self.message.message).to.equal(copy.message);
-    expect(self.message.level).to.equal(copy.level);
-    expect(self.message.flag).to.equal(copy.flag);
-    expect(self.message.context).to.equal(copy.context);
-    expect(self.message.file).to.equal(copy.file);
-    expect(self.message.fileName).to.equal(copy.fileName);
-    expect(self.message.function).to.equal(copy.function);
-    expect(self.message.line).to.equal(copy.line);
-    expect(self.message.tag).to.equal(copy.tag);
-    expect(self.message.options).to.equal(copy.options);
-    expect(self.message.timestamp).to.equal(copy.timestamp);
-    expect(self.message.threadID).to.equal(copy.threadID);
-    expect(self.message.threadName).to.equal(copy.threadName);
-    expect(self.message.queueLabel).to.equal(copy.queueLabel);
+    __auto_type copy = (typeof(self.message))[self.message copy];
+    XCTAssertEqualObjects(self.message.message, copy.message);
+    XCTAssertEqual(self.message.level, copy.level);
+    XCTAssertEqual(self.message.flag, copy.flag);
+    XCTAssertEqual(self.message.context, copy.context);
+    XCTAssertEqualObjects(self.message.file, copy.file);
+    XCTAssertEqualObjects(self.message.fileName, copy.fileName);
+    XCTAssertEqualObjects(self.message.function, copy.function);
+    XCTAssertEqual(self.message.line, copy.line);
+    XCTAssertEqualObjects(self.message.tag, copy.tag);
+    XCTAssertEqual(self.message.options, copy.options);
+    XCTAssertEqualObjects(self.message.timestamp, copy.timestamp);
+    XCTAssertEqualObjects(self.message.threadID, copy.threadID);
+    XCTAssertEqualObjects(self.message.threadName, copy.threadName);
+    XCTAssertEqualObjects(self.message.queueLabel, copy.queueLabel);
 }
 
 @end

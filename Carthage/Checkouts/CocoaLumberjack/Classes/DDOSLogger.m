@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2016, Deusty, LLC
+// Copyright (c) 2010-2018, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -14,11 +14,12 @@
 //   prior written permission of Deusty, LLC.
 
 #import "DDOSLogger.h"
+
 #import <os/log.h>
 
-static DDOSLogger *sharedInstance;
-
 @implementation DDOSLogger
+
+static DDOSLogger *sharedInstance;
 
 + (instancetype)sharedInstance {
     static dispatch_once_t DDOSLoggerOnceToken;
@@ -74,8 +75,8 @@ static DDOSLogger *sharedInstance;
 
 }
 
-- (NSString *)loggerName {
-    return @"cocoa.lumberjack.osLogger";
+- (DDLoggerName)loggerName {
+    return DDLoggerNameOS;
 }
 
 @end

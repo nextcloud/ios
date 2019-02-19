@@ -2,7 +2,7 @@
 //  main.m
 //  TextXcodeColors
 //
-//  Created by Robbie Hanson on 5/24/12.
+//  CocoaLumberjack Demos
 //
 
 #import <UIKit/UIKit.h>

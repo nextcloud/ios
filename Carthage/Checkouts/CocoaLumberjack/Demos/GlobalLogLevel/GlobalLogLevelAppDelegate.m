@@ -1,3 +1,10 @@
+//
+//  GlobalLogLevelAppDelegate.m
+//  GlobalLogLevel
+//
+//  CocoaLumberjack Demos
+//
+
 #import "GlobalLogLevelAppDelegate.h"
 #import "Stuff.h"
 #import "MyLogging.h"

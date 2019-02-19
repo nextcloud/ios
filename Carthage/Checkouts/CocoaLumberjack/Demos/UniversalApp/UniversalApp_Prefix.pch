@@ -1,4 +1,10 @@
 //
+//  UniversalApp_Prefix.pch
+//  UniversalApp
+//
+//  CocoaLumberjack Demos
+//
+//
 // Prefix header for all source files of the 'UniversalApp' target in the 'UniversalApp' project
 //
 

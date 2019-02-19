@@ -1,12 +1,18 @@
+//
+//  StaticLogging.m
+//  Benchmarking
+//
+//  CocoaLumberjack Demos
+//
+
 #import "StaticLogging.h"
 #import "PerformanceTesting.h"
-#import "DDLogMacros.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 #define FILENAME @"StaticLogging " // Trailing space to match exactly the others in length
 
 // Debug levels: off, error, warn, info, verbose
 static const DDLogLevel ddLogLevel = DDLogLevelWarning; // CONST
-
 
 @implementation StaticLogging
 
