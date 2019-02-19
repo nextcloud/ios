@@ -1997,24 +1997,6 @@ class NCManageDatabase: NSObject {
         return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
     }
     
-    @objc func deletePhotos(fileID: String) {
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        let results = realm.objects(tableMedia.self).filter("fileID = %@", fileID)
-        
-        realm.delete(results)
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return
-        }
-    }
-    
     //MARK: -
     //MARK: Table Photo Library
     

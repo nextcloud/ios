@@ -119,8 +119,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
-        loadNetworkDatasource()
-        collectionViewReloadDataSource()
+        //loadNetworkDatasource()
+        selectSearchSections()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -395,7 +395,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 }
                 
                 self.collectionView?.reloadData()
-            }            
+                
+            }  else {
+                
+                self.collectionViewReloadDataSource()
+            }
         })
     }
     
@@ -467,13 +471,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
 
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        //caused by user
         selectSearchSections()
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if (!decelerate) {
-            //cause by user
             selectSearchSections()
         }
     }
