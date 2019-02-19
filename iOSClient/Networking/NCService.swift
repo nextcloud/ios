@@ -245,7 +245,7 @@ class NCService: NSObject {
                 
                 // Call func thath required the userdID
                 self.appDelegate.activeFavorites.listingFavorites()
-                self.appDelegate.activeMedia.collectionViewReloadDataSource()
+                self.appDelegate.activeMedia.collectionViewReloadDataSource(loadNetworkDatasource: true)
                 self.appDelegate.activeMedia.loadNetworkDatasource()
                 NCFunctionMain.sharedInstance.synchronizeOffline()
                 

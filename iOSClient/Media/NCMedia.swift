@@ -119,7 +119,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
-        //loadNetworkDatasource()
         selectSearchSections()
     }
     
@@ -237,10 +236,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 selectStartDirectoryPhotosTab()
             case 2:
                 filterTypeFileImage = !filterTypeFileImage
-                collectionViewReloadDataSource()
+                collectionViewReloadDataSource(loadNetworkDatasource: false)
             case 3:
                 filterTypeFileVideo = !filterTypeFileVideo
-                collectionViewReloadDataSource()
+                collectionViewReloadDataSource(loadNetworkDatasource: false)
             default: ()
             }
         }
@@ -362,7 +361,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
                 if differenceInsert != 0 {
                     self.readRetry = 0
-                    self.collectionViewReloadDataSource()
+                    self.collectionViewReloadDataSource(loadNetworkDatasource: false)
                 }
                 
                 if differenceInsert == 0 && addPast {
@@ -398,7 +397,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
             }  else {
                 
-                self.collectionViewReloadDataSource()
+                self.collectionViewReloadDataSource(loadNetworkDatasource: false)
             }
         })
     }
@@ -457,7 +456,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     // MARK: COLLECTIONVIEW METHODS
     
-    func collectionViewReloadDataSource() {
+    public func collectionViewReloadDataSource(loadNetworkDatasource: Bool) {
         
         DispatchQueue.global().async {
     
@@ -465,6 +464,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
+                
+                if loadNetworkDatasource {
+                    self.loadNetworkDatasource()
+                }
+                
                 self.collectionView?.reloadData()
             }
         }
