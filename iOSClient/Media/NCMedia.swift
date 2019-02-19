@@ -402,7 +402,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         })
     }
     
-    @objc func loadNetworkDatasource() {
+    @objc private func loadNetworkDatasource() {
         
         isDistantPast = false
         readRetry = 0
@@ -425,7 +425,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         self.collectionView?.reloadData()
     }
     
-    func selectSearchSections() {
+    private func selectSearchSections() {
         
         let sections = NSMutableSet()
         let lastDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
