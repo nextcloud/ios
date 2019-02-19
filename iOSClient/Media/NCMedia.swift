@@ -458,6 +458,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     public func collectionViewReloadDataSource(loadNetworkDatasource: Bool) {
         
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
         DispatchQueue.global().async {
     
             let metadatas = NCManageDatabase.sharedInstance.getTableMedias(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
