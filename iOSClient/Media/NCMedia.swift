@@ -178,6 +178,12 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             CCUtility.setMediaWidthImage(Int(self.gridLayout?.preferenceWidth ?? 80))
             self.collectionView.collectionViewLayout.invalidateLayout()
+            
+            if self.stepImageWidth < 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.selectSearchSections()
+                }
+            }
         })
     }
     
