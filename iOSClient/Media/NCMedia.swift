@@ -639,13 +639,14 @@ extension NCMedia: UIScrollViewDelegate {
     }
 }
 
-// MARK: Helpers
+// MARK: FastScroll
 
 extension NCMedia {
     
     fileprivate func configFastScroll() {
         
         //bubble
+        collectionView.deactivateBubble = true
         collectionView.bubbleFocus = .dynamic
         collectionView.bubbleTextSize = 14.0
         collectionView.bubbleMarginRight = 50.0
@@ -660,7 +661,7 @@ extension NCMedia {
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0
-        collectionView.scrollbarMarginTop = 20.0
+        collectionView.scrollbarMarginTop = 40.0
         collectionView.scrollbarMarginBottom = 0.0
         collectionView.scrollbarMarginRight = 10.0
         
