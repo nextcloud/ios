@@ -317,6 +317,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 self.isEditMode = false
                 self.selectFileID.removeAll()
+                
                 self.selectSearchSections()
             }
         }
@@ -530,7 +531,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
             return footer
         }
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
