@@ -119,10 +119,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
-        // clear variable
-        isDistantPast = false
-        readRetry = 0
-        
         loadNetworkDatasource()
         collectionViewReloadDataSource()
     }
@@ -403,6 +399,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     @objc func loadNetworkDatasource() {
+        
+        isDistantPast = false
+        readRetry = 0
         
         if appDelegate.activeAccount.count == 0 {
             return
