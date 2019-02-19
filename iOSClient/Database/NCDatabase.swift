@@ -273,7 +273,7 @@ class tableMetadata: Object {
     }
 }
 
-class tablePhotos: Object {
+class tableMedia: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""

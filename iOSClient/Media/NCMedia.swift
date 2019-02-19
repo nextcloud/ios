@@ -288,7 +288,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             // Save Start Directory
             NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
             //
-            NCManageDatabase.sharedInstance.clearTable(tablePhotos.self, account: appDelegate.activeAccount)
+            NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: appDelegate.activeAccount)
             //
             loadNetworkDatasource()
         }
@@ -301,7 +301,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         var metadatas = [tableMetadata]()
         
         for fileID in selectFileID {
-            if let metadata = NCManageDatabase.sharedInstance.getTablePhoto(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+            if let metadata = NCManageDatabase.sharedInstance.getTableMedia(predicate: NSPredicate(format: "fileID == %@", fileID)) {
                 metadatas.append(metadata)
             }
         }
@@ -354,7 +354,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 var differenceInsert: Int64 = 0
                 
                 if metadatas != nil && metadatas!.count > 0 {
-                    differenceInsert = NCManageDatabase.sharedInstance.createTablePhotos(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                    differenceInsert = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                 }
                 
                 print("[LOG] Different Insert \(differenceInsert)]")
@@ -414,7 +414,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
         } else {
             
-            let gteDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
+            let gteDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
             self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
         }
         
@@ -424,7 +424,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     func selectSearchSections() {
         
         let sections = NSMutableSet()
-        let lastDate = NCManageDatabase.sharedInstance.getTablePhotoDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
+        let lastDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
         var gteDate: Date?
         
         for item in collectionView.indexPathsForVisibleItems {
@@ -456,7 +456,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         DispatchQueue.global().async {
     
-            let metadatas = NCManageDatabase.sharedInstance.getTablePhotos(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
+            let metadatas = NCManageDatabase.sharedInstance.getTableMedias(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
             self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {

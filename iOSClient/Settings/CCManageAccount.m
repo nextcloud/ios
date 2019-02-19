@@ -247,7 +247,7 @@
     [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
     
