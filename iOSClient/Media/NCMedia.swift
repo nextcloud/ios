@@ -289,6 +289,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
             //
             NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionDataSourceMetadata()
             //
             loadNetworkDatasource()
         }

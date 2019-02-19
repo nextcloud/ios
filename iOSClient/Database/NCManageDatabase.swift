@@ -1925,30 +1925,7 @@ class NCManageDatabase: NSObject {
     
     //MARK: -
     //MARK: Table Media
-    /*
-    @objc func getTablePhotos(addMetadatasFromUpload: [tableMetadata], account: String) -> [tableMetadata]? {
-
-        let realm = try! Realm()
-        realm.refresh()
-
-        let predicate = NSPredicate(format: "account == %@", account)
-        let results = realm.objects(tablePhotos.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-
-        if (results.count > 0) {
-            var returnMetadatas = Array(results.map { tableMetadata.init(value:$0) })
-            for metadata in addMetadatasFromUpload {
-                let result = realm.objects(tablePhotos.self).filter("fileID == %@", metadata.fileID).first
-                if result == nil {
-                    returnMetadatas.append(metadata)
-                }
-            }
-            return returnMetadatas
-        } else {
-            return nil
-        }
-    }
-    */
-    
+ 
     @objc func getTableMedia(predicate: NSPredicate) -> tableMetadata? {
         
         let realm = try! Realm()
@@ -2020,14 +1997,13 @@ class NCManageDatabase: NSObject {
         return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
     }
     
-    /*
     @objc func deletePhotos(fileID: String) {
         
         let realm = try! Realm()
         
         realm.beginWrite()
         
-        let results = realm.objects(tablePhotos.self).filter("fileID = %@", fileID)
+        let results = realm.objects(tableMedia.self).filter("fileID = %@", fileID)
         
         realm.delete(results)
         
@@ -2038,7 +2014,6 @@ class NCManageDatabase: NSObject {
             return
         }
     }
-    */
     
     //MARK: -
     //MARK: Table Photo Library
