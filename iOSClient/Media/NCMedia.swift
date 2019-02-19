@@ -653,16 +653,18 @@ extension NCMedia {
         collectionView.bubbleColor = UIColor(red: 38.0 / 255.0, green: 48.0 / 255.0, blue: 60.0 / 255.0, alpha: 1.0)
         
         //handle
+        /*
         collectionView.handleHeight = 40.0
         collectionView.handleWidth = 40.0
         collectionView.handleRadius = 20.0
         collectionView.handleMarginRight = -20
+        */
         collectionView.handleColor = NCBrandColor.sharedInstance.brand //UIColor(red: 38.0 / 255.0, green: 48.0 / 255.0, blue: 60.0 / 255.0, alpha: 1.0)
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0
-        collectionView.scrollbarMarginTop = 40.0
-        collectionView.scrollbarMarginBottom = 0.0
+        collectionView.scrollbarMarginTop = 45.0
+        collectionView.scrollbarMarginBottom = 5.0
         collectionView.scrollbarMarginRight = 10.0
         
         //callback action to display bubble name
