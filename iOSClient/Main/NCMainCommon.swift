@@ -1206,9 +1206,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 if appDelegate.activeDetail != nil {
                     appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
                 }
-                if appDelegate.activeMedia != nil {
-                    //appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
-                }
             }
             
             self.appDelegate.performSelector(onMainThread: #selector(self.appDelegate.loadAutoDownloadUpload), with: nil, waitUntilDone: true)
@@ -1232,9 +1229,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if appDelegate.activeDetail.view.window != nil {
                     appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
-                }
-                if appDelegate.activeMedia.view.window != nil {
-                    //appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
                 }
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
