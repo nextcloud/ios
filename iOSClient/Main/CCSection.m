@@ -80,7 +80,6 @@
     
     NSMutableArray *metadatas = [NSMutableArray new];
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
-    
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
     /*
@@ -92,6 +91,9 @@
         if ([sorted isEqualToString:@"date"]) {
             if (ascending) return [obj1.date compare:obj2.date];
             else return [obj2.date compare:obj1.date];
+        } else if ([sorted isEqualToString:@"sessionTaskIdentifier"]) {
+            if (ascending) return (obj1.sessionTaskIdentifier > obj2.sessionTaskIdentifier);
+            else return (obj2.sessionTaskIdentifier < obj1.sessionTaskIdentifier);
         } else {
             if (ascending) return [obj1.fileName compare:obj2.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1.fileName length]) locale:[NSLocale currentLocale]];
             else return [obj2.fileName compare:obj1.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj2.fileName length]) locale:[NSLocale currentLocale]];
