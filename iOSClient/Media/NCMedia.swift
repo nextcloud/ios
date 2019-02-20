@@ -483,9 +483,11 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     private func downloadThumbnail() {
-        for item in collectionView.indexPathsForVisibleItems {
-            if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: sectionDatasource) {
-               NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: collectionView, indexPath: item)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            for item in self.collectionView.indexPathsForVisibleItems {
+                if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
+                   NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView, indexPath: item)
+                }
             }
         }
     }
@@ -676,14 +678,10 @@ extension NCMedia: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        selectSearchSections()
         collectionView.scrollViewDidEndDecelerating(scrollView)
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if (!decelerate) {
-            selectSearchSections()
-        }
         collectionView.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
     }
 }
