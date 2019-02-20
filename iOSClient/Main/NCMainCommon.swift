@@ -208,7 +208,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     
     //MARK: -
     
-    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, source: UIViewController) {
+    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool,source: UIViewController) {
         
         var image: UIImage?
         var imagePreview = false
@@ -225,7 +225,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
         }
         
         // Download preview
-        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: collectionView, indexPath: indexPath)
+        if downloadThumbnail {
+            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: collectionView, indexPath: indexPath)
+        }
         
         // Share
         let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)

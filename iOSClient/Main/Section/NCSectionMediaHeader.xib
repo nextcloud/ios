@@ -17,11 +17,12 @@
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LabelSectionHeader" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn" userLabel="Label Section">
-                    <rect key="frame" x="109" y="15.5" width="158" height="19.5"/>
+                    <rect key="frame" x="109" y="14" width="158" height="22"/>
                     <constraints>
+                        <constraint firstAttribute="height" constant="22" id="fSy-kX-khX"/>
                         <constraint firstAttribute="width" constant="158" id="q8E-Aw-w6I"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -32,6 +33,7 @@
             </constraints>
             <viewLayoutGuide key="safeArea" id="EFn-SN-cxu"/>
             <connections>
+                <outlet property="labelHeightConstraint" destination="fSy-kX-khX" id="I8c-I3-WSP"/>
                 <outlet property="labelLeadingConstraint" destination="lwa-IO-uij" id="V9f-rn-jae"/>
                 <outlet property="labelSection" destination="gzy-cT-Gjn" id="yG6-wJ-CmI"/>
                 <outlet property="labelWidthConstraint" destination="q8E-Aw-w6I" id="3kq-Fd-E9d"/>

@@ -125,12 +125,22 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         selectSearchSections()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        collectionView?.reloadDataThenPerform {
+            self.downloadThumbnail()
+        }
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.reloadData()
+            self.collectionView?.reloadDataThenPerform {
+                self.downloadThumbnail()
+            }
             self.actionSheet?.viewDidLayoutSubviews()
         }
     }
@@ -258,7 +268,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             case 0:
                 isEditMode = false
                 selectFileID.removeAll()
-                collectionView.reloadData()
+                collectionView?.reloadDataThenPerform {
+                    self.downloadThumbnail()
+                }
             case 1:
                 deleteItems()
             default: ()
@@ -345,7 +357,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         if addPast {
-            CCGraphics.addImage(toTitle: NSLocalizedString("_media_", comment: ""), colorTitle: NCBrandColor.sharedInstance.brandText, imageTitle: CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), multiplier: 2, color: NCBrandColor.sharedInstance.brandText), imageRight: false, navigationItem: self.navigationItem)
+            //CCGraphics.addImage(toTitle: NSLocalizedString("_media_", comment: ""), colorTitle: NCBrandColor.sharedInstance.brandText, imageTitle: CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), multiplier: 2, color: NCBrandColor.sharedInstance.brandText), imageRight: false, navigationItem: self.navigationItem)
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         loadingSearch = true
 
@@ -356,8 +369,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             self.loadingSearch = false
 
             self.refreshControl.endRefreshing()
-            self.navigationItem.titleView = nil
-            self.navigationItem.title = NSLocalizedString("_media_", comment: "")
+            NCUtility.sharedInstance.stopActivityIndicator()
+            //self.navigationItem.titleView = nil
+            //self.navigationItem.title = NSLocalizedString("_media_", comment: "")
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -403,7 +417,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     }
                 }
                 
-                self.collectionView?.reloadData()
+                self.collectionView?.reloadDataThenPerform {
+                    self.downloadThumbnail()
+                }
                 
             }  else {
                 
@@ -421,18 +437,20 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if self.sectionDatasource.allRecordsDataSource.count == 0 {
+        if sectionDatasource.allRecordsDataSource.count == 0 {
             
             let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
-            self.search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
+            search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
             
         } else {
             
             let gteDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
-            self.search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
+            search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
         }
         
-        self.collectionView?.reloadData()
+        collectionView?.reloadDataThenPerform {
+            self.downloadThumbnail()
+        }
     }
     
     private func selectSearchSections() {
@@ -464,6 +482,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     
+    private func downloadThumbnail() {
+        for item in collectionView.indexPathsForVisibleItems {
+            if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: sectionDatasource) {
+               NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: collectionView, indexPath: item)
+            }
+        }
+    }
+    
     // MARK: COLLECTIONVIEW METHODS
     
     public func collectionViewReloadDataSource(loadNetworkDatasource: Bool) {
@@ -483,7 +509,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     self.loadNetworkDatasource()
                 }
                 
-                self.collectionView?.reloadData()
+                self.collectionView?.reloadDataThenPerform {
+                    self.downloadThumbnail()
+                }
             }
         }
     }
@@ -506,8 +534,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
             header.labelSection.textColor = .white
-            header.labelSection.layer.cornerRadius = 11
-            header.labelSection.layer.masksToBounds = true
+            header.labelHeightConstraint.constant = 20
+            header.labelSection.layer.cornerRadius = 10
             header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
             let width = header.labelSection.intrinsicContentSize.width + 30
             let leading = collectionView.bounds.width / 2 - width / 2
@@ -565,7 +593,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
       
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, source: self)
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, source: self)
         
         return cell
     }
@@ -612,6 +640,27 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 segueViewController.title = metadataPush!.fileNameView
             }
         }
+    }
+}
+
+extension FastScrollCollectionView
+{
+    /// Calls reloadsData() on self, and ensures that the given closure is
+    /// called after reloadData() has been completed.
+    ///
+    /// Discussion: reloadData() appears to be asynchronous. i.e. the
+    /// reloading actually happens during the next layout pass. So, doing
+    /// things like scrolling the collectionView immediately after a
+    /// call to reloadData() can cause trouble.
+    ///
+    /// This method uses CATransaction to schedule the closure.
+    
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void))
+    {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        self.reloadData()
+        CATransaction.commit()
     }
 }
 
