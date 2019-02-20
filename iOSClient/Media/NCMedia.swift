@@ -25,7 +25,7 @@ import Foundation
 import Sheeeeeeeeet
 import FastScroll
 
-class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
+class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate, FastScrollCollectionViewDelegate {
     
     @IBOutlet weak var collectionView : FastScrollCollectionView!
     @IBOutlet weak var menuButtonMore: UIButton!
@@ -694,6 +694,8 @@ extension NCMedia {
     
     fileprivate func configFastScroll() {
         
+        collectionView.fastScrollDelegate = self
+        
         //bubble
         collectionView.deactivateBubble = true
         collectionView.bubbleFocus = .dynamic
@@ -723,5 +725,9 @@ extension NCMedia {
             return visibleSection.sectionTitle
         }
         */
+    }
+    
+    func hideHandle() {
+        selectSearchSections()
     }
 }
