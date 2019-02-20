@@ -534,9 +534,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             }
         }
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!, sorted: datasourceSorted, ascending: datasourceAscending) {
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!, sorted: nil, ascending: false) {
             
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
         }
         
         if withLoadFolder {
