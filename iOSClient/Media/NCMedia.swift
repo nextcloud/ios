@@ -122,7 +122,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
-        selectSearchSections()
+        self.collectionViewReloadDataSource(loadNetworkDatasource: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -502,7 +502,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         DispatchQueue.global().async {
     
             let metadatas = NCManageDatabase.sharedInstance.getTableMedias(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
-            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: true, activeAccount: self.appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
                 
