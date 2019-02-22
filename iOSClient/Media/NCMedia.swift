@@ -318,6 +318,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     func deleteItems() {
         
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
         var metadatas = [tableMetadata]()
         
         for fileID in selectFileID {
