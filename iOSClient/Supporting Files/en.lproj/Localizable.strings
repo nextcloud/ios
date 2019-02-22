@@ -580,7 +580,7 @@
 
 // Scan Document
 
-"_scans_document_"                  = "Scans document";
+"_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";
 "_scan_label_document_zone_"        = "Drag images down for document creation";
