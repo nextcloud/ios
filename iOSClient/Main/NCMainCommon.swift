@@ -86,8 +86,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = "↑"
                 }
                 
-                cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - " + image + CCUtility.transformedSize(totalBytes)
-                cell.transferButton.progress = progress
+                cell.labelInfoFile?.text = CCUtility.transformedSize(totalBytesExpected) + " - " + image + CCUtility.transformedSize(totalBytes)
+                cell.transferButton?.progress = progress
             }
         }
     }

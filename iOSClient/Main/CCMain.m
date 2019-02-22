@@ -1833,7 +1833,9 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];    
+    if (sectionDataSource.fileIDIndexPath != nil) {
+        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
+    }
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
