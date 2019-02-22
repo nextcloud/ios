@@ -129,7 +129,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         super.viewDidAppear(animated)
         
         collectionView?.reloadDataThenPerform {
-            self.downloadThumbnail()
+            self.selectSearchSections()
         }
     }
     
@@ -453,6 +453,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     private func selectSearchSections() {
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
         
         let sections = NSMutableSet()
         let lastDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
