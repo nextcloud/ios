@@ -436,14 +436,7 @@
         return [CCCellMainTransfer new];
     }
     
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl]];
-    if (directory == nil) {
-        return [CCCellMainTransfer new];
-    }
-    
-    tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
-    
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:nil serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
     
     // TRANSFER
     
