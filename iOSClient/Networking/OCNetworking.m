@@ -425,18 +425,21 @@
     }];
 }
 
-- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion
+- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl  depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *url = tableAccount.url;
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:url];
+    
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication readFolder:serverUrl depth:depth withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         // Check items > 0
@@ -461,13 +464,10 @@
             NSMutableArray *metadatas = [NSMutableArray new];
             tableMetadata *metadataFolder = [tableMetadata new];
             
-            NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-            NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
-            
             NSString *serverUrlFolder;
 
             // Metadata . (self Folder)
-            if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url]]) {
+            if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:url]]) {
                 
                 // root folder
                 serverUrlFolder = k_serverUrl_root;
@@ -537,8 +537,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
     NSString *fileNamePath;
 
     if (fileName) {
@@ -548,9 +548,10 @@
         fileNamePath = serverUrl;
     }
     
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication readFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
@@ -560,10 +561,7 @@
             tableMetadata *metadata = [tableMetadata new];
                 
             OCFileDto *itemDto = [items objectAtIndex:0];
-                
-            NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-            NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
-                    
+            
             metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted];
                     
             completion(account, metadata, nil, 0);
@@ -612,7 +610,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication createFolder:path onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         NSDictionary *fields = [response allHeaderFields];
@@ -665,7 +662,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication deleteFileOrFolder:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
@@ -699,7 +695,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication moveFileOrFolder:fileName toDestiny:fileNameTo onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
@@ -739,15 +734,14 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
     NSString *folder = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
     NSString *lteDateLastModifiedString;
     NSString *gteDateLastModifiedString;
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
+    NSString *url = tableAccount.url;
+    NSString *userID = tableAccount.userID;
 
     if (lteDateLastModified) {
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -765,13 +759,14 @@
         gteDateLastModifiedString = [dateFormatter stringFromDate:gteDateLastModified];
     }
     
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", fileName] depth:depth lteDateLastModified:lteDateLastModifiedString gteDateLastModified:gteDateLastModifiedString contentType:contentType withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
-        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
@@ -789,10 +784,10 @@
                 } else
                     continue;
                 
-                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, tableAccount.userID]];
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, userID]];
                 NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
                 if ([serverPath hasSuffix:@"/"]) serverPath = [serverPath substringToIndex:[serverPath length] - 1];
-                serverUrl = [CCUtility stringAppendServerUrl:[tableAccount.url stringByAppendingString:k_webDAV] addFileName:serverPath];
+                serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
                 
                 if (itemDto.isDirectory) {
                     (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
@@ -879,13 +874,12 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
+    
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
-    
     [communication getRemotePreviewByServer:tableAccount.url ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:tableAccount.url] withWidth:width andHeight:height andA:1 andMode:@"cover" path:@"" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
         
         [preview writeToFile:file atomically:YES];
@@ -920,7 +914,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication getRemotePreviewByServer:tableAccount.url ofFilePath:@"" withWidth:0 andHeight:0 andA:0 andMode:@"" path:serverPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
         
         [preview writeToFile:fileNamePath atomically:YES];
@@ -948,7 +941,6 @@
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
-        
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
@@ -964,7 +956,6 @@
         
         [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
         [communication setUserAgent:[CCUtility getUserAgent]];
-        
         [communication getRemotePreviewTrashByServer:tableAccount.url ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
             
             [preview writeToFile:file atomically:YES];
@@ -1001,20 +992,20 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
+    NSString *url = tableAccount.url;
+    NSString *userID = tableAccount.userID;
+    NSString *path = [url stringByAppendingString:k_dav];
+
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *path = [tableAccount.url stringByAppendingString:k_dav];
-    
     [communication listingFavorites:path folder:@"" withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
-        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
         
         // Order by fileNamePath
         items = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -1042,11 +1033,11 @@
             } else
                 continue;
             
-            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, tableAccount.userID]];
+            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, userID]];
             NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
             if ([serverPath hasSuffix:@"/"])
                 serverPath = [serverPath substringToIndex:[serverPath length] - 1];
-            serverUrl = [CCUtility stringAppendServerUrl:[tableAccount.url stringByAppendingString:k_webDAV] addFileName:serverPath];
+            serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
             
             if (itemDto.isDirectory) {
                 (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
@@ -1084,13 +1075,12 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *server = [tableAccount.url stringByAppendingString:k_dav];
+
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *server = [tableAccount.url stringByAppendingString:k_dav];
-
     [communication settingFavoriteServer:server andFileOrFolderPath:fileName favorite:favorite withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
         
         completion(account, nil, 0);
@@ -1128,7 +1118,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication readSharedByServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         completion(account, items, nil, 0);
@@ -1162,7 +1151,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication shareFileOrFolderByServer:[tableAccount.url stringByAppendingString:@"/"] andFileOrFolderPath:[fileName encodeString:NSUTF8StringEncoding] andPassword:[password encodeString:NSUTF8StringEncoding] andPermission:permission andHideDownload:hideDownload onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
         completion(account, nil, 0);
@@ -1198,7 +1186,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication shareWith:userOrGroup shareeType:shareeType inServer:[tableAccount.url stringByAppendingString:@"/"] andFileOrFolderPath:[fileName encodeString:NSUTF8StringEncoding] andPermissions:permission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
@@ -1232,7 +1219,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication updateShare:shareID ofServerPath:[tableAccount.url stringByAppendingString:@"/"] withPasswordProtect:[password encodeString:NSUTF8StringEncoding] andExpirationTime:expirationTime andPermissions:permission andHideDownload:hideDownload onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
@@ -1266,7 +1252,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication unShareFileOrFolderByServer:[tableAccount.url stringByAppendingString:@"/"] andIdRemoteShared:shareID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
@@ -1300,7 +1285,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication searchUsersAndGroupsWith:searchString forPage:1 with:50 ofServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer) {
         
         completion(account, itemList, nil, 0);
@@ -1334,7 +1318,6 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-        
     [communication getSharePermissionsFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
         
         completion(account, permissions, nil ,0);
@@ -1370,16 +1353,15 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
     if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_15_0) {
         previews = true;
     }
     
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getActivityServer:[tableAccount.url stringByAppendingString:@"/"] since:since limit:limit previews:previews link:link onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
         completion(account, listOfActivity, nil, 0);
@@ -1413,7 +1395,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication getExternalSitesServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
         
         completion(account, listOfExternalSites, nil, 0);
@@ -1484,7 +1465,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication getNotificationServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
         completion(account, listOfNotifications, nil, 0);
@@ -1518,7 +1498,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication setNotificationServer:serverUrl type:type onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
@@ -1552,7 +1531,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication getCapabilitiesOfServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
         
         completion(account, capabilities, nil, 0);
@@ -1586,7 +1564,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication getUserProfileServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
         
         completion(account, userProfile, nil, 0);
@@ -1620,13 +1597,12 @@
         completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
 
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     [communication subscribingNextcloudServerPush:url pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: [NCBrandOptions sharedInstance].pushNotificationServerProxy onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
         deviceIdentifier = [CCUtility URLEncodeStringFromString:deviceIdentifier];
@@ -1681,7 +1657,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication unsubscribingNextcloudServerPush:url onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
 
         [communication unsubscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
@@ -1732,13 +1707,12 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
     NSString *fileIDServer = [[NCUtility sharedInstance] convertFileIDClientToFileIDServer:fileID];
     
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     [communication createLinkRichdocuments:[tableAccount.url stringByAppendingString:@"/"] fileID:fileIDServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
         
         completion(account, link, nil, 0);
@@ -1771,7 +1745,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-        
     [communication geTemplatesRichdocuments:[tableAccount.url stringByAppendingString:@"/"] typeTemplate:typeTemplate onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer) {
         
         completion(account, listOfTemplate, nil, 0);
@@ -1804,7 +1777,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-        
     [communication createNewRichdocuments:[tableAccount.url stringByAppendingString:@"/"] path:fileName templateID:templateID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer) {
         
         completion(account, url, nil, 0);
@@ -1833,13 +1805,12 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:tableAccount.url];
+
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:tableAccount.url];
-    
     [communication createAssetRichdocuments:[tableAccount.url stringByAppendingString:@"/"] path:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer) {
         
         completion(account, url, nil, 0);
@@ -1877,7 +1848,6 @@
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
     [communication listingTrash:[serverUrl stringByAppendingString:path] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         // Check items > 0
@@ -1947,13 +1917,12 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *path = [NSString stringWithFormat:@"%@%@/trashbin/%@/trash", tableAccount.url, k_dav, tableAccount.userID];
+
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *path = [NSString stringWithFormat:@"%@%@/trashbin/%@/trash", tableAccount.url, k_dav, tableAccount.userID];
-    
     [communication emptyTrash:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
