@@ -26,9 +26,8 @@
 #import "CCMain.h"
 #import "NCBridgeSwift.h"
 
-@interface CCSynchronize () <OCNetworkingDelegate>
+@interface CCSynchronize ()
 {
-    AppDelegate *appDelegate;
 }
 @end
 
@@ -44,7 +43,10 @@
             
             sharedSynchronize = [CCSynchronize new];
             sharedSynchronize.foldersInSynchronized = [NSMutableOrderedSet new];
-            sharedSynchronize->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            
+            sharedSynchronize->_operationSynchronizeQueue = [NSOperationQueue new];
+            sharedSynchronize->_operationSynchronizeQueue.name = @"com.nextcloud.operationSynchronizeQueue";
+            sharedSynchronize->_operationSynchronizeQueue.maxConcurrentOperationCount = 1;
         }
         return sharedSynchronize;
     }
@@ -58,13 +60,17 @@
 // selector     : selectorReadFolder, selectorReadFolderWithDownload
 //
 
-- (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector
+- (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
 {
-    [[OCNetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl selector:selector depth:@"1" delegate:self];
+    id operation = [[CCOperationSynchronize alloc] initWithDelegate:self serverUrl:serverUrl selector:selector account:account];
+
+    [self.operationSynchronizeQueue addOperation:operation];
 }
 
 - (void)readFolderSuccessFailureWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     // ERROR
     if (errorCode != 0 || ![account isEqualToString:appDelegate.activeAccount]) {
         
@@ -131,7 +137,7 @@
                 
                 NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
                 
-                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete account:metadata.account];
+                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete account:account];
             }
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
@@ -156,7 +162,7 @@
                 if (!result)
                     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
                 
-                [self readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selector];
+                [self readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selector account:account];
                 
             } else {
                 
@@ -201,11 +207,13 @@
 #pragma mark ===== Read File for Folder & Read File=====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
+- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
 {
-    [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+    //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    [[OCNetworking sharedManager] readFileWithAccount:account serverUrl:serverUrl fileName:fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode == 0 && [account isEqualToString:account]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                 
@@ -218,7 +226,7 @@
                 tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 
                 if (addMetadata)
-                    [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:appDelegate.activeAccount withDownload:withDownload];
+                    [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:account withDownload:withDownload];
             });
             
         } else if (errorCode == kOCErrorServerPathNotFound) {
@@ -309,6 +317,87 @@
     for (NSString *serverUrl in serverUrlToReload) {
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
     }
+}
+
+@end
+
+@implementation CCOperationSynchronize
+
+- (id)initWithDelegate:(id)delegate serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
+{
+    self = [super init];
+    
+    if (self) {
+        self.delegate = delegate;
+        self.serverUrl = serverUrl;
+        self.selector = selector;
+        self.account = account;
+    }
+    
+    return self;
+}
+
+- (void)start
+{
+    if (![NSThread isMainThread]) {
+        [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
+        return;
+    }
+    
+    [self willChangeValueForKey:@"isExecuting"];
+    _isExecuting = YES;
+    [self didChangeValueForKey:@"isExecuting"];
+    
+    if (self.isCancelled) {
+        
+        [self finish];
+        
+    } else {
+        
+        [self poolNetworking];
+    }
+}
+
+- (void)finish
+{
+    [self willChangeValueForKey:@"isExecuting"];
+    [self willChangeValueForKey:@"isFinished"];
+    
+    _isExecuting = NO;
+    _isFinished = YES;
+    
+    [self didChangeValueForKey:@"isExecuting"];
+    [self didChangeValueForKey:@"isFinished"];
+}
+
+- (void)cancel
+{
+    if (_isExecuting) {
+        
+        [self complete];
+    }
+    
+    [super cancel];
+}
+
+- (void)poolNetworking
+{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    
+    [[OCNetworking sharedManager] readFolderWithAccount:self.account serverUrl:self.serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
+       
+        if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailureWithAccount:serverUrl:metadataFolder:metadatas:selector:message:errorCode:)])
+            [self.delegate readFolderSuccessFailureWithAccount:self.account serverUrl:self.serverUrl metadataFolder:metadataFolder metadatas:metadatas selector:self.selector message:message errorCode:errorCode];
+        
+        [self complete];
+    }];
+}
+
+- (void)complete
+{
+    [self finish];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 @end

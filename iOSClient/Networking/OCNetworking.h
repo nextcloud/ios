@@ -26,12 +26,6 @@
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 
-@protocol OCNetworkingDelegate <NSObject>
-
-@optional - (void)readFolderSuccessFailureWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-@end
-
 @interface OCNetworking : NSObject <NSURLSessionDelegate>
 
 + (OCNetworking *)sharedManager;
@@ -54,7 +48,6 @@
 
 #pragma mark ===== WebDav =====
 
-- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl selector:(NSString *)selector depth:(NSString *)depth delegate:(id)delegate;
 - (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion;
 - (void)readFileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode))completion;
 - (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion;

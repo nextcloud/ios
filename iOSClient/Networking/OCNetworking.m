@@ -417,14 +417,6 @@
 #pragma mark ===== WebDav =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl selector:(NSString *)selector depth:(NSString *)depth delegate:(id)delegate
-{
-    [self readFolderWithAccount:account serverUrl:serverUrl depth:depth completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
-        if ([delegate respondsToSelector:@selector(readFolderSuccessFailureWithAccount:serverUrl:metadataFolder:metadatas:selector:message:errorCode:)])
-            [delegate readFolderSuccessFailureWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas selector:selector message:message errorCode:errorCode];
-    }];
-}
-
 - (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl  depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
