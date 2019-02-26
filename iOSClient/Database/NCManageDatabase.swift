@@ -1975,7 +1975,7 @@ class NCManageDatabase: NSObject {
                     sizeInsert = sizeInsert + Int64(photo.size)
                 }
                 realm.add(photos, update: true)
-                differenceInsert = sizeDelete - sizeInsert
+                differenceInsert = sizeInsert - sizeDelete
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
