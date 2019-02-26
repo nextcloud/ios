@@ -346,10 +346,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if addPast && isDistantPast {
-            return
-        }
-        
         if addPast && loadingSearch {
             return
         }
@@ -390,7 +386,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     self.collectionViewReloadDataSource(loadNetworkDatasource: false)
                 }
                 
-                if differenceInsert == 0 && addPast {
+                if differenceInsert == 0 && addPast && setDistantPast == false {
                     
                     switch totalDistance {
                     case 0...89:
