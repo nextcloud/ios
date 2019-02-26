@@ -56,7 +56,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var stepImageWidth: CGFloat = 10
     
-    private var readRetry = 0
     private var isDistantPast = false
 
     private let refreshControl = UIRefreshControl()
@@ -351,7 +350,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return
         }
         
-        if !addPast && loadingSearch {
+        if addPast && loadingSearch {
             return
         }
         
@@ -369,8 +368,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
             
-            self.loadingSearch = false
-
             self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()
             //self.navigationItem.titleView = nil
@@ -379,44 +376,44 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 var differenceInsert: Int64 = 0
-                
+                let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
+
                 if metadatas != nil && metadatas!.count > 0 {
                     differenceInsert = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                 }
                 
-                print("[LOG] Different Insert \(differenceInsert)]")
+                self.loadingSearch = false
+
+                print("[LOG] Totale Distance \(totalDistance) - Different Insert \(differenceInsert)]")
 
                 if differenceInsert != 0 {
-                    self.readRetry = 0
                     self.collectionViewReloadDataSource(loadNetworkDatasource: false)
                 }
                 
                 if differenceInsert == 0 && addPast {
                     
-                    self.readRetry += 1
-                    
-                    switch self.readRetry {
-                    case 1:
-                        if var gteDate = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
-                            gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 90 gg]")
+                    switch totalDistance {
+                    case 0...89:
+                        if var gteDate90 = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
+                            gteDate90 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate90) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 90 gg")
                         }
-                    case 2:
-                        if var gteDate = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
-                            gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 180 gg]")
+                    case 90...179:
+                        if var gteDate180 = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
+                            gteDate180 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate180) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 180 gg")
                         }
-                    case 3:
-                        if var gteDate = Calendar.current.date(byAdding: .day, value: -360, to: gteDate) {
-                            gteDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 360 gg]")
+                    case 180...364:
+                        if var gteDate365 = Calendar.current.date(byAdding: .day, value: -365, to: gteDate) {
+                            gteDate365 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate365) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 365 gg")
                         }
                     default:
                         self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
-                        print("[LOG] Media search distant pass]")
+                        print("[LOG] Media search distant pass")
                     }
                 }
                 
@@ -426,6 +423,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
             }  else {
                 
+                self.loadingSearch = false
+
                 self.collectionViewReloadDataSource(loadNetworkDatasource: false)
             }
         })
@@ -434,7 +433,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     @objc private func loadNetworkDatasource() {
         
         isDistantPast = false
-        readRetry = 0
         
         if appDelegate.activeAccount.count == 0 {
             return
@@ -526,16 +524,6 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        if kind == UICollectionView.elementKindSectionFooter {
-            
-            let sizeCollection = collectionView.bounds.size.height
-            let sizeContent = collectionView.contentSize.height
-            
-            if sizeContent <= sizeCollection {
-                selectSearchSections()
-            }
-        }
         
         if kind == UICollectionView.elementKindSectionHeader {
             
