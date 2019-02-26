@@ -1952,14 +1952,17 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> Int64 {
+    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (differenceSizeInsert: Int64, differenceNumInsert: Int64) {
 
         let realm = try! Realm()
         realm.refresh()
         
         var sizeDelete: Int64 = 0
         var sizeInsert: Int64 = 0
-        var differenceInsert: Int64 = 0
+        var numDelete: Int64 = 0
+        var numInsert: Int64 = 0
+        var differenceSizeInsert: Int64 = 0
+        var differenceNumInsert: Int64 = 0
 
         do {
             try realm.write {
@@ -1967,22 +1970,25 @@ class NCManageDatabase: NSObject {
                 let results = realm.objects(tableMedia.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
                 for resul in results {
                     sizeDelete = sizeDelete + Int64(resul.size)
+                    numDelete += 1
                 }
                 realm.delete(results)
                 // INSERT ALL
                 let photos = Array(metadatas.map { tableMedia.init(value:$0) })
                 for photo in photos {
                     sizeInsert = sizeInsert + Int64(photo.size)
+                    numInsert += 1
                 }
                 realm.add(photos, update: true)
-                differenceInsert = sizeInsert - sizeDelete
+                differenceSizeInsert = sizeInsert - sizeDelete
+                differenceNumInsert = numInsert - numDelete
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             realm.cancelWrite()
         }
         
-        return differenceInsert
+        return(differenceSizeInsert, differenceNumInsert)
     }
     
     @objc func getTableMediaDate(account: String, order: ComparisonResult) -> Date {

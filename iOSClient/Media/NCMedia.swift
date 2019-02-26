@@ -371,22 +371,26 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                var differenceInsert: Int64 = 0
+                var differenceSizeInsert: Int64 = 0
+                var differenceNumInsert: Int64 = 0
+
                 let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
 
                 if metadatas != nil && metadatas!.count > 0 {
-                    differenceInsert = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                    let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                    differenceSizeInsert = difference.differenceSizeInsert
+                    differenceNumInsert = difference.differenceNumInsert
                 }
                 
                 self.loadingSearch = false
 
-                print("[LOG] Totale Distance \(totalDistance) - Different Insert \(differenceInsert)]")
+                print("[LOG] Totale Distance \(totalDistance) - Different Size \(differenceSizeInsert) - Different Num \(differenceNumInsert)")
 
-                if differenceInsert != 0 {
+                if differenceSizeInsert != 0 {
                     self.collectionViewReloadDataSource(loadNetworkDatasource: false)
                 }
                 
-                if differenceInsert == 0 && addPast && setDistantPast == false {
+                if (differenceSizeInsert == 0 || differenceNumInsert < 100) && addPast && setDistantPast == false {
                     
                     switch totalDistance {
                     case 0...89:
