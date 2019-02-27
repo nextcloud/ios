@@ -90,24 +90,27 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
         
-        // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadNetworkDatasource), for: .valueChanged)
-        
         // empty Data Source
-        collectionView.emptyDataSetDelegate = self;
-        collectionView.emptyDataSetSource = self;
+        collectionView.emptyDataSetDelegate = self
+        collectionView.emptyDataSetSource = self
         
-        configFastScroll()
+        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
+
+        // Notification
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Color
+        // Aspect Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        
+        // Configure Refresh Control
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+        refreshControl.addTarget(self, action: #selector(loadNetworkDatasource), for: .valueChanged)
         
         menuView.backgroundColor = NCBrandColor.sharedInstance.brand
         menuButtonSwitch.setImage(UIImage(named: "switchGridChange")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -115,12 +118,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuButtonMore.setImage(UIImage(named: "moreBig")?.withRenderingMode(.alwaysTemplate), for: .normal)
         menuButtonMore.tintColor = NCBrandColor.sharedInstance.brandText
         
-        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
-        
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
+        // Fast Scrool
+        configFastScroll()
+
+        // Reload Data Source
         self.collectionViewReloadDataSource(loadNetworkDatasource: true)
     }
     
@@ -143,6 +148,13 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     
+    @objc func changeTheming() {
+        
+        if self.isViewLoaded && self.view?.window != nil {
+            appDelegate.changeTheming(self)
+        }
+    }
+
     // MARK: DZNEmpty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
@@ -703,7 +715,7 @@ extension NCMedia {
         collectionView.handleRadius = 20.0
         collectionView.handleMarginRight = -20
         */
-        collectionView.handleColor = NCBrandColor.sharedInstance.brand //UIColor(red: 38.0 / 255.0, green: 48.0 / 255.0, blue: 60.0 / 255.0, alpha: 1.0)
+        collectionView.handleColor = NCBrandColor.sharedInstance.brand
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0

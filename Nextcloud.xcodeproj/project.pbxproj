@@ -247,6 +247,7 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
+		F75153242226920200323DDC /* FastScroll.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75153232226920200323DDC /* FastScroll.framework */; };
 		F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC421772B6100BB1CDF /* DropdownItem.swift */; };
 		F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC521772B6100BB1CDF /* DropUpMenu.swift */; };
 		F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC721772B6100BB1CDF /* DropdownMenu.swift */; };
@@ -902,6 +903,7 @@
 		F750374B1DBFA91A008FB480 /* PureLayoutDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayoutDefines.h; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
 		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
+		F75153232226920200323DDC /* FastScroll.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FastScroll.framework; path = Carthage/Build/iOS/FastScroll.framework; sourceTree = "<group>"; };
 		F7540EE21D5B238600C3FFA8 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		F7540EE31D5B238600C3FFA8 /* asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
 		F7540EE41D5B238600C3FFA8 /* asn1_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
@@ -1521,6 +1523,7 @@
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
 				F72D0FFE210B6638009C96B7 /* nanopb.framework in Frameworks */,
 				F7C40C102199BA5D0004137E /* Realm.framework in Frameworks */,
+				F75153242226920200323DDC /* FastScroll.framework in Frameworks */,
 				F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */,
 				F72D0FFD210B6638009C96B7 /* GoogleToolboxForMac.framework in Frameworks */,
 				F72D0FF9210B6638009C96B7 /* Protobuf.framework in Frameworks */,
@@ -2975,6 +2978,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F75153232226920200323DDC /* FastScroll.framework */,
 				F78AA20521F783E900D0F205 /* SwiftRichString.framework */,
 				F72E0B9C21AD60BC00898D7B /* WeScan.framework */,
 				F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */,
