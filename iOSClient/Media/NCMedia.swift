@@ -700,6 +700,7 @@ extension NCMedia {
     fileprivate func configFastScroll() {
         
         collectionView.fastScrollDelegate = self
+        collectionView.handleTimeToDisappear = 1
         
         //bubble
         collectionView.deactivateBubble = true
