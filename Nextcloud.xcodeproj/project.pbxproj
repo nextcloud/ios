@@ -247,7 +247,6 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
-		F75153242226920200323DDC /* FastScroll.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75153232226920200323DDC /* FastScroll.framework */; };
 		F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC421772B6100BB1CDF /* DropdownItem.swift */; };
 		F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC521772B6100BB1CDF /* DropUpMenu.swift */; };
 		F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC721772B6100BB1CDF /* DropdownMenu.swift */; };
@@ -617,6 +616,20 @@
 			remoteGlobalIDString = F72D100B210B6B16009C96B7;
 			remoteInfo = "Notification Service Extension";
 		};
+		F751532A22269E9E00323DDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F751532522269E9D00323DDC /* FastScroll.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BDC01AB920D29A39007CD19A;
+			remoteInfo = FastScroll;
+		};
+		F751532C22269E9E00323DDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F751532522269E9D00323DDC /* FastScroll.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BDC01AC220D29A39007CD19A;
+			remoteInfo = FastScrollTests;
+		};
 		F771E3E920E2392E00AFB62D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
@@ -904,6 +917,7 @@
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
 		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
 		F75153232226920200323DDC /* FastScroll.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FastScroll.framework; path = Carthage/Build/iOS/FastScroll.framework; sourceTree = "<group>"; };
+		F751532522269E9D00323DDC /* FastScroll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FastScroll.xcodeproj; path = ../../FastScroll/FastScroll.xcodeproj; sourceTree = "<group>"; };
 		F7540EE21D5B238600C3FFA8 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		F7540EE31D5B238600C3FFA8 /* asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
 		F7540EE41D5B238600C3FFA8 /* asn1_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
@@ -1523,7 +1537,6 @@
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
 				F72D0FFE210B6638009C96B7 /* nanopb.framework in Frameworks */,
 				F7C40C102199BA5D0004137E /* Realm.framework in Frameworks */,
-				F75153242226920200323DDC /* FastScroll.framework in Frameworks */,
 				F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */,
 				F72D0FFD210B6638009C96B7 /* GoogleToolboxForMac.framework in Frameworks */,
 				F72D0FF9210B6638009C96B7 /* Protobuf.framework in Frameworks */,
@@ -1975,6 +1988,15 @@
 				F750374B1DBFA91A008FB480 /* PureLayoutDefines.h */,
 			);
 			path = PureLayout;
+			sourceTree = "<group>";
+		};
+		F751532622269E9D00323DDC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F751532B22269E9E00323DDC /* FastScroll.framework */,
+				F751532D22269E9E00323DDC /* FastScrollTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		F7540EE11D5B238600C3FFA8 /* openssl */ = {
@@ -2908,6 +2930,7 @@
 			children = (
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F70022561EC4C9100080073F /* OCCommunicationLib */,
+				F751532522269E9D00323DDC /* FastScroll.xcodeproj */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
@@ -3231,6 +3254,12 @@
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F751532622269E9D00323DDC /* Products */;
+					ProjectRef = F751532522269E9D00323DDC /* FastScroll.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
@@ -3240,6 +3269,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F751532B22269E9E00323DDC /* FastScroll.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = FastScroll.framework;
+			remoteRef = F751532A22269E9E00323DDC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F751532D22269E9E00323DDC /* FastScrollTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = FastScrollTests.xctest;
+			remoteRef = F751532C22269E9E00323DDC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		F7145A181D12E3B700CAFEEC /* Resources */ = {
@@ -3447,7 +3493,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjackSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WeScan.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/FastScroll.framework",
 			);
 			outputPaths = (
 			);
