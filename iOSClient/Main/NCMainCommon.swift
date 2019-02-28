@@ -1296,8 +1296,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                             if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
                                 if cell is NCListCell {
                                     (cell as! NCListCell).imageItem.image = image
+                                    (cell as! NCListCell).imageItem.contentMode = .scaleAspectFill
                                 } else if cell is NCGridCell {
                                     (cell as! NCGridCell).imageItem.image = image
+                                    (cell as! NCGridCell).imageItem.contentMode = .scaleAspectFill
                                 } else if cell is NCGridMediaCell {
                                     (cell as! NCGridMediaCell).imageItem.image = image
                                     (cell as! NCGridMediaCell).imageItem.contentMode = .scaleAspectFill
@@ -1309,8 +1311,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                             if let cell = (view as! UITableView).cellForRow(at: indexPath) {
                                 if cell is CCCellMainTransfer {
                                     (cell as! CCCellMainTransfer).file.image = image
+                                    (cell as! CCCellMainTransfer).file.contentMode = .scaleAspectFill
                                 } else if cell is CCCellMain {
                                     (cell as! CCCellMain).file.image = image
+                                    (cell as! CCCellMain).file.contentMode = .scaleAspectFill
                                 }
                             }
                         }
