@@ -1,9 +1,9 @@
 //
-//  NCGridCell.swift
+//  NCGridMediaCell.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 08/10/2018.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 12/02/2019.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
