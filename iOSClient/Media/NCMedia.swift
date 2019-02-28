@@ -25,7 +25,7 @@ import Foundation
 import Sheeeeeeeeet
 import FastScroll
 
-class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate, FastScrollCollectionViewDelegate {
+class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
     @IBOutlet weak var collectionView : FastScrollCollectionView!
     @IBOutlet weak var menuButtonMore: UIButton!
@@ -94,6 +94,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.emptyDataSetDelegate = self
         collectionView.emptyDataSetSource = self
         
+        // Title
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
 
         // Notification
@@ -126,7 +127,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         configFastScroll()
 
         // Reload Data Source
-        self.collectionViewReloadDataSource(loadNetworkDatasource: true)
+        self.reloadDataSource(loadNetworkDatasource: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -265,10 +266,10 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 selectStartDirectoryPhotosTab()
             case 2:
                 filterTypeFileImage = !filterTypeFileImage
-                collectionViewReloadDataSource(loadNetworkDatasource: false)
+                reloadDataSource(loadNetworkDatasource: false)
             case 3:
                 filterTypeFileVideo = !filterTypeFileVideo
-                collectionViewReloadDataSource(loadNetworkDatasource: false)
+                reloadDataSource(loadNetworkDatasource: false)
             default: ()
             }
         }
@@ -325,7 +326,161 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     
-    // MARK: NC API
+    // MARK: SEGUE
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let photoDataSource: NSMutableArray = []
+        
+        for fileID: String in sectionDatasource.allFileID as! [String] {
+            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
+            if metadata.typeFile == k_metadataTypeFile_image {
+                photoDataSource.add(metadata)
+            }
+        }
+        
+        if let segueNavigationController = segue.destination as? UINavigationController {
+            if let segueViewController = segueNavigationController.topViewController as? CCDetail {
+            
+                segueViewController.metadataDetail = metadataPush
+                segueViewController.dateFilterQuery = nil
+                segueViewController.photoDataSource = photoDataSource
+                segueViewController.title = metadataPush!.fileNameView
+            }
+        }
+    }
+}
+
+// MARK: - Collection View
+
+extension NCMedia: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+            return
+        }
+        metadataPush = metadata
+        
+        if isEditMode {
+            if let index = selectFileID.index(of: metadata.fileID) {
+                selectFileID.remove(at: index)
+            } else {
+                selectFileID.append(metadata.fileID)
+            }
+            collectionView.reloadItems(at: [indexPath])
+            return
+        }
+        
+        performSegue(withIdentifier: "segueDetail", sender: self)
+    }
+}
+
+extension NCMedia: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        if kind == UICollectionView.elementKindSectionHeader {
+            
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionMediaHeader
+            
+            header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+            header.labelSection.textColor = .white
+            header.labelHeightConstraint.constant = 20
+            header.labelSection.layer.cornerRadius = 10
+            header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
+            let width = header.labelSection.intrinsicContentSize.width + 30
+            let leading = collectionView.bounds.width / 2 - width / 2
+            header.labelWidthConstraint.constant = width
+            header.labelLeadingConstraint.constant = leading
+            
+            return header
+            
+        } else {
+            
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            
+            footer.setTitleLabel(sectionDatasource: sectionDatasource)
+            
+            return footer
+        }
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        return sections
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        var numberOfItemsInSection: Int = 0
+        
+        if section < sectionDatasource.sections.count {
+            let key = sectionDatasource.sections.object(at: section)
+            let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
+            numberOfItemsInSection = datasource.count
+        }
+        
+        return numberOfItemsInSection
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+        }
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+        
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, source: self)
+        
+        return cell
+    }
+}
+
+extension NCMedia: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        if (section == sections - 1) {
+            return CGSize(width: collectionView.frame.width, height: footerHeight)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: 0)
+        }
+    }
+}
+
+// MARK: NC API & Algorithm
+
+extension NCMedia {
+
+    public func reloadDataSource(loadNetworkDatasource: Bool) {
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
+        DispatchQueue.global().async {
+            
+            let metadatas = NCManageDatabase.sharedInstance.getTableMedias(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
+            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
+            
+            DispatchQueue.main.async {
+                
+                if loadNetworkDatasource {
+                    self.loadNetworkDatasource()
+                }
+                
+                self.collectionView?.reloadDataThenPerform {
+                    self.downloadThumbnail()
+                }
+            }
+        }
+    }
     
     func deleteItems() {
         
@@ -371,7 +526,7 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         loadingSearch = true
-
+        
         let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
         
         OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
@@ -385,19 +540,19 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 var differenceSizeInsert: Int64 = 0
                 var differenceNumInsert: Int64 = 0
-
+                
                 let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
-
+                
                 let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                 differenceSizeInsert = difference.differenceSizeInsert
                 differenceNumInsert = difference.differenceNumInsert
                 
                 self.loadingSearch = false
-
+                
                 print("[LOG] Totale Distance \(totalDistance) - Different Size \(differenceSizeInsert) - Different Num \(differenceNumInsert)")
-
+                
                 if differenceSizeInsert != 0 {
-                    self.collectionViewReloadDataSource(loadNetworkDatasource: false)
+                    self.reloadDataSource(loadNetworkDatasource: false)
                 }
                 
                 if (differenceSizeInsert == 0 || differenceNumInsert < 100) && addPast && setDistantPast == false {
@@ -434,8 +589,8 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             }  else {
                 
                 self.loadingSearch = false
-
-                self.collectionViewReloadDataSource(loadNetworkDatasource: false)
+                
+                self.reloadDataSource(loadNetworkDatasource: false)
             }
         })
     }
@@ -501,177 +656,14 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for item in self.collectionView.indexPathsForVisibleItems {
                 if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
-                   NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView, indexPath: item)
+                    NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView, indexPath: item)
                 }
-            }
-        }
-    }
-    
-    // MARK: COLLECTIONVIEW METHODS
-    
-    public func collectionViewReloadDataSource(loadNetworkDatasource: Bool) {
-        
-        if appDelegate.activeAccount.count == 0 {
-            return
-        }
-        
-        DispatchQueue.global().async {
-    
-            let metadatas = NCManageDatabase.sharedInstance.getTableMedias(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
-            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
-            
-            DispatchQueue.main.async {
-                
-                if loadNetworkDatasource {
-                    self.loadNetworkDatasource()
-                }
-                
-                self.collectionView?.reloadDataThenPerform {
-                    self.downloadThumbnail()
-                }
-            }
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        if kind == UICollectionView.elementKindSectionHeader {
-            
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionMediaHeader
-            
-            header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
-            header.labelSection.textColor = .white
-            header.labelHeightConstraint.constant = 20
-            header.labelSection.layer.cornerRadius = 10
-            header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
-            let width = header.labelSection.intrinsicContentSize.width + 30
-            let leading = collectionView.bounds.width / 2 - width / 2
-            header.labelWidthConstraint.constant = width
-            header.labelLeadingConstraint.constant = leading
-
-            return header
-            
-        } else {
-            
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-            
-            footer.setTitleLabel(sectionDatasource: sectionDatasource)
-
-            return footer
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
-        if (section == sections - 1) {
-            return CGSize(width: collectionView.frame.width, height: footerHeight)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: 0)
-        }
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
-        return sections
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        var numberOfItemsInSection: Int = 0
-        
-        if section < sectionDatasource.sections.count {
-            let key = sectionDatasource.sections.object(at: section)
-            let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
-            numberOfItemsInSection = datasource.count
-        }
-        
-        return numberOfItemsInSection
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-                
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-        }
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-      
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, source: self)
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return
-        }
-        metadataPush = metadata
-        
-        if isEditMode {
-            if let index = selectFileID.index(of: metadata.fileID) {
-                selectFileID.remove(at: index)
-            } else {
-                selectFileID.append(metadata.fileID)
-            }
-            collectionView.reloadItems(at: [indexPath])
-            return
-        }
-        
-        performSegue(withIdentifier: "segueDetail", sender: self)
-    }
-    
-    // MARK: SEGUE
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        let photoDataSource: NSMutableArray = []
-        
-        for fileID: String in sectionDatasource.allFileID as! [String] {
-            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
-            if metadata.typeFile == k_metadataTypeFile_image {
-                photoDataSource.add(metadata)
-            }
-        }
-        
-        if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? CCDetail {
-            
-                segueViewController.metadataDetail = metadataPush
-                segueViewController.dateFilterQuery = nil
-                segueViewController.photoDataSource = photoDataSource
-                segueViewController.title = metadataPush!.fileNameView
             }
         }
     }
 }
 
-extension FastScrollCollectionView
-{
-    /// Calls reloadsData() on self, and ensures that the given closure is
-    /// called after reloadData() has been completed.
-    ///
-    /// Discussion: reloadData() appears to be asynchronous. i.e. the
-    /// reloading actually happens during the next layout pass. So, doing
-    /// things like scrolling the collectionView immediately after a
-    /// call to reloadData() can cause trouble.
-    ///
-    /// This method uses CATransaction to schedule the closure.
-    
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void))
-    {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(closure)
-        self.reloadData()
-        CATransaction.commit()
-    }
-}
-
-// MARK: - UIScrollViewDelegate
+// MARK: FastScroll - ScrollView
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -691,9 +683,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
 }
 
-// MARK: FastScroll
-
-extension NCMedia {
+extension NCMedia: FastScrollCollectionViewDelegate {
     
     fileprivate func configFastScroll() {
         
@@ -735,3 +725,25 @@ extension NCMedia {
         selectSearchSections()
     }
 }
+
+extension FastScrollCollectionView
+{
+    /// Calls reloadsData() on self, and ensures that the given closure is
+    /// called after reloadData() has been completed.
+    ///
+    /// Discussion: reloadData() appears to be asynchronous. i.e. the
+    /// reloading actually happens during the next layout pass. So, doing
+    /// things like scrolling the collectionView immediately after a
+    /// call to reloadData() can cause trouble.
+    ///
+    /// This method uses CATransaction to schedule the closure.
+    
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void))
+    {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        self.reloadData()
+        CATransaction.commit()
+    }
+}
+
