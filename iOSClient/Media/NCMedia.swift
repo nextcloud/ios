@@ -509,6 +509,12 @@ extension NCMedia {
     
     func search(lteDate: Date, gteDate: Date, addPast: Bool, setDistantPast: Bool) {
         
+        // ----- DEBUG -----
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy HH:mm"
+        print("[LOG] Search: addPast \(addPast), distantPass: \(setDistantPast), Lte: " + dateFormatter.string(from: lteDate) + " - Gte: " + dateFormatter.string(from: gteDate))
+        // -----------------
+        
         if appDelegate.activeAccount.count == 0 {
             return
         }
