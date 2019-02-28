@@ -94,9 +94,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         collectionView.emptyDataSetDelegate = self
         collectionView.emptyDataSetSource = self
         
-        // Title
-        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
-
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
     }
@@ -122,6 +119,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
+        
+        // Title
+        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
         // Fast Scrool
         configFastScroll()

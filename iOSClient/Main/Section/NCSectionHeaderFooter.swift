@@ -177,12 +177,14 @@ class NCSectionMediaHeader: UICollectionReusableView {
         
         var title = ""
         
-        if sectionDatasource.sections.object(at: section) is String {
-            title = sectionDatasource.sections.object(at: section) as! String
-        }
-        if sectionDatasource.sections.object(at: section) is Date {
-            let titleDate = sectionDatasource.sections.object(at: section) as! Date
-            title = CCUtility.getTitleSectionDate(titleDate)
+        if sectionDatasource.sections.count > section {
+            if sectionDatasource.sections.object(at: section) is String {
+                title = sectionDatasource.sections.object(at: section) as! String
+            }
+            if sectionDatasource.sections.object(at: section) is Date {
+                let titleDate = sectionDatasource.sections.object(at: section) as! Date
+                title = CCUtility.getTitleSectionDate(titleDate)
+            }
         }
         
         labelSection.text = NSLocalizedString(title, comment: "")
