@@ -211,25 +211,26 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool,source: UIViewController) {
         
         var image: UIImage?
-        var imagePreview = false
+        var isImagePreviewLoaded = false
         
-        if metadata.iconName.count > 0 {
-            if cell is NCGridMediaCell {
-                if metadata.typeFile == k_metadataTypeFile_video {
-                    image = UIImage.init(named: "file_video_big")
-                } else {
-                    image = UIImage.init(named: "file_photo_big")
-                }
-            } else {
-                image = UIImage.init(named: metadata.iconName)
-            }
-        } else {
-            image = UIImage.init(named: "file")
-        }
-        
+        // Image Preview
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName)) {
             image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName))
-            imagePreview = true
+            isImagePreviewLoaded = true
+        } else {
+            if metadata.iconName.count > 0 {
+                if cell is NCGridMediaCell {
+                    if metadata.typeFile == k_metadataTypeFile_video {
+                        image = UIImage.init(named: "file_video_big")
+                    } else {
+                        image = UIImage.init(named: "file_photo_big")
+                    }
+                } else {
+                    image = UIImage.init(named: metadata.iconName)
+                }
+            } else {
+                image = UIImage.init(named: "file")
+            }
         }
         
         // Download preview
@@ -406,7 +407,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             } else {
                 
                 cell.imageItem.image = image
-                if imagePreview == false {
+                if isImagePreviewLoaded == false {
                     let width = cell.imageItem.image!.size.width * 2
                     //let scale = UIScreen.main.scale
                     cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
@@ -464,9 +465,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             cell.imageFavorite.image = nil
             
             cell.imageItem.image = image
-            if imagePreview == false {
-                let width = cell.imageItem.image!.size.width * 2
-                cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
+          
+            if isImagePreviewLoaded {
+                // Preview
+                cell.imageItem.contentMode = .scaleAspectFill
+            } else {
+                // Default xcassets
+                cell.imageItem.contentMode = .scaleAspectFit
             }
             
             // image Local
@@ -1295,6 +1300,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                                     (cell as! NCGridCell).imageItem.image = image
                                 } else if cell is NCGridMediaCell {
                                     (cell as! NCGridMediaCell).imageItem.image = image
+                                    (cell as! NCGridMediaCell).imageItem.contentMode = .scaleAspectFill
                                 }
                             }
                         }
