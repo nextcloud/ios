@@ -388,11 +388,9 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
                 let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
 
-                if metadatas != nil && metadatas!.count > 0 {
-                    let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
-                    differenceSizeInsert = difference.differenceSizeInsert
-                    differenceNumInsert = difference.differenceNumInsert
-                }
+                let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                differenceSizeInsert = difference.differenceSizeInsert
+                differenceNumInsert = difference.differenceNumInsert
                 
                 self.loadingSearch = false
 
