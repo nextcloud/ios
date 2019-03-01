@@ -1147,6 +1147,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             // Synchronized
             if selector == selectorDownloadSynchronize {
                 appDelegate.updateApplicationIconBadgeNumber()
+                appDelegate.loadAutoDownloadUpload()
                 return
             }
             
@@ -1248,7 +1249,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
             }
-        }       
+        }
+        
+        appDelegate.loadAutoDownloadUpload()
     }
     
     // UPLOAD
