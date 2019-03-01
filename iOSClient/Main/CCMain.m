@@ -1174,7 +1174,7 @@
     NSMutableArray *metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
     // insert in Database the /
     if (metadataFolder != nil) {
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
+        _metadataFolder = [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     }
     // reinsert metadatas in Download
     if (metadatasInDownload) {
@@ -3947,7 +3947,7 @@
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+    if (metadata == nil) {
         return [CCCellMain new];
     }
     
