@@ -368,7 +368,10 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 selectFileID.append(metadata.fileID)
             }
-            collectionView.reloadItems(at: [indexPath])
+            if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                collectionView.reloadItems(at: [indexPath])
+            }
+            
             return
         }
         
