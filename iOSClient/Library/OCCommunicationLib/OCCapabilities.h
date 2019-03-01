@@ -33,7 +33,7 @@
 
 @property (nonatomic) BOOL isFilesSharingPublicShareLinkEnabled;
 @property (nonatomic) BOOL isFilesSharingAllowPublicUploadsEnabled;
-@property (nonatomic) BOOL isFilesSharingAllowPublicUserSendMailNotificationAboutShareLinkEnabled;
+@property (nonatomic) BOOL isFilesSharingAllowPublicUserSendMail;
 @property (nonatomic) BOOL isFilesSharingAllowPublicUploadFilesDrop;
 @property (nonatomic) BOOL isFilesSharingAllowPublicMultipleLinks;
 
@@ -45,7 +45,7 @@
 
 //FILE SHARING - USER
 
-@property (nonatomic) BOOL isFilesSharingAllowUserSendMailNotificationAboutOtherUsersEnabled;
+@property (nonatomic) BOOL isFilesSharingAllowUserSendMail;
 @property (nonatomic) BOOL isFilesSharingUserExpireDate;
 
 //FILE SHARING - GROUP
@@ -55,8 +55,8 @@
 
 //FILE SHARING - FEDERATION
 
-@property (nonatomic) BOOL isFilesSharingFederationAllowUserSendSharesToOtherServersEnabled;
-@property (nonatomic) BOOL isFilesSharingFederationAllowUserReceiveSharesToOtherServersEnabled;
+@property (nonatomic) BOOL isFilesSharingFederationAllowUserSendShares;
+@property (nonatomic) BOOL isFilesSharingFederationAllowUserReceiveShares;
 @property (nonatomic) BOOL isFilesSharingFederationExpireDate;
 
 //FILE SHARING - SHAREBYMAIL

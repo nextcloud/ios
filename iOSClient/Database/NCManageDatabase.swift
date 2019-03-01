@@ -766,10 +766,36 @@ class NCManageDatabase: NSObject {
                     resultCapabilities.richdocumentsMimetypes.append(mimeType as! String)
                 }
                 resultCapabilities.richdocumentsDirectEditing = capabilities.richdocumentsDirectEditing
+                // FILES SHARING
+                resultCapabilities.isFilesSharingAPIEnabled = capabilities.isFilesSharingAPIEnabled
+                resultCapabilities.filesSharingDefaulPermissions = capabilities.filesSharingDefaulPermissions
+                resultCapabilities.isFilesSharingGroupSharing = capabilities.isFilesSharingGroupSharing
+                resultCapabilities.isFilesSharingReSharing = capabilities.isFilesSharingReSharing
+                resultCapabilities.isFilesSharingPublicShareLinkEnabled = capabilities.isFilesSharingPublicShareLinkEnabled
+                resultCapabilities.isFilesSharingAllowPublicUploadsEnabled = capabilities.isFilesSharingAllowPublicUploadsEnabled
+                resultCapabilities.isFilesSharingAllowPublicUserSendMail = capabilities.isFilesSharingAllowPublicUserSendMail
+                resultCapabilities.isFilesSharingAllowPublicUploadFilesDrop = capabilities.isFilesSharingAllowPublicUploadFilesDrop
+                resultCapabilities.isFilesSharingAllowPublicMultipleLinks = capabilities.isFilesSharingAllowPublicMultipleLinks
+                resultCapabilities.isFilesSharingPublicExpireDateByDefaultEnabled = capabilities.isFilesSharingPublicExpireDateByDefaultEnabled
+                resultCapabilities.isFilesSharingPublicExpireDateEnforceEnabled = capabilities.isFilesSharingPublicExpireDateEnforceEnabled
+                resultCapabilities.filesSharingPublicExpireDateDays = capabilities.filesSharingPublicExpireDateDays
+                resultCapabilities.isFilesSharingPublicPasswordEnforced = capabilities.isFilesSharingPublicPasswordEnforced
+                resultCapabilities.isFilesSharingAllowUserSendMail = capabilities.isFilesSharingAllowUserSendMail
+                resultCapabilities.isFilesSharingUserExpireDate = capabilities.isFilesSharingUserExpireDate
+                resultCapabilities.isFilesSharingGroupEnabled = capabilities.isFilesSharingGroupEnabled
+                resultCapabilities.isFilesSharingGroupExpireDate = capabilities.isFilesSharingGroupExpireDate
+                resultCapabilities.isFilesSharingFederationAllowUserSendShares = capabilities.isFilesSharingFederationAllowUserSendShares
+                resultCapabilities.isFilesSharingFederationAllowUserReceiveShares = capabilities.isFilesSharingFederationAllowUserReceiveShares
+                resultCapabilities.isFilesSharingFederationExpireDate = capabilities.isFilesSharingFederationExpireDate
+                resultCapabilities.isFileSharingShareByMailEnabled = capabilities.isFileSharingShareByMailEnabled
+                resultCapabilities.isFileSharingShareByMailPassword = capabilities.isFileSharingShareByMailPassword
+                resultCapabilities.isFileSharingShareByMailUploadFilesDrop = capabilities.isFileSharingShareByMailUploadFilesDrop
                 
                 if result == nil {
                     realm.add(resultCapabilities)
                 }
+                
+                
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
