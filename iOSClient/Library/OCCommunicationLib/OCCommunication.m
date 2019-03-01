@@ -1336,55 +1336,115 @@
             
                 //FILE SHARING
             
-                NSNumber *fileSharingAPIEnabledNumber = (NSNumber*)[fileSharing valueForKey:@"api_enabled"];
-                NSNumber *filesSharingReSharingEnabledNumber = (NSNumber*)[fileSharing valueForKey:@"resharing"];
-            
-                capabilities.isFilesSharingAPIEnabled = fileSharingAPIEnabledNumber.boolValue;
-                capabilities.isFilesSharingReSharingEnabled = filesSharingReSharingEnabledNumber.boolValue;
-            
+                NSNumber *fileSharingAPIEnabled = (NSNumber*)[fileSharing valueForKey:@"api_enabled"];
+                NSNumber *filesSharingDefaultPermissions = (NSNumber*)[fileSharing valueForKey:@"default_permissions"];
+                NSNumber *fileSharingGroupSharing = (NSNumber*)[fileSharing valueForKey:@"group_sharing"];
+                NSNumber *filesSharingReSharing = (NSNumber*)[fileSharing valueForKey:@"resharing"];
+                
+                capabilities.isFilesSharingAPIEnabled = fileSharingAPIEnabled.boolValue;
+                capabilities.filesSharingDefaulPermissions = filesSharingDefaultPermissions.integerValue;
+                capabilities.isFilesSharingGroupSharing = fileSharingGroupSharing.boolValue;
+                capabilities.isFilesSharingReSharing = filesSharingReSharing.boolValue;
+
+                //FILE SHARING - PUBLIC
+                
                 NSDictionary *fileSharingPublic = [fileSharing valueForKey:@"public"];
             
-                NSNumber *filesSharingShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"enabled"];
+                NSNumber *filesSharingPublicShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"enabled"];
                 NSNumber *filesSharingAllowPublicUploadsEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"upload"];
-                NSNumber *filesSharingAllowUserSendMailNotificationAboutShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"send_mail"];
-            
-                capabilities.isFilesSharingShareLinkEnabled = filesSharingShareLinkEnabledNumber.boolValue;
+                NSNumber *filesSharingAllowPublicUserSendMailNotificationAboutShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"send_mail"];
+                NSNumber *filesSharingAllowPublicUploadFilesDrop = (NSNumber*)[fileSharingPublic valueForKey:@"upload_files_drop"];
+                NSNumber *filesSharingAllowPublicMultipleLinks = (NSNumber*)[fileSharingPublic valueForKey:@"multiple_links"];
+                
+                capabilities.isFilesSharingPublicShareLinkEnabled = filesSharingPublicShareLinkEnabledNumber.boolValue;
                 capabilities.isFilesSharingAllowPublicUploadsEnabled = filesSharingAllowPublicUploadsEnabledNumber.boolValue;
-                capabilities.isFilesSharingAllowUserSendMailNotificationAboutShareLinkEnabled = filesSharingAllowUserSendMailNotificationAboutShareLinkEnabledNumber.boolValue;
-            
+                capabilities.isFilesSharingAllowPublicUserSendMailNotificationAboutShareLinkEnabled = filesSharingAllowPublicUserSendMailNotificationAboutShareLinkEnabledNumber.boolValue;
+                capabilities.isFilesSharingAllowPublicUploadFilesDrop = filesSharingAllowPublicUploadFilesDrop.boolValue;
+                capabilities.isFilesSharingAllowPublicMultipleLinks = filesSharingAllowPublicMultipleLinks.boolValue;
+                
                 NSDictionary *fileSharingPublicExpireDate = [fileSharingPublic valueForKey:@"expire_date"];
             
-                NSNumber *filesSharingExpireDateByDefaultEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enabled"];
-                NSNumber *filesSharingExpireDateEnforceEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enforced"];
-                NSNumber *filesSharingExpireDateDaysNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"days"];
-            
+                NSNumber *filesSharingPublicExpireDateByDefaultEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enabled"];
+                NSNumber *filesSharingPublicExpireDateEnforceEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enforced"];
+                NSNumber *filesSharingPublicExpireDateDaysNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"days"];
     
-                capabilities.isFilesSharingExpireDateByDefaultEnabled = filesSharingExpireDateByDefaultEnabledNumber.boolValue;
-                capabilities.isFilesSharingExpireDateEnforceEnabled = filesSharingExpireDateEnforceEnabledNumber.boolValue;
-                capabilities.filesSharingExpireDateDaysNumber = filesSharingExpireDateDaysNumber.integerValue;
+                capabilities.isFilesSharingPublicExpireDateByDefaultEnabled = filesSharingPublicExpireDateByDefaultEnabledNumber.boolValue;
+                capabilities.isFilesSharingPublicExpireDateEnforceEnabled = filesSharingPublicExpireDateEnforceEnabledNumber.boolValue;
+                capabilities.filesSharingPublicExpireDateDaysNumber = filesSharingPublicExpireDateDaysNumber.integerValue;
             
                 NSDictionary *fileSharingPublicPassword = [fileSharingPublic valueForKey:@"password"];
             
-                NSNumber *filesSharingPasswordEnforcedEnabledNumber = (NSNumber*)[fileSharingPublicPassword valueForKey:@"enforced"];
+                NSNumber *fileSharingPublicPasswordEnforcedEnabled = (NSNumber*)[fileSharingPublicPassword valueForKey:@"enforced"];
             
-                capabilities.isFilesSharingPasswordEnforcedEnabled = filesSharingPasswordEnforcedEnabledNumber.boolValue;;
+                capabilities.isFilesSharingPublicPasswordEnforced = fileSharingPublicPasswordEnforcedEnabled.boolValue;
             
+                //FILE SHARING - USER
+
                 NSDictionary *fileSharingUser = [fileSharing valueForKey:@"user"];
             
                 NSNumber *filesSharingAllowUserSendMailNotificationAboutOtherUsersEnabledNumber = (NSNumber*)[fileSharingUser valueForKey:@"send_mail"];
             
                 capabilities.isFilesSharingAllowUserSendMailNotificationAboutOtherUsersEnabled = filesSharingAllowUserSendMailNotificationAboutOtherUsersEnabledNumber.boolValue;
             
-                //FEDERATION
+                NSDictionary *fileSharingUserExpireDate = [fileSharingUser valueForKey:@"expire_date"];
+
+                NSNumber *filesSharingUserExpireDateNumber = (NSNumber*)[fileSharingUserExpireDate valueForKey:@"enabled"];
+
+                capabilities.isFilesSharingUserExpireDate = filesSharingUserExpireDateNumber.boolValue;
+                
+                //FILE SHARING - GROUP
+                
+                NSDictionary *fileSharingGroup = [fileSharing valueForKey:@"group"];
+                
+                NSNumber *filesSharingGroupEnabled = (NSNumber*)[fileSharingGroup valueForKey:@"enabled"];
+                
+                capabilities.isFilesSharingGroupEnabled = filesSharingGroupEnabled.boolValue;
+                
+                NSDictionary *fileSharingGroupExpireDate = [fileSharingGroup valueForKey:@"expire_date"];
+
+                NSNumber *filesSharingGroupExpireDateNumber = (NSNumber*)[fileSharingGroupExpireDate valueForKey:@"enabled"];
+                
+                capabilities.isFilesSharingGroupExpireDate = filesSharingGroupExpireDateNumber.boolValue;
+                
+                //FILE SHARING - FEDERATION
             
                 NSDictionary *fileSharingFederation = [fileSharing valueForKey:@"federation"];
+                NSDictionary *fileSharingFederationExpireDate = [fileSharingFederation valueForKey:@"expire_date"];
+
+                NSNumber *filesSharingFederationAllowUserSendSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"outgoing"];
+                NSNumber *filesSharingFederationAllowUserReceiveSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"incoming"];
+                NSNumber *filesSharingFederationExpireDateNumber = (NSNumber*)[fileSharingFederationExpireDate valueForKey:@"enabled"];
+
+                capabilities.isFilesSharingFederationAllowUserSendSharesToOtherServersEnabled = filesSharingFederationAllowUserSendSharesToOtherServersEnabledNumber.boolValue;
+                capabilities.isFilesSharingFederationAllowUserReceiveSharesToOtherServersEnabled = filesSharingFederationAllowUserReceiveSharesToOtherServersEnabledNumber.boolValue;
+                capabilities.isFilesSharingFederationExpireDate = filesSharingFederationExpireDateNumber.boolValue;
             
-                NSNumber *filesSharingAllowUserSendSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"outgoing"];
-                NSNumber *filesSharingAllowUserReceiveSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"incoming"];
-            
-                capabilities.isFilesSharingAllowUserSendSharesToOtherServersEnabled = filesSharingAllowUserSendSharesToOtherServersEnabledNumber.boolValue;
-                capabilities.isFilesSharingAllowUserReceiveSharesToOtherServersEnabled = filesSharingAllowUserReceiveSharesToOtherServersEnabledNumber.boolValue;
-            
+                //FILE SHARING - SHAREBYMAIL
+                
+                NSDictionary *fileSharingShareByMail = [fileSharing valueForKey:@"sharebymail"];
+
+                NSNumber *fileSharingShareByMailEnabled = (NSNumber*)[fileSharingShareByMail valueForKey:@"enabled"];
+                
+                capabilities.isFileSharingShareByMailEnabled = fileSharingShareByMailEnabled.boolValue;
+                
+                NSDictionary *fileSharingShareByMailExpireDate = [fileSharingShareByMail valueForKey:@"expire_date"];
+
+                NSNumber *fileSharingShareByMailExpireDateNumber = (NSNumber*)[fileSharingShareByMailExpireDate valueForKey:@"enabled"];
+
+                capabilities.isFileSharingShareByMailExpireDate = fileSharingShareByMailExpireDateNumber.boolValue;
+                
+                NSDictionary *fileSharingShareByMailPassword = [fileSharingShareByMail valueForKey:@"password"];
+                
+                NSNumber *fileSharingShareByMailPasswordNumber = (NSNumber*)[fileSharingShareByMailPassword valueForKey:@"enabled"];
+
+                capabilities.isFileSharingShareByMailPassword = fileSharingShareByMailPasswordNumber.boolValue;
+
+                NSDictionary *fileSharingShareByMailUploadFilesDrop = [fileSharingShareByMail valueForKey:@"upload_files_drop"];
+
+                NSNumber *fileSharingShareByMailUploadFilesDropNumber = (NSNumber*)[fileSharingShareByMailUploadFilesDrop valueForKey:@"enabled"];
+
+                capabilities.isFileSharingShareByMailUploadFilesDrop = fileSharingShareByMailUploadFilesDropNumber.boolValue;
+
                 // EXTERNAL SITES
             
                 NSDictionary *externalSitesDic = [capabilitiesDict valueForKey:@"external"];
