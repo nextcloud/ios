@@ -39,7 +39,7 @@
 
 @property (nonatomic) BOOL isFilesSharingPublicExpireDateByDefaultEnabled;
 @property (nonatomic) BOOL isFilesSharingPublicExpireDateEnforceEnabled;
-@property (nonatomic) NSInteger filesSharingPublicExpireDateDaysNumber;
+@property (nonatomic) NSInteger filesSharingPublicExpireDateDays;
 
 @property (nonatomic) BOOL isFilesSharingPublicPasswordEnforced;
 

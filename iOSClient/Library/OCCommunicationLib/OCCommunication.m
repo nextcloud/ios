@@ -1370,7 +1370,7 @@
     
                 capabilities.isFilesSharingPublicExpireDateByDefaultEnabled = filesSharingPublicExpireDateByDefaultEnabledNumber.boolValue;
                 capabilities.isFilesSharingPublicExpireDateEnforceEnabled = filesSharingPublicExpireDateEnforceEnabledNumber.boolValue;
-                capabilities.filesSharingPublicExpireDateDaysNumber = filesSharingPublicExpireDateDaysNumber.integerValue;
+                capabilities.filesSharingPublicExpireDateDays = filesSharingPublicExpireDateDaysNumber.integerValue;
             
                 NSDictionary *fileSharingPublicPassword = [fileSharingPublic valueForKey:@"password"];
             
