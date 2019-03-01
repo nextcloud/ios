@@ -63,7 +63,6 @@
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
 
         self.metadataDetail = [[tableMetadata alloc] init];
@@ -602,10 +601,6 @@
 - (void)photoBrowserDidFinishPresentation:(MWPhotoBrowser *)photoBrowser
 {
     [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)triggerProgressTask:(NSNotification *)notification
-{
 }
 
 - (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode

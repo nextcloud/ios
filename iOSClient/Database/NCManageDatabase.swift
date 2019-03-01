@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 41,
+            schemaVersion: 42,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -98,6 +98,7 @@ class NCManageDatabase: NSObject {
             // 39 : Version 2.22.9.1
             // 40 : Version 2.22.9.3
             // 41 : Version 2.22.9.5
+            // 42 : Version 2.23.1.0
             
 
             migrationBlock: { migration, oldSchemaVersion in
@@ -123,7 +124,6 @@ class NCManageDatabase: NSObject {
                 if oldSchemaVersion < 41 {
                     migration.deleteData(forType: tableActivity.className())
                     migration.deleteData(forType: tableMetadata.className())
-                    migration.deleteData(forType: tablePhotos.className())
                     migration.deleteData(forType: tableDirectory.className())
                 }
         })
@@ -1924,79 +1924,85 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
-    //MARK: Table Photos
-    @objc func getTablePhotos(addMetadatasFromUpload: [tableMetadata], account: String) -> [tableMetadata]? {
-
-        let realm = try! Realm()
-        realm.refresh()
-
-        let predicate = NSPredicate(format: "account == %@", account)
-        let results = realm.objects(tablePhotos.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-
-        if (results.count > 0) {
-            var returnMetadatas = Array(results.map { tableMetadata.init(value:$0) })
-            for metadata in addMetadatasFromUpload {
-                let result = realm.objects(tablePhotos.self).filter("fileID == %@", metadata.fileID).first
-                if result == nil {
-                    returnMetadatas.append(metadata)
-                }
-            }
-            return returnMetadatas
-        } else {
-            return nil
-        }
-    }
-    
-    @objc func getTablePhoto(predicate: NSPredicate) -> tableMetadata? {
+    //MARK: Table Media
+ 
+    @objc func getTableMedia(predicate: NSPredicate) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tablePhotos.self).filter(predicate).first else {
+        guard let result = realm.objects(tableMedia.self).filter(predicate).first else {
             return nil
         }
         
         return tableMetadata.init(value: result)
     }
+   
+    @objc func getTableMedias(predicate: NSPredicate) -> [tableMetadata]? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableMedia.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+        
+        if (results.count > 0) {
+            return Array(results.map { tableMetadata.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
     
-    @objc func createTablePhotos(_ metadatas: [tableMetadata], account: String) {
+    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (differenceSizeInsert: Int64, differenceNumInsert: Int64) {
 
         let realm = try! Realm()
         realm.refresh()
         
+        var sizeDelete: Int64 = 0
+        var sizeInsert: Int64 = 0
+        var numDelete: Int64 = 0
+        var numInsert: Int64 = 0
+        var differenceSizeInsert: Int64 = 0
+        var differenceNumInsert: Int64 = 0
+
         do {
             try realm.write {
                 // DELETE ALL
-                let results = realm.objects(tablePhotos.self).filter("account = %@", account)
+                let results = realm.objects(tableMedia.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
+                for resul in results {
+                    sizeDelete = sizeDelete + Int64(resul.size)
+                    numDelete += 1
+                }
                 realm.delete(results)
                 // INSERT ALL
-                let photos = Array(metadatas.map { tablePhotos.init(value:$0) })
+                let photos = Array(metadatas.map { tableMedia.init(value:$0) })
+                for photo in photos {
+                    sizeInsert = sizeInsert + Int64(photo.size)
+                    numInsert += 1
+                }
                 realm.add(photos, update: true)
+                differenceSizeInsert = sizeInsert - sizeDelete
+                differenceNumInsert = numInsert - numDelete
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             realm.cancelWrite()
         }
+        
+        return(differenceSizeInsert, differenceNumInsert)
     }
     
-    @objc func deletePhotos(fileID: String) {
+    @objc func getTableMediaDate(account: String, order: ComparisonResult) -> Date {
         
         let realm = try! Realm()
+        realm.refresh()
         
-        realm.beginWrite()
-        
-        let results = realm.objects(tablePhotos.self).filter("fileID = %@", fileID)
-        
-        realm.delete(results)
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return
+        if let entities = realm.objects(tableMedia.self).filter("account = %@", account).max(by: { $0.date.compare($1.date as Date) == order }) {
+            return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: entities.date as Date)!
         }
+        
+        return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
     }
- 
+    
     //MARK: -
     //MARK: Table Photo Library
     

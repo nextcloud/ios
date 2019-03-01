@@ -208,7 +208,7 @@
             [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
             [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
             

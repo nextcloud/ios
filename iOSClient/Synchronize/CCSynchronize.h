@@ -35,10 +35,25 @@
 + (CCSynchronize *)sharedSynchronize;
 
 @property (nonatomic, strong) NSMutableOrderedSet *foldersInSynchronized;
+@property (nonatomic, strong) NSOperationQueue *operationSynchronizeQueue;
 
-- (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector;
-- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector;
+- (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
+- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
+
+@end
+
+@interface CCOperationSynchronize : NSOperation
+
+- (id)initWithDelegate:(id)delegate serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
+
+@property (nonatomic, assign) BOOL isExecuting;
+@property (nonatomic, assign) BOOL isFinished;
+
+@property (nonatomic, weak) id delegate;
+@property (nonatomic, strong) NSString* account;
+@property (nonatomic, strong) NSString* serverUrl;
+@property (nonatomic, strong) NSString* selector;
 
 @end

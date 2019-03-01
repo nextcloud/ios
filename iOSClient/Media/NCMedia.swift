@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 12/02/2019.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -23,13 +23,15 @@
 
 import Foundation
 import Sheeeeeeeeet
+import FastScroll
 
-class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
-    @IBOutlet fileprivate weak var collectionView: UICollectionView!
-
-    var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
-    var serverUrl = ""
+    @IBOutlet weak var collectionView : FastScrollCollectionView!
+    @IBOutlet weak var menuButtonMore: UIButton!
+    @IBOutlet weak var menuButtonSwitch: UIButton!
+    @IBOutlet weak var menuView: UIView!
+    
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
@@ -37,97 +39,123 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var isEditMode = false
     private var selectFileID = [String]()
     
-    private var sectionDatasource = CCSectionDataSourceMetadata()
+    private var filterTypeFileImage = false;
+    private var filterTypeFileVideo = false;
     
-    private var typeLayout = ""
-    private var datasourceSorted = ""
-    private var datasourceAscending = true
-    private var datasourceGroupBy = ""
-    private var datasourceDirectoryOnTop = false
+    private var sectionDatasource = CCSectionDataSourceMetadata()
     
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     
-    private var listLayout: NCListLayout!
-    private var gridLayout: NCGridLayout!
+    private var gridLayout: NCGridMediaLayout!
     
     private var actionSheet: ActionSheet?
     
-    private let headerMenuHeight: CGFloat = 50
-    private let sectionHeaderHeight: CGFloat = 20
+    private let sectionHeaderHeight: CGFloat = 50
     private let footerHeight: CGFloat = 50
+    
+    private var stepImageWidth: CGFloat = 10
+    
+    private var isDistantPast = false
 
     private let refreshControl = UIRefreshControl()
+    private var loadingSearch = false
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+
+        appDelegate.activeMedia = self
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Cell
-        collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
-        collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header
-        collectionView.register(UINib.init(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
-        collectionView.register(UINib.init(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
+        collectionView.register(UINib.init(nibName: "NCSectionMediaHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
         
         // Footer
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
 
-        listLayout = NCListLayout()
-        gridLayout = NCGridLayout()
-        
+        gridLayout = NCGridMediaLayout()
+        gridLayout.preferenceWidth = CGFloat(CCUtility.getMediaWidthImage())
+        gridLayout.sectionHeadersPinToVisibleBounds = true
+
+        collectionView.collectionViewLayout = gridLayout
+
         // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
-        
-        // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
         
         // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;        
+        collectionView.emptyDataSetDelegate = self
+        collectionView.emptyDataSetSource = self
+        
+        // Notification
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Color
+        // Aspect Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
-        self.navigationItem.title = titleCurrentFolder
+        // Configure Refresh Control
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+        refreshControl.addTarget(self, action: #selector(loadNetworkDatasource), for: .valueChanged)
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
+        menuView.backgroundColor = NCBrandColor.sharedInstance.brand
+        menuButtonSwitch.setImage(UIImage(named: "switchGridChange")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        menuButtonSwitch.tintColor = NCBrandColor.sharedInstance.brandText
+        menuButtonMore.setImage(UIImage(named: "moreBig")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        menuButtonMore.tintColor = NCBrandColor.sharedInstance.brandText
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
         
-        if typeLayout == k_layout_list {
-            collectionView.collectionViewLayout = listLayout
-        } else {
-            collectionView.collectionViewLayout = gridLayout
-        }
+        // Title
+        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
-        loadDatasource()
+        // Fast Scrool
+        configFastScroll()
+
+        // Reload Data Source
+        self.reloadDataSource(loadNetworkDatasource: true)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        collectionView?.reloadDataThenPerform {
+            self.selectSearchSections()
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: nil) { _ in
-            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView?.reloadDataThenPerform {
+                self.downloadThumbnail()
+            }
             self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
+    @objc func changeTheming() {
+        
+        if self.isViewLoaded && self.view?.window != nil {
+            appDelegate.changeTheming(self)
+        }
+    }
+
     // MARK: DZNEmpty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
@@ -135,11 +163,17 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "mediaNoRecord"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_files_no_files_", comment: "")
+        
+        var text = "\n" + NSLocalizedString("_tutorial_photo_view_", comment: "")
+
+        if loadingSearch {
+            text = "\n" + NSLocalizedString("_search_in_progress_", comment: "")
+        }
+        
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
@@ -148,419 +182,148 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         return true
     }
     
-    // MARK: TAP EVENT
+    // MARK: IBAction
     
-    func tapSwitchHeader(sender: Any) {
+    @IBAction func touchUpInsideMenuButtonSwitch(_ sender: Any) {
         
-        if collectionView.collectionViewLayout == gridLayout {
-            // list layout
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
-                    self.collectionView.reloadData()
-                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
-                })
-            })
-            typeLayout = k_layout_list
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
-        } else {
-            // grid layout
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { (_) in
-                    self.collectionView.reloadData()
-                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
-                })
-            })
-            typeLayout = k_layout_grid
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
-        }
+        let itemSizeStart = self.gridLayout.itemSize
+        
+        UIView.animate(withDuration: 0.0, animations: {
+            
+            if self.gridLayout.numItems == 1 && self.stepImageWidth > 0 {
+                self.stepImageWidth = -10
+            } else if itemSizeStart.width < 50 {
+                self.stepImageWidth = 10
+            }
+            
+            repeat {
+                self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + self.stepImageWidth
+            } while (self.gridLayout.itemSize == itemSizeStart)
+            
+            CCUtility.setMediaWidthImage(Int(self.gridLayout?.preferenceWidth ?? 80))
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            
+            if self.stepImageWidth < 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.selectSearchSections()
+                }
+            }
+        })
     }
     
-    func tapOrderHeader(sender: Any) {
+    @IBAction func touchUpInsideMenuButtonMore(_ sender: Any) {
         
-        var menuView: DropdownMenu?
-        var selectedIndexPath = [IndexPath()]
-        
-        let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameAZ"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_a_z_", comment: ""))
-        let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameZA"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_z_a_", comment: ""))
-        let item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortDateMoreRecent"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_date_more_recent_", comment: ""))
-        let item4 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortDateLessRecent"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_date_less_recent_", comment: ""))
-        let item5 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortSmallest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_smallest_", comment: ""))
-        let item6 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortLargest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_largest_", comment: ""))
-        
-        switch datasourceSorted {
-        case "fileName":
-            if datasourceAscending == true { item1.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 0)) }
-            if datasourceAscending == false { item2.style = .highlight; selectedIndexPath.append(IndexPath(row: 1, section: 0)) }
-        case "date":
-            if datasourceAscending == false { item3.style = .highlight; selectedIndexPath.append(IndexPath(row: 2, section: 0)) }
-            if datasourceAscending == true { item4.style = .highlight; selectedIndexPath.append(IndexPath(row: 3, section: 0)) }
-        case "size":
-            if datasourceAscending == true { item5.style = .highlight; selectedIndexPath.append(IndexPath(row: 4, section: 0)) }
-            if datasourceAscending == false { item6.style = .highlight; selectedIndexPath.append(IndexPath(row: 5, section: 0)) }
-        default:
-            ()
-        }
-        
-        let item7 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByAlphabetic"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_alphabetic_no_", comment: ""))
-        let item8 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByFile"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_typefile_no_", comment: ""))
-        let item9 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByDate"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_date_no_", comment: ""))
-        
-        switch datasourceGroupBy {
-        case "alphabetic":
-            item7.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 1))
-        case "typefile":
-            item8.style = .highlight; selectedIndexPath.append(IndexPath(row: 1, section: 1))
-        case "date":
-            item9.style = .highlight; selectedIndexPath.append(IndexPath(row: 2, section: 1))
-        default:
-            ()
-        }
-        
-        let item10 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "foldersOnTop"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_directory_on_top_no_", comment: ""))
-        
-        if datasourceDirectoryOnTop {
-            item10.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 2))
-        }
-        
-        let sectionOrder = DropdownSection(sectionIdentifier: "", items: [item1, item2, item3, item4, item5, item6])
-        let sectionGroupBy = DropdownSection(sectionIdentifier: "", items: [item7, item8, item9])
-        let sectionFolderOnTop = DropdownSection(sectionIdentifier: "", items: [item10])
-        
-        menuView = DropdownMenu(navigationController: self.navigationController!, sections: [sectionOrder, sectionGroupBy, sectionFolderOnTop], selectedIndexPath: selectedIndexPath)
-        menuView?.token = "tapOrderHeaderMenu"
-        menuView?.delegate = self
-        menuView?.rowHeight = 45
-        menuView?.sectionHeaderHeight = 8
-        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
-        menuView?.tableView.alwaysBounceVertical = false
-        menuView?.tableViewBackgroundColor = UIColor.white
-        
-        let header = (sender as? UIButton)?.superview
-        let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
-        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
-        menuView?.topOffsetY = CGFloat(menuOffsetY)
-        
-        menuView?.showMenu()
-    }
-    
-    func tapMoreHeader(sender: Any) {
-        
-    }
-    
-    func tapMoreListItem(with fileID: String, sender: Any) {
-        tapMoreGridItem(with: fileID, sender: sender)
-    }
-    
-    func tapMoreGridItem(with fileID: String, sender: Any) {
-        
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
-            return
-        }
-        
+        var menu: DropdownMenu?
+
         if !isEditMode {
             
-            var items = [ActionSheetItem]()
-            let appearanceDelete = ActionSheetItemAppearance.init()
-            appearanceDelete.textColor = UIColor.red
-            
-            // 0 == CCMore, 1 = first NCOffline ....
-            if (self == self.navigationController?.viewControllers[1]) {
-                items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folderMedia"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_media_folder_", comment: ""))
+            var item2: DropdownItem
+            if filterTypeFileImage {
+                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageno"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_show_", comment: ""))
+            } else {
+                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageyes"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_hide_", comment: ""))
             }
-            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
-
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
-            itemDelete.customAppearance = appearanceDelete
-            items.append(itemDelete)
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-            
-            actionSheet = ActionSheet(items: items) { sheet, item in
-                if item.value as? Int == 0 {
-                    if metadata.directory {
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
-                    } else {
-                        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
-                    }
-                    self.loadDatasource()
-                }
-                if item.value as? Int == 1 { self.appDelegate.activeMain.readShare(withAccount: self.appDelegate.activeAccount, openWindow: true, metadata: metadata) }
-                if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
-                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+            var item3: DropdownItem
+            if filterTypeFileVideo {
+                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videono"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_show_", comment: ""))
+            } else {
+                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videoyes"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_hide_", comment: ""))
             }
+            menu = DropdownMenu(navigationController: self.navigationController!, items: [item0,item1,item2,item3], selectedRow: -1)
+            menu?.token = "menuButtonMore"
             
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, fileID: metadata.fileID, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-            actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
-            
-            actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
             
-            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
-            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
-            collectionView(self.collectionView, didSelectItemAt: indexPath!)
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
+            
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
+            
+            menu = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
+            menu?.token = "menuButtonMoreSelect"
         }
+        
+        menu?.delegate = self
+        menu?.rowHeight = 45
+        menu?.highlightColor = NCBrandColor.sharedInstance.brand
+        menu?.tableView.alwaysBounceVertical = false
+        menu?.tableViewBackgroundColor = UIColor.white
+        menu?.topOffsetY = menuView.bounds.height
+    
+        menu?.showMenu()
     }
     
     // MARK: DROP-DOWN-MENU
 
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
         
-        if dropdownMenu.token == "tapOrderHeaderMenu" {
-            
-            switch indexPath.section {
-            
-                    case 0: switch indexPath.row {
-                        
-                    case 0: datasourceSorted = "fileName"; datasourceAscending = true
-                    case 1: datasourceSorted = "fileName"; datasourceAscending = false
-                        
-                    case 2: datasourceSorted = "date"; datasourceAscending = false
-                    case 3: datasourceSorted = "date"; datasourceAscending = true
-                        
-                    case 4: datasourceSorted = "size"; datasourceAscending = true
-                    case 5: datasourceSorted = "size"; datasourceAscending = false
-                
-                    default: ()
-                    }
-                
-            case 1: switch indexPath.row {
-                
-                    case 0:
-                        if datasourceGroupBy == "alphabetic" {
-                            datasourceGroupBy = "none"
-                        } else {
-                            datasourceGroupBy = "alphabetic"
-                        }
-                    case 1:
-                        if datasourceGroupBy == "typefile" {
-                            datasourceGroupBy = "none"
-                        } else {
-                            datasourceGroupBy = "typefile"
-                        }
-                    case 2:
-                        if datasourceGroupBy == "date" {
-                            datasourceGroupBy = "none"
-                        } else {
-                            datasourceGroupBy = "date"
-                        }
-                
-                    default: ()
-                        }
-                    case 2:
-                        if datasourceDirectoryOnTop {
-                            datasourceDirectoryOnTop = false
-                        } else {
-                            datasourceDirectoryOnTop = true
-                        }
-                    default: ()
-                    }
-            
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
-
-            loadDatasource()
+        if dropdownMenu.token == "menuButtonMore" {
+            switch indexPath.row {
+            case 0:
+                isEditMode = true
+            case 1:
+                selectStartDirectoryPhotosTab()
+            case 2:
+                filterTypeFileImage = !filterTypeFileImage
+                reloadDataSource(loadNetworkDatasource: false)
+            case 3:
+                filterTypeFileVideo = !filterTypeFileVideo
+                reloadDataSource(loadNetworkDatasource: false)
+            default: ()
+            }
         }
         
-        if dropdownMenu.token == "tapMoreHeaderMenu" {
-        
-        }
-        
-        if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
-            
-        }
-    }
-    
-    // MARK: NC API
-    
-    func deleteItem(with metadata: tableMetadata, sender: Any) {
-        
-        var items = [ActionSheetItem]()
-        
-        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
-            return
-        }
-        
-        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        actionSheet = ActionSheet(items: items) { sheet, item in
-            if item is ActionSheetDangerButton {
-                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
-                    self.loadDatasource()
+        if dropdownMenu.token == "menuButtonMoreSelect" {
+            switch indexPath.row {
+            case 0:
+                isEditMode = false
+                selectFileID.removeAll()
+                collectionView?.reloadDataThenPerform {
+                    self.downloadThumbnail()
                 }
+            case 1:
+                deleteItems()
+            default: ()
             }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
-        
-        let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, fileID: metadata.fileID, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-        actionSheet?.headerView = headerView
-        actionSheet?.headerView?.frame.size.height = 50
-        
-        actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    // MARK: DATASOURCE
-    @objc func loadDatasource() {
+    // MARK: Select Directory
+    
+    func selectStartDirectoryPhotosTab() {
         
-        var fileIDs = [String]()
-        sectionDatasource = CCSectionDataSourceMetadata()
-
-        if serverUrl == "" {
+        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let viewController = navigationController.topViewController as! NCSelect
         
-            if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true) {
-                for directory: tableDirectory in directories {
-                    fileIDs.append(directory.fileID)
-                }
-            }
-          
-            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true) {
-                for file: tableLocalFile in files {
-                    fileIDs.append(file.fileID)
-                }
-            }
+        viewController.delegate = self
+        viewController.hideButtonCreateFolder = true
+        viewController.includeDirectoryE2EEncryption = false
+        viewController.includeImages = false
+        viewController.layoutViewSelect = k_layout_view_move
+        viewController.selectFile = false
+        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
+        viewController.type = "mediaFolder"
+        
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        self.present(navigationController, animated: true, completion: nil)
+        
+    }
+    
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+        
+        let oldStartDirectoryMediaTabView = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+        
+        if serverUrl != nil && serverUrl != oldStartDirectoryMediaTabView {
             
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND fileID IN %@", appDelegate.activeAccount, fileIDs), sorted: datasourceSorted, ascending: datasourceAscending)  {
-
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
-            }
-            
-        } else {
-        
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl), sorted: datasourceSorted, ascending: datasourceAscending)  {
-                
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
-            }
+            // Save Start Directory
+            NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
+            //
+            NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionDataSourceMetadata()
+            //
+            loadNetworkDatasource()
         }
-        
-        self.refreshControl.endRefreshing()
-        
-        collectionView.reloadData()
-    }
-    
-    // MARK: COLLECTIONVIEW METHODS
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        if (indexPath.section == 0) {
-            
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
-                
-                if collectionView.collectionViewLayout == gridLayout {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                } else {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                }
-                
-                header.delegate = self
-                
-                header.setStatusButton(count: sectionDatasource.allFileID.count)
-                header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
-                
-                if datasourceGroupBy == "none" {
-                    header.labelSection.isHidden = true
-                    header.labelSectionHeightConstraint.constant = 0
-                } else {
-                    header.labelSection.isHidden = false
-                    header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
-                    header.labelSectionHeightConstraint.constant = sectionHeaderHeight
-                }
-         
-                return header
-            
-            } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
-                
-                return footer
-            }
-            
-        } else {
-        
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
-                
-                header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
-                
-                return header
-                
-            } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
-
-                return footer
-            }
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        if section == 0 {
-            if datasourceGroupBy == "none" {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
-            } else {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
-            }
-        } else {
-            return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
-        if (section == sections - 1) {
-            return CGSize(width: collectionView.frame.width, height: footerHeight)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: 0)
-        }
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
-        return sections
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let key = sectionDatasource.sections.object(at: section)
-        let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
-        return datasource.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-        }
-        
-        let cell = NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, typeLayout: typeLayout, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, source: self)
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return
-        }
-        metadataPush = metadata
-        
-        if isEditMode {
-            if let index = selectFileID.index(of: metadata.fileID) {
-                selectFileID.remove(at: index)
-            } else {
-                selectFileID.append(metadata.fileID)
-            }
-            collectionView.reloadItems(at: [indexPath])
-            return
-        }
-        
-        performSegue(withIdentifier: "segueDetail", sender: self)
     }
     
     // MARK: SEGUE
@@ -587,3 +350,408 @@ class NCMedia: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
 }
+
+// MARK: - Collection View
+
+extension NCMedia: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+            return
+        }
+        metadataPush = metadata
+        
+        if isEditMode {
+            if let index = selectFileID.index(of: metadata.fileID) {
+                selectFileID.remove(at: index)
+            } else {
+                selectFileID.append(metadata.fileID)
+            }
+            collectionView.reloadItems(at: [indexPath])
+            return
+        }
+        
+        performSegue(withIdentifier: "segueDetail", sender: self)
+    }
+}
+
+extension NCMedia: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        if kind == UICollectionView.elementKindSectionHeader {
+            
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionMediaHeader
+            
+            header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+            header.labelSection.textColor = .white
+            header.labelHeightConstraint.constant = 20
+            header.labelSection.layer.cornerRadius = 10
+            header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
+            let width = header.labelSection.intrinsicContentSize.width + 30
+            let leading = collectionView.bounds.width / 2 - width / 2
+            header.labelWidthConstraint.constant = width
+            header.labelLeadingConstraint.constant = leading
+            
+            return header
+            
+        } else {
+            
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            
+            footer.setTitleLabel(sectionDatasource: sectionDatasource)
+            
+            return footer
+        }
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        return sections
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        var numberOfItemsInSection: Int = 0
+        
+        if section < sectionDatasource.sections.count {
+            let key = sectionDatasource.sections.object(at: section)
+            let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
+            numberOfItemsInSection = datasource.count
+        }
+        
+        return numberOfItemsInSection
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+        }
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+        
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, source: self)
+        
+        return cell
+    }
+}
+
+extension NCMedia: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        if (section == sections - 1) {
+            return CGSize(width: collectionView.frame.width, height: footerHeight)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: 0)
+        }
+    }
+}
+
+// MARK: NC API & Algorithm
+
+extension NCMedia {
+
+    public func reloadDataSource(loadNetworkDatasource: Bool) {
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
+        DispatchQueue.global().async {
+            
+            let metadatas = NCManageDatabase.sharedInstance.getTableMedias(predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
+            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
+            
+            DispatchQueue.main.async {
+                
+                if loadNetworkDatasource {
+                    self.loadNetworkDatasource()
+                }
+                
+                self.collectionView?.reloadDataThenPerform {
+                    self.downloadThumbnail()
+                }
+            }
+        }
+    }
+    
+    func deleteItems() {
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
+        var metadatas = [tableMetadata]()
+        
+        for fileID in selectFileID {
+            if let metadata = NCManageDatabase.sharedInstance.getTableMedia(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+                metadatas.append(metadata)
+            }
+        }
+        
+        if metadatas.count > 0 {
+            NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderFileID: "") { (errorCode, message) in
+                
+                self.isEditMode = false
+                self.selectFileID.removeAll()
+                
+                self.selectSearchSections()
+            }
+        }
+    }
+    
+    func search(lteDate: Date, gteDate: Date, addPast: Bool, setDistantPast: Bool) {
+        
+        // ----- DEBUG -----
+#if DEBUG
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy HH:mm"
+        print("[LOG] Search: addPast \(addPast), distantPass: \(setDistantPast), Lte: " + dateFormatter.string(from: lteDate) + " - Gte: " + dateFormatter.string(from: gteDate))
+#endif
+        // -----------------
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
+        if addPast && loadingSearch {
+            return
+        }
+        
+        if setDistantPast {
+            isDistantPast = true
+        }
+        
+        if addPast {
+            //CCGraphics.addImage(toTitle: NSLocalizedString("_media_", comment: ""), colorTitle: NCBrandColor.sharedInstance.brandText, imageTitle: CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), multiplier: 2, color: NCBrandColor.sharedInstance.brandText), imageRight: false, navigationItem: self.navigationItem)
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+        }
+        loadingSearch = true
+        
+        let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+        
+        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
+            
+            self.refreshControl.endRefreshing()
+            NCUtility.sharedInstance.stopActivityIndicator()
+            //self.navigationItem.titleView = nil
+            //self.navigationItem.title = NSLocalizedString("_media_", comment: "")
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                var differenceSizeInsert: Int64 = 0
+                var differenceNumInsert: Int64 = 0
+                
+                let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
+                
+                let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                differenceSizeInsert = difference.differenceSizeInsert
+                differenceNumInsert = difference.differenceNumInsert
+                
+                self.loadingSearch = false
+                
+                print("[LOG] Totale Distance \(totalDistance) - Different Size \(differenceSizeInsert) - Different Num \(differenceNumInsert)")
+                
+                if differenceSizeInsert != 0 {
+                    self.reloadDataSource(loadNetworkDatasource: false)
+                }
+                
+                if (differenceSizeInsert == 0 || differenceNumInsert < 100) && addPast && setDistantPast == false {
+                    
+                    switch totalDistance {
+                    case 0...89:
+                        if var gteDate90 = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
+                            gteDate90 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate90) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 90 gg")
+                        }
+                    case 90...179:
+                        if var gteDate180 = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
+                            gteDate180 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate180) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 180 gg")
+                        }
+                    case 180...364:
+                        if var gteDate365 = Calendar.current.date(byAdding: .day, value: -365, to: gteDate) {
+                            gteDate365 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate365) ?? Date()
+                            self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, setDistantPast: false)
+                            print("[LOG] Media search 365 gg")
+                        }
+                    default:
+                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
+                        print("[LOG] Media search distant pass")
+                    }
+                }
+                
+                self.collectionView?.reloadDataThenPerform {
+                    self.downloadThumbnail()
+                }
+                
+            }  else {
+                
+                self.loadingSearch = false
+                
+                self.reloadDataSource(loadNetworkDatasource: false)
+            }
+        })
+    }
+    
+    @objc private func loadNetworkDatasource() {
+        
+        isDistantPast = false
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
+        if sectionDatasource.allRecordsDataSource.count == 0 {
+            
+            let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
+            search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
+            
+        } else {
+            
+            let gteDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
+            search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
+        }
+        
+        collectionView?.reloadDataThenPerform {
+            self.downloadThumbnail()
+        }
+    }
+    
+    private func selectSearchSections() {
+        
+        if appDelegate.activeAccount.count == 0 {
+            return
+        }
+        
+        let sections = NSMutableSet()
+        let lastDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
+        var gteDate: Date?
+        
+        for item in collectionView.indexPathsForVisibleItems {
+            if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: sectionDatasource) {
+                if let date = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: metadata.date as Date) {
+                    sections.add(date)
+                }
+            }
+        }
+        let sortedSections = sections.sorted { (date1, date2) -> Bool in
+            (date1 as! Date).compare(date2 as! Date) == .orderedDescending
+        }
+        
+        if sortedSections.count >= 1 {
+            let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
+            if lastDate == sortedSections.last as! Date {
+                gteDate = Calendar.current.date(byAdding: .day, value: -30, to: sortedSections.last as! Date)!
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false)
+            } else {
+                gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false)
+            }
+        }
+    }
+    
+    private func downloadThumbnail() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            for item in self.collectionView.indexPathsForVisibleItems {
+                if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
+                    NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView, indexPath: item)
+                }
+            }
+        }
+    }
+}
+
+// MARK: FastScroll - ScrollView
+
+extension NCMedia: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        collectionView.scrollViewDidScroll(scrollView)
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        collectionView.scrollViewWillBeginDragging(scrollView)
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        collectionView.scrollViewDidEndDecelerating(scrollView)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        collectionView.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
+    }
+}
+
+extension NCMedia: FastScrollCollectionViewDelegate {
+    
+    fileprivate func configFastScroll() {
+        
+        collectionView.fastScrollDelegate = self
+        collectionView.handleTimeToDisappear = 1
+        
+        //bubble
+        collectionView.deactivateBubble = true
+        collectionView.bubbleFocus = .dynamic
+        collectionView.bubbleTextSize = 14.0
+        collectionView.bubbleMarginRight = 50.0
+        collectionView.bubbleColor = UIColor(red: 38.0 / 255.0, green: 48.0 / 255.0, blue: 60.0 / 255.0, alpha: 1.0)
+        
+        //handle
+        /*
+        collectionView.handleHeight = 40.0
+        collectionView.handleWidth = 40.0
+        collectionView.handleRadius = 20.0
+        collectionView.handleMarginRight = -20
+        */
+        collectionView.handleColor = NCBrandColor.sharedInstance.brand
+        
+        //scrollbar
+        collectionView.scrollbarWidth = 0.0
+        collectionView.scrollbarMarginTop = 45.0
+        collectionView.scrollbarMarginBottom = 5.0
+        collectionView.scrollbarMarginRight = 10.0
+        
+        //callback action to display bubble name
+        /*
+        collectionView.bubbleNameForIndexPath = { indexPath in
+            let visibleSection: Section = self.data[indexPath.section]
+            return visibleSection.sectionTitle
+        }
+        */
+    }
+    
+    func hideHandle() {
+        selectSearchSections()
+    }
+}
+
+extension FastScrollCollectionView
+{
+    /// Calls reloadsData() on self, and ensures that the given closure is
+    /// called after reloadData() has been completed.
+    ///
+    /// Discussion: reloadData() appears to be asynchronous. i.e. the
+    /// reloading actually happens during the next layout pass. So, doing
+    /// things like scrolling the collectionView immediately after a
+    /// call to reloadData() can cause trouble.
+    ///
+    /// This method uses CATransaction to schedule the closure.
+    
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void))
+    {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        self.reloadData()
+        CATransaction.commit()
+    }
+}
+

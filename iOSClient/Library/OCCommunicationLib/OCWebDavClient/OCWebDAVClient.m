@@ -266,18 +266,19 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [self mr_listPath:path depth:depth withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSString *)dateLastModified contentType:(NSArray *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth lteDateLastModified:(NSString *)lteDateLastModified gteDateLastModified:(NSString *)gteDateLastModified contentType:(NSArray *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
     NSString *body = @"";
     NSString *whereType = @"";
-        
+    NSString *whereDate = @"";
+    
     NSParameterAssert(success);
     
     _requestMethod = @"SEARCH";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_search];
     
-    if (contentType && dateLastModified) {
+    if (contentType && lteDateLastModified && gteDateLastModified) {
         
         body = [NSString stringWithFormat: @""
         "<?xml version=\"1.0\"?>"
@@ -311,7 +312,19 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
             whereType = [NSString stringWithFormat: @"%@<d:like><d:prop><d:getcontenttype/></d:prop><d:literal>%@</d:literal></d:like>", whereType, type];
         }
         
-        body = [NSString stringWithFormat: @"%@%@</d:or><d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte></d:and></d:where></d:basicsearch></d:searchrequest>", body, whereType, dateLastModified];
+        body = [NSString stringWithFormat: @"%@%@</d:or><d:or>", body, whereType];
+        
+        whereDate = [NSString stringWithFormat: @"%@<d:and><d:lte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:lte><d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte></d:and>", whereDate, lteDateLastModified, gteDateLastModified];
+        
+        /*
+        if (gteDateLastModified != nil && lteDateLastModified == nil) {
+            whereDate = [NSString stringWithFormat: @"%@<d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte>", whereDate, gteDateLastModified];
+        } else if (gteDateLastModified != nil && lteDateLastModified != nil) {
+            whereDate = [NSString stringWithFormat: @"%@<d:and><d:lte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:lte><d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte></d:and>", whereDate, lteDateLastModified, gteDateLastModified];
+        }
+        */
+        
+        body = [NSString stringWithFormat: @"%@%@</d:or></d:and></d:where></d:basicsearch></d:searchrequest>", body, whereDate];
         
     } else {
         
@@ -321,15 +334,15 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
             "<d:basicsearch>"
                 "<d:select>"
                     "<d:prop>"
-                        "<d:getlastmodified />"
-                        "<d:getetag />"
-                        "<d:getcontenttype />"
+                        "<d:getlastmodified/>"
+                        "<d:getetag/>"
+                        "<d:getcontenttype/>"
                         "<d:resourcetype/>"
-                        "<d:getcontentlength />"
+                        "<d:getcontentlength/>"
                         "<oc:fileid/>"
                         "<oc:id/>"
-                        "<oc:permissions />"
-                        "<oc:size />"
+                        "<oc:permissions/>"
+                        "<oc:size/>"
                         "<oc:favorite/>"
                         "<nc:is-encrypted/>"
                         "<nc:has-preview/>"
