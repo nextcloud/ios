@@ -396,7 +396,6 @@
                     textField.secureTextEntry = true;
                     [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                 }];
-
                 UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
                     NSLog(@"[LOG] Cancel action");
                 }];
