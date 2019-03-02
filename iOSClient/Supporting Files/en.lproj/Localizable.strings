@@ -439,6 +439,7 @@
 "_share_type_user_"             = "User";
 "_share_type_group_"            = "Group";
 "_share_type_remote_"           = "Remote";
+"_enforce_password_protection_" = "Enforce password protection";
 
 // Share Permission
 

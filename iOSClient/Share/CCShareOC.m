@@ -28,6 +28,7 @@
 @interface CCShareOC ()
 {
     AppDelegate *appDelegate;
+    tableCapabilities *capabilities;
 }
 @end
 
@@ -73,7 +74,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
  
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
     if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_15_0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"hideDownload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_share_link_hide_download_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -388,8 +389,37 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [self.delegate share:self.metadata serverUrl:self.serverUrl password:@"" permission:1 hideDownload:false];
-            [self disableForm];
+            if (capabilities.isFilesSharingPublicPasswordEnforced == YES) {
+                
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_enforce_password_protection_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                    textField.secureTextEntry = true;
+                    [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                }];
+
+                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                    NSLog(@"[LOG] Cancel action");
+                }];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                    NSString *password = alertController.textFields.firstObject.text;
+                    XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
+                    rowPassword.value = password;
+                    [self.delegate share:self.metadata serverUrl:self.serverUrl password:password permission:1 hideDownload:false];
+                    [self disableForm];
+                }];
+                
+                okAction.enabled = NO;
+                
+                [alertController addAction:cancelAction];
+                [alertController addAction:okAction];
+                
+                [self presentViewController:alertController animated:YES completion:nil];
+                
+            } else {
+                
+                [self.delegate share:self.metadata serverUrl:self.serverUrl password:@"" permission:1 hideDownload:false];
+                [self disableForm];
+            }
             
         } else {
             
@@ -541,6 +571,17 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Utility =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)minCharTextFieldDidChange:(UITextField *)sender
+{
+    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
+    
+    if (alertController) {
+        UITextField *password = alertController.textFields.firstObject;
+        UIAlertAction *okAction = alertController.actions.lastObject;
+        okAction.enabled = password.text.length > 0;
+    }
+}
 
 -(void)disableForm
 {
