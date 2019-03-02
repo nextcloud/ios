@@ -509,20 +509,28 @@
         
         NSString *password = rowDescriptor.value;
         
-        // if the password is not changed or is 0 lenght
-        if ([[self.itemShareLink shareWith] isEqualToString:password]) {
+        // Public Password Enforced Test
+        if (capabilities.isFilesSharingPublicPasswordEnforced == YES && password == nil) {
             
             [self reloadData];
             
         } else {
-            
-            if (password == nil)
-                password = @"";
-            
-            if (self.shareLink) {
+        
+            // if the password is not changed or is 0 lenght
+            if ([[self.itemShareLink shareWith] isEqualToString:password]) {
                 
-                [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:0 hideDownload:false];
-                [self disableForm];
+                [self reloadData];
+                
+            } else {
+                
+                if (password == nil)
+                    password = @"";
+                
+                if (self.shareLink) {
+                    
+                    [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:0 hideDownload:false];
+                    [self disableForm];
+                }
             }
         }
     }
