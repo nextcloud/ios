@@ -512,6 +512,8 @@
         // Public Password Enforced Test
         if (capabilities.isFilesSharingPublicPasswordEnforced == YES && password == nil) {
             
+            [appDelegate messageNotification:@"_share_link_" description:@"_password_obligatory_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+
             [self reloadData];
             
         } else {
