@@ -168,6 +168,92 @@ class NCUtility: NSObject {
         return (k_layout_list, "fileName", true, "none", true)
     }
     
+    
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, closure: @escaping (String?) -> ()) {
+        
+        var fileNamePNG = ""
+        
+        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            return closure(nil)
+        }
+        guard let iconURL = URL(string: svgUrlString) else {
+            return closure(nil)
+        }
+        
+        if fileName == nil {
+            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
+        } else {
+            fileNamePNG = fileName!
+        }
+        
+        let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileNamePNG
+        
+        if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
+            
+            guard let imageData = try? Data(contentsOf:iconURL) else {
+                return closure(nil)
+            }
+            
+            if let image = UIImage.init(data: imageData) {
+                
+                var newImage: UIImage = image
+                
+                if width != nil {
+                    
+                    let ratio = image.size.height / image.size.width
+                    let newSize = CGSize(width: width!, height: width! * ratio)
+                    
+                    let renderFormat = UIGraphicsImageRendererFormat.default()
+                    renderFormat.opaque = false
+                    let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
+                    newImage = renderer.image {
+                        (context) in
+                        image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
+                    }
+                }
+                
+                guard let pngImageData = newImage.pngData() else {
+                    return closure(nil)
+                }
+                
+                CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                
+            } else {
+                
+                let task = URLSession(configuration: .default).dataTask(with: iconURL) { (data, response, error) in
+                    guard error == nil,  response != nil, data != nil else {
+                        return closure(nil)
+                    }
+                    
+                    guard let svgImage: SVGKImage = SVGKImage(data: data) else {
+                        return closure(nil)
+                    }
+                    
+                    if width != nil {
+                        let scale = svgImage.size.height / svgImage.size.width
+                        svgImage.size = CGSize(width: width!, height: width! * scale)
+                    }
+                    
+                    guard let image: UIImage = svgImage.uiImage else {
+                        return closure(nil)
+                    }
+                    guard let pngImageData = image.pngData() else {
+                        return closure(nil)
+                    }
+                    
+                    CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                    
+                    DispatchQueue.main.async {
+                        return closure(imageNamePath)
+                    }
+                }
+                task.resume()
+            }
+        }
+        
+        return closure(imageNamePath)
+    }
+    
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool) -> String? {
         
         var fileNamePNG = ""

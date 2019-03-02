@@ -387,12 +387,10 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                 
                 let source = activityPreview.source
                 
-                DispatchQueue.global().async {
-                    if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) {
-                        DispatchQueue.main.async {
-                            if let image = UIImage(contentsOfFile: imageNamePath) {
-                                cell.imageView.image = image
-                            }
+                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
+                    if imageNamePath != nil {
+                        if let image = UIImage(contentsOfFile: imageNamePath!) {
+                            cell.imageView.image = image
                         }
                     }
                 }
@@ -403,12 +401,10 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                     
                     let source = activityPreview.source
 
-                    DispatchQueue.global().async {
-                        if let imageNamePath = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) {
-                            DispatchQueue.main.async {
-                                if let image = UIImage(contentsOfFile: imageNamePath) {
-                                    cell.imageView.image = image
-                                }
+                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
+                        if imageNamePath != nil {
+                            if let image = UIImage(contentsOfFile: imageNamePath!) {
+                                cell.imageView.image = image
                             }
                         }
                     }
