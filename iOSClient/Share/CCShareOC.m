@@ -579,7 +579,7 @@
     if (alertController) {
         UITextField *password = alertController.textFields.firstObject;
         UIAlertAction *okAction = alertController.actions.lastObject;
-        okAction.enabled = password.text.length > 0;
+        okAction.enabled = password.text.length >= 8;
     }
 }
 
