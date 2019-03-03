@@ -621,7 +621,7 @@
 
 // Offline
 
-"_manage_file_offline_"             = "Manage file offline";
+"_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
 
