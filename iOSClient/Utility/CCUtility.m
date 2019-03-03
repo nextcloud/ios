@@ -1307,7 +1307,11 @@
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
     
-    metadata.date = attributes[NSFileModificationDate];
+    if (attributes[NSFileModificationDate]) {
+        metadata.date = attributes[NSFileModificationDate];
+    } else {
+        metadata.date = [NSDate date];
+    }
     metadata.size = [attributes[NSFileSize] longValue];
     
     [self insertTypeFileIconName:metadata.fileNameView metadata:metadata];
