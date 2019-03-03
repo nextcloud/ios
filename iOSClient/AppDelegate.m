@@ -1170,7 +1170,7 @@
     
     // Detect E2EE
     NSString *saveserverUrl = @"";
-    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:nil ascending:NO];
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:@"serverUrl" ascending:NO];
     for (tableMetadata *metadata in metadatasForE2EE) {
         if (![saveserverUrl isEqualToString:metadata.serverUrl]) {
             saveserverUrl = metadata.serverUrl;
