@@ -510,13 +510,13 @@ extension NCMedia {
         }
     }
     
-    func search(lteDate: Date, gteDate: Date, addPast: Bool, setDistantPast: Bool) {
+    func search(lteDate: Date, gteDate: Date, addPast: Bool, setDistantPast: Bool, debug: String) {
         
         // ----- DEBUG -----
 #if DEBUG
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yyyy HH:mm"
-        print("[LOG] Search: addPast \(addPast), distantPass: \(setDistantPast), Lte: " + dateFormatter.string(from: lteDate) + " - Gte: " + dateFormatter.string(from: gteDate))
+        print("[LOG] Search: addPast \(addPast), distantPass: \(setDistantPast), Lte: " + dateFormatter.string(from: lteDate) + " - Gte: " + dateFormatter.string(from: gteDate) + " DEBUG: " + debug)
 #endif
         // -----------------
         
@@ -572,24 +572,20 @@ extension NCMedia {
                     case 0...89:
                         if var gteDate90 = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
                             gteDate90 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate90) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 90 gg")
+                            self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, setDistantPast: false, debug: "search recursive -90 gg")
                         }
                     case 90...179:
                         if var gteDate180 = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
                             gteDate180 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate180) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 180 gg")
+                            self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, setDistantPast: false, debug: "search recursive -180 gg")
                         }
                     case 180...364:
                         if var gteDate365 = Calendar.current.date(byAdding: .day, value: -365, to: gteDate) {
                             gteDate365 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate365) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 365 gg")
+                            self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, setDistantPast: false, debug: "search recursive -365 gg")
                         }
                     default:
-                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
-                        print("[LOG] Media search distant pass")
+                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true, debug: "search recursive distant pass")
                     }
                 }
                 
@@ -617,12 +613,12 @@ extension NCMedia {
         if sectionDatasource.allRecordsDataSource.count == 0 {
             
             let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
-            search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
+            search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false, debug: "search today, -30 gg")
             
         } else {
             
             let gteDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
-            search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
+            search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false, debug: "search today, first date record")
         }
         
         collectionView?.reloadDataThenPerform {
@@ -655,10 +651,10 @@ extension NCMedia {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             if lastDate == sortedSections.last as! Date {
                 gteDate = Calendar.current.date(byAdding: .day, value: -30, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false)
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false, debug: "search add past last record, -30 gg")
             } else {
                 gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false)
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false, debug: "search [refresh window]")
             }
         }
     }
