@@ -1985,7 +1985,6 @@ class NCManageDatabase: NSObject {
         
         var numDelete: Int = 0
         var numInsert: Int = 0
-        var newInsert: Int = 0
         var etagsDelete = [String]()
         var etagsInsert = [String]()
         var isDifferent: Bool = false
@@ -1993,32 +1992,32 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                // DELETE ALL
+                // DELETE
                 let results = realm.objects(tableMedia.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
                 etagsDelete = Array(results.map { $0.etag })
                 numDelete = results.count
-                realm.delete(results)
                 
-                // INSERT ALL
+                // INSERT
                 let photos = Array(metadatas.map { tableMedia.init(value:$0) })
                 etagsInsert = Array(results.map { $0.etag })
                 numInsert = photos.count
-                realm.add(photos, update: true)
                 
                 // CALCULATE DIFFERENT RETURN
                 if etagsDelete.count == etagsInsert.count && etagsDelete.sorted() == etagsInsert.sorted() {
                     isDifferent = false
                 } else {
                     isDifferent = true
+
+                    realm.delete(results)
+                    realm.add(photos, update: true)
                 }
-                newInsert = numInsert - numDelete
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             realm.cancelWrite()
         }
         
-        return(isDifferent, newInsert)
+        return(isDifferent, numInsert - numDelete)
     }
     
     @objc func getTableMediaDate(account: String, order: ComparisonResult) -> Date {
