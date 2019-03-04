@@ -720,3 +720,7 @@
 
 "Try again in 1 minute" = "Try again in 1 minute";
 
+// QRCode
+
+"_qrcode_not_authorized_"   = "This app is not authorized to use Back Camera";
+"_qrcode_not_supported_"    = "QRCode not supported by the current device";

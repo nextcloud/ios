@@ -77,9 +77,9 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
             
             switch error.code {
             case -11852:
-                alert = UIAlertController(title: "Error", message: "This app is not authorized to use Back Camera.", preferredStyle: .alert)
+                alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_qrcode_not_authorized_", comment: ""), preferredStyle: .alert)
                 
-                alert.addAction(UIAlertAction(title: "Setting", style: .default, handler: { (_) in
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_settings_", comment: ""), style: .default, handler: { (_) in
                     DispatchQueue.main.async {
                         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                             UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
@@ -87,10 +87,10 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
                     }
                 }))
                 
-                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
             default:
-                alert = UIAlertController(title: "Error", message: "Reader not supported by the current device", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_qrcode_not_supported_", comment: ""), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .cancel, handler: nil))
             }
             
             delegate?.present(alert, animated: true, completion: nil)
