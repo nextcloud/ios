@@ -1978,14 +1978,14 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (isDifferent: Bool, differenceNumInsert: Int) {
+    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (isDifferent: Bool, newInsert: Int) {
 
         let realm = try! Realm()
         realm.refresh()
         
         var numDelete: Int = 0
         var numInsert: Int = 0
-        var differenceNumInsert: Int = 0
+        var newInsert: Int = 0
         var etagsDelete = [String]()
         var etagsInsert = [String]()
         var isDifferent: Bool = false
@@ -2005,20 +2005,20 @@ class NCManageDatabase: NSObject {
                 numInsert = photos.count
                 realm.add(photos, update: true)
                 
-                // CALCULATE RETURN
+                // CALCULATE DIFFERENT RETURN
                 if etagsDelete.count == etagsInsert.count && etagsDelete.sorted() == etagsInsert.sorted() {
                     isDifferent = false
                 } else {
                     isDifferent = true
                 }
-                differenceNumInsert = numInsert - numDelete
+                newInsert = numInsert - numDelete
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             realm.cancelWrite()
         }
         
-        return(isDifferent, differenceNumInsert)
+        return(isDifferent, newInsert)
     }
     
     @objc func getTableMediaDate(account: String, order: ComparisonResult) -> Date {

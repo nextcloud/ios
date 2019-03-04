@@ -550,23 +550,23 @@ extension NCMedia {
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 var isDifferent: Bool = false
-                var differenceNumInsert: Int = 0
+                var newInsert: Int = 0
                 
                 let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
                 
                 let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
                 isDifferent = difference.isDifferent
-                differenceNumInsert = difference.differenceNumInsert
+                newInsert = difference.newInsert
                 
                 self.loadingSearch = false
                 
-                print("[LOG] Search: Totale Distance \(totalDistance) - It's Different \(isDifferent) - Different Num \(differenceNumInsert)")
+                print("[LOG] Search: Totale Distance \(totalDistance) - It's Different \(isDifferent) - New insert \(newInsert)")
                 
                 if isDifferent {
                     self.reloadDataSource(loadNetworkDatasource: false)
                 }
                 
-                if (isDifferent == false || differenceNumInsert < 100) && addPast && setDistantPast == false {
+                if (isDifferent == false || newInsert < 100) && addPast && setDistantPast == false {
                     
                     switch totalDistance {
                     case 0...89:
