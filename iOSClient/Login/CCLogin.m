@@ -398,6 +398,13 @@
     }
 }
 
+- (IBAction)handleQRCode:(id)sender
+{
+    NCLoginQRCode *qrCode = [[NCLoginQRCode alloc] initWithDelegate:self];
+    
+    [qrCode scan];
+}
+
 -(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
 {
     // The pinnning check

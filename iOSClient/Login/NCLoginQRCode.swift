@@ -21,11 +21,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import Foundation
 import QRCodeReader
 
-class NCLoginQRCode: QRCodeReaderViewControllerDelegate {
+class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
     
     lazy var reader: QRCodeReader = QRCodeReader()
     weak var delegate: UIViewController?
@@ -44,12 +43,15 @@ class NCLoginQRCode: QRCodeReaderViewControllerDelegate {
         return QRCodeReaderViewController(builder: builder)
     }()
 
+    override init() {
+        
+    }
     
-    public init(delegate: UIViewController) {
+    @objc public init(delegate: UIViewController) {
         self.delegate = delegate
     }
     
-    func scanInModalAction() {
+    @objc func scan() {
         guard checkScanPermissions() else { return }
         
         readerVC.modalPresentationStyle = .formSheet
