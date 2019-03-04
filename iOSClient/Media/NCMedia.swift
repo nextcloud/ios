@@ -716,6 +716,7 @@ extension NCMedia: FastScrollCollectionViewDelegate {
         collectionView.handleMarginRight = -20
         */
         collectionView.handleColor = NCBrandColor.sharedInstance.brand
+        collectionView.handle?.backgroundColor = NCBrandColor.sharedInstance.brand
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0
