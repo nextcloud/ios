@@ -239,6 +239,7 @@
 		F7434B6120E2445C00417916 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7434B6220E249F700417916 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
+		F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F745B250222D871800346520 /* QRCodeReader.framework */; };
 		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F74E432620B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
 		F74E432720B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
@@ -884,6 +885,7 @@
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
+		F745B250222D871800346520 /* QRCodeReader.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QRCodeReader.framework; path = Carthage/Build/iOS/QRCodeReader.framework; sourceTree = "<group>"; };
 		F7496B81208F5651004B299C /* iOSClient.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = iOSClient.plist; sourceTree = "<group>"; };
 		F7496B83208F5652004B299C /* Share.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Share.plist; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
@@ -1512,6 +1514,7 @@
 				F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */,
 				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
 				F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */,
+				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
@@ -2970,6 +2973,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F745B250222D871800346520 /* QRCodeReader.framework */,
 				F75153232226920200323DDC /* FastScroll.framework */,
 				F78AA20521F783E900D0F205 /* SwiftRichString.framework */,
 				F72E0B9C21AD60BC00898D7B /* WeScan.framework */,
@@ -3440,6 +3444,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/WeScan.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/FastScroll.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
 			);
 			outputPaths = (
 			);
