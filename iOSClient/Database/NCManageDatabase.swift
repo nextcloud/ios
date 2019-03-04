@@ -1978,46 +1978,39 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (differenceSizeInsert: Int64, differenceNumInsert: Int64) {
+    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (isDifferent: Bool, differenceNumInsert: Int) {
 
         let realm = try! Realm()
         realm.refresh()
         
-        var sizeDelete: Int64 = 0
-        var sizeInsert: Int64 = 0
-        var numDelete: Int64 = 0
-        var numInsert: Int64 = 0
-        var differenceSizeInsert: Int64 = 0
-        var differenceNumInsert: Int64 = 0
+        var numDelete: Int = 0
+        var numInsert: Int = 0
+        var differenceNumInsert: Int = 0
         var etagsDelete = [String]()
         var etagsInsert = [String]()
+        var isDifferent: Bool = false
         
         do {
             try realm.write {
+                
                 // DELETE ALL
                 let results = realm.objects(tableMedia.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
                 etagsDelete = Array(results.map { $0.etag })
-                for result in results {
-                    sizeDelete = sizeDelete + Int64(result.size)
-                    numDelete += 1
-                }
+                numDelete = results.count
                 realm.delete(results)
+                
                 // INSERT ALL
                 let photos = Array(metadatas.map { tableMedia.init(value:$0) })
-                for photo in photos {
-                    etagsInsert.append(photo.etag)
-                    sizeInsert = sizeInsert + Int64(photo.size)
-                    numInsert += 1
-                }
+                etagsInsert = Array(results.map { $0.etag })
+                numInsert = photos.count
                 realm.add(photos, update: true)
                 
+                // CALCULATE RETURN
                 if etagsDelete.count == etagsInsert.count && etagsDelete.sorted() == etagsInsert.sorted() {
-                    print("same")
+                    isDifferent = false
                 } else {
-                    print("different")
+                    isDifferent = true
                 }
-                
-                differenceSizeInsert = sizeInsert - sizeDelete
                 differenceNumInsert = numInsert - numDelete
             }
         } catch let error {
@@ -2025,7 +2018,7 @@ class NCManageDatabase: NSObject {
             realm.cancelWrite()
         }
         
-        return(differenceSizeInsert, differenceNumInsert)
+        return(isDifferent, differenceNumInsert)
     }
     
     @objc func getTableMediaDate(account: String, order: ComparisonResult) -> Date {
