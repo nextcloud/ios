@@ -1989,23 +1989,34 @@ class NCManageDatabase: NSObject {
         var numInsert: Int64 = 0
         var differenceSizeInsert: Int64 = 0
         var differenceNumInsert: Int64 = 0
-
+        var etagsDelete = [String]()
+        var etagsInsert = [String]()
+        
         do {
             try realm.write {
                 // DELETE ALL
                 let results = realm.objects(tableMedia.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
-                for resul in results {
-                    sizeDelete = sizeDelete + Int64(resul.size)
+                etagsDelete = Array(results.map { $0.etag })
+                for result in results {
+                    sizeDelete = sizeDelete + Int64(result.size)
                     numDelete += 1
                 }
                 realm.delete(results)
                 // INSERT ALL
                 let photos = Array(metadatas.map { tableMedia.init(value:$0) })
                 for photo in photos {
+                    etagsInsert.append(photo.etag)
                     sizeInsert = sizeInsert + Int64(photo.size)
                     numInsert += 1
                 }
                 realm.add(photos, update: true)
+                
+                if etagsDelete.count == etagsInsert.count && etagsDelete.sorted() == etagsInsert.sorted() {
+                    print("same")
+                } else {
+                    print("different")
+                }
+                
                 differenceSizeInsert = sizeInsert - sizeDelete
                 differenceNumInsert = numInsert - numDelete
             }
