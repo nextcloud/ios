@@ -63,11 +63,6 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
         readerVC.delegate = self
         
         readerVC.completionBlock = { (result: QRCodeReaderResult?) in
-            if let result = result {
-                print("Completion with result: \(result.value) of type \(result.metadataType)")
-            } else {
-                
-            }
             self.readerVC.dismiss(animated: true, completion: nil)
         }
         

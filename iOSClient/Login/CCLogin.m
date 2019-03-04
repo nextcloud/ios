@@ -259,7 +259,9 @@
 
 - (void)dismissQRCode:(NSString *)value metadataType:(NSString *)metadataType
 {
-    
+    if (value != nil) {
+        
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
