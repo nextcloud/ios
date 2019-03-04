@@ -474,6 +474,8 @@ extension NCMedia {
             
             DispatchQueue.main.async {
                 
+                self.collectionView?.reloadData()
+                
                 if loadNetworkDatasource {
                     self.loadNetworkDatasource()
                 }
@@ -695,7 +697,6 @@ extension NCMedia: FastScrollCollectionViewDelegate {
     fileprivate func configFastScroll() {
         
         collectionView.fastScrollDelegate = self
-        collectionView.handleTimeToDisappear = 1
         
         //bubble
         collectionView.deactivateBubble = true
@@ -709,8 +710,9 @@ extension NCMedia: FastScrollCollectionViewDelegate {
         collectionView.handleHeight = 40.0
         collectionView.handleWidth = 40.0
         collectionView.handleRadius = 20.0
-        collectionView.handleMarginRight = -20
         */
+        collectionView.handleTimeToDisappear = 1
+        collectionView.handleMarginRight = 3
         collectionView.handleColor = NCBrandColor.sharedInstance.brand
         collectionView.handle?.backgroundColor = NCBrandColor.sharedInstance.brand
         
