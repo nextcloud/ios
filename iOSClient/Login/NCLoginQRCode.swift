@@ -24,18 +24,23 @@
 import Foundation
 import QRCodeReader
 
+@objc public protocol NCLoginQRCodeDelegate {
+    @objc func dismissQRCode(_ value: String?, metadataType: String?)
+}
+
 class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
     
     lazy var reader: QRCodeReader = QRCodeReader()
+    
     weak var delegate: UIViewController?
     
     lazy var readerVC: QRCodeReaderViewController = {
         let builder = QRCodeReaderViewControllerBuilder {
-            $0.reader                  = QRCodeReader(metadataObjectTypes: [.qr], captureDevicePosition: .back)
-            $0.showTorchButton         = true
+            $0.reader = QRCodeReader(metadataObjectTypes: [.qr], captureDevicePosition: .back)
+            $0.showTorchButton = true
             $0.preferredStatusBarStyle = .lightContent
-            $0.showOverlayView        = true
-            $0.rectOfInterest          = CGRect(x: 0.2, y: 0.2, width: 0.6, height: 0.6)
+            $0.showOverlayView = true
+            $0.rectOfInterest = CGRect(x: 0.2, y: 0.2, width: 0.6, height: 0.6)
             
             $0.reader.stopScanningWhenCodeIsFound = false
         }
@@ -55,12 +60,15 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
         guard checkScanPermissions() else { return }
         
         readerVC.modalPresentationStyle = .formSheet
-        readerVC.delegate               = self
+        readerVC.delegate = self
         
         readerVC.completionBlock = { (result: QRCodeReaderResult?) in
             if let result = result {
                 print("Completion with result: \(result.value) of type \(result.metadataType)")
+            } else {
+                
             }
+            self.readerVC.dismiss(animated: true, completion: nil)
         }
         
         delegate?.present(readerVC, animated: true, completion: nil)
@@ -98,9 +106,13 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
     
     func reader(_ reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
         reader.stopScanning()
+        
+        (self.delegate as? NCLoginQRCodeDelegate)?.dismissQRCode(result.value, metadataType: result.metadataType)
     }
     
     func readerDidCancel(_ reader: QRCodeReaderViewController) {
         reader.stopScanning()
+        
+        (self.delegate as? NCLoginQRCodeDelegate)?.dismissQRCode(nil, metadataType: nil)
     }
 }

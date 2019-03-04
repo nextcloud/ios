@@ -27,7 +27,7 @@
 #import "NCBridgeSwift.h"
 #import "NCNetworkingEndToEnd.h"
 
-@interface CCLogin () <CCLoginDelegateWeb>
+@interface CCLogin () <CCLoginDelegateWeb, NCLoginQRCodeDelegate>
 {
     AppDelegate *appDelegate;
     UIView *rootView;
@@ -250,6 +250,16 @@
         self.toggleVisiblePassword.hidden = YES;
         self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].customerText};
     }
+}
+
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === NCLoginQRCodeDelegate ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)dismissQRCode:(NSString *)value metadataType:(NSString *)metadataType
+{
+    
 }
 
 #pragma --------------------------------------------------------------------------------------------
