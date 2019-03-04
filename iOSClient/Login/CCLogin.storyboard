@@ -126,7 +126,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6tp-bh-Z9k" userLabel="QRCode">
                                 <rect key="frame" x="194.66666666666666" y="440.66666666666669" width="25" height="25"/>
-                                <state key="normal" image="autoUpload"/>
+                                <state key="normal" image="qrcode"/>
                                 <connections>
                                     <action selector="handleQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="IW6-a9-880"/>
                                 </connections>
@@ -189,10 +189,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="autoUpload" width="25" height="25"/>
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>
+        <image name="qrcode" width="25" height="25"/>
         <image name="visiblePassword" width="25" height="25"/>
     </resources>
 </document>

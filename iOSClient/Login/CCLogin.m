@@ -252,15 +252,32 @@
     }
 }
 
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === NCLoginQRCodeDelegate ===
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)dismissQRCode:(NSString *)value metadataType:(NSString *)metadataType
 {
-    if (value != nil) {
+    if (value != nil && [value containsString:[NCBrandOptions sharedInstance].webLoginAutenticationProtocol]) {
         
+        value = [value stringByReplacingOccurrencesOfString:[NCBrandOptions sharedInstance].webLoginAutenticationProtocol withString:@""];
+        value = [value stringByReplacingOccurrencesOfString:@"login/" withString:@""];
+        
+        NSArray *valueArray = [value componentsSeparatedByString: @"&"];
+        
+        if (valueArray.count == 3) {
+            
+            _imageUser.hidden = NO;
+            _user.hidden = NO;
+            _imagePassword.hidden = NO;
+            _password.hidden = NO;
+            
+            [self.loginTypeView setTitle:NSLocalizedString(@"_web_login_", nil) forState:UIControlStateNormal];
+            
+            self.user.text = [valueArray[0] stringByReplacingOccurrencesOfString:@"user:" withString:@""];
+            self.password.text = [valueArray[1] stringByReplacingOccurrencesOfString:@"password:" withString:@""];
+            self.baseUrl.text = [valueArray[2] stringByReplacingOccurrencesOfString:@"server:" withString:@""];
+        }
     }
 }
 
