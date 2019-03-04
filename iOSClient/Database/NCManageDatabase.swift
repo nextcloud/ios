@@ -1985,9 +1985,12 @@ class NCManageDatabase: NSObject {
         
         var numDelete: Int = 0
         var numInsert: Int = 0
+        
         var etagsDelete = [String]()
         var etagsInsert = [String]()
+        
         var isDifferent: Bool = false
+        var newInsert: Int = 0
         
         do {
             try realm.write {
@@ -1999,7 +2002,7 @@ class NCManageDatabase: NSObject {
                 
                 // INSERT
                 let photos = Array(metadatas.map { tableMedia.init(value:$0) })
-                etagsInsert = Array(results.map { $0.etag })
+                etagsInsert = Array(photos.map { $0.etag })
                 numInsert = photos.count
                 
                 // CALCULATE DIFFERENT RETURN
@@ -2007,7 +2010,8 @@ class NCManageDatabase: NSObject {
                     isDifferent = false
                 } else {
                     isDifferent = true
-
+                    newInsert = numInsert - numDelete
+                    
                     realm.delete(results)
                     realm.add(photos, update: true)
                 }
@@ -2017,7 +2021,7 @@ class NCManageDatabase: NSObject {
             realm.cancelWrite()
         }
         
-        return(isDifferent, numInsert - numDelete)
+        return(isDifferent, newInsert)
     }
     
     @objc func getTableMediaDate(account: String, order: ComparisonResult) -> Date {
