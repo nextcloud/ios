@@ -613,7 +613,7 @@ extension NCMedia {
         if sectionDatasource.allRecordsDataSource.count == 0 {
             
             let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
-            search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false, debug: "search today, -30 gg")
+            search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false, debug: "search (add past) today, -30 gg")
             
         } else {
             
@@ -651,7 +651,7 @@ extension NCMedia {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             if lastDate == sortedSections.last as! Date {
                 gteDate = Calendar.current.date(byAdding: .day, value: -30, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false, debug: "search add past last record, -30 gg")
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false, debug: "search (add past) last record, -30 gg")
             } else {
                 gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
                 search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false, debug: "search [refresh window]")
