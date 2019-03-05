@@ -47,9 +47,9 @@ class NCCreateMenuAdd: NSObject {
         
         items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage(named: "createMedia"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_menu"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt_menu"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
