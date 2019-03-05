@@ -524,7 +524,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             cell.favorite.image = nil
             cell.shared.image = nil
             cell.local.image = nil
-            cell.imageTitleSegue = nil
             cell.shared.isUserInteractionEnabled = false
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
@@ -560,22 +559,16 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 // File Image & Image Title Segue
                 if metadata.e2eEncrypted {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "lock")
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "media")
                 } else if isShare {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "share")
                 } else if isMounted {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "shareMounted")
                 } else if (sharesUserAndGroup != nil) {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "share")
                 } else if (sharesLink != nil) {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "sharebylink")
                 } else {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 }

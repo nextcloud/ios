@@ -45,7 +45,7 @@ class NCCreateMenuAdd: NSObject {
         
         var items = [ActionSheetItem]()
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage(named: "createMedia"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
         items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
         
@@ -57,7 +57,7 @@ class NCCreateMenuAdd: NSObject {
         }
 #endif
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:1, color: colorIcon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "createFolder"), multiplier:1, color: colorIcon)))
         
         // items.append(ActionSheetSectionTitle(title: "Cheap"))
         // items.append(ActionSheetSectionMargin())

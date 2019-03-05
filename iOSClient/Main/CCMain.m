@@ -75,9 +75,6 @@
     // Folder
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
-    
-    // Image Title Segue
-    UIImage *imageTitleSegue;
 }
 @end
 
@@ -4159,7 +4156,6 @@
     
     if (self.metadata.directory) {
         
-        imageTitleSegue = cell.imageTitleSegue;
         [self performSegueDirectoryWithControlPasscode:true];
     }
 }
