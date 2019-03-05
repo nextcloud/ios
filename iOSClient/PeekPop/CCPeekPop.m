@@ -125,19 +125,17 @@
             
             self.imagePreview.image = image;
             
-            self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
-            
         } else {
             
-            if (errorCode != 0)  {
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            if (self.metadata.iconName.length > 0) {
+                self.imagePreview.image = [UIImage imageNamed:self.metadata.iconName];
             } else {
-                NSLog(@"[LOG] It has been changed user during networking process, error.");
+                self.imagePreview.image = [UIImage imageNamed:@"file"];
             }
-            
-            [self dismissViewControllerAnimated:YES completion:nil];
         }
+        
+        self.imagePreview.contentMode = UIViewContentModeScaleToFill;
+        self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
     }];
 }
 
