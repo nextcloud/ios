@@ -139,7 +139,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 1, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {

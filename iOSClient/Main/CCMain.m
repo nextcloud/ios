@@ -404,7 +404,7 @@
     if (_isSearchMode)
         return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"searchBig"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     else
-        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"filesNoFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
 }
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView

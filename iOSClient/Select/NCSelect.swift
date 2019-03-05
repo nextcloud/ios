@@ -184,7 +184,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         if networkInProgress {
             return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), multiplier: 2, color: UIColor.lightGray)
         } else {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 1, color: NCBrandColor.sharedInstance.brandElement)
         }
     }
     
