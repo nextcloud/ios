@@ -47,40 +47,41 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    //self.preferredContentSize = CGSizeMake(self.view.frame.size.width - 50, self.view.frame.size.width - 50);
-    
-    /*
-    NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
-    self.imagePreview.image = [UIImage animatedImageWithAnimatedGIFURL:url];
-    */
-    
-    self.imagePreview.contentMode = UIViewContentModeCenter;
     self.fileName.text = self.metadata.fileNameView;
     
     if (self.metadata.hasPreview) {
         
         if ([CCUtility fileProviderStorageIconExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
+            
             self.imagePreview.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
-            self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
+        
         } else {
+            
             NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
             self.imagePreview.image = [UIImage animatedImageWithAnimatedGIFURL:url];
+            
             [self downloadThumbnail];
         }
+        
+        self.imagePreview.contentMode = UIViewContentModeScaleToFill;
+        self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
         
     } else {
         
         if (self.metadata.directory) {
-            self.imagePreview.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+            
+            self.imagePreview.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            
         } else {
+            
             if (self.metadata.iconName.length > 0) {
                 self.imagePreview.image = [UIImage imageNamed:self.metadata.iconName];
             } else {
                 self.imagePreview.image = [UIImage imageNamed:@"file"];
-
             }
         }
+        
+        self.imagePreview.contentMode = UIViewContentModeCenter;
     }
 }
 
@@ -120,8 +121,7 @@
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             self.imagePreview.image = image;
-            self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
+            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
             
         } else {
             
