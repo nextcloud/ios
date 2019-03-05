@@ -74,9 +74,6 @@
             
             self.imagePreview.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
             
-            self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
-            
         } else {
             
             if (self.metadata.iconName.length > 0) {
@@ -84,9 +81,10 @@
             } else {
                 self.imagePreview.image = [UIImage imageNamed:@"file"];
             }
-            
-            self.imagePreview.contentMode = UIViewContentModeCenter;
         }
+        
+        self.imagePreview.contentMode = UIViewContentModeScaleToFill;
+        self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
     }
 }
 
