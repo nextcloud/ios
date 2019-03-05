@@ -258,7 +258,7 @@
 
 - (void)dismissQRCode:(NSString *)value metadataType:(NSString *)metadataType
 {
-    if (value != nil && [value containsString:[NCBrandOptions sharedInstance].webLoginAutenticationProtocol]) {
+    if (value != nil) {
         
         value = [value stringByReplacingOccurrencesOfString:[NCBrandOptions sharedInstance].webLoginAutenticationProtocol withString:@""];
         value = [value stringByReplacingOccurrencesOfString:@"login/" withString:@""];
@@ -277,6 +277,8 @@
             self.user.text = [valueArray[0] stringByReplacingOccurrencesOfString:@"user:" withString:@""];
             self.password.text = [valueArray[1] stringByReplacingOccurrencesOfString:@"password:" withString:@""];
             self.baseUrl.text = [valueArray[2] stringByReplacingOccurrencesOfString:@"server:" withString:@""];
+            
+            [self handleButtonLogin:self];
         }
     }
 }
