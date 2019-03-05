@@ -219,15 +219,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             isImagePreviewLoaded = true
         } else {
             if metadata.iconName.count > 0 {
-                if cell is NCGridMediaCell {
-                    if metadata.typeFile == k_metadataTypeFile_video {
-                        image = UIImage.init(named: "file_video_big")
-                    } else {
-                        image = UIImage.init(named: "file_photo_big")
-                    }
-                } else {
-                    image = UIImage.init(named: metadata.iconName)
-                }
+                image = UIImage.init(named: metadata.iconName)
             } else {
                 image = UIImage.init(named: "file")
             }
