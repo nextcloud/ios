@@ -934,18 +934,16 @@
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata.hasPreview == 1) {
-        CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         
-        if (cell) {
-            previewingContext.sourceRect = cell.frame;
-            CCPeekPop *vc = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
+    if (cell) {
+        previewingContext.sourceRect = cell.frame;
+        CCPeekPop *vc = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
             
-            vc.delegate = self;
-            vc.metadata = metadata;
+        vc.delegate = self;
+        vc.metadata = metadata;
             
-            return vc;
-        }
+        return vc;
     }
     
     return nil;

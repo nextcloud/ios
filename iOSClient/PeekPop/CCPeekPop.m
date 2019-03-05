@@ -51,19 +51,17 @@
     
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
     
-    _imagePreview.image = [UIImage animatedImageWithAnimatedGIFURL:url];
-    
-    _imagePreview.contentMode = UIViewContentModeCenter;
+    self.imagePreview.image = [UIImage animatedImageWithAnimatedGIFURL:url];
+    self.imagePreview.contentMode = UIViewContentModeCenter;
+    self.fileName.text = self.metadata.fileNameView;
 
-    [self downloadThumbnail];
+    if (self.metadata.hasPreview) {
+        [self downloadThumbnail];
+    } else {
+        
+    }
 }
 
-// E' apparso
-
--(void) viewDidAppear:(BOOL)animated{
-    
-    [super viewDidAppear:animated];    
-}
 
 - (void)didReceiveMemoryWarning
 {
@@ -72,14 +70,12 @@
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
-    //__weak typeof(self) weakSelf = self;
-    
     UIPreviewAction *previewAction1 = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
-        _metadata.session = k_download_session;
-        _metadata.sessionError = @"";
-        _metadata.sessionSelector = selectorOpenIn;
-        _metadata.status = k_metadataStatusWaitDownload;
+        self.metadata.session = k_download_session;
+        self.metadata.sessionError = @"";
+        self.metadata.sessionSelector = selectorOpenIn;
+        self.metadata.status = k_metadataStatusWaitDownload;
             
         // Add Metadata for Download
         (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
@@ -102,8 +98,8 @@
      
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            _imagePreview.image = image;
-            _imagePreview.contentMode = UIViewContentModeScaleToFill;
+            self.imagePreview.image = image;
+            self.imagePreview.contentMode = UIViewContentModeScaleToFill;
             
             self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
             

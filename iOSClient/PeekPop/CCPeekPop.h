@@ -34,6 +34,7 @@
 
 @property (nonatomic, strong) tableMetadata *metadata;
 
+@property (nonatomic, weak) IBOutlet UILabel *fileName;
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;
 
 @end
