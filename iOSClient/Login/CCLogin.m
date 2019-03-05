@@ -258,10 +258,11 @@
 
 - (void)dismissQRCode:(NSString *)value metadataType:(NSString *)metadataType
 {
-    if (value != nil) {
+    NSString *protocolLogin = [[NCBrandOptions sharedInstance].webLoginAutenticationProtocol stringByAppendingString:@"login/"];
+    
+    if (value != nil && [value hasPrefix:protocolLogin] && [value containsString:@"user:"] && [value containsString:@"password:"] && [value containsString:@"server:"]) {
         
-        value = [value stringByReplacingOccurrencesOfString:[NCBrandOptions sharedInstance].webLoginAutenticationProtocol withString:@""];
-        value = [value stringByReplacingOccurrencesOfString:@"login/" withString:@""];
+        value = [value stringByReplacingOccurrencesOfString:protocolLogin withString:@""];
         
         NSArray *valueArray = [value componentsSeparatedByString: @"&"];
         

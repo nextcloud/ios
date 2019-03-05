@@ -63,13 +63,7 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
         readerVC.delegate = self
         
         readerVC.completionBlock = { (result: QRCodeReaderResult?) in
-            if result != nil {
-                if result!.value.hasPrefix(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) && result!.value.contains("user:") && result!.value.contains("password:") && result!.value.contains("server:") {
-                    self.readerVC.dismiss(animated: true, completion: nil)
-                }
-            } else {
-                self.readerVC.dismiss(animated: true, completion: nil)
-            }
+            self.readerVC.dismiss(animated: true, completion: nil)
         }
         
         delegate?.present(readerVC, animated: true, completion: nil)
