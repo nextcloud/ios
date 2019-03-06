@@ -279,6 +279,11 @@
             self.password.text = [valueArray[1] stringByReplacingOccurrencesOfString:@"password:" withString:@""];
             self.baseUrl.text = [valueArray[2] stringByReplacingOccurrencesOfString:@"server:" withString:@""];
             
+            // Check whether baseUrl contain protocol. If not add https:// by default.
+            if(![self.baseUrl.text hasPrefix:@"https"] && ![self.baseUrl.text hasPrefix:@"http"]) {
+                self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
+            }
+            
             [self handleButtonLogin:self];
         }
     }
