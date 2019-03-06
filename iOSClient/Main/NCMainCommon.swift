@@ -274,7 +274,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -380,7 +380,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
                 cell.imageItem.contentMode = .center
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -496,6 +496,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     
     @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String) -> UITableViewCell {
         
+        var image: UIImage?
+
         // Create File System
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID)
@@ -550,20 +552,22 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // File Image & Image Title Segue
                 if metadata.e2eEncrypted {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folderEncrypted")
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folderAutomaticUpload")
                 } else if isShare {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folder_shared_with_me")
                 } else if isMounted {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folder_external")
                 } else if (sharesUserAndGroup != nil) {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folder_shared_with_me")
                 } else if (sharesLink != nil) {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folder_public")
                 } else {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folder")
                 }
+                
+                cell.file.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
