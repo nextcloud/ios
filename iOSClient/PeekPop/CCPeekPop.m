@@ -46,17 +46,21 @@
     [super viewDidLoad];
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
+    UIImage *image;
+
     self.fileName.text = self.metadata.fileNameView;
     
     if (self.metadata.hasPreview) {
         
         if ([CCUtility fileProviderStorageIconExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
             
-            self.imagePreview.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
+            
+            self.imagePreview.image = image;
         
             self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
+            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
             
         } else {
             
@@ -72,19 +76,20 @@
         
         if (self.metadata.directory) {
             
-            self.imagePreview.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
             
         } else {
             
             if (self.metadata.iconName.length > 0) {
-                self.imagePreview.image = [UIImage imageNamed:self.metadata.iconName];
+                image = [UIImage imageNamed:self.metadata.iconName];
             } else {
-                self.imagePreview.image = [UIImage imageNamed:@"file"];
+                image = [UIImage imageNamed:@"file"];
             }
         }
         
-        self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-        self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
+        self.imagePreview.image = image;
+        self.imagePreview.contentMode = UIViewContentModeCenter;
+        self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + 100);
     }
 }
 
@@ -125,6 +130,9 @@
             
             self.imagePreview.image = image;
             
+            self.imagePreview.contentMode = UIViewContentModeScaleToFill;
+            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
+            
         } else {
             
             if (self.metadata.iconName.length > 0) {
@@ -132,10 +140,10 @@
             } else {
                 self.imagePreview.image = [UIImage imageNamed:@"file"];
             }
+            
+            self.imagePreview.contentMode = UIViewContentModeCenter;
+            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height + 100);
         }
-        
-        self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-        self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height);
     }];
 }
 
