@@ -1272,40 +1272,38 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         
-        if metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
+        if !metadata.isInvalidated && metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             
             OCNetworking.sharedManager().downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
-                    if CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
-                        
-                        if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
-                                if cell is NCListCell {
-                                    (cell as! NCListCell).imageItem.image = image
-                                    (cell as! NCListCell).imageItem.contentMode = .scaleAspectFill
-                                } else if cell is NCGridCell {
-                                    (cell as! NCGridCell).imageItem.image = image
-                                    (cell as! NCGridCell).imageItem.contentMode = .scaleAspectFill
-                                } else if cell is NCGridMediaCell {
-                                    (cell as! NCGridMediaCell).imageItem.image = image
-                                    (cell as! NCGridMediaCell).imageItem.contentMode = .scaleAspectFill
-                                }
+                if errorCode == 0 && account == self.appDelegate.activeAccount && !metadata.isInvalidated && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
+                    
+                    if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                        if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
+                            if cell is NCListCell {
+                                (cell as! NCListCell).imageItem.image = image
+                                (cell as! NCListCell).imageItem.contentMode = .scaleAspectFill
+                            } else if cell is NCGridCell {
+                                (cell as! NCGridCell).imageItem.image = image
+                                (cell as! NCGridCell).imageItem.contentMode = .scaleAspectFill
+                            } else if cell is NCGridMediaCell {
+                                (cell as! NCGridMediaCell).imageItem.image = image
+                                (cell as! NCGridMediaCell).imageItem.contentMode = .scaleAspectFill
                             }
                         }
-                        
-                        if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UITableView).cellForRow(at: indexPath) {
-                                if cell is CCCellMainTransfer {
-                                    (cell as! CCCellMainTransfer).file.image = image
-                                    (cell as! CCCellMainTransfer).file.contentMode = .scaleAspectFill
-                                } else if cell is CCCellMain {
-                                    (cell as! CCCellMain).file.image = image
-                                    (cell as! CCCellMain).file.contentMode = .scaleAspectFill
-                                }
+                    }
+                    
+                    if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                        if let cell = (view as! UITableView).cellForRow(at: indexPath) {
+                            if cell is CCCellMainTransfer {
+                                (cell as! CCCellMainTransfer).file.image = image
+                                (cell as! CCCellMainTransfer).file.contentMode = .scaleAspectFill
+                            } else if cell is CCCellMain {
+                                (cell as! CCCellMain).file.image = image
+                                (cell as! CCCellMain).file.contentMode = .scaleAspectFill
                             }
                         }
                     }
