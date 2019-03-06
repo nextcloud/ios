@@ -304,16 +304,16 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (isMounted) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesLink != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
@@ -415,16 +415,16 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (isMounted) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesLink != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
@@ -609,13 +609,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (isMounted) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesLink != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
                 }
             }
             

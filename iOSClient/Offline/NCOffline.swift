@@ -317,7 +317,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             if (self == self.navigationController?.viewControllers[1]) {
                 items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
             }
-            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
+            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
 
             let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, scale: 2, color: .red))
             itemDelete.customAppearance = appearanceDelete
