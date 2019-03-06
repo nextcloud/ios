@@ -96,6 +96,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        
+        // 3D Touch peek and pop
+        if traitCollection.forceTouchCapability == .available {
+            registerForPreviewing(with: self, sourceView: view)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -351,6 +356,35 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
 }
 
+// MARK: - 3D Touch peek and pop
+
+extension NCMedia: UIViewControllerPreviewingDelegate {
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        
+        let offsetPoint = collectionView.contentOffset
+        let realLocation = CGPoint(x: location.x + offsetPoint.x, y: location.y + offsetPoint.y)
+
+        guard let indexPath = collectionView?.indexPathForItem(at: realLocation) else { return nil }
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else { return nil }
+        guard let cell = collectionView?.cellForItem(at: indexPath) else { return nil }
+        guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
+        
+        previewingContext.sourceRect = cell.frame
+        viewController.metadata = metadata
+        viewController.hideOpenIn = true
+        
+        return viewController
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        
+        guard let indexPath = collectionView?.indexPathForItem(at: previewingContext.sourceRect.origin) else { return }
+        
+        collectionView(collectionView, didSelectItemAt: indexPath)
+    }
+}
+
 // MARK: - Collection View
 
 extension NCMedia: UICollectionViewDelegate {
@@ -457,7 +491,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: NC API & Algorithm
+// MARK: - NC API & Algorithm
 
 extension NCMedia {
 
@@ -672,7 +706,7 @@ extension NCMedia {
     }
 }
 
-// MARK: FastScroll - ScrollView
+// MARK: - FastScroll - ScrollView
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

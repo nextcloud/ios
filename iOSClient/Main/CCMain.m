@@ -937,9 +937,7 @@
         previewingContext.sourceRect = cell.frame;
         CCPeekPop *vc = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
             
-        vc.delegate = self;
         vc.metadata = metadata;
-            
         return vc;
     }
     

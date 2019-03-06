@@ -30,6 +30,7 @@
 @interface CCPeekPop ()
 {
     AppDelegate *appDelegate;
+    NSInteger highLabelFileName;
 }
 @end
 
@@ -49,6 +50,7 @@
     UIImage *image;
 
     self.fileName.text = self.metadata.fileNameView;
+    highLabelFileName = self.fileName.bounds.size.height + 5;
     
     if (self.metadata.hasPreview) {
         
@@ -60,7 +62,7 @@
             self.imagePreview.image = image;
         
             self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
+            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + highLabelFileName);
             
         } else {
             
@@ -89,7 +91,7 @@
         
         self.imagePreview.image = image;
         self.imagePreview.contentMode = UIViewContentModeCenter;
-        self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + 100);
+        self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + highLabelFileName);
     }
 }
 
@@ -100,6 +102,10 @@
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
+    if (self.hideOpenIn) {
+        return @[];
+    }
+    
     UIPreviewAction *previewAction1 = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
         self.metadata.session = k_download_session;
@@ -131,7 +137,7 @@
             self.imagePreview.image = image;
             
             self.imagePreview.contentMode = UIViewContentModeScaleToFill;
-            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
+            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + highLabelFileName);
             
         } else {
             
@@ -142,7 +148,7 @@
             }
             
             self.imagePreview.contentMode = UIViewContentModeCenter;
-            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height + 100);
+            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height + highLabelFileName);
         }
     }];
 }
