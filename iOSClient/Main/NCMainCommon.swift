@@ -274,7 +274,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -304,7 +304,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (isMounted) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
@@ -313,7 +313,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
@@ -380,7 +380,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, color: NCBrandColor.sharedInstance.brandElement)
                 cell.imageItem.contentMode = .center
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -415,7 +415,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (isMounted) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
@@ -424,7 +424,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
@@ -567,7 +567,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.file.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
+                cell.file.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, color: NCBrandColor.sharedInstance.brandElement)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
@@ -613,13 +613,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (isMounted) {
                     cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesLink != nil) {
                     cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 }
             }
             

@@ -139,7 +139,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
@@ -317,9 +317,9 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             if (self == self.navigationController?.viewControllers[1]) {
                 items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
             }
-            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
+            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, scale: 2, color: .red))
+            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
             itemDelete.customAppearance = appearanceDelete
             items.append(itemDelete)
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))

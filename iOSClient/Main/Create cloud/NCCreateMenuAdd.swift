@@ -45,19 +45,19 @@ class NCCreateMenuAdd: NSObject {
         
         var items = [ActionSheetItem]()
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
-            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
+            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         }
 #endif
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, scale: 2, color: colorIcon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: colorIcon)))
         
         // items.append(ActionSheetSectionTitle(title: "Cheap"))
         // items.append(ActionSheetSectionMargin())

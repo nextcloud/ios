@@ -168,7 +168,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
@@ -223,7 +223,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if !isEditMode {
             
             let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_media_folder_", comment: ""))
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_media_folder_", comment: ""))
             var item2: DropdownItem
             if filterTypeFileImage {
                 item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageno"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_show_", comment: ""))

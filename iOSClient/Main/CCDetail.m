@@ -272,7 +272,7 @@
     if (![NCBrandOptions sharedInstance].disable_openin_file) {
         self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     }
-    buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 scale:2 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+    buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     buttonDelete = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"delete"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
