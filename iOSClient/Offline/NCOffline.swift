@@ -139,7 +139,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 1, color: NCBrandColor.sharedInstance.brandElement)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
@@ -319,7 +319,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             }
             items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
 
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash75"), multiplier: 1, color: UIColor.red))
+            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, scale: 2, color: .red))
             itemDelete.customAppearance = appearanceDelete
             items.append(itemDelete)
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))

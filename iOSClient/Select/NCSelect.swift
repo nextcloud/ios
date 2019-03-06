@@ -182,9 +182,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
         if networkInProgress {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), multiplier: 2, color: UIColor.lightGray)
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, scale: 2, color: UIColor.lightGray)
         } else {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 1, color: NCBrandColor.sharedInstance.brandElement)
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, scale: 2, color: NCBrandColor.sharedInstance.brandElement)
         }
     }
     
