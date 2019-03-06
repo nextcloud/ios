@@ -53,7 +53,7 @@ class NCCreateMenuAdd: NSObject {
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
-            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: NCBrandColor.sharedInstance.icon)))
+            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
         }
 #endif
         
@@ -73,9 +73,9 @@ class NCCreateMenuAdd: NSObject {
         
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: CCGraphics.scale(UIImage.init(named: "document"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 7, image: CCGraphics.scale(UIImage.init(named: "file_xls"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: CCGraphics.scale(UIImage.init(named: "file_ppt"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "create_file_document")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 7, image: UIImage(named: "create_file_xls")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "create_file_ppt")))
             }
         }
         
