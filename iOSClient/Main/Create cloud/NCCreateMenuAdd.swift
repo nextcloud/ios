@@ -45,11 +45,11 @@ class NCCreateMenuAdd: NSObject {
         
         var items = [ActionSheetItem]()
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage(named: "createMedia"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_menu"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt_menu"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, scale: 2, color: NCBrandColor.sharedInstance.icon)))
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
@@ -57,7 +57,7 @@ class NCCreateMenuAdd: NSObject {
         }
 #endif
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "createFolder"), multiplier:1, color: colorIcon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, scale: 2, color: colorIcon)))
         
         // items.append(ActionSheetSectionTitle(title: "Cheap"))
         // items.append(ActionSheetSectionMargin())
@@ -73,9 +73,9 @@ class NCCreateMenuAdd: NSObject {
         
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: CCGraphics.scale(UIImage.init(named: "document"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 7, image: CCGraphics.scale(UIImage.init(named: "file_xls"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: CCGraphics.scale(UIImage.init(named: "file_ppt"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
             }
         }
         
