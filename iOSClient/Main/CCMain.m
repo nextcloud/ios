@@ -3535,7 +3535,7 @@
         if ([NCUtility.sharedInstance isEditImage:self.metadata.fileNameView] != nil && !_metadataFolder.e2eEncrypted && self.metadata.status == k_metadataStatusNormal) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_modify_photo_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
