@@ -146,6 +146,8 @@
 
 // ===== Varius =====
 
++ (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
+
 + (NSString *)getUserAgent;
 
 + (NSString *)dateDiff:(NSDate *) convertedDate;
