@@ -374,7 +374,6 @@
     self.sharePermissionOC.metadata = self.metadata;
     self.sharePermissionOC.serverUrl = self.serverUrl;
     
-    
     [self.sharePermissionOC setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:self.sharePermissionOC animated:YES completion:NULL];
 }
@@ -391,13 +390,13 @@
             
             if (capabilities.isFilesSharingPublicPasswordEnforced == YES) {
                 
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_enforce_password_protection_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                __weak __typeof(UIAlertController) *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_enforce_password_protection_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                 [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                     textField.secureTextEntry = true;
                     [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                 }];
                 UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                    NSLog(@"[LOG] Cancel action");
+                    [self reloadData];
                 }];
                 UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                     NSString *password = alertController.textFields.firstObject.text;
