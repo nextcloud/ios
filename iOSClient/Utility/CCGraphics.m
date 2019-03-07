@@ -53,9 +53,7 @@
 
 // mix two image
 + (UIImage *)overlayImage:(UIImage *)backgroundImage watermarkImage:(UIImage *)watermarkImage where:(NSString *)where
-{
-    // example watermarkImage = [UIImage imageNamed:@"lock"];
-    
+{    
     UIGraphicsBeginImageContext(backgroundImage.size);
     [backgroundImage drawInRect:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
     
