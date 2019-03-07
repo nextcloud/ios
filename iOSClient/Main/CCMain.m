@@ -36,7 +36,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb, NCSelectDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb, NCSelectDelegate, UITextFieldDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -475,8 +475,19 @@
     }
 }
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField{
-    [textField selectAll:textField];
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    UITextPosition *endPosition;
+    NSRange rangeDot = [textField.text rangeOfString:@"." options:NSBackwardsSearch];
+    
+    if (rangeDot.location != NSNotFound) {
+        endPosition = [textField positionFromPosition:textField.beginningOfDocument offset:rangeDot.location];
+    } else {
+        endPosition = textField.endOfDocument;
+    }
+    
+    UITextRange *textRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:endPosition];
+    textField.selectedTextRange = textRange;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3286,12 +3297,11 @@
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        __weak __typeof(UIAlertController) *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                         
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                             textField.text = self.metadata.fileNameView;
-                                            //textField.selectedTextRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
-                                            //textField.delegate = self;
+                                            textField.delegate = self;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                         }];
                                         
@@ -3486,10 +3496,11 @@
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
-                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                    __weak __typeof(UIAlertController) *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
                                     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                         textField.text = self.metadata.fileNameView;
+                                        textField.delegate = self;
                                         [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                     }];
                                     
