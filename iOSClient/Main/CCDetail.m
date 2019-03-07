@@ -273,7 +273,7 @@
         self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     }
     buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
-    buttonDelete = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"delete"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
+    buttonDelete = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE

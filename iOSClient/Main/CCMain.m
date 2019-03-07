@@ -2602,8 +2602,7 @@
     }];
     
     // ITEM DELETE ------------------------------------------------------------------------------------------------------
-    
-    appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self deleteFile];
     }];
     
@@ -3423,7 +3422,7 @@
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDestructive
@@ -3587,7 +3586,7 @@
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDestructive
@@ -4021,7 +4020,7 @@
         [favoriteButton centerIconOverText];
         
         // RIGHT
-        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
         
         ((CCCellMain *)cell).rightExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).rightExpansion.fillOnTrigger = NO;

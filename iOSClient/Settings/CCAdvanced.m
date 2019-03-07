@@ -97,7 +97,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCache:);
     [section addFormRow:row];
 

@@ -493,7 +493,7 @@
     
     // Delete
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                              image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]]
+                              image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
                     backgroundColor:[NCBrandColor sharedInstance].backgroundView
                              height:50.0
                                type:AHKActionSheetButtonTypeDestructive
@@ -615,7 +615,7 @@
         }
         
         // RIGHT
-        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
         
         ((CCCellMain *)cell).rightExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).rightExpansion.fillOnTrigger = NO;
