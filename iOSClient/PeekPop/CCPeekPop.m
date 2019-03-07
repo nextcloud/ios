@@ -102,11 +102,11 @@
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
-    if (self.hideOpenIn) {
+    if (self.hideAction) {
         return @[];
     }
     
-    UIPreviewAction *previewAction1 = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+    UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
         self.metadata.session = k_download_session;
         self.metadata.sessionError = @"";
@@ -118,7 +118,12 @@
         [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     }];
     
-    return @[previewAction1];
+    UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+        
+        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
+    }];
+    
+    return @[openIn, share];
 }
 
 #pragma --------------------------------------------------------------------------------------------

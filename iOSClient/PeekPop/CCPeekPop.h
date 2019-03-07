@@ -29,7 +29,7 @@
 @interface CCPeekPop : UIViewController
 
 @property (nonatomic, strong) tableMetadata *metadata;
-@property BOOL hideOpenIn;
+@property BOOL hideAction;
 
 @property (nonatomic, weak) IBOutlet UILabel *fileName;
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;

@@ -370,7 +370,7 @@ extension NCMedia: UIViewControllerPreviewingDelegate {
         
         previewingContext.sourceRect = cell.frame
         viewController.metadata = metadata
-        viewController.hideOpenIn = true
+        viewController.hideAction = true
         
         return viewController
     }
@@ -750,7 +750,7 @@ extension NCMedia: FastScrollCollectionViewDelegate {
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0
-        collectionView.scrollbarMarginTop = 45.0
+        collectionView.scrollbarMarginTop = 43.0
         collectionView.scrollbarMarginBottom = 5.0
         collectionView.scrollbarMarginRight = 10.0
         
