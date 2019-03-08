@@ -30,7 +30,7 @@ import AVFoundation
 import QuartzCore
 
 @objc protocol NCAudioRecorderViewControllerDelegate : class {
-    func didFinishRecording(_ viewController: NCAudioRecorderViewController)
+    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String)
 }
 
 class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate {
@@ -38,6 +38,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     open weak var delegate: NCAudioRecorderViewControllerDelegate?
     var recording: NCAudioRecorder!
     var recordDuration = 0
+    var fileName: String = ""
     
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
@@ -48,7 +49,6 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,6 +63,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     
     func createRecorder(fileName: String) {
         
+        self.fileName = fileName
         recording = NCAudioRecorder(to: fileName)
         recording.delegate = self
 
@@ -76,11 +77,20 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
         }
     }
     
+    @IBAction func touchViewController() {
+        
+        if recording.state == .record {
+            startStop()
+        } else {
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
     @IBAction func startStop() {
         
         if recording.state == .record {
             
-            delegate?.didFinishRecording(self)
+            delegate?.didFinishRecording(self, fileName: self.fileName)
             dismiss(animated: true, completion: nil)
             
             recordDuration = 0
@@ -195,7 +205,7 @@ open class NCAudioRecorder : NSObject {
             startMetering()
         }
     }
-        
+    
     open func stop() {
         switch state {
         case .record:

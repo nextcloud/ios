@@ -730,3 +730,4 @@
 "_create_voice_memo_"       = "Create voice memo";
 "_voice_memo_start_"        = "tap to start";
 "_voice_memo_stop_"         = "tap to stop";
+"_voice_memo_filename_"     = "voice memo";

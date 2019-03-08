@@ -1024,18 +1024,33 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     func startAudioRecorder() {
     
+        let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
         let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
     
         viewController.delegate = self
-        viewController.createRecorder(fileName: "xxx.m4a")
+        viewController.createRecorder(fileName: fileName)
         viewController.modalTransitionStyle = .crossDissolve
         viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
     
         self.appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
     }
     
-    func didFinishRecording(_ viewController: NCAudioRecorderViewController) {
+    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
         
+        let metadata = tableMetadata()
+        
+        metadata.account = appDelegate.activeAccount
+        metadata.date = NSDate()
+        metadata.fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeMain.serverUrl, fileNameView: fileName, directory: false)
+        metadata.fileName = fileName
+        metadata.fileNameView = fileName
+        metadata.serverUrl = appDelegate.activeMain.serverUrl
+        metadata.session = k_upload_session
+        metadata.sessionSelector = selectorUploadFile
+        metadata.status = Int(k_metadataStatusWaitUpload)
+        
+        //CCUtility.copyFile(atPath: NSTemporaryDirectory() + fileName, toPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: fileName))
+        //_ = NCManageDatabase.sharedInstance.addMetadata(metadata)
     }
 }
     
