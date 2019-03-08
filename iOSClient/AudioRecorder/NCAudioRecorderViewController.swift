@@ -29,8 +29,8 @@ import UIKit
 import AVFoundation
 import QuartzCore
 
-protocol NCAudioRecorderViewControllerDelegate : class {
-    func didFinishRecording(_ NCAudioRecorderViewController: NCAudioRecorderViewController)
+@objc protocol NCAudioRecorderViewControllerDelegate : class {
+    func didFinishRecording(_ viewController: NCAudioRecorderViewController)
 }
 
 class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate {
@@ -39,8 +39,9 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     var recording: NCAudioRecorder!
     var recordDuration = 0
     
-    @IBOutlet weak var tapToFinishBtn: UIButton!
+    @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
+    @IBOutlet weak var startStopLabel: UILabel!
     @IBOutlet weak var voiceRecordHUD: VoiceRecordHUD!
     
     // MARK: View Life Cycle
@@ -48,19 +49,20 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //createRecorder()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        contentContainerView.backgroundColor = NCBrandColor.sharedInstance.brand
         voiceRecordHUD.update(0.0)
         voiceRecordHUD.fillColor = UIColor.green
         durationLabel.text = ""
+        startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
     }
     
     func createRecorder(fileName: String) {
-        recording = NCAudioRecorder(to: fileName) //"recording.m4a"
+        recording = NCAudioRecorder(to: fileName)
         recording.delegate = self
         
         // Optionally, you can prepare the recording in the background to
@@ -76,24 +78,29 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
         }
     }
     
-    func startRecording() {
-        recordDuration = 0
-        do {
-            try recording.record()
-        } catch {
-            print(error)
+    @IBAction func startStop() {
+        
+        if recording.state == .none {
+            
+            recordDuration = 0
+            do {
+                try recording.record()
+                startStopLabel.text = NSLocalizedString("_voice_memo_stop_", comment: "")
+            } catch {
+                print(error)
+            }
+            
+        } else {
+            
+            delegate?.didFinishRecording(self)
+            dismiss(animated: true, completion: nil)
+            
+            recordDuration = 0
+            recording.stop()
+            voiceRecordHUD.update(0.0)
+            
+            startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
         }
-    }
-    
-    @IBAction func stop() {
-        
-        delegate?.didFinishRecording(self)
-        dismiss(animated: true, completion: nil)
-        
-        recordDuration = 0
-        recording.stop()
-        voiceRecordHUD.update(0.0)
-        
     }
     
     func audioMeterDidUpdate(_ db: Float) {

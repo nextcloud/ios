@@ -24,7 +24,7 @@
 import Foundation
 import TLPhotoPicker
 
-class NCMainCommon: NSObject, PhotoEditorDelegate {
+class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate {
     
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
@@ -1018,6 +1018,24 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     
     func canceledEditing() {
         print("Canceled")
+    }
+    
+    //MARK: - NCAudioRecorder
+    
+    func startAudioRecorder() {
+    
+        let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
+    
+        viewController.delegate = self
+        viewController.createRecorder(fileName: "xxx.m4a")
+        viewController.modalTransitionStyle = .crossDissolve
+        viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+    
+        self.appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
+    }
+    
+    func didFinishRecording(_ viewController: NCAudioRecorderViewController) {
+        
     }
 }
     

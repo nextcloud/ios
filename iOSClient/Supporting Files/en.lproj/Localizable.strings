@@ -724,3 +724,9 @@
 
 "_qrcode_not_authorized_"   = "This app is not authorized to use Back Camera";
 "_qrcode_not_supported_"    = "QRCode not supported by the current device";
+
+// Voice Memo
+
+"_create_voice_memo_"       = "Create voice memo";
+"_voice_memo_start_"        = "tap to start";
+"_voice_memo_stop_"         = "tap to stop";
