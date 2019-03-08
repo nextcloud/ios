@@ -1049,8 +1049,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         metadata.sessionSelector = selectorUploadFile
         metadata.status = Int(k_metadataStatusWaitUpload)
         
-        //CCUtility.copyFile(atPath: NSTemporaryDirectory() + fileName, toPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: fileName))
-        //_ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+        CCUtility.copyFile(atPath: NSTemporaryDirectory() + fileName, toPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: fileName))
+        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+        
+        self.reloadDatasource(ServerUrl: appDelegate.activeMain.serverUrl, fileID: metadata.fileID, action: k_action_NULL)
     }
 }
     

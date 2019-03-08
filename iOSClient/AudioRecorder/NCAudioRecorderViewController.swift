@@ -89,16 +89,14 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     @IBAction func startStop() {
         
         if recording.state == .record {
-            
-            delegate?.didFinishRecording(self, fileName: self.fileName)
-            dismiss(animated: true, completion: nil)
-            
+        
             recordDuration = 0
             recording.stop()
             voiceRecordHUD.update(0.0)
-            
-            startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
-            
+        
+            dismiss(animated: true) {
+                self.delegate?.didFinishRecording(self, fileName: self.fileName)
+            }
         } else {
             
             recordDuration = 0
@@ -146,7 +144,7 @@ open class NCAudioRecorder : NSObject {
     }
     
     static var directory: String {
-        return NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        return NSTemporaryDirectory()
     }
     
     open weak var delegate: NCAudioRecorderDelegate?
