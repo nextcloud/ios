@@ -256,12 +256,12 @@ class VoiceRecordHUD: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        image = UIImage(named: "Microphone")
+        image = UIImage(named: "microphone")
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        image = UIImage(named: "Microphone")
+        image = UIImage(named: "microphone")
     }
     
     func update(_ rate: CGFloat) {
@@ -283,6 +283,6 @@ class VoiceRecordHUD: UIView {
     
     override func prepareForInterfaceBuilder() {
         let bundle = Bundle(for: type(of: self))
-        image = UIImage(named: "Microphone", in: bundle, compatibleWith: self.traitCollection)
+        image = UIImage(named: "microphone", in: bundle, compatibleWith: self.traitCollection)
     }
 }
