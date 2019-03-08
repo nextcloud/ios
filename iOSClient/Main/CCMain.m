@@ -741,9 +741,9 @@
                             
                             // Add Medtadata for upload
                             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                            
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+
+                            [appDelegate startLoadAutoDownloadUpload];
                         }];
                         
                         [alertController addAction:cancelAction];
@@ -759,9 +759,9 @@
                         
                         // Add Medtadata for upload
                         (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-
                         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+                        
+                        [appDelegate startLoadAutoDownloadUpload];
                     }
                     
                 } else {
@@ -889,7 +889,8 @@
                     
                 // Add Metadata for Download
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                
+                [appDelegate startLoadAutoDownloadUpload];
             }
         }
         
@@ -1088,7 +1089,8 @@
 
                 // Add Medtadata for upload
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                
+                [appDelegate startLoadAutoDownloadUpload];
             }];
             
             [alertController addAction:cancelAction];
@@ -1104,7 +1106,8 @@
             
             // Add Medtadata for upload
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+            
+            [appDelegate startLoadAutoDownloadUpload];
         }
     }
     
@@ -2164,9 +2167,9 @@
                     
                 // Add Metadata for Download
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
+                
+                [appDelegate startLoadAutoDownloadUpload];
             }
             
         } else if (errorCode == kOCErrorServerUnauthorized) {
@@ -2194,9 +2197,9 @@
     
     // Add Metadata for Download
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-    
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
+    
+    [appDelegate startLoadAutoDownloadUpload];
 }
 
 - (void)openIn:(tableMetadata *)metadata
@@ -2856,9 +2859,9 @@
             
         // Add Metadata for Download
         (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-            
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+        
+        [appDelegate startLoadAutoDownloadUpload];
     }
 }
 
@@ -2885,9 +2888,9 @@
                 
             // Add Metadata for Download
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
+            
+            [appDelegate startLoadAutoDownloadUpload];
         }
     }
     
@@ -2969,9 +2972,9 @@
         }
     }
     
-    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+    
+    [appDelegate startLoadAutoDownloadUpload];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3544,8 +3547,10 @@
                                         self.metadata.sessionError = @"";
                                         self.metadata.sessionSelector = selectorDownloadEditPhoto;
                                         self.metadata.status = k_metadataStatusWaitDownload;
+                                        
                                         (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                                        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                                        
+                                        [appDelegate startLoadAutoDownloadUpload];
                                     }];
         }
         
@@ -3572,9 +3577,9 @@
                                             
                                             // Add Metadata for Download
                                             (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                                            
                                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+                                            
+                                            [appDelegate startLoadAutoDownloadUpload];
                                         } else if (localFile.offline == false) {
                                             [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID offline:true];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
@@ -4154,9 +4159,9 @@
                     
                     // Add Metadata for Download
                     (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                    
                     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+                    
+                    [appDelegate startLoadAutoDownloadUpload];
                 }
             }
         }

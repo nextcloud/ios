@@ -1053,6 +1053,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
         
         self.reloadDatasource(ServerUrl: appDelegate.activeMain.serverUrl, fileID: metadata.fileID, action: k_action_NULL)
+        appDelegate.startLoadAutoDownloadUpload()
     }
 }
     
@@ -1171,7 +1172,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             // Synchronized
             if selector == selectorDownloadSynchronize {
                 appDelegate.updateApplicationIconBadgeNumber()
-                appDelegate.loadAutoDownloadUpload()
+                appDelegate.startLoadAutoDownloadUpload()
                 return
             }
             
@@ -1248,7 +1249,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 }
             }
             
-            self.appDelegate.performSelector(onMainThread: #selector(self.appDelegate.loadAutoDownloadUpload), with: nil, waitUntilDone: true)
+            appDelegate.startLoadAutoDownloadUpload()
             
         } else {
             
@@ -1275,7 +1276,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             }
         }
         
-        appDelegate.loadAutoDownloadUpload()
+        appDelegate.startLoadAutoDownloadUpload()
     }
     
     // UPLOAD
@@ -1299,9 +1300,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
         
         if errorCode == 0 {
-            if self.appDelegate.timerProcessAutoDownloadUpload.isValid {
-                self.appDelegate.performSelector(onMainThread: #selector(self.appDelegate.loadAutoDownloadUpload), with: nil, waitUntilDone: true)
-            }
+            appDelegate.startLoadAutoDownloadUpload()
         } else {
             if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorMessage != "" {
                 appDelegate.messageNotification("_upload_file_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)

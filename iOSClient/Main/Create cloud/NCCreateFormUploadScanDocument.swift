@@ -396,10 +396,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
         
         _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-        self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
-        
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
-        
+
+        self.appDelegate.startLoadAutoDownloadUpload()
+                        
         // Request delete all image scanned
         let alertController = UIAlertController(title: "", message: NSLocalizedString("_delete_all_scanned_images_", comment: ""), preferredStyle: .alert)
         

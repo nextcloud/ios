@@ -115,7 +115,8 @@
             
         // Add Metadata for Download
         (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
-        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+        
+        [appDelegate startLoadAutoDownloadUpload];
     }];
     
     UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
