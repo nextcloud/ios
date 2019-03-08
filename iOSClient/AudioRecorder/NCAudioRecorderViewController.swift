@@ -37,7 +37,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     
     open weak var delegate: NCAudioRecorderViewControllerDelegate?
     var recording: NCAudioRecorder!
-    var recordDuration = 0
+    var recordDuration: TimeInterval = 0
     var fileName: String = ""
     
     @IBOutlet weak var contentContainerView: UIView!
@@ -128,9 +128,8 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
         voiceRecordHUD.update(CGFloat(rate))
         voiceRecordHUD.fillColor = UIColor.green
         recordDuration += 1
-        durationLabel.text = String(recordDuration)
+        durationLabel.text = NCUtility.sharedInstance.formatSecondsToString(recordDuration/60)
     }
-    
 }
 
 @objc public protocol NCAudioRecorderDelegate: AVAudioRecorderDelegate {

@@ -301,6 +301,16 @@ class NCUtility: NSObject {
             return nil
         }
     }
+    
+    @objc func formatSecondsToString(_ seconds: TimeInterval) -> String {
+        if seconds.isNaN {
+            return "00:00:00"
+        }
+        let sec = Int(seconds.truncatingRemainder(dividingBy: 60))
+        let min = Int(seconds.truncatingRemainder(dividingBy: 3600) / 60)
+        let hour = Int(seconds / 3600)
+        return String(format: "%02d:%02d:%02d", hour, min, sec)
+    }
 
 }
 
