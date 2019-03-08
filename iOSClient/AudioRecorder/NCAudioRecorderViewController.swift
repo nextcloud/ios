@@ -62,12 +62,10 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     }
     
     func createRecorder(fileName: String) {
+        
         recording = NCAudioRecorder(to: fileName)
         recording.delegate = self
-        
-        // Optionally, you can prepare the recording in the background to
-        // make it start recording faster when you hit `record()`.
-        
+
         DispatchQueue.global().async {
             // Background thread
             do {
@@ -80,17 +78,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     
     @IBAction func startStop() {
         
-        if recording.state == .none {
-            
-            recordDuration = 0
-            do {
-                try recording.record()
-                startStopLabel.text = NSLocalizedString("_voice_memo_stop_", comment: "")
-            } catch {
-                print(error)
-            }
-            
-        } else {
+        if recording.state == .record {
             
             delegate?.didFinishRecording(self)
             dismiss(animated: true, completion: nil)
@@ -100,10 +88,21 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
             voiceRecordHUD.update(0.0)
             
             startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
+            
+        } else {
+            
+            recordDuration = 0
+            do {
+                try recording.record()
+                startStopLabel.text = NSLocalizedString("_voice_memo_stop_", comment: "")
+            } catch {
+                print(error)
+            }
         }
     }
     
     func audioMeterDidUpdate(_ db: Float) {
+        
         print("db level: %f", db)
         
         self.recording.recorder?.updateMeters()
@@ -133,7 +132,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
 open class NCAudioRecorder : NSObject {
     
     @objc public enum State: Int {
-        case none, record, play
+        case none, record
     }
     
     static var directory: String {
@@ -196,22 +195,9 @@ open class NCAudioRecorder : NSObject {
             startMetering()
         }
     }
-    
-    // MARK: - Playback
-    
-    open func play() throws {
-        try session.setCategory(.playback, mode: .default)
         
-        player = try AVAudioPlayer(contentsOf: url)
-        player?.play()
-        state = .play
-    }
-    
     open func stop() {
         switch state {
-        case .play:
-            player?.stop()
-            player = nil
         case .record:
             recorder?.stop()
             recorder = nil
