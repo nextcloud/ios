@@ -139,7 +139,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
 open class NCAudioRecorder : NSObject {
     
     @objc public enum State: Int {
-        case none, record
+        case none, record, play
     }
     
     static var directory: String {
@@ -203,8 +203,19 @@ open class NCAudioRecorder : NSObject {
         }
     }
     
+    open func play() throws {
+        try session.setCategory(.playback, mode: .default)
+        
+        player = try AVAudioPlayer(contentsOf: url)
+        player?.play()
+        state = .play
+    }
+    
     open func stop() {
         switch state {
+        case .play:
+            player?.stop()
+            player = nil
         case .record:
             recorder?.stop()
             recorder = nil
