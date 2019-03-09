@@ -245,6 +245,16 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         }
     }
     
+    override func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        let cell = textField.formDescriptorCell()
+        let tag = cell?.rowDescriptor.tag
+        
+        if tag == "fileName" {
+            CCUtility.selectFileName(from: textField)
+        }
+    }
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
