@@ -208,6 +208,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
     
     @objc func cancel() {
         
+        try? FileManager.default.removeItem(atPath: fileNamePath)
         self.dismiss(animated: true, completion: nil)
     }
     
