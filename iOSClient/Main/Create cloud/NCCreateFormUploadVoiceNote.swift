@@ -25,10 +25,12 @@ import Foundation
 
 class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
     
-    var serverUrl = ""
-    var titleServerUrl = ""
-    var fileName = ""
-    var fileNamePath = ""
+    private var serverUrl = ""
+    private var titleServerUrl = ""
+    private var fileName = ""
+    private var fileNamePath = ""
+    
+    private var recorder: NCAudioRecorder?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -143,6 +145,10 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
+        //
+        recorder = NCAudioRecorder.init(to: fileNamePath)
+        try? recorder?.play()
     }
     
     // MARK: - Action

@@ -204,9 +204,16 @@ open class NCAudioRecorder : NSObject {
     }
     
     open func play() throws {
-        try session.setCategory(.playback, mode: .default)
+        if recorder == nil {
+            try prepare()
+        }
         
+        try session.setCategory(.playback, mode: .default)
+        try AVAudioSession.sharedInstance().setActive(true)
+
         player = try AVAudioPlayer(contentsOf: url)
+        player?.prepareToPlay()
+
         player?.play()
         state = .play
     }
