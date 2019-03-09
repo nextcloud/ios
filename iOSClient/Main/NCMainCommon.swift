@@ -1037,6 +1037,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
         
+        /*
         let metadata = tableMetadata()
         
         metadata.account = appDelegate.activeAccount
@@ -1054,6 +1055,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         
         self.reloadDatasource(ServerUrl: appDelegate.activeMain.serverUrl, fileID: metadata.fileID, action: k_action_NULL)
         appDelegate.startLoadAutoDownloadUpload()
+        */
     }
 }
     
