@@ -53,7 +53,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_text_upload_title_", comment: "")) as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
