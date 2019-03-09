@@ -201,8 +201,7 @@
 
 + (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
 
-+ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
++ (void)selectFileNameFrom:(UITextField *)textField;
 
 // ===== E2E Encrypted =====
 
@@ -217,6 +216,9 @@
 
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata;
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
+
++ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
 
 // ===== Third parts =====
 

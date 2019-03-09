@@ -477,17 +477,7 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    UITextPosition *endPosition;
-    NSRange rangeDot = [textField.text rangeOfString:@"." options:NSBackwardsSearch];
-    
-    if (rangeDot.location != NSNotFound) {
-        endPosition = [textField positionFromPosition:textField.beginningOfDocument offset:rangeDot.location];
-    } else {
-        endPosition = textField.endOfDocument;
-    }
-    
-    UITextRange *textRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:endPosition];
-    textField.selectedTextRange = textRange;
+    [CCUtility selectFileNameFrom:textField];
 }
 
 #pragma --------------------------------------------------------------------------------------------
