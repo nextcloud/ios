@@ -1037,25 +1037,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
         
-        /*
-        let metadata = tableMetadata()
-        
-        metadata.account = appDelegate.activeAccount
-        metadata.date = NSDate()
-        metadata.fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeMain.serverUrl, fileNameView: fileName, directory: false)
-        metadata.fileName = fileName
-        metadata.fileNameView = fileName
-        metadata.serverUrl = appDelegate.activeMain.serverUrl
-        metadata.session = k_upload_session
-        metadata.sessionSelector = selectorUploadFile
-        metadata.status = Int(k_metadataStatusWaitUpload)
-        
-        CCUtility.copyFile(atPath: NSTemporaryDirectory() + fileName, toPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: fileName))
-        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-        
-        self.reloadDatasource(ServerUrl: appDelegate.activeMain.serverUrl, fileID: metadata.fileID, action: k_action_NULL)
-        appDelegate.startLoadAutoDownloadUpload()
-        */
+        let formViewController = NCCreateFormUploadVoiceNote.init(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
+        let formNavigationController = UINavigationController(rootViewController: formViewController)
+
+        self.appDelegate.window.rootViewController?.present(formNavigationController, animated: true, completion: nil)
     }
 }
     

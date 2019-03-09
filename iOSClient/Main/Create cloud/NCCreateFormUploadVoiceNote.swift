@@ -53,7 +53,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_voice_memo_title_", comment: "")) as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
@@ -79,7 +79,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
-        
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
@@ -131,7 +130,11 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         
         super.viewDidLoad()
         
+        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+        
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        
+        self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
         
         self.navigationController?.navigationBar.isTranslucent = false
@@ -165,56 +168,31 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
     
     @objc func save() {
         
-        let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
-        guard let name = rowFileName.value else {
-            return
-        }
-        let ext = (name as! NSString).pathExtension.uppercased()
-        var fileNameSave = ""
-        
-        if (ext == "") {
-            fileNameSave = name as! String + ".txt"
-        } else if (CCUtility.isDocumentModifiableExtension(ext)) {
-            fileNameSave = name as! String
-        } else {
-            fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
-        }
-        
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, self.serverUrl, fileNameSave))
-        if (metadata != nil) {
-            
-            let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
-            
-            let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in
-            }
-            
-            let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, serverUrl: self.serverUrl)
-            }
-            
-            alertController.addAction(cancelAction)
-            alertController.addAction(overwriteAction)
-            
-            self.present(alertController, animated: true, completion:nil)
-            
-        } else {
-            let fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!
-            dismissAndUpload(fileNameSave, fileID: fileID, serverUrl: serverUrl)
-        }
-    }
-    
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
-        
         self.dismiss(animated: true, completion: {
         
+            let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+            guard let name = rowFileName.value else {
+                return
+            }
+            let ext = (name as! NSString).pathExtension.uppercased()
+            var fileNameSave = ""
+            
+            if (ext == "") {
+                fileNameSave = name as! String + ".m4a"
+            } else if (CCUtility.isDocumentModifiableExtension(ext)) {
+                fileNameSave = name as! String
+            } else {
+                fileNameSave = (name as! NSString).deletingPathExtension + ".m4a"
+            }
+            
             let metadataForUpload = tableMetadata()
             
             metadataForUpload.account = self.appDelegate.activeAccount
             metadataForUpload.date = NSDate()
-            metadataForUpload.fileID = fileID
+            metadataForUpload.fileID = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)
             metadataForUpload.fileName = fileNameSave
             metadataForUpload.fileNameView = fileNameSave
-            metadataForUpload.serverUrl = serverUrl
+            metadataForUpload.serverUrl = self.serverUrl
             metadataForUpload.session = k_upload_session
             metadataForUpload.sessionSelector = selectorUploadFile
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
@@ -228,7 +206,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         })
     }
     
-    func cancel() {
+    @objc func cancel() {
         
         self.dismiss(animated: true, completion: nil)
     }
