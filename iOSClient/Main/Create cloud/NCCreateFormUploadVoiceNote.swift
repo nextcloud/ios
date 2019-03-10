@@ -145,10 +145,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        
-        //
-        recorder = NCAudioRecorder.init(to: fileNamePath)
-        try? recorder?.play()
     }
     
     // MARK: - Action
