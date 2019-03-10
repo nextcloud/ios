@@ -137,8 +137,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             }
             
             formRow.value = self.fileName
-            self.title = fileName
-            
             self.updateFormRow(formRow)
             
             self.form.delegate = self
