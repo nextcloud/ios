@@ -1037,10 +1037,12 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
         
-        let formViewController = NCCreateFormUploadVoiceNote.init(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
-        let formNavigationController = UINavigationController(rootViewController: formViewController)
-
-        self.appDelegate.window.rootViewController?.present(formNavigationController, animated: true, completion: nil)
+        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        
+        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
+        viewController.setup(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
+        self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
 }
     

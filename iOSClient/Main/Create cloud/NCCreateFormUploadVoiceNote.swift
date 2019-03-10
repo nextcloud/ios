@@ -30,27 +30,23 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
     private var fileName = ""
     private var fileNamePath = ""
     
-    private var recorder: NCAudioRecorder?
-    
+    private var audioPlayer = AVAudioPlayer()
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    convenience init(serverUrl: String, fileNamePath: String, fileName: String) {
-        
-        self.init()
-        
+    public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
+    
         if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
             titleServerUrl = "/"
         } else {
             titleServerUrl = (serverUrl as NSString).lastPathComponent
         }
-        
+    
         self.fileName = fileName
         self.serverUrl = serverUrl
         self.fileNamePath = fileNamePath
-        
-        initializeForm()
     }
-    
+        
     //MARK: XLFormDescriptorDelegate
     
     func initializeForm() {
@@ -86,12 +82,11 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         row.value = self.fileName
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         
         section.addFormRow(row)
-        
+
         self.form = form
     }
     
@@ -145,6 +140,9 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
+        // form
+        initializeForm()
     }
     
     // MARK: - Action
@@ -233,5 +231,14 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
         self.present(navigationController, animated: true, completion: nil)
+    }
+    
+    func play() {
+        try! AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+        try! AVAudioSession.sharedInstance().setActive(true)
+        
+        try! audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
+        audioPlayer.prepareToPlay()
+        audioPlayer.play()
     }
 }
