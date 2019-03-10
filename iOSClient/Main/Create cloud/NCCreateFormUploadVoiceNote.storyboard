@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eeP-9N-ZRP">
-                                <rect key="frame" x="0.0" y="64" width="375" height="200"/>
+                                <rect key="frame" x="0.0" y="89" width="375" height="200"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="kKy-VZ-d0g"/>
@@ -32,7 +32,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" id="AEH-dn-vHh"/>
+                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" constant="25" id="AEH-dn-vHh"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="eeP-9N-ZRP" secondAttribute="trailing" id="yxz-bK-MTp"/>
                         </constraints>

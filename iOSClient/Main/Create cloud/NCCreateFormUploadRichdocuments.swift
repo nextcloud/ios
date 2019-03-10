@@ -41,7 +41,6 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
     
-
     // Layout
     let numItems = 2
     let sectionInsets: CGFloat = 10

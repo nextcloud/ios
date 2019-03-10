@@ -46,12 +46,10 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.serverUrl = serverUrl
         self.fileNamePath = fileNamePath
     }
-        
-    //MARK: XLFormDescriptorDelegate
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_voice_memo_title_", comment: "")) as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
@@ -59,7 +57,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         
         // Section: Destination Folder
         
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_save_path_", comment: ""))
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_save_path_", comment: "").uppercased())
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
@@ -78,7 +76,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
+        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: "").uppercased())
         row.value = self.fileName
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -121,14 +119,18 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         }
     }
     
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
+        header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
+        header.textLabel?.textColor = NCBrandColor.sharedInstance.icon //UIColor.lightGray
+    }
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         
         let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
-        
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
         self.navigationItem.leftBarButtonItem = cancelButton
@@ -141,6 +143,9 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
+        // title
+        self.title = NSLocalizedString("_voice_memo_title_", comment: "")
+                
         // form
         initializeForm()
     }
