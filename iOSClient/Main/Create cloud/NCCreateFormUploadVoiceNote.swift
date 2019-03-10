@@ -47,6 +47,29 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.fileNamePath = fileNamePath
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        
+        self.navigationItem.leftBarButtonItem = cancelButton
+        self.navigationItem.rightBarButtonItem = saveButton
+        
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
+        // title
+        self.title = NSLocalizedString("_voice_memo_title_", comment: "")
+        
+        // form
+        initializeForm()
+    }
+    
     func initializeForm() {
         
         let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
@@ -88,6 +111,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.form = form
     }
     
+    //MARK: XLFormDescriptorDelegate
+    
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
@@ -119,35 +144,12 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         }
     }
     
+    //MARK: TableViewDelegate
+
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = NCBrandColor.sharedInstance.icon //UIColor.lightGray
-    }
-    
-    // MARK: - View Life Cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
-        
-        self.navigationItem.leftBarButtonItem = cancelButton
-        self.navigationItem.rightBarButtonItem = saveButton
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        
-        // title
-        self.title = NSLocalizedString("_voice_memo_title_", comment: "")
-                
-        // form
-        initializeForm()
     }
     
     // MARK: - Action
