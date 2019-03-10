@@ -79,6 +79,9 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         // title
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
         
+        // Button Play Stop
+        buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
+
         // form
         initializeForm()
     }
@@ -99,7 +102,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:1, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig["imageView.image"] = imageFolder
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
@@ -256,16 +259,16 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         if audioPlayer.isPlaying {
             audioPlayer.currentTime = 0.0
             audioPlayer.stop()
-            buttonPlayStop.setImage(UIImage.init(named: "audioPlay"), for: .normal)
+            buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
         } else {
             audioPlayer.prepareToPlay()
             audioPlayer.play()
-            buttonPlayStop.setImage(UIImage.init(named: "audioStop"), for: .normal)
+            buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioStop")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
         }
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        buttonPlayStop.setImage(UIImage.init(named: "audioPlay"), for: .normal)
+        buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
     }
 }
 
