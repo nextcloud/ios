@@ -23,8 +23,10 @@
 
 import Foundation
 
-class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
+class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAudioPlayerDelegate {
     
+    @IBOutlet weak var buttonPlayStop: UIButton!
+
     private var serverUrl = ""
     private var titleServerUrl = ""
     private var fileName = ""
@@ -45,6 +47,15 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.fileName = fileName
         self.serverUrl = serverUrl
         self.fileNamePath = fileNamePath
+        
+        // player
+        do {
+            try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
+            audioPlayer.prepareToPlay()
+            audioPlayer.delegate = self
+        } catch {
+            buttonPlayStop.isEnabled = false
+        }
     }
     
     override func viewDidLoad() {
@@ -240,12 +251,21 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate {
         self.present(navigationController, animated: true, completion: nil)
     }
     
-    func play() {
-        try! AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-        try! AVAudioSession.sharedInstance().setActive(true)
-        
-        try! audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
-        audioPlayer.prepareToPlay()
-        audioPlayer.play()
+    @IBAction func playStop(_ sender: Any) {
+
+        if audioPlayer.isPlaying {
+            audioPlayer.currentTime = 0.0
+            audioPlayer.stop()
+            buttonPlayStop.setImage(UIImage.init(named: "audioPlay"), for: .normal)
+        } else {
+            audioPlayer.prepareToPlay()
+            audioPlayer.play()
+            buttonPlayStop.setImage(UIImage.init(named: "audioStop"), for: .normal)
+        }
+    }
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        buttonPlayStop.setImage(UIImage.init(named: "audioPlay"), for: .normal)
     }
 }
+

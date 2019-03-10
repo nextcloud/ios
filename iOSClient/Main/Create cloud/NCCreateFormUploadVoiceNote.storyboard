@@ -29,17 +29,31 @@
                                     <outlet property="delegate" destination="uQo-FX-ejX" id="gsE-cc-f9G"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s98-hk-uUP">
+                                <rect key="frame" x="150" y="319" width="75" height="75"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="75" id="h48-gg-iPB"/>
+                                    <constraint firstAttribute="height" constant="75" id="mjB-VI-Gzf"/>
+                                </constraints>
+                                <state key="normal" image="audioPlay"/>
+                                <connections>
+                                    <action selector="playStop:" destination="uQo-FX-ejX" eventType="touchUpInside" id="4AN-dB-Qq8"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" constant="25" id="AEH-dn-vHh"/>
+                            <constraint firstItem="s98-hk-uUP" firstAttribute="top" secondItem="eeP-9N-ZRP" secondAttribute="bottom" constant="30" id="HDU-PP-dpD"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
+                            <constraint firstItem="s98-hk-uUP" firstAttribute="centerX" secondItem="ILQ-5j-b92" secondAttribute="centerX" id="vLn-iu-xOz"/>
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="eeP-9N-ZRP" secondAttribute="trailing" id="yxz-bK-MTp"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ILQ-5j-b92"/>
                     </view>
                     <navigationItem key="navigationItem" id="YB9-Lg-X9d"/>
                     <connections>
+                        <outlet property="buttonPlayStop" destination="s98-hk-uUP" id="Aek-KA-loq"/>
                         <outlet property="tableView" destination="eeP-9N-ZRP" id="dzG-bV-m9u"/>
                     </connections>
                 </viewController>
@@ -66,4 +80,7 @@
             <point key="canvasLocation" x="256.80000000000001" y="228.93553223388307"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="audioPlay" width="300" height="300"/>
+    </resources>
 </document>
