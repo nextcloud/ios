@@ -30,7 +30,7 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s98-hk-uUP">
-                                <rect key="frame" x="150" y="319" width="75" height="75"/>
+                                <rect key="frame" x="150" y="346" width="75" height="75"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="75" id="h48-gg-iPB"/>
                                     <constraint firstAttribute="height" constant="75" id="mjB-VI-Gzf"/>
@@ -40,12 +40,21 @@
                                     <action selector="playStop:" destination="uQo-FX-ejX" eventType="touchUpInside" id="4AN-dB-Qq8"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="we1-Q7-8Us">
+                                <rect key="frame" x="10" y="309" width="355" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" constant="25" id="AEH-dn-vHh"/>
-                            <constraint firstItem="s98-hk-uUP" firstAttribute="top" secondItem="eeP-9N-ZRP" secondAttribute="bottom" constant="30" id="HDU-PP-dpD"/>
+                            <constraint firstItem="we1-Q7-8Us" firstAttribute="top" secondItem="eeP-9N-ZRP" secondAttribute="bottom" constant="20" id="Rgu-v2-bFJ"/>
+                            <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="we1-Q7-8Us" secondAttribute="trailing" constant="10" id="hlz-TT-1Ue"/>
+                            <constraint firstItem="we1-Q7-8Us" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" constant="10" id="mDe-vt-V6l"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
+                            <constraint firstItem="s98-hk-uUP" firstAttribute="top" secondItem="we1-Q7-8Us" secondAttribute="bottom" constant="20" id="t2J-Ir-ONd"/>
                             <constraint firstItem="s98-hk-uUP" firstAttribute="centerX" secondItem="ILQ-5j-b92" secondAttribute="centerX" id="vLn-iu-xOz"/>
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="eeP-9N-ZRP" secondAttribute="trailing" id="yxz-bK-MTp"/>
                         </constraints>
@@ -54,6 +63,7 @@
                     <navigationItem key="navigationItem" id="YB9-Lg-X9d"/>
                     <connections>
                         <outlet property="buttonPlayStop" destination="s98-hk-uUP" id="Aek-KA-loq"/>
+                        <outlet property="labelTimer" destination="we1-Q7-8Us" id="9LN-EV-8tm"/>
                         <outlet property="tableView" destination="eeP-9N-ZRP" id="dzG-bV-m9u"/>
                     </connections>
                 </viewController>

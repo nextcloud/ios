@@ -26,14 +26,17 @@ import Foundation
 class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAudioPlayerDelegate {
     
     @IBOutlet weak var buttonPlayStop: UIButton!
+    @IBOutlet weak var labelTimer: UILabel!
 
     private var serverUrl = ""
     private var titleServerUrl = ""
     private var fileName = ""
     private var fileNamePath = ""
-    private var duration: TimeInterval = 0
+    private var durationPlayerString = ""
+    private var counterSecondPlayer: TimeInterval = 0
     
     private var audioPlayer = AVAudioPlayer()
+    private var timer = Timer()
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -54,7 +57,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
             audioPlayer.prepareToPlay()
             audioPlayer.delegate = self
-            duration = audioPlayer.duration
+            durationPlayerString = NCUtility.sharedInstance.formatSecondsToString(TimeInterval(audioPlayer.duration))
         } catch {
             buttonPlayStop.isEnabled = false
         }
@@ -84,6 +87,12 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         // form
         initializeForm()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateLabelTimer()
     }
     
     func initializeForm() {
@@ -254,20 +263,47 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         self.present(navigationController, animated: true, completion: nil)
     }
     
+    //MARK: Player
+
+    func updateLabelTimer() {
+        labelTimer.text = NCUtility.sharedInstance.formatSecondsToString(counterSecondPlayer) + " - " + durationPlayerString
+    }
+    
+    @objc func updateTimer() {
+        counterSecondPlayer += 1
+        updateLabelTimer()
+    }
+    
     @IBAction func playStop(_ sender: Any) {
 
         if audioPlayer.isPlaying {
+            
             audioPlayer.currentTime = 0.0
             audioPlayer.stop()
+            
+            timer.invalidate()
+            counterSecondPlayer = 0
+            updateLabelTimer()
+            
             buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
+            
         } else {
+            
             audioPlayer.prepareToPlay()
             audioPlayer.play()
+            
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+            
             buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioStop")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
         }
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        
+        timer.invalidate()
+        counterSecondPlayer = 0
+        updateLabelTimer()
+        
         buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
     }
 }
