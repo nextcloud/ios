@@ -31,6 +31,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     private var titleServerUrl = ""
     private var fileName = ""
     private var fileNamePath = ""
+    private var duration: TimeInterval = 0
     
     private var audioPlayer = AVAudioPlayer()
 
@@ -53,6 +54,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
             audioPlayer.prepareToPlay()
             audioPlayer.delegate = self
+            duration = audioPlayer.duration
         } catch {
             buttonPlayStop.isEnabled = false
         }
