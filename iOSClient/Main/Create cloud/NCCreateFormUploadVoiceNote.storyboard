@@ -19,10 +19,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eeP-9N-ZRP">
-                                <rect key="frame" x="0.0" y="89" width="375" height="200"/>
+                                <rect key="frame" x="0.0" y="89" width="375" height="150"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="kKy-VZ-d0g"/>
+                                    <constraint firstAttribute="height" constant="150" id="kKy-VZ-d0g"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="dataSource" destination="uQo-FX-ejX" id="Y7U-AM-3WZ"/>
@@ -30,7 +30,7 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s98-hk-uUP">
-                                <rect key="frame" x="150" y="346" width="75" height="75"/>
+                                <rect key="frame" x="150" y="249" width="75" height="75"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="75" id="h48-gg-iPB"/>
                                     <constraint firstAttribute="height" constant="75" id="mjB-VI-Gzf"/>
@@ -40,21 +40,40 @@
                                     <action selector="playStop:" destination="uQo-FX-ejX" eventType="touchUpInside" id="4AN-dB-Qq8"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="we1-Q7-8Us">
-                                <rect key="frame" x="10" y="309" width="355" height="17"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="we1-Q7-8Us">
+                                <rect key="frame" x="20" y="334" width="70" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="70" id="Su3-nN-I5z"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zd0-7e-z9V" userLabel="Label Duration">
+                                <rect key="frame" x="285" y="334" width="70" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="70" id="JZa-Lm-wgx"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="6HO-NK-obf">
+                                <rect key="frame" x="100" y="341.5" width="175" height="2"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="ILQ-5j-b92" secondAttribute="top" constant="25" id="AEH-dn-vHh"/>
-                            <constraint firstItem="we1-Q7-8Us" firstAttribute="top" secondItem="eeP-9N-ZRP" secondAttribute="bottom" constant="20" id="Rgu-v2-bFJ"/>
-                            <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="we1-Q7-8Us" secondAttribute="trailing" constant="10" id="hlz-TT-1Ue"/>
-                            <constraint firstItem="we1-Q7-8Us" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" constant="10" id="mDe-vt-V6l"/>
+                            <constraint firstItem="6HO-NK-obf" firstAttribute="leading" secondItem="we1-Q7-8Us" secondAttribute="trailing" constant="10" id="C6M-oc-T1Z"/>
+                            <constraint firstItem="6HO-NK-obf" firstAttribute="centerY" secondItem="we1-Q7-8Us" secondAttribute="centerY" id="J28-Wh-Byv"/>
+                            <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="zd0-7e-z9V" secondAttribute="trailing" constant="20" id="Zkq-S4-Hnu"/>
+                            <constraint firstItem="zd0-7e-z9V" firstAttribute="leading" secondItem="6HO-NK-obf" secondAttribute="trailing" constant="10" id="bKe-sM-Gvy"/>
+                            <constraint firstItem="we1-Q7-8Us" firstAttribute="top" secondItem="s98-hk-uUP" secondAttribute="bottom" constant="10" id="ehi-c7-6om"/>
+                            <constraint firstItem="zd0-7e-z9V" firstAttribute="top" secondItem="s98-hk-uUP" secondAttribute="bottom" constant="10" id="elb-sf-8LP"/>
+                            <constraint firstItem="s98-hk-uUP" firstAttribute="top" secondItem="eeP-9N-ZRP" secondAttribute="bottom" constant="10" id="o8u-gE-61X"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
-                            <constraint firstItem="s98-hk-uUP" firstAttribute="top" secondItem="we1-Q7-8Us" secondAttribute="bottom" constant="20" id="t2J-Ir-ONd"/>
+                            <constraint firstItem="we1-Q7-8Us" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" constant="20" id="uvM-m5-Ofp"/>
                             <constraint firstItem="s98-hk-uUP" firstAttribute="centerX" secondItem="ILQ-5j-b92" secondAttribute="centerX" id="vLn-iu-xOz"/>
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="eeP-9N-ZRP" secondAttribute="trailing" id="yxz-bK-MTp"/>
                         </constraints>
@@ -63,7 +82,9 @@
                     <navigationItem key="navigationItem" id="YB9-Lg-X9d"/>
                     <connections>
                         <outlet property="buttonPlayStop" destination="s98-hk-uUP" id="Aek-KA-loq"/>
+                        <outlet property="labelDuration" destination="zd0-7e-z9V" id="GQW-RU-pdA"/>
                         <outlet property="labelTimer" destination="we1-Q7-8Us" id="9LN-EV-8tm"/>
+                        <outlet property="progressView" destination="6HO-NK-obf" id="ZwP-0h-8Df"/>
                         <outlet property="tableView" destination="eeP-9N-ZRP" id="dzG-bV-m9u"/>
                     </connections>
                 </viewController>

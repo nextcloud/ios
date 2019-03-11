@@ -27,12 +27,14 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     @IBOutlet weak var buttonPlayStop: UIButton!
     @IBOutlet weak var labelTimer: UILabel!
+    @IBOutlet weak var labelDuration: UILabel!
+    @IBOutlet weak var progressView: UIProgressView!
 
     private var serverUrl = ""
     private var titleServerUrl = ""
     private var fileName = ""
     private var fileNamePath = ""
-    private var durationPlayerString = ""
+    private var durationPlayer: TimeInterval = 0
     private var counterSecondPlayer: TimeInterval = 0
     
     private var audioPlayer = AVAudioPlayer()
@@ -57,7 +59,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
             audioPlayer.prepareToPlay()
             audioPlayer.delegate = self
-            durationPlayerString = NCUtility.sharedInstance.formatSecondsToString(TimeInterval(audioPlayer.duration))
+            durationPlayer = TimeInterval(audioPlayer.duration)
         } catch {
             buttonPlayStop.isEnabled = false
         }
@@ -84,7 +86,12 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         // Button Play Stop
         buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
-
+        
+        // Progress view
+        progressView.progressTintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        progressView.progress = 0
+        
         // form
         initializeForm()
     }
@@ -92,7 +99,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        updateLabelTimer()
+        updateTimerUI()
     }
     
     func initializeForm() {
@@ -265,13 +272,15 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     //MARK: Player - Timer
 
-    func updateLabelTimer() {
-        labelTimer.text = NCUtility.sharedInstance.formatSecondsToString(counterSecondPlayer) + " - " + durationPlayerString
+    func updateTimerUI() {
+        labelTimer.text = NCUtility.sharedInstance.formatSecondsToString(counterSecondPlayer)
+        labelDuration.text = NCUtility.sharedInstance.formatSecondsToString(durationPlayer)
+        progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
     
     @objc func updateTimer() {
         counterSecondPlayer += 1
-        updateLabelTimer()
+        updateTimerUI()
     }
     
     @IBAction func playStop(_ sender: Any) {
@@ -283,7 +292,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             timer.invalidate()
             counterSecondPlayer = 0
-            updateLabelTimer()
+            progressView.progress = 0
+            updateTimerUI()
             
             buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
             
@@ -292,7 +302,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             audioPlayer.prepareToPlay()
             audioPlayer.play()
             
-            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
             
             buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioStop")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
         }
@@ -302,7 +312,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         timer.invalidate()
         counterSecondPlayer = 0
-        updateLabelTimer()
+        progressView.progress = 0
+        updateTimerUI()
         
         buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
     }

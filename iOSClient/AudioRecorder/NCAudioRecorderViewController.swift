@@ -111,7 +111,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     
     func audioMeterDidUpdate(_ db: Float) {
         
-        print("db level: %f", db)
+        //print("db level: %f", db)
         
         self.recording.recorder?.updateMeters()
         let ALPHA = 0.05
