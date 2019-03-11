@@ -328,10 +328,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 cell.imageSelect.isHidden = false
                 
                 if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedNo"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = nil
                 }
             } else {
@@ -434,7 +434,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
@@ -469,7 +469,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
