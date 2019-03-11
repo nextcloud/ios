@@ -266,6 +266,7 @@ class VoiceRecordHUD: UIView {
             setNeedsDisplay()
         }
     }
+    
     var image: UIImage! {
         didSet {
             setNeedsDisplay()
