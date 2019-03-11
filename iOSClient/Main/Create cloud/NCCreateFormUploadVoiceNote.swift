@@ -263,7 +263,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         self.present(navigationController, animated: true, completion: nil)
     }
     
-    //MARK: Player
+    //MARK: Player - Timer
 
     func updateLabelTimer() {
         labelTimer.text = NCUtility.sharedInstance.formatSecondsToString(counterSecondPlayer) + " - " + durationPlayerString
