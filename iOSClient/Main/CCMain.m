@@ -937,10 +937,12 @@
         
     if (cell) {
         previewingContext.sourceRect = cell.frame;
-        CCPeekPop *vc = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
+        CCPeekPop *viewController = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
             
-        vc.metadata = metadata;
-        return vc;
+        viewController.metadata = metadata;
+        viewController.imageFile = cell.file.image;
+        
+        return viewController;
     }
     
     return nil;

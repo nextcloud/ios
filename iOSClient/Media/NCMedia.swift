@@ -364,11 +364,13 @@ extension NCMedia: UIViewControllerPreviewingDelegate {
         guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
         guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else { return nil }
-        guard let cell = collectionView?.cellForItem(at: indexPath) else { return nil }
+        guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridMediaCell  else { return nil }
         guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
         
         previewingContext.sourceRect = cell.frame
         viewController.metadata = metadata
+        viewController.imageFile = cell.imageItem.image
+        
         viewController.hideAction = true
         
         return viewController

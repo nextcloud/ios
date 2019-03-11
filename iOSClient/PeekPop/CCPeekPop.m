@@ -52,11 +52,37 @@
     self.fileName.text = self.metadata.fileNameView;
     highLabelFileName = self.fileName.bounds.size.height + 5;
     
+    /*
+    if (self.imageFile != nil) {
+        
+        image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+        if (image == nil) {
+            image = self.imageFile;
+        }
+        
+    } else {
+        
+        if (self.metadata.iconName.length > 0) {
+            image = [UIImage imageNamed:self.metadata.iconName];
+        } else {
+            image = [UIImage imageNamed:@"file"];
+        }
+    }
+    
+    self.imagePreview.image = image;
+    self.imagePreview.contentMode = UIViewContentModeScaleToFill;
+    self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + highLabelFileName);
+    */
+    
     if (self.metadata.hasPreview) {
         
         if ([CCUtility fileProviderStorageIconExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
             
-            image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            if (image == nil) {
+                image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            }
+            
             image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
             
             self.imagePreview.image = image;
@@ -78,7 +104,11 @@
         
         if (self.metadata.directory) {
             
-            image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            if (self.imageFile != nil) {
+                image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            } else {
+                image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            }
             
         } else {
             
@@ -91,6 +121,8 @@
         
         self.imagePreview.image = image;
         self.imagePreview.contentMode = UIViewContentModeCenter;
+        self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + highLabelFileName);
+
         self.preferredContentSize = CGSizeMake(image.size.width, image.size.height + highLabelFileName);
     }
 }

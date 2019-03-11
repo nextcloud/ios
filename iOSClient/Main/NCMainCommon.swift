@@ -274,7 +274,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -380,8 +380,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, color: NCBrandColor.sharedInstance.brandElement)
-                cell.imageItem.contentMode = .center
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
@@ -401,9 +400,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 cell.imageItem.image = image
                 if isImagePreviewLoaded == false {
                     let width = cell.imageItem.image!.size.width * 2
-                    //let scale = UIScreen.main.scale
                     cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
-                    cell.imageItem.contentMode = .center
                 }
                 
                 // image Local
@@ -455,17 +452,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
-            
             cell.imageItem.image = image
           
-            if isImagePreviewLoaded {
-                // Preview
-                cell.imageItem.contentMode = .scaleAspectFill
-            } else {
-                // Default xcassets
-                cell.imageItem.contentMode = .scaleAspectFit
-            }
-            
             // image Local
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
@@ -567,7 +555,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.file.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width, height: image!.size.height, color: NCBrandColor.sharedInstance.brandElement)
+                cell.file.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
@@ -1312,13 +1300,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
                             if cell is NCListCell {
                                 (cell as! NCListCell).imageItem.image = image
-                                (cell as! NCListCell).imageItem.contentMode = .scaleAspectFill
                             } else if cell is NCGridCell {
                                 (cell as! NCGridCell).imageItem.image = image
-                                (cell as! NCGridCell).imageItem.contentMode = .scaleAspectFill
                             } else if cell is NCGridMediaCell {
                                 (cell as! NCGridMediaCell).imageItem.image = image
-                                (cell as! NCGridMediaCell).imageItem.contentMode = .scaleAspectFill
                             }
                         }
                     }
@@ -1327,10 +1312,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         if let cell = (view as! UITableView).cellForRow(at: indexPath) {
                             if cell is CCCellMainTransfer {
                                 (cell as! CCCellMainTransfer).file.image = image
-                                (cell as! CCCellMainTransfer).file.contentMode = .scaleAspectFill
                             } else if cell is CCCellMain {
                                 (cell as! CCCellMain).file.image = image
-                                (cell as! CCCellMain).file.contentMode = .scaleAspectFill
                             }
                         }
                     }
