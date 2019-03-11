@@ -41,7 +41,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="we1-Q7-8Us">
-                                <rect key="frame" x="20" y="334" width="70" height="17"/>
+                                <rect key="frame" x="20" y="339" width="70" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="70" id="Su3-nN-I5z"/>
                                 </constraints>
@@ -50,7 +50,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zd0-7e-z9V" userLabel="Label Duration">
-                                <rect key="frame" x="285" y="334" width="70" height="17"/>
+                                <rect key="frame" x="285" y="339" width="70" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="70" id="JZa-Lm-wgx"/>
                                 </constraints>
@@ -59,7 +59,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="6HO-NK-obf">
-                                <rect key="frame" x="100" y="341.5" width="175" height="2"/>
+                                <rect key="frame" x="100" y="346.5" width="175" height="2"/>
                             </progressView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -69,8 +69,8 @@
                             <constraint firstItem="6HO-NK-obf" firstAttribute="centerY" secondItem="we1-Q7-8Us" secondAttribute="centerY" id="J28-Wh-Byv"/>
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="zd0-7e-z9V" secondAttribute="trailing" constant="20" id="Zkq-S4-Hnu"/>
                             <constraint firstItem="zd0-7e-z9V" firstAttribute="leading" secondItem="6HO-NK-obf" secondAttribute="trailing" constant="10" id="bKe-sM-Gvy"/>
-                            <constraint firstItem="we1-Q7-8Us" firstAttribute="top" secondItem="s98-hk-uUP" secondAttribute="bottom" constant="10" id="ehi-c7-6om"/>
-                            <constraint firstItem="zd0-7e-z9V" firstAttribute="top" secondItem="s98-hk-uUP" secondAttribute="bottom" constant="10" id="elb-sf-8LP"/>
+                            <constraint firstItem="we1-Q7-8Us" firstAttribute="top" secondItem="s98-hk-uUP" secondAttribute="bottom" constant="15" id="ehi-c7-6om"/>
+                            <constraint firstItem="zd0-7e-z9V" firstAttribute="top" secondItem="s98-hk-uUP" secondAttribute="bottom" constant="15" id="elb-sf-8LP"/>
                             <constraint firstItem="s98-hk-uUP" firstAttribute="top" secondItem="eeP-9N-ZRP" secondAttribute="bottom" constant="10" id="o8u-gE-61X"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
                             <constraint firstItem="we1-Q7-8Us" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" constant="20" id="uvM-m5-Ofp"/>
