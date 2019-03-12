@@ -105,21 +105,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         loadListingTrash()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if scrollToFileID != "" {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
-                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
-                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
-                    }
-                }
-            }
-        }
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -691,6 +676,17 @@ extension NCTrash {
             }
             
             self.loadDatasource()
+            
+            // GoTo FileID
+            if self.scrollToFileID != "" {
+                for item in 0...self.datasource.count-1 {
+                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
+                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
+                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
+                    }
+                }
+                self.scrollToFileID = ""
+            }
         })
     }
     
