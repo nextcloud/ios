@@ -91,9 +91,7 @@ class NCBrandColor: NSObject {
     @objc public let capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
     
     // Database key encryption key 64byte AES-256+SHA2
-    @objc public var databaseEncryptionKey:             String = "1234567890123456789012345678901234567890123456789012345678901234"
-//    @objc public var databaseEncryptionKey:             String = "LdFNb00N+ywBuNGJRjCUuDt1zIXK/PX82ZNHWochfu1is8TorIERQi1aJsAMLC3rK2BB0uMjh2kNZ9Dcwx/G5Q=="
-
+    @objc public var databaseEncryptionKey:             String = "LdFNb00N+ywBuNGJRjCUuDt1zIXK/PX82ZNHWochfu1is8TorIERQi1aJsAMLC3rK2BB0uMjh2kNZ9Dcwx/G5Q=="
     
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
