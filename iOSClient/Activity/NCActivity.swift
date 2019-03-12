@@ -25,7 +25,7 @@ import Foundation
 import UIKit
 import SwiftRichString
 
-class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, UITableViewDataSourcePrefetching, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet weak var tableView: UITableView!
 
@@ -87,45 +87,46 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
     }
-    
-    // MARK: TableView
+}
 
-    func loadDataSource() {
+class activityTableViewCell: UITableViewCell {
+    
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var avatar: UIImageView!
+    @IBOutlet weak var subject: UILabel!
+    @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
+
+    var idActivity: Int = 0
+    var account: String = ""
+    var activityPreviews = [tableActivityPreview]()
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
         
-        sectionDate.removeAll()
-    
-        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
-        for tableActivity in activities {
-            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
-                continue
-            }
-            if !sectionDate.contains(date) {
-                sectionDate.append(date)
-            }
-        }
-        tableView.reloadData()
+        collectionView.delegate = self
+        collectionView.dataSource = self
     }
+}
+
+// MARK: - Table View
+
+extension NCActivity: UITableViewDelegate {
     
-    func getTableActivitiesFromSection(_ section: Int) -> [tableActivity] {
-        let startDate = sectionDate[section]
-        let endDate: Date = {
-            let components = DateComponents(day: 1, second: -1)
-            return Calendar.current.date(byAdding: components, to: startDate)!
-        }()
-        
-        return NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sectionDate.count
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return getTableActivitiesFromSection(section).count
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 60
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -148,33 +149,16 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
         view.addSubview(label)
         return view
     }
+}
 
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+extension NCActivity: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sectionDate.count
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-    
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
-        let section = indexPaths.last?.section ?? 0
-        let row = indexPaths.last?.row ?? 0
-        
-        let lastSection = self.sectionDate.count - 1
-        let lastRow = getTableActivitiesFromSection(section).count - 1
-        
-        if section == lastSection && row > lastRow - 1 {
-            let results = getTableActivitiesFromSection(section)
-            let activity = results[lastRow]
-            
-            loadActivity(idActivity: activity.idActivity)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        //print("cancelPrefetchingForRowsAt \(indexPaths)")
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return getTableActivitiesFromSection(section).count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -184,13 +168,13 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
             let results = getTableActivitiesFromSection(indexPath.section)
             let activity = results[indexPath.row]
             var orderKeysId = [String]()
-
+            
             cell.idActivity = activity.idActivity
             cell.account = activity.account
             cell.avatar.image = nil
             cell.avatar.isHidden = true
             cell.subjectTrailingConstraint.constant = 10
-
+            
             // icon
             if activity.icon.count > 0 {
                 
@@ -220,7 +204,7 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                     }
                 }
             }
-    
+            
             // avatar
             if activity.user.count > 0 && activity.user != appDelegate.activeUserID {
                 
@@ -289,160 +273,45 @@ class NCActivity: UIViewController, UITableViewDataSource, UITableViewDelegate, 
                 cell.collectionViewHeightConstraint.constant = 60
             }
             cell.collectionView.reloadData()
-
+            
             return cell
         }
         
         return UITableViewCell()
     }
-    
-    // MARK: NC API
-    
-    @objc func loadActivityRefreshing() {
-        loadActivity(idActivity: 0)
-    }
+}
 
-    @objc func loadActivity(idActivity: Int) {
+extension NCActivity: UITableViewDataSourcePrefetching {
+    
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         
-        if loadingActivity {
-            return
-        } else {
-            loadingActivity = true
+        let section = indexPaths.last?.section ?? 0
+        let row = indexPaths.last?.row ?? 0
+        
+        let lastSection = self.sectionDate.count - 1
+        let lastRow = getTableActivitiesFromSection(section).count - 1
+        
+        if section == lastSection && row > lastRow - 1 {
+            let results = getTableActivitiesFromSection(section)
+            let activity = results[lastRow]
+            
+            loadActivity(idActivity: activity.idActivity)
         }
-        
-        if idActivity > 0 {
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
-        }
-        
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                
-                self.loadDataSource()
-            }
-            
-            self.refreshControl.endRefreshing()
-            NCUtility.sharedInstance.stopActivityIndicator()
-            
-            self.loadingActivity = false
-        })
+    }
+    
+    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        //print("cancelPrefetchingForRowsAt \(indexPaths)")
     }
 }
 
-class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+// MARK: - Collection View
 
-    @IBOutlet weak var collectionView: UICollectionView!
-    
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var avatar: UIImageView!
-    @IBOutlet weak var subject: UILabel!
-    @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
-
-    var idActivity: Int = 0
-    var account: String = ""
-    var activityPreviews = [tableActivityPreview]()
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        collectionView.delegate = self
-        collectionView.dataSource = self
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 50, height: 50)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 20
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return activityPreviews.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-      
-        if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell {
-            
-            cell.imageView.image = nil
-            
-            let activityPreview = activityPreviews[indexPath.row]
-            let fileID = String(activityPreview.fileId)
-
-            // Trashbin
-            if activityPreview.view == "trashbin" {
-                
-                let source = activityPreview.source
-                
-                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
-                    if imageNamePath != nil {
-                        if let image = UIImage(contentsOfFile: imageNamePath!) {
-                            cell.imageView.image = image
-                        }
-                    }
-                }
-                
-            } else {
-                
-                if activityPreview.isMimeTypeIcon {
-                    
-                    let source = activityPreview.source
-
-                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
-                        if imageNamePath != nil {
-                            if let image = UIImage(contentsOfFile: imageNamePath!) {
-                                cell.imageView.image = image
-                            }
-                        }
-                    }
-                    
-                } else {
-                    
-                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileID) {
-                    
-                        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
-                        
-                        if FileManager.default.fileExists(atPath: fileNamePath) {
-                            
-                            if let image = UIImage(contentsOfFile: fileNamePath) {
-                                cell.imageView.image = image
-                            }
-                            
-                        } else {
-                            
-                            OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, serverPath: activityPreview.source, fileNamePath: fileNamePath, completion: { (account, image, message, errorCode) in
-                                if errorCode == 0 {
-                                    cell.imageView.image = image
-                                }
-                            })
-                        }
-                    }
-                }
-            }
-            
-            return cell
-        }
-        
-        return UICollectionViewCell()
-    }
+extension activityTableViewCell: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let activityPreview = activityPreviews[indexPath.row]
-
+        
         if activityPreview.view == "trashbin" {
             
             var responder: UIResponder? = collectionView
@@ -503,7 +372,7 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
                     OCNetworking.sharedManager()?.readFile(withAccount: activityPreview.account, serverUrl: serverUrl, fileName: fileName, completion: { (account, metadata, message, errorCode) in
                         
                         NCUtility.sharedInstance.stopActivityIndicator()
-
+                        
                         if account == self.appDelegate.activeAccount && errorCode == 0 {
                             
                             // move from id to oc:id + instanceid (fileID)
@@ -528,11 +397,166 @@ class activityTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollec
     }
 }
 
+extension activityTableViewCell: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return activityPreviews.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell {
+            
+            cell.imageView.image = nil
+            
+            let activityPreview = activityPreviews[indexPath.row]
+            let fileID = String(activityPreview.fileId)
+            
+            // Trashbin
+            if activityPreview.view == "trashbin" {
+                
+                let source = activityPreview.source
+                
+                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
+                    if imageNamePath != nil {
+                        if let image = UIImage(contentsOfFile: imageNamePath!) {
+                            cell.imageView.image = image
+                        }
+                    }
+                }
+                
+            } else {
+                
+                if activityPreview.isMimeTypeIcon {
+                    
+                    let source = activityPreview.source
+                    
+                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
+                        if imageNamePath != nil {
+                            if let image = UIImage(contentsOfFile: imageNamePath!) {
+                                cell.imageView.image = image
+                            }
+                        }
+                    }
+                    
+                } else {
+                    
+                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileID) {
+                        
+                        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
+                        
+                        if FileManager.default.fileExists(atPath: fileNamePath) {
+                            
+                            if let image = UIImage(contentsOfFile: fileNamePath) {
+                                cell.imageView.image = image
+                            }
+                            
+                        } else {
+                            
+                            OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, serverPath: activityPreview.source, fileNamePath: fileNamePath, completion: { (account, image, message, errorCode) in
+                                if errorCode == 0 {
+                                    cell.imageView.image = image
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+            
+            return cell
+        }
+        
+        return UICollectionViewCell()
+    }
+    
+}
+
 class activityCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var imageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
+    }
+}
+
+extension activityTableViewCell: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 50, height: 50)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 20
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+    }
+}
+
+// MARK: - NC API & Algorithm
+
+extension NCActivity {
+    
+    func loadDataSource() {
+        
+        sectionDate.removeAll()
+        
+        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
+        for tableActivity in activities {
+            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
+                continue
+            }
+            if !sectionDate.contains(date) {
+                sectionDate.append(date)
+            }
+        }
+        tableView.reloadData()
+    }
+    
+    func getTableActivitiesFromSection(_ section: Int) -> [tableActivity] {
+        let startDate = sectionDate[section]
+        let endDate: Date = {
+            let components = DateComponents(day: 1, second: -1)
+            return Calendar.current.date(byAdding: components, to: startDate)!
+        }()
+        
+        return NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
+    }
+    
+    @objc func loadActivityRefreshing() {
+        loadActivity(idActivity: 0)
+    }
+    
+    @objc func loadActivity(idActivity: Int) {
+        
+        if loadingActivity {
+            return
+        } else {
+            loadingActivity = true
+        }
+        
+        if idActivity > 0 {
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+        }
+        
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
+                
+                self.loadDataSource()
+            }
+            
+            self.refreshControl.endRefreshing()
+            NCUtility.sharedInstance.stopActivityIndicator()
+            
+            self.loadingActivity = false
+        })
     }
 }

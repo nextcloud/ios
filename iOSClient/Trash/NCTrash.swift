@@ -28,7 +28,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
-    var path = ""
+    var serverUrl = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var scrollToFileID = ""
     var scrollToIndexPath: IndexPath?
@@ -109,7 +109,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         super.viewDidAppear(animated)
         
         if scrollToFileID != "" {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 for item in 0...self.datasource.count-1 {
                     if self.datasource[item].fileID.contains(self.scrollToFileID) {
                         self.scrollToIndexPath = IndexPath(item: item, section: 0)
@@ -491,7 +491,7 @@ extension NCTrash: UICollectionViewDelegate {
             
             let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
             
-            ncTrash.path = tableTrash.filePath + tableTrash.fileName
+            ncTrash.serverUrl = tableTrash.filePath + tableTrash.fileName
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             
             self.navigationController?.pushViewController(ncTrash, animated: true)
@@ -646,10 +646,13 @@ extension NCTrash {
     @objc func loadDatasource() {
         
         datasource.removeAll()
+        var path = ""
         
-        if path == "" {
+        if serverUrl == "" {
             let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
             path = k_dav + "/trashbin/" + userID! + "/trash/"
+        } else {
+            path = serverUrl
         }
         
         guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.activeAccount) else {
@@ -663,12 +666,21 @@ extension NCTrash {
     
     @objc func loadListingTrash() {
         
+        var path = ""
+
+        if serverUrl == "" {
+            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
+            path = k_dav + "/trashbin/" + userID! + "/trash/"
+        } else {
+            path = serverUrl
+        }
+        
         OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, completion: { (account, item, message, errorCode) in
             
             self.refreshControl.endRefreshing()
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: path, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             } else if errorCode == kOCErrorServerUnauthorized {
                 self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
