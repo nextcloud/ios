@@ -49,7 +49,7 @@ class NCManageDatabase: NSObject {
         
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
         if NCBrandOptions.sharedInstance.use_database_encryption {
-            if let keyData = Data(base64Encoded: NCBrandOptions.sharedInstance.databaseEncryptionKey) {
+            if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
                 configCompact.encryptionKey = keyData
             }
         }
@@ -131,7 +131,7 @@ class NCManageDatabase: NSObject {
         
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
         if NCBrandOptions.sharedInstance.use_database_encryption {
-            if let keyData = Data(base64Encoded: NCBrandOptions.sharedInstance.databaseEncryptionKey) {
+            if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
                 config.encryptionKey = keyData
             }
         }
