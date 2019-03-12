@@ -101,7 +101,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             collectionView.collectionViewLayout = gridLayout
         }
         
-        loadDatasource()
         loadListingTrash()
     }
     
@@ -646,7 +645,24 @@ extension NCTrash {
         
         datasource = tashItems
         
-        collectionView.reloadData()
+        reloadDataThenPerform {
+            // GoTo FileID
+            if self.scrollToFileID != "" {
+                for item in 0...self.datasource.count-1 {
+                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
+                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
+                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
+                        if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
+                            cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
+                            UIView.animate(withDuration: 0.5, animations: {
+                                cell.backgroundColor = .white
+                            })
+                        }
+                    }
+                }
+                self.scrollToFileID = ""
+            }
+        }
     }
     
     @objc func loadListingTrash() {
@@ -676,26 +692,14 @@ extension NCTrash {
             }
             
             self.loadDatasource()
-            
-            // GoTo FileID
-            if self.scrollToFileID != "" {
-                for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
-                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
-                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
-                                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
-                                UIView.animate(withDuration: 0.5, animations: {
-                                    cell.backgroundColor = .white
-                                })
-                            }
-                        }
-                    }
-                }
-                self.scrollToFileID = ""
-            }
         })
+    }
+    
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        collectionView.reloadData()
+        CATransaction.commit()
     }
     
     func restoreItem(with fileID: String) {
