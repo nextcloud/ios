@@ -252,27 +252,6 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Open in... ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)openIn:(tableMetadata *)metadata
-{
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-        
-    docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-    docController.delegate = self;
-        
-    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-
-    if (cell) {
-        [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
-    } else {
-        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    }
-}
-
 - (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
 {
     CGPoint location = [tapGesture locationInView:self.tableView];
@@ -473,21 +452,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             [self.tableView setEditing:NO animated:YES];
             
-            if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
-                [self openIn:metadata];
-            } else {
-                
-                metadata.session = k_download_session;
-                metadata.sessionError = @"";
-                metadata.sessionSelector = selectorOpenIn;
-                metadata.status = k_metadataStatusWaitDownload;
-                
-                // Add Metadata for Download
-                tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume];
-                
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
-            }
+            [[NCMainCommon sharedInstance] downloadOpenInMetadata:metadata];
         }];
     }
     

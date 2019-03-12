@@ -35,7 +35,7 @@
 
 @class tableMetadata;
 
-@interface CCFavorites : UIViewController <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MGSwipeTableCellDelegate>
+@interface CCFavorites : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MGSwipeTableCellDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
@@ -47,7 +47,6 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 
 - (void)shouldPerformSegue:(tableMetadata *)metadata;
-- (void)openIn:(tableMetadata *)metadata;
 - (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
 - (void)listingFavorites;
 

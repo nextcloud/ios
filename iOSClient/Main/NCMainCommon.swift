@@ -24,7 +24,7 @@
 import Foundation
 import TLPhotoPicker
 
-class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate {
+class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
     
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
@@ -32,7 +32,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var metadata: tableMetadata?
+    var metadataEditPhoto: tableMetadata?
+    var docController: UIDocumentInteractionController?
+
     lazy var operationQueueReloadDatasource: OperationQueue = {
         let queue = OperationQueue()
         queue.name = "Reload main datasource queue"
@@ -955,7 +957,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             return
         }
         
-        self.metadata = metadata
+        self.metadataEditPhoto = metadata
 
         let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
         
@@ -974,7 +976,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     }
     
     func doneEditing(image: UIImage) {
-        guard let metadata = self.metadata else {
+        guard let metadata = self.metadataEditPhoto else {
             return
         }
         guard let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView) else {
@@ -1006,6 +1008,46 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     func canceledEditing() {
         print("Canceled")
+    }
+    
+    //MARK: - OpenIn
+    
+    @objc func downloadOpenIn(metadata: tableMetadata) {
+        
+        if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+            
+            openIn(metadata: metadata)
+            
+        } else {
+            
+            metadata.session = k_download_session
+            metadata.sessionError = ""
+            metadata.sessionSelector = selectorOpenIn
+            metadata.status = Int(k_metadataStatusWaitDownload)
+            
+            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            reloadDatasource(ServerUrl: metadata.serverUrl, fileID: metadata.fileID, action: k_action_MOD)
+        }
+    }
+
+    func openIn(metadata: tableMetadata) {
+        
+        docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)) as URL)
+        docController?.delegate = self
+        
+        guard let splitViewController = self.appDelegate.window?.rootViewController as? UISplitViewController else {
+            return
+        }
+        
+        guard let view = splitViewController.viewControllers.first?.view else {
+            return
+        }
+        
+        guard let frame = splitViewController.viewControllers.first?.view.frame else {
+            return
+        }
+        
+        docController?.presentOptionsMenu(from: frame, in: view, animated: true)
     }
     
     //MARK: - NCAudioRecorder
@@ -1171,12 +1213,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                    if appDelegate.activeMain.view.window != nil {
-                        appDelegate.activeMain.open(in: metadata)
-                    }
-                    if appDelegate.activeFavorites.view.window != nil {
-                        appDelegate.activeFavorites.open(in: metadata)
-                    }
+                    NCMainCommon.sharedInstance.openIn(metadata: metadata)
                     
                 } else {
                     
@@ -1192,12 +1229,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             // Open in...
             if selector == selectorOpenIn && UIApplication.shared.applicationState == UIApplication.State.active {
 
-                if appDelegate.activeMain.view.window != nil {
-                    appDelegate.activeMain.open(in: metadata)
-                }
-                if appDelegate.activeFavorites.view.window != nil {
-                    appDelegate.activeFavorites.open(in: metadata)
-                }
+                NCMainCommon.sharedInstance.openIn(metadata: metadata)
             }
             
             // Save to Photo Album

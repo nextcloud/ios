@@ -52,7 +52,6 @@
     NSDate *_lockUntilDate;
 
     UIRefreshControl *refreshControl;
-    UIDocumentInteractionController *docController;
 
     CCHud *_hud;
     
@@ -2176,41 +2175,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Open in... =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)DownloadOpenIn:(tableMetadata *)metadata
-{
-    metadata.session = k_download_session;
-    metadata.sessionError = @"";
-    metadata.sessionSelector = selectorOpenIn;
-    metadata.status = k_metadataStatusWaitDownload;
-    
-    // Add Metadata for Download
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
-    
-    [appDelegate startLoadAutoDownloadUpload];
-}
-
-- (void)openIn:(tableMetadata *)metadata
-{
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-    
-    docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-    docController.delegate = self;
-    
-    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    
-    if (cell) {
-        [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
-    } else {
-        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Menu LOGO ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2905,7 +2869,7 @@
 
 - (void)openinFile:(id)sender
 {
-    [self DownloadOpenIn:self.metadata];
+    [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
 }
 
 /************************************ PASTE ************************************/
@@ -3478,7 +3442,7 @@
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        [self performSelector:@selector(DownloadOpenIn:) withObject:self.metadata];
+                                        [self performSelector:@selector(openinFile:) withObject:nil];
                                     }];
         }
         

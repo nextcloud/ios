@@ -370,8 +370,7 @@ extension NCMedia: UIViewControllerPreviewingDelegate {
         previewingContext.sourceRect = cell.frame
         viewController.metadata = metadata
         viewController.imageFile = cell.imageItem.image
-        
-        viewController.hideAction = true
+        viewController.hideShare = true
         
         return viewController
     }

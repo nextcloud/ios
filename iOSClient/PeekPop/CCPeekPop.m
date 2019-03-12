@@ -83,21 +83,9 @@
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
-    if (self.hideAction) {
-        return @[];
-    }
-    
     UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
-        self.metadata.session = k_download_session;
-        self.metadata.sessionError = @"";
-        self.metadata.sessionSelector = selectorOpenIn;
-        self.metadata.status = k_metadataStatusWaitDownload;
-            
-        // Add Metadata for Download
-        (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
-        
-        [appDelegate startLoadAutoDownloadUpload];
+        [[NCMainCommon sharedInstance] downloadOpenInMetadata:_metadata];
     }];
     
     UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
@@ -105,7 +93,12 @@
         [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
     }];
     
-    return @[openIn, share];
+    if (_hideShare == true) {
+        return @[openIn];
+
+    } else {
+        return @[openIn, share];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
