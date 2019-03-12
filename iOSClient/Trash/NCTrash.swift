@@ -683,6 +683,14 @@ extension NCTrash {
                     if self.datasource[item].fileID.contains(self.scrollToFileID) {
                         self.scrollToIndexPath = IndexPath(item: item, section: 0)
                         self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
+                                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
+                                UIView.animate(withDuration: 0.5, animations: {
+                                    cell.backgroundColor = .white
+                                })
+                            }
+                        }
                     }
                 }
                 self.scrollToFileID = ""
