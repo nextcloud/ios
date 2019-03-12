@@ -940,6 +940,7 @@
             
         viewController.metadata = metadata;
         viewController.imageFile = cell.file.image;
+        viewController.showShare = true;
         
         return viewController;
     }

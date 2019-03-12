@@ -78,6 +78,12 @@
     self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
     
+    // Register for 3D Touch Previewing if available
+    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable))
+    {
+        [self registerForPreviewingWithDelegate:self sourceView:self.view];
+    }
+    
     // calculate _serverUrl
     if (!_serverUrl)
         _serverUrl = nil;
@@ -312,6 +318,39 @@
         [alertController.view layoutIfNeeded];
     
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Peek & Pop  =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location
+{
+    CGPoint convertedLocation = [self.view convertPoint:location toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    
+    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    
+    if (cell) {
+        previewingContext.sourceRect = cell.frame;
+        CCPeekPop *viewController = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
+        
+        viewController.metadata = metadata;
+        viewController.imageFile = cell.file.image;
+        
+        return viewController;
+    }
+    
+    return nil;
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:previewingContext.sourceRect.origin];
+    
+    [self tableView:self.tableView didSelectRowAtIndexPath:indexPath];
 }
 
 #pragma mark -

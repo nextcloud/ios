@@ -35,7 +35,7 @@
 
 @class tableMetadata;
 
-@interface CCFavorites : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MGSwipeTableCellDelegate>
+@interface CCFavorites : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MGSwipeTableCellDelegate, UIViewControllerPreviewingDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 

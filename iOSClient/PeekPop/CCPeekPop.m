@@ -93,11 +93,10 @@
         [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
     }];
     
-    if (_hideShare == true) {
-        return @[openIn];
-
-    } else {
+    if (self.showShare == true) {
         return @[openIn, share];
+    } else {
+        return @[openIn];
     }
 }
 

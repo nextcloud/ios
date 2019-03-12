@@ -30,7 +30,7 @@
 
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) UIImage *imageFile;
-@property BOOL hideShare;
+@property BOOL showShare;
 
 @property (nonatomic, weak) IBOutlet UILabel *fileName;
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;
