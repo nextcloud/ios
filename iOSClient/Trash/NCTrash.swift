@@ -28,7 +28,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
-    var serverUrl = ""
+    var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var scrollToFileID = ""
     var scrollToIndexPath: IndexPath?
@@ -99,6 +99,17 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
+        }
+        
+        // Datasource & serverUrl
+        
+        if path == "" {
+            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
+            path = k_dav + "/trashbin/" + userID! + "/trash/"
+        }
+        
+        if (datasource.count == 0) {
+            loadDatasource()
         }
         
         loadListingTrash()
@@ -475,7 +486,7 @@ extension NCTrash: UICollectionViewDelegate {
             
             let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
             
-            ncTrash.serverUrl = tableTrash.filePath + tableTrash.fileName
+            ncTrash.path = tableTrash.filePath + tableTrash.fileName
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             
             self.navigationController?.pushViewController(ncTrash, animated: true)
@@ -630,14 +641,7 @@ extension NCTrash {
     @objc func loadDatasource() {
         
         datasource.removeAll()
-        var path = ""
         
-        if serverUrl == "" {
-            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-            path = k_dav + "/trashbin/" + userID! + "/trash/"
-        } else {
-            path = serverUrl
-        }
         
         guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.activeAccount) else {
             return
@@ -654,7 +658,7 @@ extension NCTrash {
                         self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
                         if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
                             cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
-                            UIView.animate(withDuration: 0.5, animations: {
+                            UIView.animate(withDuration: 1.0, animations: {
                                 cell.backgroundColor = .white
                             })
                         }
@@ -667,21 +671,12 @@ extension NCTrash {
     
     @objc func loadListingTrash() {
         
-        var path = ""
-
-        if serverUrl == "" {
-            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-            path = k_dav + "/trashbin/" + userID! + "/trash/"
-        } else {
-            path = serverUrl
-        }
-        
         OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, completion: { (account, item, message, errorCode) in
             
             self.refreshControl.endRefreshing()
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(filePath: path, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             } else if errorCode == kOCErrorServerUnauthorized {
                 self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
