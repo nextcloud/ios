@@ -45,6 +45,7 @@ class NCService: NSObject {
         self.requestUserProfile()
         self.requestServerCapabilities()
         self.requestServerStatus()
+        self.requestListTrash()
     }
 
     //MARK: -
@@ -306,6 +307,19 @@ class NCService: NSObject {
                 }
             }
             
+        })
+    }
+    
+    private func requestListTrash() {
+        
+        let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
+        let path = k_dav + "/trashbin/" + userID! + "/trash/"
+        
+        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, depth: "infinity", completion: { (account, item, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: nil, account: account!)
+                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+            }
         })
     }
 }
