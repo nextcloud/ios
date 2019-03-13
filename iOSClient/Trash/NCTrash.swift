@@ -642,7 +642,6 @@ extension NCTrash {
         
         datasource.removeAll()
         
-        
         guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.activeAccount) else {
             return
         }
@@ -671,7 +670,7 @@ extension NCTrash {
     
     @objc func loadListingTrash() {
         
-        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, completion: { (account, item, message, errorCode) in
+        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, depth: "1", completion: { (account, item, message, errorCode) in
             
             self.refreshControl.endRefreshing()
             
