@@ -2474,13 +2474,20 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func deleteTrash(filePath: String, account: String) {
+    @objc func deleteTrash(filePath: String?, account: String) {
         
         let realm = try! Realm()
-        
+        var predicate = NSPredicate()
+
         realm.beginWrite()
         
-        let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", account, filePath)
+        if filePath == nil {
+            predicate = NSPredicate(format: "account == %@", account)
+        } else {
+            predicate = NSPredicate(format: "account = %@ AND filePath = %@", account, filePath!)
+        }
+        
+        let results = realm.objects(tableTrash.self).filter(predicate)
         realm.delete(results)
         
         do {
@@ -2498,11 +2505,8 @@ class NCManageDatabase: NSObject {
         realm.beginWrite()
         
         if fileID == nil {
-            
             predicate = NSPredicate(format: "account == %@", account)
-            
         } else {
-            
             predicate = NSPredicate(format: "account = %@ AND fileID = %@", account, fileID!)
         }
         
