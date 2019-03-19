@@ -26,18 +26,13 @@
 
 @class tableMetadata;
 
-@protocol CCPeekPopDelegate;
-
 @interface CCPeekPop : UIViewController
 
-@property (nonatomic, weak) id <CCPeekPopDelegate> delegate;
-
 @property (nonatomic, strong) tableMetadata *metadata;
+@property (nonatomic, strong) UIImage *imageFile;
+@property BOOL showShare;
 
+@property (nonatomic, weak) IBOutlet UILabel *fileName;
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;
-
-@end
-
-@protocol CCPeekPopDelegate <NSObject>
 
 @end

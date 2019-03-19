@@ -45,19 +45,21 @@ class NCCreateMenuAdd: NSObject {
         
         var items = [ActionSheetItem]()
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:1, color: NCBrandColor.sharedInstance.icon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 3, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
-            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: NCBrandColor.sharedInstance.icon)))
+            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 4, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         }
 #endif
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:1, color: colorIcon)))
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_voice_memo_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 6, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: colorIcon)))
         
         // items.append(ActionSheetSectionTitle(title: "Cheap"))
         // items.append(ActionSheetSectionMargin())
@@ -73,9 +75,9 @@ class NCCreateMenuAdd: NSObject {
         
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 6, image: UIImage.init(named: "document_menu")))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 7, image: UIImage(named: "file_xls_menu")))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 8, image: UIImage(named: "file_ppt_menu")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 7, image: UIImage.init(named: "create_file_document")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 8, image: UIImage(named: "create_file_xls")))
+                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 9, image: UIImage(named: "create_file_ppt")))
             }
         }
         
@@ -95,9 +97,12 @@ class NCCreateMenuAdd: NSObject {
                     NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self.appDelegate.activeMain, openScan: true)
                 }
             }
-            if item.value as? Int == 5 { self.appDelegate.activeMain.createFolder() }
             
-            if item.value as? Int == 6 {
+            if item.value as? Int == 5 { NCMainCommon.sharedInstance.startAudioRecorder() }
+            
+            if item.value as? Int == 6 { self.appDelegate.activeMain.createFolder() }
+            
+            if item.value as? Int == 7 {
                 guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
                     return
                 }
@@ -110,7 +115,7 @@ class NCCreateMenuAdd: NSObject {
                 
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
             }
-            if item.value as? Int == 7 {
+            if item.value as? Int == 8 {
                 guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
                     return
                 }
@@ -123,7 +128,7 @@ class NCCreateMenuAdd: NSObject {
                 
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
             }
-            if item.value as? Int == 8 {
+            if item.value as? Int == 9 {
                 guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
                     return
                 }

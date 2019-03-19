@@ -53,7 +53,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_text_upload_title_", comment: "")) as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
@@ -67,8 +67,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:1, color: NCBrandColor.sharedInstance.brandElement) as UIImage
-        row.cellConfig["imageView.image"] = imageFolder
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -112,6 +111,16 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             self.updateFormRow(formRow)
             
             self.form.delegate = self
+        }
+    }
+    
+    override func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        let cell = textField.formDescriptorCell()
+        let tag = cell?.rowDescriptor.tag
+        
+        if tag == "fileName" {
+            CCUtility.selectFileName(from: textField)
         }
     }
     
@@ -215,10 +224,10 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-                self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
-                
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
-                
+
+                self.appDelegate.startLoadAutoDownloadUpload()
+            
             } else {
                 
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)

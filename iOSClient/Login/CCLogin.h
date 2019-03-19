@@ -28,6 +28,7 @@
 #import "OCNetworking.h"
 
 @class CCLoginWeb;
+@class NCLoginQRCode;
 
 @protocol CCLoginDelegate <NSObject>
 
@@ -55,6 +56,8 @@
 @property (nonatomic, weak) IBOutlet UIButton *annulla;
 @property (nonatomic, weak) IBOutlet UIButton *toggleVisiblePassword;
 @property (nonatomic, weak) IBOutlet UIButton *loginTypeView;
+
+@property (nonatomic, weak) IBOutlet UIButton *qrCode;
 
 @property NSInteger loginType;
 

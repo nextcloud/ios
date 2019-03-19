@@ -80,7 +80,7 @@
         [form addFormSection:section];
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_not_available_", nil)];
-        [row.cellConfig setObject:[UIImage imageNamed:@"no_red"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"closeCircle"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -99,7 +99,7 @@
         [form addFormSection:section];
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_activated_", nil)];
-        [row.cellConfig setObject:[UIImage imageNamed:@"ok_green"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectFull"] width:50 height:50 color:[UIColor greenColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -112,7 +112,7 @@
         
         // Read Passphrase
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"readPassphrase" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
-        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"e2eReadPassphrase"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"e2eReadPassphrase"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -127,7 +127,7 @@
         
         // remove locally Encryption
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removeLocallyEncryption" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_remove_", nil)];
-        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];

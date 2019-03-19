@@ -27,7 +27,7 @@
 #import "NCBridgeSwift.h"
 #import "NCNetworkingEndToEnd.h"
 
-@interface CCLogin () <CCLoginDelegateWeb>
+@interface CCLogin () <CCLoginDelegateWeb, NCLoginQRCodeDelegate>
 {
     AppDelegate *appDelegate;
     UIView *rootView;
@@ -253,6 +253,43 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark === NCLoginQRCodeDelegate ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)dismissQRCode:(NSString *)value metadataType:(NSString *)metadataType
+{
+    NSString *protocolLogin = [[NCBrandOptions sharedInstance].webLoginAutenticationProtocol stringByAppendingString:@"login/"];
+    
+    if (value != nil && [value hasPrefix:protocolLogin] && [value containsString:@"user:"] && [value containsString:@"password:"] && [value containsString:@"server:"]) {
+        
+        value = [value stringByReplacingOccurrencesOfString:protocolLogin withString:@""];
+        
+        NSArray *valueArray = [value componentsSeparatedByString: @"&"];
+        
+        if (valueArray.count == 3) {
+            
+            _imageUser.hidden = NO;
+            _user.hidden = NO;
+            _imagePassword.hidden = NO;
+            _password.hidden = NO;
+            
+            [self.loginTypeView setTitle:NSLocalizedString(@"_web_login_", nil) forState:UIControlStateNormal];
+            
+            self.user.text = [valueArray[0] stringByReplacingOccurrencesOfString:@"user:" withString:@""];
+            self.password.text = [valueArray[1] stringByReplacingOccurrencesOfString:@"password:" withString:@""];
+            self.baseUrl.text = [valueArray[2] stringByReplacingOccurrencesOfString:@"server:" withString:@""];
+            
+            // Check whether baseUrl contain protocol. If not add https:// by default.
+            if(![self.baseUrl.text hasPrefix:@"https"] && ![self.baseUrl.text hasPrefix:@"http"]) {
+                self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
+            }
+            
+            [self handleButtonLogin:self];
+        }
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark === CCLoginDelegateWeb ===
 #pragma --------------------------------------------------------------------------------------------
 
@@ -396,6 +433,13 @@
         
         [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
     }
+}
+
+- (IBAction)handleQRCode:(id)sender
+{
+    NCLoginQRCode *qrCode = [[NCLoginQRCode alloc] initWithDelegate:self];
+    
+    [qrCode scan];
 }
 
 -(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler

@@ -78,8 +78,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:1, color: NCBrandColor.sharedInstance.brandElement) as UIImage
-        row.cellConfig["imageView.image"] = imageFolder
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -245,6 +244,16 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         }
     }
     
+    override func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        let cell = textField.formDescriptorCell()
+        let tag = cell?.rowDescriptor.tag
+        
+        if tag == "fileName" {
+            CCUtility.selectFileName(from: textField)
+        }
+    }
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -396,10 +405,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
         
         _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-        self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
-        
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
-        
+
+        self.appDelegate.startLoadAutoDownloadUpload()
+                        
         // Request delete all image scanned
         let alertController = UIAlertController(title: "", message: NSLocalizedString("_delete_all_scanned_images_", comment: ""), preferredStyle: .alert)
         

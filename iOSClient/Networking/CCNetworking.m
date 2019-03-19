@@ -216,10 +216,12 @@
     if ([sessionDescription isEqualToString:k_download_session]) return [self sessionDownload];
     if ([sessionDescription isEqualToString:k_download_session_foreground]) return [self sessionDownloadForeground];
     if ([sessionDescription isEqualToString:k_download_session_wwan]) return [self sessionWWanDownload];
-    
+
     if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
+    
+    if ([sessionDescription isEqualToString:k_upload_session_extension]) return [self sessionUploadExtension];
 
     return nil;
 }

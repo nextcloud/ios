@@ -24,7 +24,7 @@
 import Foundation
 import TLPhotoPicker
 
-class NCMainCommon: NSObject, PhotoEditorDelegate {
+class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
     
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
@@ -32,7 +32,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var metadata: tableMetadata?
+    var metadataEditPhoto: tableMetadata?
+    var docController: UIDocumentInteractionController?
+
     lazy var operationQueueReloadDatasource: OperationQueue = {
         let queue = OperationQueue()
         queue.name = "Reload main datasource queue"
@@ -219,15 +221,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             isImagePreviewLoaded = true
         } else {
             if metadata.iconName.count > 0 {
-                if cell is NCGridMediaCell {
-                    if metadata.typeFile == k_metadataTypeFile_video {
-                        image = UIImage.init(named: "file_video_big")
-                    } else {
-                        image = UIImage.init(named: "file_photo_big")
-                    }
-                } else {
-                    image = UIImage.init(named: metadata.iconName)
-                }
+                image = UIImage.init(named: metadata.iconName)
             } else {
                 image = UIImage.init(named: "file")
             }
@@ -282,7 +276,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -312,16 +306,16 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (isMounted) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesLink != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
@@ -336,10 +330,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 cell.imageSelect.isHidden = false
                 
                 if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedNo"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = nil
                 }
             } else {
@@ -388,8 +382,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                     image = UIImage.init(named: "folder")
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
-                cell.imageItem.contentMode = .center
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
@@ -409,9 +402,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 cell.imageItem.image = image
                 if isImagePreviewLoaded == false {
                     let width = cell.imageItem.image!.size.width * 2
-                    //let scale = UIScreen.main.scale
                     cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
-                    cell.imageItem.contentMode = .center
                 }
                 
                 // image Local
@@ -423,16 +414,16 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (isMounted) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesLink != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.imageShare.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
@@ -445,7 +436,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
@@ -463,17 +454,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
-            
             cell.imageItem.image = image
           
-            if isImagePreviewLoaded {
-                // Preview
-                cell.imageItem.contentMode = .scaleAspectFill
-            } else {
-                // Default xcassets
-                cell.imageItem.contentMode = .scaleAspectFit
-            }
-            
             // image Local
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
@@ -489,7 +471,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(metadata.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
@@ -504,6 +486,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     
     @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String) -> UITableViewCell {
         
+        var image: UIImage?
+
         // Create File System
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID)
@@ -524,7 +508,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             cell.favorite.image = nil
             cell.shared.image = nil
             cell.local.image = nil
-            cell.imageTitleSegue = nil
             cell.shared.isUserInteractionEnabled = false
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
@@ -559,26 +542,22 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // File Image & Image Title Segue
                 if metadata.e2eEncrypted {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "lock")
+                    image = UIImage.init(named: "folderEncrypted")
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "media")
+                    image = UIImage.init(named: "folderAutomaticUpload")
                 } else if isShare {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "share")
+                    image = UIImage.init(named: "folder_shared_with_me")
                 } else if isMounted {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "shareMounted")
+                    image = UIImage.init(named: "folder_external")
                 } else if (sharesUserAndGroup != nil) {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "share")
+                    image = UIImage.init(named: "folder_shared_with_me")
                 } else if (sharesLink != nil) {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                    cell.imageTitleSegue = UIImage.init(named: "sharebylink")
+                    image = UIImage.init(named: "folder_public")
                 } else {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    image = UIImage.init(named: "folder")
                 }
+                
+                cell.file.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
@@ -624,13 +603,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
                 
                 // Share
                 if (isShare) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (isMounted) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesLink != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 }
             }
             
@@ -978,7 +957,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
             return
         }
         
-        self.metadata = metadata
+        self.metadataEditPhoto = metadata
 
         let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
         
@@ -997,7 +976,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     }
     
     func doneEditing(image: UIImage) {
-        guard let metadata = self.metadata else {
+        guard let metadata = self.metadataEditPhoto else {
             return
         }
         guard let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView) else {
@@ -1029,6 +1008,71 @@ class NCMainCommon: NSObject, PhotoEditorDelegate {
     
     func canceledEditing() {
         print("Canceled")
+    }
+    
+    //MARK: - OpenIn
+    
+    @objc func downloadOpenIn(metadata: tableMetadata) {
+        
+        if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+            
+            openIn(metadata: metadata)
+            
+        } else {
+            
+            metadata.session = k_download_session
+            metadata.sessionError = ""
+            metadata.sessionSelector = selectorOpenIn
+            metadata.status = Int(k_metadataStatusWaitDownload)
+            
+            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            reloadDatasource(ServerUrl: metadata.serverUrl, fileID: metadata.fileID, action: k_action_MOD)
+        }
+    }
+
+    func openIn(metadata: tableMetadata) {
+        
+        docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)) as URL)
+        docController?.delegate = self
+        
+        guard let splitViewController = self.appDelegate.window?.rootViewController as? UISplitViewController else {
+            return
+        }
+        
+        guard let view = splitViewController.viewControllers.first?.view else {
+            return
+        }
+        
+        guard let frame = splitViewController.viewControllers.first?.view.frame else {
+            return
+        }
+        
+        docController?.presentOptionsMenu(from: frame, in: view, animated: true)
+    }
+    
+    //MARK: - NCAudioRecorder
+    
+    func startAudioRecorder() {
+    
+        let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+        let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
+    
+        viewController.delegate = self
+        viewController.createRecorder(fileName: fileName)
+        viewController.modalTransitionStyle = .crossDissolve
+        viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+    
+        self.appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
+    }
+    
+    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
+        
+        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        
+        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
+        viewController.setup(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
+        self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
 }
     
@@ -1147,6 +1191,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             // Synchronized
             if selector == selectorDownloadSynchronize {
                 appDelegate.updateApplicationIconBadgeNumber()
+                appDelegate.startLoadAutoDownloadUpload()
                 return
             }
             
@@ -1168,12 +1213,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                    if appDelegate.activeMain.view.window != nil {
-                        appDelegate.activeMain.open(in: metadata)
-                    }
-                    if appDelegate.activeFavorites.view.window != nil {
-                        appDelegate.activeFavorites.open(in: metadata)
-                    }
+                    NCMainCommon.sharedInstance.openIn(metadata: metadata)
                     
                 } else {
                     
@@ -1189,12 +1229,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             // Open in...
             if selector == selectorOpenIn && UIApplication.shared.applicationState == UIApplication.State.active {
 
-                if appDelegate.activeMain.view.window != nil {
-                    appDelegate.activeMain.open(in: metadata)
-                }
-                if appDelegate.activeFavorites.view.window != nil {
-                    appDelegate.activeFavorites.open(in: metadata)
-                }
+                NCMainCommon.sharedInstance.openIn(metadata: metadata)
             }
             
             // Save to Photo Album
@@ -1223,7 +1258,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 }
             }
             
-            self.appDelegate.performSelector(onMainThread: #selector(self.appDelegate.loadAutoDownloadUpload), with: nil, waitUntilDone: true)
+            appDelegate.startLoadAutoDownloadUpload()
             
         } else {
             
@@ -1248,7 +1283,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
             }
-        }       
+        }
+        
+        appDelegate.startLoadAutoDownloadUpload()
     }
     
     // UPLOAD
@@ -1272,7 +1309,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
         
         if errorCode == 0 {
-            self.appDelegate.performSelector(onMainThread: #selector(self.appDelegate.loadAutoDownloadUpload), with: nil, waitUntilDone: true)
+            appDelegate.startLoadAutoDownloadUpload()
         } else {
             if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorMessage != "" {
                 appDelegate.messageNotification("_upload_file_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -1282,40 +1319,33 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         
-        if metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
+        if !metadata.isInvalidated && metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             
             OCNetworking.sharedManager().downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
-                    if CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
-                        
-                        if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
-                                if cell is NCListCell {
-                                    (cell as! NCListCell).imageItem.image = image
-                                    (cell as! NCListCell).imageItem.contentMode = .scaleAspectFill
-                                } else if cell is NCGridCell {
-                                    (cell as! NCGridCell).imageItem.image = image
-                                    (cell as! NCGridCell).imageItem.contentMode = .scaleAspectFill
-                                } else if cell is NCGridMediaCell {
-                                    (cell as! NCGridMediaCell).imageItem.image = image
-                                    (cell as! NCGridMediaCell).imageItem.contentMode = .scaleAspectFill
-                                }
+                if errorCode == 0 && account == self.appDelegate.activeAccount && !metadata.isInvalidated && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
+                    
+                    if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                        if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
+                            if cell is NCListCell {
+                                (cell as! NCListCell).imageItem.image = image
+                            } else if cell is NCGridCell {
+                                (cell as! NCGridCell).imageItem.image = image
+                            } else if cell is NCGridMediaCell {
+                                (cell as! NCGridMediaCell).imageItem.image = image
                             }
                         }
-                        
-                        if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UITableView).cellForRow(at: indexPath) {
-                                if cell is CCCellMainTransfer {
-                                    (cell as! CCCellMainTransfer).file.image = image
-                                    (cell as! CCCellMainTransfer).file.contentMode = .scaleAspectFill
-                                } else if cell is CCCellMain {
-                                    (cell as! CCCellMain).file.image = image
-                                    (cell as! CCCellMain).file.contentMode = .scaleAspectFill
-                                }
+                    }
+                    
+                    if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                        if let cell = (view as! UITableView).cellForRow(at: indexPath) {
+                            if cell is CCCellMainTransfer {
+                                (cell as! CCCellMainTransfer).file.image = image
+                            } else if cell is CCCellMain {
+                                (cell as! CCCellMain).file.image = image
                             }
                         }
                     }

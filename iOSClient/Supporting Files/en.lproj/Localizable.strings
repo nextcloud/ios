@@ -439,6 +439,8 @@
 "_share_type_user_"             = "User";
 "_share_type_group_"            = "Group";
 "_share_type_remote_"           = "Remote";
+"_enforce_password_protection_" = "Enforce password protection";
+"_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 
 // Share Permission
 
@@ -542,6 +544,7 @@
 // Text File
 
 "_untitled_txt_"                    = "Untitled.txt";
+"_text_upload_title_"               = "Upload text file";
 
 // EndToEnd Encryption
 
@@ -619,7 +622,7 @@
 
 // Offline
 
-"_manage_file_offline_"             = "Manage file offline";
+"_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
 
@@ -718,3 +721,15 @@
 
 "Try again in 1 minute" = "Try again in 1 minute";
 
+// QRCode
+
+"_qrcode_not_authorized_"   = "This app is not authorized to use Back Camera";
+"_qrcode_not_supported_"    = "QRCode not supported by the current device";
+
+// Voice Memo
+
+"_create_voice_memo_"       = "Create voice memo";
+"_voice_memo_start_"        = "tap to start";
+"_voice_memo_stop_"         = "tap to stop";
+"_voice_memo_filename_"     = "voice memo";
+"_voice_memo_title_"        = "Upload voice memo";

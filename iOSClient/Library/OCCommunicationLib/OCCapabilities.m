@@ -19,7 +19,6 @@
         self.versionString = @"";
         self.versionEdition = @"";
         self.corePollInterval = 0;
-        self.filesSharingExpireDateDaysNumber = 0;
         
         self.themingBackground = @"";
         self.themingColor = @"";

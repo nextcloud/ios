@@ -90,6 +90,11 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
+    // Directory Excluded From Backup
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData]];
+    
     // Verify upgrade
     if ([self upgrade]) {
     
@@ -518,8 +523,8 @@
 - (void)configDynamicShortcutItems
 {
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-
-    UIApplicationShortcutIcon *shortcutMediaIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionMedia"];
+    
+    UIApplicationShortcutIcon *shortcutMediaIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"media"];
     UIApplicationShortcutItem *shortcutMedia = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.media", bundleId] localizedTitle:NSLocalizedString(@"_media_", nil) localizedSubtitle:nil icon:shortcutMediaIcon userInfo:nil];
    
     // add the array to our app
@@ -1170,7 +1175,7 @@
     
     // Detect E2EE
     NSString *saveserverUrl = @"";
-    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:nil ascending:NO];
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:@"serverUrl" ascending:NO];
     for (tableMetadata *metadata in metadatasForE2EE) {
         if (![saveserverUrl isEqualToString:metadata.serverUrl]) {
             saveserverUrl = metadata.serverUrl;
@@ -1400,6 +1405,13 @@
     
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
+}
+
+- (void)startLoadAutoDownloadUpload
+{
+    if (self.timerProcessAutoDownloadUpload.isValid) {
+        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

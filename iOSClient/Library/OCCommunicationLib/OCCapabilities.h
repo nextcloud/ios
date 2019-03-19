@@ -25,29 +25,46 @@
 /*FILES SHARING*/
 
 @property (nonatomic) BOOL isFilesSharingAPIEnabled;
+@property (nonatomic) NSInteger filesSharingDefaulPermissions;
+@property (nonatomic) BOOL isFilesSharingGroupSharing;
+@property (nonatomic) BOOL isFilesSharingReSharing;
 
-//SHARE LINK FEATURES
-@property (nonatomic) BOOL isFilesSharingShareLinkEnabled;
+//FILE SHARING - PUBLIC
 
-//Share Link with password
-@property (nonatomic) BOOL isFilesSharingPasswordEnforcedEnabled;
-
-//Share Link with expiration date
-@property (nonatomic) BOOL isFilesSharingExpireDateByDefaultEnabled;
-@property (nonatomic) BOOL isFilesSharingExpireDateEnforceEnabled;
-@property (nonatomic) NSInteger filesSharingExpireDateDaysNumber;
-
-//Other share link features
-@property (nonatomic) BOOL isFilesSharingAllowUserSendMailNotificationAboutShareLinkEnabled;
+@property (nonatomic) BOOL isFilesSharingPublicShareLinkEnabled;
 @property (nonatomic) BOOL isFilesSharingAllowPublicUploadsEnabled;
+@property (nonatomic) BOOL isFilesSharingAllowPublicUserSendMail;
+@property (nonatomic) BOOL isFilesSharingAllowPublicUploadFilesDrop;
+@property (nonatomic) BOOL isFilesSharingAllowPublicMultipleLinks;
 
-//Other Shares Features
-@property (nonatomic) BOOL isFilesSharingAllowUserSendMailNotificationAboutOtherUsersEnabled;
-@property (nonatomic) BOOL isFilesSharingReSharingEnabled;
+@property (nonatomic) BOOL isFilesSharingPublicExpireDateByDefaultEnabled;
+@property (nonatomic) BOOL isFilesSharingPublicExpireDateEnforceEnabled;
+@property (nonatomic) NSInteger filesSharingPublicExpireDateDays;
 
-//Federating cloud share (before called Server-to-Server sharing)
-@property (nonatomic) BOOL isFilesSharingAllowUserSendSharesToOtherServersEnabled;
-@property (nonatomic) BOOL isFilesSharingAllowUserReceiveSharesToOtherServersEnabled;
+@property (nonatomic) BOOL isFilesSharingPublicPasswordEnforced;
+
+//FILE SHARING - USER
+
+@property (nonatomic) BOOL isFilesSharingAllowUserSendMail;
+@property (nonatomic) BOOL isFilesSharingUserExpireDate;
+
+//FILE SHARING - GROUP
+
+@property (nonatomic) BOOL isFilesSharingGroupEnabled;
+@property (nonatomic) BOOL isFilesSharingGroupExpireDate;
+
+//FILE SHARING - FEDERATION
+
+@property (nonatomic) BOOL isFilesSharingFederationAllowUserSendShares;
+@property (nonatomic) BOOL isFilesSharingFederationAllowUserReceiveShares;
+@property (nonatomic) BOOL isFilesSharingFederationExpireDate;
+
+//FILE SHARING - SHAREBYMAIL
+
+@property (nonatomic) BOOL isFileSharingShareByMailEnabled;
+@property (nonatomic) BOOL isFileSharingShareByMailExpireDate;
+@property (nonatomic) BOOL isFileSharingShareByMailPassword;
+@property (nonatomic) BOOL isFileSharingShareByMailUploadFilesDrop;
 
 // External sites
 @property (nonatomic) BOOL isExternalSitesServerEnabled;

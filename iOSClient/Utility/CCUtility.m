@@ -530,6 +530,19 @@
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
 
++ (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL
+{
+    assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);
+    
+    NSError *error = nil;
+    BOOL success = [URL setResourceValue:[NSNumber numberWithBool: YES] forKey: NSURLIsExcludedFromBackupKey error: &error];
+    if(!success){
+        NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
+    }
+    
+    return success;
+}
+
 + (NSString *)getUserAgent
 {
     NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
@@ -1078,30 +1091,19 @@
     [data writeToFile:fileNamePath atomically:YES];
 }
 
-+ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl
++ (void)selectFileNameFrom:(UITextField *)textField
 {
-    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
+    UITextPosition *endPosition;
+    NSRange rangeDot = [textField.text rangeOfString:@"." options:NSBackwardsSearch];
     
-    for (NSString *currentCharacter in arrayForbiddenCharacters) {
-        account = [account stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    if (rangeDot.location != NSNotFound) {
+        endPosition = [textField positionFromPosition:textField.beginningOfDocument offset:rangeDot.location];
+    } else {
+        endPosition = textField.endOfDocument;
     }
     
-    for (NSString *currentCharacter in arrayForbiddenCharacters) {
-        serverUrl = [serverUrl stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
-    }
-    
-    return [[account stringByAppendingString:serverUrl] lowercaseString];
-}
-
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
-{
-    NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileNameView] lowercaseString];
-    
-    if (directory) {
-        return [metadataID stringByAppendingString:@"-dir"];
-    }
-    
-    return metadataID;
+    UITextRange *textRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:endPosition];
+    textField.selectedTextRange = textRange;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1307,12 +1309,42 @@
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
     
-    metadata.date = attributes[NSFileModificationDate];
+    if (attributes[NSFileModificationDate]) {
+        metadata.date = attributes[NSFileModificationDate];
+    } else {
+        metadata.date = [NSDate date];
+    }
     metadata.size = [attributes[NSFileSize] longValue];
     
     [self insertTypeFileIconName:metadata.fileNameView metadata:metadata];
     
     return metadata;
+}
+
++ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl
+{
+    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
+    
+    for (NSString *currentCharacter in arrayForbiddenCharacters) {
+        account = [account stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    }
+    
+    for (NSString *currentCharacter in arrayForbiddenCharacters) {
+        serverUrl = [serverUrl stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    }
+    
+    return [[account stringByAppendingString:serverUrl] lowercaseString];
+}
+
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
+{
+    NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileNameView] lowercaseString];
+    
+    if (directory) {
+        return [metadataID stringByAppendingString:@"-dir"];
+    }
+    
+    return metadataID;
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -53,9 +53,7 @@
 
 // mix two image
 + (UIImage *)overlayImage:(UIImage *)backgroundImage watermarkImage:(UIImage *)watermarkImage where:(NSString *)where
-{
-    // example watermarkImage = [UIImage imageNamed:@"lock"];
-    
+{    
     UIGraphicsBeginImageContext(backgroundImage.size);
     [backgroundImage drawInRect:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
     
@@ -189,7 +187,7 @@
     return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
 }
 
-+ (UIImage *)changeThemingColorImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height scale:(CGFloat)scale color:(UIColor *)color
++ (UIImage *)changeThemingColorImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height color:(UIColor *)color
 {
     CGRect rect = CGRectMake(0, 0, width, height);
     UIGraphicsBeginImageContext(rect.size);
@@ -201,7 +199,7 @@
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return [UIImage imageWithCGImage:img.CGImage scale:scale orientation: UIImageOrientationDownMirrored];
+    return [UIImage imageWithCGImage:img.CGImage scale:2 orientation: UIImageOrientationDownMirrored];
 }
 
 + (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont

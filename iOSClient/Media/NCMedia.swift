@@ -96,6 +96,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        
+        // 3D Touch peek and pop
+        if traitCollection.forceTouchCapability == .available {
+            registerForPreviewing(with: self, sourceView: view)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -163,7 +168,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "mediaNoRecord"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
@@ -217,28 +222,27 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
         if !isEditMode {
             
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folderMedia"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_media_folder_", comment: ""))
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_media_folder_", comment: ""))
             var item2: DropdownItem
             if filterTypeFileImage {
-                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageno"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_show_", comment: ""))
+                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageno"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_show_", comment: ""))
             } else {
-                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageyes"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_hide_", comment: ""))
+                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_hide_", comment: ""))
             }
             var item3: DropdownItem
             if filterTypeFileVideo {
-                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videono"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_show_", comment: ""))
+                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videono"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_show_", comment: ""))
             } else {
-                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videoyes"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_hide_", comment: ""))
+                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_hide_", comment: ""))
             }
             menu = DropdownMenu(navigationController: self.navigationController!, items: [item0,item1,item2,item3], selectedRow: -1)
             menu?.token = "menuButtonMore"
             
         } else {
             
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
-            
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
             
             menu = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
             menu?.token = "menuButtonMoreSelect"
@@ -351,6 +355,33 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
 }
 
+// MARK: - 3D Touch peek and pop
+
+extension NCMedia: UIViewControllerPreviewingDelegate {
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        
+        guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
+        guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else { return nil }
+        guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridMediaCell  else { return nil }
+        guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
+        
+        previewingContext.sourceRect = cell.frame
+        viewController.metadata = metadata
+        viewController.imageFile = cell.imageItem.image
+
+        return viewController
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        
+        guard let indexPath = collectionView?.indexPathForItem(at: previewingContext.sourceRect.origin) else { return }
+        
+        collectionView(collectionView, didSelectItemAt: indexPath)
+    }
+}
+
 // MARK: - Collection View
 
 extension NCMedia: UICollectionViewDelegate {
@@ -368,7 +399,10 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 selectFileID.append(metadata.fileID)
             }
-            collectionView.reloadItems(at: [indexPath])
+            if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                collectionView.reloadItems(at: [indexPath])
+            }
+            
             return
         }
         
@@ -454,7 +488,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: NC API & Algorithm
+// MARK: - NC API & Algorithm
 
 extension NCMedia {
 
@@ -470,6 +504,8 @@ extension NCMedia {
             self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
+                
+                self.collectionView?.reloadData()
                 
                 if loadNetworkDatasource {
                     self.loadNetworkDatasource()
@@ -507,13 +543,13 @@ extension NCMedia {
         }
     }
     
-    func search(lteDate: Date, gteDate: Date, addPast: Bool, setDistantPast: Bool) {
+    func search(lteDate: Date, gteDate: Date, addPast: Bool, insertPrevius: Int,setDistantPast: Bool, debug: String) {
         
         // ----- DEBUG -----
 #if DEBUG
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yyyy HH:mm"
-        print("[LOG] Search: addPast \(addPast), distantPass: \(setDistantPast), Lte: " + dateFormatter.string(from: lteDate) + " - Gte: " + dateFormatter.string(from: gteDate))
+        print("[LOG] Search: addPast \(addPast), distantPass: \(setDistantPast), Lte: " + dateFormatter.string(from: lteDate) + " - Gte: " + dateFormatter.string(from: gteDate) + " DEBUG: " + debug)
 #endif
         // -----------------
         
@@ -546,47 +582,43 @@ extension NCMedia {
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                var differenceSizeInsert: Int64 = 0
-                var differenceNumInsert: Int64 = 0
+                var isDifferent: Bool = false
+                var newInsert: Int = 0
                 
                 let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
                 
                 let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
-                differenceSizeInsert = difference.differenceSizeInsert
-                differenceNumInsert = difference.differenceNumInsert
+                isDifferent = difference.isDifferent
+                newInsert = difference.newInsert
                 
                 self.loadingSearch = false
                 
-                print("[LOG] Totale Distance \(totalDistance) - Different Size \(differenceSizeInsert) - Different Num \(differenceNumInsert)")
+                print("[LOG] Search: Totale Distance \(totalDistance) - It's Different \(isDifferent) - New insert \(newInsert)")
                 
-                if differenceSizeInsert != 0 {
+                if isDifferent {
                     self.reloadDataSource(loadNetworkDatasource: false)
                 }
                 
-                if (differenceSizeInsert == 0 || differenceNumInsert < 100) && addPast && setDistantPast == false {
+                if (isDifferent == false || newInsert+insertPrevius < 100) && addPast && setDistantPast == false {
                     
                     switch totalDistance {
                     case 0...89:
                         if var gteDate90 = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
                             gteDate90 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate90) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 90 gg")
+                            self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -90 gg")
                         }
                     case 90...179:
                         if var gteDate180 = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
                             gteDate180 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate180) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 180 gg")
+                            self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -180 gg")
                         }
                     case 180...364:
                         if var gteDate365 = Calendar.current.date(byAdding: .day, value: -365, to: gteDate) {
                             gteDate365 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate365) ?? Date()
-                            self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, setDistantPast: false)
-                            print("[LOG] Media search 365 gg")
+                            self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -365 gg")
                         }
                     default:
-                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, setDistantPast: true)
-                        print("[LOG] Media search distant pass")
+                        self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: true, debug: "search recursive distant pass")
                     }
                 }
                 
@@ -614,12 +646,12 @@ extension NCMedia {
         if sectionDatasource.allRecordsDataSource.count == 0 {
             
             let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
-            search(lteDate: Date(), gteDate: gteDate!, addPast: true, setDistantPast: false)
+            search(lteDate: Date(), gteDate: gteDate!, addPast: true, insertPrevius: 0, setDistantPast: false, debug: "search (add past) today, -30 gg")
             
         } else {
             
             let gteDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
-            search(lteDate: Date(), gteDate: gteDate, addPast: false, setDistantPast: false)
+            search(lteDate: Date(), gteDate: gteDate, addPast: false, insertPrevius: 0, setDistantPast: false, debug: "search today, first date record")
         }
         
         collectionView?.reloadDataThenPerform {
@@ -652,10 +684,10 @@ extension NCMedia {
             let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
             if lastDate == sortedSections.last as! Date {
                 gteDate = Calendar.current.date(byAdding: .day, value: -30, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, setDistantPast: false)
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, insertPrevius: 0, setDistantPast: false, debug: "search (add past) last record, -30 gg")
             } else {
                 gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, setDistantPast: false)
+                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, insertPrevius: 0, setDistantPast: false, debug: "search [refresh window]")
             }
         }
     }
@@ -671,7 +703,7 @@ extension NCMedia {
     }
 }
 
-// MARK: FastScroll - ScrollView
+// MARK: - FastScroll - ScrollView
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -696,7 +728,6 @@ extension NCMedia: FastScrollCollectionViewDelegate {
     fileprivate func configFastScroll() {
         
         collectionView.fastScrollDelegate = self
-        collectionView.handleTimeToDisappear = 1
         
         //bubble
         collectionView.deactivateBubble = true
@@ -710,13 +741,15 @@ extension NCMedia: FastScrollCollectionViewDelegate {
         collectionView.handleHeight = 40.0
         collectionView.handleWidth = 40.0
         collectionView.handleRadius = 20.0
-        collectionView.handleMarginRight = -20
         */
+        collectionView.handleTimeToDisappear = 1
+        collectionView.handleMarginRight = 3
         collectionView.handleColor = NCBrandColor.sharedInstance.brand
+        collectionView.handle?.backgroundColor = NCBrandColor.sharedInstance.brand
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0
-        collectionView.scrollbarMarginTop = 45.0
+        collectionView.scrollbarMarginTop = 43.0
         collectionView.scrollbarMarginBottom = 5.0
         collectionView.scrollbarMarginRight = 10.0
         

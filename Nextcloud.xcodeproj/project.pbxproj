@@ -65,6 +65,7 @@
 		F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
 		F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
+		F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */; };
 		F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEC2199E55F003F38DA /* SVGKit.framework */; };
 		F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */; };
 		F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */; };
@@ -239,6 +240,9 @@
 		F7434B6120E2445C00417916 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7434B6220E249F700417916 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
+		F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F745B250222D871800346520 /* QRCodeReader.framework */; };
+		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
+		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
 		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F74E432620B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
 		F74E432720B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
@@ -549,6 +553,8 @@
 		F7DFB7F2219C5C0000680748 /* NCCreateFormUploadFileText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */; };
 		F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */; };
 		F7DFB7F6219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */; };
+		F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */; };
+		F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */; };
 		F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E9C41820F4CA870040CF18 /* CCTransfers.m */; };
 		F7ECBA6D1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */; };
 		F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CAF1E5B14C700E19C62 /* ImageError.png */; };
@@ -719,6 +725,7 @@
 		F700229E1EC4C9100080073F /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
 		F700229F1EC4C9100080073F /* UtilsFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilsFramework.h; sourceTree = "<group>"; };
 		F70022A01EC4C9100080073F /* UtilsFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilsFramework.m; sourceTree = "<group>"; };
+		F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadVoiceNote.swift; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
 		F70211F71BAC56E9003FC03E /* CCCellMainTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMainTransfer.h; sourceTree = "<group>"; };
@@ -884,6 +891,9 @@
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
+		F745B250222D871800346520 /* QRCodeReader.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QRCodeReader.framework; path = Carthage/Build/iOS/QRCodeReader.framework; sourceTree = "<group>"; };
+		F745B252222D88AE00346520 /* NCLoginQRCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginQRCode.swift; sourceTree = "<group>"; };
+		F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCCreateFormUploadVoiceNote.storyboard; sourceTree = "<group>"; };
 		F7496B81208F5651004B299C /* iOSClient.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = iOSClient.plist; sourceTree = "<group>"; };
 		F7496B83208F5652004B299C /* Share.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Share.plist; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
@@ -1387,6 +1397,8 @@
 		F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadFileText.swift; sourceTree = "<group>"; };
 		F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadScanDocument.swift; sourceTree = "<group>"; };
 		F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadRichdocuments.storyboard; sourceTree = "<group>"; };
+		F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAudioRecorderViewController.swift; sourceTree = "<group>"; };
+		F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAudioRecorderViewController.storyboard; sourceTree = "<group>"; };
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E9C41520F4CA870040CF18 /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
 		F7E9C41820F4CA870040CF18 /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
@@ -1512,6 +1524,7 @@
 				F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */,
 				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
 				F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */,
+				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
@@ -2576,6 +2589,7 @@
 				F7BF1B3F1D51E893000854F6 /* CCLogin.h */,
 				F7BF1B401D51E893000854F6 /* CCLogin.m */,
 				F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */,
+				F745B252222D88AE00346520 /* NCLoginQRCode.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -2772,11 +2786,22 @@
 				F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */,
 				F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */,
 				F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */,
+				F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */,
+				F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */,
 				F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */,
 				F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */,
 				F7DFB7EA219C5A2E00680748 /* NCCreateMenuAdd.swift */,
 			);
 			path = "Create cloud";
+			sourceTree = "<group>";
+		};
+		F7E0E1DA22327885006B0911 /* AudioRecorder */ = {
+			isa = PBXGroup;
+			children = (
+				F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */,
+				F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */,
+			);
+			path = AudioRecorder;
 			sourceTree = "<group>";
 		};
 		F7E9C41320F4CA870040CF18 /* Transfers */ = {
@@ -2932,6 +2957,7 @@
 				F78F74322163753B00C2ADAD /* Trash */,
 				F7E9C41320F4CA870040CF18 /* Transfers */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
+				F7E0E1DA22327885006B0911 /* AudioRecorder */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 			);
 			path = iOSClient;
@@ -2970,6 +2996,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F745B250222D871800346520 /* QRCodeReader.framework */,
 				F75153232226920200323DDC /* FastScroll.framework */,
 				F78AA20521F783E900D0F205 /* SwiftRichString.framework */,
 				F72E0B9C21AD60BC00898D7B /* WeScan.framework */,
@@ -3325,6 +3352,7 @@
 				F762CB981EACB84400B38484 /* icon-info@2x.png in Resources */,
 				F7D423361F0596AC009C9782 /* AppIcon-167.png in Resources */,
 				F7F54CF71E5B14C700E19C62 /* PlayButtonOverlayLargeTap.png in Resources */,
+				F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */,
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F77B0F4D1D118A16002130FE /* CCShare.storyboard in Resources */,
 				F7F54D021E5B14C700E19C62 /* UIBarButtonItemGrid@3x.png in Resources */,
@@ -3339,6 +3367,7 @@
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
 				F7F54CEE1E5B14C700E19C62 /* ImageSelectedSmallOff.png in Resources */,
 				F760F79721F21F61006B1A73 /* StickerCollectionViewCell.xib in Resources */,
+				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
 				F73B4EF31F470D9100BBEE4B /* GB2312Freq.tab in Resources */,
 				F7B2DEF11F976859007CF4D2 /* english.txt in Resources */,
 				F7F54D051E5B14C800E19C62 /* VideoOverlay@3x.png in Resources */,
@@ -3440,6 +3469,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/WeScan.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/FastScroll.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
 			);
 			outputPaths = (
 			);
@@ -3833,8 +3863,10 @@
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,
+				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
+				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
@@ -3857,6 +3889,7 @@
 				F760F78E21F21F61006B1A73 /* PhotoEditor+Drawing.swift in Sources */,
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
 				F760F78921F21F61006B1A73 /* UIView+Image.swift in Sources */,
+				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F760F79221F21F61006B1A73 /* EmojisCollectionViewDelegate.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,

@@ -169,6 +169,7 @@
 
 // Task Networking
 - (void)loadAutoDownloadUpload;
+- (void)startLoadAutoDownloadUpload;
 
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;

@@ -168,15 +168,16 @@ class NCUtility: NSObject {
         return (k_layout_list, "fileName", true, "none", true)
     }
     
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool) -> String? {
+    
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, closure: @escaping (String?) -> ()) {
         
         var fileNamePNG = ""
         
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return nil
+            return closure(nil)
         }
         guard let iconURL = URL(string: svgUrlString) else {
-            return nil
+            return closure(nil)
         }
         
         if fileName == nil {
@@ -190,7 +191,7 @@ class NCUtility: NSObject {
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
             guard let imageData = try? Data(contentsOf:iconURL) else {
-                return nil
+                return closure(nil)
             }
             
             if let image = UIImage.init(data: imageData) {
@@ -212,35 +213,45 @@ class NCUtility: NSObject {
                 }
                 
                 guard let pngImageData = newImage.pngData() else {
-                    return nil
+                    return closure(nil)
                 }
+                
                 CCUtility.write(pngImageData, fileNamePath: imageNamePath)
                 
             } else {
                 
-                guard let svgImage: SVGKImage = SVGKImage(contentsOf: iconURL) else {
-                    return nil
+                let task = URLSession(configuration: .default).dataTask(with: iconURL) { (data, response, error) in
+                    guard error == nil,  response != nil, data != nil else {
+                        return closure(nil)
+                    }
+                    
+                    guard let svgImage: SVGKImage = SVGKImage(data: data) else {
+                        return closure(nil)
+                    }
+                    
+                    if width != nil {
+                        let scale = svgImage.size.height / svgImage.size.width
+                        svgImage.size = CGSize(width: width!, height: width! * scale)
+                    }
+                    
+                    guard let image: UIImage = svgImage.uiImage else {
+                        return closure(nil)
+                    }
+                    guard let pngImageData = image.pngData() else {
+                        return closure(nil)
+                    }
+                    
+                    CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                    
+                    DispatchQueue.main.async {
+                        return closure(imageNamePath)
+                    }
                 }
-                
-                if width != nil {
-                    let scale = svgImage.size.height / svgImage.size.width
-                    svgImage.size = CGSize(width: width!, height: width! * scale)
-                }
-                
-                guard let image: UIImage = svgImage.uiImage else {
-                    return nil
-                }
-                guard let pngImageData = image.pngData() else {
-                    return nil
-                }
-                
-                CCUtility.write(pngImageData, fileNamePath: imageNamePath)
-                
-                return imageNamePath
+                task.resume()
             }
         }
         
-        return imageNamePath
+        return closure(imageNamePath)
     }
     
     @objc func startActivityIndicator(view: UIView, bottom: CGFloat) {
@@ -289,6 +300,16 @@ class NCUtility: NSObject {
         default:
             return nil
         }
+    }
+    
+    @objc func formatSecondsToString(_ seconds: TimeInterval) -> String {
+        if seconds.isNaN {
+            return "00:00:00"
+        }
+        let sec = Int(seconds.truncatingRemainder(dividingBy: 60))
+        let min = Int(seconds.truncatingRemainder(dividingBy: 3600) / 60)
+        let hour = Int(seconds / 3600)
+        return String(format: "%02d:%02d:%02d", hour, min, sec)
     }
 
 }

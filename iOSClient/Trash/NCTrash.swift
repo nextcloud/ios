@@ -24,7 +24,7 @@
 import Foundation
 import Sheeeeeeeeet
 
-class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCGridCellDelegate, NCTrashSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCGridCellDelegate, NCTrashSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -101,23 +101,18 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             collectionView.collectionViewLayout = gridLayout
         }
         
-        loadDatasource()
-        loadListingTrash()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        // Datasource & serverUrl
         
-        if scrollToFileID != "" {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
-                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
-                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
-                    }
-                }
-            }
+        if path == "" {
+            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
+            path = k_dav + "/trashbin/" + userID! + "/trash/"
         }
+        
+        if (datasource.count == 0) {
+            loadDatasource()
+        }
+        
+        loadListingTrash()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -136,7 +131,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "trashNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.graySoft)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 300, height: 300, color: NCBrandColor.sharedInstance.graySoft)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
@@ -234,7 +229,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             //let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
             //let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_selected_", comment: ""))
-            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_selected_", comment: ""))
+            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_selected_", comment: ""))
             
             menuView = DropdownMenu(navigationController: self.navigationController!, items: [item2], selectedRow: -1)
             menuView?.token = "tapMoreHeaderMenuSelect"
@@ -243,7 +238,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             //let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
             //let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
-            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
+            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
             
             menuView = DropdownMenu(navigationController: self.navigationController!, items: [item2], selectedRow: -1)
             menuView?.token = "tapMoreHeaderMenu"
@@ -467,139 +462,40 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     */
-    
-    // MARK: NC API
-    
-    @objc func loadListingTrash() {
-        
-        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, completion: { (account, item, message, errorCode) in
-            
-            self.refreshControl.endRefreshing()
+}
 
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-            } else if errorCode == kOCErrorServerUnauthorized {
-                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
-            } else if errorCode != 0 {
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
-            }
-            
-            self.loadDatasource()
-        })
-    }
-    
-    func restoreItem(with fileID: String) {
-        
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
-            return
-        }
-        
-        let fileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
-        
-        OCNetworking.sharedManager().moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
-                self.loadDatasource()
-            } else if errorCode == kOCErrorServerUnauthorized {
-                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
-            } else if errorCode != 0 {
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
-            }
-        })
-    }
-    
-    func emptyTrash() {
-        
-        OCNetworking.sharedManager().emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
-            } else if errorCode == kOCErrorServerUnauthorized {
-                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
-            } else if errorCode != 0 {
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
-            }
-            self.loadDatasource()
-        })
-    }
-    
-    func deleteItem(with fileID: String) {
-        
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
-            return
-        }
-        
-        let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
+// MARK: - Collection View
 
-        OCNetworking.sharedManager().deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
-                self.loadDatasource()
-            } else if errorCode != 0 {
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+extension NCTrash: UICollectionViewDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let tableTrash = datasource[indexPath.item]
+        
+        if isEditMode {
+            if let index = selectFileID.index(of: tableTrash.fileID) {
+                selectFileID.remove(at: index)
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                selectFileID.append(tableTrash.fileID)
             }
-        })
-    }
-    
-    func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
-                
-        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                if let cell = self.collectionView.cellForItem(at: indexPath) {
-                    if cell is NCTrashListCell {
-                        (cell as! NCTrashListCell).imageItem.image = image
-                    } else if cell is NCGridCell {
-                        (cell as! NCGridCell).imageItem.image = image
-                    }
-                }
-            }
-        })
-    }
-    
-    // MARK: DATASOURCE
-    
-    @objc func loadDatasource() {
-        
-        datasource.removeAll()
-        
-        if path == "" {
-            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-            path = k_dav + "/trashbin/" + userID! + "/trash/"
-        }
-        
-        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.activeAccount) else {
+            collectionView.reloadItems(at: [indexPath])
             return
         }
         
-        datasource = tashItems
-        
-        collectionView.reloadData()
-    }
-    
-    // MARK: COLLECTIONVIEW METHODS
-    
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        
-        if scrollToIndexPath != nil {
-            if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
-                UIView.animate(withDuration: 0.5, animations: {
-                    cell.backgroundColor = .white
-                })
-            }
+        if tableTrash.directory {
+            
+            let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
+            
+            ncTrash.path = tableTrash.filePath + tableTrash.fileName
+            ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
+            
+            self.navigationController?.pushViewController(ncTrash, animated: true)
         }
     }
-    
+}
+
+extension NCTrash: UICollectionViewDataSource {
+
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionHeader {
@@ -627,14 +523,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             return trashFooter
         }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: highHeader)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: highHeader)
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -687,10 +575,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 cell.imageSelect.isHidden = false
                 
                 if selectFileID.contains(tableTrash.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedNo"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = nil
                 }
             } else {
@@ -700,7 +588,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             }
             
             return cell
-        
+            
         } else {
             
             // GRID
@@ -720,7 +608,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(tableTrash.fileID) {
-                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
+                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
@@ -733,30 +621,153 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             return cell
         }
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        let tableTrash = datasource[indexPath.item]
+}
 
-        if isEditMode {
-            if let index = selectFileID.index(of: tableTrash.fileID) {
-                selectFileID.remove(at: index)
-            } else {
-                selectFileID.append(tableTrash.fileID)
-            }
-            collectionView.reloadItems(at: [indexPath])
-            return
-        }
-        
-        if tableTrash.directory {
-        
-            let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
-            
-            ncTrash.path = tableTrash.filePath + tableTrash.fileName
-            ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
-            
-            self.navigationController?.pushViewController(ncTrash, animated: true)
-        }
+extension NCTrash: UICollectionViewDelegateFlowLayout {
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: highHeader)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: highHeader)
     }
 }
 
+// MARK: - NC API & Algorithm
+
+extension NCTrash {
+
+    @objc func loadDatasource() {
+        
+        datasource.removeAll()
+        
+        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.activeAccount) else {
+            return
+        }
+        
+        datasource = tashItems
+        
+        reloadDataThenPerform {
+            // GoTo FileID
+            if self.scrollToFileID != "" {
+                for item in 0...self.datasource.count-1 {
+                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
+                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
+                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
+                        if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
+                            cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
+                            UIView.animate(withDuration: 1.0, animations: {
+                                cell.backgroundColor = .white
+                            })
+                        }
+                    }
+                }
+                self.scrollToFileID = ""
+            }
+        }
+    }
+    
+    @objc func loadListingTrash() {
+        
+        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, depth: "1", completion: { (account, item, message, errorCode) in
+            
+            self.refreshControl.endRefreshing()
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+            } else if errorCode == kOCErrorServerUnauthorized {
+                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
+            
+            self.loadDatasource()
+        })
+    }
+    
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        collectionView.reloadData()
+        CATransaction.commit()
+    }
+    
+    func restoreItem(with fileID: String) {
+        
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
+            return
+        }
+        
+        let fileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
+        let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
+        
+        OCNetworking.sharedManager().moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
+                self.loadDatasource()
+            } else if errorCode == kOCErrorServerUnauthorized {
+                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
+        })
+    }
+    
+    func emptyTrash() {
+        
+        OCNetworking.sharedManager().emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
+            } else if errorCode == kOCErrorServerUnauthorized {
+                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
+            self.loadDatasource()
+        })
+    }
+    
+    func deleteItem(with fileID: String) {
+        
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
+            return
+        }
+        
+        let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
+        
+        OCNetworking.sharedManager().deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
+                self.loadDatasource()
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
+        })
+    }
+    
+    func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
+        
+        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                if let cell = self.collectionView.cellForItem(at: indexPath) {
+                    if cell is NCTrashListCell {
+                        (cell as! NCTrashListCell).imageItem.image = image
+                    } else if cell is NCGridCell {
+                        (cell as! NCGridCell).imageItem.image = image
+                    }
+                }
+            }
+        })
+    }
+}

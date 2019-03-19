@@ -1279,7 +1279,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 #pragma mark - Trash
 
-- (void)listTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error))failure
+- (void)listTrash:(NSString *)path depth:(NSString *)depth onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error))failure
 {
     NSParameterAssert(success);
     
@@ -1287,6 +1287,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_webdav];
     
+    [request setValue: depth forHTTPHeaderField: @"Depth"];
     NSString *body = [NSString stringWithFormat: @""
                       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                       "<D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"

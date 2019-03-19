@@ -45,6 +45,7 @@ class NCService: NSObject {
         self.requestUserProfile()
         self.requestServerCapabilities()
         self.requestServerStatus()
+        self.requestListTrash()
     }
 
     //MARK: -
@@ -69,7 +70,7 @@ class NCService: NSObject {
                     
                     // Download Logo
                     let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-                    _ = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true)
+                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, closure: { (imageNamePath) in })
                     
                     // Download Theming Background
                     DispatchQueue.global().async {
@@ -132,7 +133,8 @@ class NCService: NSObject {
                                 for notification in listOfNotifications! {
                                     let id = (notification as! OCNotifications).idNotification
                                     if let icon = (notification as! OCNotifications).icon {
-                                        _ = NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false)
+                                        
+                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, closure: { (imageNamePath) in })                                        
                                     }
                                     new = new + String(describing: id)
                                 }
@@ -305,6 +307,19 @@ class NCService: NSObject {
                 }
             }
             
+        })
+    }
+    
+    private func requestListTrash() {
+        
+        let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
+        let path = k_dav + "/trashbin/" + userID! + "/trash/"
+        
+        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, depth: "infinity", completion: { (account, item, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: nil, account: account!)
+                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+            }
         })
     }
 }

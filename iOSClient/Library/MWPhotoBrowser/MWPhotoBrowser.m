@@ -170,7 +170,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     
     //TWS
     if (self.displayDeleteButton) {
-        _deleteButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"delete"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
+        _deleteButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"deletePhotoBrowser"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
     }
     
     if (self.displayActionButton) {
@@ -178,7 +178,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     if (self.displayShareButton) {
-        _shareButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+        _shareButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"sharePhotoBrowser"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     }
     
     // Update

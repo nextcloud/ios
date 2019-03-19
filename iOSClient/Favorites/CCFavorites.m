@@ -78,6 +78,12 @@
     self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
     
+    // Register for 3D Touch Previewing if available
+    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable))
+    {
+        [self registerForPreviewingWithDelegate:self sourceView:self.view];
+    }
+    
     // calculate _serverUrl
     if (!_serverUrl)
         _serverUrl = nil;
@@ -136,7 +142,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favoriteNoFiles"] multiplier:1 color:[NCBrandColor sharedInstance].yellowFavorite];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:300 height:300 color:[NCBrandColor sharedInstance].yellowFavorite];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -252,27 +258,6 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Open in... ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)openIn:(tableMetadata *)metadata
-{
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-        
-    docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-    docController.delegate = self;
-        
-    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-
-    if (cell) {
-        [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
-    } else {
-        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    }
-}
-
 - (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
 {
     CGPoint location = [tapGesture locationInView:self.tableView];
@@ -333,6 +318,39 @@
         [alertController.view layoutIfNeeded];
     
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Peek & Pop  =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location
+{
+    CGPoint convertedLocation = [self.view convertPoint:location toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    
+    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    
+    if (cell) {
+        previewingContext.sourceRect = cell.frame;
+        CCPeekPop *viewController = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
+        
+        viewController.metadata = metadata;
+        viewController.imageFile = cell.file.image;
+        
+        return viewController;
+    }
+    
+    return nil;
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:previewingContext.sourceRect.origin];
+    
+    [self tableView:self.tableView didSelectRowAtIndexPath:indexPath];
 }
 
 #pragma mark -
@@ -473,27 +491,13 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             [self.tableView setEditing:NO animated:YES];
             
-            if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
-                [self openIn:metadata];
-            } else {
-                
-                metadata.session = k_download_session;
-                metadata.sessionError = @"";
-                metadata.sessionSelector = selectorOpenIn;
-                metadata.status = k_metadataStatusWaitDownload;
-                
-                // Add Metadata for Download
-                tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume];
-                
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
-            }
+            [[NCMainCommon sharedInstance] downloadOpenInMetadata:metadata];
         }];
     }
     
     // Delete
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                              image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]]
+                              image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
                     backgroundColor:[NCBrandColor sharedInstance].backgroundView
                              height:50.0
                                type:AHKActionSheetButtonTypeDestructive
@@ -605,7 +609,7 @@
         // LEFT : configure ONLY Root Favorites : Remove file/folder Favorites
         if (_serverUrl == nil) {
             
-            ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:1 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
+            ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
             ((CCCellMain *)cell).leftExpansion.buttonIndex = 0;
             ((CCCellMain *)cell).leftExpansion.fillOnTrigger = NO;
             
@@ -615,7 +619,7 @@
         }
         
         // RIGHT
-        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
         
         ((CCCellMain *)cell).rightExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).rightExpansion.fillOnTrigger = NO;

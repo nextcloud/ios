@@ -49,7 +49,7 @@ class NCManageDatabase: NSObject {
         
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
         if NCBrandOptions.sharedInstance.use_database_encryption {
-            if let keyData = Data(base64Encoded: NCBrandOptions.sharedInstance.databaseEncryptionKey) {
+            if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
                 configCompact.encryptionKey = keyData
             }
         }
@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 42,
+            schemaVersion: 43,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -99,7 +99,7 @@ class NCManageDatabase: NSObject {
             // 40 : Version 2.22.9.3
             // 41 : Version 2.22.9.5
             // 42 : Version 2.23.1.0
-            
+            // 43 : Version 2.23.2.0
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -131,7 +131,7 @@ class NCManageDatabase: NSObject {
         
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
         if NCBrandOptions.sharedInstance.use_database_encryption {
-            if let keyData = Data(base64Encoded: NCBrandOptions.sharedInstance.databaseEncryptionKey) {
+            if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
                 config.encryptionKey = keyData
             }
         }
@@ -766,10 +766,36 @@ class NCManageDatabase: NSObject {
                     resultCapabilities.richdocumentsMimetypes.append(mimeType as! String)
                 }
                 resultCapabilities.richdocumentsDirectEditing = capabilities.richdocumentsDirectEditing
+                // FILES SHARING
+                resultCapabilities.isFilesSharingAPIEnabled = capabilities.isFilesSharingAPIEnabled
+                resultCapabilities.filesSharingDefaulPermissions = capabilities.filesSharingDefaulPermissions
+                resultCapabilities.isFilesSharingGroupSharing = capabilities.isFilesSharingGroupSharing
+                resultCapabilities.isFilesSharingReSharing = capabilities.isFilesSharingReSharing
+                resultCapabilities.isFilesSharingPublicShareLinkEnabled = capabilities.isFilesSharingPublicShareLinkEnabled
+                resultCapabilities.isFilesSharingAllowPublicUploadsEnabled = capabilities.isFilesSharingAllowPublicUploadsEnabled
+                resultCapabilities.isFilesSharingAllowPublicUserSendMail = capabilities.isFilesSharingAllowPublicUserSendMail
+                resultCapabilities.isFilesSharingAllowPublicUploadFilesDrop = capabilities.isFilesSharingAllowPublicUploadFilesDrop
+                resultCapabilities.isFilesSharingAllowPublicMultipleLinks = capabilities.isFilesSharingAllowPublicMultipleLinks
+                resultCapabilities.isFilesSharingPublicExpireDateByDefaultEnabled = capabilities.isFilesSharingPublicExpireDateByDefaultEnabled
+                resultCapabilities.isFilesSharingPublicExpireDateEnforceEnabled = capabilities.isFilesSharingPublicExpireDateEnforceEnabled
+                resultCapabilities.filesSharingPublicExpireDateDays = capabilities.filesSharingPublicExpireDateDays
+                resultCapabilities.isFilesSharingPublicPasswordEnforced = capabilities.isFilesSharingPublicPasswordEnforced
+                resultCapabilities.isFilesSharingAllowUserSendMail = capabilities.isFilesSharingAllowUserSendMail
+                resultCapabilities.isFilesSharingUserExpireDate = capabilities.isFilesSharingUserExpireDate
+                resultCapabilities.isFilesSharingGroupEnabled = capabilities.isFilesSharingGroupEnabled
+                resultCapabilities.isFilesSharingGroupExpireDate = capabilities.isFilesSharingGroupExpireDate
+                resultCapabilities.isFilesSharingFederationAllowUserSendShares = capabilities.isFilesSharingFederationAllowUserSendShares
+                resultCapabilities.isFilesSharingFederationAllowUserReceiveShares = capabilities.isFilesSharingFederationAllowUserReceiveShares
+                resultCapabilities.isFilesSharingFederationExpireDate = capabilities.isFilesSharingFederationExpireDate
+                resultCapabilities.isFileSharingShareByMailEnabled = capabilities.isFileSharingShareByMailEnabled
+                resultCapabilities.isFileSharingShareByMailPassword = capabilities.isFileSharingShareByMailPassword
+                resultCapabilities.isFileSharingShareByMailUploadFilesDrop = capabilities.isFileSharingShareByMailUploadFilesDrop
                 
                 if result == nil {
                     realm.add(resultCapabilities)
                 }
+                
+                
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -1952,43 +1978,50 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (differenceSizeInsert: Int64, differenceNumInsert: Int64) {
+    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (isDifferent: Bool, newInsert: Int) {
 
         let realm = try! Realm()
         realm.refresh()
         
-        var sizeDelete: Int64 = 0
-        var sizeInsert: Int64 = 0
-        var numDelete: Int64 = 0
-        var numInsert: Int64 = 0
-        var differenceSizeInsert: Int64 = 0
-        var differenceNumInsert: Int64 = 0
-
+        var numDelete: Int = 0
+        var numInsert: Int = 0
+        
+        var etagsDelete = [String]()
+        var etagsInsert = [String]()
+        
+        var isDifferent: Bool = false
+        var newInsert: Int = 0
+        
         do {
             try realm.write {
-                // DELETE ALL
+                
+                // DELETE
                 let results = realm.objects(tableMedia.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
-                for resul in results {
-                    sizeDelete = sizeDelete + Int64(resul.size)
-                    numDelete += 1
-                }
-                realm.delete(results)
-                // INSERT ALL
+                etagsDelete = Array(results.map { $0.etag })
+                numDelete = results.count
+                
+                // INSERT
                 let photos = Array(metadatas.map { tableMedia.init(value:$0) })
-                for photo in photos {
-                    sizeInsert = sizeInsert + Int64(photo.size)
-                    numInsert += 1
+                etagsInsert = Array(photos.map { $0.etag })
+                numInsert = photos.count
+                
+                // CALCULATE DIFFERENT RETURN
+                if etagsDelete.count == etagsInsert.count && etagsDelete.sorted() == etagsInsert.sorted() {
+                    isDifferent = false
+                } else {
+                    isDifferent = true
+                    newInsert = numInsert - numDelete
+                    
+                    realm.delete(results)
+                    realm.add(photos, update: true)
                 }
-                realm.add(photos, update: true)
-                differenceSizeInsert = sizeInsert - sizeDelete
-                differenceNumInsert = numInsert - numDelete
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             realm.cancelWrite()
         }
         
-        return(differenceSizeInsert, differenceNumInsert)
+        return(isDifferent, newInsert)
     }
     
     @objc func getTableMediaDate(account: String, order: ComparisonResult) -> Date {
@@ -2441,13 +2474,20 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func deleteTrash(filePath: String, account: String) {
+    @objc func deleteTrash(filePath: String?, account: String) {
         
         let realm = try! Realm()
-        
+        var predicate = NSPredicate()
+
         realm.beginWrite()
         
-        let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", account, filePath)
+        if filePath == nil {
+            predicate = NSPredicate(format: "account == %@", account)
+        } else {
+            predicate = NSPredicate(format: "account = %@ AND filePath = %@", account, filePath!)
+        }
+        
+        let results = realm.objects(tableTrash.self).filter(predicate)
         realm.delete(results)
         
         do {
@@ -2465,11 +2505,8 @@ class NCManageDatabase: NSObject {
         realm.beginWrite()
         
         if fileID == nil {
-            
             predicate = NSPredicate(format: "account == %@", account)
-            
         } else {
-            
             predicate = NSPredicate(format: "account = %@ AND fileID = %@", account, fileID!)
         }
         

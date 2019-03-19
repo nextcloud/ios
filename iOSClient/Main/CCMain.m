@@ -36,7 +36,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb, NCSelectDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb, NCSelectDelegate, UITextFieldDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -52,7 +52,6 @@
     NSDate *_lockUntilDate;
 
     UIRefreshControl *refreshControl;
-    UIDocumentInteractionController *docController;
 
     CCHud *_hud;
     
@@ -75,9 +74,6 @@
     // Folder
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
-    
-    // Image Title Segue
-    UIImage *imageTitleSegue;
 }
 @end
 
@@ -402,9 +398,9 @@
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
     if (_isSearchMode)
-        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"searchBig"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"search"] width:300 height:300 color:[NCBrandColor sharedInstance].brandElement];
     else
-        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"filesNoFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] width:300 height:300 color:[NCBrandColor sharedInstance].brandElement];
 }
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
@@ -478,8 +474,9 @@
     }
 }
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField{
-    [textField selectAll:textField];
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    [CCUtility selectFileNameFrom:textField];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -733,9 +730,9 @@
                             
                             // Add Medtadata for upload
                             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                            
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+
+                            [appDelegate startLoadAutoDownloadUpload];
                         }];
                         
                         [alertController addAction:cancelAction];
@@ -751,9 +748,9 @@
                         
                         // Add Medtadata for upload
                         (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-
                         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+                        
+                        [appDelegate startLoadAutoDownloadUpload];
                     }
                     
                 } else {
@@ -881,7 +878,8 @@
                     
                 // Add Metadata for Download
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                
+                [appDelegate startLoadAutoDownloadUpload];
             }
         }
         
@@ -934,18 +932,17 @@
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata.hasPreview == 1) {
-        CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         
-        if (cell) {
-            previewingContext.sourceRect = cell.frame;
-            CCPeekPop *vc = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
+    if (cell) {
+        previewingContext.sourceRect = cell.frame;
+        CCPeekPop *viewController = [[UIStoryboard storyboardWithName:@"CCPeekPop" bundle:nil] instantiateViewControllerWithIdentifier:@"PeekPopImagePreview"];
             
-            vc.delegate = self;
-            vc.metadata = metadata;
-            
-            return vc;
-        }
+        viewController.metadata = metadata;
+        viewController.imageFile = cell.file.image;
+        viewController.showShare = true;
+        
+        return viewController;
     }
     
     return nil;
@@ -1074,9 +1071,8 @@
             
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileNameWithoutExtension message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
             
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                // NO OVERWITE
-            }];
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }];
+            
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
                 // Remove record metadata
@@ -1084,7 +1080,8 @@
 
                 // Add Medtadata for upload
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                
+                [appDelegate startLoadAutoDownloadUpload];
             }];
             
             [alertController addAction:cancelAction];
@@ -1100,7 +1097,8 @@
             
             // Add Medtadata for upload
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+            
+            [appDelegate startLoadAutoDownloadUpload];
         }
     }
     
@@ -1174,7 +1172,7 @@
     NSMutableArray *metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
     // insert in Database the /
     if (metadataFolder != nil) {
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
+        _metadataFolder = [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     }
     // reinsert metadatas in Download
     if (metadatasInDownload) {
@@ -2160,9 +2158,9 @@
                     
                 // Add Metadata for Download
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
+                
+                [appDelegate startLoadAutoDownloadUpload];
             }
             
         } else if (errorCode == kOCErrorServerUnauthorized) {
@@ -2175,41 +2173,6 @@
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Open in... =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)DownloadOpenIn:(tableMetadata *)metadata
-{
-    metadata.session = k_download_session;
-    metadata.sessionError = @"";
-    metadata.sessionSelector = selectorOpenIn;
-    metadata.status = k_metadataStatusWaitDownload;
-    
-    // Add Metadata for Download
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-    
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
-}
-
-- (void)openIn:(tableMetadata *)metadata
-{
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-    
-    docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-    docController.delegate = self;
-    
-    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    
-    if (cell) {
-        [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
-    } else {
-        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2392,7 +2355,7 @@
     
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
     
-    appDelegate.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    appDelegate.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectLight"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         if ([sectionDataSource.allRecordsDataSource count] > 0) [self tableViewSelect:YES];
     }];
     
@@ -2575,7 +2538,7 @@
 {
     // ITEM SELECT ALL --------------------------------------------------------------------------------------------------
     
-    appDelegate.selectAllItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_all_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectAll"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    appDelegate.selectAllItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_all_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectFull"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self didSelectAll];
     }];
     
@@ -2598,8 +2561,7 @@
     }];
     
     // ITEM DELETE ------------------------------------------------------------------------------------------------------
-    
-    appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self deleteFile];
     }];
     
@@ -2853,9 +2815,9 @@
             
         // Add Metadata for Download
         (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-            
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+        
+        [appDelegate startLoadAutoDownloadUpload];
     }
 }
 
@@ -2882,9 +2844,9 @@
                 
             // Add Metadata for Download
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
+            
+            [appDelegate startLoadAutoDownloadUpload];
         }
     }
     
@@ -2908,7 +2870,7 @@
 
 - (void)openinFile:(id)sender
 {
-    [self DownloadOpenIn:self.metadata];
+    [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
 }
 
 /************************************ PASTE ************************************/
@@ -2966,9 +2928,9 @@
         }
     }
     
-    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+    
+    [appDelegate startLoadAutoDownloadUpload];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3293,12 +3255,11 @@
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        __weak __typeof(UIAlertController) *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                         
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                             textField.text = self.metadata.fileNameView;
-                                            //textField.selectedTextRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
-                                            //textField.delegate = self;
+                                            textField.delegate = self;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                         }];
                                         
@@ -3376,7 +3337,7 @@
         if (!self.metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3399,7 +3360,7 @@
         if (self.metadata.e2eEncrypted && !_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3420,7 +3381,7 @@
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDestructive
@@ -3482,7 +3443,7 @@
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        [self performSelector:@selector(DownloadOpenIn:) withObject:self.metadata];
+                                        [self performSelector:@selector(openinFile:) withObject:nil];
                                     }];
         }
         
@@ -3493,10 +3454,11 @@
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
-                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                    __weak __typeof(UIAlertController) *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
                                     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                         textField.text = self.metadata.fileNameView;
+                                        textField.delegate = self;
                                         [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                     }];
                                     
@@ -3532,7 +3494,7 @@
         if ([NCUtility.sharedInstance isEditImage:self.metadata.fileNameView] != nil && !_metadataFolder.e2eEncrypted && self.metadata.status == k_metadataStatusNormal) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_modify_photo_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3541,8 +3503,10 @@
                                         self.metadata.sessionError = @"";
                                         self.metadata.sessionSelector = selectorDownloadEditPhoto;
                                         self.metadata.status = k_metadataStatusWaitDownload;
+                                        
                                         (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                                        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                                        
+                                        [appDelegate startLoadAutoDownloadUpload];
                                     }];
         }
         
@@ -3569,9 +3533,9 @@
                                             
                                             // Add Metadata for Download
                                             (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                                            
                                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+                                            
+                                            [appDelegate startLoadAutoDownloadUpload];
                                         } else if (localFile.offline == false) {
                                             [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID offline:true];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
@@ -3583,7 +3547,7 @@
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDestructive
@@ -3946,8 +3910,8 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-    
-    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+
+    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder])) {
         return [CCCellMain new];
     }
     
@@ -4007,7 +3971,7 @@
         ((CCCellMain *)cell).delegate = self;
 
         // LEFT
-        ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:1 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
+        ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
         
         ((CCCellMain *)cell).leftExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).leftExpansion.fillOnTrigger = NO;
@@ -4017,7 +3981,7 @@
         [favoriteButton centerIconOverText];
         
         // RIGHT
-        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
         
         ((CCCellMain *)cell).rightExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).rightExpansion.fillOnTrigger = NO;
@@ -4151,9 +4115,9 @@
                     
                     // Add Metadata for Download
                     (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                    
                     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+                    
+                    [appDelegate startLoadAutoDownloadUpload];
                 }
             }
         }
@@ -4161,7 +4125,6 @@
     
     if (self.metadata.directory) {
         
-        imageTitleSegue = cell.imageTitleSegue;
         [self performSegueDirectoryWithControlPasscode:true];
     }
 }

@@ -142,6 +142,30 @@ class tableCapabilities: Object {
     @objc dynamic var endToEndEncryptionVersion = ""
     let richdocumentsMimetypes = List<String>()
     @objc dynamic var richdocumentsDirectEditing: Bool = false
+    // FILES SHARING
+    @objc dynamic var isFilesSharingAPIEnabled: Bool = false
+    @objc dynamic var filesSharingDefaulPermissions: Int = 0
+    @objc dynamic var isFilesSharingGroupSharing: Bool = false
+    @objc dynamic var isFilesSharingReSharing: Bool = false
+    @objc dynamic var isFilesSharingPublicShareLinkEnabled: Bool = false
+    @objc dynamic var isFilesSharingAllowPublicUploadsEnabled: Bool = false
+    @objc dynamic var isFilesSharingAllowPublicUserSendMail: Bool = false
+    @objc dynamic var isFilesSharingAllowPublicUploadFilesDrop: Bool = false
+    @objc dynamic var isFilesSharingAllowPublicMultipleLinks: Bool = false
+    @objc dynamic var isFilesSharingPublicExpireDateByDefaultEnabled: Bool = false
+    @objc dynamic var isFilesSharingPublicExpireDateEnforceEnabled: Bool = false
+    @objc dynamic var filesSharingPublicExpireDateDays : Int = 0
+    @objc dynamic var isFilesSharingPublicPasswordEnforced: Bool = false
+    @objc dynamic var isFilesSharingAllowUserSendMail: Bool = false
+    @objc dynamic var isFilesSharingUserExpireDate: Bool = false
+    @objc dynamic var isFilesSharingGroupEnabled: Bool = false
+    @objc dynamic var isFilesSharingGroupExpireDate: Bool = false
+    @objc dynamic var isFilesSharingFederationAllowUserSendShares: Bool = false
+    @objc dynamic var isFilesSharingFederationAllowUserReceiveShares: Bool = false
+    @objc dynamic var isFilesSharingFederationExpireDate: Bool = false
+    @objc dynamic var isFileSharingShareByMailEnabled: Bool = false
+    @objc dynamic var isFileSharingShareByMailPassword: Bool = false
+    @objc dynamic var isFileSharingShareByMailUploadFilesDrop: Bool = false
 }
 
 class tableCertificates: Object {

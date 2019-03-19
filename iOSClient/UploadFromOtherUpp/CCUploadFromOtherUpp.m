@@ -191,10 +191,10 @@
     
     // Add Medtadata for upload
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-    
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal fileID:metadataForUpload.fileID action:k_action_NULL];
 
+    [appDelegate startLoadAutoDownloadUpload];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

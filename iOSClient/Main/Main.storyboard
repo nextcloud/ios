@@ -488,11 +488,11 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="49.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6dd-uC-EQT">
-                                                    <rect key="frame" x="20" y="5" width="40" height="40"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6dd-uC-EQT">
+                                                    <rect key="frame" x="20" y="10" width="30" height="30"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="40" id="Jg6-vD-zNJ"/>
-                                                        <constraint firstAttribute="height" constant="40" id="KbT-nO-u8E"/>
+                                                        <constraint firstAttribute="width" constant="30" id="Jg6-vD-zNJ"/>
+                                                        <constraint firstAttribute="height" constant="30" id="KbT-nO-u8E"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jgw-HO-Z7g">

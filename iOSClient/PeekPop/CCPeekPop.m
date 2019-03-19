@@ -30,6 +30,7 @@
 @interface CCPeekPop ()
 {
     AppDelegate *appDelegate;
+    NSInteger highLabelFileName;
 }
 @end
 
@@ -46,23 +47,33 @@
     [super viewDidLoad];
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
-    self.preferredContentSize = CGSizeMake(self.view.frame.size.width - 50, self.view.frame.size.width - 50);
-    
-    NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
-    
-    _imagePreview.image = [UIImage animatedImageWithAnimatedGIFURL:url];
-    
-    _imagePreview.contentMode = UIViewContentModeCenter;
+    UIImage *image = self.imageFile;
 
-    [self downloadThumbnail];
+    self.fileName.text = self.metadata.fileNameView;
+    highLabelFileName = self.fileName.bounds.size.height + 5;
+    
+    if (self.metadata.hasPreview) {
+        
+        if ([CCUtility fileProviderStorageIconExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
+            
+            UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            if (fullImage != nil) {
+                image = fullImage;
+            }
+            
+        } else {
+            
+            [self downloadThumbnail];
+        }
+    }
+    
+    self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
+    self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width,  self.imagePreview.image.size.height + highLabelFileName);
 }
 
-// E' apparso
-
--(void) viewDidAppear:(BOOL)animated{
-    
-    [super viewDidAppear:animated];    
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -72,21 +83,21 @@
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
-    //__weak typeof(self) weakSelf = self;
-    
-    UIPreviewAction *previewAction1 = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+    UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
-        _metadata.session = k_download_session;
-        _metadata.sessionError = @"";
-        _metadata.sessionSelector = selectorOpenIn;
-        _metadata.status = k_metadataStatusWaitDownload;
-            
-        // Add Metadata for Download
-        (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
-        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+        [[NCMainCommon sharedInstance] downloadOpenInMetadata:_metadata];
     }];
     
-    return @[previewAction1];
+    UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+        
+        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
+    }];
+    
+    if (self.showShare == true) {
+        return @[openIn, share];
+    } else {
+        return @[openIn];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -101,21 +112,8 @@
     [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:_metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
      
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-            _imagePreview.image = image;
-            _imagePreview.contentMode = UIViewContentModeScaleToFill;
-            
-            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
-            
-        } else {
-            
-            if (errorCode != 0)  {
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            } else {
-                NSLog(@"[LOG] It has been changed user during networking process, error.");
-            }
-            
-            [self dismissViewControllerAnimated:YES completion:nil];
+            self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
+            self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height + highLabelFileName);
         }
     }];
 }
