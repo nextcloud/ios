@@ -178,10 +178,11 @@
     // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
-    // How to hide UINavigationBar 1px bottom line < iOS 11
+    // APPEARANCE: How to hide UINavigationBar 1px bottom line < iOS 11
     [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
-    
+    [UINavigationBar appearance].translucent = NO;
+
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
     
