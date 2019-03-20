@@ -1327,10 +1327,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     }
     
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
-        
-        operationQueueNetworkingMain.addOperation {
-            _ = NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath)
-        }
+        operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath))
     }
     
     func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
@@ -1370,6 +1367,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 return closure()
             })
         }
+        
+        return closure()
     }
 }
 
@@ -1377,8 +1376,27 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
 
 class NCOperationNetworkingMain: Operation {
     
-    private var operationExecuting: Bool = false
-    private var operationFinished: Bool = false
+    private var _executing : Bool = false
+    override var isExecuting : Bool {
+        get { return _executing }
+        set {
+            guard _executing != newValue else { return }
+            willChangeValue(forKey: "isExecuting")
+            _executing = newValue
+            didChangeValue(forKey: "isExecuting")
+        }
+    }
+
+    private var _finished : Bool = false
+    override var isFinished : Bool {
+        get { return _finished }
+        set {
+            guard _finished != newValue else { return }
+            willChangeValue(forKey: "isFinished")
+            _finished = newValue
+            didChangeValue(forKey: "isFinished")
+        }
+    }
     
     private var metadata: tableMetadata?
     private var view: Any?
@@ -1394,33 +1412,30 @@ class NCOperationNetworkingMain: Operation {
     
     override func start() {
         if !Thread.isMainThread {
+            
             self.performSelector(onMainThread:#selector(start), with: nil, waitUntilDone: false)
-        }
-        
-        self.willChangeValue(forKey: "isExecuting")
-        operationExecuting = true
-        self.didChangeValue(forKey: "isExecuting")
-
-        if isCancelled {
-            finish()
+            
         } else {
-            poolNetworking()
+        
+            isExecuting = true
+        
+            if isCancelled {
+                finish()
+            } else {
+                poolNetworking()
+            }
         }
     }
     
     func finish() {
-        self.willChangeValue(forKey: "isExecuting")
-        self.willChangeValue(forKey: "isFinished")
-        operationExecuting = false
-        operationFinished = true
-        self.didChangeValue(forKey: "isExecuting")
-        self.didChangeValue(forKey: "isFinished")
+        isExecuting = false
+        isFinished = true
     }
     
     override func cancel() {
         super.cancel()
         
-        if operationExecuting {
+        if isExecuting {
             complete()
         }
     }
