@@ -1327,7 +1327,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     }
     
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
-        operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath))
+        operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath, networkingFunc: "downloadThumbnail"))
     }
     
     func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
@@ -1401,13 +1401,16 @@ class NCOperationNetworkingMain: Operation {
     private var metadata: tableMetadata?
     private var view: Any?
     private var indexPath: IndexPath?
+    private var networkingFunc: String = ""
 
-    init(metadata: tableMetadata?, view: Any?, indexPath: IndexPath?) {
+    init(metadata: tableMetadata?, view: Any?, indexPath: IndexPath?, networkingFunc: String) {
         super.init()
         
         if metadata != nil { self.metadata = metadata! }
         if view != nil { self.view = view! }
         if indexPath != nil { self.indexPath = indexPath! }
+        
+        self.networkingFunc = networkingFunc
     }
     
     override func start() {
@@ -1449,8 +1452,13 @@ class NCOperationNetworkingMain: Operation {
     func poolNetworking() {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
-        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata!, view: view!, indexPath: indexPath!) {
-            self.complete()
+        switch networkingFunc {
+        case "downloadThumbnail":
+            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata!, view: view!, indexPath: indexPath!) {
+                self.complete()
+            }
+        default:
+            print("error")
         }
     }
 }
