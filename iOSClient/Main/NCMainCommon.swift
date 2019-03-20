@@ -24,6 +24,8 @@
 import Foundation
 import TLPhotoPicker
 
+//MARK: - Main Common
+
 class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
     
     @objc static let sharedInstance: NCMainCommon = {
@@ -1076,7 +1078,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     }
 }
     
-//MARK: -
+//MARK: - Main TabBarController
 
 class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         
@@ -1156,13 +1158,20 @@ extension UITabBar {
     }
 }
 
-//MARK: -
+//MARK: - Networking Main
 
 class NCNetworkingMain: NSObject, CCNetworkingDelegate {
 
     @objc static let sharedInstance: NCNetworkingMain = {
         let instance = NCNetworkingMain()
         return instance
+    }()
+    
+    lazy var operationQueueNetworkingMain: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.nextcloud.operationQueueNetworkingMain"
+        queue.maxConcurrentOperationCount = 1
+        return queue
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -1319,12 +1328,19 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         
+        operationQueueNetworkingMain.addOperation {
+            _ = NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath)
+        }
+    }
+    
+    func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
+        
         if !metadata.isInvalidated && metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             
-            OCNetworking.sharedManager().downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
+            OCNetworking.sharedManager().downloadPreview(withAccount: metadata.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount && !metadata.isInvalidated && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
                     
@@ -1350,12 +1366,82 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         }
                     }
                 }
+                
+                return closure()
             })
         }
     }
 }
 
-//MARK: -
+//MARK: - Operation Networking Main
+
+class NCOperationNetworkingMain: Operation {
+    
+    private var operationExecuting: Bool = false
+    private var operationFinished: Bool = false
+    
+    private var metadata: tableMetadata?
+    private var view: Any?
+    private var indexPath: IndexPath?
+
+    init(metadata: tableMetadata?, view: Any?, indexPath: IndexPath?) {
+        super.init()
+        
+        if metadata != nil { self.metadata = metadata! }
+        if view != nil { self.view = view! }
+        if indexPath != nil { self.indexPath = indexPath! }
+    }
+    
+    override func start() {
+        if !Thread.isMainThread {
+            self.performSelector(onMainThread:#selector(start), with: nil, waitUntilDone: false)
+        }
+        
+        self.willChangeValue(forKey: "isExecuting")
+        operationExecuting = true
+        self.didChangeValue(forKey: "isExecuting")
+
+        if isCancelled {
+            finish()
+        } else {
+            poolNetworking()
+        }
+    }
+    
+    func finish() {
+        self.willChangeValue(forKey: "isExecuting")
+        self.willChangeValue(forKey: "isFinished")
+        operationExecuting = false
+        operationFinished = true
+        self.didChangeValue(forKey: "isExecuting")
+        self.didChangeValue(forKey: "isFinished")
+    }
+    
+    override func cancel() {
+        super.cancel()
+        
+        if operationExecuting {
+            complete()
+        }
+    }
+    
+    func complete() {
+        finish()
+        
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+    }
+    
+    func poolNetworking() {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        
+        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata!, view: view!, indexPath: indexPath!) {
+            self.complete()
+        }
+    }
+}
+
+
+//MARK: - Function Main
 
 class NCFunctionMain: NSObject {
     

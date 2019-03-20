@@ -51,7 +51,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     }
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         
         tableView.delegate = self
