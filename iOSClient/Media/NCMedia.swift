@@ -721,6 +721,10 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         collectionView.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
     }
+    
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        selectSearchSections()
+    }
 }
 
 extension NCMedia: FastScrollCollectionViewDelegate {
