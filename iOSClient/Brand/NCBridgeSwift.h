@@ -47,10 +47,3 @@
     #import "File_Provider_Extension-Swift.h"
 
 #endif
-
-// Nextcloud Notification Service Extension
-#if defined(EXTENSION_NOTIFICATION_SERVICE)
-
-    #import "Notification_Service_Extension-Swift.h"
-
-#endif

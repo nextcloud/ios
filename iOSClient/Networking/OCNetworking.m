@@ -1585,18 +1585,22 @@
     }
     
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
-
+    NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+    //proxyServerPath = @"http://127.0.0.1:8088";
+    NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication subscribingNextcloudServerPush:url pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: [NCBrandOptions sharedInstance].pushNotificationServerProxy onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
+    [communication subscribingNextcloudServerPush:url pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: proxyServerPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
         deviceIdentifier = [CCUtility URLEncodeStringFromString:deviceIdentifier];
         signature = [CCUtility URLEncodeStringFromString:signature];
         publicKey = [CCUtility URLEncodeStringFromString:publicKey];
         
-        [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        [communication subscribingPushProxy:proxyServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             completion(account, deviceIdentifier, signature, publicKey, nil, 0);
             
@@ -1640,13 +1644,16 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication unsubscribingNextcloudServerPush:url onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
 
-        [communication unsubscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        [communication unsubscribingPushProxy:proxyServer deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             completion(account, nil, 0);
             

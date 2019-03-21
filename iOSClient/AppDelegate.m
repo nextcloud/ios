@@ -402,11 +402,12 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair];
+    [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair:self.activeAccount];
 
     NSString *pushToken = [CCUtility getPushNotificationToken];
     NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
-    NSString *devicePublicKey = [[NSString alloc] initWithData:[NCPushNotificationEncryption sharedInstance].ncPNPublicKey encoding:NSUTF8StringEncoding];
+    NSData *ncPNPublicKey = [CCUtility getPushNotificationPublicKey:self.activeAccount];
+    NSString *devicePublicKey = [[NSString alloc] initWithData:ncPNPublicKey encoding:NSUTF8StringEncoding];
     
     self.pnDeviceIdentifier = nil;
     self.pnDeviceIdentifierSignature = nil;
@@ -501,6 +502,25 @@
     }
     */
     completionHandler();
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    NSLog(@"Push notification: %@", userInfo);
+    
+    NSString *message = [userInfo objectForKey:@"subject"];
+    if (message && [CCUtility getPushNotificationPrivateKey:self.activeAccount]) {
+        NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:self.activeAccount]];
+        if (decryptedMessage) {
+            UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+            content.body = decryptedMessage;
+            content.sound = [UNNotificationSound defaultSound];
+            NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
+            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
+            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+        }
+    }
 }
 
 #pragma FIREBASE

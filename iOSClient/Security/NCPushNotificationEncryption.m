@@ -54,13 +54,11 @@
     self = [super init];
     if (self) {
        
-        self.ncPNPublicKey = [CCUtility getPushNotificationPublicKey];
-        self.ncPNPrivateKey = [CCUtility getPushNotificationPrivateKey];
     }
     return self;
 }
 
-- (BOOL)generatePushNotificationsKeyPair
+- (BOOL)generatePushNotificationsKeyPair:(NSString *)account
 {
     EVP_PKEY *pkey;
     NSError *keyError;
@@ -68,6 +66,8 @@
     if (keyError) {
         return NO;
     }
+    
+    
     
     // Extract publicKey, privateKey
     int len;
@@ -81,9 +81,9 @@
     keyBytes  = malloc(len);
     
     BIO_read(publicKeyBIO, keyBytes, len);
-    _ncPNPublicKey = [NSData dataWithBytes:keyBytes length:len];
-    [CCUtility setPushNotificationPublicKey:_ncPNPublicKey];
-    NSLog(@"Push Notifications Key Pair generated: \n%@", [[NSString alloc] initWithData:_ncPNPublicKey encoding:NSUTF8StringEncoding]);
+    NSData *ncPNPublicKey = [NSData dataWithBytes:keyBytes length:len];
+    [CCUtility setPushNotificationPublicKey:account data:ncPNPublicKey];
+    NSLog(@"Push Notifications Key Pair generated: \n%@", [[NSString alloc] initWithData:ncPNPublicKey encoding:NSUTF8StringEncoding]);
     
     // PrivateKey
     BIO *privateKeyBIO = BIO_new(BIO_s_mem());
@@ -93,8 +93,8 @@
     keyBytes = malloc(len);
     
     BIO_read(privateKeyBIO, keyBytes, len);
-    _ncPNPrivateKey = [NSData dataWithBytes:keyBytes length:len];
-    [CCUtility setPushNotificationPrivateKey:_ncPNPrivateKey];
+    NSData *ncPNPrivateKey = [NSData dataWithBytes:keyBytes length:len];
+    [CCUtility setPushNotificationPrivateKey:account data:ncPNPrivateKey];
     
     EVP_PKEY_free(pkey);
     

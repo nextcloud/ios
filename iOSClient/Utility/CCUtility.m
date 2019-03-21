@@ -479,24 +479,28 @@
     [UICKeyChainStore setString:sDisable forKey:@"disablefilesapp" service:k_serviceShareKeyChain];
 }
 
-+ (void)setPushNotificationPublicKey:(NSData *)data
++ (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data
 {
-    [UICKeyChainStore setData:data forKey:@"ncPNPublicKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"ncPNPublicKey" stringByAppendingString:account];
+    [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSData *)getPushNotificationPublicKey
++ (NSData *)getPushNotificationPublicKey:(NSString *)account
 {
-    return [UICKeyChainStore dataForKey:@"ncPNPublicKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"ncPNPublicKey" stringByAppendingString:account];
+    return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setPushNotificationPrivateKey:(NSData *)data
++ (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data
 {
-    [UICKeyChainStore setData:data forKey:@"ncPNPrivateKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"ncPNPrivateKey" stringByAppendingString:account];
+    [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSData *)getPushNotificationPrivateKey
++ (NSData *)getPushNotificationPrivateKey:(NSString *)account
 {
-    return [UICKeyChainStore dataForKey:@"ncPNPrivateKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"ncPNPrivateKey" stringByAppendingString:account];
+    return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setPushNotificationToken:(NSString *)token

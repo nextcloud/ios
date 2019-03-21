@@ -134,10 +134,10 @@
 + (BOOL)getDisableFilesApp;
 + (void)setDisableFilesApp:(BOOL)disable;
 
-+ (void)setPushNotificationPublicKey:(NSData *)data;
-+ (NSData *)getPushNotificationPublicKey;
-+ (void)setPushNotificationPrivateKey:(NSData *)data;
-+ (NSData *)getPushNotificationPrivateKey;
++ (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data;
++ (NSData *)getPushNotificationPublicKey:(NSString *)account;
++ (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data;
++ (NSData *)getPushNotificationPrivateKey:(NSString *)account;
 + (void)setPushNotificationToken:(NSString *)token;
 + (NSString *)getPushNotificationToken;
 
