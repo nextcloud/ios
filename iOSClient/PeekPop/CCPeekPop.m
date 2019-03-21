@@ -83,21 +83,23 @@
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
-    UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-        
-        [[NCMainCommon sharedInstance] downloadOpenInMetadata:_metadata];
-    }];
+    NSMutableArray *items = [NSMutableArray new];
     
-    UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-        
-        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
-    }];
-    
-    if (self.showShare == true) {
-        return @[openIn, share];
-    } else {
-        return @[openIn];
+    if (self.showOpenIn) {
+        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+            [[NCMainCommon sharedInstance] downloadOpenInMetadata:_metadata];
+        }];
+        [items addObject:openIn];
     }
+    
+    if (self.showShare) {
+        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+            [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
+        }];
+        [items addObject:share];
+    }
+    
+    return items;
 }
 
 #pragma --------------------------------------------------------------------------------------------

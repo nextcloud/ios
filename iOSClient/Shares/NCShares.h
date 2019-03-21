@@ -24,7 +24,7 @@
 #import <UIKit/UIKit.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-@interface NCShares : UIViewController <UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetDelegate , DZNEmptyDataSetSource>
+@interface NCShares : UIViewController <UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetDelegate , DZNEmptyDataSetSource, UIViewControllerPreviewingDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 

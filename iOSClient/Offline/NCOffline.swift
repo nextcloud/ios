@@ -520,6 +520,9 @@ extension NCOffline: UIViewControllerPreviewingDelegate {
             viewController.imageFile = cell.imageItem.image
         }
         
+        viewController.showOpenIn = true
+        viewController.showShare = false
+        
         return viewController
     }
     

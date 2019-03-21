@@ -142,8 +142,7 @@
     [self createRefreshControl];
     
     // Register for 3D Touch Previewing if available
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable))
-    {
+    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
     }
 
@@ -940,6 +939,7 @@
             
         viewController.metadata = metadata;
         viewController.imageFile = cell.file.image;
+        viewController.showOpenIn = true;
         viewController.showShare = true;
         
         return viewController;
