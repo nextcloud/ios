@@ -179,9 +179,7 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-    
-    [appDelegate subscribingNextcloudServerPushNotification:appDelegate.activeAccount url:appDelegate.activeUrl];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];    
 }
 
 #pragma --------------------------------------------------------------------------------------------
