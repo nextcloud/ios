@@ -69,21 +69,18 @@
 {
     NSMutableArray *items = [NSMutableArray new];
  
-    if (self.metadata.directory == false) {
-        
-        if (self.showOpenIn) {
-            UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-                [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
-            }];
-            [items addObject:openIn];
-        }
-        
-        if (self.showShare) {
-            UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-                [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
-            }];
-            [items addObject:share];
-        }
+    if (self.showOpenIn && !self.metadata.directory) {
+        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+            [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
+        }];
+        [items addObject:openIn];
+    }
+    
+    if (self.showShare) {
+        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+            [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
+        }];
+        [items addObject:share];
     }
     
     return items;
