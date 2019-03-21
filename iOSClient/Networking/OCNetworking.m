@@ -1864,7 +1864,9 @@
                     trash.directory = itemDto.isDirectory;
                     trash.fileID = itemDto.ocId;
                     trash.fileName = itemDto.fileName;
-                    trash.filePath = itemDto.filePath;
+                    NSArray *array = [itemDto.filePath componentsSeparatedByString:path];
+                    long len = [[array objectAtIndex:0] length];
+                    trash.filePath = [itemDto.filePath substringFromIndex:len];
                     trash.size = itemDto.size;
                     trash.trashbinFileName = itemDto.trashbinFileName;
                     trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
