@@ -36,14 +36,6 @@
 
 @implementation CCPeekPop
 
-/*
-- (void)setMetadata:(tableMetadata *)newMetadata
-{
-    if (self.metadata != newMetadata)
-        self.metadata = newMetadata;
-}
-*/
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
