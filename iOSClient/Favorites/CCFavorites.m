@@ -339,6 +339,8 @@
         
         viewController.metadata = metadata;
         viewController.imageFile = cell.file.image;
+        viewController.showOpenIn = true;
+        viewController.showShare = false;
         
         return viewController;
     }

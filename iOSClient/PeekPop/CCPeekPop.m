@@ -36,11 +36,13 @@
 
 @implementation CCPeekPop
 
+/*
 - (void)setMetadata:(tableMetadata *)newMetadata
 {
-    if (_metadata != newMetadata)
-        _metadata = newMetadata;
+    if (self.metadata != newMetadata)
+        self.metadata = newMetadata;
 }
+*/
 
 - (void)viewDidLoad
 {
@@ -84,19 +86,22 @@
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
     NSMutableArray *items = [NSMutableArray new];
-    
-    if (self.showOpenIn) {
-        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-            [[NCMainCommon sharedInstance] downloadOpenInMetadata:_metadata];
-        }];
-        [items addObject:openIn];
-    }
-    
-    if (self.showShare) {
-        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-            [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
-        }];
-        [items addObject:share];
+ 
+    if (self.metadata.directory == false) {
+        
+        if (self.showOpenIn) {
+            UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+                [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
+            }];
+            [items addObject:openIn];
+        }
+        
+        if (self.showShare) {
+            UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+                [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
+            }];
+            [items addObject:share];
+        }
     }
     
     return items;
@@ -111,7 +116,7 @@
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:_metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:self.metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
      
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
