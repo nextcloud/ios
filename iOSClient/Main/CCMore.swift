@@ -474,9 +474,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
         
-        appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
-        
-        appDelegate.subscribingNextcloudServerPushNotification()
+        appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))        
     }
 }
 

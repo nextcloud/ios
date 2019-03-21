@@ -160,8 +160,8 @@
 - (NSString *)getTabBarControllerActiveServerUrl;
 
 // Push Notification
-- (void)subscribingNextcloudServerPushNotification;
-- (void)unsubscribingNextcloudServerPushNotification;
+- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url;
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account;
 
 // Theming Color
 - (void)settingThemingColorBrand;

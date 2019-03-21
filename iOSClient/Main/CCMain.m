@@ -915,9 +915,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-    });
-    
-    [appDelegate subscribingNextcloudServerPushNotification];
+    });    
 }
 
 #pragma mark -
@@ -2287,9 +2285,7 @@
 - (void)changeDefaultAccount:(CCMenuItem *)sender
 {
     // LOGOUT
-        
-    [appDelegate unsubscribingNextcloudServerPushNotification];
-        
+    
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
     if (tableAccount) {
             
@@ -2299,8 +2295,6 @@
     
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-            
-        [appDelegate subscribingNextcloudServerPushNotification];
     }
 }
 

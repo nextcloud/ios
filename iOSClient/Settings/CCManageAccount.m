@@ -203,8 +203,6 @@
 - (void)loginSuccess:(NSInteger)loginType
 {
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-    
-    [appDelegate subscribingNextcloudServerPushNotification];
 }
 
 
@@ -236,7 +234,7 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    [appDelegate unsubscribingNextcloudServerPushNotification];
+    [appDelegate unsubscribingNextcloudServerPushNotification:account];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
@@ -302,9 +300,7 @@
         // Init home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
             
-        [self UpdateForm];
-            
-        [appDelegate subscribingNextcloudServerPushNotification];
+        [self UpdateForm];            
     }
 }
 
