@@ -65,16 +65,6 @@
     self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width,  self.imagePreview.image.size.height + highLabelFileName);
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
     NSMutableArray *items = [NSMutableArray new];
