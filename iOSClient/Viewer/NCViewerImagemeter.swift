@@ -72,10 +72,6 @@ class NCViewerImagemeter: UIViewController {
         }
     }
     
-    @objc func close() {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
     func imgThumbnails() {
         
         guard let annotation = self.annotation else {
@@ -94,5 +90,9 @@ class NCViewerImagemeter: UIViewController {
                 }
             }
         }
+    }
+    
+    @objc func close() {
+        self.dismiss(animated: true, completion: nil)
     }
 }
