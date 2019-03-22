@@ -23,6 +23,7 @@
 
 import Foundation
 import TLPhotoPicker
+import Zip
 
 //MARK: - Main Common
 
@@ -1223,6 +1224,23 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
                     NCMainCommon.sharedInstance.openIn(metadata: metadata)
+                    
+                } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
+                    
+                    do {
+                        Zip.addCustomFileExtension("imi")
+
+                        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+                        let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                        
+                        try Zip.unzipFile(source, destination: destination, overwrite: true, password: nil, progress: { (progress) in
+                            // progress
+                        }, fileOutputHandler: { (url) in
+                            // end
+                        })
+                    } catch {
+                        appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    }
                     
                 } else {
                     

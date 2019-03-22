@@ -1292,6 +1292,11 @@
                 
                 metadata.iconName = @"utorrent";
                 
+            } else if ([ext isEqualToString:@"IMI"]) {
+                
+                metadata.typeFile = k_metadataTypeFile_imagemeter;
+                metadata.iconName = @"imagemeter";
+            
             } else {
             
                 metadata.iconName = @"file";
