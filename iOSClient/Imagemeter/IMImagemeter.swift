@@ -73,6 +73,24 @@ class IMImagemeterCodable: NSObject {
             }
         }
         
+        struct export_image_cache: Codable {
+            let width: Double
+            let height: Double
+            let file_format: String
+            let with_hardware_antialiasing: Bool
+            let with_watermark: Bool
+            let with_image_title: Bool
+            
+            enum CodingKeys : String, CodingKey {
+                case width
+                case height
+                case file_format = "file-format"
+                case with_hardware_antialiasing = "with-hardware-antialiasing"
+                case with_watermark = "with-watermark"
+                case with_image_title = "with-image-title"
+            }
+        }
+        
         struct elements: Codable {
             let id: Int
             let class_: String
@@ -109,6 +127,7 @@ class IMImagemeterCodable: NSObject {
         let version: Int
         let capture_timestamp: capture_timestamp
         let image: image
+        let export_image_cache: [export_image_cache]
         let elements: [elements]
         let id: String
         let thumbnails: [thumbnails]
@@ -119,6 +138,7 @@ class IMImagemeterCodable: NSObject {
             case version
             case capture_timestamp = "capture-timestamp"
             case image
+            case export_image_cache = "export-image-cache"
             case elements
             case id
             case thumbnails
