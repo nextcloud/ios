@@ -32,11 +32,31 @@ class IMImagemeterCodable: NSObject {
             let y: Double
         }
         
+        struct color: Codable {
+            let rgba: [Double]
+        }
+        
         struct end_pt: Codable {
             let end_pt: coordinates
             
             enum CodingKeys : String, CodingKey {
                 case end_pt = "end-pt"
+            }
+        }
+        
+        struct style: Codable {
+            let color: color
+            let line_width: Double
+            let text_outline_width: Double
+            let font_base_size: Double
+            let font_magnification: Double
+            
+            enum CodingKeys : String, CodingKey {
+                case color
+                case line_width = "line-width"
+                case text_outline_width = "text-outline-width"
+                case font_base_size = "font-base-size"
+                case font_magnification = "font-magnification"
             }
         }
         
@@ -102,6 +122,7 @@ class IMImagemeterCodable: NSObject {
             let show_border: Bool
             let show_arrows: Bool
             let fill_background: Bool
+            let style: style
             
             enum CodingKeys : String, CodingKey {
                 case id
@@ -114,6 +135,7 @@ class IMImagemeterCodable: NSObject {
                 case show_border = "show-border"
                 case show_arrows = "show-arrows"
                 case fill_background = "fill-background"
+                case style
             }
         }
         
