@@ -28,21 +28,25 @@ class IMImagemeterCodable: NSObject {
     struct imagemeterAnnotation: Codable {
         
         struct coordinates: Codable {
-            let x: Int
-            let y: Int
+            let x: Double
+            let y: Double
         }
         
         struct end_pt: Codable {
-            let coordinates: [coordinates]
+            let end_pt: [coordinates]
+            
+            enum CodingKeys : String, CodingKey {
+                case end_pt = "and-pt"
+            }
         }
         
         struct audio_recording: Codable {
             let recording_filename: String
-            let recording_duration_msecs: Int
+            let recording_duration_msecs: Double
             
             enum CodingKeys : String, CodingKey {
                 case recording_filename = "recording-filename"
-                case recording_duration_msecs = "recording-duration_msecs"
+                case recording_duration_msecs = "recording-duration-msecs"
             }
         }
         
@@ -59,7 +63,7 @@ class IMImagemeterCodable: NSObject {
             let title: String
             let filename: String
             let annotated_image_filename: String
-            let rotation:Int
+            let rotation: Int
             
             enum CodingKeys : String, CodingKey {
                 case title
@@ -72,20 +76,20 @@ class IMImagemeterCodable: NSObject {
         struct elements: Codable {
             let id: Int
             let class_: String
-//            let center: coordinates
-//            let width: Int
-//            let arrows: [end_pt]
-//            let text: String
-//            let audio_recording: [audio_recording]
+            let center: coordinates
+            let width: Double
+            let arrows: [end_pt]
+            let text: String
+            let audio_recording: audio_recording
             
             enum CodingKeys : String, CodingKey {
                 case id
                 case class_ = "class"
-//                case center
-//                case width
-//                case arrows
-//                case text
-//                case audio_recording = "audio-recording"
+                case center
+                case width
+                case arrows
+                case text
+                case audio_recording = "audio-recording"
             }
         }
         
