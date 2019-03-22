@@ -81,6 +81,9 @@ class IMImagemeterCodable: NSObject {
             let arrows: [end_pt]
             let text: String
             let audio_recording: audio_recording
+            let show_border: Bool
+            let show_arrows: Bool
+            let fill_background: Bool
             
             enum CodingKeys : String, CodingKey {
                 case id
@@ -90,6 +93,9 @@ class IMImagemeterCodable: NSObject {
                 case arrows
                 case text
                 case audio_recording = "audio-recording"
+                case show_border = "show-border"
+                case show_arrows = "show-arrows"
+                case fill_background = "fill-background"
             }
         }
         
