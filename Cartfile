@@ -14,3 +14,4 @@ github "WeTransfer/WeScan" == 0.9.1
 github "malcommac/SwiftRichString"
 github "https://github.com/marinofaggiana/FastScroll" "master"
 github "yannickl/QRCodeReader.swift" >= 10.0.0
+github "marmelroy/Zip"

@@ -341,6 +341,7 @@
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76C6F8E21943C8C0063591B /* NCActionSheetHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76C6F8D21943C8C0063591B /* NCActionSheetHeader.swift */; };
+		F76E71E52244DF6900690001 /* Zip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F76E71E42244DF6900690001 /* Zip.framework */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -1119,6 +1120,7 @@
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
 		F76C6F8D21943C8C0063591B /* NCActionSheetHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeader.swift; sourceTree = "<group>"; };
+		F76E71E42244DF6900690001 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Zip.framework; path = Carthage/Build/iOS/Zip.framework; sourceTree = "<group>"; };
 		F76F23321ED4600700C40023 /* Share-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share-Bridging-Header.h"; sourceTree = "<group>"; };
 		F771E3D020E2392D00AFB62D /* File Provider Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
@@ -1516,6 +1518,7 @@
 				F72D1001210B6638009C96B7 /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F72D0FFA210B6638009C96B7 /* FirebaseMessaging.framework in Frameworks */,
 				F72D0FFC210B6638009C96B7 /* FirebaseAnalytics.framework in Frameworks */,
+				F76E71E52244DF6900690001 /* Zip.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2952,6 +2955,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F76E71E42244DF6900690001 /* Zip.framework */,
 				F745B250222D871800346520 /* QRCodeReader.framework */,
 				F75153232226920200323DDC /* FastScroll.framework */,
 				F78AA20521F783E900D0F205 /* SwiftRichString.framework */,
@@ -3386,6 +3390,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/FastScroll.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Zip.framework",
 			);
 			outputPaths = (
 			);
