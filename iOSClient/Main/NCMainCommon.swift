@@ -1233,15 +1233,19 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
                         let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                         
-                        try Zip.unzipFile(source, destination: destination, overwrite: true, password: nil, progress: { (progress) in
-                            // progress
-                        }, fileOutputHandler: { (url) in
-                            // end
-                        })
+                        try Zip.unzipFile(source, destination: destination, overwrite: true, password: nil)
+                        
+                        let navigationController = UIStoryboard(name: "NCViewerImagemeter", bundle: nil).instantiateInitialViewController() as! UINavigationController
+                        let viewController = navigationController.topViewController as! NCViewerImagemeter
+                        
+                        viewController.metadata = metadata
+                        
+                        self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                        
                     } catch {
                         appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }
-                    
+                                        
                 } else {
                     
                     if appDelegate.activeMain.view.window != nil {
@@ -1511,7 +1515,6 @@ class NCFunctionMain: NSObject {
                 CCSynchronize.shared()?.readFile(metadata.fileID, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload, account: appDelegate.activeAccount)
             }
         }
-    
     }
 }
 

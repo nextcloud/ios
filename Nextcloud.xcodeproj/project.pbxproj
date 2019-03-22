@@ -342,6 +342,8 @@
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76C6F8E21943C8C0063591B /* NCActionSheetHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76C6F8D21943C8C0063591B /* NCActionSheetHeader.swift */; };
 		F76E71E52244DF6900690001 /* Zip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F76E71E42244DF6900690001 /* Zip.framework */; };
+		F76E71E72244F48400690001 /* NCViewerImagemeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76E71E62244F48400690001 /* NCViewerImagemeter.swift */; };
+		F76E71E92244FA0500690001 /* NCViewerImagemeter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76E71E82244FA0500690001 /* NCViewerImagemeter.storyboard */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -1121,6 +1123,8 @@
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
 		F76C6F8D21943C8C0063591B /* NCActionSheetHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeader.swift; sourceTree = "<group>"; };
 		F76E71E42244DF6900690001 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Zip.framework; path = Carthage/Build/iOS/Zip.framework; sourceTree = "<group>"; };
+		F76E71E62244F48400690001 /* NCViewerImagemeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerImagemeter.swift; sourceTree = "<group>"; };
+		F76E71E82244FA0500690001 /* NCViewerImagemeter.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerImagemeter.storyboard; sourceTree = "<group>"; };
 		F76F23321ED4600700C40023 /* Share-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share-Bridging-Header.h"; sourceTree = "<group>"; };
 		F771E3D020E2392D00AFB62D /* File Provider Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
@@ -2381,6 +2385,8 @@
 			isa = PBXGroup;
 			children = (
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
+				F76E71E62244F48400690001 /* NCViewerImagemeter.swift */,
+				F76E71E82244FA0500690001 /* NCViewerImagemeter.storyboard */,
 				F7FB1D3D215E191D00D669EA /* NCViewerDocumentWeb.swift */,
 				F79630ED215527D40015EEA5 /* NCViewerMedia.swift */,
 			);
@@ -3232,6 +3238,7 @@
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
 				F762CB991EACB84400B38484 /* icon-success.png in Resources */,
 				F7F54CF81E5B14C700E19C62 /* PlayButtonOverlayLargeTap@2x.png in Resources */,
+				F76E71E92244FA0500690001 /* NCViewerImagemeter.storyboard in Resources */,
 				F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */,
 				F7D4233B1F0596AC009C9782 /* Reader-Button-N.png in Resources */,
 				F760F78821F21F61006B1A73 /* PhotoCropEditorBorder@2x.png in Resources */,
@@ -3604,6 +3611,7 @@
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				F762CB0C1EACB66200B38484 /* XLFormSectionDescriptor.m in Sources */,
 				F760F79421F21F61006B1A73 /* ResizeControl.swift in Sources */,
+				F76E71E72244F48400690001 /* NCViewerImagemeter.swift in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
 				F7DFB7F2219C5C0000680748 /* NCCreateFormUploadFileText.swift in Sources */,
 				F762CB861EACB81000B38484 /* RECommonFunctions.m in Sources */,
