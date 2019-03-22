@@ -19,9 +19,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kz9-lQ-2Uc">
-                                <rect key="frame" x="0.0" y="64" width="375" height="128"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="256"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="128" id="QfZ-vy-737"/>
+                                    <constraint firstAttribute="height" constant="256" id="QfZ-vy-737"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -36,6 +36,7 @@
                     <navigationItem key="navigationItem" id="ZuV-mh-zPX"/>
                     <connections>
                         <outlet property="img" destination="kz9-lQ-2Uc" id="r2x-XE-2Nf"/>
+                        <outlet property="imgHeightConstraint" destination="QfZ-vy-737" id="CZu-I3-wwo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ISU-dv-V7S" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -26,10 +26,12 @@ import Foundation
 class NCViewerImagemeter: UIViewController {
     
     @IBOutlet weak var img: UIImageView!
+    @IBOutlet weak var imgHeightConstraint: NSLayoutConstraint!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var nameArchiveImagemeter: String = ""
     private var pathArchiveImagemeter: String = ""
+    private var annotation: IMImagemeterCodable.imagemeterAnnotation?
     var metadata: tableMetadata?
     
 
@@ -58,9 +60,8 @@ class NCViewerImagemeter: UIViewController {
             let annoData = try Data(contentsOf: annoPath, options: .mappedIfSafe)
             if let annotation = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData) {
                 
-                if let thumbnailsFilename = annotation.thumbnails.first?.filename {
-                    img.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
-                }
+                self.annotation = annotation
+                imgThumbnails()
                 
             } else {
                 appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
@@ -69,12 +70,29 @@ class NCViewerImagemeter: UIViewController {
         } catch {
             print("error:\(error)")
         }
-        
-        
-        //img.image = UIImage(contentsOfFile: imgPath)
     }
     
     @objc func close() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func imgThumbnails() {
+        
+        guard let annotation = self.annotation else {
+            return
+        }
+        
+        if let thumbnailsFilename = annotation.thumbnails.first?.filename {
+            if let thumbnailsWidth = annotation.thumbnails.first?.width {
+                if let thumbnailsHeight = annotation.thumbnails.first?.height {
+                    
+                    let ratio = Float(thumbnailsWidth) / Float(thumbnailsHeight)
+                    let imageWidth = self.view.bounds.size.width
+                    
+                    imgHeightConstraint.constant = CGFloat((Float(imageWidth) / ratio))
+                    img.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
+                }
+            }
+        }
     }
 }

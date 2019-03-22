@@ -183,6 +183,8 @@ class IMImagemeterCodable: NSObject {
             return decode
             
         } catch let error {
+            
+            print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
             return nil
         }
     }
