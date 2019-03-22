@@ -36,7 +36,7 @@ class NCViewerImagemeter: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
         
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
@@ -56,7 +56,15 @@ class NCViewerImagemeter: UIViewController {
             
             let annoPath = (pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm").url
             let annoData = try Data(contentsOf: annoPath, options: .mappedIfSafe)
-            let x = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData)
+            if let annotation = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData) {
+                
+                if let thumbnailsFilename = annotation.thumbnails.first?.filename {
+                    img.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
+                }
+                
+            } else {
+                appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            }
             
         } catch {
             print("error:\(error)")
