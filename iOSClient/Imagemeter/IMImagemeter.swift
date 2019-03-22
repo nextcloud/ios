@@ -33,10 +33,10 @@ class IMImagemeterCodable: NSObject {
         }
         
         struct end_pt: Codable {
-            let end_pt: [coordinates]
+            let end_pt: coordinates
             
             enum CodingKeys : String, CodingKey {
-                case end_pt = "and-pt"
+                case end_pt = "end-pt"
             }
         }
         
