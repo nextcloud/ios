@@ -39,6 +39,11 @@ class IMImagemeterCodable: NSObject {
         struct audio_recording: Codable {
             let recording_filename: String
             let recording_duration_msecs: Int
+            
+            enum CodingKeys : String, CodingKey {
+                case recording_filename = "recording-filename"
+                case recording_duration_msecs = "recording-duration_msecs"
+            }
         }
         
         struct capture_timestamp: Codable {
@@ -55,24 +60,60 @@ class IMImagemeterCodable: NSObject {
             let filename: String
             let annotated_image_filename: String
             let rotation:Int
+            
+            enum CodingKeys : String, CodingKey {
+                case title
+                case filename
+                case annotated_image_filename = "annotated-image-filename"
+                case rotation
+            }
         }
         
         struct elements: Codable {
             let id: Int
             let class_: String
-            let center: [coordinates]
-            let width: Int
-            let arrows: [end_pt]
-            let text: String
-            let audio_recording: [audio_recording]
+//            let center: coordinates
+//            let width: Int
+//            let arrows: [end_pt]
+//            let text: String
+//            let audio_recording: [audio_recording]
+            
+            enum CodingKeys : String, CodingKey {
+                case id
+                case class_ = "class"
+//                case center
+//                case width
+//                case arrows
+//                case text
+//                case audio_recording = "audio-recording"
+            }
         }
         
+        struct thumbnails: Codable {
+            let filename: String
+            let width: Int
+            let height: Int
+        }
+        
+        let is_example_image: Bool
         let version: Int
         let capture_timestamp: capture_timestamp
         let image: image
-        let id: String
-        let last_modification: Int
         let elements: [elements]
+        let id: String
+        let thumbnails: [thumbnails]
+        let last_modification: Int
+        
+        enum CodingKeys : String, CodingKey {
+            case is_example_image = "is-example-image"
+            case version
+            case capture_timestamp = "capture-timestamp"
+            case image
+            case elements
+            case id
+            case thumbnails
+            case last_modification = "last-modification"
+        }
     }
     
     @objc static let sharedInstance: IMImagemeterCodable = {

@@ -52,9 +52,18 @@ class NCViewerImagemeter: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let imgPath = pathArchiveImagemeter + "/img-" + nameArchiveImagemeter + ".jpg"
+        do {
+            
+            let annoPath = (pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm").url
+            let annoData = try Data(contentsOf: annoPath, options: .mappedIfSafe)
+            let x = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData)
+            
+        } catch {
+            print("error:\(error)")
+        }
         
-        img.image = UIImage(contentsOfFile: imgPath)
+        
+        //img.image = UIImage(contentsOfFile: imgPath)
     }
     
     @objc func close() {
