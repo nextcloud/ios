@@ -19,17 +19,23 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kz9-lQ-2Uc">
-                                <rect key="frame" x="0.0" y="64" width="375" height="256"/>
+                                <rect key="frame" x="0.0" y="237.5" width="375" height="256"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="256" id="QfZ-vy-737"/>
                                 </constraints>
                             </imageView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="VB6-rN-Jmz">
+                                <rect key="frame" x="0.0" y="493.5" width="375" height="2"/>
+                            </progressView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="jl6-Io-SEU" firstAttribute="trailing" secondItem="kz9-lQ-2Uc" secondAttribute="trailing" id="9Mn-Qo-7AI"/>
+                            <constraint firstItem="VB6-rN-Jmz" firstAttribute="top" secondItem="kz9-lQ-2Uc" secondAttribute="bottom" id="9XM-DO-X7r"/>
+                            <constraint firstItem="VB6-rN-Jmz" firstAttribute="leading" secondItem="jl6-Io-SEU" secondAttribute="leading" id="ALf-9d-NTt"/>
+                            <constraint firstItem="kz9-lQ-2Uc" firstAttribute="centerY" secondItem="jl6-Io-SEU" secondAttribute="centerY" id="CX2-9j-jI8"/>
+                            <constraint firstItem="jl6-Io-SEU" firstAttribute="trailing" secondItem="VB6-rN-Jmz" secondAttribute="trailing" id="LsM-BK-5mZ"/>
                             <constraint firstItem="kz9-lQ-2Uc" firstAttribute="leading" secondItem="jl6-Io-SEU" secondAttribute="leading" id="bR8-Vl-BZ7"/>
-                            <constraint firstItem="kz9-lQ-2Uc" firstAttribute="top" secondItem="jl6-Io-SEU" secondAttribute="top" id="fbi-gv-s56"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="jl6-Io-SEU"/>
                     </view>
@@ -37,6 +43,7 @@
                     <connections>
                         <outlet property="img" destination="kz9-lQ-2Uc" id="r2x-XE-2Nf"/>
                         <outlet property="imgHeightConstraint" destination="QfZ-vy-737" id="CZu-I3-wwo"/>
+                        <outlet property="progressView" destination="VB6-rN-Jmz" id="Kb7-5c-3Vg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ISU-dv-V7S" userLabel="First Responder" sceneMemberID="firstResponder"/>

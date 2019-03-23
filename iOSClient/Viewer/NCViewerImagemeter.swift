@@ -23,11 +23,12 @@
 
 import Foundation
 
-class NCViewerImagemeter: UIViewController, AVAudioPlayerDelegate {
+class NCViewerImagemeter: UIViewController {
     
     @IBOutlet weak var img: UIImageView!
     @IBOutlet weak var imgHeightConstraint: NSLayoutConstraint!
-    
+    @IBOutlet weak var progressView: UIProgressView!
+
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var nameArchiveImagemeter: String = ""
     
@@ -108,7 +109,7 @@ class NCViewerImagemeter: UIViewController, AVAudioPlayerDelegate {
             
             let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(self.view.bounds.width), height: Double(imgHeightConstraint.constant), button: 30)
             let x = coordinateNormalize.x
-            let y = coordinateNormalize.y + 15
+            let y = coordinateNormalize.y + Double(img.frame.origin.y)
             
             let button = UIButton()
             button.frame = CGRect(x: x, y: y, width: 30, height: 30)
@@ -144,5 +145,13 @@ class NCViewerImagemeter: UIViewController, AVAudioPlayerDelegate {
     
     @objc func close() {
         self.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension NCViewerImagemeter: AVAudioPlayerDelegate {
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        
+        progressView.progress = 0
     }
 }
