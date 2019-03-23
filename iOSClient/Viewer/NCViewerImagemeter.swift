@@ -37,6 +37,10 @@ class NCViewerImagemeter: UIViewController {
     private var annotation: IMImagemeterCodable.imagemeterAnnotation?
   
     private var audioPlayer = AVAudioPlayer()
+    private var timer = Timer()
+    
+    private var durationPlayer: TimeInterval = 0
+    private var counterSecondPlayer: TimeInterval = 0
 
     var metadata: tableMetadata?
     
@@ -55,6 +59,11 @@ class NCViewerImagemeter: UIViewController {
         pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata?.fileID) + "/" + nameArchiveImagemeter
         
         self.navigationItem.title = nameArchiveImagemeter
+        
+        // Progress view
+        progressView.progressTintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        progressView.progress = 0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -77,6 +86,11 @@ class NCViewerImagemeter: UIViewController {
         } catch {
             print("error:\(error)")
         }
+    }
+    
+    @objc func updateTimer() {
+        counterSecondPlayer += 1
+        progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
     
     func imgThumbnails() {
@@ -132,13 +146,17 @@ class NCViewerImagemeter: UIViewController {
                 let fileNamePath =  pathArchiveImagemeter + "/" + element.audio_recording.recording_filename
                 // player
                 do {
+
                     try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
                     audioPlayer.delegate = self
                     audioPlayer.prepareToPlay()
                     audioPlayer.play()
+
+                    durationPlayer = TimeInterval(audioPlayer.duration)
+                    timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+
                 } catch {
                 }
-                
             }
         }
     }
@@ -152,6 +170,12 @@ extension NCViewerImagemeter: AVAudioPlayerDelegate {
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         
-        progressView.progress = 0
+        updateTimer()
+        timer.invalidate()
+        counterSecondPlayer = 0
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.progressView.progress = 0
+        }
     }
 }
