@@ -141,8 +141,8 @@ class IMImagemeterCodable: NSObject {
         
         struct thumbnails: Codable {
             let filename: String
-            let width: Int
-            let height: Int
+            let width: Double
+            let height: Double
         }
         
         let is_example_image: Bool
@@ -187,5 +187,16 @@ class IMImagemeterCodable: NSObject {
             print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
             return nil
         }
+    }
+    
+    func convertCoordinate(x: Double, y: Double, width: Double, height: Double, button: Double) -> (x: Double, y: Double) {
+        
+        let normalizeX: Double = floor(512 + x)
+        let normalizeY: Double = floor(384 + y)
+        
+        let factorX: Double = width * normalizeX / 1024
+        let factorY: Double = height * normalizeY / 768
+        
+        return(factorX, factorY)
     }
 }

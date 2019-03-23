@@ -23,15 +23,20 @@
 
 import Foundation
 
-class NCViewerImagemeter: UIViewController {
+class NCViewerImagemeter: UIViewController, AVAudioPlayerDelegate {
     
     @IBOutlet weak var img: UIImageView!
     @IBOutlet weak var imgHeightConstraint: NSLayoutConstraint!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var nameArchiveImagemeter: String = ""
+    
     private var pathArchiveImagemeter: String = ""
+    
     private var annotation: IMImagemeterCodable.imagemeterAnnotation?
+  
+    private var audioPlayer = AVAudioPlayer()
+
     var metadata: tableMetadata?
     
 
@@ -62,6 +67,7 @@ class NCViewerImagemeter: UIViewController {
                 
                 self.annotation = annotation
                 imgThumbnails()
+                imgAudio()
                 
             } else {
                 appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
@@ -82,12 +88,56 @@ class NCViewerImagemeter: UIViewController {
             if let thumbnailsWidth = annotation.thumbnails.first?.width {
                 if let thumbnailsHeight = annotation.thumbnails.first?.height {
                     
-                    let ratio = Float(thumbnailsWidth) / Float(thumbnailsHeight)
+                    let factor = Float(thumbnailsWidth) / Float(thumbnailsHeight)
                     let imageWidth = self.view.bounds.size.width
                     
-                    imgHeightConstraint.constant = CGFloat((Float(imageWidth) / ratio))
+                    imgHeightConstraint.constant = CGFloat((Float(imageWidth) / factor))
                     img.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
                 }
+            }
+        }
+    }
+    
+    func imgAudio() {
+        
+        guard let annotation = self.annotation else {
+            return
+        }
+        
+        for element in annotation.elements {
+            
+            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(self.view.bounds.width), height: Double(imgHeightConstraint.constant), button: 30)
+            let x = coordinateNormalize.x
+            let y = coordinateNormalize.y + 15
+            
+            let button = UIButton()
+            button.frame = CGRect(x: x, y: y, width: 30, height: 30)
+            button.setImage(UIImage(named: "audioPlay"), for: .normal)
+            button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+            button.tag = element.id
+    
+            self.view.addSubview(button)
+        }
+    }
+    
+    @objc func buttonAction(sender: UIButton!) {
+        
+        guard let annotation = self.annotation else {
+            return
+        }
+        
+        for element in annotation.elements {
+            if element.id == sender.tag {
+                let fileNamePath =  pathArchiveImagemeter + "/" + element.audio_recording.recording_filename
+                // player
+                do {
+                    try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
+                    audioPlayer.delegate = self
+                    audioPlayer.prepareToPlay()
+                    audioPlayer.play()
+                } catch {
+                }
+                
             }
         }
     }
