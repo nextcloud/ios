@@ -143,10 +143,9 @@ class NCViewerImagemeter: UIViewController {
         
         for element in annotation.elements {
             if element.id == sender.tag {
-                let fileNamePath =  pathArchiveImagemeter + "/" + element.audio_recording.recording_filename
-                // player
                 do {
 
+                    let fileNamePath =  pathArchiveImagemeter + "/" + element.audio_recording.recording_filename
                     try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
                     audioPlayer.delegate = self
                     audioPlayer.prepareToPlay()
@@ -156,6 +155,7 @@ class NCViewerImagemeter: UIViewController {
                     timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
 
                 } catch {
+                    
                 }
             }
         }
