@@ -248,6 +248,12 @@
         [self createToolbar];
         [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
     }
+    
+    // IMI File
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_imagemeter]) {
+        
+        [[NCViewerImagemeter sharedInstance] viewImagemeter:self.metadataDetail detail:self];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

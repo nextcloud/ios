@@ -10,18 +10,18 @@ import Foundation
 import KTVHTTPCache
 
 class NCViewerMedia: NSObject {
-    
-    @objc static let sharedInstance: NCViewerMedia = {
-        let viewMedia = NCViewerMedia()
-        viewMedia.setupHTTPCache()
-        return viewMedia
-    }()
 
     var detail: CCDetail!
     var metadata: tableMetadata!
     var videoURL: URL!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var safeAreaBottom: Int = 0
+
+    @objc static let sharedInstance: NCViewerMedia = {
+        let viewMedia = NCViewerMedia()
+        viewMedia.setupHTTPCache()
+        return viewMedia
+    }()
 
     @objc func viewMedia(_ metadata: tableMetadata, detail: CCDetail) {
         

@@ -1221,31 +1221,26 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     metadata.typeFile = k_metadataTypeFile_unknown
                 }
                 
-                if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
-
-                    NCMainCommon.sharedInstance.openIn(metadata: metadata)
-                    
-                } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
+                if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
                     do {
                         Zip.addCustomFileExtension("imi")
-
+                        
                         let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
                         let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                         
                         try Zip.unzipFile(source, destination: destination, overwrite: true, password: nil)
                         
-                        let navigationController = UIStoryboard(name: "NCViewerImagemeter", bundle: nil).instantiateInitialViewController() as! UINavigationController
-                        let viewController = navigationController.topViewController as! NCViewerImagemeter
-                        
-                        viewController.metadata = metadata
-                        
-                        self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
-                        
                     } catch {
                         appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                        return
                     }
-                                        
+                }
+                
+                if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
+
+                    NCMainCommon.sharedInstance.openIn(metadata: metadata)
+                    
                 } else {
                     
                     if appDelegate.activeMain.view.window != nil {

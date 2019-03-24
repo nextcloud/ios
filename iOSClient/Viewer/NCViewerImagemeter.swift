@@ -23,12 +23,10 @@
 
 import Foundation
 
-class NCViewerImagemeter: UIViewController {
+class NCViewerImagemeter: NSObject {
     
-    @IBOutlet weak var img: UIImageView!
-    @IBOutlet weak var imgHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var progressView: UIProgressView!
-
+    private var imagemeterView: IMImagemeterView!
+    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var nameArchiveImagemeter: String = ""
     
@@ -42,32 +40,26 @@ class NCViewerImagemeter: UIViewController {
     private var durationPlayer: TimeInterval = 0
     private var counterSecondPlayer: TimeInterval = 0
 
-    var metadata: tableMetadata?
+    var metadata: tableMetadata!
+    var detail: CCDetail!
     
+    @objc static let sharedInstance: NCViewerImagemeter = {
+        let instance = NCViewerImagemeter()
+        return instance
+    }()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    @objc func viewImagemeter(_ metadata: tableMetadata, detail: CCDetail) {
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
+        self.metadata = metadata
+        self.detail = detail
         
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
+        pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
         
-        nameArchiveImagemeter = (metadata!.fileNameView as NSString).deletingPathExtension
-        pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata?.fileID) + "/" + nameArchiveImagemeter
+        self.imagemeterView = IMImagemeterView.instanceFromNib() as? IMImagemeterView
+        self.imagemeterView.frame = CGRect(x: 0, y: 0, width: detail.view.frame.width, height: detail.view.frame.height)
         
-        self.navigationItem.title = nameArchiveImagemeter
-        
-        // Progress view
-        progressView.progressTintColor = NCBrandColor.sharedInstance.brandElement
-        progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
-        progressView.progress = 0
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        detail.view.addSubview(imagemeterView)
         
         do {
             
@@ -87,10 +79,10 @@ class NCViewerImagemeter: UIViewController {
             print("error:\(error)")
         }
     }
-    
+
     @objc func updateTimer() {
         counterSecondPlayer += 1
-        progressView.progress = Float(counterSecondPlayer / durationPlayer)
+        imagemeterView.progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
     
     func imgThumbnails() {
@@ -104,10 +96,10 @@ class NCViewerImagemeter: UIViewController {
                 if let thumbnailsHeight = annotation.thumbnails.first?.height {
                     
                     let factor = Float(thumbnailsWidth) / Float(thumbnailsHeight)
-                    let imageWidth = self.view.bounds.size.width
+                    let imageWidth = imagemeterView.bounds.size.width
                     
-                    imgHeightConstraint.constant = CGFloat((Float(imageWidth) / factor))
-                    img.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
+                    imagemeterView.imgHeightConstraint.constant = CGFloat((Float(imageWidth) / factor))
+                    imagemeterView.img.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
                 }
             }
         }
@@ -121,9 +113,9 @@ class NCViewerImagemeter: UIViewController {
         
         for element in annotation.elements {
             
-            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(self.view.bounds.width), height: Double(imgHeightConstraint.constant), button: 30)
+            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(imagemeterView.bounds.width), height: Double(imagemeterView.imgHeightConstraint.constant), button: 30)
             let x = coordinateNormalize.x
-            let y = coordinateNormalize.y + Double(img.frame.origin.y)
+            let y = coordinateNormalize.y + Double(imagemeterView.img.frame.origin.y)
             
             let button = UIButton()
             button.frame = CGRect(x: x, y: y, width: 30, height: 30)
@@ -131,7 +123,7 @@ class NCViewerImagemeter: UIViewController {
             button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
             button.tag = element.id
     
-            self.view.addSubview(button)
+            imagemeterView.addSubview(button)
         }
     }
     
@@ -160,10 +152,6 @@ class NCViewerImagemeter: UIViewController {
             }
         }
     }
-    
-    @objc func close() {
-        self.dismiss(animated: true, completion: nil)
-    }
 }
 
 extension NCViewerImagemeter: AVAudioPlayerDelegate {
@@ -175,7 +163,28 @@ extension NCViewerImagemeter: AVAudioPlayerDelegate {
         counterSecondPlayer = 0
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.progressView.progress = 0
+            self.imagemeterView.progressView.progress = 0
         }
+    }
+}
+
+class IMImagemeterView: UIView {
+    
+    @IBOutlet weak var img: UIImageView!
+    @IBOutlet weak var imgHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var progressView: UIProgressView!
+    
+    class func instanceFromNib() -> UIView {
+        return UINib(nibName: "IMImagemeterView", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! UIView
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        /*
+        progressView.progressTintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        progressView.progress = 0
+        */
     }
 }
