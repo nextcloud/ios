@@ -178,13 +178,11 @@ class IMImagemeterView: UIView {
         return UINib(nibName: "IMImagemeterView", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! UIView
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+    override func awakeFromNib() {
+        super.awakeFromNib()
         
-        /*
         progressView.progressTintColor = NCBrandColor.sharedInstance.brandElement
         progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
         progressView.progress = 0
-        */
     }
 }
