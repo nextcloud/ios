@@ -114,8 +114,8 @@ class NCViewerImagemeter: NSObject {
         for element in annotation.elements {
             
             let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(imagemeterView.bounds.width), height: Double(imagemeterView.imageHeightConstraint.constant), button: 30)
-            let x = coordinateNormalize.x
-            let y = coordinateNormalize.y + 15
+            let x = coordinateNormalize.x - 30
+            let y = coordinateNormalize.y + 30
             
             let button = UIButton()
             button.frame = CGRect(x: x, y: y, width: 30, height: 30)

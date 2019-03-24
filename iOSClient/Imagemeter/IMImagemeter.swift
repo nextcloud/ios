@@ -190,12 +190,14 @@ class IMImagemeterCodable: NSObject {
     }
     
     func convertCoordinate(x: Double, y: Double, width: Double, height: Double, button: Double) -> (x: Double, y: Double) {
-        
+    
         let normalizeX: Double = floor(512 + x)
         let normalizeY: Double = floor(384 + y)
+    
+        let factor = sqrt(width * height / (1024*768))
         
-        let factorX: Double = width * normalizeX / 1024
-        let factorY: Double = height * normalizeY / 768
+        let factorX: Double = factor * normalizeX
+        let factorY: Double = factor * normalizeY
         
         return(factorX, factorY)
     }
