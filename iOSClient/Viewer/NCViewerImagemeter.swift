@@ -43,7 +43,8 @@ class NCViewerImagemeter: NSObject {
     private var metadata: tableMetadata!
     private var detail: CCDetail!
     
-    @objc func Init(_ metadata: tableMetadata, detail: CCDetail) {
+    @objc public init(metadata: tableMetadata, detail: CCDetail) {
+        super.init()
         
         self.metadata = metadata
         self.detail = detail
