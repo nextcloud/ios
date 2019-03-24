@@ -40,15 +40,10 @@ class NCViewerImagemeter: NSObject {
     private var durationPlayer: TimeInterval = 0
     private var counterSecondPlayer: TimeInterval = 0
 
-    var metadata: tableMetadata!
-    var detail: CCDetail!
+    private var metadata: tableMetadata!
+    private var detail: CCDetail!
     
-    @objc static let sharedInstance: NCViewerImagemeter = {
-        let instance = NCViewerImagemeter()
-        return instance
-    }()
-
-    @objc func viewImagemeter(_ metadata: tableMetadata, detail: CCDetail) {
+    @objc func Init(_ metadata: tableMetadata, detail: CCDetail) {
         
         self.metadata = metadata
         self.detail = detail
@@ -80,12 +75,12 @@ class NCViewerImagemeter: NSObject {
         }
     }
 
-    @objc func updateTimer() {
+    @objc private func updateTimer() {
         counterSecondPlayer += 1
         imagemeterView.progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
     
-    func imgThumbnails() {
+    private func imgThumbnails() {
         
         guard let annotation = self.annotation else {
             return
@@ -105,7 +100,7 @@ class NCViewerImagemeter: NSObject {
         }
     }
     
-    func imgAudio() {
+    private func imgAudio() {
         
         guard let annotation = self.annotation else {
             return
@@ -127,7 +122,7 @@ class NCViewerImagemeter: NSObject {
         }
     }
     
-    @objc func buttonAction(sender: UIButton!) {
+    @objc private func buttonAction(sender: UIButton!) {
         
         guard let annotation = self.annotation else {
             return
@@ -151,6 +146,10 @@ class NCViewerImagemeter: NSObject {
                 }
             }
         }
+    }
+    
+    @objc func updateButtonCoordinate() {
+        
     }
 }
 

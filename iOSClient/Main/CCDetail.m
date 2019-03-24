@@ -140,6 +140,18 @@
     }
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        if (self.imagemeter) {
+            [self.imagemeter updateButtonCoordinate];
+        }
+    }];
+}
+
 - (void)changeTheming
 {
     [appDelegate changeTheming:self];
@@ -252,7 +264,8 @@
     // IMI File
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_imagemeter]) {
         
-        [[NCViewerImagemeter sharedInstance] viewImagemeter:self.metadataDetail detail:self];
+        self.imagemeter = [NCViewerImagemeter new];
+        [self.imagemeter Init:self.metadataDetail detail:self];        
     }
 }
 
