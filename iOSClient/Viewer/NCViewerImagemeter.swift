@@ -98,8 +98,8 @@ class NCViewerImagemeter: NSObject {
                     let factor = Float(thumbnailsWidth) / Float(thumbnailsHeight)
                     let imageWidth = imagemeterView.bounds.size.width
                     
-                    imagemeterView.imgHeightConstraint.constant = CGFloat((Float(imageWidth) / factor))
-                    imagemeterView.img.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
+                    imagemeterView.imageHeightConstraint.constant = CGFloat((Float(imageWidth) / factor))
+                    imagemeterView.image.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
                 }
             }
         }
@@ -113,9 +113,9 @@ class NCViewerImagemeter: NSObject {
         
         for element in annotation.elements {
             
-            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(imagemeterView.bounds.width), height: Double(imagemeterView.imgHeightConstraint.constant), button: 30)
+            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(imagemeterView.bounds.width), height: Double(imagemeterView.imageHeightConstraint.constant), button: 30)
             let x = coordinateNormalize.x
-            let y = coordinateNormalize.y + Double(imagemeterView.img.frame.origin.y)
+            let y = coordinateNormalize.y + 15
             
             let button = UIButton()
             button.frame = CGRect(x: x, y: y, width: 30, height: 30)
@@ -123,7 +123,7 @@ class NCViewerImagemeter: NSObject {
             button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
             button.tag = element.id
     
-            imagemeterView.addSubview(button)
+            imagemeterView.image.addSubview(button)
         }
     }
     
@@ -170,8 +170,8 @@ extension NCViewerImagemeter: AVAudioPlayerDelegate {
 
 class IMImagemeterView: UIView {
     
-    @IBOutlet weak var img: UIImageView!
-    @IBOutlet weak var imgHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var imageHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var progressView: UIProgressView!
     
     class func instanceFromNib() -> UIView {
@@ -180,6 +180,8 @@ class IMImagemeterView: UIView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        image.isUserInteractionEnabled = true
         
         progressView.progressTintColor = NCBrandColor.sharedInstance.brandElement
         progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)

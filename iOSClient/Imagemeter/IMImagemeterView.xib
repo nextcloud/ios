@@ -37,8 +37,8 @@
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
-                <outlet property="img" destination="1ij-2s-LYq" id="joC-Iz-qCc"/>
-                <outlet property="imgHeightConstraint" destination="LfB-Mf-Syk" id="WeS-Qi-gl1"/>
+                <outlet property="image" destination="1ij-2s-LYq" id="iez-qY-Pih"/>
+                <outlet property="imageHeightConstraint" destination="LfB-Mf-Syk" id="0Og-Mt-xU1"/>
                 <outlet property="progressView" destination="6f5-Kb-BAR" id="nc5-MB-GOs"/>
             </connections>
         </view>
