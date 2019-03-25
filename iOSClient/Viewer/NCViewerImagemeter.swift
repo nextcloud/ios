@@ -186,6 +186,8 @@ class NCViewerImagemeter: NSObject {
                     audioPlayer.play()
 
                     durationPlayer = TimeInterval(audioPlayer.duration)
+                    counterSecondPlayer = 0
+                    timer.invalidate()
                     timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
 
                 } catch {
