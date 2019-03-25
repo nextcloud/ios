@@ -44,6 +44,7 @@ class NCViewerImagemeter: NSObject {
     private var detail: CCDetail!
 
     private var safeAreaBottom: Int = 0
+    private let dimButton: CGFloat = 30.0
     
     @objc public init(metadata: tableMetadata, detail: CCDetail) {
         super.init()
@@ -102,7 +103,7 @@ class NCViewerImagemeter: NSObject {
             let factor = image.size.width / image.size.height
             
             imagemeterView.imageHeightConstraint.constant = imagemeterView.bounds.size.width / factor
-            imagemeterView.image.image = image
+            imagemeterView.image.image = NCUtility.sharedInstance.resizeImage(image: image, newWidth: imagemeterView.bounds.size.width)
         }
     }
     
@@ -123,20 +124,49 @@ class NCViewerImagemeter: NSObject {
                     continue
                 }
                 
-                let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
-                
-                let x = coordinateNormalize.x - 15
-                let y = coordinateNormalize.y - 15
+                let center = IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
                 
                 let button = UIButton()
-                button.frame = CGRect(x: x, y: y, width: 30, height: 30)
-                button.setImage(UIImage(named: "audioPlay"), for: .normal)
+                button.frame = CGRect(x: center.x - dimButton/2, y: center.y - dimButton/2, width: dimButton, height: dimButton)
+                button.setImage(UIImage(named: "audioPlayFull"), for: .normal)
                 button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
                 button.tag = element.id
         
                 imagemeterView.image.addSubview(button)
+                
+                if element.arrows != nil {
+                    for arrow in element.arrows! {
+                        let endPt = IMImagemeterCodable.sharedInstance.convertCoordinate(x: arrow.end_pt.x, y: arrow.end_pt.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
+                        imagemeterView.image.image = drawLineOnImage(startingImage: imagemeterView.image.image!, x: center.x, y: center.y, endX: endPt.x, endY: endPt.y, color: .yellow, size: 1.5)
+                    }
+                }
             }
         }
+    }
+    
+    func drawLineOnImage(startingImage: UIImage, x: CGFloat, y: CGFloat, endX:CGFloat, endY:CGFloat, color: UIColor, size: CGFloat) -> UIImage {
+        
+        // Create a context of the starting image size and set it as the current one
+        UIGraphicsBeginImageContext(startingImage.size)
+        
+        // Draw the starting image in the current context as background
+        startingImage.draw(at: CGPoint.zero)
+        
+        // Get the current context
+        let context = UIGraphicsGetCurrentContext()!
+        
+        // Draw a red line
+        context.setLineWidth(size)
+        context.setStrokeColor(color.cgColor)
+        context.move(to: CGPoint(x: x, y: y))
+        context.addLine(to: CGPoint(x: endX, y: endY))
+        context.strokePath()
+        
+        // Save the context as a new UIImage
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image!
     }
     
     @objc private func buttonAction(sender: UIButton!) {
