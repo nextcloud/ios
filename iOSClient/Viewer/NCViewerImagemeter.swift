@@ -73,8 +73,8 @@ class NCViewerImagemeter: NSObject {
             if let annotation = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData) {
                 
                 self.annotation = annotation
-                thumbnails()
-                audio()
+                imageImagemeter()
+                audioImagemeter()
                 
             } else {
                 appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
@@ -90,27 +90,23 @@ class NCViewerImagemeter: NSObject {
         imagemeterView.progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
     
-    private func thumbnails() {
+    private func imageImagemeter() {
         
         guard let annotation = self.annotation else {
             return
         }
         
-        if let thumbnailsFilename = annotation.thumbnails.first?.filename {
-            if let thumbnailsWidth = annotation.thumbnails.first?.width {
-                if let thumbnailsHeight = annotation.thumbnails.first?.height {
-                    
-                    let factor = Float(thumbnailsWidth) / Float(thumbnailsHeight)
-                    let imageWidth = imagemeterView.bounds.size.width
-                    
-                    imagemeterView.imageHeightConstraint.constant = CGFloat((Float(imageWidth) / factor))
-                    imagemeterView.image.image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + thumbnailsFilename)
-                }
-            }
+        let imageFilename = annotation.image.filename
+        if let image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + imageFilename) {
+            
+            let factor = image.size.width / image.size.height
+            
+            imagemeterView.imageHeightConstraint.constant = CGFloat(imagemeterView.bounds.size.width) / factor
+            imagemeterView.image.image = image
         }
     }
     
-    @objc func audio() {
+    @objc func audioImagemeter() {
         
         guard let annotation = self.annotation else {
             return

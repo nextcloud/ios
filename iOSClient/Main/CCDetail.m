@@ -147,7 +147,7 @@
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
         if (self.imagemeter) {
-            [self.imagemeter audio];
+            [self.imagemeter audioImagemeter];
         }
     }];
 }
