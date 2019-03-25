@@ -167,6 +167,9 @@
     if (_readerPDFViewController) {
         [self.readerPDFViewController updateContentViews];
     }
+    if (self.imagemeter) {
+        [self.imagemeter viewImagemeter];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
