@@ -147,7 +147,7 @@
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
         if (self.imagemeter) {
-//            [self.imagemeter audioImagemeter];
+            [self.imagemeter viewImagemeter];
         }
     }];
 }
@@ -164,8 +164,9 @@
 
 - (void)changeToDisplayMode
 {
-    if (_readerPDFViewController)
+    if (_readerPDFViewController) {
         [self.readerPDFViewController updateContentViews];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -265,6 +266,7 @@
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_imagemeter]) {
         
         self.imagemeter = [[NCViewerImagemeter alloc] initWithMetadata:self.metadataDetail detail:self];
+        [self.imagemeter viewImagemeter];
         [self createToolbar];
     }
 }

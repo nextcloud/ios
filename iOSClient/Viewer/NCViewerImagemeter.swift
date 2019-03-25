@@ -51,12 +51,21 @@ class NCViewerImagemeter: NSObject {
         
         self.metadata = metadata
         self.detail = detail
+    }
+    
+    @objc public func viewImagemeter() {
         
         guard let rootView = UIApplication.shared.keyWindow else {
             return
         }
         if #available(iOS 11.0, *) {
             safeAreaBottom = Int(rootView.safeAreaInsets.bottom)
+        }
+        
+        for view in self.detail.view.subviews {
+            if view is IMImagemeterView {
+                view.removeFromSuperview()
+            }
         }
         
         nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
@@ -86,11 +95,6 @@ class NCViewerImagemeter: NSObject {
         }
     }
 
-    @objc private func updateTimer() {
-        counterSecondPlayer += 1
-        imagemeterView.progressView.progress = Float(counterSecondPlayer / durationPlayer)
-    }
-    
     private func imageImagemeter() {
         
         guard let annotation = self.annotation else {
@@ -107,14 +111,10 @@ class NCViewerImagemeter: NSObject {
         }
     }
     
-    @objc func audioImagemeter() {
+    private func audioImagemeter() {
         
         guard let annotation = self.annotation else {
             return
-        }
-        
-        for view in imagemeterView.image.subviews {
-            view.removeFromSuperview()
         }
         
         if annotation.elements != nil {
@@ -144,7 +144,7 @@ class NCViewerImagemeter: NSObject {
         }
     }
     
-    func drawLineOnImage(startingImage: UIImage, x: CGFloat, y: CGFloat, endX:CGFloat, endY:CGFloat, color: UIColor, size: CGFloat) -> UIImage {
+    private func drawLineOnImage(startingImage: UIImage, x: CGFloat, y: CGFloat, endX:CGFloat, endY:CGFloat, color: UIColor, size: CGFloat) -> UIImage {
         
         // Create a context of the starting image size and set it as the current one
         UIGraphicsBeginImageContext(startingImage.size)
@@ -193,6 +193,11 @@ class NCViewerImagemeter: NSObject {
                 }
             }
         }
+    }
+    
+    @objc private func updateTimer() {
+        counterSecondPlayer += 1
+        imagemeterView.progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
 }
 
