@@ -98,13 +98,6 @@
     // TabBar
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
-    
-    // Open View
-    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.fileID length] > 0) {
-    
-        // open view
-        [self viewFile];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -113,6 +106,13 @@
     
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
+    
+    // Open View
+    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.fileID length] > 0) {
+        
+        // open view
+        [self viewFile];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
