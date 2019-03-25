@@ -61,7 +61,6 @@
 // IM
 @property (nonatomic, strong) NCViewerImagemeter *imagemeter;
 
-
 @property(nonatomic, weak) IBOutlet UIImageView *imageBackground;
 
 - (void)changeToDisplayMode;

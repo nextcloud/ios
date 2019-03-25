@@ -147,7 +147,7 @@
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
         if (self.imagemeter) {
-            [self.imagemeter updateButtonCoordinate];
+            [self.imagemeter audio];
         }
     }];
 }
@@ -264,7 +264,8 @@
     // IMI File
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_imagemeter]) {
         
-        self.imagemeter = [[NCViewerImagemeter alloc] initWithMetadata:self.metadataDetail detail:self];        
+        self.imagemeter = [[NCViewerImagemeter alloc] initWithMetadata:self.metadataDetail detail:self];
+        [self createToolbar];
     }
 }
 

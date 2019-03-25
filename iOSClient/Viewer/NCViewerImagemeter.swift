@@ -28,8 +28,8 @@ class NCViewerImagemeter: NSObject {
     private var imagemeterView: IMImagemeterView!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     private var nameArchiveImagemeter: String = ""
-    
     private var pathArchiveImagemeter: String = ""
     
     private var annotation: IMImagemeterCodable.imagemeterAnnotation?
@@ -42,6 +42,8 @@ class NCViewerImagemeter: NSObject {
 
     private var metadata: tableMetadata!
     private var detail: CCDetail!
+
+    private var safeAreaBottom: Int = 0
     
     @objc public init(metadata: tableMetadata, detail: CCDetail) {
         super.init()
@@ -49,11 +51,18 @@ class NCViewerImagemeter: NSObject {
         self.metadata = metadata
         self.detail = detail
         
+        guard let rootView = UIApplication.shared.keyWindow else {
+            return
+        }
+        if #available(iOS 11.0, *) {
+            safeAreaBottom = Int(rootView.safeAreaInsets.bottom)
+        }
+        
         nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
         pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
         
         self.imagemeterView = IMImagemeterView.instanceFromNib() as? IMImagemeterView
-        self.imagemeterView.frame = CGRect(x: 0, y: 0, width: detail.view.frame.width, height: detail.view.frame.height)
+        self.imagemeterView.frame = CGRect(x: 0, y: 0, width: Int(detail.view.frame.width), height: Int(detail.view.frame.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1)
         
         detail.view.addSubview(imagemeterView)
         
@@ -64,8 +73,8 @@ class NCViewerImagemeter: NSObject {
             if let annotation = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData) {
                 
                 self.annotation = annotation
-                imgThumbnails()
-                imgAudio()
+                thumbnails()
+                audio()
                 
             } else {
                 appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
@@ -81,7 +90,7 @@ class NCViewerImagemeter: NSObject {
         imagemeterView.progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
     
-    private func imgThumbnails() {
+    private func thumbnails() {
         
         guard let annotation = self.annotation else {
             return
@@ -101,17 +110,21 @@ class NCViewerImagemeter: NSObject {
         }
     }
     
-    private func imgAudio() {
+    @objc func audio() {
         
         guard let annotation = self.annotation else {
             return
         }
         
+        for view in imagemeterView.image.subviews {
+            view.removeFromSuperview()
+        }
+        
         for element in annotation.elements {
             
             let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(imagemeterView.bounds.width), height: Double(imagemeterView.imageHeightConstraint.constant), button: 30)
-            let x = coordinateNormalize.x - 30
-            let y = coordinateNormalize.y + 30
+            let x = coordinateNormalize.x
+            let y = coordinateNormalize.y
             
             let button = UIButton()
             button.frame = CGRect(x: x, y: y, width: 30, height: 30)
@@ -147,10 +160,6 @@ class NCViewerImagemeter: NSObject {
                 }
             }
         }
-    }
-    
-    @objc func updateButtonCoordinate() {
-        
     }
 }
 
