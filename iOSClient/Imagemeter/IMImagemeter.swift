@@ -45,11 +45,11 @@ class IMImagemeterCodable: NSObject {
         }
         
         struct style: Codable {
-            let color: color
-            let line_width: CGFloat
-            let text_outline_width: CGFloat
-            let font_base_size: CGFloat
-            let font_magnification: CGFloat
+            let color: color?
+            let line_width: CGFloat?
+            let text_outline_width: CGFloat?
+            let font_base_size: CGFloat?
+            let font_magnification: CGFloat?
             
             enum CodingKeys : String, CodingKey {
                 case color
@@ -115,14 +115,14 @@ class IMImagemeterCodable: NSObject {
             let id: Int
             let class_: String
             let center: coordinates
-            let width: CGFloat
-            let arrows: [end_pt]
-            let text: String
-            let audio_recording: audio_recording
-            let show_border: Bool
-            let show_arrows: Bool
-            let fill_background: Bool
-            let style: style
+            let width: CGFloat?
+            let arrows: [end_pt]?
+            let text: String?
+            let audio_recording: audio_recording?
+            let show_border: Bool?
+            let show_arrows: Bool?
+            let fill_background: Bool?
+            let style: style?
             
             enum CodingKeys : String, CodingKey {
                 case id
@@ -150,7 +150,7 @@ class IMImagemeterCodable: NSObject {
         let capture_timestamp: capture_timestamp
         let image: image
         let export_image_cache: [export_image_cache]
-        let elements: [elements]
+        let elements: [elements]?
         let id: String
         let thumbnails: [thumbnails]
         let last_modification: Int

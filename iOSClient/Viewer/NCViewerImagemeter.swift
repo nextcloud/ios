@@ -116,19 +116,26 @@ class NCViewerImagemeter: NSObject {
             view.removeFromSuperview()
         }
         
-        for element in annotation.elements {
-            
-            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)            
-            let x = coordinateNormalize.x
-            let y = coordinateNormalize.y
-            
-            let button = UIButton()
-            button.frame = CGRect(x: x, y: y, width: 30, height: 30)
-            button.setImage(UIImage(named: "audioPlay"), for: .normal)
-            button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-            button.tag = element.id
-    
-            imagemeterView.image.addSubview(button)
+        if annotation.elements != nil {
+            for element in annotation.elements! {
+                
+                if element.audio_recording == nil {
+                    continue
+                }
+                
+                let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
+                
+                let x = coordinateNormalize.x - 15
+                let y = coordinateNormalize.y - 15
+                
+                let button = UIButton()
+                button.frame = CGRect(x: x, y: y, width: 30, height: 30)
+                button.setImage(UIImage(named: "audioPlay"), for: .normal)
+                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+                button.tag = element.id
+        
+                imagemeterView.image.addSubview(button)
+            }
         }
     }
     
@@ -138,11 +145,11 @@ class NCViewerImagemeter: NSObject {
             return
         }
         
-        for element in annotation.elements {
+        for element in annotation.elements! {
             if element.id == sender.tag {
                 do {
 
-                    let fileNamePath =  pathArchiveImagemeter + "/" + element.audio_recording.recording_filename
+                    let fileNamePath =  pathArchiveImagemeter + "/" + element.audio_recording!.recording_filename
                     try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
                     audioPlayer.delegate = self
                     audioPlayer.prepareToPlay()
