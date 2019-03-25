@@ -28,12 +28,12 @@ class IMImagemeterCodable: NSObject {
     struct imagemeterAnnotation: Codable {
         
         struct coordinates: Codable {
-            let x: Double
-            let y: Double
+            let x: CGFloat
+            let y: CGFloat
         }
         
         struct color: Codable {
-            let rgba: [Double]
+            let rgba: [Int]
         }
         
         struct end_pt: Codable {
@@ -46,10 +46,10 @@ class IMImagemeterCodable: NSObject {
         
         struct style: Codable {
             let color: color
-            let line_width: Double
-            let text_outline_width: Double
-            let font_base_size: Double
-            let font_magnification: Double
+            let line_width: CGFloat
+            let text_outline_width: CGFloat
+            let font_base_size: CGFloat
+            let font_magnification: CGFloat
             
             enum CodingKeys : String, CodingKey {
                 case color
@@ -62,7 +62,7 @@ class IMImagemeterCodable: NSObject {
         
         struct audio_recording: Codable {
             let recording_filename: String
-            let recording_duration_msecs: Double
+            let recording_duration_msecs: Int
             
             enum CodingKeys : String, CodingKey {
                 case recording_filename = "recording-filename"
@@ -94,8 +94,8 @@ class IMImagemeterCodable: NSObject {
         }
         
         struct export_image_cache: Codable {
-            let width: Double
-            let height: Double
+            let width: CGFloat
+            let height: CGFloat
             let file_format: String
             let with_hardware_antialiasing: Bool
             let with_watermark: Bool
@@ -115,7 +115,7 @@ class IMImagemeterCodable: NSObject {
             let id: Int
             let class_: String
             let center: coordinates
-            let width: Double
+            let width: CGFloat
             let arrows: [end_pt]
             let text: String
             let audio_recording: audio_recording
@@ -141,8 +141,8 @@ class IMImagemeterCodable: NSObject {
         
         struct thumbnails: Codable {
             let filename: String
-            let width: Double
-            let height: Double
+            let width: CGFloat
+            let height: CGFloat
         }
         
         let is_example_image: Bool
@@ -189,15 +189,12 @@ class IMImagemeterCodable: NSObject {
         }
     }
     
-    func convertCoordinate(x: Double, y: Double, width: Double, height: Double, button: Double) -> (x: Double, y: Double) {
-    
-        let normalizeX: Double = floor(512 + x)
-        let normalizeY: Double = floor(384 + y)
-    
+    func convertCoordinate(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) -> (x: CGFloat, y: CGFloat) {
+        
         let factor = sqrt(width * height / (1024*768))
         
-        let factorX: Double = factor * normalizeX
-        let factorY: Double = factor * normalizeY
+        let factorX = factor * x + width/2
+        let factorY = factor * y + height/2
         
         return(factorX, factorY)
     }

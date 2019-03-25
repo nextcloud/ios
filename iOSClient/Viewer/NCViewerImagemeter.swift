@@ -33,7 +33,7 @@ class NCViewerImagemeter: NSObject {
     private var pathArchiveImagemeter: String = ""
     
     private var annotation: IMImagemeterCodable.imagemeterAnnotation?
-  
+    
     private var audioPlayer = AVAudioPlayer()
     private var timer = Timer()
     
@@ -101,7 +101,7 @@ class NCViewerImagemeter: NSObject {
             
             let factor = image.size.width / image.size.height
             
-            imagemeterView.imageHeightConstraint.constant = CGFloat(imagemeterView.bounds.size.width) / factor
+            imagemeterView.imageHeightConstraint.constant = imagemeterView.bounds.size.width / factor
             imagemeterView.image.image = image
         }
     }
@@ -118,7 +118,7 @@ class NCViewerImagemeter: NSObject {
         
         for element in annotation.elements {
             
-            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: Double(imagemeterView.bounds.width), height: Double(imagemeterView.imageHeightConstraint.constant), button: 30)
+            let coordinateNormalize =  IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)            
             let x = coordinateNormalize.x
             let y = coordinateNormalize.y
             
