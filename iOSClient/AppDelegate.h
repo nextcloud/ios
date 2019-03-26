@@ -83,6 +83,9 @@
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerViewController *playerController;
 
+// Push Norification Token
+@property (nonatomic, strong) NSString *pushKitToken;
+
 // Remenu
 @property (nonatomic, strong) REMenu *reMainMenu;
 @property (nonatomic, strong) REMenuItem *selezionaItem;

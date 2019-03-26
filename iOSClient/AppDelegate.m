@@ -563,15 +563,15 @@ PKPushRegistry *pushRegistry;
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    NSString *pushKitToken = [self stringWithDeviceToken:credentials.token];
+    self.pushKitToken = [self stringWithDeviceToken:credentials.token];
 
     NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
-    if (![token isEqualToString:pushKitToken]) {
+    if (![token isEqualToString:self.pushKitToken]) {
         if (token != nil) {
             // unsubscribing + subscribing
-            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:pushKitToken];
+            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:self.pushKitToken];
         } else {
-            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:pushKitToken];
+            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:self.pushKitToken];
         }
     }
 }
@@ -599,7 +599,7 @@ PKPushRegistry *pushRegistry;
                         content.title = @"Nextcloud Talk";
                     } else {
                         content.title = app.capitalizedString;
-                    }                    
+                    }
                     if (subject) {
                         content.body = subject;
                     } else {
