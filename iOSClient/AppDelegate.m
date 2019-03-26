@@ -457,53 +457,6 @@
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(nonnull UNNotificationResponse *)response withCompletionHandler:(nonnull void (^)(void))completionHandler
 {
-    /*
-    NSString *message = [response.notification.request.content.userInfo objectForKey:@"subject"];
-    
-    if (message && [NCPushNotificationEncryption sharedInstance].ncPNPrivateKey) {
-        
-        NSData *privateKey = [CCUtility getPushNotificationPrivateKey];
-        NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:privateKey];
-        if (decryptedMessage) {
-           
-            NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            NSString *app = [json objectForKey:@"app"];
-            
-            if ([app isEqualToString:@"spreed"] == NO) {
-                
-                UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-                UINavigationController *navigationControllerMore;
-                UITabBarController *tabBarController;
-                
-                if (splitViewController.isCollapsed) {
-                    
-                    tabBarController = splitViewController.viewControllers.firstObject;
-                    for (UINavigationController *nvc in tabBarController.viewControllers) {
-                        
-                        if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                            [nvc popToRootViewControllerAnimated:NO];
-                        
-                        if ([nvc.topViewController isKindOfClass:[CCMore class]])
-                            navigationControllerMore = nvc;
-                    }
-                    
-                } else {
-                    
-                    UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-                    [nvcDetail popToRootViewControllerAnimated:NO];
-                    
-                    tabBarController = splitViewController.viewControllers.firstObject;
-                }
-                
-                if (tabBarController)
-                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexMore];
-                if (navigationControllerMore)
-                    [navigationControllerMore performSegueWithIdentifier:@"segueActivity" sender:navigationControllerMore];
-            }
-        }
-    }
-    */
     completionHandler();
 }
 
@@ -512,16 +465,43 @@
     NSLog(@"Push notification: %@", userInfo);
     
     NSString *message = [userInfo objectForKey:@"subject"];
-    if (message && [CCUtility getPushNotificationPrivateKey:self.activeAccount]) {
-        NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:self.activeAccount]];
-        if (decryptedMessage) {
-            UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-            content.body = decryptedMessage;
-            content.sound = [UNNotificationSound defaultSound];
-            NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
-            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
-            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+    
+    if (message) {
+        for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
+            if ([CCUtility getPushNotificationPrivateKey:result.account]) {
+                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:result.account]];
+                if (decryptedMessage) {
+                    
+                    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+                    
+                    NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                    
+                    NSString *app = [json objectForKey:@"app"];
+                    NSString *subject = [json objectForKey:@"subject"];
+                    
+                    if ([app isEqualToString:@"spreed"]) {
+                        content.title = @"Nextcloud Talk";
+                    } else {
+                        content.title = app.capitalizedString;
+                    }
+                    
+                    if (subject) {
+                        content.body = subject;
+                    }
+                    
+                    content.sound = [UNNotificationSound defaultSound];
+                    
+                    NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
+                    
+                    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
+                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+                    
+                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                    
+                    break;
+                }
+            }
         }
     }
 }

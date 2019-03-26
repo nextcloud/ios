@@ -322,6 +322,16 @@ class NCManageDatabase: NSObject {
         return nil
     }
     
+    @objc func getAllAccount() -> [tableAccount] {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableAccount.self)
+        
+        return Array(results.map { tableAccount.init(value:$0) })
+    }
+    
     @objc func getAccountAutoUploadFileName() -> String {
         
         let realm = try! Realm()
