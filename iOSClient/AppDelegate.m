@@ -415,6 +415,7 @@
             [CCUtility setPushNotificationToken:account token:token];
             [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
             [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:deviceIdentifierSignature];
+            [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:publicKey];
         } else if (errorCode != 0) {
             NSLog(@"[LOG] Subscribed to Push Notification server & proxy error.");
         } else {
@@ -423,7 +424,7 @@
     }];
 }
 
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url token:(NSString *)token
 {
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
@@ -431,11 +432,15 @@
     
     NSString *deviceIdentifier = [CCUtility getPushNotificationDeviceIdentifier:account];
     NSString *deviceIdentifierSignature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
-    
-    [[OCNetworking sharedManager] unsubscribingPushNotificationWithAccount:account url:url deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:@"" completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    NSString *publicKey = [CCUtility getPushNotificationSubscribingPublicKey:account];
+
+    [[OCNetworking sharedManager] unsubscribingPushNotificationWithAccount:account url:url deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0) {
             NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+            if (token != nil) {
+                [self subscribingNextcloudServerPushNotification:account url:url token:token];
+            }
         } else if (errorCode != 0) {
             NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy error.");
         } else {
@@ -533,8 +538,12 @@
     
     NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
     if (![token isEqualToString:fcmToken]) {
-        [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl];
-        [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
+        if (token != nil) {
+            // unsubscribing + subscribing
+            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
+        } else {
+            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
+        }
     }
 }
 

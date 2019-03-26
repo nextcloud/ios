@@ -136,6 +136,8 @@
 
 + (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data;
 + (NSData *)getPushNotificationPublicKey:(NSString *)account;
++ (void)setPushNotificationSubscribingPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
++ (NSString *)getPushNotificationSubscribingPublicKey:(NSString *)account;
 + (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data;
 + (NSData *)getPushNotificationPrivateKey:(NSString *)account;
 + (void)setPushNotificationToken:(NSString *)account token:(NSString *)token;

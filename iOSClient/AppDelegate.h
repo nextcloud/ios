@@ -157,7 +157,7 @@
 
 // Push Notification
 - (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url token:(NSString *)token;
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url;
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url token:(NSString *)token;
 
 // Theming Color
 - (void)settingThemingColorBrand;

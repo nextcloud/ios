@@ -491,6 +491,18 @@
     return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)setPushNotificationSubscribingPublicKey:(NSString *)account publicKey:(NSString *)publicKey
+{
+    NSString *key = [@"PNSubscribingPublicKey" stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPushNotificationSubscribingPublicKey:(NSString *)account
+{
+    NSString *key = [@"PNSubscribingPublicKey" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
 + (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data
 {
     NSString *key = [@"PNPrivateKey" stringByAppendingString:account];
