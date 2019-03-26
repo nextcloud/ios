@@ -481,36 +481,62 @@
 
 + (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data
 {
-    NSString *key = [@"ncPNPublicKey" stringByAppendingString:account];
+    NSString *key = [@"PNPublicKey" stringByAppendingString:account];
     [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSData *)getPushNotificationPublicKey:(NSString *)account
 {
-    NSString *key = [@"ncPNPublicKey" stringByAppendingString:account];
+    NSString *key = [@"PNPublicKey" stringByAppendingString:account];
     return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data
 {
-    NSString *key = [@"ncPNPrivateKey" stringByAppendingString:account];
+    NSString *key = [@"PNPrivateKey" stringByAppendingString:account];
     [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSData *)getPushNotificationPrivateKey:(NSString *)account
 {
-    NSString *key = [@"ncPNPrivateKey" stringByAppendingString:account];
+    NSString *key = [@"PNPrivateKey" stringByAppendingString:account];
     return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setPushNotificationToken:(NSString *)token
++ (void)setPushNotificationToken:(NSString *)account token:(NSString *)token
 {
-    [UICKeyChainStore setString:token forKey:@"ncPushToken" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNToken" stringByAppendingString:account];
+    [UICKeyChainStore setString:token forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getPushNotificationToken
++ (NSString *)getPushNotificationToken:(NSString *)account
 {
-    return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNToken" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setPushNotificationDeviceIdentifier:(NSString *)account deviceIdentifier:(NSString *)deviceIdentifier
+{
+    NSString *key = [@"PNDeviceIdentifier" stringByAppendingString:account];
+    [UICKeyChainStore setString:deviceIdentifier forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account
+{
+    NSString *key = [@"PNDeviceIdentifier" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature
+{
+    NSString *key = [@"PNDeviceIdentifierSignature" stringByAppendingString:account];
+    [UICKeyChainStore setString:deviceIdentifierSignature forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account
+{
+    NSString *key = [@"PNDeviceIdentifierSignature" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSInteger)getMediaWidthImage

@@ -138,8 +138,12 @@
 + (NSData *)getPushNotificationPublicKey:(NSString *)account;
 + (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data;
 + (NSData *)getPushNotificationPrivateKey:(NSString *)account;
-+ (void)setPushNotificationToken:(NSString *)token;
-+ (NSString *)getPushNotificationToken;
++ (void)setPushNotificationToken:(NSString *)account token:(NSString *)token;
++ (NSString *)getPushNotificationToken:(NSString *)account;
++ (void)setPushNotificationDeviceIdentifier:(NSString *)account deviceIdentifier:(NSString *)deviceIdentifier;
++ (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account;
++ (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature;
++ (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
 
 + (NSInteger)getMediaWidthImage;
 + (void)setMediaWidthImage:(NSInteger)width;

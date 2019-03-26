@@ -233,9 +233,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)deleteAccount:(NSString *)account
-{
-    [appDelegate unsubscribingNextcloudServerPushNotification:account];
-    
+{    
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];

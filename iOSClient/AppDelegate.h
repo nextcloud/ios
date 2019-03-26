@@ -127,10 +127,6 @@
 
 @property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
 
-@property (nonatomic, strong) NSString *pnDeviceIdentifier;
-@property (nonatomic, strong) NSString *pnDeviceIdentifierSignature;
-@property (nonatomic, strong) NSString *pnPublicKey;
-
 // Maintenance Mode
 @property BOOL maintenanceMode;
 
@@ -160,8 +156,8 @@
 - (NSString *)getTabBarControllerActiveServerUrl;
 
 // Push Notification
-- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url;
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account;
+- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url token:(NSString *)token;
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url;
 
 // Theming Color
 - (void)settingThemingColorBrand;

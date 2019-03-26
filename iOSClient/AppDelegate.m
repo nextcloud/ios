@@ -396,7 +396,7 @@
 #pragma mark ===== Push Notification =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url
+- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url token:(NSString *)token
 {
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
@@ -404,22 +404,17 @@
     
     [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair:account];
 
-    NSString *pushToken = [CCUtility getPushNotificationToken];
-    NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
-    NSData *ncPNPublicKey = [CCUtility getPushNotificationPublicKey:account];
-    NSString *devicePublicKey = [[NSString alloc] initWithData:ncPNPublicKey encoding:NSUTF8StringEncoding];
+    NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:token];
+    NSData *pushPublicKey = [CCUtility getPushNotificationPublicKey:account];
+    NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
     
-    self.pnDeviceIdentifier = nil;
-    self.pnDeviceIdentifierSignature = nil;
-    self.pnPublicKey = nil;
-
-    [[OCNetworking sharedManager] subscribingPushNotificationWithAccount:account url:url pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey completion:^(NSString *accountCompletion, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] subscribingPushNotificationWithAccount:account url:url pushToken:token Hash:pushTokenHash devicePublicKey:pushDevicePublicKey completion:^(NSString *accountCompletion, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [accountCompletion isEqualToString:account]) {
             NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
-            self.pnDeviceIdentifier = deviceIdentifier;
-            self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
-            self.pnPublicKey = publicKey;
+            [CCUtility setPushNotificationToken:account token:token];
+            [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
+            [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:deviceIdentifierSignature];
         } else if (errorCode != 0) {
             NSLog(@"[LOG] Subscribed to Push Notification server & proxy error.");
         } else {
@@ -428,13 +423,16 @@
     }];
 }
 
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url
 {
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    [[OCNetworking sharedManager] unsubscribingPushNotificationWithAccount:account url:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    NSString *deviceIdentifier = [CCUtility getPushNotificationDeviceIdentifier:account];
+    NSString *deviceIdentifierSignature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
+    
+    [[OCNetworking sharedManager] unsubscribingPushNotificationWithAccount:account url:url deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:@"" completion:^(NSString *account, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0) {
             NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
@@ -533,17 +531,11 @@
     
     NSLog(@"FCM registration token: %@", fcmToken);
     
-    NSString *token = [CCUtility getPushNotificationToken];
+    NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
     if (![token isEqualToString:fcmToken]) {
-        
-        // da fare per tutti gli utenti
-        
-        
-        
-        [CCUtility setPushNotificationToken:fcmToken];
+        [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl];
+        [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
     }
-
-    //[self subscribingNextcloudServerPushNotification];
 }
 
 #pragma --------------------------------------------------------------------------------------------
