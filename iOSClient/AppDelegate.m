@@ -527,13 +527,14 @@ PKPushRegistry *pushRegistry;
     
     completionHandler(fetchResult);
 }
-*/
+
 
 #pragma FIREBASE
 
+
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken
 {
-    /*
+
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
@@ -549,9 +550,9 @@ PKPushRegistry *pushRegistry;
             [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
         }
     }
-    */
 }
-
+*/
+ 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== PushKit Delegate =====
 #pragma --------------------------------------------------------------------------------------------
@@ -598,9 +599,7 @@ PKPushRegistry *pushRegistry;
                         content.title = @"Nextcloud Talk";
                     } else {
                         content.title = app.capitalizedString;
-                    }
-                    content.title = [NSString stringWithFormat:@"%@ (%@)", content.title, result.account];
-                    
+                    }                    
                     if (subject) {
                         content.body = subject;
                     } else {
