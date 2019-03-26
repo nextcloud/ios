@@ -536,6 +536,12 @@
     
     NSLog(@"FCM registration token: %@", fcmToken);
     
+    // sdcshdcvsdvcsdvgcusd
+    
+     [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
+    // sgdvchsgdvcsdg
+    
+    
     NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
     if (![token isEqualToString:fcmToken]) {
         if (token != nil) {
