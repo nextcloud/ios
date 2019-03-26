@@ -23,6 +23,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
+#import <PushKit/PushKit.h>
 
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"
@@ -40,7 +41,7 @@
 @class CCMore;
 @class NCMedia;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;

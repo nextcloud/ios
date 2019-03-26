@@ -38,7 +38,9 @@
 #import "NCPushNotificationEncryption.h"
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
-
+{
+PKPushRegistry *pushRegistry;
+}
 @end
 
 @implementation AppDelegate
@@ -147,12 +149,19 @@
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
     
+    /*
     // Firebase - Push Notification
     @try {
         [FIRApp configure];
     } @catch (NSException *exception) {
         NSLog(@"[LOG] Something went wrong while configuring Firebase");
     }
+    */
+    
+    // Push Notification
+    pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+    pushRegistry.delegate = self;
+    pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
     
     // Display notification (sent via APNS)
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
@@ -460,6 +469,7 @@
     completionHandler();
 }
 
+/*
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     NSLog(@"Push notification: %@", userInfo);
@@ -517,22 +527,18 @@
     
     completionHandler(fetchResult);
 }
+*/
 
 #pragma FIREBASE
 
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken
 {
+    /*
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
     NSLog(@"FCM registration token: %@", fcmToken);
-    
-    // sdcshdcvsdvcsdvgcusd
-    
-     [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
-    // sgdvchsgdvcsdg
-    
     
     NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
     if (![token isEqualToString:fcmToken]) {
@@ -543,6 +549,94 @@
             [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
         }
     }
+    */
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== PushKit Delegate =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type
+{
+    // test
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
+    NSString *pushKitToken = [self stringWithDeviceToken:credentials.token];
+
+    NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
+    if (![token isEqualToString:pushKitToken]) {
+        if (token != nil) {
+            // unsubscribing + subscribing
+            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:pushKitToken];
+        } else {
+            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:pushKitToken];
+        }
+    }
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type
+{
+    NSString *message = [payload.dictionaryPayload objectForKey:@"subject"];
+    
+    if (message) {
+        for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
+            if ([CCUtility getPushNotificationPrivateKey:result.account]) {
+                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:result.account]];
+                if (decryptedMessage) {
+                    
+                    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+                    
+                    NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                    
+                    NSString *app = [json objectForKey:@"app"];
+                    NSString *subject = [json objectForKey:@"subject"];
+                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
+                    
+                    if ([app isEqualToString:@"spreed"]) {
+                        content.title = @"Nextcloud Talk";
+                    } else {
+                        content.title = app.capitalizedString;
+                    }
+                    content.title = [NSString stringWithFormat:@"%@ (%@)", content.title, result.account];
+                    
+                    if (subject) {
+                        content.body = subject;
+                    } else {
+                        content.body = @"Nextcloud notification";
+                    }
+                    
+                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
+                        //
+                    }];
+                    
+                    content.sound = [UNNotificationSound defaultSound];
+                    
+                    NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
+                    
+                    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
+                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+                    
+                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                    
+                    break;
+                }
+            }
+        }
+    }
+}
+
+- (NSString *)stringWithDeviceToken:(NSData *)deviceToken
+{
+    const char *data = [deviceToken bytes];
+    NSMutableString *token = [NSMutableString string];
+    
+    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+        [token appendFormat:@"%02.2hhX", data[i]];
+    }
+    
+    return [token copy];
 }
 
 #pragma --------------------------------------------------------------------------------------------
