@@ -495,7 +495,7 @@
                         content.body = @"Nextcloud notification";
                     }
                     
-                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
+                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
                         //
                     }];
                     

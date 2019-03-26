@@ -1690,9 +1690,9 @@
     }];
 }
 
-- (void)getServerNotification:(NSString *)serverUrl notificationId:(NSInteger)notificationId completion:(void(^)(NSString *message, NSInteger errorCode))completion
+- (void)getServerNotification:(NSString *)serverUrl notificationId:(NSInteger)notificationId completion:(void(^)(NSDictionary*jsongParsed, NSString *message, NSInteger errorCode))completion
 {
-    NSString *URLString = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/notifications/api/v2/notifications/%ld", serverUrl, (long)notificationId];
+    NSString *URLString = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/notifications/api/v2/notifications/%ld?format=json", serverUrl, (long)notificationId];
 
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:URLString] cachePolicy:0 timeoutInterval:20.0];
     [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
@@ -1703,10 +1703,31 @@
 
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
 
-        //NSDictionary *notification = [[response objectForKey:@"ocs"] objectForKey:@"data"];
-        
-        completion(@"", 0);
-        
+        if (error) {
+            
+            NSString *message;
+            NSInteger errorCode;
+            
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+            errorCode = httpResponse.statusCode;
+            
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedString(@"_server_error_retry_", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+            completion(nil, message, errorCode);
+            
+        } else {
+            
+            NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+
+            completion(jsongParsed, nil, 0);
+        }
     }];
     
     [task resume];
@@ -1961,6 +1982,10 @@
         completion(account, message, errorCode);
     }];
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  didReceiveChallenge =====
+#pragma --------------------------------------------------------------------------------------------
 
 -(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
 {
