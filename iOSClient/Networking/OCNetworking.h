@@ -26,7 +26,7 @@
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 
-@interface OCNetworking : NSObject <NSURLSessionDelegate>
+@interface OCNetworking : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate>
 
 + (OCNetworking *)sharedManager;
 
@@ -89,6 +89,7 @@
 
 - (void)subscribingPushNotificationWithAccount:(NSString *)account url:(NSString *)url pushToken:(NSString *)pushToken Hash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey completion:(void(^)(NSString *account, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode))completion;
 - (void)unsubscribingPushNotificationWithAccount:(NSString *)account url:(NSString *)url deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey completion:(void (^)(NSString *account ,NSString *message, NSInteger errorCode))completion;
+- (void)getServerNotification:(NSString *)serverUrl notificationId:(NSInteger)notificationId completion:(void(^)(NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== Manage Mobile Editor OCS API =====
 

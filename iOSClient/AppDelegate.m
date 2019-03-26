@@ -464,6 +464,7 @@
 {
     NSLog(@"Push notification: %@", userInfo);
     
+    NSUInteger fetchResult = UIBackgroundFetchResultNoData;
     NSString *message = [userInfo objectForKey:@"subject"];
     
     if (message) {
@@ -479,17 +480,24 @@
                     
                     NSString *app = [json objectForKey:@"app"];
                     NSString *subject = [json objectForKey:@"subject"];
+                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
                     
                     if ([app isEqualToString:@"spreed"]) {
                         content.title = @"Nextcloud Talk";
                     } else {
                         content.title = app.capitalizedString;
                     }
+                    content.title = [NSString stringWithFormat:@"%@ (%@)", content.title, result.account];
+                    
                     if (subject) {
                         content.body = subject;
                     } else {
                         content.body = @"Nextcloud notification";
                     }
+                    
+                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
+                        //
+                    }];
                     
                     content.sound = [UNNotificationSound defaultSound];
                     
@@ -500,11 +508,14 @@
                     
                     [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
                     
+                    fetchResult = UIBackgroundFetchResultNewData;
                     break;
                 }
             }
         }
     }
+    
+    completionHandler(fetchResult);
 }
 
 #pragma FIREBASE
