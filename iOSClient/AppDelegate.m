@@ -485,9 +485,10 @@
                     } else {
                         content.title = app.capitalizedString;
                     }
-                    
                     if (subject) {
                         content.body = subject;
+                    } else {
+                        content.body = @"Nextcloud notification";
                     }
                     
                     content.sound = [UNNotificationSound defaultSound];
