@@ -375,6 +375,9 @@
         // reload datasource
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl fileID:nil action:k_action_NULL];
     }
+    
+    // Registered push notification
+    [appDelegate pushNotification];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -67,8 +67,6 @@
         return NO;
     }
     
-    
-    
     // Extract publicKey, privateKey
     int len;
     char *keyBytes;
@@ -136,6 +134,5 @@
     
     return decryptString;
 }
-
 
 @end
