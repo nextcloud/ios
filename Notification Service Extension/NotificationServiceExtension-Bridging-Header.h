@@ -1,9 +1,9 @@
 //
-//  NCBridgeSwift.h
-//  Nextcloud iOS
+//  NotificationServiceExtension-Bridging-Header.h
+//  Nextcloud
 //
-//  Created by Marino Faggiana on 11/05/17.
-//  Copyright © 2017 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 27/07/18.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -21,36 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// App bridge swift
-//
-// change 
-// from   : Nextcloud-Swift.h
-// to     : brand-Swift.h
-//
-#if !defined(EXTENSION)
+#import "CCUtility.h"
+#import "NCPushNotificationEncryption.h"
 
-    #import "Nextcloud-Swift.h"
-
-#endif
-
-// Nextcloud Share
-#if defined(EXTENSION_SHARE)
-
-    #import "Share-Swift.h"
-
-#endif
-
-// Nextcloud File Provider Extension
-#if defined(EXTENSION_FILE_PROVIDER_EXTENSION)
-
-    #import "File_Provider_Extension-Swift.h"
-
-#endif
-
-// Nextcloud Notification Service Extension
-#if defined(EXTENSION_NOTIFICATION_SERVICE)
-
-#import "Notification_Service_Extension-Swift.h"
-
-#endif
+#import "OCActivity.h"
+#import "OCUserProfile.h"
+#import "OCCapabilities.h"
+#import "OCExternalSites.h"
+#import "OCSharedDto.h"

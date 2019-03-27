@@ -610,11 +610,15 @@ PKPushRegistry *pushRegistry;
                     NSString *subject = [json objectForKey:@"subject"];
                     NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
                     
+                    NSURL *url = [NSURL URLWithString:result.url];
+                    NSString *domain = [url host];
+                    
                     if ([app isEqualToString:@"spreed"]) {
                         content.title = @"Nextcloud Talk";
                     } else {
                         content.title = app.capitalizedString;
                     }
+                    content.title = [NSString stringWithFormat:@"%@ - %@ (%@)", content.title, result.displayName, domain];
                     if (subject) {
                         content.body = subject;
                     } else {
