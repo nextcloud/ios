@@ -123,10 +123,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         
                         // STOP Intro
                         CCUtility.setIntro(true)
-                        
-                        // LOGOUT
-                        //appDelegate.unsubscribingNextcloudServerPushNotification()
-                        
+                                                
                         // Add new account
                         NCManageDatabase.sharedInstance.deleteAccount(account)
                         NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)

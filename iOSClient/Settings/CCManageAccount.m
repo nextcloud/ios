@@ -239,24 +239,21 @@
         [appDelegate unsubscribingNextcloudServerPushNotification:tableAccount.account url:tableAccount.url withSubscribing:false];
     }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-
-        [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
     
-        // Clear active user
-        [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
-    });
+    // Clear active user
+    [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender

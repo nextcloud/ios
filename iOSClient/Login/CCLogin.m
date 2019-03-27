@@ -169,7 +169,7 @@
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    [[OCNetworking sharedManager] serverStatusUrl:self.baseUrl.text delegate:self completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] serverStatusUrl:self.baseUrl.text completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0) {
             
@@ -359,9 +359,6 @@
                     // STOP Intro
                     [CCUtility setIntro:YES];
                     
-                    // LOGOUT
-                    //[appDelegate unsubscribingNextcloudServerPushNotification];
-                    
                     [[NCManageDatabase sharedInstance] deleteAccount:account];
                     [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];
                     
@@ -440,16 +437,6 @@
     NCLoginQRCode *qrCode = [[NCLoginQRCode alloc] initWithDelegate:self];
     
     [qrCode scan];
-}
-
--(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
-{
-    // The pinnning check
-    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
-        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    } else {
-        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-    }
 }
 
 @end
