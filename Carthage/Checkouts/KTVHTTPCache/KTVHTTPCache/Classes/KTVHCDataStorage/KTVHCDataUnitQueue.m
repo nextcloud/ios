@@ -11,62 +11,51 @@
 
 @interface KTVHCDataUnitQueue ()
 
-@property (nonatomic, copy) NSString * path;
-@property (nonatomic, strong) NSMutableArray <KTVHCDataUnit *> * unitArray;
+@property (nonatomic, copy) NSString *path;
+@property (nonatomic, strong) NSMutableArray<KTVHCDataUnit *> *unitArray;
 
 @end
 
 @implementation KTVHCDataUnitQueue
 
-+ (instancetype)queueWithPath:(NSString *)path
-{
-    return [[self alloc] initWithPath:path];
-}
-
 - (instancetype)initWithPath:(NSString *)path
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.path = path;
-        NSMutableArray * unitArray = nil;
+        NSMutableArray *unitArray = nil;
         @try {
             unitArray = [NSKeyedUnarchiver unarchiveObjectWithFile:self.path];
-        } @catch (NSException * exception) {
+        } @catch (NSException *exception) {
             KTVHCLogDataUnitQueue(@"%p, Init exception\nname : %@\breason : %@\nuserInfo : %@", self, exception.name, exception.reason, exception.userInfo);
         }
         self.unitArray = [NSMutableArray array];
-        for (KTVHCDataUnit * obj in unitArray) {
-            if (obj.valid) {
-                [self.unitArray addObject:obj];
-            } else {
+        for (KTVHCDataUnit *obj in unitArray) {
+            if (obj.error) {
                 [obj deleteFiles];
+            } else {
+                [self.unitArray addObject:obj];
             }
         }
     }
     return self;
 }
 
-- (NSArray <KTVHCDataUnit *> *)allUnits
+- (NSArray<KTVHCDataUnit *> *)allUnits
 {
-    if (self.unitArray.count <= 0)
-    {
+    if (self.unitArray.count <= 0) {
         return nil;
     }
-    NSArray <KTVHCDataUnit *> * units = [self.unitArray copy];
-    return units;
+    return [self.unitArray copy];
 }
 
 - (KTVHCDataUnit *)unitWithKey:(NSString *)key
 {
-    if (key.length <= 0)
-    {
+    if (key.length <= 0) {
         return nil;
     }
-    KTVHCDataUnit * unit = nil;
-    for (KTVHCDataUnit * obj in self.unitArray)
-    {
-        if ([obj.key isEqualToString:key])
-        {
+    KTVHCDataUnit *unit = nil;
+    for (KTVHCDataUnit *obj in self.unitArray) {
+        if ([obj.key isEqualToString:key]) {
             unit = obj;
             break;
         }
@@ -76,24 +65,20 @@
 
 - (void)putUnit:(KTVHCDataUnit *)unit
 {
-    if (!unit)
-    {
+    if (!unit) {
         return;
     }
-    if (![self.unitArray containsObject:unit])
-    {
+    if (![self.unitArray containsObject:unit]) {
         [self.unitArray addObject:unit];
     }
 }
 
 - (void)popUnit:(KTVHCDataUnit *)unit
 {
-    if (!unit)
-    {
+    if (!unit) {
         return;
     }
-    if ([self.unitArray containsObject:unit])
-    {
+    if ([self.unitArray containsObject:unit]) {
         [self.unitArray removeObject:unit];
     }
 }

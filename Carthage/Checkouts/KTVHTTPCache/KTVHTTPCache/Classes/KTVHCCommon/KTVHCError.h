@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, KTVHCErrorCode)
-{
+typedef NS_ENUM(NSInteger, KTVHCErrorCode) {
     KTVHCErrorCodeResponseUnavailable  = -192700,
     KTVHCErrorCodeUnsupportContentType = -192701,
     KTVHCErrorCodeNotEnoughDiskSpace   = -192702,

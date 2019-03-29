@@ -23,7 +23,7 @@
 /**
  *  Return file path if the content did finished cache.
  */
-- (NSURL *)completeFileURLIfExistedWithURL:(NSURL *)URL;
+- (NSURL *)completeFileURLWithURL:(NSURL *)URL;
 
 /**
  *  Reader for certain request.
@@ -39,12 +39,12 @@
  *  Get cache item.
  */
 - (KTVHCDataCacheItem *)cacheItemWithURL:(NSURL *)URL;
-- (NSArray <KTVHCDataCacheItem *> *)allCacheItems;
+- (NSArray<KTVHCDataCacheItem *> *)allCacheItems;
 
 /**
  *  Get cache length.
  */
-@property (nonatomic, assign) long long maxCacheLength;     // Default is 500M.
+@property (nonatomic) long long maxCacheLength;     // Default is 500M.
 - (long long)totalCacheLength;
 
 /**

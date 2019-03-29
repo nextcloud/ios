@@ -14,9 +14,9 @@
 
 @protocol KTVHCDataReaderDelegate <NSObject>
 
-- (void)readerDidPrepared:(KTVHCDataReader *)reader;
-- (void)readerHasAvailableData:(KTVHCDataReader *)reader;
-- (void)reader:(KTVHCDataReader *)reader didFailed:(NSError *)error;
+- (void)ktv_readerDidPrepare:(KTVHCDataReader *)reader;
+- (void)ktv_readerHasAvailableData:(KTVHCDataReader *)reader;
+- (void)ktv_reader:(KTVHCDataReader *)reader didFailWithError:(NSError *)error;
 
 @end
 
@@ -25,22 +25,20 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)readerWithRequest:(KTVHCDataRequest *)request;
-
 @property (nonatomic, weak) id <KTVHCDataReaderDelegate> delegate;
-
 @property (nonatomic, strong) id object;
 
-@property (nonatomic, strong, readonly) KTVHCDataRequest * request;
-@property (nonatomic, strong, readonly) KTVHCDataResponse * response;
+@property (nonatomic, strong, readonly) KTVHCDataRequest *request;
+@property (nonatomic, strong, readonly) KTVHCDataResponse *response;
 
-@property (nonatomic, strong, readonly) NSError * error;
+@property (nonatomic, copy, readonly) NSError *error;
 
-@property (nonatomic, assign, readonly) BOOL didClosed;
-@property (nonatomic, assign, readonly) BOOL didPrepared;
-@property (nonatomic, assign, readonly) BOOL didFinished;
+@property (nonatomic, readonly, getter=isPrepared) BOOL prepared;
+@property (nonatomic, readonly, getter=isFinished) BOOL finished;
+@property (nonatomic, readonly, getter=isClosed) BOOL closed;
 
-@property (nonatomic, assign, readonly) long long readOffset;
+@property (nonatomic, readonly) long long readedLength;
+@property (nonatomic, readonly) double progress;
 
 - (void)prepare;
 - (void)close;

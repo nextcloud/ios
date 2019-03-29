@@ -7,32 +7,36 @@
 //
 
 #import "KTVHCDataSourceManager.h"
-#import "KTVHCDataSourceQueue.h"
 #import "KTVHCDataCallback.h"
 #import "KTVHCLog.h"
 
 @interface KTVHCDataSourceManager () <NSLocking, KTVHCDataFileSourceDelegate, KTVHCDataNetworkSourceDelegate>
 
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, assign) BOOL didCalledPrepare;
-@property (nonatomic, assign) BOOL didCalledReceiveResponse;
-
-@property (nonatomic, strong) KTVHCDataSourceQueue * sourceQueue;
-@property (nonatomic, strong) id <KTVHCDataSourceProtocol> currentSource;
-@property (nonatomic, strong) KTVHCDataNetworkSource * currentNetworkSource;
+@property (nonatomic, strong) NSLock *coreLock;
+@property (nonatomic, strong) id <KTVHCDataSource> currentSource;
+@property (nonatomic, strong) KTVHCDataNetworkSource *currentNetworkSource;
+@property (nonatomic, strong) NSMutableArray<id<KTVHCDataSource>> *sources;
+@property (nonatomic) BOOL calledPrepare;
+@property (nonatomic) BOOL calledReceiveResponse;
 
 @end
 
 @implementation KTVHCDataSourceManager
 
-- (instancetype)initWithDelegate:(id <KTVHCDataSourceManagerDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
+@synthesize error = _error;
+@synthesize range = _range;
+@synthesize closed = _closed;
+@synthesize prepared = _prepared;
+@synthesize finished = _finished;
+@synthesize readedLength = _readedLength;
+
+- (instancetype)initWithSources:(NSArray<id<KTVHCDataSource>> *)sources delegate:(id<KTVHCDataSourceManagerDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         KTVHCLogAlloc(self);
-        _delegate = delegate;
-        _delegateQueue = delegateQueue;
-        self.sourceQueue = [KTVHCDataSourceQueue sourceQueue];
+        self->_sources = [sources mutableCopy];
+        self->_delegate = delegate;
+        self->_delegateQueue = delegateQueue;
     }
     return self;
 }
@@ -43,108 +47,141 @@
     KTVHCLogDataReader(@"%p, Destory reader\nError : %@\ncurrentSource : %@\ncurrentNetworkSource : %@", self, self.error, self.currentSource, self.currentNetworkSource);
 }
 
-- (void)putSource:(id<KTVHCDataSourceProtocol>)source
-{
-    KTVHCLogDataSourceManager(@"%p, Put source : %@", self, source);
-    [self.sourceQueue putSource:source];
-}
-
 - (void)prepare
 {
     [self lock];
-    if (self.didClosed)
-    {
+    if (self.isClosed) {
         [self unlock];
         return;
     }
-    if (self.didCalledPrepare)
-    {
+    if (self.calledPrepare) {
         [self unlock];
         return;
     }
-    _didCalledPrepare = YES;
+    self->_calledPrepare = YES;
     KTVHCLogDataSourceManager(@"%p, Call prepare", self);
-    [self.sourceQueue sortSources];
-    [self.sourceQueue setAllSourceDelegate:self delegateQueue:self.delegateQueue];
-    self.currentSource = [self.sourceQueue firstSource];
-    self.currentNetworkSource = [self.sourceQueue firstNetworkSource];
+    KTVHCLogDataSourceManager(@"%p, Sort sources - Begin\nSources : %@", self, self.sources);
+    [self.sources sortUsingComparator:^NSComparisonResult(id <KTVHCDataSource> obj1, id <KTVHCDataSource> obj2) {
+        if (obj1.range.start < obj2.range.start) {
+            return NSOrderedAscending;
+        }
+        return NSOrderedDescending;
+    }];
+    KTVHCLogDataSourceManager(@"%p, Sort sources - End  \nSources : %@", self, self.sources);
+    for (id <KTVHCDataSource> obj in self.sources) {
+        if ([obj isKindOfClass:[KTVHCDataFileSource class]]) {
+            KTVHCDataFileSource *source = (KTVHCDataFileSource *)obj;
+            [source setDelegate:self delegateQueue:self.delegateQueue];
+        }
+        else if ([obj isKindOfClass:[KTVHCDataNetworkSource class]]) {
+            KTVHCDataNetworkSource *source = (KTVHCDataNetworkSource *)obj;
+            [source setDelegate:self delegateQueue:self.delegateQueue];
+        }
+    }
+    self.currentSource = self.sources.firstObject;
+    for (id<KTVHCDataSource> obj in self.sources) {
+        if ([obj isKindOfClass:[KTVHCDataNetworkSource class]]) {
+            self.currentNetworkSource = obj;
+            break;
+        }
+    }
     KTVHCLogDataSourceManager(@"%p, Sort source\ncurrentSource : %@\ncurrentNetworkSource : %@", self, self.currentSource, self.currentNetworkSource);
     [self.currentSource prepare];
-    if (self.currentSource != self.currentNetworkSource)
-    {
-        [self.currentNetworkSource prepare];
-    }
+    [self.currentNetworkSource prepare];
     [self unlock];
 }
 
 - (void)close
 {
     [self lock];
-    if (self.didClosed)
-    {
+    if (self.isClosed) {
         [self unlock];
         return;
     }
-    _didClosed = YES;
+    self->_closed = YES;
     KTVHCLogDataSourceManager(@"%p, Call close", self);
-    [self.sourceQueue closeAllSource];
+    for (id <KTVHCDataSource> obj in self.sources) {
+        [obj close];
+    }
     [self unlock];
 }
 
 - (NSData *)readDataOfLength:(NSUInteger)length
 {
     [self lock];
-    if (self.didClosed)
-    {
+    if (self.isClosed) {
         [self unlock];
         return nil;
     }
-    if (self.didFinished)
-    {
+    if (self.isFinished) {
         [self unlock];
         return nil;
     }
-    if (self.error)
-    {
+    if (self.error) {
         [self unlock];
         return nil;
     }
-    NSData * data = [self.currentSource readDataOfLength:length];
+    NSData *data = [self.currentSource readDataOfLength:length];
+    self->_readedLength += data.length;
     KTVHCLogDataSourceManager(@"%p, Read data : %lld", self, (long long)data.length);
-    if (self.currentSource.didFinished)
-    {
-        self.currentSource = [self.sourceQueue nextSource:self.currentSource];
-        if (self.currentSource)
-        {
+    if (self.currentSource.isFinished) {
+        self.currentSource = [self nextSource];
+        if (self.currentSource) {
             KTVHCLogDataSourceManager(@"%p, Switch to next source, %@", self, self.currentSource);
-            if ([self.currentSource isKindOfClass:[KTVHCDataFileSource class]])
-            {
+            if ([self.currentSource isKindOfClass:[KTVHCDataFileSource class]]) {
                 [self.currentSource prepare];
             }
-        }
-        else
-        {
+        } else {
             KTVHCLogDataSourceManager(@"%p, Read data did finished", self);
-            _didFinished = YES;
+            self->_finished = YES;
         }
     }
     [self unlock];
     return data;
 }
 
-- (void)fileSourceDidPrepared:(KTVHCDataFileSource *)fileSource
+- (id<KTVHCDataSource>)nextSource
+{
+    NSUInteger index = [self.sources indexOfObject:self.currentSource] + 1;
+    if (index < self.sources.count) {
+        KTVHCLogDataSourceManager(@"%p, Fetch next source : %@", self, [self.sources objectAtIndex:index]);
+        return [self.sources objectAtIndex:index];
+    }
+    KTVHCLogDataSourceManager(@"%p, Fetch netxt source failed", self);
+    return nil;
+}
+
+- (KTVHCDataNetworkSource *)nextNetworkSource
+{
+    NSUInteger index = [self.sources indexOfObject:self.currentNetworkSource] + 1;
+    for (; index < self.sources.count; index++) {
+        id <KTVHCDataSource> obj = [self.sources objectAtIndex:index];
+        if ([obj isKindOfClass:[KTVHCDataNetworkSource class]]) {
+            KTVHCLogDataSourceManager(@"%p, Fetch next network source : %@", self, obj);
+            return obj;
+        }
+    }
+    KTVHCLogDataSourceManager(@"%p, Fetch netxt network source failed", self);
+    return nil;
+}
+
+#pragma mark - KTVHCDataFileSourceDelegate
+
+- (void)ktv_fileSourceDidPrepare:(KTVHCDataFileSource *)fileSource
 {
     [self lock];
     [self callbackForPrepared];
     [self unlock];
 }
 
-- (void)fileSource:(KTVHCDataFileSource *)fileSource didFailed:(NSError *)error
+- (void)ktv_fileSource:(KTVHCDataFileSource *)fileSource didFailWithError:(NSError *)error
 {
     [self callbackForFailed:error];
 }
 
-- (void)networkSourceDidPrepared:(KTVHCDataNetworkSource *)networkSource
+#pragma mark - KTVHCDataNetworkSourceDelegate
+
+- (void)ktv_networkSourceDidPrepare:(KTVHCDataNetworkSource *)networkSource
 {
     [self lock];
     [self callbackForPrepared];
@@ -152,104 +189,97 @@
     [self unlock];
 }
 
-- (void)networkSourceHasAvailableData:(KTVHCDataNetworkSource *)networkSource
+- (void)ktv_networkSourceHasAvailableData:(KTVHCDataNetworkSource *)networkSource
 {
     [self lock];
-    if ([self.delegate respondsToSelector:@selector(sourceManagerHasAvailableData:)])
-    {
+    if ([self.delegate respondsToSelector:@selector(ktv_sourceManagerHasAvailableData:)]) {
         KTVHCLogDataSourceManager(@"%p, Callback for has available data - Begin\nSource : %@", self, networkSource);
         [KTVHCDataCallback callbackWithQueue:self.delegateQueue block:^{
             KTVHCLogDataSourceManager(@"%p, Callback for has available data - End", self);
-            [self.delegate sourceManagerHasAvailableData:self];
+            [self.delegate ktv_sourceManagerHasAvailableData:self];
         }];
     }
     [self unlock];
 }
 
-- (void)networkSourceDidFinishedDownload:(KTVHCDataNetworkSource *)networkSource
+- (void)ktv_networkSourceDidFinisheDownload:(KTVHCDataNetworkSource *)networkSource
 {
     [self lock];
-    self.currentNetworkSource = [self.sourceQueue nextNetworkSource:self.currentNetworkSource];
+    self.currentNetworkSource = [self nextNetworkSource];
     [self.currentNetworkSource prepare];
     [self unlock];
 }
 
-- (void)networkSource:(KTVHCDataNetworkSource *)networkSource didFailed:(NSError *)error
+- (void)ktv_networkSource:(KTVHCDataNetworkSource *)networkSource didFailWithError:(NSError *)error
 {
     [self callbackForFailed:error];
 }
 
+#pragma mark - Callback
+
 - (void)callbackForPrepared
 {
-    if (self.didClosed)
-    {
+    if (self.isClosed) {
         return;
     }
-    if (self.didPrepared)
-    {
+    if (self.isPrepared) {
         return;
     }
-    _didPrepared = YES;
-    if ([self.delegate respondsToSelector:@selector(sourceManagerDidPrepared:)])
-    {
+    self->_prepared = YES;
+    if ([self.delegate respondsToSelector:@selector(ktv_sourceManagerDidPrepare:)]) {
         KTVHCLogDataSourceManager(@"%p, Callback for prepared - Begin", self);
         [KTVHCDataCallback callbackWithQueue:self.delegateQueue block:^{
             KTVHCLogDataSourceManager(@"%p, Callback for prepared - End", self);
-            [self.delegate sourceManagerDidPrepared:self];
+            [self.delegate ktv_sourceManagerDidPrepare:self];
         }];
     }
 }
 
 - (void)callbackForReceiveResponse:(KTVHCDataResponse *)response
 {
-    if (self.didClosed)
-    {
+    if (self.isClosed) {
         return;
     }
-    if (self.didCalledReceiveResponse)
-    {
+    if (self.calledReceiveResponse) {
         return;
     }
-    _didCalledReceiveResponse = YES;
-    if ([self.delegate respondsToSelector:@selector(sourceManager:didReceiveResponse:)])
-    {
+    self->_calledReceiveResponse = YES;
+    if ([self.delegate respondsToSelector:@selector(ktv_sourceManager:didReceiveResponse:)]) {
         KTVHCLogDataSourceManager(@"%p, Callback for did receive response - End", self);
         [KTVHCDataCallback callbackWithQueue:self.delegateQueue block:^{
             KTVHCLogDataSourceManager(@"%p, Callback for did receive response - End", self);
-            [self.delegate sourceManager:self didReceiveResponse:response];
+            [self.delegate ktv_sourceManager:self didReceiveResponse:response];
         }];
     }
 }
 
 - (void)callbackForFailed:(NSError *)error
 {
-    if (!error)
-    {
+    if (!error) {
         return;
     }
     [self lock];
-    if (self.didClosed)
-    {
+    if (self.isClosed) {
         [self unlock];
         return;
     }
-    if (self.error)
-    {
+    if (self.error) {
         [self unlock];
         return;
     }
-    _error = error;
+    self->_error = error;
     KTVHCLogDataSourceManager(@"failure, %d", (int)self.error.code);
-    if (self.error && [self.delegate respondsToSelector:@selector(sourceManager:didFailed:)])
-    {
+    if (self.error && [self.delegate respondsToSelector:@selector(ktv_sourceManager:didFailWithError:)]) {
         KTVHCLogDataSourceManager(@"%p, Callback for network source failed - Begin\nError : %@", self, self.error);
         [KTVHCDataCallback callbackWithQueue:self.delegateQueue block:^{
             KTVHCLogDataSourceManager(@"%p, Callback for network source failed - End", self);
-            [self.delegate sourceManager:self didFailed:self.error];
+            [self.delegate ktv_sourceManager:self didFailWithError:self.error];
         }];
     }
     [self unlock];
 }
+
+#pragma mark - NSLocking
 
 - (void)lock
 {

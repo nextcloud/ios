@@ -14,13 +14,10 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithURL:(NSURL *)URL headers:(NSDictionary *)headers;
+- (instancetype)initWithURL:(NSURL *)URL headers:(NSDictionary *)headers NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, copy, readonly) NSURL * URL;
-@property (nonatomic, copy, readonly) NSDictionary * headers;
-@property (nonatomic, assign, readonly) KTVHCRange range;
-
-- (KTVHCDataRequest *)requestWithRange:(KTVHCRange)range;
-- (KTVHCDataRequest *)requestWithTotalLength:(long long)totalLength;
+@property (nonatomic, copy, readonly) NSURL *URL;
+@property (nonatomic, copy, readonly) NSDictionary *headers;
+@property (nonatomic, readonly) KTVHCRange range;
 
 @end

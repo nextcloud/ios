@@ -7,6 +7,7 @@
 //
 
 #import "KTVHCDownload.h"
+#import "KTVHCData+Internal.h"
 #import "KTVHCDataUnitPool.h"
 #import "KTVHCDataStorage.h"
 #import "KTVHCError.h"
@@ -22,13 +23,14 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
 
 @interface KTVHCDownload () <NSURLSessionDataDelegate, NSLocking>
 
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) NSURLSession * session;
-@property (nonatomic, strong) NSOperationQueue * sessionDelegateQueue;
-@property (nonatomic, strong) NSURLSessionConfiguration * sessionConfiguration;
-@property (nonatomic, strong) NSMutableDictionary <NSURLSessionTask *, NSError *> * errorDictionary;
-@property (nonatomic, strong) NSMutableDictionary <NSURLSessionTask *, KTVHCDataRequest *> * requestDictionary;
-@property (nonatomic, strong) NSMutableDictionary <NSURLSessionTask *, id<KTVHCDownloadDelegate>> * delegateDictionary;
+@property (nonatomic, strong) NSLock *coreLock;
+@property (nonatomic, strong) NSURLSession *session;
+@property (nonatomic, strong) NSOperationQueue *sessionDelegateQueue;
+@property (nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
+@property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, NSError *> *errorDictionary;
+@property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, KTVHCDataRequest *> *requestDictionary;
+@property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, id<KTVHCDownloadDelegate>> *delegateDictionary;
+@property (nonatomic) UIBackgroundTaskIdentifier backgroundTask;
 
 @end
 
@@ -36,7 +38,7 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
 
 + (instancetype)download
 {
-    static KTVHCDownload * obj = nil;
+    static KTVHCDownload *obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         obj = [[self alloc] init];
@@ -46,10 +48,10 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         KTVHCLogAlloc(self);
         self.timeoutInterval = 30.0f;
+        self.backgroundTask = UIBackgroundTaskInvalid;
         self.errorDictionary = [NSMutableDictionary dictionary];
         self.requestDictionary = [NSMutableDictionary dictionary];
         self.delegateDictionary = [NSMutableDictionary dictionary];
@@ -61,11 +63,11 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
         self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
                                                      delegate:self
                                                 delegateQueue:self.sessionDelegateQueue];
-        self.acceptContentTypes = @[KTVHCContentTypeVideo,
-                                    KTVHCContentTypeAudio,
-                                    KTVHCContentTypeApplicationMPEG4,
-                                    KTVHCContentTypeApplicationOctetStream,
-                                    KTVHCContentTypeBinaryOctetStream];
+        self.acceptableContentTypes = @[KTVHCContentTypeVideo,
+                                        KTVHCContentTypeAudio,
+                                        KTVHCContentTypeApplicationMPEG4,
+                                        KTVHCContentTypeApplicationOctetStream,
+                                        KTVHCContentTypeBinaryOctetStream];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidEnterBackground:)
                                                      name:UIApplicationDidEnterBackgroundNotification
@@ -81,43 +83,45 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
 - (void)dealloc
 {
     KTVHCLogDealloc(self);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (NSArray <NSString *> *)availableHeaderKeys
+- (NSArray<NSString *> *)availableHeaderKeys
 {
-    static NSArray <NSString *> * availableHeaderKeys = nil;
+    static NSArray<NSString *> *obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        availableHeaderKeys = @[@"User-Agent",
-                                @"Connection",
-                                @"Accept",
-                                @"Accept-Encoding",
-                                @"Accept-Language",
-                                @"Range"];
+        obj = @[@"User-Agent",
+                @"Connection",
+                @"Accept",
+                @"Accept-Encoding",
+                @"Accept-Language",
+                @"Range"];
     });
-    return availableHeaderKeys;
+    return obj;
 }
 
 - (NSURLSessionTask *)downloadWithRequest:(KTVHCDataRequest *)request delegate:(id<KTVHCDownloadDelegate>)delegate
 {
     [self lock];
-    NSMutableURLRequest * HTTPRequest = [NSMutableURLRequest requestWithURL:request.URL];
-    [request.headers enumerateKeysAndObjectsUsingBlock:^(NSString * key, NSString * obj, BOOL * stop) {
-        if ([[self availableHeaderKeys] containsObject:key] || [self.whitelistHeaderKeys containsObject:key]) {
-            [HTTPRequest setValue:obj forHTTPHeaderField:key];
+    NSMutableURLRequest *mRequest = [NSMutableURLRequest requestWithURL:request.URL];
+    mRequest.timeoutInterval = self.timeoutInterval;
+    mRequest.cachePolicy = NSURLRequestReloadIgnoringCacheData;
+    [request.headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *obj, BOOL *stop) {
+        if ([self.availableHeaderKeys containsObject:key] ||
+            [self.whitelistHeaderKeys containsObject:key]) {
+            [mRequest setValue:obj forHTTPHeaderField:key];
         }
     }];
-    HTTPRequest.timeoutInterval = self.timeoutInterval;
-    HTTPRequest.cachePolicy = NSURLRequestReloadIgnoringCacheData;
-    [self.additionalHeaders enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-        [HTTPRequest setValue:obj forHTTPHeaderField:key];
+    [self.additionalHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *obj, BOOL *stop) {
+        [mRequest setValue:obj forHTTPHeaderField:key];
     }];
-    NSURLSessionDataTask * task = [self.session dataTaskWithRequest:HTTPRequest];
-    task.priority = 1.0;
+    NSURLSessionDataTask *task = [self.session dataTaskWithRequest:mRequest];
     [self.requestDictionary setObject:request forKey:task];
     [self.delegateDictionary setObject:delegate forKey:task];
-    KTVHCLogDownload(@"%p, Add Request\nrequest : %@\nURL : %@\nheaders : %@\nHTTPRequest headers : %@\nCount : %d", self, request, request.URL, request.headers, HTTPRequest.allHTTPHeaderFields, (int)self.delegateDictionary.count);
+    task.priority = 1.0;
     [task resume];
+    KTVHCLogDownload(@"%p, Add Request\nrequest : %@\nURL : %@\nheaders : %@\nHTTPRequest headers : %@\nCount : %d", self, request, request.URL, request.headers, mRequest.allHTTPHeaderFields, (int)self.delegateDictionary.count);
     [self unlock];
     return task;
 }
@@ -126,92 +130,84 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
 {
     [self lock];
     KTVHCLogDownload(@"%p, Complete\nError : %@", self, error);
-    id <KTVHCDownloadDelegate> delegate = [self.delegateDictionary objectForKey:task];
-    NSError * cancelError = [self.errorDictionary objectForKey:task];
-    if (cancelError)
-    {
-        error = cancelError;
+    if ([self.errorDictionary objectForKey:task]) {
+        error = [self.errorDictionary objectForKey:task];
     }
-    [delegate download:self didCompleteWithError:error];
+    id<KTVHCDownloadDelegate> delegate = [self.delegateDictionary objectForKey:task];
+    [delegate ktv_download:self didCompleteWithError:error];
     [self.delegateDictionary removeObjectForKey:task];
     [self.requestDictionary removeObjectForKey:task];
     [self.errorDictionary removeObjectForKey:task];
-    if (self.delegateDictionary.count <= 0)
-    {
-        [self cleanBackgroundTaskAsync];
+    if (self.delegateDictionary.count <= 0) {
+        [self endBackgroundTaskDelay];
     }
     [self unlock];
 }
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveResponse:(NSHTTPURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
     [self lock];
-    NSHTTPURLResponse * HTTPResponse = (NSHTTPURLResponse *)response;
-    KTVHCDataRequest * dataRequest = [self.requestDictionary objectForKey:dataTask];
-    KTVHCDataResponse * dataResponse = [[KTVHCDataResponse alloc] initWithURL:dataRequest.URL headers:HTTPResponse.allHeaderFields];
-    KTVHCLogDownload(@"%p, Receive response\nrequest : %@\nresponse : %@\nHTTPResponse : %@", self, dataRequest, dataResponse, [(NSHTTPURLResponse *)response allHeaderFields]);
-    NSError * error = nil;
-    if (!error)
-    {
-        if (HTTPResponse.statusCode > 400)
-        {
-            error = [KTVHCError errorForResponseUnavailable:dataTask.currentRequest.URL request:dataTask.currentRequest response:dataTask.response];
+    KTVHCDataRequest *dataRequest = [self.requestDictionary objectForKey:task];
+    KTVHCDataResponse *dataResponse = [[KTVHCDataResponse alloc] initWithURL:dataRequest.URL headers:response.allHeaderFields];
+    KTVHCLogDownload(@"%p, Receive response\nrequest : %@\nresponse : %@\nHTTPResponse : %@", self, dataRequest, dataResponse, response.allHeaderFields);
+    NSError *error = nil;
+    if (!error) {
+        if (response.statusCode > 400) {
+            error = [KTVHCError errorForResponseUnavailable:task.currentRequest.URL
+                                                    request:task.currentRequest
+                                                   response:task.response];
         }
-        if (!error)
-        {
-            BOOL contentTypeVaild = NO;
-            if (dataResponse.contentType.length > 0)
-            {
-                for (NSString * obj in self.acceptContentTypes)
-                {
-                    if ([[dataResponse.contentType lowercaseString] containsString:[obj lowercaseString]])
-                    {
-                        contentTypeVaild = YES;
-                    }
-                }
-                if (!contentTypeVaild && self.unsupportContentTypeFilter)
-                {
-                    contentTypeVaild = self.unsupportContentTypeFilter(dataRequest.URL, dataResponse.contentType);
+    }
+    if (!error) {
+        BOOL vaild = NO;
+        if (dataResponse.contentType.length > 0) {
+            for (NSString *obj in self.acceptableContentTypes) {
+                if ([[dataResponse.contentType lowercaseString] containsString:[obj lowercaseString]]) {
+                    vaild = YES;
                 }
             }
-            if (!contentTypeVaild)
-            {
-                error = [KTVHCError errorForUnsupportContentType:dataTask.currentRequest.URL request:dataTask.currentRequest response:dataTask.response];
+            if (!vaild && self.unacceptableContentTypeDisposer) {
+                vaild = self.unacceptableContentTypeDisposer(dataRequest.URL, dataResponse.contentType);
             }
-            if (!error)
-            {
-                if (dataResponse.currentLength <= 0 ||
-                    (!KTVHCRangeIsFull(dataRequest.range) &&
-                     (dataResponse.currentLength != KTVHCRangeGetLength(dataRequest.range))))
-                {
-                    error = [KTVHCError errorForUnsupportContentType:dataTask.currentRequest.URL request:dataTask.currentRequest response:dataTask.response];
-                }
-                if (!error)
-                {
-                    long long length = dataResponse.currentLength + [KTVHCDataStorage storage].totalCacheLength - [KTVHCDataStorage storage].maxCacheLength;
-                    if (length > 0)
-                    {
-                        [[KTVHCDataUnitPool pool] deleteUnitsWithLength:length];
-                        length = dataResponse.currentLength + [KTVHCDataStorage storage].totalCacheLength - [KTVHCDataStorage storage].maxCacheLength;
-                        if (length > 0)
-                        {
-                            error = [KTVHCError errorForNotEnoughDiskSpace:dataResponse.totalLength request:dataResponse.currentLength totalCacheLength:[KTVHCDataStorage storage].totalCacheLength maxCacheLength:[KTVHCDataStorage storage].maxCacheLength];
-                        }
-                    }
-                }
+        }
+        if (!vaild) {
+            error = [KTVHCError errorForUnsupportContentType:task.currentRequest.URL
+                                                     request:task.currentRequest
+                                                    response:task.response];
+        }
+    }
+    if (!error) {
+        if (dataResponse.contentLength <= 0 ||
+            (!KTVHCRangeIsFull(dataRequest.range) &&
+             (dataResponse.contentLength != KTVHCRangeGetLength(dataRequest.range)))) {
+                error = [KTVHCError errorForUnsupportContentType:task.currentRequest.URL
+                                                         request:task.currentRequest
+                                                        response:task.response];
+            }
+    }
+    if (!error) {
+        long long (^getDeletionLength)(long long) = ^(long long desireLength){
+            return desireLength + [KTVHCDataStorage storage].totalCacheLength - [KTVHCDataStorage storage].maxCacheLength;
+        };
+        long long length = getDeletionLength(dataResponse.contentLength);
+        if (length > 0) {
+            [[KTVHCDataUnitPool pool] deleteUnitsWithLength:length];
+            length = getDeletionLength(dataResponse.contentLength);
+            if (length > 0) {
+                error = [KTVHCError errorForNotEnoughDiskSpace:dataResponse.totalLength
+                                                       request:dataResponse.contentLength
+                                              totalCacheLength:[KTVHCDataStorage storage].totalCacheLength
+                                                maxCacheLength:[KTVHCDataStorage storage].maxCacheLength];
             }
         }
     }
-    if (error)
-    {
+    if (error) {
         KTVHCLogDownload(@"%p, Invaild response\nError : %@", self, error);
-        [self.errorDictionary setObject:error forKey:dataTask];
+        [self.errorDictionary setObject:error forKey:task];
         completionHandler(NSURLSessionResponseCancel);
-    }
-    else
-    {
-        id <KTVHCDownloadDelegate> delegate = [self.delegateDictionary objectForKey:dataTask];
-        [delegate download:self didReceiveResponse:dataResponse];
+    } else {
+        id<KTVHCDownloadDelegate> delegate = [self.delegateDictionary objectForKey:task];
+        [delegate ktv_download:self didReceiveResponse:dataResponse];
         completionHandler(NSURLSessionResponseAllow);
     }
     [self unlock];
@@ -229,16 +225,15 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
 {
     [self lock];
     KTVHCLogDownload(@"%p, Receive data - Begin\nLength : %lld\nURL : %@", self, (long long)data.length, dataTask.originalRequest.URL.absoluteString);
-    id <KTVHCDownloadDelegate> delegate = [self.delegateDictionary objectForKey:dataTask];
-    [delegate download:self didReceiveData:data];
+    id<KTVHCDownloadDelegate> delegate = [self.delegateDictionary objectForKey:dataTask];
+    [delegate ktv_download:self didReceiveData:data];
     KTVHCLogDownload(@"%p, Receive data - End\nLength : %lld\nURL : %@", self, (long long)data.length, dataTask.originalRequest.URL.absoluteString);
     [self unlock];
 }
 
 - (void)lock
 {
-    if (!self.coreLock)
-    {
+    if (!self.coreLock) {
         self.coreLock = [[NSLock alloc] init];
     }
     [self.coreLock lock];
@@ -251,53 +246,41 @@ NSString * const KTVHCContentTypeBinaryOctetStream      = @"binary/octet-stream"
 
 #pragma mark - Background Task
 
-static UIBackgroundTaskIdentifier backgroundTaskIdentifier = -1;
-
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
-    [self cleanBackgroundTask];
     [self lock];
-    if (self.delegateDictionary.count > 0)
-    {
-        backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            [self cleanBackgroundTask];
-        }];
-        UIBackgroundTaskIdentifier blockIdentifier = backgroundTaskIdentifier;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(300 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (blockIdentifier == backgroundTaskIdentifier)
-            {
-                [self cleanBackgroundTask];
-            }
-        });
+    if (self.delegateDictionary.count > 0) {
+        [self beginBackgroundTask];
     }
     [self unlock];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    [self cleanBackgroundTask];
+    [self endBackgroundTask];
 }
 
-- (void)cleanBackgroundTask
+- (void)beginBackgroundTask
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-    });
-    if (backgroundTaskIdentifier != UIBackgroundTaskInvalid)
-    {
-        [[UIApplication sharedApplication] endBackgroundTask:backgroundTaskIdentifier];
-        backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+    self.backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [self endBackgroundTask];
+    }];
+}
+
+- (void)endBackgroundTask
+{
+    if (self.backgroundTask != UIBackgroundTaskInvalid) {
+        [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTask];
+        self.backgroundTask = UIBackgroundTaskInvalid;
     }
 }
 
-- (void)cleanBackgroundTaskAsync
+- (void)endBackgroundTaskDelay
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self lock];
-        if (self.delegateDictionary.count <= 0)
-        {
-            [self cleanBackgroundTask];
+        if (self.delegateDictionary.count <= 0) {
+            [self endBackgroundTask];
         }
         [self unlock];
     });

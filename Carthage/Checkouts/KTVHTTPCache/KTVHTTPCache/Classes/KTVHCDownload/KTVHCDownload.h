@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KTVHCDataRequest.h"
 #import "KTVHCDataResponse.h"
-#import "KTVHCCommon.h"
+#import "KTVHCDataRequest.h"
+#import "KTVHCMacro.h"
 
 KTVHTTPCACHE_EXTERN NSString * const KTVHCContentTypeVideo;
 KTVHTTPCACHE_EXTERN NSString * const KTVHCContentTypeAudio;
@@ -21,9 +21,9 @@ KTVHTTPCACHE_EXTERN NSString * const KTVHCContentTypeBinaryOctetStream;
 
 @protocol KTVHCDownloadDelegate <NSObject>
 
-- (void)download:(KTVHCDownload *)download didCompleteWithError:(NSError *)error;
-- (void)download:(KTVHCDownload *)download didReceiveResponse:(KTVHCDataResponse *)response;
-- (void)download:(KTVHCDownload *)download didReceiveData:(NSData *)data;
+- (void)ktv_download:(KTVHCDownload *)download didCompleteWithError:(NSError *)error;
+- (void)ktv_download:(KTVHCDownload *)download didReceiveResponse:(KTVHCDataResponse *)response;
+- (void)ktv_download:(KTVHCDownload *)download didReceiveData:(NSData *)data;
 
 @end
 
@@ -34,19 +34,19 @@ KTVHTTPCACHE_EXTERN NSString * const KTVHCContentTypeBinaryOctetStream;
 
 + (instancetype)download;
 
-@property (nonatomic, assign) NSTimeInterval timeoutInterval;
+@property (nonatomic) NSTimeInterval timeoutInterval;
 
 /**
  *  Header Fields
  */
-@property (nonatomic, copy) NSArray <NSString *> * whitelistHeaderKeys;
-@property (nonatomic, copy) NSDictionary <NSString *, NSString *> * additionalHeaders;
+@property (nonatomic, copy) NSArray<NSString *> *whitelistHeaderKeys;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *additionalHeaders;
 
 /**
  *  Content-Type
  */
-@property (nonatomic, copy) NSArray <NSString *> * acceptContentTypes;
-@property (nonatomic, copy) BOOL (^unsupportContentTypeFilter)(NSURL * URL, NSString * contentType);
+@property (nonatomic, copy) NSArray<NSString *> *acceptableContentTypes;
+@property (nonatomic, copy) BOOL (^unacceptableContentTypeDisposer)(NSURL *URL, NSString *contentType);
 
 - (NSURLSessionTask *)downloadWithRequest:(KTVHCDataRequest *)request delegate:(id<KTVHCDownloadDelegate>)delegate;
 
