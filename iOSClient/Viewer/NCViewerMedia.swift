@@ -122,27 +122,24 @@ class NCViewerMedia: NSObject {
     
     @objc func setupHTTPCache() {
         
-        var error: NSError?
-
         KTVHTTPCache.cacheSetMaxCacheLength(Int64(k_maxHTTPCache))
         
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
             KTVHTTPCache.logSetConsoleLogEnable(true)
         }
         
-        KTVHTTPCache.proxyStart(&error)
-        if error == nil {
-            print("Proxy Start Success")
-        } else {
-            print("Proxy Start error : \(error!)")
+        do {
+            try KTVHTTPCache.proxyStart()
+        } catch let error {
+            print("Proxy Start error : \(error)")
         }
-    
-        KTVHTTPCache.tokenSetURLFilter { (url) -> URL? in
+        
+        KTVHTTPCache.encodeSetURLConverter { (url) -> URL? in
             print("URL Filter reviced URL : " + String(describing: url))
             return url
         }
         
-        KTVHTTPCache.downloadSetUnsupportContentTypeFilter { (url, contentType) -> Bool in
+        KTVHTTPCache.downloadSetUnacceptableContentTypeDisposer { (url, contentType) -> Bool in
             print("Unsupport Content-Type Filter reviced URL : " + String(describing: url) + " " + String(describing: contentType))
             return false
         }
