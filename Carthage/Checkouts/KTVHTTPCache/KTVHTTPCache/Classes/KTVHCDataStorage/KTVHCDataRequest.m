@@ -7,18 +7,22 @@
 //
 
 #import "KTVHCDataRequest.h"
-#import "KTVHCData+Internal.h"
 #import "KTVHCLog.h"
 
 @implementation KTVHCDataRequest
 
 - (instancetype)initWithURL:(NSURL *)URL headers:(NSDictionary *)headers
 {
-    if (self = [super init]) {
+    if (self = [super init])
+    {
         KTVHCLogAlloc(self);
-        self->_URL = URL;
-        self->_headers = KTVHCRangeFillToRequestHeadersIfNeeded(KTVHCRangeFull(), headers);
-        self->_range = KTVHCRangeWithRequestHeaderValue([self.headers objectForKey:@"Range"]);
+        _URL = URL;
+        if (![headers objectForKey:@"Range"]) {
+            _headers = KTVHCRangeFillToRequestHeaders(KTVHCRangeFull(), headers);
+        } else {
+            _headers = headers;
+        }
+        _range = KTVHCRangeWithRequestHeaderValue([_headers objectForKey:@"Range"]);
         KTVHCLogDataRequest(@"%p Create data request\nURL : %@\nHeaders : %@\nRange : %@", self, self.URL, self.headers, KTVHCStringFromRange(self.range));
     }
     return self;
@@ -29,17 +33,21 @@
     KTVHCLogDealloc(self);
 }
 
-- (KTVHCDataRequest *)newRequestWithRange:(KTVHCRange)range
+- (KTVHCDataRequest *)requestWithRange:(KTVHCRange)range
 {
-    NSDictionary *headers = KTVHCRangeFillToRequestHeaders(range, self.headers);
-    KTVHCDataRequest *obj = [[KTVHCDataRequest alloc] initWithURL:self.URL headers:headers];
-    return obj;
+    if (!KTVHCEqualRanges(self.range, range))
+    {
+        NSDictionary * headers = KTVHCRangeFillToRequestHeaders(range, self.headers);
+        KTVHCDataRequest * obj = [[KTVHCDataRequest alloc] initWithURL:self.URL headers:headers];
+        return obj;
+    }
+    return self;
 }
 
-- (KTVHCDataRequest *)newRequestWithTotalLength:(long long)totalLength
+- (KTVHCDataRequest *)requestWithTotalLength:(long long)totalLength
 {
     KTVHCRange range = KTVHCRangeWithEnsureLength(self.range, totalLength);
-    return [self newRequestWithRange:range];
+    return [self requestWithRange:range];
 }
 
 @end

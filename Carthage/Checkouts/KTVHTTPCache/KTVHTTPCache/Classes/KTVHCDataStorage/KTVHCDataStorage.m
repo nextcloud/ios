@@ -7,7 +7,6 @@
 //
 
 #import "KTVHCDataStorage.h"
-#import "KTVHCData+Internal.h"
 #import "KTVHCDataUnitPool.h"
 #import "KTVHCLog.h"
 
@@ -15,7 +14,7 @@
 
 + (instancetype)storage
 {
-    static KTVHCDataStorage *obj = nil;
+    static KTVHCDataStorage * obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         obj = [[self alloc] init];
@@ -25,37 +24,40 @@
 
 - (instancetype)init
 {
-    if (self = [super init]) {
+    if (self = [super init])
+    {
         self.maxCacheLength = 500 * 1024 * 1024;
     }
     return self;
 }
 
-- (NSURL *)completeFileURLWithURL:(NSURL *)URL
+- (NSURL *)completeFileURLIfExistedWithURL:(NSURL *)URL
 {
-    KTVHCDataUnit *unit = [[KTVHCDataUnitPool pool] unitWithURL:URL];
-    NSURL *completeURL = unit.completeURL;
+    KTVHCDataUnit * unit = [[KTVHCDataUnitPool pool] unitWithURL:URL];
+    NSURL * fileURL = unit.fileURL;
     [unit workingRelease];
-    return completeURL;
+    return fileURL;
 }
 
 - (KTVHCDataReader *)readerWithRequest:(KTVHCDataRequest *)request
 {
-    if (!request || request.URL.absoluteString.length <= 0) {
+    if (!request || request.URL.absoluteString.length <= 0)
+    {
         KTVHCLogDataStorage(@"Invaild reader request, %@", request.URL);
         return nil;
     }
-    KTVHCDataReader *reader = [[KTVHCDataReader alloc] initWithRequest:request];
+    KTVHCDataReader * reader = [KTVHCDataReader readerWithRequest:request];
     return reader;
 }
 
 - (KTVHCDataLoader *)loaderWithRequest:(KTVHCDataRequest *)request
 {
-    if (!request || request.URL.absoluteString.length <= 0) {
+    if (!request || request.URL.absoluteString.length <= 0)
+    {
         KTVHCLogDataStorage(@"Invaild loader request, %@", request.URL);
         return nil;
     }
-    KTVHCDataLoader *loader = [[KTVHCDataLoader alloc] initWithRequest:request];
+    KTVHCDataLoader * loader = [KTVHCDataLoader loaderWithRequest:request];
     return loader;
 }
 

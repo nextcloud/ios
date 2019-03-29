@@ -7,12 +7,12 @@
 //
 
 #import "KTVHCDataUnitItem.h"
-#import "KTVHCPathTool.h"
+#import "KTVHCPathTools.h"
 #import "KTVHCLog.h"
 
 @interface KTVHCDataUnitItem ()
 
-@property (nonatomic, strong) NSRecursiveLock *coreLock;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 
 @end
 
@@ -21,7 +21,7 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     [self lock];
-    KTVHCDataUnitItem *obj = [[KTVHCDataUnitItem alloc] init];
+    KTVHCDataUnitItem * obj = [[KTVHCDataUnitItem alloc] initForCopy];
     obj->_relativePath = self.relativePath;
     obj->_absolutePath = self.absolutePath;
     obj->_createTimeInterval = self.createTimeInterval;
@@ -31,33 +31,37 @@
     return obj;
 }
 
-- (instancetype)initWithPath:(NSString *)path
+- (instancetype)initForCopy
 {
-    return [self initWithPath:path offset:0];
+    if (self = [super init])
+    {
+        
+    }
+    return self;
 }
 
-- (instancetype)initWithPath:(NSString *)path offset:(uint64_t)offset
+- (instancetype)initWithPath:(NSString *)path offset:(long long)offset
 {
-    if (self = [super init]) {
-        self->_createTimeInterval = [NSDate date].timeIntervalSince1970;
-        self->_relativePath = [KTVHCPathTool converToRelativePath:path];
-        self->_absolutePath = [KTVHCPathTool converToAbsoultePath:path];
-        self->_offset = offset;
-        self->_length = [KTVHCPathTool sizeAtPath:self.absolutePath];
-        [self commonInit];
+    if (self = [super init])
+    {
+        KTVHCLogAlloc(self);
+        _createTimeInterval = [NSDate date].timeIntervalSince1970;
+        _relativePath = [KTVHCPathTools relativePathWithAbsoultePath:path];
+        _offset = offset;
+        [self prepare];
     }
     return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super init]) {
-        self->_createTimeInterval = [[aDecoder decodeObjectForKey:@"createTimeInterval"] doubleValue];
-        self->_relativePath = [aDecoder decodeObjectForKey:@"relativePath"];
-        self->_absolutePath = [KTVHCPathTool converToAbsoultePath:self.relativePath];
-        self->_offset = [[aDecoder decodeObjectForKey:@"offset"] longLongValue];
-        self->_length = [KTVHCPathTool sizeAtPath:self.absolutePath];
-        [self commonInit];
+    if (self = [super init])
+    {
+        KTVHCLogAlloc(self);
+        _createTimeInterval = [[aDecoder decodeObjectForKey:@"createTimeInterval"] doubleValue];
+        _relativePath = [aDecoder decodeObjectForKey:@"relativePath"];
+        _offset = [[aDecoder decodeObjectForKey:@"offset"] longLongValue];
+        [self prepare];
     }
     return self;
 }
@@ -74,23 +78,25 @@
     KTVHCLogDealloc(self);
 }
 
-- (void)commonInit
+- (void)prepare
 {
-    KTVHCLogAlloc(self);
+    _absolutePath = [KTVHCPathTools absoultePathWithRelativePath:self.relativePath];
+    self.length = [KTVHCPathTools sizeOfItemAtPath:self.absolutePath];
     KTVHCLogDataUnitItem(@"%p, Create Unit Item\nabsolutePath : %@\nrelativePath : %@\nOffset : %lld\nLength : %lld", self, self.absolutePath, self.relativePath, self.offset, self.length);
 }
 
-- (void)updateLength:(long long)length
+- (void)setLength:(long long)length
 {
     [self lock];
-    self->_length = length;
+    _length = length;
     KTVHCLogDataUnitItem(@"%p, Set length : %lld", self, length);
     [self unlock];
 }
 
 - (void)lock
 {
-    if (!self.coreLock) {
+    if (!self.coreLock)
+    {
         self.coreLock = [[NSRecursiveLock alloc] init];
     }
     [self.coreLock lock];

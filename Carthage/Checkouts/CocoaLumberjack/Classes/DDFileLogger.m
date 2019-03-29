@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2019, Deusty, LLC
+// Copyright (c) 2010-2018, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -1007,55 +1007,39 @@ unsigned long long const kDDDefaultLogFilesDiskQuota   = 20 * 1024 * 1024; // 20
 - (DDLogFileInfo *)lt_currentLogFileInfo {
     NSAssert([self isOnInternalLoggerQueue], @"lt_ methods should be on logger queue.");
 
-    // Get the current log file info ivar (might be nil).
-    DDLogFileInfo *newCurrentLogFile = _currentLogFileInfo;
-
-    // Check if we're resuming and if so, get the first of the sorted log file infos.
-    BOOL isResuming = newCurrentLogFile == nil;
+    BOOL isResuming = _currentLogFileInfo == nil;
     if (isResuming) {
         NSArray *sortedLogFileInfos = [_logFileManager sortedLogFileInfos];
-        newCurrentLogFile = sortedLogFileInfos.firstObject;
+        _currentLogFileInfo = sortedLogFileInfos.firstObject;
     }
 
-    // Check if the file we've found is still valid. Otherwise create a new one.
-    if (newCurrentLogFile != nil && [self lt_shouldUseLogFile:newCurrentLogFile isResuming:isResuming]) {
-        if (isResuming) {
-            NSLogVerbose(@"DDFileLogger: Resuming logging with file %@", newCurrentLogFile.fileName);
+    if (_currentLogFileInfo) {
+        BOOL isMostRecentLogArchived = _currentLogFileInfo.isArchived;
+        BOOL forceArchive = _doNotReuseLogFiles && isMostRecentLogArchived == NO;
+
+        if (forceArchive || [self lt_shouldLogFileBeArchived:_currentLogFileInfo]) {
+            _currentLogFileInfo.isArchived = YES;
+            NSString *archivedLogFilePath = [_currentLogFileInfo.fileName copy];
+            _currentLogFileInfo = nil;
+
+            if ([_logFileManager respondsToSelector:@selector(didArchiveLogFile:)]) {
+                dispatch_async(_completionQueue, ^{
+                    [self->_logFileManager didArchiveLogFile:archivedLogFilePath];
+                });
+            }
         }
-        _currentLogFileInfo = newCurrentLogFile;
-    } else {
+    }
+
+    if (isResuming && _currentLogFileInfo) {
+        NSLogVerbose(@"DDFileLogger: Resuming logging with file %@", _currentLogFileInfo.fileName);
+    }
+
+    if (!_currentLogFileInfo) {
         NSString *currentLogFilePath = [_logFileManager createNewLogFile];
         _currentLogFileInfo = [[DDLogFileInfo alloc] initWithFilePath:currentLogFilePath];
     }
 
     return _currentLogFileInfo;
-}
-
-- (BOOL)lt_shouldUseLogFile:(nonnull DDLogFileInfo *)logFileInfo isResuming:(BOOL)isResuming {
-    NSAssert([self isOnInternalLoggerQueue], @"lt_ methods should be on logger queue.");
-    NSParameterAssert(logFileInfo);
-
-    // Check if the log file is archived. We must not use archived log files.
-    if (logFileInfo.isArchived) {
-        return NO;
-    }
-
-    // If we're resuming, we need to check if the log file is allowed for reuse or needs to be archived.
-    if (isResuming && (_doNotReuseLogFiles || [self lt_shouldLogFileBeArchived:logFileInfo])) {
-        logFileInfo.isArchived = YES;
-        NSString *archivedLogFilePath = [logFileInfo.fileName copy];
-
-        if ([_logFileManager respondsToSelector:@selector(didArchiveLogFile:)]) {
-            dispatch_async(_completionQueue, ^{
-                [self->_logFileManager didArchiveLogFile:archivedLogFilePath];
-            });
-        }
-
-        return NO;
-    }
-
-    // All checks have passed. It's valid.
-    return YES;
 }
 
 - (void)lt_monitorCurrentLogFileForExternalChanges {
