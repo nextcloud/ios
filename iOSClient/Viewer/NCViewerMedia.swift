@@ -97,7 +97,8 @@ class NCViewerMedia: NSObject {
             
             // Save cache
             if !CCUtility.fileProviderStorageExists(self.metadata.fileID, fileNameView:self.metadata.fileNameView) {
-                guard let url = KTVHTTPCache.cacheCompleteFileURLIfExisted(with: self.videoURL) else {
+                
+                guard let url = KTVHTTPCache.cacheCompleteFileURL(with: self.videoURL) else {
                     return
                 }
                 
