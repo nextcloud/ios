@@ -582,10 +582,6 @@ PKPushRegistry *pushRegistry;
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type
 {
-    // test
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
-    
     self.pushKitToken = [self stringWithDeviceToken:credentials.token];
 
     [self pushNotification];
