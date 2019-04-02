@@ -41,7 +41,7 @@ extension FileProviderExtension {
             let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier)
             if metadata != nil {
                 
-                if (metadata!.typeFile == k_metadataTypeFile_image || metadata!.typeFile == k_metadataTypeFile_video) {
+                if (metadata!.hasPreview == 1) {
                     
                     let width = NCUtility.sharedInstance.getScreenWidthForPreview()
                     let height = NCUtility.sharedInstance.getScreenHeightForPreview()
