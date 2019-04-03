@@ -243,6 +243,9 @@ PKPushRegistry *pushRegistry;
     
     NSLog(@"[LOG] Read active directory");
     [self.activeMain readFileReloadFolder];
+    
+    NSLog(@"[LOG] Required unsubscribing / subscribing");
+    [self pushNotification];
 }
 
 //
