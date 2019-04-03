@@ -535,7 +535,6 @@ PKPushRegistry *pushRegistry;
                     } else {
                         content.title = content.title;
                         content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain];
-                        content.threadIdentifier = content.subtitle;
                     }
                     if (subject) {
                         content.body = subject;
