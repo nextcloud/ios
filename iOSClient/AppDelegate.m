@@ -507,7 +507,8 @@ PKPushRegistry *pushRegistry;
     NSString *message = [payload.dictionaryPayload objectForKey:@"subject"];
     
     if (message) {
-        for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
+        NSArray *results = [[NCManageDatabase sharedInstance] getAllAccount];
+        for (tableAccount *result in results) {
             if ([CCUtility getPushNotificationPrivateKey:result.account]) {
                 NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:result.account]];
                 if (decryptedMessage) {
@@ -529,7 +530,13 @@ PKPushRegistry *pushRegistry;
                     } else {
                         content.title = app.capitalizedString;
                     }
-                    content.title = [NSString stringWithFormat:@"%@ - %@ (%@)", content.title, result.displayName, domain];
+                    if (results.count == 1) {
+                        content.title = content.title;
+                    } else {
+                        content.title = content.title;
+                        content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain];
+                        content.threadIdentifier = content.subtitle;
+                    }
                     if (subject) {
                         content.body = subject;
                     } else {

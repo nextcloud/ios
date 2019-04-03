@@ -1586,9 +1586,12 @@
     
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
     NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
-    //proxyServerPath = @"http://127.0.0.1:8088";
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
-    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
+#ifdef DEBUG
+    proxyServerPath = @"http://127.0.0.1:8088";
+    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+#endif
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
@@ -1645,7 +1648,10 @@
     }
     
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
-    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
+#ifdef DEBUG
+    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+#endif
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
