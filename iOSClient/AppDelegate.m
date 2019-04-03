@@ -404,8 +404,10 @@ PKPushRegistry *pushRegistry;
     
     if (![token isEqualToString:self.pushKitToken]) {
         if (token != nil) {
-            // unsubscribing + subscribing
-            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl withSubscribing:true];
+            // token has changed, unsubscribing + subscribing for all acconts
+            for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
+                [self unsubscribingNextcloudServerPushNotification:result.account url:result.url withSubscribing:true];
+            }
         } else {
             [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl];
         }
