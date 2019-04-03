@@ -400,16 +400,17 @@ PKPushRegistry *pushRegistry;
     if (self.activeAccount.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
         return;
     
-    NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
-    
-    if (![token isEqualToString:self.pushKitToken]) {
-        if (token != nil) {
-            // token has changed, unsubscribing + subscribing for all acconts
-            for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
+    for (tableAccount *result in [[NCManageDatabase sharedInstance] getAllAccount]) {
+        
+        NSString *token = [CCUtility getPushNotificationToken:result.account];
+        
+        if (![token isEqualToString:self.pushKitToken]) {
+            if (token != nil) {
+                // unsubscribing + subscribing
                 [self unsubscribingNextcloudServerPushNotification:result.account url:result.url withSubscribing:true];
+            } else {
+                [self subscribingNextcloudServerPushNotification:result.account url:result.url];
             }
-        } else {
-            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl];
         }
     }
 }
