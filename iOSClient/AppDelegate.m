@@ -34,10 +34,9 @@
 #import <Crashlytics/Crashlytics.h>
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
-#import "Firebase.h"
 #import "NCPushNotificationEncryption.h"
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -149,28 +148,18 @@ PKPushRegistry *pushRegistry;
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
     
-    /*
-    // Firebase - Push Notification
-    @try {
-        [FIRApp configure];
-    } @catch (NSException *exception) {
-        NSLog(@"[LOG] Something went wrong while configuring Firebase");
-    }
-    */
-    
     // Push Notification
     pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
     pushRegistry.delegate = self;
     pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+    
+    [application registerForRemoteNotifications];
     
     // Display notification (sent via APNS)
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
     UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
     [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
     }];
-    
-    [application registerForRemoteNotifications];
-    [FIRMessaging messaging].delegate = self;
     
     // setting Reachable in back
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -499,86 +488,6 @@ PKPushRegistry *pushRegistry;
 {
     completionHandler();
 }
-
-/*
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
-    NSLog(@"Push notification: %@", userInfo);
-    
-    NSUInteger fetchResult = UIBackgroundFetchResultNoData;
-    NSString *message = [userInfo objectForKey:@"subject"];
-    
-    if (message) {
-        for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
-            if ([CCUtility getPushNotificationPrivateKey:result.account]) {
-                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:result.account]];
-                if (decryptedMessage) {
-                    
-                    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-                    
-                    NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                    
-                    NSString *app = [json objectForKey:@"app"];
-                    NSString *subject = [json objectForKey:@"subject"];
-                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
-                    
-                    if ([app isEqualToString:@"spreed"]) {
-                        content.title = @"Nextcloud Talk";
-                    } else {
-                        content.title = app.capitalizedString;
-                    }
-                    content.title = [NSString stringWithFormat:@"%@ (%@)", content.title, result.account];
-                    
-                    if (subject) {
-                        content.body = subject;
-                    } else {
-                        content.body = @"Nextcloud notification";
-                    }
-                    
-                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
-                        //
-                    }];
-                    
-                    content.sound = [UNNotificationSound defaultSound];
-                    
-                    NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
-                    
-                    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
-                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-                    
-                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-                    
-                    fetchResult = UIBackgroundFetchResultNewData;
-                    break;
-                }
-            }
-        }
-    }
-    
-    completionHandler(fetchResult);
-}
-
-- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken
-{
-
-    // test
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
-    
-    NSLog(@"FCM registration token: %@", fcmToken);
-    
-    NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
-    if (![token isEqualToString:fcmToken]) {
-        if (token != nil) {
-            // unsubscribing + subscribing
-            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
-        } else {
-            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
-        }
-    }
-}
-*/
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type
 {
