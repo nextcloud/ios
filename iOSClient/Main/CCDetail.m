@@ -98,13 +98,6 @@
     // TabBar
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
-    
-    // Open View
-    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.fileID length] > 0) {
-    
-        // open view
-        [self viewFile];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -113,6 +106,13 @@
     
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
+    
+    // Open View
+    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.fileID length] > 0) {
+        
+        // open view
+        [self viewFile];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -140,6 +140,18 @@
     }
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        if (self.imagemeter) {
+            [self.imagemeter viewImagemeter];
+        }
+    }];
+}
+
 - (void)changeTheming
 {
     [appDelegate changeTheming:self];
@@ -152,8 +164,12 @@
 
 - (void)changeToDisplayMode
 {
-    if (_readerPDFViewController)
+    if (_readerPDFViewController) {
         [self.readerPDFViewController updateContentViews];
+    }
+    if (self.imagemeter) {
+        [self.imagemeter viewImagemeter];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -247,6 +263,14 @@
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self createToolbar];
         [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
+    }
+    
+    // IMI File
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_imagemeter]) {
+        
+        self.imagemeter = [[NCViewerImagemeter alloc] initWithMetadata:self.metadataDetail detail:self];
+        [self.imagemeter viewImagemeter];
+        [self createToolbar];
     }
 }
 

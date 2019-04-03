@@ -25,15 +25,15 @@ import Foundation
 
 class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     
+    var detail: CCDetail!
+    var webView: WKWebView!
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     @objc static let sharedInstance: NCViewerRichdocument = {
         let instance = NCViewerRichdocument()
         return instance
     }()
     
-    var detail: CCDetail!
-    var webView: WKWebView!
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     @objc func viewRichDocumentAt(_ link: String, detail: CCDetail) {
         
         self.detail = detail

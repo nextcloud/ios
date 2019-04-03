@@ -142,8 +142,7 @@
     [self createRefreshControl];
     
     // Register for 3D Touch Previewing if available
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable))
-    {
+    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
     }
 
@@ -376,6 +375,9 @@
         // reload datasource
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl fileID:nil action:k_action_NULL];
     }
+    
+    // Registered push notification
+    [appDelegate pushNotification];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -916,9 +918,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-    });
-    
-    [appDelegate subscribingNextcloudServerPushNotification];
+    });    
 }
 
 #pragma mark -
@@ -940,6 +940,7 @@
             
         viewController.metadata = metadata;
         viewController.imageFile = cell.file.image;
+        viewController.showOpenIn = true;
         viewController.showShare = true;
         
         return viewController;
@@ -2287,9 +2288,7 @@
 - (void)changeDefaultAccount:(CCMenuItem *)sender
 {
     // LOGOUT
-        
-    [appDelegate unsubscribingNextcloudServerPushNotification];
-        
+    
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
     if (tableAccount) {
             
@@ -2299,8 +2298,6 @@
     
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-            
-        [appDelegate subscribingNextcloudServerPushNotification];
     }
 }
 

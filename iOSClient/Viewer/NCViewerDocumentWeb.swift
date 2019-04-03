@@ -25,13 +25,13 @@ import Foundation
 
 class NCViewerDocumentWeb: NSObject {
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var safeAreaBottom: Int = 0
+    
     @objc static let sharedInstance: NCViewerDocumentWeb = {
         let instance = NCViewerDocumentWeb()
         return instance
     }()
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var safeAreaBottom: Int = 0
     
     @objc func viewDocumentWebAt(_ metadata: tableMetadata, detail: CCDetail) {
         

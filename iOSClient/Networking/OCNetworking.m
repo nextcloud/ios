@@ -165,7 +165,7 @@
     }];
 }
 
-- (void)serverStatusUrl:(NSString *)serverUrl delegate:(id)delegate completion:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode))completion
+- (void)serverStatusUrl:(NSString *)serverUrl completion:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode))completion
 {
     NSString *urlTest = [serverUrl stringByAppendingString:k_serverStatus];
     
@@ -181,7 +181,7 @@
     [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:delegate delegateQueue:nil];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
@@ -1585,18 +1585,22 @@
     }
     
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
-
+    NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+    //proxyServerPath = @"http://127.0.0.1:8088";
+    NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication subscribingNextcloudServerPush:url pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: [NCBrandOptions sharedInstance].pushNotificationServerProxy onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
+    [communication subscribingNextcloudServerPush:url pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: proxyServerPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
         deviceIdentifier = [CCUtility URLEncodeStringFromString:deviceIdentifier];
         signature = [CCUtility URLEncodeStringFromString:signature];
         publicKey = [CCUtility URLEncodeStringFromString:publicKey];
         
-        [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        [communication subscribingPushProxy:proxyServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             completion(account, deviceIdentifier, signature, publicKey, nil, 0);
             
@@ -1640,13 +1644,16 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication unsubscribingNextcloudServerPush:url onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
 
-        [communication unsubscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        [communication unsubscribingPushProxy:proxyServer deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             completion(account, nil, 0);
             
@@ -1681,6 +1688,49 @@
         
         completion(account, message, errorCode);
     }];
+}
+
+- (void)getServerNotification:(NSString *)serverUrl notificationId:(NSInteger)notificationId completion:(void(^)(NSDictionary*jsongParsed, NSString *message, NSInteger errorCode))completion
+{
+    NSString *URLString = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/notifications/api/v2/notifications/%ld?format=json", serverUrl, (long)notificationId];
+
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:URLString] cachePolicy:0 timeoutInterval:20.0];
+    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+
+        if (error) {
+            
+            NSString *message;
+            NSInteger errorCode;
+            
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+            errorCode = httpResponse.statusCode;
+            
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedString(@"_server_error_retry_", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+            completion(nil, message, errorCode);
+            
+        } else {
+            
+            NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+
+            completion(jsongParsed, nil, 0);
+        }
+    }];
+    
+    [task resume];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1864,7 +1914,9 @@
                     trash.directory = itemDto.isDirectory;
                     trash.fileID = itemDto.ocId;
                     trash.fileName = itemDto.fileName;
-                    trash.filePath = itemDto.filePath;
+                    NSArray *array = [itemDto.filePath componentsSeparatedByString:path];
+                    long len = [[array objectAtIndex:0] length];
+                    trash.filePath = [itemDto.filePath substringFromIndex:len];
                     trash.size = itemDto.size;
                     trash.trashbinFileName = itemDto.trashbinFileName;
                     trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
@@ -1929,6 +1981,20 @@
         
         completion(account, message, errorCode);
     }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  didReceiveChallenge =====
+#pragma --------------------------------------------------------------------------------------------
+
+-(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
+{
+    // The pinnning check
+    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
+        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    } else {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
 }
 
 @end

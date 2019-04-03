@@ -55,6 +55,8 @@
 {
     [super viewDidLoad];
 
+    self.delegate = self;
+    
     // Display mode SPLIT
     self.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
     //self.maximumPrimaryColumnWidth = 400;
@@ -179,9 +181,7 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-    
-    [appDelegate subscribingNextcloudServerPushNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];    
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -36,12 +36,6 @@
 
 @implementation CCPeekPop
 
-- (void)setMetadata:(tableMetadata *)newMetadata
-{
-    if (_metadata != newMetadata)
-        _metadata = newMetadata;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -71,33 +65,25 @@
     self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width,  self.imagePreview.image.size.height + highLabelFileName);
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
-    UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-        
-        [[NCMainCommon sharedInstance] downloadOpenInMetadata:_metadata];
-    }];
-    
-    UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-        
-        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
-    }];
-    
-    if (self.showShare == true) {
-        return @[openIn, share];
-    } else {
-        return @[openIn];
+    NSMutableArray *items = [NSMutableArray new];
+ 
+    if (self.showOpenIn && !self.metadata.directory) {
+        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+            [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
+        }];
+        [items addObject:openIn];
     }
+    
+    if (self.showShare) {
+        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+            [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadata];
+        }];
+        [items addObject:share];
+    }
+    
+    return items;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -109,7 +95,7 @@
     CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
     CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:_metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:self.metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
      
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];

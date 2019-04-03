@@ -23,6 +23,9 @@
 
 import Foundation
 import TLPhotoPicker
+import Zip
+
+//MARK: - Main Common
 
 class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
     
@@ -1076,7 +1079,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     }
 }
     
-//MARK: -
+//MARK: - Main TabBarController
 
 class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         
@@ -1156,13 +1159,20 @@ extension UITabBar {
     }
 }
 
-//MARK: -
+//MARK: - Networking Main
 
 class NCNetworkingMain: NSObject, CCNetworkingDelegate {
 
     @objc static let sharedInstance: NCNetworkingMain = {
         let instance = NCNetworkingMain()
         return instance
+    }()
+    
+    lazy var operationQueueNetworkingMain: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.nextcloud.operationQueueNetworkingMain"
+        queue.maxConcurrentOperationCount = 1
+        return queue
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -1209,6 +1219,40 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     uti = ""
                 } else if uti!.contains("opendocument") && !NCViewerRichdocument.sharedInstance.isRichDocument(metadata) {
                     metadata.typeFile = k_metadataTypeFile_unknown
+                }
+                
+                if metadata.typeFile == k_metadataTypeFile_imagemeter {
+                    
+                    do {
+                        Zip.addCustomFileExtension("imi")
+                        
+                        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+                        let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                        
+                        try Zip.unzipFile(source, destination: destination, overwrite: true, password: nil)
+                        
+                        let nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
+                        let pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
+                        let annoPath = (pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm")
+                        
+                        if let fileHandle = FileHandle(forReadingAtPath: annoPath) {
+                            let data = fileHandle.readData(ofLength: 4)
+                            if data.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
+                                Zip.addCustomFileExtension("imm")
+                                do {
+                                    try Zip.unzipFile(annoPath.url, destination: pathArchiveImagemeter.url, overwrite: true, password: nil)
+                                } catch {
+                                    appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                                    return
+                                }
+                            }
+                            fileHandle.closeFile()
+                        }
+                        
+                    } catch {
+                        appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                        return
+                    }
                 }
                 
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
@@ -1318,13 +1362,17 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     }
     
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
+        operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath, networkingFunc: "downloadThumbnail"))
+    }
+    
+    func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
         
         if !metadata.isInvalidated && metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()
             
-            OCNetworking.sharedManager().downloadPreview(withAccount: appDelegate.activeAccount, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
+            OCNetworking.sharedManager().downloadPreview(withAccount: metadata.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount && !metadata.isInvalidated && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
                     
@@ -1350,12 +1398,108 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         }
                     }
                 }
+                
+                return closure()
             })
+        }
+        
+        return closure()
+    }
+}
+
+//MARK: - Operation Networking Main
+
+class NCOperationNetworkingMain: Operation {
+    
+    private var _executing : Bool = false
+    override var isExecuting : Bool {
+        get { return _executing }
+        set {
+            guard _executing != newValue else { return }
+            willChangeValue(forKey: "isExecuting")
+            _executing = newValue
+            didChangeValue(forKey: "isExecuting")
+        }
+    }
+
+    private var _finished : Bool = false
+    override var isFinished : Bool {
+        get { return _finished }
+        set {
+            guard _finished != newValue else { return }
+            willChangeValue(forKey: "isFinished")
+            _finished = newValue
+            didChangeValue(forKey: "isFinished")
+        }
+    }
+    
+    private var metadata: tableMetadata?
+    private var view: Any?
+    private var indexPath: IndexPath?
+    private var networkingFunc: String = ""
+
+    init(metadata: tableMetadata?, view: Any?, indexPath: IndexPath?, networkingFunc: String) {
+        super.init()
+        
+        if metadata != nil { self.metadata = metadata! }
+        if view != nil { self.view = view! }
+        if indexPath != nil { self.indexPath = indexPath! }
+        
+        self.networkingFunc = networkingFunc
+    }
+    
+    override func start() {
+        if !Thread.isMainThread {
+            
+            self.performSelector(onMainThread:#selector(start), with: nil, waitUntilDone: false)
+            
+        } else {
+        
+            isExecuting = true
+        
+            if isCancelled {
+                finish()
+            } else {
+                poolNetworking()
+            }
+        }
+    }
+    
+    func finish() {
+        isExecuting = false
+        isFinished = true
+    }
+    
+    override func cancel() {
+        super.cancel()
+        
+        if isExecuting {
+            complete()
+        }
+    }
+    
+    func complete() {
+        finish()
+        
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+    }
+    
+    func poolNetworking() {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        
+        switch networkingFunc {
+        case "downloadThumbnail":
+            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata!, view: view!, indexPath: indexPath!) {
+                self.complete()
+            }
+        default:
+            print("error")
         }
     }
 }
 
-//MARK: -
+
+//MARK: - Function Main
 
 class NCFunctionMain: NSObject {
     
@@ -1384,7 +1528,6 @@ class NCFunctionMain: NSObject {
                 CCSynchronize.shared()?.readFile(metadata.fileID, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload, account: appDelegate.activeAccount)
             }
         }
-    
     }
 }
 

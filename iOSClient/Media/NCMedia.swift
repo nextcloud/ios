@@ -370,6 +370,8 @@ extension NCMedia: UIViewControllerPreviewingDelegate {
         previewingContext.sourceRect = cell.frame
         viewController.metadata = metadata
         viewController.imageFile = cell.imageItem.image
+        viewController.showOpenIn = true
+        viewController.showShare = false
 
         return viewController
     }
@@ -720,6 +722,10 @@ extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         collectionView.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
+    }
+    
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        selectSearchSections()
     }
 }
 

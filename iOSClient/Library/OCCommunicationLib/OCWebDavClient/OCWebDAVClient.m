@@ -914,7 +914,10 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
+    NSString *userAgent = [request valueForHTTPHeaderField:@"User-Agent"];
+    //[request setValue:[userAgent stringByAppendingString:@" (SilentPush)"] forHTTPHeaderField:@"User-Agent"];
+    [request setValue:[userAgent stringByAppendingString:@" (PushKit)"] forHTTPHeaderField:@"User-Agent"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     [operation resume];

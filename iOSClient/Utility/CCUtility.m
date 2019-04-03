@@ -479,34 +479,76 @@
     [UICKeyChainStore setString:sDisable forKey:@"disablefilesapp" service:k_serviceShareKeyChain];
 }
 
-+ (void)setPushNotificationPublicKey:(NSData *)data
++ (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data
 {
-    [UICKeyChainStore setData:data forKey:@"ncPNPublicKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNPublicKey" stringByAppendingString:account];
+    [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSData *)getPushNotificationPublicKey
++ (NSData *)getPushNotificationPublicKey:(NSString *)account
 {
-    return [UICKeyChainStore dataForKey:@"ncPNPublicKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNPublicKey" stringByAppendingString:account];
+    return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setPushNotificationPrivateKey:(NSData *)data
++ (void)setPushNotificationSubscribingPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
-    [UICKeyChainStore setData:data forKey:@"ncPNPrivateKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNSubscribingPublicKey" stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSData *)getPushNotificationPrivateKey
++ (NSString *)getPushNotificationSubscribingPublicKey:(NSString *)account
 {
-    return [UICKeyChainStore dataForKey:@"ncPNPrivateKey" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNSubscribingPublicKey" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setPushNotificationToken:(NSString *)token
++ (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data
 {
-    [UICKeyChainStore setString:token forKey:@"ncPushToken" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNPrivateKey" stringByAppendingString:account];
+    [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getPushNotificationToken
++ (NSData *)getPushNotificationPrivateKey:(NSString *)account
 {
-    return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
+    NSString *key = [@"PNPrivateKey" stringByAppendingString:account];
+    return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setPushNotificationToken:(NSString *)account token:(NSString *)token
+{
+    NSString *key = [@"PNToken" stringByAppendingString:account];
+    [UICKeyChainStore setString:token forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPushNotificationToken:(NSString *)account
+{
+    NSString *key = [@"PNToken" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setPushNotificationDeviceIdentifier:(NSString *)account deviceIdentifier:(NSString *)deviceIdentifier
+{
+    NSString *key = [@"PNDeviceIdentifier" stringByAppendingString:account];
+    [UICKeyChainStore setString:deviceIdentifier forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account
+{
+    NSString *key = [@"PNDeviceIdentifier" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature
+{
+    NSString *key = [@"PNDeviceIdentifierSignature" stringByAppendingString:account];
+    [UICKeyChainStore setString:deviceIdentifierSignature forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account
+{
+    NSString *key = [@"PNDeviceIdentifierSignature" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSInteger)getMediaWidthImage
@@ -1288,6 +1330,11 @@
                 
                 metadata.iconName = @"utorrent";
                 
+            } else if ([ext isEqualToString:@"IMI"]) {
+                
+                metadata.typeFile = k_metadataTypeFile_imagemeter;
+                metadata.iconName = @"imagemeter";
+            
             } else {
             
                 metadata.iconName = @"file";

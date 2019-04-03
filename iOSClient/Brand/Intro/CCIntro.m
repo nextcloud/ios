@@ -138,6 +138,13 @@
     
     // Pages
     
+    /*
+    EAIntroPage *page1 = [EAIntroPage pageWithCustomViewFromNibNamed:@"NCIntroPage1"];
+    page1.customView.backgroundColor = [[NCBrandColor sharedInstance] customer];
+    UILabel *titlePage1 = (UILabel *)[page1.customView viewWithTag:1];
+    titlePage1.text = NSLocalizedString(@"_intro_1_title_", nil);
+    */
+    
     EAIntroPage *page1 = [EAIntroPage page];
 
     page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];

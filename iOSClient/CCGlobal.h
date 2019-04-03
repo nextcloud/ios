@@ -216,6 +216,7 @@
 #define k_metadataTypeFile_image                        @"image"
 #define k_metadataTypeFile_unknown                      @"unknow"
 #define k_metadataTypeFile_video                        @"video"
+#define k_metadataTypeFile_imagemeter                   @"imagemeter"
 
 // TabBar button
 #define k_tabBarApplicationIndexFile                    0

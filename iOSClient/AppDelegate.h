@@ -23,6 +23,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
+#import <PushKit/PushKit.h>
 
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"
@@ -40,7 +41,7 @@
 @class CCMore;
 @class NCMedia;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
@@ -81,6 +82,9 @@
 // Audio Video
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerViewController *playerController;
+
+// Push Norification Token
+@property (nonatomic, strong) NSString *pushKitToken;
 
 // Remenu
 @property (nonatomic, strong) REMenu *reMainMenu;
@@ -127,10 +131,6 @@
 
 @property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
 
-@property (nonatomic, strong) NSString *pnDeviceIdentifier;
-@property (nonatomic, strong) NSString *pnDeviceIdentifierSignature;
-@property (nonatomic, strong) NSString *pnPublicKey;
-
 // Maintenance Mode
 @property BOOL maintenanceMode;
 
@@ -160,8 +160,8 @@
 - (NSString *)getTabBarControllerActiveServerUrl;
 
 // Push Notification
-- (void)subscribingNextcloudServerPushNotification;
-- (void)unsubscribingNextcloudServerPushNotification;
+- (void)pushNotification;
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url withSubscribing:(BOOL)subscribing;
 
 // Theming Color
 - (void)settingThemingColorBrand;

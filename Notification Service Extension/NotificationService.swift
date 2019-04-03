@@ -25,7 +25,6 @@ import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
 
-    let privateKey = CCUtility.getPushNotificationPrivateKey()
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
 
@@ -39,39 +38,40 @@ class NotificationService: UNNotificationServiceExtension {
             bestAttemptContent.title = ""
             bestAttemptContent.body = "Nextcloud notification"
             
-            let message = bestAttemptContent.userInfo["subject"] as! String
-            
-            guard let privateKey = CCUtility.getPushNotificationPrivateKey() else {
+            guard let message = bestAttemptContent.userInfo["subject"] else {
                 contentHandler(bestAttemptContent)
                 return
             }
             
-            guard let decryptedMessage = NCPushNotificationEncryption.sharedInstance().decryptPushNotification(message, withDevicePrivateKey: privateKey) else {
-                contentHandler(bestAttemptContent)
-                return
-            }
-            
-            guard let data = decryptedMessage.data(using: .utf8) else {
-                contentHandler(bestAttemptContent)
-                return
-            }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data) as! [String:AnyObject]
-                if let app = json["app"] as? String {
-                    if app == "spreed" {
-                        bestAttemptContent.title = "Nextcloud Talk"
-                    } else {
-                        bestAttemptContent.title = app.capitalized
+            for result in NCManageDatabase.sharedInstance.getAllAccount() {
+                guard let privateKey = CCUtility.getPushNotificationPrivateKey(result.account) else {
+                    continue
+                }
+                guard let decryptedMessage = NCPushNotificationEncryption.sharedInstance()?.decryptPushNotification(message as? String, withDevicePrivateKey: privateKey) else {
+                    continue
+                }
+                guard let data = decryptedMessage.data(using: .utf8) else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
+                
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data) as! [String:AnyObject]
+                    if let app = json["app"] as? String {
+                        if app == "spreed" {
+                            bestAttemptContent.title = "Nextcloud Talk"
+                        } else {
+                            bestAttemptContent.title = app.capitalized
+                        }
                     }
+                    if let subject = json["subject"] as? String {
+                        bestAttemptContent.body = subject
+                    }
+                } catch let error as NSError {
+                    print("Failed : \(error.localizedDescription)")
                 }
-                if let subject = json["subject"] as? String {
-                    bestAttemptContent.body = subject
-                }
-            } catch let error as NSError {
-                print("Failed : \(error.localizedDescription)")
             }
-          
+            
             contentHandler(bestAttemptContent)
         }
     }
@@ -81,10 +81,9 @@ class NotificationService: UNNotificationServiceExtension {
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             
             bestAttemptContent.title = ""
-            bestAttemptContent.body = "Nextcloud notification"
+            bestAttemptContent.body = "Nextcloud"
             
             contentHandler(bestAttemptContent)
         }
     }
-
 }
