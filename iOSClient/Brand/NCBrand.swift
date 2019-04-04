@@ -93,6 +93,9 @@ class NCBrandColor: NSObject {
     // Database key 64 char ASCII (for encryption AES-256+SHA2)
     @objc public var databaseEncryptionKey:             String = "1234567890123456789012345678901234567890123456789012345678901234"
     
+    // User Agent
+    @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
+    
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public let use_default_auto_upload:           Bool = false
