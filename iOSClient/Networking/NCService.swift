@@ -236,7 +236,7 @@ class NCService: NSObject {
                 let user = tableAccount.user
                 let url = tableAccount.url
                 
-                self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
+                self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: CCUtility.getPassword(tableAccount.account))
                 
                 // Call func thath required the userdID
                 self.appDelegate.activeFavorites.listingFavorites()

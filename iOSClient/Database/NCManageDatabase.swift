@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 43,
+            schemaVersion: 44,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -100,6 +100,7 @@ class NCManageDatabase: NSObject {
             // 41 : Version 2.22.9.5
             // 42 : Version 2.23.1.0
             // 43 : Version 2.23.2.0
+            // 44 : Version 2.23.4.3
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -125,6 +126,14 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableActivity.className())
                     migration.deleteData(forType: tableMetadata.className())
                     migration.deleteData(forType: tableDirectory.className())
+                }
+                
+                if oldSchemaVersion < 44 {
+                    migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                        let account = oldObject!["account"] as! String
+                        let password = oldObject!["password"] as! String
+                        CCUtility.setPassword(account, password: password)
+                    }
                 }
         })
 

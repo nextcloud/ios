@@ -367,7 +367,7 @@
                     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
                     
                     // Setting appDelegate active account
-                    [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+                    [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
                     
                     [self.delegate loginSuccess:_loginType];
                     

@@ -46,9 +46,9 @@
 
 -(void)viewDidLoad
 {
-    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if (recordAccount == nil) {
+    if (tableAccount == nil) {
         
         // close now
         [self performSelector:@selector(closeShareViewController) withObject:nil afterDelay:0.1];
@@ -57,11 +57,11 @@
         
     } else {
         
-        _activeAccount = recordAccount.account;
-        _activePassword = recordAccount.password;
-        _activeUrl = recordAccount.url;
-        _activeUser = recordAccount.user;
-        _activeUserID = recordAccount.userID;
+        _activeAccount = tableAccount.account;
+        _activePassword = [CCUtility getPassword:tableAccount.account];
+        _activeUrl = tableAccount.url;
+        _activeUser = tableAccount.user;
+        _activeUserID = tableAccount.userID;
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             

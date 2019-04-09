@@ -100,9 +100,9 @@ PKPushRegistry *pushRegistry;
     if ([self upgrade]) {
     
         // Set account, if no exists clear all
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-        if (account == nil) {
+        if (tableAccount == nil) {
         
             // remove all the keys Chain
             [CCUtility deleteAllChainStore];
@@ -112,7 +112,7 @@ PKPushRegistry *pushRegistry;
 
         } else {
         
-            [self settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
+            [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
         }
     }
     
@@ -1592,14 +1592,6 @@ PKPushRegistry *pushRegistry;
             [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:nil];
             [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:nil];
             [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:nil];
-        }
-    }
-    
-    if ([actualVersion isEqualToString:@"2.23.4"]) {
-        if (([actualBuild compare:@"3" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
-            for (tableAccount *result in [[NCManageDatabase sharedInstance] getAllAccount]) {
-                [CCUtility setPassword:result.account password:result.password];
-            }
         }
     }
     

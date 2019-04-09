@@ -44,7 +44,6 @@ class tableAccount: Object {
     @objc dynamic var enabled: Bool = false
     @objc dynamic var loginFlow: Bool = false
     @objc dynamic var optimization = NSDate()
-    @objc dynamic var password = ""
     @objc dynamic var phone = ""
     @objc dynamic var quota: Double = 0
     @objc dynamic var quotaFree: Double = 0
