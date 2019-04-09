@@ -396,7 +396,7 @@ extension NCMedia: UICollectionViewDelegate {
         metadataPush = metadata
         
         if isEditMode {
-            if let index = selectFileID.index(of: metadata.fileID) {
+            if let index = selectFileID.firstIndex(of: metadata.fileID) {
                 selectFileID.remove(at: index)
             } else {
                 selectFileID.append(metadata.fileID)

@@ -473,7 +473,7 @@ extension NCTrash: UICollectionViewDelegate {
         let tableTrash = datasource[indexPath.item]
         
         if isEditMode {
-            if let index = selectFileID.index(of: tableTrash.fileID) {
+            if let index = selectFileID.firstIndex(of: tableTrash.fileID) {
                 selectFileID.remove(at: index)
             } else {
                 selectFileID.append(tableTrash.fileID)

@@ -1093,7 +1093,7 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
             
         let tabViewControllers = tabBarController.viewControllers!
-        guard let toIndex = tabViewControllers.index(of: viewController) else {
+        guard let toIndex = tabViewControllers.firstIndex(of: viewController) else {
                 
             if let vc = viewController as? UINavigationController {
                 vc.popToRootViewController(animated: true);
@@ -1112,7 +1112,7 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         let tabViewControllers = viewControllers!
         let fromView = selectedViewController!.view!
         let toView = tabViewControllers[toIndex].view!
-        let fromIndex = tabViewControllers.index(of: selectedViewController!)
+        let fromIndex = tabViewControllers.firstIndex(of: selectedViewController!)
             
         guard fromIndex != toIndex else {return}
             

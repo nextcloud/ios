@@ -2231,7 +2231,7 @@ class NCManageDatabase: NSObject {
             if (result.shareUserAndGroup.contains(share)) {
                     
                 var shares : [String] = result.shareUserAndGroup.components(separatedBy: ",")
-                if let index = shares.index(of:share) {
+                if let index = shares.firstIndex(of:share) {
                     shares.remove(at: index)
                 }
                 result.shareUserAndGroup = shares.joined(separator: ",")
