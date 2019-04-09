@@ -344,11 +344,13 @@
                 
                 if (_loginType == k_login_Modify_Password) {
                     
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+
                     // Change Password
-                    tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:password];
+                    [CCUtility setPassword:account password:password];
                     
                     // Setting appDelegate active account
-                    [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
+                    [appDelegate settingActiveAccount:account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:password];
                     
                     [self.delegate loginSuccess:_loginType];
                     

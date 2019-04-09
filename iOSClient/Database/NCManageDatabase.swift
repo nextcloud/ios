@@ -227,7 +227,8 @@ class NCManageDatabase: NSObject {
             addObject.autoUploadWWAnVideo = true
         }
             
-        addObject.password = password
+        CCUtility.setPassword(account, password: password)
+    
         addObject.url = url
         addObject.user = user
         addObject.userID = user
@@ -239,29 +240,6 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
-    }
-    
-    @objc func setAccountPassword(_ account: String, password: String) -> tableAccount? {
-        
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableAccount.self).filter("account = %@", account).first else {
-            realm.cancelWrite()
-            return nil
-        }
-        
-        result.password = password
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
-        }
-        
-        return result
     }
     
     @objc func deleteAccount(_ account: String) {

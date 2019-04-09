@@ -1594,7 +1594,15 @@ PKPushRegistry *pushRegistry;
             [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:nil];
         }
     }
-
+    
+    if ([actualVersion isEqualToString:@"2.23.4"]) {
+        if (([actualBuild compare:@"3" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+            for (tableAccount *result in [[NCManageDatabase sharedInstance] getAllAccount]) {
+                [CCUtility setPassword:result.account password:result.password];
+            }
+        }
+    }
+    
     return YES;
 }
 

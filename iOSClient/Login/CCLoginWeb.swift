@@ -105,13 +105,9 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                             return
                         }
                         
-                        // Change Password
-                        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountPassword(account, password: password) else {
-                            self.viewController?.dismiss(animated: true, completion: nil)
-                            return
-                        }
-                        
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                        // Change Password & setting active account
+                        CCUtility.setPassword(account, password: password)
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: appDelegate.activeUserID, activePassword: password)
                         
                         self.delegate?.loginSuccess(NSInteger(loginType))
                         self.delegate?.webDismiss?()
