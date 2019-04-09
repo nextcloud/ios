@@ -32,6 +32,7 @@
 #include <memory>
 
 namespace realm {
+class AuditInterface;
 class BindingContext;
 class Group;
 class Realm;
@@ -188,6 +189,11 @@ public:
         // User-supplied encryption key. Must be either empty or 64 bytes.
         std::vector<char> encryption_key;
 
+        // Core and Object Store will in some cases need to create named pipes alongside the Realm file.
+        // But on some filesystems this can be a problem (e.g. external storage on Android that uses FAT32).
+        // In order to work around this, a separate path can be specified for these files.
+        std::string fifo_files_fallback_path;
+
         bool in_memory = false;
         SchemaMode schema_mode = SchemaMode::Automatic;
 
@@ -242,9 +248,12 @@ public:
         /// A data structure storing data used to configure the Realm for sync support.
         std::shared_ptr<SyncConfig> sync_config;
 
-        // FIXME: Realm Java manages sync at the Java level, so it needs to create Realms using the sync history
-        //        format.
+        // Open the Realm using the sync history mode even if a sync
+        // configuration is not supplied.
         bool force_sync_history = false;
+
+        // A factory function which produces an audit implementation.
+        std::function<std::shared_ptr<AuditInterface>()> audit_factory;
     };
 
     // Get a cached Realm or create a new one if no cached copies exists
@@ -279,7 +288,10 @@ public:
     void commit_transaction();
     void cancel_transaction();
     bool is_in_transaction() const noexcept;
+
     bool is_in_read_transaction() const { return !!m_group; }
+    VersionID read_transaction_version() const;
+    Group& read_group();
 
     bool is_in_migration() const noexcept { return m_in_migration; }
 
@@ -328,6 +340,8 @@ public:
     ComputedPrivileges get_privileges();
     ComputedPrivileges get_privileges(StringData object_type);
     ComputedPrivileges get_privileges(RowExpr row);
+
+    AuditInterface* audit_context() const noexcept;
 
     static SharedRealm make_shared_realm(Config config, std::shared_ptr<_impl::RealmCoordinator> coordinator = nullptr) {
         struct make_shared_enabler : public Realm {
@@ -426,12 +440,8 @@ private:
 public:
     std::unique_ptr<BindingContext> m_binding_context;
 
-    // FIXME private
-    Group& read_group();
-
-    std::size_t compute_size();
-    
-    Replication *history() { return m_history.get(); }
+    // FIXME: This is currently needed by the adapter to get access to its changeset cooker
+    Replication* history() { return m_history.get(); }
 
     friend class _impl::RealmFriend;
 };

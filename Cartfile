@@ -1,4 +1,4 @@
-github "tilltue/TLPhotoPicker" == 1.8.3
+github "tilltue/TLPhotoPicker" == 1.8.5
 github "kishikawakatsumi/UICKeyChainStore" == 2.1.2
 github "danielsaidi/Sheeeeeeeeet" == 1.2.2
 github "sgr-ksmt/PDFGenerator" == 2.1
@@ -8,10 +8,10 @@ github "ealeksandrov/EAIntroView" == 2.12.0
 github "calimarkus/JDStatusBarNotification" == 1.6.0
 github "ChangbaDevs/KTVHTTPCache" == 2.0.0
 github "jdg/MBProgressHUD" == 1.1.0
-github "realm/realm-cocoa" == 3.13.1
+github "realm/realm-cocoa" == 3.14.1
 github "SVGKit/SVGKit" == 2.1.0
-github "WeTransfer/WeScan" == 0.9.1
-github "malcommac/SwiftRichString" == 2.0.1
+github "WeTransfer/WeScan" == 1.1.0
+github "malcommac/SwiftRichString" == 3.0.0
 github "https://github.com/marinofaggiana/FastScroll" "master"
 github "yannickl/QRCodeReader.swift" >= 10.0.0
 github "marmelroy/Zip"

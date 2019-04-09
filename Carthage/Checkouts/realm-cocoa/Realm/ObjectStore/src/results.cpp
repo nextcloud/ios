@@ -20,6 +20,7 @@
 
 #include "impl/realm_coordinator.hpp"
 #include "impl/results_notifier.hpp"
+#include "audit.hpp"
 #include "object_schema.hpp"
 #include "object_store.hpp"
 #include "schema.hpp"
@@ -267,6 +268,8 @@ void Results::evaluate_query_if_needed(bool wants_notifications)
                 prepare_async(ForCallback{false});
             m_has_used_table_view = true;
             m_table_view.sync_if_needed();
+            if (auto audit = m_realm->audit_context())
+                audit->record_query(m_realm->read_transaction_version(), m_table_view);
             break;
     }
 }

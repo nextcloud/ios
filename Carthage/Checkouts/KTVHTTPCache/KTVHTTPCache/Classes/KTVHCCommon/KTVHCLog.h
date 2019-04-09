@@ -28,10 +28,7 @@ KTVHCLogEnable(Common,            YES, YES)
  */
 KTVHCLogEnable(HTTPServer,        YES, YES)
 KTVHCLogEnable(HTTPConnection,    YES, YES)
-KTVHCLogEnable(HTTPRequest,       YES, YES)
 KTVHCLogEnable(HTTPResponse,      YES, YES)
-KTVHCLogEnable(HTTPResponsePing,  YES, YES)
-KTVHCLogEnable(HTTPURL,           YES, YES)
 
 /**
  *  Data Storage
@@ -48,7 +45,6 @@ KTVHCLogEnable(DataUnitPool,      YES, YES)
 KTVHCLogEnable(DataUnitQueue,     YES, YES)
 
 KTVHCLogEnable(DataSourceManager, YES, YES)
-KTVHCLogEnable(DataSourceQueue,   YES, YES)
 KTVHCLogEnable(DataFileSource,    YES, YES)
 KTVHCLogEnable(DataNetworkSource, YES, YES)
 
@@ -69,8 +65,8 @@ KTVHCLogEnable(Dealloc,           YES, YES)
 #define KTVHCLogging(target, console_log_enable, record_log_enable, ...)            \
 if (([KTVHCLog log].consoleLogEnable && console_log_enable) || ([KTVHCLog log].recordLogEnable && record_log_enable))       \
 {                                                                                   \
-    NSString * va_args = [NSString stringWithFormat:__VA_ARGS__];                   \
-    NSString * log = [NSString stringWithFormat:@"%@  :   %@", target, va_args];    \
+    NSString *va_args = [NSString stringWithFormat:__VA_ARGS__];                    \
+    NSString *log = [NSString stringWithFormat:@"%@  :   %@", target, va_args];     \
     if ([KTVHCLog log].recordLogEnable && record_log_enable) {                      \
         [[KTVHCLog log] addRecordLog:log];                                          \
     }                                                                               \
@@ -83,17 +79,14 @@ if (([KTVHCLog log].consoleLogEnable && console_log_enable) || ([KTVHCLog log].r
 /**
  *  Common
  */
-#define KTVHCLogCommon(...)                 KTVHCLogging(@"KTVHCCommon           ", KTVHCLogEnableValueConsoleLog(Common),            KTVHCLogEnableValueRecordLog(Common),            ##__VA_ARGS__)
+#define KTVHCLogCommon(...)                 KTVHCLogging(@"KTVHCMacro           ", KTVHCLogEnableValueConsoleLog(Common),            KTVHCLogEnableValueRecordLog(Common),            ##__VA_ARGS__)
 
 /**
  *  HTTP Server
  */
 #define KTVHCLogHTTPServer(...)             KTVHCLogging(@"KTVHCHTTPServer       ", KTVHCLogEnableValueConsoleLog(HTTPServer),        KTVHCLogEnableValueRecordLog(HTTPServer),        ##__VA_ARGS__)
 #define KTVHCLogHTTPConnection(...)         KTVHCLogging(@"KTVHCHTTPConnection   ", KTVHCLogEnableValueConsoleLog(HTTPConnection),    KTVHCLogEnableValueRecordLog(HTTPConnection),    ##__VA_ARGS__)
-#define KTVHCLogHTTPRequest(...)            KTVHCLogging(@"KTVHCHTTPRequest      ", KTVHCLogEnableValueConsoleLog(HTTPRequest),       KTVHCLogEnableValueRecordLog(HTTPRequest),       ##__VA_ARGS__)
 #define KTVHCLogHTTPResponse(...)           KTVHCLogging(@"KTVHCHTTPResponse     ", KTVHCLogEnableValueConsoleLog(HTTPResponse),      KTVHCLogEnableValueRecordLog(HTTPResponse),      ##__VA_ARGS__)
-#define KTVHCLogHTTPResponsePing(...)       KTVHCLogging(@"KTVHCHTTPPingResponse ", KTVHCLogEnableValueConsoleLog(HTTPResponsePing),  KTVHCLogEnableValueRecordLog(HTTPResponsePing),  ##__VA_ARGS__)
-#define KTVHCLogHTTPURL(...)                KTVHCLogging(@"KTVHCHTTPURL          ", KTVHCLogEnableValueConsoleLog(HTTPURL),           KTVHCLogEnableValueRecordLog(HTTPURL),           ##__VA_ARGS__)
 
 /**
  *  Data Storage
@@ -110,7 +103,6 @@ if (([KTVHCLog log].consoleLogEnable && console_log_enable) || ([KTVHCLog log].r
 #define KTVHCLogDataUnitQueue(...)          KTVHCLogging(@"KTVHCDataUnitQueue    ", KTVHCLogEnableValueConsoleLog(DataUnitQueue),     KTVHCLogEnableValueRecordLog(DataUnitQueue),     ##__VA_ARGS__)
 
 #define KTVHCLogDataSourceManager(...)      KTVHCLogging(@"KTVHCDataSourceManager", KTVHCLogEnableValueConsoleLog(DataSourceManager), KTVHCLogEnableValueRecordLog(DataSourceManager), ##__VA_ARGS__)
-#define KTVHCLogDataSourceQueue(...)        KTVHCLogging(@"KTVHCDataSourceQueue  ", KTVHCLogEnableValueConsoleLog(DataSourceQueue),   KTVHCLogEnableValueRecordLog(DataSourceQueue),   ##__VA_ARGS__)
 #define KTVHCLogDataFileSource(...)         KTVHCLogging(@"KTVHCDataFileSource   ", KTVHCLogEnableValueConsoleLog(DataFileSource),    KTVHCLogEnableValueRecordLog(DataFileSource),    ##__VA_ARGS__)
 #define KTVHCLogDataNetworkSource(...)      KTVHCLogging(@"KTVHCDataNetworkSource", KTVHCLogEnableValueConsoleLog(DataNetworkSource), KTVHCLogEnableValueRecordLog(DataNetworkSource), ##__VA_ARGS__)
 
@@ -136,24 +128,25 @@ if (([KTVHCLog log].consoleLogEnable && console_log_enable) || ([KTVHCLog log].r
  *  DEBUG   : default is NO.
  *  RELEASE : default is NO.
  */
-@property (nonatomic, assign) BOOL consoleLogEnable;
+@property (nonatomic) BOOL consoleLogEnable;
 
 /**
  *  DEBUG   : default is NO.
  *  RELEASE : default is NO.
  */
-@property (nonatomic, assign) BOOL recordLogEnable;
+@property (nonatomic) BOOL recordLogEnable;
 
 - (void)addRecordLog:(NSString *)log;
 
-- (NSString *)recordLogFilePath;
-- (void)deleteRecordLog;
+- (NSURL *)recordLogFileURL;
+- (void)deleteRecordLogFile;
 
 /**
  *  Error
  */
-- (NSError *)lastError;
-- (NSArray <NSError *> *)allErrors;
-- (void)addError:(NSError *)error;
+- (void)addError:(NSError *)error forURL:(NSURL *)URL;
+- (NSDictionary<NSURL *, NSError *> *)errors;
+- (NSError *)errorForURL:(NSURL *)URL;
+- (void)cleanErrorForURL:(NSURL *)URL;
 
 @end

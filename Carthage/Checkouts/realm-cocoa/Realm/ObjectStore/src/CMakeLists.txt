@@ -64,14 +64,16 @@ set(HEADERS
 
     util/aligned_union.hpp
     util/atomic_shared_ptr.hpp
+    util/event_loop_dispatcher.hpp
     util/event_loop_signal.hpp
+    util/fifo.hpp
     util/tagged_bool.hpp
     util/uuid.hpp)
 
 if(APPLE)
-    list(APPEND SOURCES impl/apple/external_commit_helper.cpp impl/apple/keychain_helper.cpp)
+    list(APPEND SOURCES impl/apple/external_commit_helper.cpp impl/apple/keychain_helper.cpp util/fifo.cpp)
 elseif(REALM_HAVE_EPOLL)
-    list(APPEND SOURCES impl/epoll/external_commit_helper.cpp)
+    list(APPEND SOURCES impl/epoll/external_commit_helper.cpp util/fifo.cpp)
 elseif(CMAKE_SYSTEM_NAME MATCHES "^Windows")
     list(APPEND SOURCES impl/windows/external_commit_helper.cpp)
 else()
@@ -117,6 +119,18 @@ if(REALM_ENABLE_SYNC)
     endif()
     find_package(ZLIB REQUIRED)
     list(APPEND INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
+endif()
+
+if(REALM_ENABLE_SERVER)
+    list(APPEND HEADERS
+        server/adapter.hpp
+        server/admin_realm.hpp
+        server/global_notifier.hpp)
+    list(APPEND SOURCES
+        server/adapter.cpp
+        server/admin_realm.cpp
+        server/global_notifier.cpp)
+    list(APPEND INCLUDE_DIRS ../external/json)
 endif()
 
 add_library(realm-object-store STATIC ${SOURCES} ${HEADERS})
