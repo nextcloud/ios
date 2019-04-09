@@ -3078,7 +3078,7 @@
 			};
 			buildConfigurationList = F7F67BA31A24D27800EE80DA /* Build configuration list for PBXProject "Nextcloud" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
