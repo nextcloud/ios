@@ -196,7 +196,11 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  
 */ 
 
+NS_ASSUME_NONNULL_BEGIN
+
 - (void)search:(NSString * _Nonnull)path folder:(NSString * _Nonnull)folder fileName:(NSString * _Nonnull)fileName depth:(NSString * _Nonnull)depth lteDateLastModified:(NSString *)lteDateLastModified gteDateLastModified:(NSString *)gteDateLastModified contentType:(NSArray * _Nonnull)contentType user:(NSString * _Nonnull)user userID:(NSString * _Nonnull)userID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;
+
+NS_ASSUME_NONNULL_END
 
 /**
  
@@ -506,9 +510,13 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
                             success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
                             failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
+NS_ASSUME_NONNULL_BEGIN
+
 - (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString * _Nonnull)serverPath ofFilePath:(NSString *_Nonnull)filePath  withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode path:(NSString * _Nonnull)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 - (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString * _Nonnull)serverPath ofFileID:(NSString *_Nonnull)fileID onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
+NS_ASSUME_NONNULL_END
 
 #pragma mark - Notification
 
@@ -656,6 +664,8 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 /// Manage Mobile Editor OCS API
 ///-----------------------------------
 
+NS_ASSUME_NONNULL_BEGIN
+
 - (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileID:(NSString * _Nonnull)fileID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)geTemplatesRichdocuments:(NSString *_Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
@@ -672,5 +682,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 - (void)listTrash:(NSString *)path depth:(NSString *)depth onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)emptyTrash:(NSString*)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
+NS_ASSUME_NONNULL_END
 
 @end
