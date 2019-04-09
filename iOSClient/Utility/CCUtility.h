@@ -150,6 +150,9 @@
 + (NSInteger)getMediaWidthImage;
 + (void)setMediaWidthImage:(NSInteger)width;
 
++ (BOOL)getDisableCrashservice;
++ (void)setDisableCrashservice:(BOOL)disable;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

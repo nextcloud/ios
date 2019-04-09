@@ -234,6 +234,10 @@
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";
 "_format_compatibility_footer_" = "\"Most compatible\" will save, when possible, photos as JPEG";
+"_privacy_"                     = "Privacy";
+"_privacy_footer_"              = "Nextcloud iOS use a service for the analysis of crash, your personal information is not sent with the report. If you want disable this please setting on ON the \"Disable crash reporter\"";
+"_crashservice_title_"          = "Disable crash reporter";
+"_crashservice_alert_"          = "This option requires program termination to take effect";
 
 // Login
 

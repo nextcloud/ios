@@ -204,7 +204,9 @@ PKPushRegistry *pushRegistry;
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Fabric
-    [Fabric with:@[[Crashlytics class]]];
+    if (![CCUtility getDisableCrashservice]) {
+        [Fabric with:@[[Crashlytics class]]];
+    }
     
     // Store review
     if ([[NCUtility sharedInstance] isSimulatorOrTestFlight] == false) {
