@@ -215,7 +215,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                 return
             }
             if name as! String == "" {
-                name = CCUtility.createFileNameDate("scan", extension: "pdf")
+                name = CCUtility.createFileNameDate("scan", extension: "pdf") ?? "scan.pdf"
             }
             
             let ext = (name as! NSString).pathExtension.uppercased()

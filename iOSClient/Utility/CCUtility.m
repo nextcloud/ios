@@ -579,6 +579,18 @@
     [UICKeyChainStore setString:sDisable forKey:@"crashservice" service:k_serviceShareKeyChain];
 }
 
++ (void)setPassword:(NSString *)account password:(NSString *)password
+{
+    NSString *key = [@"password" stringByAppendingString:account];
+    [UICKeyChainStore setString:password forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPassword:(NSString *)account
+{
+    NSString *key = [@"password" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
