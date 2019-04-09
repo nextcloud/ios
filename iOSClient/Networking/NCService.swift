@@ -68,35 +68,26 @@ class NCService: NSObject {
                 
                 if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
                     
-                    // Download Logo
-                    let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, closure: { (imageNamePath) in })
-                    
                     // Download Theming Background
                     DispatchQueue.global().async {
+                        
+                        // Download Logo
+                        let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
+                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, closure: { (imageNamePath) in })
                         
                         let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
                         
-                        guard let imageData = try? Data(contentsOf: URL(string: backgroundURL)!) else {
-                            DispatchQueue.main.async {
-                                self.appDelegate.settingThemingColorBrand()
+                        if let imageData = try? Data(contentsOf: URL(string: backgroundURL)!) {
+                            if let image = UIImage(data: imageData) {
+                                try? FileManager.default.removeItem(atPath: fileNamePath)
+                                if let data = image.pngData() {
+                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                                }
                             }
-                            return
                         }
                         
                         DispatchQueue.main.async {
-                            
-                            guard let image = UIImage(data: imageData) else {
-                                try? FileManager.default.removeItem(atPath: fileNamePath)
-                                self.appDelegate.settingThemingColorBrand()
-                                return
-                            }
-                            
-                            if let data = image.pngData() {
-                                try? data.write(to: URL(fileURLWithPath: fileNamePath))
-                            }
-                            
                             self.appDelegate.settingThemingColorBrand()
                         }
                     }
@@ -121,7 +112,7 @@ class NCService: NSObject {
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             
-                            DispatchQueue.global(qos: .default).async {
+                            DispatchQueue.global().async {
                                 
                                 let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [
                                     NSSortDescriptor(key: "date", ascending: false)
@@ -206,9 +197,11 @@ class NCService: NSObject {
                 if (capabilities!.isActivityV2Enabled) {
                     
                     OCNetworking.sharedManager().getActivityWithAccount(account!, since: 0, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                        } 
+                        DispatchQueue.global().async {
+                            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                                NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
+                            }
+                        }
                     })
                 }
                 
@@ -250,30 +243,21 @@ class NCService: NSObject {
                 self.appDelegate.activeMedia.reloadDataSource(loadNetworkDatasource: true)
                 NCFunctionMain.sharedInstance.synchronizeOffline()
                 
-                DispatchQueue.global(qos: .default).async {
+                DispatchQueue.global().async {
                     
                     let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
-                    guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    if let imageData = try? Data(contentsOf: URL(string: address)!) {
+                        if let image = UIImage(data: imageData) {
+                            try? FileManager.default.removeItem(atPath: fileNamePath)
+                            if let data = image.pngData() {
+                                try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                            }
                         }
-                        return
                     }
                     
                     DispatchQueue.main.async {
-                        
-                        guard let image = UIImage(data: imageData) else {
-                            try? FileManager.default.removeItem(atPath: fileNamePath)
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
-                            return
-                        }
-                        
-                        if let data = image.pngData() {
-                            try? data.write(to: URL(fileURLWithPath: fileNamePath))
-                        }
-                        
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
                     }
                 }
@@ -317,8 +301,10 @@ class NCService: NSObject {
         
         OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, depth: "infinity", completion: { (account, item, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(filePath: nil, account: account!)
-                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+                DispatchQueue.global().async {
+                    NCManageDatabase.sharedInstance.deleteTrash(filePath: nil, account: account!)
+                    NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+                }
             }
         })
     }
