@@ -1,3 +1,4 @@
+github "AFNetworking/AFNetworking" "3.2.1"
 github "ChangbaDevs/KTVHTTPCache" "2.0.0"
 github "CocoaLumberjack/CocoaLumberjack" "3.5.2"
 github "MortimerGoro/MGSwipeTableCell" "1.6.8"

@@ -24,7 +24,6 @@
 #import <MBProgressHUD/MBProgressHUD.h>
 
 #import "OCCommunication.h"
-#import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 #import "OCNetworking.h"
 #import "CCBKPasscode.h"

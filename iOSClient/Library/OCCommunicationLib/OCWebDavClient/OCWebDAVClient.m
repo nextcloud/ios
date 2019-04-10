@@ -39,7 +39,6 @@
 #import "OCFrameworkConstants.h"
 #import "OCCommunication.h"
 #import "UtilsFramework.h"
-#import "AFURLSessionManager.h"
 #import "NSString+Encode.h"
 #import "OCConstants.h"
 
@@ -48,7 +47,6 @@
 #define k_server_information_json @"status.php"
 #define k_api_header_request @"OCS-APIREQUEST"
 #define k_group_sharee_type 1
-
 
 NSString const *OCWebDAVContentTypeKey		= @"getcontenttype";
 NSString const *OCWebDAVETagKey				= @"getetag";

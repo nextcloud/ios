@@ -22,9 +22,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
-#import "AFURLSessionManager.h"
 #import "CCNetworking.h"
+@import AFNetworking;
 
 @interface OCNetworking : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate>
 

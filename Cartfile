@@ -15,3 +15,4 @@ github "malcommac/SwiftRichString" == 3.0.0
 github "https://github.com/marinofaggiana/FastScroll" "master"
 github "yannickl/QRCodeReader.swift" >= 10.0.0
 github "marmelroy/Zip"
+github "AFNetworking/AFNetworking" == 3.2.1

@@ -45,7 +45,6 @@
 #import "OCWebDAVClient.h"
 #import "OCXMLShareByLinkParser.h"
 #import "OCErrorMsg.h"
-#import "AFURLSessionManager.h"
 #import "OCShareUser.h"
 #import "OCActivity.h"
 #import "OCExternalSites.h"

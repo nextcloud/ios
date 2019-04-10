@@ -23,8 +23,6 @@
 
 #import "AppDelegate.h"
 #import <JDStatusBarNotification/JDStatusBarNotification.h>
-
-#import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 #import "CCGraphics.h"
 #import "CCSynchronize.h"

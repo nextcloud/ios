@@ -35,8 +35,8 @@
 //
 
 
-#import "AFHTTPSessionManager.h"
 #import "OCHTTPRequestOperation.h"
+@import AFNetworking;
 
 @class OCCommunication;
 @class OCChunkDto;
