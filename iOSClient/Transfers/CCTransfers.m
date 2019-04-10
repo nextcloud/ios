@@ -40,6 +40,7 @@
 
     // Datasource
     CCSectionDataSourceMetadata *sectionDataSource;
+    tableMetadata *metadataForRecognizer;
 }
 @end
 
@@ -78,6 +79,10 @@
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    
+    // long press recognizer TableView
+    UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
+    [self.tableView addGestureRecognizer:longPressRecognizer];
     
     self.title = NSLocalizedString(@"_transfers_", nil);
     
@@ -145,6 +150,61 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Long Press Recognized Table View =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)onLongPressTableView:(UILongPressGestureRecognizer*)recognizer
+{
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        
+        CGPoint touchPoint = [recognizer locationInView:self.tableView];
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
+        
+        metadataForRecognizer = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+        
+        [self becomeFirstResponder];
+
+        UIMenuController *menuController = [UIMenuController sharedMenuController];
+        
+        UIMenuItem *startTaskItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_start_", nil) action:@selector(startTask:)];
+
+        [menuController setMenuItems:[NSArray arrayWithObjects:startTaskItem, nil]];
+
+        [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:self.tableView];
+        [menuController setMenuVisible:YES animated:YES];
+    }
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if (metadataForRecognizer == nil)
+        return NO;
+    
+    // Detect E2EE
+    NSString *saveserverUrl = @"";
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:@"serverUrl" ascending:NO];
+    for (tableMetadata *metadata in metadatasForE2EE) {
+        if (![saveserverUrl isEqualToString:metadata.serverUrl]) {
+            saveserverUrl = metadata.serverUrl;
+            if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1", metadata.account, metadata.serverUrl]] != nil) {
+                return NO;
+            }
+        }
+    }
+    
+    if (@selector(startTask:) == action && (metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
+        return YES;
+    }
+    
+    return NO;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark - ===== Progress & Task Button =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -191,6 +251,18 @@
         [alertController.view layoutIfNeeded];
     
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)startTask:(id)sender
+{
+    if (metadataForRecognizer.status == k_metadataStatusUploading) {
+        
+    }
+    
+    metadataForRecognizer.status = k_metadataStatusInUpload;
+    metadataForRecognizer.session = k_upload_session;
+    
+    [[CCNetworking sharedNetworking] uploadFile:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer] taskStatus:k_taskStatusResume];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -451,6 +523,27 @@
     }
     
     return cell;
+}
+
+- (BOOL)indexPathIsValid:(NSIndexPath *)indexPath
+{
+    if (!indexPath)
+        return NO;
+    
+    NSInteger section = indexPath.section;
+    NSInteger row = indexPath.row;
+    
+    NSInteger lastSectionIndex = [self numberOfSectionsInTableView:self.tableView] - 1;
+    
+    if (section > lastSectionIndex || lastSectionIndex < 0)
+        return NO;
+    
+    NSInteger rowCount = [self.tableView numberOfRowsInSection:indexPath.section] - 1;
+    
+    if (rowCount < 0)
+        return NO;
+    
+    return row <= rowCount;
 }
 
 
