@@ -273,9 +273,6 @@
 #define k_action_MOD                                    1
 #define k_action_DEL                                    2
 
-// Nextcloud unsupported
-#define k_nextcloud_unsupported                         11
-
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
@@ -292,6 +289,9 @@
 #define k_layout_view_richdocument                      @"LayoutRichdocument"
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
+
+// Nextcloud unsupported
+#define k_nextcloud_unsupported                         13
 
 // Nextcloud version
 #define k_nextcloud_version_12_0                        12
