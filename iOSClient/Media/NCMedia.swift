@@ -698,7 +698,7 @@ extension NCMedia {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for item in self.collectionView.indexPathsForVisibleItems {
                 if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
-                    NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView, indexPath: item)
+                    NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView as Any, indexPath: item)
                 }
             }
         }

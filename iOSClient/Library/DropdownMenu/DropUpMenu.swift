@@ -119,10 +119,10 @@ open class DropUpMenu: UIView {
         }
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant:0)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: tableViewHeight)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 0)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: 0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant:0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: tableViewHeight)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: 0)])
     }
     
     fileprivate func setupBottomSeperatorView() {
@@ -141,10 +141,10 @@ open class DropUpMenu: UIView {
         barCoverView.backgroundColor = UIColor.clear
         barCoverView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(barCoverView)
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: bottomOffsetY)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView as Any, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView as Any, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: bottomOffsetY)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView as Any, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: barCoverView as Any, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0)])
         barCoverView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
     }
     
