@@ -28,6 +28,8 @@ class NCGridMediaCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
     
+    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
+    
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!

@@ -480,14 +480,15 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(metadata.fileID) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
+                    cell.imageVisualEffect.isHidden = false
+                    cell.imageVisualEffect.alpha = 0.3
                 } else {
                     cell.imageSelect.isHidden = true
-                    cell.backgroundView = nil
+                    cell.imageVisualEffect.isHidden = true
                 }
             } else {
                 cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
+                cell.imageVisualEffect.isHidden = true
             }
         }
     }
