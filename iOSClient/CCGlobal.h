@@ -165,6 +165,7 @@
 #define k_metadataStatusInUpload                        7
 #define k_metadataStatusUploading                       8
 #define k_metadataStatusUploadError                     9
+#define k_metadataStatusUploadForcedStart               10
 
 // Timer
 #define k_timerProcessAutoDownloadUpload                5

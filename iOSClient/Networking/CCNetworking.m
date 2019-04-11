@@ -1060,15 +1060,32 @@
         // Mark error only if not Cancelled Task
         if (errorCode == kCFURLErrorCancelled)  {
             
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:tempFileID] error:nil];
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
+            if (metadata.status == k_metadataStatusUploadForcedStart) {
+                
+                errorCode = 0;
+                
+                metadata.session = k_upload_session;
+                metadata.sessionError = @"";
+                metadata.sessionTaskIdentifier = 0;
+                metadata.status = k_metadataStatusInUpload;
+                metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
 
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                
+            } else {
+                
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:tempFileID] error:nil];
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
+                
+                errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
+            }
+            
         } else {
 
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
+            
+            errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
         }
-        
-        errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
         
     } else {
             

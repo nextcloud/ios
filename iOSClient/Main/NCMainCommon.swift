@@ -97,9 +97,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
     }
     
-    @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool) {
+    @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool, uploadStatusForcedStart: Bool) {
         
         var actionReloadDatasource = k_action_NULL
+        var metadata = metadata
         
         if metadata.session.count == 0 {
             return
@@ -156,6 +157,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if metadata.session.count > 0 && metadata.session.contains("upload") {
                 for task in uploadTasks {
                     if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        if uploadStatusForcedStart {
+                            metadata.status = Int(k_metadataStatusUploadForcedStart)
+                            metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+                        }
                         task.cancel()
                         cancel = true
                     }
@@ -199,7 +204,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     
                     // Cancel Task
                     if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                        self.cancelTransferMetadata(metadata, reloadDatasource: false)
+                        self.cancelTransferMetadata(metadata, reloadDatasource: false, uploadStatusForcedStart: false)
                     }
                 }
             }

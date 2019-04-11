@@ -227,7 +227,7 @@
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         if (metadata)
-            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
+            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true uploadStatusForcedStart:false];
     }
 }
 
@@ -256,13 +256,12 @@
 - (void)startTask:(id)sender
 {
     if (metadataForRecognizer.status == k_metadataStatusUploading) {
-        
+        [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer reloadDatasource:false uploadStatusForcedStart:true];
+    } else {
+        metadataForRecognizer.status = k_metadataStatusInUpload;
+        metadataForRecognizer.session = k_upload_session;
+        [[CCNetworking sharedNetworking] uploadFile:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer] taskStatus:k_taskStatusResume];
     }
-    
-    metadataForRecognizer.status = k_metadataStatusInUpload;
-    metadataForRecognizer.session = k_upload_session;
-    
-    [[CCNetworking sharedNetworking] uploadFile:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer] taskStatus:k_taskStatusResume];
 }
 
 #pragma --------------------------------------------------------------------------------------------

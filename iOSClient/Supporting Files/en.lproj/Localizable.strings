@@ -98,6 +98,7 @@
 "_no_albums_"               = "No albums";
 "_denied_album_"            = "This app does not have access to \"Photos\", you can enable access in Privacy Settings";
 "_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
+"_start_"                   = "Start";
 
 // App
 
@@ -189,8 +190,6 @@
 "_favorite_offline_"            = "Favorites available offline";
 "_favorite_offline_footer_"     = "Making all favorites available offline may take a while and use a lot of memory while doing it.";
 "_advanced_"                    = "Advanced";
-"Skip"                          = "Skip";
-"Start"                         = "Start";
 "_disable_files_app_"           = "Disable Files App integration";
 "_disable_files_app_footer_"    = "Do not permit the access of files across the Apple Files application";
 
