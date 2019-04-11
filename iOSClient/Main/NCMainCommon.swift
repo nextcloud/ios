@@ -23,7 +23,7 @@
 
 import Foundation
 import TLPhotoPicker
-import Zip
+import ZIPFoundation
 
 //MARK: - Main Common
 
@@ -1224,12 +1224,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
                     do {
-                        Zip.addCustomFileExtension("imi")
-                        
                         let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
                         let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                         
-                        try Zip.unzipFile(source, destination: destination, overwrite: true, password: nil)
+                        try FileManager().unzipItem(at: source, to: destination)
                         
                         let nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
                         let pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
@@ -1238,9 +1236,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         if let fileHandle = FileHandle(forReadingAtPath: annoPath) {
                             let data = fileHandle.readData(ofLength: 4)
                             if data.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                                Zip.addCustomFileExtension("imm")
                                 do {
-                                    try Zip.unzipFile(annoPath.url, destination: pathArchiveImagemeter.url, overwrite: true, password: nil)
+                                    try FileManager().unzipItem(at: annoPath.url, to: pathArchiveImagemeter.url)
                                 } catch {
                                     appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                                     return
