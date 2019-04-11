@@ -22,22 +22,6 @@
                     <imageView autoresizesSubviews="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
                         <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                     </imageView>
-                    <visualEffectView hidden="YES" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r1K-4X-gNd" userLabel="VisualEffect">
-                        <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
-                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="3h4-qt-b9E">
-                            <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </view>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <blurEffect style="extraLight"/>
-                    </visualEffectView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
-                        <rect key="frame" x="5" y="5" width="25" height="25"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="25" id="SoZ-J3-98x"/>
-                            <constraint firstAttribute="width" constant="25" id="cZG-gx-gwt"/>
-                        </constraints>
-                    </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
                         <rect key="frame" x="200" y="5" width="15" height="15"/>
                         <constraints>
@@ -57,6 +41,22 @@
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="NTa-Gi-uzY"/>
                             <constraint firstAttribute="width" constant="15" id="xLe-lb-N1p"/>
+                        </constraints>
+                    </imageView>
+                    <visualEffectView hidden="YES" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r1K-4X-gNd" userLabel="VisualEffect">
+                        <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
+                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="3h4-qt-b9E">
+                            <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        </view>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <blurEffect style="extraLight"/>
+                    </visualEffectView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
+                        <rect key="frame" x="5" y="5" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="SoZ-J3-98x"/>
+                            <constraint firstAttribute="width" constant="25" id="cZG-gx-gwt"/>
                         </constraints>
                     </imageView>
                 </subviews>

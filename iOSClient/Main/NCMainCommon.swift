@@ -481,7 +481,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 if selectFileID.contains(metadata.fileID) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.imageVisualEffect.isHidden = false
-                    cell.imageVisualEffect.alpha = 0.3
+                    cell.imageVisualEffect.alpha = 0.4
                 } else {
                     cell.imageSelect.isHidden = true
                     cell.imageVisualEffect.isHidden = true
