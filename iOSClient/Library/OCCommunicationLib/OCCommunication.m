@@ -3085,7 +3085,102 @@
     }];
 }
 
+#pragma mark - Third Parts
 
+- (void)getHCUserProfile:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
+{
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getHCUserProfile:serverPath onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+        
+        NSData *responseData = (NSData*) response;
+        OCUserProfile *userProfile = [OCUserProfile new];
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] User Profile : %@",jsongParsed);
+        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"address"] && ![[data valueForKey:@"address"] isKindOfClass:[NSNull class]])
+                    userProfile.address = [data valueForKey:@"address"];
+                
+                if ([data valueForKey:@"display-name"] && ![[data valueForKey:@"display-name"] isKindOfClass:[NSNull class]])
+                    userProfile.displayName = [data valueForKey:@"display-name"];
+                
+                if ([data valueForKey:@"email"] && ![[data valueForKey:@"email"] isKindOfClass:[NSNull class]])
+                    userProfile.email = [data valueForKey:@"email"];
+                
+                if ([data valueForKey:@"enabled"] && ![[data valueForKey:@"enabled"] isKindOfClass:[NSNull class]])
+                    userProfile.enabled = [[data valueForKey:@"enabled"] boolValue];
+                
+                if ([data valueForKey:@"id"] && ![[data valueForKey:@"id"] isKindOfClass:[NSNull class]])
+                    userProfile.id = [data valueForKey:@"id"];
+                
+                if ([data valueForKey:@"phone"] && ![[data valueForKey:@"phone"] isKindOfClass:[NSNull class]])
+                    userProfile.phone = [data valueForKey:@"phone"];
+                
+                if ([data valueForKey:@"twitter"] && ![[data valueForKey:@"twitter"] isKindOfClass:[NSNull class]])
+                    userProfile.twitter = [data valueForKey:@"twitter"];
+                
+                if ([data valueForKey:@"webpage"] && ![[data valueForKey:@"webpage"] isKindOfClass:[NSNull class]])
+                    userProfile.webpage = [data valueForKey:@"webpage"];
+                
+                /* QUOTA */
+                
+                NSDictionary *quota = [data valueForKey:@"quota"];
+                
+                if ([quota count] > 0) {
+                    
+                    if ([quota valueForKey:@"free"] && ![[quota valueForKey:@"free"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaFree = [[quota valueForKey:@"free"] doubleValue];
+                    
+                    if ([quota valueForKey:@"quota"] && ![[quota valueForKey:@"quota"] isKindOfClass:[NSNull class]])
+                        userProfile.quota = [[quota valueForKey:@"quota"] doubleValue];
+                    
+                    if ([quota valueForKey:@"relative"] && ![[quota valueForKey:@"relative"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaRelative = [[quota valueForKey:@"relative"] doubleValue];
+                    
+                    if ([quota valueForKey:@"total"] && ![[quota valueForKey:@"total"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaTotal = [[quota valueForKey:@"total"] doubleValue];
+                    
+                    if ([quota valueForKey:@"used"] && ![[quota valueForKey:@"used"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaUsed = [[quota valueForKey:@"used"] doubleValue];
+                }
+                
+                successRequest(response, userProfile, request.redirectedServer);
+                
+            } else {
+                
+                NSString *message = (NSString *)[meta objectForKey:@"message"];
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = NSLocalizedString(@"_server_response_error_", nil);
+                }
+                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+            }
+            
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+    
+}
 
 #pragma mark - Manage Mobile Editor OCS API
 

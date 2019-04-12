@@ -674,14 +674,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createAssetRichdocuments:(NSString *_Nonnull)serverPath path:(NSString *_Nonnull)path onCommunication:(OCCommunication *_Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
-
-///-----------------------------------
-/// Trash
-///-----------------------------------
+#pragma mark - Trash
 
 - (void)listTrash:(NSString *)path depth:(NSString *)depth onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)emptyTrash:(NSString*)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
+
+#pragma mark - Third Parts
+
+- (void)getHCUserProfile:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 NS_ASSUME_NONNULL_END
 

@@ -1328,7 +1328,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== API =====
+#pragma mark ===== VAR =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)getActivityWithAccount:(NSString *)account since:(NSInteger)since limit:(NSInteger)limit link:(NSString *)link completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
@@ -1403,43 +1403,6 @@
         completion(account, nil, message, errorCode);
     }];
 }
-
-/*
-- (void)middlewarePing
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getMiddlewarePing:_metadataNet.serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
-        
-        [self complete];
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        }
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        [self complete];
-    }];
-    
-}
-*/
 
 - (void)getNotificationWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfNotifications, NSString *message, NSInteger errorCode))completion
 {
@@ -1988,6 +1951,83 @@
         completion(account, message, errorCode);
     }];
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Third Parts =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getHCUserProfile:(NSString *)account serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, OCUserProfile *userProfile, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/settings/%@", serverUrl, tableAccount.userID];
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getHCUserProfile:serverPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
+        
+        completion(account, userProfile, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, nil,message, errorCode);
+    }];
+}
+
+/*
+ - (void)middlewarePing
+ {
+ OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+ 
+ [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+ [communication setUserAgent:[CCUtility getUserAgent]];
+ 
+ [communication getMiddlewarePing:_metadataNet.serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
+ 
+ [self complete];
+ 
+ } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+ 
+ NSInteger errorCode = response.statusCode;
+ if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+ errorCode = error.code;
+ 
+ // Error
+ if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)]) {
+ 
+ if (errorCode == 503)
+ [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
+ else
+ [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+ }
+ 
+ // Request trusted certificated
+ if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
+ [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+ 
+ [self complete];
+ }];
+ 
+ }
+ */
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  didReceiveChallenge =====
