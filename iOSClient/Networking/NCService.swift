@@ -46,6 +46,11 @@ class NCService: NSObject {
         self.requestServerCapabilities()
         self.requestServerStatus()
         self.requestListTrash()
+        
+        // Thirt Part
+        if NCBrandOptions.sharedInstance.brandInitials == "hc" {
+            self.registerHC()
+        }
     }
 
     //MARK: -
@@ -307,5 +312,16 @@ class NCService: NSObject {
                 }
             }
         })
+    }
+    
+    //MARK: -
+    //MARK: Thirt Part
+    
+    private func registerHC() {
+        
+        let professions = CCUtility.getHCBusinessType(appDelegate.activeAccount)
+        if professions != nil && professions!.count > 0 {
+            
+        }
     }
 }
