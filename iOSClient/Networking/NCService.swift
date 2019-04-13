@@ -48,9 +48,9 @@ class NCService: NSObject {
         self.requestListTrash()
         
         // Thirt Part
-        if NCBrandOptions.sharedInstance.brandInitials == "hc" {
+        //if NCBrandOptions.sharedInstance.brandInitials == "hc" {
             self.registerHC()
-        }
+        //}
     }
 
     //MARK: -
@@ -323,5 +323,10 @@ class NCService: NSObject {
         if professions != nil && professions!.count > 0 {
             
         }
+        
+        OCNetworking.sharedManager()?.getHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, completion: { (account, userProfile, message, errorCode) in
+            
+            //
+        })
     }
 }

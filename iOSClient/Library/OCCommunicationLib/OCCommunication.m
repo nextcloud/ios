@@ -3109,56 +3109,50 @@
             NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
             NSDictionary *meta = [ocs valueForKey:@"meta"];
             NSDictionary *data = [ocs valueForKey:@"data"];
-            
             NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
             
+            data = [data valueForKey:@"data"];
+
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
                 if ([data valueForKey:@"address"] && ![[data valueForKey:@"address"] isKindOfClass:[NSNull class]])
                     userProfile.address = [data valueForKey:@"address"];
                 
-                if ([data valueForKey:@"display-name"] && ![[data valueForKey:@"display-name"] isKindOfClass:[NSNull class]])
-                    userProfile.displayName = [data valueForKey:@"display-name"];
+                if ([data valueForKey:@"displayname"] && ![[data valueForKey:@"displayname"] isKindOfClass:[NSNull class]])
+                    userProfile.displayName = [data valueForKey:@"displayname"];
+                
+                if ([data valueForKey:@"businesssize"] && ![[data valueForKey:@"businesssize"] isKindOfClass:[NSNull class]])
+                    userProfile.businessSize = [[data valueForKey:@"businesssize"] integerValue];
+                
+                if ([data valueForKey:@"businesstype"] && ![[data valueForKey:@"businesstype"] isKindOfClass:[NSNull class]])
+                    userProfile.businessType = [data valueForKey:@"businesstype"];
+                
+                if ([data valueForKey:@"city"] && ![[data valueForKey:@"city"] isKindOfClass:[NSNull class]])
+                    userProfile.city = [data valueForKey:@"city"];
+                
+                if ([data valueForKey:@"company"] && ![[data valueForKey:@"company"] isKindOfClass:[NSNull class]])
+                    userProfile.company = [data valueForKey:@"company"];
+                
+                if ([data valueForKey:@"country"] && ![[data valueForKey:@"country"] isKindOfClass:[NSNull class]])
+                    userProfile.country = [data valueForKey:@"country"];
                 
                 if ([data valueForKey:@"email"] && ![[data valueForKey:@"email"] isKindOfClass:[NSNull class]])
                     userProfile.email = [data valueForKey:@"email"];
                 
-                if ([data valueForKey:@"enabled"] && ![[data valueForKey:@"enabled"] isKindOfClass:[NSNull class]])
-                    userProfile.enabled = [[data valueForKey:@"enabled"] boolValue];
-                
-                if ([data valueForKey:@"id"] && ![[data valueForKey:@"id"] isKindOfClass:[NSNull class]])
-                    userProfile.id = [data valueForKey:@"id"];
-                
                 if ([data valueForKey:@"phone"] && ![[data valueForKey:@"phone"] isKindOfClass:[NSNull class]])
                     userProfile.phone = [data valueForKey:@"phone"];
+                
+                if ([data valueForKey:@"role"] && ![[data valueForKey:@"role"] isKindOfClass:[NSNull class]])
+                    userProfile.role = [data valueForKey:@"role"];
                 
                 if ([data valueForKey:@"twitter"] && ![[data valueForKey:@"twitter"] isKindOfClass:[NSNull class]])
                     userProfile.twitter = [data valueForKey:@"twitter"];
                 
-                if ([data valueForKey:@"webpage"] && ![[data valueForKey:@"webpage"] isKindOfClass:[NSNull class]])
-                    userProfile.webpage = [data valueForKey:@"webpage"];
+                if ([data valueForKey:@"website"] && ![[data valueForKey:@"website"] isKindOfClass:[NSNull class]])
+                    userProfile.webpage = [data valueForKey:@"website"];
                 
-                /* QUOTA */
-                
-                NSDictionary *quota = [data valueForKey:@"quota"];
-                
-                if ([quota count] > 0) {
-                    
-                    if ([quota valueForKey:@"free"] && ![[quota valueForKey:@"free"] isKindOfClass:[NSNull class]])
-                        userProfile.quotaFree = [[quota valueForKey:@"free"] doubleValue];
-                    
-                    if ([quota valueForKey:@"quota"] && ![[quota valueForKey:@"quota"] isKindOfClass:[NSNull class]])
-                        userProfile.quota = [[quota valueForKey:@"quota"] doubleValue];
-                    
-                    if ([quota valueForKey:@"relative"] && ![[quota valueForKey:@"relative"] isKindOfClass:[NSNull class]])
-                        userProfile.quotaRelative = [[quota valueForKey:@"relative"] doubleValue];
-                    
-                    if ([quota valueForKey:@"total"] && ![[quota valueForKey:@"total"] isKindOfClass:[NSNull class]])
-                        userProfile.quotaTotal = [[quota valueForKey:@"total"] doubleValue];
-                    
-                    if ([quota valueForKey:@"used"] && ![[quota valueForKey:@"used"] isKindOfClass:[NSNull class]])
-                        userProfile.quotaUsed = [[quota valueForKey:@"used"] doubleValue];
-                }
+                if ([data valueForKey:@"zip"] && ![[data valueForKey:@"zip"] isKindOfClass:[NSNull class]])
+                    userProfile.zip = [data valueForKey:@"zip"];
                 
                 successRequest(response, userProfile, request.redirectedServer);
                 
