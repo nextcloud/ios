@@ -591,6 +591,18 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)setHCBusinessType:(NSString *)account professions:(NSString *)professions
+{
+    NSString *key = [@"businessType" stringByAppendingString:account];
+    [UICKeyChainStore setString:professions forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getHCBusinessType:(NSString *)account
+{
+    NSString *key = [@"businessType" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

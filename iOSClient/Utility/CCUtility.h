@@ -156,6 +156,9 @@
 + (void)setPassword:(NSString *)account password:(NSString *)password;
 + (NSString *)getPassword:(NSString *)account;
 
++ (void)setHCBusinessType:(NSString *)account professions:(NSString *)professions;
++ (NSString *)getHCBusinessType:(NSString *)account;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
