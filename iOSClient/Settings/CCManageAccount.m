@@ -85,6 +85,18 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
     
+    // City
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercity" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_city_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Zip
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userzip" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_zip_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
     // Phone
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userphone" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_phone_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -105,6 +117,30 @@
     
     // Twitter
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Business Type
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesstype" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesstype_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Business Size
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesssize" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesssize_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Role
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userrole" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_role_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Company
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercompany" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_company_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
@@ -354,11 +390,18 @@
     
     XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
     XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];
+    XLFormRowDescriptor *rowUserCity = [self.form formRowWithTag:@"usercity"];
+    XLFormRowDescriptor *rowUserZip = [self.form formRowWithTag:@"userzip"];
     XLFormRowDescriptor *rowUserPhone = [self.form formRowWithTag:@"userphone"];
     XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
     XLFormRowDescriptor *rowUserWeb = [self.form formRowWithTag:@"userweb"];
     XLFormRowDescriptor *rowUserTwitter = [self.form formRowWithTag:@"usertwitter"];
+    XLFormRowDescriptor *rowUserBusinessType = [self.form formRowWithTag:@"userbusinesstype"];
+    XLFormRowDescriptor *rowUserBusinessSize = [self.form formRowWithTag:@"userbusinesssize"];
+    XLFormRowDescriptor *rowUserRole = [self.form formRowWithTag:@"userrole"];
+    XLFormRowDescriptor *rowUserCompany = [self.form formRowWithTag:@"usercompany"];
 
+    
     rowUserFullName.value = _tableAccount.displayName;
     if ([_tableAccount.displayName isEqualToString:@""] || _tableAccount.displayName == nil) rowUserFullName.hidden = @YES;
     else rowUserFullName.hidden = @NO;
@@ -366,6 +409,14 @@
     rowUserAddress.value = _tableAccount.address;
     if ([_tableAccount.address isEqualToString:@""] || _tableAccount.address == nil) rowUserAddress.hidden = @YES;
     else rowUserAddress.hidden = @NO;
+    
+    rowUserCity.value = _tableAccount.city;
+    if ([_tableAccount.city isEqualToString:@""] || _tableAccount.city == nil) rowUserCity.hidden = @YES;
+    else rowUserCity.hidden = @NO;
+    
+    rowUserZip.value = _tableAccount.zip;
+    if ([_tableAccount.zip isEqualToString:@""] || _tableAccount.zip == nil) rowUserZip.hidden = @YES;
+    else rowUserZip.hidden = @NO;
     
     rowUserPhone.value = _tableAccount.phone;
     if ([_tableAccount.phone isEqualToString:@""] || _tableAccount.phone == nil) rowUserPhone.hidden = @YES;
@@ -383,6 +434,22 @@
     if ([_tableAccount.twitter isEqualToString:@""] || _tableAccount.twitter == nil) rowUserTwitter.hidden = @YES;
     else rowUserTwitter.hidden = @NO;
 
+    rowUserBusinessType.value = _tableAccount.businessType;
+    if ([_tableAccount.businessType isEqualToString:@""] || _tableAccount.businessType == nil) rowUserBusinessType.hidden = @YES;
+    else rowUserBusinessType.hidden = @NO;
+    
+    rowUserBusinessSize.value = @(_tableAccount.businessSize).stringValue;
+    if (_tableAccount.businessSize > 0) rowUserBusinessSize.hidden = @YES;
+    else rowUserBusinessSize.hidden = @NO;
+    
+    rowUserRole.value = _tableAccount.role;
+    if ([_tableAccount.role isEqualToString:@""] || _tableAccount.role == nil) rowUserRole.hidden = @YES;
+    else rowUserRole.hidden = @NO;
+    
+    rowUserCompany.value = _tableAccount.company;
+    if ([_tableAccount.company isEqualToString:@""] || _tableAccount.company == nil) rowUserCompany.hidden = @YES;
+    else rowUserCompany.hidden = @NO;
+    
     [self.tableView reloadData];
     
     [self performSelector:@selector(reloadData) withObject:nil afterDelay:1];
