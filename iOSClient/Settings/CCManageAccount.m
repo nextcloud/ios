@@ -40,16 +40,28 @@
 
 @implementation CCManageAccount
 
--(id)init
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
+    if (self) {
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        
+        [self initializeForm];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    }
+    
+    return self;
+}
+
+- (void)initializeForm
 {
     XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_credentials_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    
+        
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
 
     // Section : CLOUD ACCOUNT -------------------------------------------
@@ -186,7 +198,7 @@
         [section addFormRow:row];
     }
     
-    return [super initWithForm:form];
+    self.form = form;
 }
 
 // Apparirà
