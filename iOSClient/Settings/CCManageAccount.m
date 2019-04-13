@@ -48,8 +48,6 @@
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
-        [self initializeForm];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     }
     
@@ -213,6 +211,8 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
+    [self initializeForm];
+
     [self UpdateForm];
 }
 
