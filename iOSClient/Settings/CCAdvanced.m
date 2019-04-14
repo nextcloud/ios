@@ -35,7 +35,7 @@
 
 @implementation CCAdvanced
 
--(id)init
+- (id)init
 {
     XLFormDescriptor *form ;
     XLFormSectionDescriptor *section;
