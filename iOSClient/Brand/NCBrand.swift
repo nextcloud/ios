@@ -117,7 +117,6 @@ class NCBrandColor: NSObject {
     override init() {
         
         if folderBrandAutoUpload != "" {
-            
             folderDefaultAutoUpload = folderBrandAutoUpload
         }
         
