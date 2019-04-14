@@ -54,6 +54,7 @@
 #import "OCRichObjectStrings.h"
 #import "OCUserProfile.h"
 #import "NCRichDocumentTemplate.h"
+#import "HCFeatures.h"
 
 @interface OCCommunication ()
 
@@ -3155,6 +3156,83 @@
                     userProfile.zip = [data valueForKey:@"zip"];
                 
                 successRequest(response, userProfile, request.redirectedServer);
+                
+            } else {
+                
+                NSString *message = (NSString *)[meta objectForKey:@"message"];
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = NSLocalizedString(@"_server_response_error_", nil);
+                }
+                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+            }
+            
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+    
+}
+
+- (void)getHCFeatures:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, HCFeatures *features, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
+{
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getHCUserProfile:serverPath onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+        
+        NSData *responseData = (NSData*) response;
+        HCFeatures *features = [HCFeatures new];
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] User Profile : %@",jsongParsed);
+        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            data = [data valueForKey:@"data"];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"is_trial"] && ![[data valueForKey:@"is_trial"] isKindOfClass:[NSNull class]])
+                    features.isTrial = [[data valueForKey:@"is_trial"] boolValue];
+                
+                if ([data valueForKey:@"trial_expired"] && ![[data valueForKey:@"trial_expired"] isKindOfClass:[NSNull class]])
+                    features.trialExpired = [[data valueForKey:@"trial_expired"] boolValue];
+                
+                if ([data valueForKey:@"trial_remaining_sec"] && ![[data valueForKey:@"trial_remaining_sec"] isKindOfClass:[NSNull class]])
+                    features.trialRemainingSec = [[data valueForKey:@"trial_remaining_sec"] integerValue];
+                
+                if ([data valueForKey:@"trial_end_time"] && ![[data valueForKey:@"trial_end_time"] isKindOfClass:[NSNull class]])
+                    features.trialEndTime = [[data valueForKey:@"trial_end_time"] integerValue];
+                
+                if ([data valueForKey:@"trial_end"] && ![[data valueForKey:@"trial_end"] isKindOfClass:[NSNull class]])
+                    features.trialEnd = [data valueForKey:@"trial_end"];
+                
+                if ([data valueForKey:@"account_remove_expired"] && ![[data valueForKey:@"account_remove_expired"] isKindOfClass:[NSNull class]])
+                    features.accountRemoveExpired = [[data valueForKey:@"account_remove_expired"] boolValue];
+                
+                if ([data valueForKey:@"account_remove_remaining_sec"] && ![[data valueForKey:@"account_remove_remaining_sec"] isKindOfClass:[NSNull class]])
+                    features.accountRemoveRemainingSec = [[data valueForKey:@"account_remove_remaining_sec"] integerValue];
+                
+                if ([data valueForKey:@"account_remove_time"] && ![[data valueForKey:@"account_remove_time"] isKindOfClass:[NSNull class]])
+                    features.accountRemoveTime = [[data valueForKey:@"account_remove_time"] integerValue];
+                
+                if ([data valueForKey:@"account_remove"] && ![[data valueForKey:@"account_remove"] isKindOfClass:[NSNull class]])
+                    features.accountRemove = [data valueForKey:@"account_remove"];
+                
+                successRequest(response, features, request.redirectedServer);
                 
             } else {
                 

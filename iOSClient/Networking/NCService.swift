@@ -329,5 +329,11 @@ class NCService: NSObject {
                 _ = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!)
             }
         })
+        
+        OCNetworking.sharedManager()?.getHCFeatures(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, completion: { (account, features, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            }
+        })
+        
     }
 }
