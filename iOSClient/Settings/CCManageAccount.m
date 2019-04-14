@@ -177,7 +177,8 @@
         [section addFormRow:row];
     }
     
-    // Thirt Part 
+    // Section : THIRT PART -------------------------------------------
+
     if ([NCBrandOptions.sharedInstance.brandInitials isEqualToString:@"hc"]) {
     
         section = [XLFormSectionDescriptor formSection];
@@ -375,6 +376,8 @@
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
         if ([listAccount count] > 0) {
             [self ChangeDefaultAccount:listAccount[0]];
+        } else {
+            [self initializeForm];
         }
     }]];
     
