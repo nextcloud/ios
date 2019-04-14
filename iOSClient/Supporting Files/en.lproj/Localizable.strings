@@ -178,7 +178,7 @@
 "_change_simply_passcode_"      = "Change password type";
 "_quota_"                       = "Quota";
 "_available_"                   = "available";
-"_cloud_account_"               = "Cloud Account";
+"_accounts_"                    = "Accounts";
 "_information_"                 = "Information";
 "_personal_information_"        = "Personal info";
 "_user_full_name_"              = "Full name";

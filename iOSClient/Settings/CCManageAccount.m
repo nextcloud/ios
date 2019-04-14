@@ -22,7 +22,6 @@
 //
 
 #import <JDStatusBarNotification/JDStatusBarNotification.h>
-
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
@@ -34,7 +33,6 @@
 @interface CCManageAccount () <CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
-    tableAccount *_tableAccount;
 }
 @end
 
@@ -61,10 +59,11 @@
     XLFormRowDescriptor *row;
         
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
-    // Section : CLOUD ACCOUNT -------------------------------------------
+    // Section : ACCOUNTS -------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:@"cloud account"];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_accounts_", nil)];
     [form addFormSection:section];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
@@ -72,10 +71,33 @@
     row.height = 100;
     if (listAccount.count > 0) {
         row.selectorOptions = listAccount;
-        row.value = appDelegate.activeAccount;
+        row.value = tableAccount.account;
     } else {
         row.selectorOptions = [[NSArray alloc] initWithObjects:@"", nil];
     }
+    
+    // Avatar
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl], appDelegate.activeUser];
+    
+    UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
+    if (avatar) {
+        
+        avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
+        
+        CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
+        
+        CGSize imageSize = avatarImageView.bounds.size;
+        UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        [avatarImageView.layer renderInContext:context];
+        avatar = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+    } else {
+        avatar = [UIImage imageNamed:@"avatarBN"];
+    }
+    
+    [row.cellConfig setObject:avatar forKey:@"imageView.image"];
     [section addFormRow:row];
 
     // Section : USER INFORMATION -------------------------------------------
@@ -84,76 +106,111 @@
     [form addFormSection:section];
     
     // Full Name
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_full_name_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.displayName length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_full_name_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.displayName;
+        [section addFormRow:row];
+    }
     
     // Address
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useraddress" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_address_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.address length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useraddress" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_address_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.address;
+        [section addFormRow:row];
+    }
     
     // City
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercity" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_city_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.city length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercity" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_city_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.city;
+        [section addFormRow:row];
+    }
     
     // Zip
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userzip" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_zip_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.zip length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userzip" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_zip_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.zip;
+        [section addFormRow:row];
+    }
     
     // Phone
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userphone" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_phone_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.phone length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userphone" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_phone_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.phone;
+        [section addFormRow:row];
+    }
     
     // Email
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_email_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.email length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_email_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.email;
+        [section addFormRow:row];
+    }
     
     // Web
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userweb" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_web_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.webpage length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userweb" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_web_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.webpage;
+        [section addFormRow:row];
+    }
     
     // Twitter
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    if ([tableAccount.twitter length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.twitter;
+        [section addFormRow:row];
+    }
     
-    // Business Type
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesstype" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesstype_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+    // Thirt Part 
+    if ([NCBrandOptions.sharedInstance.brandInitials isEqualToString:@"hc"]) {
     
-    // Business Size
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesssize" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesssize_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // Role
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userrole" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_role_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // Company
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercompany" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_company_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
+        section = [XLFormSectionDescriptor formSection];
+        [form addFormSection:section];
+        
+        // Business Type
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesstype" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesstype_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.businessType;
+        [section addFormRow:row];
+        
+        // Business Size
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesssize" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesssize_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = @(tableAccount.businessSize).stringValue;
+        [section addFormRow:row];
+        
+        // Role
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userrole" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_role_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.role;
+        [section addFormRow:row];
+        
+        // Company
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercompany" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_company_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.company;
+        [section addFormRow:row];
+    }
     
     // Section : MANAGE ACCOUNT -------------------------------------------
     
@@ -191,12 +248,17 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        row.action.formSelector = @selector(answerDelAccount:);
+        row.action.formSelector = @selector(deleteAccount:);
         if (listAccount.count == 0) row.disabled = @YES;
         [section addFormRow:row];
     }
     
     self.form = form;
+    
+    // Open Login
+    if (listAccount.count == 0) {
+        [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+    }
 }
 
 // Apparirà
@@ -212,8 +274,6 @@
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self initializeForm];
-
-    [self UpdateForm];
 }
 
 - (void)changeTheming
@@ -231,15 +291,15 @@
     
     if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue) {
         
-        if (![newValue isEqualToString:oldValue] && ![newValue isEqualToString:@""] && ![newValue isEqualToString:appDelegate.activeAccount])
+        if (![newValue isEqualToString:oldValue] && ![newValue isEqualToString:@""] && ![newValue isEqualToString:appDelegate.activeAccount]) {
             [self ChangeDefaultAccount:newValue];
+        }
         
         if ([newValue isEqualToString:@""]) {
-            
             NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-
-            if ([listAccount count] > 0)
+            if ([listAccount count] > 0) {
                 [self ChangeDefaultAccount:listAccount[0]];
+            }
         }
     }
 }
@@ -252,7 +312,6 @@
 {
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Add Account ===
@@ -280,31 +339,7 @@
 #pragma mark === Delete Account  ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteAccount:(NSString *)account
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount) {
-        [appDelegate unsubscribingNextcloudServerPushNotification:tableAccount.account url:tableAccount.url withSubscribing:false];
-    }
-    
-    [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
-    
-    // Clear active user
-    [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
-}
-
-- (void)answerDelAccount:(XLFormRowDescriptor *)sender
+- (void)deleteAccount:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
@@ -314,21 +349,36 @@
         
         XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
         
-        NSString *accountNow = pickerAccount.rowDescriptor.value;
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", pickerAccount.rowDescriptor.value]];
         
-        [self deleteAccount:accountNow];
+        if (tableAccount) {
+            
+            [appDelegate unsubscribingNextcloudServerPushNotification:tableAccount.account url:tableAccount.url withSubscribing:false];
+        
+            [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:tableAccount.account];
+        
+            // Clear active user
+            [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+        }
         
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-        if ([listAccount count] > 0)
+        if ([listAccount count] > 0) {
             [self ChangeDefaultAccount:listAccount[0]];
-        else {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
     }]];
     
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        [alertController dismissViewControllerAnimated:YES completion:nil];
-    }]];
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
     
     alertController.popoverPresentationController.sourceView = self.view;
     NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
@@ -350,126 +400,9 @@
  
         // Init home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-            
-        [self UpdateForm];            
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Update Form ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)UpdateForm
-{
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-    
-    if (listAccount.count == 0) {
-        [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
-        return;
     }
     
-    XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
-    
-    pickerAccount.rowDescriptor.selectorOptions = listAccount;
-    pickerAccount.rowDescriptor.value = appDelegate.activeAccount;
-    
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl], appDelegate.activeUser];
-
-    UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
-    if (avatar) {
-    
-        avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
-    
-        CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-        
-        CGSize imageSize = avatarImageView.bounds.size;
-        UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        [avatarImageView.layer renderInContext:context];
-        avatar = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-    } else {
-        
-        avatar = [UIImage imageNamed:@"avatarBN"];
-    }
-    
-    [pickerAccount.rowDescriptor.cellConfig setObject:avatar forKey:@"imageView.image"];
-
-    // --
-    
-    _tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
-    XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];
-    XLFormRowDescriptor *rowUserCity = [self.form formRowWithTag:@"usercity"];
-    XLFormRowDescriptor *rowUserZip = [self.form formRowWithTag:@"userzip"];
-    XLFormRowDescriptor *rowUserPhone = [self.form formRowWithTag:@"userphone"];
-    XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
-    XLFormRowDescriptor *rowUserWeb = [self.form formRowWithTag:@"userweb"];
-    XLFormRowDescriptor *rowUserTwitter = [self.form formRowWithTag:@"usertwitter"];
-    XLFormRowDescriptor *rowUserBusinessType = [self.form formRowWithTag:@"userbusinesstype"];
-    XLFormRowDescriptor *rowUserBusinessSize = [self.form formRowWithTag:@"userbusinesssize"];
-    XLFormRowDescriptor *rowUserRole = [self.form formRowWithTag:@"userrole"];
-    XLFormRowDescriptor *rowUserCompany = [self.form formRowWithTag:@"usercompany"];
-
-    
-    rowUserFullName.value = _tableAccount.displayName;
-    if ([_tableAccount.displayName isEqualToString:@""] || _tableAccount.displayName == nil) rowUserFullName.hidden = @YES;
-    else rowUserFullName.hidden = @NO;
-    
-    rowUserAddress.value = _tableAccount.address;
-    if ([_tableAccount.address isEqualToString:@""] || _tableAccount.address == nil) rowUserAddress.hidden = @YES;
-    else rowUserAddress.hidden = @NO;
-    
-    rowUserCity.value = _tableAccount.city;
-    if ([_tableAccount.city isEqualToString:@""] || _tableAccount.city == nil) rowUserCity.hidden = @YES;
-    else rowUserCity.hidden = @NO;
-    
-    rowUserZip.value = _tableAccount.zip;
-    if ([_tableAccount.zip isEqualToString:@""] || _tableAccount.zip == nil) rowUserZip.hidden = @YES;
-    else rowUserZip.hidden = @NO;
-    
-    rowUserPhone.value = _tableAccount.phone;
-    if ([_tableAccount.phone isEqualToString:@""] || _tableAccount.phone == nil) rowUserPhone.hidden = @YES;
-    else rowUserPhone.hidden = @NO;
-    
-    rowUserEmail.value = _tableAccount.email;
-    if ([_tableAccount.email isEqualToString:@""] || _tableAccount.email == nil) rowUserEmail.hidden = @YES;
-    else rowUserEmail.hidden = @NO;
-    
-    rowUserWeb.value = _tableAccount.webpage;
-    if ([_tableAccount.webpage isEqualToString:@""] || _tableAccount.webpage == nil) rowUserWeb.hidden = @YES;
-    else rowUserWeb.hidden = @NO;
-    
-    rowUserTwitter.value = _tableAccount.twitter;
-    if ([_tableAccount.twitter isEqualToString:@""] || _tableAccount.twitter == nil) rowUserTwitter.hidden = @YES;
-    else rowUserTwitter.hidden = @NO;
-
-    rowUserBusinessType.value = _tableAccount.businessType;
-    if ([_tableAccount.businessType isEqualToString:@""] || _tableAccount.businessType == nil) rowUserBusinessType.hidden = @YES;
-    else rowUserBusinessType.hidden = @NO;
-    
-    rowUserBusinessSize.value = @(_tableAccount.businessSize).stringValue;
-    if (_tableAccount.businessSize > 0) rowUserBusinessSize.hidden = @YES;
-    else rowUserBusinessSize.hidden = @NO;
-    
-    rowUserRole.value = _tableAccount.role;
-    if ([_tableAccount.role isEqualToString:@""] || _tableAccount.role == nil) rowUserRole.hidden = @YES;
-    else rowUserRole.hidden = @NO;
-    
-    rowUserCompany.value = _tableAccount.company;
-    if ([_tableAccount.company isEqualToString:@""] || _tableAccount.company == nil) rowUserCompany.hidden = @YES;
-    else rowUserCompany.hidden = @NO;
-    
-    [self.tableView reloadData];
-    
-    [self performSelector:@selector(reloadData) withObject:nil afterDelay:1];
-}
-
-- (void)reloadData
-{
-    [self.tableView reloadData];
+    [self initializeForm];
 }
 
 @end
