@@ -200,8 +200,8 @@
 {
     self.form.delegate = nil;
     
-    // ----------------------
-    
+    // ------------------------------------------------------------------
+
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowSimplyPasscode = [self.form formRowWithTag:@"simplypasscode"];
     XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];
