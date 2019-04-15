@@ -188,7 +188,7 @@
     
     // Section : THIRT PART -------------------------------------------
 
-    if ([NCBrandOptions.sharedInstance.brandInitials isEqualToString:@"hc"]) {
+    if ([NCBrandOptions.sharedInstance.brandInitials containsString:@"hc"]) {
     
         section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
