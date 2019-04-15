@@ -238,15 +238,6 @@ class NCManageDatabase: NSObject {
         }
         
         CCUtility.setPassword(account, password: password)
-        
-        // Third Parts:
-        //
-        // HC
-        //
-        let professions = CCUtility.getHCBusinessType(account)
-        if professions != nil && professions!.count > 0 {
-            CCUtility.setHCBusinessType(account, professions: professions)
-        }
     
         addObject.url = url
         addObject.user = user

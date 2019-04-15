@@ -319,11 +319,11 @@ class NCService: NSObject {
     
     private func requestHC() {
         
-        let professions = CCUtility.getHCBusinessType("")
+        let professions = CCUtility.getHCBusinessType()
         if professions != nil && professions!.count > 0 {
             OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, professions: professions, completion: { (account, message, errorCode) in
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
-                    CCUtility.setHCBusinessType("", professions: nil)
+                    CCUtility.setHCBusinessType(nil)
                     OCNetworking.sharedManager()?.getHCUserProfile(withAccount: self.appDelegate.activeAccount, serverUrl: self.appDelegate.activeUrl, completion: { (account, userProfile, message, errorCode) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             _ = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!)
