@@ -48,7 +48,7 @@ class NCService: NSObject {
         self.requestListTrash()
         
         // Thirt Part
-        if NCBrandOptions.sharedInstance.brandInitials.contains("hc") {
+        if NCBrandOptions.sharedInstance.brandInitials == "hc" {
             self.requestHC()
         }
     }
