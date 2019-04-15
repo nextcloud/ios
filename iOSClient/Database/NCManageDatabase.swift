@@ -501,6 +501,7 @@ class NCManageDatabase: NSObject {
                     result.businessSize = Double(userProfile.businessSize)
                     result.businessType = userProfile.businessType
                     result.city = userProfile.city
+                    result.country = userProfile.country
                     result.company = userProfile.company
                     result.role = userProfile.role
                     result.zip = userProfile.zip

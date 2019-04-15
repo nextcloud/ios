@@ -190,6 +190,7 @@
 "_user_businesssize_"           = "Business size";
 "_user_businesstype_"           = "Business type";
 "_user_city_"                   = "City";
+"_user_country_"                = "Country";
 "_user_company_"                = "Company";
 "_user_role_"                   = "Role";
 "_user_zip_"                    = "Zip";

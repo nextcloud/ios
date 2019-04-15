@@ -132,6 +132,15 @@
         [section addFormRow:row];
     }
     
+    // Country
+    if ([tableAccount.country length] > 0) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercity" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_country_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        row.value = tableAccount.country;
+        [section addFormRow:row];
+    }
+    
     // Zip
     if ([tableAccount.zip length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userzip" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_zip_", nil)];
