@@ -1992,13 +1992,17 @@
     }];
 }
 
-- (void)putHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)putHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl professions:(NSString *)professions completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
+    // Create JSON
+    NSDictionary *dataDic = @{@"businesstype": professions};
+    NSString *data = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:dataDic options:0 error:nil] encoding:NSUTF8StringEncoding];
+
     NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/settings/%@", serverUrl, tableAccount.userID];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -2006,7 +2010,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication putHCUserProfile:serverPath data:@"" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication putHCUserProfile:serverPath data:data onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
         
