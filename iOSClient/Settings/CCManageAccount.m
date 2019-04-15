@@ -190,7 +190,7 @@
 
     if ([NCBrandOptions.sharedInstance.brandInitials isEqualToString:@"hc"]) {
     
-        section = [XLFormSectionDescriptor formSection];
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_job_", nil)];
         [form addFormSection:section];
         
         // Business Type
