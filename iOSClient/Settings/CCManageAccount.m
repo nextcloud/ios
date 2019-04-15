@@ -137,7 +137,8 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercity" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_country_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-        row.value = tableAccount.country;
+        row.value = [[NSLocale systemLocale] displayNameForKey:NSLocaleCountryCode value:tableAccount.country];
+        //NSArray *countryCodes = [NSLocale ISOCountryCodes];
         [section addFormRow:row];
     }
     
