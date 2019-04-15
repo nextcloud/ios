@@ -467,7 +467,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountUserProfile(_ userProfile: OCUserProfile) -> tableAccount? {
+    @objc func setAccountUserProfile(_ userProfile: OCUserProfile, HCProperties: Bool) -> tableAccount? {
      
         guard let activeAccount = self.getAccountActive() else {
             return nil
@@ -491,17 +491,20 @@ class NCManageDatabase: NSObject {
                 
                 result.enabled = userProfile.enabled
                 result.address = userProfile.address
-                result.businessSize = Double(userProfile.businessSize)
-                result.businessType = userProfile.businessType
-                result.city = userProfile.city
-                result.company = userProfile.company
                 result.displayName = userProfile.displayName
                 result.email = userProfile.email
                 result.phone = userProfile.phone
-                result.role = userProfile.role
                 result.twitter = userProfile.twitter
                 result.webpage = userProfile.webpage
-                result.zip = userProfile.zip
+                
+                if HCProperties {
+                    result.businessSize = Double(userProfile.businessSize)
+                    result.businessType = userProfile.businessType
+                    result.city = userProfile.city
+                    result.company = userProfile.company
+                    result.role = userProfile.role
+                    result.zip = userProfile.zip
+                }
                 
                 result.quota = userProfile.quota
                 result.quotaFree = userProfile.quotaFree
