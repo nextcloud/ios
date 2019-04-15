@@ -64,7 +64,7 @@ class NCManageDatabase: NSObject {
         var config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 45,
+            schemaVersion: 46,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -102,6 +102,7 @@ class NCManageDatabase: NSObject {
             // 43 : Version 2.23.2.0
             // 44 : Version 2.23.4.3
             // 45 : Version 2.23.4.4
+            // 46 : Version 2.23.4.5
 
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -520,6 +521,43 @@ class NCManageDatabase: NSObject {
         return activeAccount
     }
     
+    @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
+        
+        guard let activeAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                    return
+                }
+                
+                result.hcIsTrial = features.isTrial
+                result.hcTrialExpired = features.trialExpired
+                result.hcTrialRemainingSec = features.trialRemainingSec
+                if features.trialEndTime > 0 {
+                    result.hcTrialEndTime = Date(timeIntervalSince1970: features.trialEndTime) as NSDate
+                } else {
+                    result.hcTrialEndTime = nil
+                }
+                result.hcAccountRemoveExpired = features.accountRemoveExpired
+                result.hcAccountRemoveRemainingSec = features.accountRemoveRemainingSec
+                if features.accountRemoveTime > 0 {
+                    result.hcAccountRemoveTime = Date(timeIntervalSince1970: features.accountRemoveTime) as NSDate
+                } else {
+                    result.hcAccountRemoveTime = nil
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+        
+        return activeAccount
+    }
     @objc func setAccountDateSearchContentTypeImageVideo(_ date: Date) {
         
         guard let activeAccount = self.getAccountActive() else {

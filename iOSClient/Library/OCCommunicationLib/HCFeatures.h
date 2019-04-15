@@ -26,12 +26,12 @@
 
 @property BOOL isTrial;
 @property BOOL trialExpired;
-@property NSInteger trialRemainingSec;
-@property NSInteger trialEndTime;
+@property double trialRemainingSec;
+@property double trialEndTime;
 @property (nonatomic, strong) NSString *trialEnd;
 @property BOOL accountRemoveExpired;
-@property NSInteger accountRemoveRemainingSec;
-@property NSInteger accountRemoveTime;
+@property double accountRemoveRemainingSec;
+@property double accountRemoveTime;
 @property (nonatomic, strong) NSString *accountRemove;
 
 @end

@@ -341,6 +341,7 @@ class NCService: NSObject {
         
         OCNetworking.sharedManager()?.getHCFeatures(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, completion: { (account, features, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
+                _ = NCManageDatabase.sharedInstance.setAccountHCFeatures(features!)
             }
         })
         

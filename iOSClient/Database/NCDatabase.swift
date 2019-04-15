@@ -63,6 +63,14 @@ class tableAccount: Object {
     @objc dynamic var userID = ""
     @objc dynamic var webpage = ""
     @objc dynamic var zip = ""
+    // HC
+    @objc dynamic var hcIsTrial: Bool = false
+    @objc dynamic var hcTrialExpired: Bool = false
+    @objc dynamic var hcTrialRemainingSec: Double = 0
+    @objc dynamic var hcTrialEndTime: NSDate? = nil
+    @objc dynamic var hcAccountRemoveExpired: Bool = false
+    @objc dynamic var hcAccountRemoveRemainingSec: Double = 0
+    @objc dynamic var hcAccountRemoveTime: NSDate? = nil
 }
 
 class tableActivity: Object {
