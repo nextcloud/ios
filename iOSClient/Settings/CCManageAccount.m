@@ -204,14 +204,47 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesssize" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesssize_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-        row.value = @(tableAccount.businessSize).stringValue;
+        switch ((int)tableAccount.businessSize) {
+            case 1:
+                row.value = @"1-4";
+                break;
+            case 5:
+                row.value = @"5-9";
+                break;
+            case 10:
+                row.value = @"10-19";
+                break;
+            case 20:
+                row.value = @"20-49";
+                break;
+            case 50:
+                row.value = @"50-99";
+                break;
+            case 100:
+                row.value = @"100-249";
+                break;
+            case 250:
+                row.value = @"250-499";
+                break;
+            case 500:
+                row.value = @"500-999";
+                break;
+            case 1000:
+                row.value = @"1000+";
+                break;
+            default:
+                row.value = @"";
+        }
         [section addFormRow:row];
         
         // Role
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userrole" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_role_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-        row.value = tableAccount.role;
+        if ([tableAccount.role isEqualToString:@"owner"]) row.value = NSLocalizedString(@"_user_owner_", nil);
+        else if ([tableAccount.role isEqualToString:@"employee"]) row.value = NSLocalizedString(@"_user_employee_", nil);
+        else if ([tableAccount.role isEqualToString:@"contractor"]) row.value = NSLocalizedString(@"_user_contractor_", nil);
+        else row.value = @"";
         [section addFormRow:row];
         
         // Company

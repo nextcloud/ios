@@ -195,6 +195,9 @@
 "_user_company_"                = "Company";
 "_user_role_"                   = "Role";
 "_user_zip_"                    = "Zip";
+"_user_owner_"                  = "Owner";
+"_user_employee_"               = "Employee";
+"_user_contractor_"             = "Contractor";
 "_favorite_offline_"            = "Favorites available offline";
 "_favorite_offline_footer_"     = "Making all favorites available offline may take a while and use a lot of memory while doing it.";
 "_advanced_"                    = "Advanced";
