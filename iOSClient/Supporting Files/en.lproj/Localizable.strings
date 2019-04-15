@@ -198,6 +198,7 @@
 "_user_owner_"                  = "Owner";
 "_user_employee_"               = "Employee";
 "_user_contractor_"             = "Contractor";
+"_user_editprofile_"            = "Edit profile";
 "_favorite_offline_"            = "Favorites available offline";
 "_favorite_offline_footer_"     = "Making all favorites available offline may take a while and use a lot of memory while doing it.";
 "_advanced_"                    = "Advanced";
