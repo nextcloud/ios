@@ -84,10 +84,7 @@ class NCManageDatabase: NSObject {
         
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
         configCompact.encryptionKey = CCUtility.getDatabaseEncryptionKey()
-        //if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
-        //    configCompact.encryptionKey = keyData
-        //}
-        
+    
         do {
             _ = try Realm(configuration: configCompact)
         } catch let error {
