@@ -33,10 +33,14 @@ class NCManageDatabase: NSObject {
     override init() {
         
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+        let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
+        
+        // Compact Database
         
         var configCompact = Realm.Configuration(
             
-            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
+            fileURL: databaseFilePath,
+            schemaVersion: UInt64(k_databaseSchemaVersion),
             
             shouldCompactOnLaunch: { totalBytes, usedBytes in
             // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -56,55 +60,18 @@ class NCManageDatabase: NSObject {
         }
         
         do {
-            // Realm is compacted on the first open if the configuration block conditions were met.
             _ = try Realm(configuration: configCompact)
-        } catch {
-            // handle error compacting or opening Realm
+        } catch let error {
+            print("error: \(error)")
         }
         
+        // Open Database
+
         var config = Realm.Configuration(
         
-            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 46,
+            fileURL: databaseFilePath,
+            schemaVersion: UInt64(k_databaseSchemaVersion),
             
-            // 10 : Version 2.18.0
-            // 11 : Version 2.18.2
-            // 12 : Version 2.19.0.5
-            // 13 : Version 2.19.0.14
-            // 14 : Version 2.19.0.xx
-            // 15 : Version 2.19.2
-            // 16 : Version 2.20.2
-            // 17 : Version 2.20.4
-            // 18 : Version 2.20.6
-            // 19 : Version 2.20.7
-            // 20 : Version 2.21.0
-            // 21 : Version 2.21.0.3
-            // 22 : Version 2.21.0.9
-            // 23 : Version 2.21.0.15
-            // 24 : Version 2.21.2.5
-            // 25 : Version 2.21.3.1
-            // 26 : Version 2.22.0.4
-            // 27 : Version 2.22.0.7
-            // 28 : Version 2.22.3.5
-            // 29 : Version 2.22.5.2
-            // 30 : Version 2.22.6.0
-            // 31 : Version 2.22.6.3
-            // 32 : Version 2.22.6.10
-            // 33 : Version 2.22.7.1
-            // 34 : Version 2.22.8.14
-            // 35 : Version 2.22.8.14
-            // 36 : Version 2.22.8.14
-            // 37 : Version 2.22.8.14
-            // 38 : Version 2.22.8.20
-            // 39 : Version 2.22.9.1
-            // 40 : Version 2.22.9.3
-            // 41 : Version 2.22.9.5
-            // 42 : Version 2.23.1.0
-            // 43 : Version 2.23.2.0
-            // 44 : Version 2.23.4.3
-            // 45 : Version 2.23.4.4
-            // 46 : Version 2.23.4.5
-
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
                 /*
@@ -146,7 +113,11 @@ class NCManageDatabase: NSObject {
         }
         
         Realm.Configuration.defaultConfiguration = config
-        _ = try! Realm()
+        do {
+            _ = try Realm()
+        } catch let error {
+            print("error: \(error)")
+        }
     }
     
     //MARK: -

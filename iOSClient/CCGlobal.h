@@ -80,8 +80,10 @@
 
 #define k_maxErrorAutoUploadAll                         100
 
-// Name Default DB
+// Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
+#define k_databaseEncryptedDefault                      @"nextcloudencrypted.realm"
+#define k_databaseSchemaVersion                         46
 
 // Intro selector
 #define k_intro_login                                   0
