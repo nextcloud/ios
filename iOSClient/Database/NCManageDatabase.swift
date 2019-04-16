@@ -36,7 +36,7 @@ class NCManageDatabase: NSObject {
         let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
         let databaseEncryptedFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseEncryptedDefault)")
 
-        // Migrate "unencrypted" database to encrypted datadase
+        // Migrate unencrypted database to encrypted datadase
         
         if FileManager.default.fileExists(atPath: databaseFilePath!.path) {
         
@@ -138,6 +138,10 @@ class NCManageDatabase: NSObject {
 
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
         config.encryptionKey = CCUtility.getDatabaseEncryptionKey()
+
+        #if targetEnvironment(simulator)
+        print("[LOG] Database encryption key:\n" + CCUtility.hexRepresentation(config.encryptionKey, spaces: false))
+        #endif
         
         Realm.Configuration.defaultConfiguration = config
         do {
