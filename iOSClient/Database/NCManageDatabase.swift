@@ -34,12 +34,43 @@ class NCManageDatabase: NSObject {
         
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
+        let databaseEncryptedFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseEncryptedDefault)")
+
+        // Migrate "unencrypted" database to encrypted datadase
+        
+        if FileManager.default.fileExists(atPath: databaseFilePath!.path) {
+        
+            let configMigration = Realm.Configuration(
+                
+                fileURL: databaseFilePath,
+                schemaVersion: UInt64(k_databaseSchemaVersion)
+            )
+            
+            do {
+                try FileManager.default.removeItem(at: databaseEncryptedFilePath!)
+            } catch let error {
+                print("error: \(error)")
+            }
+
+            do {
+                let realm = try Realm(configuration: configMigration)
+                try realm.writeCopy(toFile: databaseEncryptedFilePath!, encryptionKey: CCUtility.getDatabaseEncryptionKey())
+            } catch let error {
+                print("error: \(error)")
+            }
+            
+            do {
+                try FileManager.default.removeItem(at: databaseFilePath!)
+            } catch let error {
+                print("error: \(error)")
+            }
+        }
         
         // Compact Database
         
         var configCompact = Realm.Configuration(
             
-            fileURL: databaseFilePath,
+            fileURL: databaseEncryptedFilePath,
             schemaVersion: UInt64(k_databaseSchemaVersion),
             
             shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -52,12 +83,10 @@ class NCManageDatabase: NSObject {
         })
         
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
-        if NCBrandOptions.sharedInstance.use_database_encryption {
-            configCompact.encryptionKey = CCUtility.getDatabaseEncryptionKey()
-            //if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
-            //    configCompact.encryptionKey = keyData
-            //}
-        }
+        configCompact.encryptionKey = CCUtility.getDatabaseEncryptionKey()
+        //if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
+        //    configCompact.encryptionKey = keyData
+        //}
         
         do {
             _ = try Realm(configuration: configCompact)
@@ -65,15 +94,15 @@ class NCManageDatabase: NSObject {
             print("error: \(error)")
         }
         
-        // Open Database
+        // Open default Database
 
         var config = Realm.Configuration(
         
-            fileURL: databaseFilePath,
+            fileURL: databaseEncryptedFilePath,
             schemaVersion: UInt64(k_databaseSchemaVersion),
             
             migrationBlock: { migration, oldSchemaVersion in
-                // We haven’t migrated anything yet, so oldSchemaVersion == 0
+                
                 /*
                 if (oldSchemaVersion < 37) {
                     migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
@@ -108,9 +137,7 @@ class NCManageDatabase: NSObject {
         })
 
         // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
-        if NCBrandOptions.sharedInstance.use_database_encryption {
-            config.encryptionKey = CCUtility.getDatabaseEncryptionKey()
-        }
+        config.encryptionKey = CCUtility.getDatabaseEncryptionKey()
         
         Realm.Configuration.defaultConfiguration = config
         do {
