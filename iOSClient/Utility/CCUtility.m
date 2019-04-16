@@ -601,6 +601,24 @@
     return [UICKeyChainStore stringForKey:@"businessType" service:k_serviceShareKeyChain];
 }
 
++ (NSData *)getDatabaseEncryptionKey
+{
+    NSData *key = [UICKeyChainStore dataForKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+    if (key == nil) {
+        NSMutableData *key = [NSMutableData dataWithLength:64];
+        (void)SecRandomCopyBytes(kSecRandomDefault, key.length, (uint8_t *)key.mutableBytes);
+        [UICKeyChainStore setData:key forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+        return key;
+    } else {
+        return key;
+    }
+}
+
++ (void)setDatabaseEncryptionKey:(NSData *)data
+{
+    [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

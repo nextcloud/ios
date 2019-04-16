@@ -159,6 +159,8 @@
 + (void)setHCBusinessType:(NSString *)professions;
 + (NSString *)getHCBusinessType;
 
++ (NSData *)getDatabaseEncryptionKey;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
