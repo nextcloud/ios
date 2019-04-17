@@ -26,6 +26,7 @@ import Foundation
 class HCEditProfile: XLFormViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var tableAccount: tableAccount?
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -43,7 +44,7 @@ class HCEditProfile: XLFormViewController {
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
-        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
@@ -140,7 +141,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "businesstype"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.selectorOptions = ["ARCHITECT","BRICKLAYER","CARPENTER","ELECTRICIAN","INSTALLER","PAINTER","PLUMBER","ROOFER","STOVEBUILDER","STUCCOER","WINDOWBUILDER","OTHER"]
+        row.selectorOptions = ["ARCHITECT", "BRICKLAYER", "CARPENTER", "ELECTRICIAN", "INSTALLER", "PAINTER", "PLUMBER", "ROOFER", "STOVEBUILDER","STUCCOER", "WINDOWBUILDER", "OTHER"]
         row.value = tableAccount?.businessType.components(separatedBy: ",")
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
@@ -149,7 +150,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "users"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.selectorOptions = ["1-4","5-9","10-19","20-49","50-99","100-249","250-499","500-999","1000+"];
+        row.selectorOptions = ["1-4", "5-9", "10-19", "20-49", "50-99", "100-249", "250-499", "500-999", "1000+"];
         switch tableAccount?.businessSize {
         case 1: row.value = "1-4"
         case 5: row.value = "5-9"

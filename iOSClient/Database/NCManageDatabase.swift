@@ -281,7 +281,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return result
+        return tableAccount.init(value: result)
     }
 
     @objc func getAccounts() -> [String]? {
@@ -378,7 +378,7 @@ class NCManageDatabase: NSObject {
                     if result.account == account {
                     
                         result.active = true
-                        activeAccount = result
+                        activeAccount = tableAccount.init(value: result)
                     
                     } else {
                     
@@ -517,7 +517,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return activeAccount
+        return tableAccount.init(value: activeAccount)
     }
     
     @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
