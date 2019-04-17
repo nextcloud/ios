@@ -32,6 +32,8 @@ class NCManageDatabase: NSObject {
     
     override init() {
         
+        var realm = try! Realm()
+        
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
         let databaseEncryptedFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseEncryptedDefault)")
@@ -53,7 +55,7 @@ class NCManageDatabase: NSObject {
             }
 
             do {
-                let realm = try Realm(configuration: configMigration)
+                realm = try Realm(configuration: configMigration)
                 try realm.writeCopy(toFile: databaseEncryptedFilePath!, encryptionKey: CCUtility.getDatabaseEncryptionKey())
             } catch let error {
                 print("error: \(error)")
@@ -86,7 +88,7 @@ class NCManageDatabase: NSObject {
         configCompact.encryptionKey = CCUtility.getDatabaseEncryptionKey()
     
         do {
-            _ = try Realm(configuration: configCompact)
+            realm = try Realm(configuration: configCompact)
         } catch let error {
             print("error: \(error)")
         }
@@ -142,7 +144,7 @@ class NCManageDatabase: NSObject {
         
         Realm.Configuration.defaultConfiguration = config
         do {
-            _ = try Realm()
+            realm = try Realm()
         } catch let error {
             print("error: \(error)")
         }
