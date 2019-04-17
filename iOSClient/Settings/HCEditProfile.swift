@@ -95,14 +95,71 @@ class HCEditProfile: XLFormViewController {
         row.selectorOptions = locales.sorted()
         section.addFormRow(row)
         
+        row = XLFormRowDescriptor(tag: "userphone", rowType: XLFormRowDescriptorTypePhone, title: NSLocalizedString("_user_phone_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "phone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.value = tableAccount?.phone
+        section.addFormRow(row)
+        
+        row = XLFormRowDescriptor(tag: "useremail", rowType: XLFormRowDescriptorTypeEmail, title: NSLocalizedString("_user_email_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "email"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.value = tableAccount?.email
+        section.addFormRow(row)
+        
+        row = XLFormRowDescriptor(tag: "userweb", rowType: XLFormRowDescriptorTypeEmail, title: NSLocalizedString("_user_web_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "web"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.value = tableAccount?.webpage
+        section.addFormRow(row)
+        
+        row = XLFormRowDescriptor(tag: "usertwitter", rowType: XLFormRowDescriptorTypeTwitter, title: NSLocalizedString("_user_twitter_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "twitter"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.value = tableAccount?.twitter
+        section.addFormRow(row)
+        
+        row = XLFormRowDescriptor(tag: "userbusinesstype", rowType: XLFormRowDescriptorTypeMultipleSelector, title: NSLocalizedString("_user_businesstype_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "businesstype"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.selectorOptions = ["ARCHITECT","BRICKLAYER","CARPENTER","ELECTRICIAN","INSTALLER","PAINTER","PLUMBER","ROOFER","STOVEBUILDER","STUCCOER","WINDOWBUILDER","OTHER"]
+        row.value = tableAccount?.businessType.components(separatedBy: ",")
+        section.addFormRow(row)
+        
+        row = XLFormRowDescriptor(tag: "userbusinesssize", rowType: XLFormRowDescriptorTypeSelectorPickerView, title: NSLocalizedString("_user_businesssize_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "users"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.selectorOptions = ["1-4","5-9","10-19","20-49","50-99","100-249","250-499","500-999","1000+"];
+        switch tableAccount?.businessSize {
+        case 1: row.value = "1-4"
+        case 5: row.value = "5-9"
+        case 10: row.value = "10-19"
+        case 20: row.value = "20-49"
+        case 50: row.value = "50-99"
+        case 100: row.value = "100-249"
+        case 250: row.value = "250-499"
+        case 500: row.value = "500-999"
+        case 1000: row.value = "1000+"
+        default: break
+        }
+        section.addFormRow(row)
+        
         self.form = form
     }
     
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
-        
-        
     }
     
     // MARK: - View Life Cycle
