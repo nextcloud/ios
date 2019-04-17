@@ -238,8 +238,31 @@ class HCEditProfile: XLFormViewController {
         let website = self.form.formRow(withTag: "userweb")!.value as! String
         let twitter = self.form.formRow(withTag: "usertwitter")!.value as! String
         let company = self.form.formRow(withTag: "usercompany")!.value as! String
-        let businesssize = self.form.formRow(withTag: "userbusinesssize")!.value as! String
-        let role_ = self.form.formRow(withTag: "userrole")!.value as! String
+        
+        var businesssize = "1"
+        let businesssizeRow = self.form.formRow(withTag: "userbusinesssize")!.value as! String
+        switch businesssizeRow {
+        case "1-4": businesssize = "1"
+        case "5-9": businesssize = "5"
+        case "10-19": businesssize = "10"
+        case "20-49": businesssize = "20"
+        case "50-99": businesssize = "50"
+        case "100-249": businesssize = "100"
+        case "250-499": businesssize = "250"
+        case "500-999": businesssize = "500"
+        case "1000+": businesssize = "1000"
+        default: break
+        }
+        
+        var role_ = "contractor"
+        let roleRow = self.form.formRow(withTag: "userrole")!.value as! String
+        switch roleRow {
+        case NSLocalizedString("_user_owner_", comment: ""): role_ = "owner"
+        case NSLocalizedString("_user_employee_", comment: ""): businesssize = "employee"
+        case NSLocalizedString("_user_contractor_", comment: ""): businesssize = "contractor"
+        default: break
+        }
+        
         let businesstypeArray = self.form.formRow(withTag: "userbusinesstype")!.value
         let businesstype =  (businesstypeArray as! [String]).joined(separator: ",")
         
