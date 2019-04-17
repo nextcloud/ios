@@ -205,8 +205,8 @@ class HCEditProfile: XLFormViewController {
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
-        // Replace the default back button
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
         self.navigationItem.setHidesBackButton(true, animated: false)
         saveButton = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         cancelButton = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
