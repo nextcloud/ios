@@ -154,6 +154,24 @@ class HCEditProfile: XLFormViewController {
         }
         section.addFormRow(row)
         
+        row = XLFormRowDescriptor(tag: "userrole", rowType: XLFormRowDescriptorTypeSelectorPickerView, title: NSLocalizedString("_user_role_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "role"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.selectorOptions = [NSLocalizedString("_user_owner_", comment: ""),NSLocalizedString("_user_employee_", comment: ""),NSLocalizedString("_user_contractor_", comment: "")];
+        if tableAccount?.role == "owner"      { row.value = NSLocalizedString("_user_owner_", comment: "") }
+        if tableAccount?.role == "employee"   { row.value = NSLocalizedString("_user_employee_", comment: "") }
+        if tableAccount?.role == "contractor" { row.value = NSLocalizedString("_user_contractor_", comment: "") }
+        section.addFormRow(row)
+        
+        row = XLFormRowDescriptor(tag: "usercompany", rowType: XLFormRowDescriptorTypeText, title: NSLocalizedString("_user_company_", comment: ""))
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "company"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+        row.value = tableAccount?.company
+        section.addFormRow(row)
+        
         self.form = form
     }
     
