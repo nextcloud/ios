@@ -26,7 +26,8 @@ import Foundation
 class HCEditProfile: XLFormViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var backButton : UIBarButtonItem!
+    var saveButton: UIBarButtonItem!
+    var cancelButton: UIBarButtonItem!
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -207,15 +208,22 @@ class HCEditProfile: XLFormViewController {
         // Replace the default back button
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         self.navigationItem.setHidesBackButton(true, animated: false)
-        self.backButton = UIBarButtonItem(title: NSLocalizedString("_manage_account_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(goBack))
-        self.navigationItem.leftBarButtonItem = backButton
+        saveButton = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        cancelButton = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+        self.navigationItem.rightBarButtonItem = saveButton
+        self.navigationItem.leftBarButtonItem = cancelButton
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     
         initializeForm()
     }
+
+    @objc func cancel() {
+        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
     
-    @objc func goBack() {
+    @objc func save() {
         
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
         
