@@ -26,7 +26,8 @@ import Foundation
 class HCEditProfile: XLFormViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+    var backButton : UIBarButtonItem!
+
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -54,6 +55,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "user"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.displayName
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
 
         row = XLFormRowDescriptor(tag: "useraddress", rowType: XLFormRowDescriptorTypeText, title: NSLocalizedString("_user_address_", comment: ""))
@@ -62,6 +64,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "address"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.address
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "usercity", rowType: XLFormRowDescriptorTypeText, title: NSLocalizedString("_user_city_", comment: ""))
@@ -70,6 +73,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "city"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.city
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "userzip", rowType: XLFormRowDescriptorTypeZipCode, title: NSLocalizedString("_user_zip_", comment: ""))
@@ -78,6 +82,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "cityzip"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.zip
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "usercountry", rowType: XLFormRowDescriptorTypeSelectorPickerView, title: NSLocalizedString("_user_country_", comment: ""))
@@ -93,6 +98,7 @@ class HCEditProfile: XLFormViewController {
             locales.append(countryName)
         }
         row.selectorOptions = locales.sorted()
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "userphone", rowType: XLFormRowDescriptorTypePhone, title: NSLocalizedString("_user_phone_", comment: ""))
@@ -101,6 +107,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "phone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.phone
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "useremail", rowType: XLFormRowDescriptorTypeEmail, title: NSLocalizedString("_user_email_", comment: ""))
@@ -109,6 +116,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "email"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.email
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "userweb", rowType: XLFormRowDescriptorTypeEmail, title: NSLocalizedString("_user_web_", comment: ""))
@@ -117,6 +125,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "web"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.webpage
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "usertwitter", rowType: XLFormRowDescriptorTypeTwitter, title: NSLocalizedString("_user_twitter_", comment: ""))
@@ -125,6 +134,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "twitter"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.twitter
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "userbusinesstype", rowType: XLFormRowDescriptorTypeMultipleSelector, title: NSLocalizedString("_user_businesstype_", comment: ""))
@@ -133,6 +143,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "businesstype"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.selectorOptions = ["ARCHITECT","BRICKLAYER","CARPENTER","ELECTRICIAN","INSTALLER","PAINTER","PLUMBER","ROOFER","STOVEBUILDER","STUCCOER","WINDOWBUILDER","OTHER"]
         row.value = tableAccount?.businessType.components(separatedBy: ",")
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "userbusinesssize", rowType: XLFormRowDescriptorTypeSelectorPickerView, title: NSLocalizedString("_user_businesssize_", comment: ""))
@@ -150,7 +161,7 @@ class HCEditProfile: XLFormViewController {
         case 250: row.value = "250-499"
         case 500: row.value = "500-999"
         case 1000: row.value = "1000+"
-        default: break
+        default: row.value = ""
         }
         section.addFormRow(row)
         
@@ -159,9 +170,10 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "role"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.selectorOptions = [NSLocalizedString("_user_owner_", comment: ""),NSLocalizedString("_user_employee_", comment: ""),NSLocalizedString("_user_contractor_", comment: "")];
-        if tableAccount?.role == "owner"      { row.value = NSLocalizedString("_user_owner_", comment: "") }
-        if tableAccount?.role == "employee"   { row.value = NSLocalizedString("_user_employee_", comment: "") }
-        if tableAccount?.role == "contractor" { row.value = NSLocalizedString("_user_contractor_", comment: "") }
+        if tableAccount?.role == "owner" { row.value = NSLocalizedString("_user_owner_", comment: "") }
+        else if tableAccount?.role == "employee" { row.value = NSLocalizedString("_user_employee_", comment: "") }
+        else if tableAccount?.role == "contractor" { row.value = NSLocalizedString("_user_contractor_", comment: "") }
+        else { row.value = "" }
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "usercompany", rowType: XLFormRowDescriptorTypeText, title: NSLocalizedString("_user_company_", comment: ""))
@@ -170,20 +182,19 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "company"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.value = tableAccount?.company
+        if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
         self.form = form
     }
     
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
-        
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
     }
     
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         
         self.navigationItem.title = NSLocalizedString("_user_editprofile_", comment: "")
@@ -193,9 +204,53 @@ class HCEditProfile: XLFormViewController {
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
+        // Replace the default back button
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        self.navigationItem.setHidesBackButton(true, animated: false)
+        self.backButton = UIBarButtonItem(title: NSLocalizedString("_manage_account_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(goBack))
+        self.navigationItem.leftBarButtonItem = backButton
+        
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     
         initializeForm()
     }
     
+    @objc func goBack() {
+        
+        NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
+        
+        let displayname = self.form.formRow(withTag: "userfullname")!.value as! String
+        let address = self.form.formRow(withTag: "useraddress")!.value as! String
+        let city = self.form.formRow(withTag: "usercity")!.value as! String
+        let zip = self.form.formRow(withTag: "userzip")!.value as! String
+        
+        var country = ""
+        let countryNameRow = self.form.formRow(withTag: "usercountry")!.value as? String
+        for localeCode in NSLocale.isoCountryCodes {
+            let countryName = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: localeCode) ?? ""
+            if countryNameRow == countryName {
+                country = localeCode
+                break
+            }
+        }
+        let phone = self.form.formRow(withTag: "userphone")!.value as! String
+        let email = self.form.formRow(withTag: "useremail")!.value as! String
+        let website = self.form.formRow(withTag: "userweb")!.value as! String
+        let twitter = self.form.formRow(withTag: "usertwitter")!.value as! String
+        let company = self.form.formRow(withTag: "usercompany")!.value as! String
+        let businesssize = self.form.formRow(withTag: "userbusinesssize")!.value as! String
+        let role_ = self.form.formRow(withTag: "userrole")!.value as! String
+        let businesstypeArray = self.form.formRow(withTag: "userbusinesstype")!.value
+        let businesstype =  (businesstypeArray as! [String]).joined(separator: ",")
+        
+        OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: address, businesssize: businesssize, businesstype: businesstype, city: city, company: company, country: country, displayname: displayname, email: email, phone: phone, role_: role_, twitter: twitter, website: website, zip: zip, completion: { (account, message, errorCode) in
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                self.navigationController?.popViewController(animated: true)
+                self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+            NCUtility.sharedInstance.stopActivityIndicator()
+        })
+    }
 }

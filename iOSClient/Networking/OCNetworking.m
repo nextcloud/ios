@@ -1992,7 +1992,7 @@
     }];
 }
 
-- (void)putHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl professions:(NSString *)professions completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)putHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl address:(NSString *)address businesssize:(NSString *)businesssize businesstype:(NSString *)businesstype city:(NSString *)city company:(NSString *)company  country:(NSString *)country displayname:(NSString *)displayname email:(NSString *)email phone:(NSString *)phone role_:(NSString *)role_ twitter:(NSString *)twitter website:(NSString *)website zip:(NSString *)zip completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2000,7 +2000,20 @@
     }
     
     // Create JSON
-    NSDictionary *dataDic = @{@"businesstype": professions};
+    NSMutableDictionary *dataDic = [NSMutableDictionary new];
+    if (address) [dataDic setValue:address forKey:@"address"];
+    if (businesssize) [dataDic setValue:businesssize forKey:@"businesssize"];
+    if (businesstype) [dataDic setValue:businesstype forKey:@"businesstype"];
+    if (city) [dataDic setValue:city forKey:@"city"];
+    if (company) [dataDic setValue:company forKey:@"company"];
+    if (country) [dataDic setValue:country forKey:@"country"];
+    if (displayname) [dataDic setValue:displayname forKey:@"displayname"];
+    if (email) [dataDic setValue:email forKey:@"email"];
+    if (phone) [dataDic setValue:phone forKey:@"phone"];
+    if (role_) [dataDic setValue:role_ forKey:@"role"];
+    if (twitter) [dataDic setValue:twitter forKey:@"twitter"];
+    if (website) [dataDic setValue:website forKey:@"website"];
+    if (zip) [dataDic setValue:zip forKey:@"zip"];
     NSString *data = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:dataDic options:0 error:nil] encoding:NSUTF8StringEncoding];
 
     NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/settings/%@", serverUrl, tableAccount.userID];
