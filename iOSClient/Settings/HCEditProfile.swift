@@ -224,55 +224,54 @@ class HCEditProfile: XLFormViewController {
         
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
         
-        let displayname = self.form.formRow(withTag: "userfullname")!.value as! String
-        let address = self.form.formRow(withTag: "useraddress")!.value as! String
-        let city = self.form.formRow(withTag: "usercity")!.value as! String
-        let zip = self.form.formRow(withTag: "userzip")!.value as! String
+        tableAccount?.displayName = self.form.formRow(withTag: "userfullname")!.value as! String
+        tableAccount?.address = self.form.formRow(withTag: "useraddress")!.value as! String
+        tableAccount?.city = self.form.formRow(withTag: "usercity")!.value as! String
+        tableAccount?.zip = self.form.formRow(withTag: "userzip")!.value as! String
         
-        var country = ""
         let countryNameRow = self.form.formRow(withTag: "usercountry")!.value as? String
         for localeCode in NSLocale.isoCountryCodes {
             let countryName = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: localeCode) ?? ""
             if countryNameRow == countryName {
-                country = localeCode
+                tableAccount?.country = localeCode
                 break
             }
         }
-        let phone = self.form.formRow(withTag: "userphone")!.value as! String
-        let email = self.form.formRow(withTag: "useremail")!.value as! String
-        let website = self.form.formRow(withTag: "userweb")!.value as! String
-        let twitter = self.form.formRow(withTag: "usertwitter")!.value as! String
-        let company = self.form.formRow(withTag: "usercompany")!.value as! String
         
-        var businesssize = "1"
+        tableAccount?.phone = self.form.formRow(withTag: "userphone")!.value as! String
+        tableAccount?.email = self.form.formRow(withTag: "useremail")!.value as! String
+        tableAccount?.webpage = self.form.formRow(withTag: "userweb")!.value as! String
+        tableAccount?.twitter = self.form.formRow(withTag: "usertwitter")!.value as! String
+        tableAccount?.company = self.form.formRow(withTag: "usercompany")!.value as! String
+        
         let businesssizeRow = self.form.formRow(withTag: "userbusinesssize")!.value as! String
         switch businesssizeRow {
-        case "1-4": businesssize = "1"
-        case "5-9": businesssize = "5"
-        case "10-19": businesssize = "10"
-        case "20-49": businesssize = "20"
-        case "50-99": businesssize = "50"
-        case "100-249": businesssize = "100"
-        case "250-499": businesssize = "250"
-        case "500-999": businesssize = "500"
-        case "1000+": businesssize = "1000"
+        case "1-4": tableAccount?.businessSize = 1
+        case "5-9": tableAccount?.businessSize = 5
+        case "10-19": tableAccount?.businessSize = 10
+        case "20-49": tableAccount?.businessSize = 20
+        case "50-99": tableAccount?.businessSize = 50
+        case "100-249": tableAccount?.businessSize = 100
+        case "250-499": tableAccount?.businessSize = 250
+        case "500-999": tableAccount?.businessSize = 500
+        case "1000+": tableAccount?.businessSize = 1000
         default: break
         }
         
-        var role_ = "contractor"
         let roleRow = self.form.formRow(withTag: "userrole")!.value as! String
         switch roleRow {
-        case NSLocalizedString("_user_owner_", comment: ""): role_ = "owner"
-        case NSLocalizedString("_user_employee_", comment: ""): businesssize = "employee"
-        case NSLocalizedString("_user_contractor_", comment: ""): businesssize = "contractor"
+        case NSLocalizedString("_user_owner_", comment: ""): tableAccount?.role = "owner"
+        case NSLocalizedString("_user_employee_", comment: ""): tableAccount?.role = "employee"
+        case NSLocalizedString("_user_contractor_", comment: ""): tableAccount?.role = "contractor"
         default: break
         }
         
         let businesstypeArray = self.form.formRow(withTag: "userbusinesstype")!.value
-        let businesstype =  (businesstypeArray as! [String]).joined(separator: ",")
+        tableAccount?.businessType =  (businesstypeArray as! [String]).joined(separator: ",")
         
-        OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: address, businesssize: businesssize, businesstype: businesstype, city: city, company: company, country: country, displayname: displayname, email: email, phone: phone, role_: role_, twitter: twitter, website: website, zip: zip, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: tableAccount?.address, businesssize: String(describing: tableAccount?.businessSize), businesstype: tableAccount?.businessType, city: tableAccount?.city, company: tableAccount?.company, country: tableAccount?.country, displayname: tableAccount?.displayName, email: tableAccount?.email, phone: tableAccount?.phone, role_: tableAccount?.role, twitter: tableAccount?.twitter, website: tableAccount?.webpage, zip: tableAccount?.zip, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
+                _ = NCManageDatabase.sharedInstance.updateAccount(self.tableAccount!)
                 self.navigationController?.popViewController(animated: true)
                 self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
             } else if errorCode != 0 {

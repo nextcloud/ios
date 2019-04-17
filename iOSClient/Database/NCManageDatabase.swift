@@ -252,6 +252,22 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func updateAccount(_ account: tableAccount) -> tableAccount? {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                realm.add(account, update: true)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return nil
+        }
+        
+        return tableAccount.init(value: account)
+    }
+    
     @objc func deleteAccount(_ account: String) {
         
         let realm = try! Realm()
