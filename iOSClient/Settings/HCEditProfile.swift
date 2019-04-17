@@ -26,8 +26,6 @@ import Foundation
 class HCEditProfile: XLFormViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var saveButton: UIBarButtonItem!
-    var cancelButton: UIBarButtonItem!
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -208,11 +206,9 @@ class HCEditProfile: XLFormViewController {
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         self.navigationItem.setHidesBackButton(true, animated: false)
-        saveButton = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
-        cancelButton = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
-        self.navigationItem.rightBarButtonItem = saveButton
-        self.navigationItem.leftBarButtonItem = cancelButton
-        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+       
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     
         initializeForm()
