@@ -54,7 +54,7 @@
 
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_credentials_", nil)];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
         
@@ -181,7 +181,7 @@
     
     // Country
     if ([tableAccount.country length] > 0) {
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercity" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_country_", nil)];
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercountry" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_country_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"country"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
@@ -305,13 +305,13 @@
         section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
         
-        // Modify Account
+        // Edit profile
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"editUserProfile" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_user_editprofile_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"editUserProfile"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-        row.action.formSelector = @selector(xxxxx:);
+        row.action.viewControllerClass = [HCEditProfile class];
         if (listAccount.count == 0) row.disabled = @YES;
         [section addFormRow:row];
     }
@@ -329,6 +329,8 @@
 {
     [super viewWillAppear:animated];
  
+    self.navigationItem.title = NSLocalizedString(@"_credentials_", nil);
+    
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     self.tableView.showsVerticalScrollIndicator = NO;
 
