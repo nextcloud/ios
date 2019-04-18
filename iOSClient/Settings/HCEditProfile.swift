@@ -151,18 +151,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "users"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.selectorOptions = ["1-4", "5-9", "10-19", "20-49", "50-99", "100-249", "250-499", "500-999", "1000+"];
-        switch tableAccount?.businessSize {
-        case 1: row.value = "1-4"
-        case 5: row.value = "5-9"
-        case 10: row.value = "10-19"
-        case 20: row.value = "20-49"
-        case 50: row.value = "50-99"
-        case 100: row.value = "100-249"
-        case 250: row.value = "250-499"
-        case 500: row.value = "500-999"
-        case 1000: row.value = "1000+"
-        default: row.value = ""
-        }
+        row.value = tableAccount?.businessSize;
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "userrole", rowType: XLFormRowDescriptorTypeSelectorPickerView, title: NSLocalizedString("_user_role_", comment: ""))
@@ -190,6 +179,7 @@ class HCEditProfile: XLFormViewController {
     
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
+        
     }
     
     // MARK: - View Life Cycle
@@ -224,10 +214,33 @@ class HCEditProfile: XLFormViewController {
         
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
         
-        tableAccount?.displayName = self.form.formRow(withTag: "userfullname")!.value as! String
-        tableAccount?.address = self.form.formRow(withTag: "useraddress")!.value as! String
-        tableAccount?.city = self.form.formRow(withTag: "usercity")!.value as! String
-        tableAccount?.zip = self.form.formRow(withTag: "userzip")!.value as! String
+        // Full name
+        if self.form.formRow(withTag: "userfullname")?.value == nil {
+            tableAccount?.displayName = ""
+        } else {
+            tableAccount?.displayName = self.form.formRow(withTag: "userfullname")?.value as! String
+        }
+
+        // Address
+        if self.form.formRow(withTag: "useraddress")?.value == nil {
+            tableAccount?.address = ""
+        } else {
+            tableAccount?.address = self.form.formRow(withTag: "useraddress")?.value as! String
+        }
+        
+        // City
+        if self.form.formRow(withTag: "usercity")?.value == nil {
+            tableAccount?.city = ""
+        } else {
+            tableAccount?.city = self.form.formRow(withTag: "usercity")?.value as! String
+        }
+        
+        // Zip
+        if self.form.formRow(withTag: "userzip")?.value == nil {
+            tableAccount?.zip = ""
+        } else {
+            tableAccount?.zip = self.form.formRow(withTag: "userzip")?.value as! String
+        }
         
         let countryNameRow = self.form.formRow(withTag: "usercountry")!.value as? String
         for localeCode in NSLocale.isoCountryCodes {
@@ -238,26 +251,43 @@ class HCEditProfile: XLFormViewController {
             }
         }
         
-        tableAccount?.phone = self.form.formRow(withTag: "userphone")!.value as! String
-        tableAccount?.email = self.form.formRow(withTag: "useremail")!.value as! String
-        tableAccount?.webpage = self.form.formRow(withTag: "userweb")!.value as! String
-        tableAccount?.twitter = self.form.formRow(withTag: "usertwitter")!.value as! String
-        tableAccount?.company = self.form.formRow(withTag: "usercompany")!.value as! String
-        
-        let businesssizeRow = self.form.formRow(withTag: "userbusinesssize")!.value as! String
-        switch businesssizeRow {
-        case "1-4": tableAccount?.businessSize = 1
-        case "5-9": tableAccount?.businessSize = 5
-        case "10-19": tableAccount?.businessSize = 10
-        case "20-49": tableAccount?.businessSize = 20
-        case "50-99": tableAccount?.businessSize = 50
-        case "100-249": tableAccount?.businessSize = 100
-        case "250-499": tableAccount?.businessSize = 250
-        case "500-999": tableAccount?.businessSize = 500
-        case "1000+": tableAccount?.businessSize = 1000
-        default: break
+        // Phone
+        if self.form.formRow(withTag: "userphone")?.value == nil {
+            tableAccount?.phone = ""
+        } else {
+            tableAccount?.phone = self.form.formRow(withTag: "userphone")?.value as! String
         }
         
+        // Email
+        if self.form.formRow(withTag: "useremail")?.value == nil {
+            tableAccount?.email = ""
+        } else {
+            tableAccount?.email = self.form.formRow(withTag: "useremail")?.value as! String
+        }
+        
+        // Web
+        if self.form.formRow(withTag: "userweb")?.value == nil {
+            tableAccount?.webpage = ""
+        } else {
+            tableAccount?.webpage = self.form.formRow(withTag: "userweb")?.value as! String
+        }
+        
+        // Twitter
+        if self.form.formRow(withTag: "usertwitter")?.value == nil {
+            tableAccount?.twitter = ""
+        } else {
+            tableAccount?.twitter = self.form.formRow(withTag: "usertwitter")?.value as! String
+        }
+        
+        // Company
+        if self.form.formRow(withTag: "usercompany")?.value == nil {
+            tableAccount?.company = ""
+        } else {
+            tableAccount?.company = self.form.formRow(withTag: "usercompany")?.value as! String
+        }
+        
+        tableAccount?.businessSize = self.form.formRow(withTag: "userbusinesssize")!.value as! String
+       
         let roleRow = self.form.formRow(withTag: "userrole")!.value as! String
         switch roleRow {
         case NSLocalizedString("_user_owner_", comment: ""): tableAccount?.role = "owner"
@@ -267,11 +297,11 @@ class HCEditProfile: XLFormViewController {
         }
         
         let businesstypeArray = self.form.formRow(withTag: "userbusinesstype")!.value
-        tableAccount?.businessType =  (businesstypeArray as! [String]).joined(separator: ",")
+        tableAccount?.businessType = (businesstypeArray as! [String]).joined(separator: ",")
         
-        OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: tableAccount?.address, businesssize: String(describing: tableAccount?.businessSize), businesstype: tableAccount?.businessType, city: tableAccount?.city, company: tableAccount?.company, country: tableAccount?.country, displayname: tableAccount?.displayName, email: tableAccount?.email, phone: tableAccount?.phone, role_: tableAccount?.role, twitter: tableAccount?.twitter, website: tableAccount?.webpage, zip: tableAccount?.zip, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: tableAccount?.address, businesssize: tableAccount?.businessSize, businesstype: tableAccount?.businessType, city: tableAccount?.city, company: tableAccount?.company, country: tableAccount?.country, displayname: tableAccount?.displayName, email: tableAccount?.email, phone: tableAccount?.phone, role_: tableAccount?.role, twitter: tableAccount?.twitter, website: tableAccount?.webpage, zip: tableAccount?.zip, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-//                _ = NCManageDatabase.sharedInstance.updateAccount(self.tableAccount!)
+                NCManageDatabase.sharedInstance.updateAccount(self.tableAccount!)
                 self.navigationController?.popViewController(animated: true)
                 self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
             } else if errorCode != 0 {

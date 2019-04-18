@@ -250,37 +250,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"users"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
-        switch ((int)tableAccount.businessSize) {
-            case 1:
-                row.value = @"1-4";
-                break;
-            case 5:
-                row.value = @"5-9";
-                break;
-            case 10:
-                row.value = @"10-19";
-                break;
-            case 20:
-                row.value = @"20-49";
-                break;
-            case 50:
-                row.value = @"50-99";
-                break;
-            case 100:
-                row.value = @"100-249";
-                break;
-            case 250:
-                row.value = @"250-499";
-                break;
-            case 500:
-                row.value = @"500-999";
-                break;
-            case 1000:
-                row.value = @"1000+";
-                break;
-            default:
-                row.value = @"";
-        }
+        row.value = tableAccount.businessSize;
         [section addFormRow:row];
         
         // Role

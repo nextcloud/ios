@@ -2002,7 +2002,17 @@
     // Create JSON
     NSMutableDictionary *dataDic = [NSMutableDictionary new];
     if (address) [dataDic setValue:address forKey:@"address"];
-    if (businesssize) [dataDic setValue:businesssize forKey:@"businesssize"];
+    if (businesssize) {
+        if ([businesssize isEqualToString:@"1-4"]) { [dataDic setValue:[NSNumber numberWithInt:1] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"5-9"]) { [dataDic setValue:[NSNumber numberWithInt:5] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"10-19"]) { [dataDic setValue:[NSNumber numberWithInt:10] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"20-49"]) { [dataDic setValue:[NSNumber numberWithInt:20] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"50-99"]) { [dataDic setValue:[NSNumber numberWithInt:50] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"100-249"]) { [dataDic setValue:[NSNumber numberWithInt:100] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"250-499"]) { [dataDic setValue:[NSNumber numberWithInt:250] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"500-999"]) { [dataDic setValue:[NSNumber numberWithInt:500] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"1000+"]) { [dataDic setValue:[NSNumber numberWithInt:1000] forKey:@"businesssize"]; }
+    }
     if (businesstype) [dataDic setValue:businesstype forKey:@"businesstype"];
     if (city) [dataDic setValue:city forKey:@"city"];
     if (company) [dataDic setValue:company forKey:@"company"];

@@ -32,6 +32,7 @@
     self.id = @"";
     
     self.address = @"";
+    self.businessSize = @"";
     self.businessType = @"";
     self.city = @"";
     self.company = @"";

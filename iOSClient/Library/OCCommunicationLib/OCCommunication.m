@@ -3122,9 +3122,40 @@
                 if ([data valueForKey:@"displayname"] && ![[data valueForKey:@"displayname"] isKindOfClass:[NSNull class]])
                     userProfile.displayName = [data valueForKey:@"displayname"];
                 
-                if ([data valueForKey:@"businesssize"] && ![[data valueForKey:@"businesssize"] isKindOfClass:[NSNull class]])
-                    userProfile.businessSize = [[data valueForKey:@"businesssize"] integerValue];
-                
+                if ([data valueForKey:@"businesssize"] && ![[data valueForKey:@"businesssize"] isKindOfClass:[NSNull class]]) {
+                    switch ([[data valueForKey:@"businesssize"] integerValue]) {
+                        case 1:
+                            userProfile.businessSize = @"1-4";
+                            break;
+                        case 5:
+                            userProfile.businessSize = @"5-9";
+                            break;
+                        case 10:
+                            userProfile.businessSize = @"10-19";
+                            break;
+                        case 20:
+                            userProfile.businessSize = @"20-49";
+                            break;
+                        case 50:
+                            userProfile.businessSize = @"50-99";
+                            break;
+                        case 100:
+                            userProfile.businessSize = @"100-249";
+                            break;
+                        case 250:
+                            userProfile.businessSize = @"250-499";
+                            break;
+                        case 500:
+                            userProfile.businessSize = @"500-999";
+                            break;
+                        case 1000:
+                            userProfile.businessSize = @"1000+";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+               
                 if ([data valueForKey:@"businesstype"] && ![[data valueForKey:@"businesstype"] isKindOfClass:[NSNull class]])
                     userProfile.businessType = [data valueForKey:@"businesstype"];
                 

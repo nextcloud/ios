@@ -203,6 +203,19 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func updateAccount(_ account: tableAccount) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                realm.add(account, update: true)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     @objc func deleteAccount(_ account: String) {
         
         let realm = try! Realm()
@@ -232,7 +245,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return result
+        return tableAccount.init(value: result)
     }
 
     @objc func getAccounts() -> [String]? {
@@ -449,7 +462,7 @@ class NCManageDatabase: NSObject {
                 result.webpage = userProfile.webpage
                 
                 if HCProperties {
-                    result.businessSize = Double(userProfile.businessSize)
+                    result.businessSize = userProfile.businessSize
                     result.businessType = userProfile.businessType
                     result.city = userProfile.city
                     result.country = userProfile.country

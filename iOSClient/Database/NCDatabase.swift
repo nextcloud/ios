@@ -38,7 +38,7 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    @objc dynamic var businessSize: Double = 0
+    @objc dynamic var businessSize: String = ""
     @objc dynamic var businessType = ""
     @objc dynamic var dateSearchContentTypeImageVideo = NSDate.distantPast
     @objc dynamic var city = ""

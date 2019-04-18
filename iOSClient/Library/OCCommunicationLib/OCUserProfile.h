@@ -29,7 +29,7 @@
 @property BOOL enabled;
 
 @property (nonatomic, strong) NSString *address;
-@property NSInteger businessSize;
+@property (nonatomic, strong) NSString *businessSize;
 @property (nonatomic, strong) NSString *businessType;
 @property (nonatomic, strong) NSString *city;
 @property (nonatomic, strong) NSString *company;
