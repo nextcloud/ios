@@ -201,6 +201,8 @@ class HCEditProfile: XLFormViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
        
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        self.tableView.showsVerticalScrollIndicator = false
     
         initializeForm()
     }
