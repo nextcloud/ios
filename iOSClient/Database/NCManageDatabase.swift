@@ -355,7 +355,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return activeAccount
+        return tableAccount.init(value: activeAccount)
     }
 
     @objc func setAccountAutoUploadProperty(_ property: String, state: Bool) {
@@ -433,13 +433,15 @@ class NCManageDatabase: NSObject {
     
     @objc func setAccountUserProfile(_ userProfile: OCUserProfile, HCProperties: Bool) -> tableAccount? {
      
-        guard let activeAccount = self.getAccountActive() else {
-            return nil
-        }
-        
         let realm = try! Realm()
 
+        var returnAccount = tableAccount()
+
         do {
+            guard let activeAccount = self.getAccountActive() else {
+                return nil
+            }
+            
             try realm.write {
                 
                 guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
@@ -476,23 +478,27 @@ class NCManageDatabase: NSObject {
                 result.quotaRelative = userProfile.quotaRelative
                 result.quotaTotal = userProfile.quotaTotal
                 result.quotaUsed = userProfile.quotaUsed
+                
+                returnAccount = result
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return activeAccount
+        return tableAccount.init(value: returnAccount)
     }
     
     @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
         
-        guard let activeAccount = self.getAccountActive() else {
-            return nil
-        }
-        
         let realm = try! Realm()
         
+        var returnAccount = tableAccount()
+
         do {
+            guard let activeAccount = self.getAccountActive() else {
+                return nil
+            }
+            
             try realm.write {
                 
                 guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
@@ -514,13 +520,16 @@ class NCManageDatabase: NSObject {
                 } else {
                     result.hcAccountRemoveTime = nil
                 }
+                
+                returnAccount = result
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return activeAccount
+        return tableAccount.init(value: returnAccount)
     }
+    
     @objc func setAccountDateSearchContentTypeImageVideo(_ date: Date) {
         
         guard let activeAccount = self.getAccountActive() else {
