@@ -71,6 +71,10 @@ class tableAccount: Object {
     @objc dynamic var hcAccountRemoveExpired: Bool = false
     @objc dynamic var hcAccountRemoveRemainingSec: Double = 0
     @objc dynamic var hcAccountRemoveTime: NSDate? = nil
+    
+    override static func primaryKey() -> String {
+        return "account"
+    }
 }
 
 class tableActivity: Object {
