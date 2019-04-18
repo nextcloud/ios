@@ -271,7 +271,7 @@ class HCEditProfile: XLFormViewController {
         
         OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: tableAccount?.address, businesssize: String(describing: tableAccount?.businessSize), businesstype: tableAccount?.businessType, city: tableAccount?.city, company: tableAccount?.company, country: tableAccount?.country, displayname: tableAccount?.displayName, email: tableAccount?.email, phone: tableAccount?.phone, role_: tableAccount?.role, twitter: tableAccount?.twitter, website: tableAccount?.webpage, zip: tableAccount?.zip, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                _ = NCManageDatabase.sharedInstance.updateAccount(self.tableAccount!)
+//                _ = NCManageDatabase.sharedInstance.updateAccount(self.tableAccount!)
                 self.navigationController?.popViewController(animated: true)
                 self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
             } else if errorCode != 0 {

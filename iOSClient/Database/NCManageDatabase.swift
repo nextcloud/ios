@@ -32,49 +32,14 @@ class NCManageDatabase: NSObject {
     
     override init() {
         
-        var realm = try! Realm()
-        
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
-        let databaseEncryptedFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseEncryptedDefault)")
 
-        // Migrate unencrypted database to encrypted datadase
-        
-        if FileManager.default.fileExists(atPath: databaseFilePath!.path) {
-        
-            let configMigration = Realm.Configuration(
-                
-                fileURL: databaseFilePath,
-                schemaVersion: UInt64(k_databaseSchemaVersion)
-            )
+        let configCompact = Realm.Configuration(
             
-            do {
-                try FileManager.default.removeItem(at: databaseEncryptedFilePath!)
-            } catch let error {
-                print("error: \(error)")
-            }
-
-            do {
-                realm = try Realm(configuration: configMigration)
-                try realm.writeCopy(toFile: databaseEncryptedFilePath!, encryptionKey: CCUtility.getDatabaseEncryptionKey())
-            } catch let error {
-                print("error: \(error)")
-            }
-            
-            do {
-                try FileManager.default.removeItem(at: databaseFilePath!)
-            } catch let error {
-                print("error: \(error)")
-            }
-        }
-        
-        // Compact Database
-        
-        var configCompact = Realm.Configuration(
-            
-            fileURL: databaseEncryptedFilePath,
+            fileURL: databaseFilePath,
             schemaVersion: UInt64(k_databaseSchemaVersion),
-            
+
             shouldCompactOnLaunch: { totalBytes, usedBytes in
             // totalBytes refers to the size of the file on disk in bytes (data + free space)
             // usedBytes refers to the number of bytes used by data in the file
@@ -84,24 +49,20 @@ class NCManageDatabase: NSObject {
             return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
         })
         
-        // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
-        configCompact.encryptionKey = CCUtility.getDatabaseEncryptionKey()
-    
         do {
-            realm = try Realm(configuration: configCompact)
-        } catch let error {
-            print("error: \(error)")
+            // Realm is compacted on the first open if the configuration block conditions were met.
+            _ = try Realm(configuration: configCompact)
+        } catch {
+            // handle error compacting or opening Realm
         }
         
-        // Open default Database
-
-        var config = Realm.Configuration(
+        let config = Realm.Configuration(
         
-            fileURL: databaseEncryptedFilePath,
+            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
             schemaVersion: UInt64(k_databaseSchemaVersion),
             
             migrationBlock: { migration, oldSchemaVersion in
-                
+                // We haven’t migrated anything yet, so oldSchemaVersion == 0
                 /*
                 if (oldSchemaVersion < 37) {
                     migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
@@ -134,20 +95,9 @@ class NCManageDatabase: NSObject {
                     }
                 }
         })
-
-        // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
-        config.encryptionKey = CCUtility.getDatabaseEncryptionKey()
-
-        #if targetEnvironment(simulator)
-        print("[LOG] Database encryption key:\n" + CCUtility.hexRepresentation(config.encryptionKey, spaces: false))
-        #endif
         
         Realm.Configuration.defaultConfiguration = config
-        do {
-            realm = try Realm()
-        } catch let error {
-            print("error: \(error)")
-        }
+        _ = try! Realm()
     }
     
     //MARK: -
@@ -252,21 +202,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func updateAccount(_ account: tableAccount) {
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-                if var result = realm.objects(tableAccount.self).filter("active = true").first {
-                    result = account
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
     @objc func deleteAccount(_ account: String) {
         
         let realm = try! Realm()
@@ -296,7 +231,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableAccount.init(value: result)
+        return result
     }
 
     @objc func getAccounts() -> [String]? {
@@ -393,7 +328,7 @@ class NCManageDatabase: NSObject {
                     if result.account == account {
                     
                         result.active = true
-                        activeAccount = tableAccount.init(value: result)
+                        activeAccount = result
                     
                     } else {
                     
@@ -532,7 +467,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return tableAccount.init(value: activeAccount)
+        return activeAccount
     }
     
     @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
