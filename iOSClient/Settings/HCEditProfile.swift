@@ -26,7 +26,7 @@ import Foundation
 class HCEditProfile: XLFormViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var tableAccount: tableAccount?
+    var tableAccount: tableAccount!
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -54,7 +54,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "user"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.displayName
+        row.value = tableAccount.displayName
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
 
@@ -63,7 +63,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "address"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.address
+        row.value = tableAccount.address
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -72,7 +72,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "city"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.city
+        row.value = tableAccount.city
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -81,7 +81,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "cityzip"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.zip
+        row.value = tableAccount.zip
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -92,7 +92,7 @@ class HCEditProfile: XLFormViewController {
         var locales = [String]()
         for localeCode in NSLocale.isoCountryCodes {
             let countryName = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: localeCode) ?? ""
-            if localeCode == tableAccount?.country {
+            if localeCode == tableAccount.country {
                 row.value = countryName
             }
             locales.append(countryName)
@@ -106,7 +106,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "phone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.phone
+        row.value = tableAccount.phone
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -115,7 +115,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "email"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.email
+        row.value = tableAccount.email
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -124,7 +124,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "web"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.webpage
+        row.value = tableAccount.webpage
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -133,7 +133,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "twitter"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.twitter
+        row.value = tableAccount.twitter
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -142,7 +142,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "businesstype"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.selectorOptions = ["ARCHITECT", "BRICKLAYER", "CARPENTER", "ELECTRICIAN", "INSTALLER", "PAINTER", "PLUMBER", "ROOFER", "STOVEBUILDER","STUCCOER", "WINDOWBUILDER", "OTHER"]
-        row.value = tableAccount?.businessType.components(separatedBy: ",")
+        row.value = tableAccount.businessType.components(separatedBy: ",")
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -151,7 +151,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "users"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.selectorOptions = ["1-4", "5-9", "10-19", "20-49", "50-99", "100-249", "250-499", "500-999", "1000+"];
-        row.value = tableAccount?.businessSize;
+        row.value = tableAccount.businessSize;
         section.addFormRow(row)
         
         row = XLFormRowDescriptor(tag: "userrole", rowType: XLFormRowDescriptorTypeSelectorPickerView, title: NSLocalizedString("_user_role_", comment: ""))
@@ -159,9 +159,9 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["detailTextLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "role"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
         row.selectorOptions = [NSLocalizedString("_user_owner_", comment: ""),NSLocalizedString("_user_employee_", comment: ""),NSLocalizedString("_user_contractor_", comment: "")];
-        if tableAccount?.role == "owner" { row.value = NSLocalizedString("_user_owner_", comment: "") }
-        else if tableAccount?.role == "employee" { row.value = NSLocalizedString("_user_employee_", comment: "") }
-        else if tableAccount?.role == "contractor" { row.value = NSLocalizedString("_user_contractor_", comment: "") }
+        if tableAccount.role == "owner" { row.value = NSLocalizedString("_user_owner_", comment: "") }
+        else if tableAccount.role == "employee" { row.value = NSLocalizedString("_user_employee_", comment: "") }
+        else if tableAccount.role == "contractor" { row.value = NSLocalizedString("_user_contractor_", comment: "") }
         else { row.value = "" }
         section.addFormRow(row)
         
@@ -170,7 +170,7 @@ class HCEditProfile: XLFormViewController {
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage.init(named: "company"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
-        row.value = tableAccount?.company
+        row.value = tableAccount.company
         if row.value == nil { row.value = "" }
         section.addFormRow(row)
         
@@ -218,92 +218,95 @@ class HCEditProfile: XLFormViewController {
         
         // Full name
         if self.form.formRow(withTag: "userfullname")?.value == nil {
-            tableAccount?.displayName = ""
+            tableAccount.displayName = ""
         } else {
-            tableAccount?.displayName = self.form.formRow(withTag: "userfullname")?.value as! String
+            tableAccount.displayName = self.form.formRow(withTag: "userfullname")?.value as! String
         }
 
         // Address
         if self.form.formRow(withTag: "useraddress")?.value == nil {
-            tableAccount?.address = ""
+            tableAccount.address = ""
         } else {
-            tableAccount?.address = self.form.formRow(withTag: "useraddress")?.value as! String
+            tableAccount.address = self.form.formRow(withTag: "useraddress")?.value as! String
         }
         
         // City
         if self.form.formRow(withTag: "usercity")?.value == nil {
-            tableAccount?.city = ""
+            tableAccount.city = ""
         } else {
-            tableAccount?.city = self.form.formRow(withTag: "usercity")?.value as! String
+            tableAccount.city = self.form.formRow(withTag: "usercity")?.value as! String
         }
         
         // Zip
         if self.form.formRow(withTag: "userzip")?.value == nil {
-            tableAccount?.zip = ""
+            tableAccount.zip = ""
         } else {
-            tableAccount?.zip = self.form.formRow(withTag: "userzip")?.value as! String
+            tableAccount.zip = self.form.formRow(withTag: "userzip")?.value as! String
         }
         
         let countryNameRow = self.form.formRow(withTag: "usercountry")!.value as? String
         for localeCode in NSLocale.isoCountryCodes {
             let countryName = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: localeCode) ?? ""
             if countryNameRow == countryName {
-                tableAccount?.country = localeCode
+                tableAccount.country = localeCode
                 break
             }
         }
         
         // Phone
         if self.form.formRow(withTag: "userphone")?.value == nil {
-            tableAccount?.phone = ""
+            tableAccount.phone = ""
         } else {
-            tableAccount?.phone = self.form.formRow(withTag: "userphone")?.value as! String
+            tableAccount.phone = self.form.formRow(withTag: "userphone")?.value as! String
         }
         
         // Email
         if self.form.formRow(withTag: "useremail")?.value == nil {
-            tableAccount?.email = ""
+            tableAccount.email = ""
         } else {
-            tableAccount?.email = self.form.formRow(withTag: "useremail")?.value as! String
+            tableAccount.email = self.form.formRow(withTag: "useremail")?.value as! String
         }
         
         // Web
         if self.form.formRow(withTag: "userweb")?.value == nil {
-            tableAccount?.webpage = ""
+            tableAccount.webpage = ""
         } else {
-            tableAccount?.webpage = self.form.formRow(withTag: "userweb")?.value as! String
+            tableAccount.webpage = self.form.formRow(withTag: "userweb")?.value as! String
         }
         
         // Twitter
         if self.form.formRow(withTag: "usertwitter")?.value == nil {
-            tableAccount?.twitter = ""
+            tableAccount.twitter = ""
         } else {
-            tableAccount?.twitter = self.form.formRow(withTag: "usertwitter")?.value as! String
+            tableAccount.twitter = self.form.formRow(withTag: "usertwitter")?.value as! String
         }
         
         // Company
         if self.form.formRow(withTag: "usercompany")?.value == nil {
-            tableAccount?.company = ""
+            tableAccount.company = ""
         } else {
-            tableAccount?.company = self.form.formRow(withTag: "usercompany")?.value as! String
+            tableAccount.company = self.form.formRow(withTag: "usercompany")?.value as! String
         }
         
-        tableAccount?.businessSize = self.form.formRow(withTag: "userbusinesssize")!.value as! String
+        tableAccount.businessSize = self.form.formRow(withTag: "userbusinesssize")!.value as! String
        
         let roleRow = self.form.formRow(withTag: "userrole")!.value as! String
         switch roleRow {
-        case NSLocalizedString("_user_owner_", comment: ""): tableAccount?.role = "owner"
-        case NSLocalizedString("_user_employee_", comment: ""): tableAccount?.role = "employee"
-        case NSLocalizedString("_user_contractor_", comment: ""): tableAccount?.role = "contractor"
+        case NSLocalizedString("_user_owner_", comment: ""): tableAccount.role = "owner"
+        case NSLocalizedString("_user_employee_", comment: ""): tableAccount.role = "employee"
+        case NSLocalizedString("_user_contractor_", comment: ""): tableAccount.role = "contractor"
         default: break
         }
         
         let businesstypeArray = self.form.formRow(withTag: "userbusinesstype")!.value
-        tableAccount?.businessType = (businesstypeArray as! [String]).joined(separator: ",")
+        tableAccount.businessType = (businesstypeArray as! [String]).joined(separator: ",")
+        if tableAccount.businessType.first == "," {
+           tableAccount.businessType.removeFirst()
+        }
         
-        OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: tableAccount?.address, businesssize: tableAccount?.businessSize, businesstype: tableAccount?.businessType, city: tableAccount?.city, company: tableAccount?.company, country: tableAccount?.country, displayname: tableAccount?.displayName, email: tableAccount?.email, phone: tableAccount?.phone, role_: tableAccount?.role, twitter: tableAccount?.twitter, website: tableAccount?.webpage, zip: tableAccount?.zip, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: tableAccount.address, businesssize: tableAccount.businessSize, businesstype: tableAccount.businessType, city: tableAccount.city, company: tableAccount.company, country: tableAccount.country, displayname: tableAccount.displayName, email: tableAccount.email, phone: tableAccount.phone, role_: tableAccount.role, twitter: tableAccount.twitter, website: tableAccount.webpage, zip: tableAccount.zip, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.updateAccount(self.tableAccount!)
+                NCManageDatabase.sharedInstance.updateAccount(self.tableAccount)
                 self.navigationController?.popViewController(animated: true)
                 self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
             } else if errorCode != 0 {
