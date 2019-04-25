@@ -197,6 +197,10 @@
         }
     }
     
+    if ([metadataForRecognizer.session isEqualToString:k_upload_session_extension]) {
+        return NO;
+    }
+    
     if (@selector(startTask:) == action && (metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
         return YES;
     }
