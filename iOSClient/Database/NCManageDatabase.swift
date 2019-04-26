@@ -40,14 +40,15 @@ class NCManageDatabase: NSObject {
             fileURL: databaseFilePath,
             schemaVersion: UInt64(k_databaseSchemaVersion),
 
-            shouldCompactOnLaunch: { totalBytes, usedBytes in
-            // totalBytes refers to the size of the file on disk in bytes (data + free space)
-            // usedBytes refers to the number of bytes used by data in the file
-            
-            // Compact if the file is over 100MB in size and less than 50% 'used'
-            let oneHundredMB = 100 * 1024 * 1024
-            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
-        })
+                shouldCompactOnLaunch: { totalBytes, usedBytes in
+                // totalBytes refers to the size of the file on disk in bytes (data + free space)
+                // usedBytes refers to the number of bytes used by data in the file
+                
+                // Compact if the file is over 100MB in size and less than 50% 'used'
+                let oneHundredMB = 100 * 1024 * 1024
+                return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+            }
+        )
         
         do {
             // Realm is compacted on the first open if the configuration block conditions were met.
@@ -74,11 +75,11 @@ class NCManageDatabase: NSObject {
                     migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
                         let account = oldObject!["account"] as! String
                         let password = oldObject!["password"] as! String
-                        CCUtility.setPassword(account, password: password)
                     }
                 }
                 */
-        })
+            }
+        )
         
         Realm.Configuration.defaultConfiguration = config
         _ = try! Realm()
