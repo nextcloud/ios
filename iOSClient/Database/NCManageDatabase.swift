@@ -63,31 +63,13 @@ class NCManageDatabase: NSObject {
             
             migrationBlock: { migration, oldSchemaVersion in
                 
-                /*
-                // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 37) {
-                    migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
-                        let account = oldObject!["account"] as! String
-                        let serverUrl = oldObject!["serverUrl"] as! String
-                        let fileName = oldObject!["fileName"] as! String
-                        newObject!["metadataID"] = CCUtility.createMetadataID(fromAccount: account, serverUrl: serverUrl, fileName: fileName)
-                    }
-                    
-                    migration.enumerateObjects(ofType: tablePhotos.className()) { oldObject, newObject in
-                        let account = oldObject!["account"] as! String
-                        let serverUrl = oldObject!["serverUrl"] as! String
-                        let fileName = oldObject!["fileName"] as! String
-                        newObject!["metadataID"] = CCUtility.createMetadataID(fromAccount: account, serverUrl: serverUrl, fileName: fileName)
-                    }
-                }
-                */
-                
                 if oldSchemaVersion < 41 {
                     migration.deleteData(forType: tableActivity.className())
                     migration.deleteData(forType: tableMetadata.className())
                     migration.deleteData(forType: tableDirectory.className())
                 }
                 
+                /*
                 if oldSchemaVersion < 44 {
                     migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
                         let account = oldObject!["account"] as! String
@@ -95,6 +77,7 @@ class NCManageDatabase: NSObject {
                         CCUtility.setPassword(account, password: password)
                     }
                 }
+                */
         })
         
         Realm.Configuration.defaultConfiguration = config
@@ -356,6 +339,24 @@ class NCManageDatabase: NSObject {
         }
         
         return tableAccount.init(value: activeAccount)
+    }
+    
+    @objc func removePasswordAccount(_ account: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableAccount.self).filter("account = %@", account).first else {
+                    return
+                }
+                
+                result.password = "********"
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
 
     @objc func setAccountAutoUploadProperty(_ property: String, state: Bool) {

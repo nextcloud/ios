@@ -1593,6 +1593,14 @@ PKPushRegistry *pushRegistry;
         }
     }
     
+    if (([actualVersion compare:@"2.23.4" options:NSNumericSearch] == NSOrderedAscending)) {
+        NSArray *records = [[NCManageDatabase sharedInstance] getAllAccount];
+        for (tableAccount *record in records) {
+            [CCUtility setPassword:record.account password:record.password];
+            [[NCManageDatabase sharedInstance] removePasswordAccount:record.account];
+        }
+    }
+
     return YES;
 }
 
