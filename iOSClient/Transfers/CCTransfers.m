@@ -182,8 +182,8 @@
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-    if (metadataForRecognizer == nil)
-        return NO;
+    if (@selector(startTask:) != action) return NO;
+    if (metadataForRecognizer == nil) return NO;
     
     // Detect E2EE
     NSString *saveserverUrl = @"";
@@ -197,11 +197,7 @@
         }
     }
     
-    if ([metadataForRecognizer.session isEqualToString:k_upload_session_extension]) {
-        return NO;
-    }
-    
-    if (@selector(startTask:) == action && (metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
+    if (!([metadataForRecognizer.session isEqualToString:k_upload_session_extension]) &&(metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
         return YES;
     }
     
@@ -223,7 +219,7 @@
 {
     UITouch * touch = [[event allTouches] anyObject];
     CGPoint location = [touch locationInView:self.tableView];
-    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:location];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
     if (indexPath) {
         
