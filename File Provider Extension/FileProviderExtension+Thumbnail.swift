@@ -38,42 +38,42 @@ extension FileProviderExtension {
         
         for itemIdentifier in itemIdentifiers {
             
-            let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier)
-            if metadata != nil {
+            guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 
-                if (metadata!.typeFile == k_metadataTypeFile_image || metadata!.typeFile == k_metadataTypeFile_video) {
-                    
-                    let width = NCUtility.sharedInstance.getScreenWidthForPreview()
-                    let height = NCUtility.sharedInstance.getScreenHeightForPreview()
-                    
-                    OCNetworking.sharedManager().downloadPreview(withAccount: providerData.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, preview, message, errorCode) in
-                       
-                        if errorCode == 0 && account == self.providerData.account {
-                            do {
-                                let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
-                                let data = try Data.init(contentsOf: url)
-                                perThumbnailCompletionHandler(itemIdentifier, data, nil)
-                            } catch let error {
-                                print("error: \(error)")
-                                perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.noSuchItem))
-                            }
-                        } else {
-                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
+                counterProgress += 1
+                if (counterProgress == progress.totalUnitCount) {
+                    completionHandler(nil)
+                }
+                
+                continue
+            }
+            
+            if (metadata.hasPreview == 1) {
+                
+                let width = NCUtility.sharedInstance.getScreenWidthForPreview()
+                let height = NCUtility.sharedInstance.getScreenHeightForPreview()
+                
+                OCNetworking.sharedManager().downloadPreview(withAccount: providerData.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, preview, message, errorCode) in
+                   
+                    if errorCode == 0 && account == self.providerData.account {
+                        do {
+                            let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+                            let data = try Data.init(contentsOf: url)
+                            perThumbnailCompletionHandler(itemIdentifier, data, nil)
+                        } catch let error {
+                            print("error: \(error)")
+                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.noSuchItem))
                         }
-                        
-                        counterProgress += 1
-                        if (counterProgress == progress.totalUnitCount) {
-                            completionHandler(nil)
-                        }
-                    })
-                    
-                } else {
+                    } else {
+                        perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
+                    }
                     
                     counterProgress += 1
                     if (counterProgress == progress.totalUnitCount) {
                         completionHandler(nil)
                     }
-                }
+                })
+                
             } else {
                 
                 counterProgress += 1

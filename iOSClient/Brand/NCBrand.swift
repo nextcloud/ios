@@ -71,6 +71,7 @@ class NCBrandColor: NSObject {
     }()
     
     @objc public let brand:                             String = "Nextcloud"
+    @objc public var brandInitials:                     String = "nc"                                               // Don't touch me !!
     @objc public let mailMe:                            String = "ios@nextcloud.com"
     @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2019"
     @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
@@ -90,8 +91,8 @@ class NCBrandColor: NSObject {
     // Capabilities Group
     @objc public let capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
     
-    // Database key 64 char ASCII (for encryption AES-256+SHA2)
-    @objc public var databaseEncryptionKey:             String = "1234567890123456789012345678901234567890123456789012345678901234"
+    // User Agent
+    @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
     
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
@@ -101,7 +102,6 @@ class NCBrandColor: NSObject {
     @objc public let use_themingLogo:                   Bool = false     
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
-    @objc public let use_database_encryption:           Bool = false
 
     @objc public let disable_intro:                     Bool = false
     @objc public let disable_request_login_url:         Bool = false
@@ -113,9 +113,10 @@ class NCBrandColor: NSObject {
     override init() {
         
         if folderBrandAutoUpload != "" {
-            
-            self.folderDefaultAutoUpload = self.folderBrandAutoUpload
+            folderDefaultAutoUpload = folderBrandAutoUpload
         }
+        
+        brandInitials = brandInitials.lowercased()
     }
 }
 

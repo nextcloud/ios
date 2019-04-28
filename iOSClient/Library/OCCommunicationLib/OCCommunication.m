@@ -45,7 +45,6 @@
 #import "OCWebDAVClient.h"
 #import "OCXMLShareByLinkParser.h"
 #import "OCErrorMsg.h"
-#import "AFURLSessionManager.h"
 #import "OCShareUser.h"
 #import "OCActivity.h"
 #import "OCExternalSites.h"
@@ -55,6 +54,7 @@
 #import "OCRichObjectStrings.h"
 #import "OCUserProfile.h"
 #import "NCRichDocumentTemplate.h"
+#import "HCFeatures.h"
 
 @interface OCCommunication ()
 
@@ -3086,7 +3086,221 @@
     }];
 }
 
+#pragma mark - Third Parts
 
+- (void)getHCUserProfile:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
+{
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getHCUserProfile:serverPath onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+        
+        NSData *responseData = (NSData*) response;
+        OCUserProfile *userProfile = [OCUserProfile new];
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] User Profile : %@",jsongParsed);
+        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            data = [data valueForKey:@"data"];
+
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"address"] && ![[data valueForKey:@"address"] isKindOfClass:[NSNull class]])
+                    userProfile.address = [data valueForKey:@"address"];
+                
+                if ([data valueForKey:@"displayname"] && ![[data valueForKey:@"displayname"] isKindOfClass:[NSNull class]])
+                    userProfile.displayName = [data valueForKey:@"displayname"];
+                
+                if ([data valueForKey:@"businesssize"] && ![[data valueForKey:@"businesssize"] isKindOfClass:[NSNull class]]) {
+                    switch ([[data valueForKey:@"businesssize"] integerValue]) {
+                        case 1:
+                            userProfile.businessSize = @"1-4";
+                            break;
+                        case 5:
+                            userProfile.businessSize = @"5-9";
+                            break;
+                        case 10:
+                            userProfile.businessSize = @"10-19";
+                            break;
+                        case 20:
+                            userProfile.businessSize = @"20-49";
+                            break;
+                        case 50:
+                            userProfile.businessSize = @"50-99";
+                            break;
+                        case 100:
+                            userProfile.businessSize = @"100-249";
+                            break;
+                        case 250:
+                            userProfile.businessSize = @"250-499";
+                            break;
+                        case 500:
+                            userProfile.businessSize = @"500-999";
+                            break;
+                        case 1000:
+                            userProfile.businessSize = @"1000+";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+               
+                if ([data valueForKey:@"businesstype"] && ![[data valueForKey:@"businesstype"] isKindOfClass:[NSNull class]])
+                    userProfile.businessType = [data valueForKey:@"businesstype"];
+                
+                if ([data valueForKey:@"city"] && ![[data valueForKey:@"city"] isKindOfClass:[NSNull class]])
+                    userProfile.city = [data valueForKey:@"city"];
+                
+                if ([data valueForKey:@"company"] && ![[data valueForKey:@"company"] isKindOfClass:[NSNull class]])
+                    userProfile.company = [data valueForKey:@"company"];
+                
+                if ([data valueForKey:@"country"] && ![[data valueForKey:@"country"] isKindOfClass:[NSNull class]])
+                    userProfile.country = [data valueForKey:@"country"];
+                
+                if ([data valueForKey:@"email"] && ![[data valueForKey:@"email"] isKindOfClass:[NSNull class]])
+                    userProfile.email = [data valueForKey:@"email"];
+                
+                if ([data valueForKey:@"phone"] && ![[data valueForKey:@"phone"] isKindOfClass:[NSNull class]])
+                    userProfile.phone = [data valueForKey:@"phone"];
+                
+                if ([data valueForKey:@"role"] && ![[data valueForKey:@"role"] isKindOfClass:[NSNull class]])
+                    userProfile.role = [data valueForKey:@"role"];
+                
+                if ([data valueForKey:@"twitter"] && ![[data valueForKey:@"twitter"] isKindOfClass:[NSNull class]])
+                    userProfile.twitter = [data valueForKey:@"twitter"];
+                
+                if ([data valueForKey:@"website"] && ![[data valueForKey:@"website"] isKindOfClass:[NSNull class]])
+                    userProfile.webpage = [data valueForKey:@"website"];
+                
+                if ([data valueForKey:@"zip"] && ![[data valueForKey:@"zip"] isKindOfClass:[NSNull class]])
+                    userProfile.zip = [data valueForKey:@"zip"];
+                
+                successRequest(response, userProfile, request.redirectedServer);
+                
+            } else {
+                
+                NSString *message = (NSString *)[meta objectForKey:@"message"];
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = NSLocalizedString(@"_server_response_error_", nil);
+                }
+                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+            }
+            
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+    
+}
+
+- (void)putHCUserProfile:(NSString*)serverPath data:(NSString *)data onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request putHCUserProfile:serverPath data:data onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+        successRequest(response, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, id responseObject, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)getHCFeatures:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, HCFeatures *features, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
+{
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getHCUserProfile:serverPath onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+        
+        NSData *responseData = (NSData*) response;
+        HCFeatures *features = [HCFeatures new];
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] User Profile : %@",jsongParsed);
+        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            data = [data valueForKey:@"data"];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"is_trial"] && ![[data valueForKey:@"is_trial"] isKindOfClass:[NSNull class]])
+                    features.isTrial = [[data valueForKey:@"is_trial"] boolValue];
+                
+                if ([data valueForKey:@"trial_expired"] && ![[data valueForKey:@"trial_expired"] isKindOfClass:[NSNull class]])
+                    features.trialExpired = [[data valueForKey:@"trial_expired"] boolValue];
+                
+                if ([data valueForKey:@"trial_remaining_sec"] && ![[data valueForKey:@"trial_remaining_sec"] isKindOfClass:[NSNull class]])
+                    features.trialRemainingSec = [[data valueForKey:@"trial_remaining_sec"] integerValue];
+                
+                if ([data valueForKey:@"trial_end_time"] && ![[data valueForKey:@"trial_end_time"] isKindOfClass:[NSNull class]])
+                    features.trialEndTime = [[data valueForKey:@"trial_end_time"] integerValue];
+                
+                if ([data valueForKey:@"trial_end"] && ![[data valueForKey:@"trial_end"] isKindOfClass:[NSNull class]])
+                    features.trialEnd = [data valueForKey:@"trial_end"];
+                
+                if ([data valueForKey:@"account_remove_expired"] && ![[data valueForKey:@"account_remove_expired"] isKindOfClass:[NSNull class]])
+                    features.accountRemoveExpired = [[data valueForKey:@"account_remove_expired"] boolValue];
+                
+                if ([data valueForKey:@"account_remove_remaining_sec"] && ![[data valueForKey:@"account_remove_remaining_sec"] isKindOfClass:[NSNull class]])
+                    features.accountRemoveRemainingSec = [[data valueForKey:@"account_remove_remaining_sec"] integerValue];
+                
+                if ([data valueForKey:@"account_remove_time"] && ![[data valueForKey:@"account_remove_time"] isKindOfClass:[NSNull class]])
+                    features.accountRemoveTime = [[data valueForKey:@"account_remove_time"] integerValue];
+                
+                if ([data valueForKey:@"account_remove"] && ![[data valueForKey:@"account_remove"] isKindOfClass:[NSNull class]])
+                    features.accountRemove = [data valueForKey:@"account_remove"];
+                
+                successRequest(response, features, request.redirectedServer);
+                
+            } else {
+                
+                NSString *message = (NSString *)[meta objectForKey:@"message"];
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = NSLocalizedString(@"_server_response_error_", nil);
+                }
+                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+            }
+            
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+    
+}
 
 #pragma mark - Manage Mobile Editor OCS API
 

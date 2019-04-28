@@ -33,26 +33,22 @@ class NCManageDatabase: NSObject {
     override init() {
         
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        
-        var configCompact = Realm.Configuration(
+        let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
+
+        let configCompact = Realm.Configuration(
             
-            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            
-            shouldCompactOnLaunch: { totalBytes, usedBytes in
-            // totalBytes refers to the size of the file on disk in bytes (data + free space)
-            // usedBytes refers to the number of bytes used by data in the file
-            
-            // Compact if the file is over 100MB in size and less than 50% 'used'
-            let oneHundredMB = 100 * 1024 * 1024
-            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
-        })
-        
-        // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
-        if NCBrandOptions.sharedInstance.use_database_encryption {
-            if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
-                configCompact.encryptionKey = keyData
+            fileURL: databaseFilePath,
+            schemaVersion: UInt64(k_databaseSchemaVersion),
+
+                shouldCompactOnLaunch: { totalBytes, usedBytes in
+                // totalBytes refers to the size of the file on disk in bytes (data + free space)
+                // usedBytes refers to the number of bytes used by data in the file
+                
+                // Compact if the file is over 100MB in size and less than 50% 'used'
+                let oneHundredMB = 100 * 1024 * 1024
+                return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
             }
-        }
+        )
         
         do {
             // Realm is compacted on the first open if the configuration block conditions were met.
@@ -61,80 +57,29 @@ class NCManageDatabase: NSObject {
             // handle error compacting or opening Realm
         }
         
-        var config = Realm.Configuration(
+        let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 43,
+            schemaVersion: UInt64(k_databaseSchemaVersion),
             
-            // 10 : Version 2.18.0
-            // 11 : Version 2.18.2
-            // 12 : Version 2.19.0.5
-            // 13 : Version 2.19.0.14
-            // 14 : Version 2.19.0.xx
-            // 15 : Version 2.19.2
-            // 16 : Version 2.20.2
-            // 17 : Version 2.20.4
-            // 18 : Version 2.20.6
-            // 19 : Version 2.20.7
-            // 20 : Version 2.21.0
-            // 21 : Version 2.21.0.3
-            // 22 : Version 2.21.0.9
-            // 23 : Version 2.21.0.15
-            // 24 : Version 2.21.2.5
-            // 25 : Version 2.21.3.1
-            // 26 : Version 2.22.0.4
-            // 27 : Version 2.22.0.7
-            // 28 : Version 2.22.3.5
-            // 29 : Version 2.22.5.2
-            // 30 : Version 2.22.6.0
-            // 31 : Version 2.22.6.3
-            // 32 : Version 2.22.6.10
-            // 33 : Version 2.22.7.1
-            // 34 : Version 2.22.8.14
-            // 35 : Version 2.22.8.14
-            // 36 : Version 2.22.8.14
-            // 37 : Version 2.22.8.14
-            // 38 : Version 2.22.8.20
-            // 39 : Version 2.22.9.1
-            // 40 : Version 2.22.9.3
-            // 41 : Version 2.22.9.5
-            // 42 : Version 2.23.1.0
-            // 43 : Version 2.23.2.0
-
             migrationBlock: { migration, oldSchemaVersion in
-                // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                /*
-                if (oldSchemaVersion < 37) {
-                    migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
-                        let account = oldObject!["account"] as! String
-                        let serverUrl = oldObject!["serverUrl"] as! String
-                        let fileName = oldObject!["fileName"] as! String
-                        newObject!["metadataID"] = CCUtility.createMetadataID(fromAccount: account, serverUrl: serverUrl, fileName: fileName)
-                    }
-                    
-                    migration.enumerateObjects(ofType: tablePhotos.className()) { oldObject, newObject in
-                        let account = oldObject!["account"] as! String
-                        let serverUrl = oldObject!["serverUrl"] as! String
-                        let fileName = oldObject!["fileName"] as! String
-                        newObject!["metadataID"] = CCUtility.createMetadataID(fromAccount: account, serverUrl: serverUrl, fileName: fileName)
-                    }
-                }
-                */
                 
                 if oldSchemaVersion < 41 {
                     migration.deleteData(forType: tableActivity.className())
                     migration.deleteData(forType: tableMetadata.className())
                     migration.deleteData(forType: tableDirectory.className())
                 }
-        })
-
-        
-        // Encrypting the database file on disk with AES-256+SHA2 by supplying a 64-byte encryption key
-        if NCBrandOptions.sharedInstance.use_database_encryption {
-            if let keyData = NCBrandOptions.sharedInstance.databaseEncryptionKey.data(using: String.Encoding.utf8, allowLossyConversion: false) {
-                config.encryptionKey = keyData
+                
+                /*
+                if oldSchemaVersion < 44 {
+                    migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                        let account = oldObject!["account"] as! String
+                        let password = oldObject!["password"] as! String
+                    }
+                }
+                */
             }
-        }
+        )
         
         Realm.Configuration.defaultConfiguration = config
         _ = try! Realm()
@@ -226,12 +171,13 @@ class NCManageDatabase: NSObject {
 
             addObject.autoUploadWWAnVideo = true
         }
-            
-        addObject.password = password
+        
+        CCUtility.setPassword(account, password: password)
+    
         addObject.url = url
         addObject.user = user
         addObject.userID = user
-
+        
         realm.add(addObject)
         
         do {
@@ -241,27 +187,17 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountPassword(_ account: String, password: String) -> tableAccount? {
+    @objc func updateAccount(_ account: tableAccount) {
         
         let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableAccount.self).filter("account = %@", account).first else {
-            realm.cancelWrite()
-            return nil
-        }
-        
-        result.password = password
         
         do {
-            try realm.commitWrite()
+            try realm.write {
+                realm.add(account, update: true)
+            }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-        
-        return result
     }
     
     @objc func deleteAccount(_ account: String) {
@@ -293,7 +229,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return result
+        return tableAccount.init(value: result)
     }
 
     @objc func getAccounts() -> [String]? {
@@ -403,7 +339,25 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return activeAccount
+        return tableAccount.init(value: activeAccount)
+    }
+    
+    @objc func removePasswordAccount(_ account: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableAccount.self).filter("account = %@", account).first else {
+                    return
+                }
+                
+                result.password = "********"
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
 
     @objc func setAccountAutoUploadProperty(_ property: String, state: Bool) {
@@ -479,15 +433,17 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountUserProfile(_ userProfile: OCUserProfile) -> tableAccount? {
+    @objc func setAccountUserProfile(_ userProfile: OCUserProfile, HCProperties: Bool) -> tableAccount? {
      
-        guard let activeAccount = self.getAccountActive() else {
-            return nil
-        }
-        
         let realm = try! Realm()
 
+        var returnAccount = tableAccount()
+
         do {
+            guard let activeAccount = self.getAccountActive() else {
+                return nil
+            }
+            
             try realm.write {
                 
                 guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
@@ -509,17 +465,71 @@ class NCManageDatabase: NSObject {
                 result.twitter = userProfile.twitter
                 result.webpage = userProfile.webpage
                 
+                if HCProperties {
+                    result.businessSize = userProfile.businessSize
+                    result.businessType = userProfile.businessType
+                    result.city = userProfile.city
+                    result.country = userProfile.country
+                    result.company = userProfile.company
+                    result.role = userProfile.role
+                    result.zip = userProfile.zip
+                }
+                
                 result.quota = userProfile.quota
                 result.quotaFree = userProfile.quotaFree
                 result.quotaRelative = userProfile.quotaRelative
                 result.quotaTotal = userProfile.quotaTotal
                 result.quotaUsed = userProfile.quotaUsed
+                
+                returnAccount = result
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return activeAccount
+        return tableAccount.init(value: returnAccount)
+    }
+    
+    @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
+        
+        let realm = try! Realm()
+        
+        var returnAccount = tableAccount()
+
+        do {
+            guard let activeAccount = self.getAccountActive() else {
+                return nil
+            }
+            
+            try realm.write {
+                
+                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                    return
+                }
+                
+                result.hcIsTrial = features.isTrial
+                result.hcTrialExpired = features.trialExpired
+                result.hcTrialRemainingSec = features.trialRemainingSec
+                if features.trialEndTime > 0 {
+                    result.hcTrialEndTime = Date(timeIntervalSince1970: features.trialEndTime) as NSDate
+                } else {
+                    result.hcTrialEndTime = nil
+                }
+                result.hcAccountRemoveExpired = features.accountRemoveExpired
+                result.hcAccountRemoveRemainingSec = features.accountRemoveRemainingSec
+                if features.accountRemoveTime > 0 {
+                    result.hcAccountRemoveTime = Date(timeIntervalSince1970: features.accountRemoveTime) as NSDate
+                } else {
+                    result.hcAccountRemoveTime = nil
+                }
+                
+                returnAccount = result
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+        
+        return tableAccount.init(value: returnAccount)
     }
     
     @objc func setAccountDateSearchContentTypeImageVideo(_ date: Date) {
@@ -2231,7 +2241,7 @@ class NCManageDatabase: NSObject {
             if (result.shareUserAndGroup.contains(share)) {
                     
                 var shares : [String] = result.shareUserAndGroup.components(separatedBy: ",")
-                if let index = shares.index(of:share) {
+                if let index = shares.firstIndex(of:share) {
                     shares.remove(at: index)
                 }
                 result.shareUserAndGroup = shares.joined(separator: ",")

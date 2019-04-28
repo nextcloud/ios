@@ -75,7 +75,7 @@ class FileProviderData: NSObject {
                 account = activeAccount.account
                 accountUser = activeAccount.user
                 accountUserID = activeAccount.userID
-                accountPassword = activeAccount.password
+                accountPassword = CCUtility.getPassword(activeAccount.account)
                 accountUrl = activeAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
             }

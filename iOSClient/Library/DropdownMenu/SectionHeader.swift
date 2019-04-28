@@ -36,18 +36,18 @@ open class SectionHeader: UIView {
 
     func updateTitleLabelConstraint() {
         if #available(iOS 11.0, *) {
-            let leftConstraint = NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: safeAreaLayoutGuide, attribute: .left, multiplier: 1.0, constant: style.bottomPadding)
+            let leftConstraint = NSLayoutConstraint(item: titleLabel as Any, attribute: .left, relatedBy: .equal, toItem: safeAreaLayoutGuide, attribute: .left, multiplier: 1.0, constant: style.bottomPadding)
             NSLayoutConstraint.activate([leftConstraint])
         } else {
             // Fallback on earlier versions
-            let constraints =  NSLayoutConstraint.constraints(withVisualFormat: "H:|-leftPadding-[titleLabel]->=20-|", options: [], metrics: ["leftPadding": style.leftPadding], views: ["titleLabel": titleLabel])
+            let constraints =  NSLayoutConstraint.constraints(withVisualFormat: "H:|-leftPadding-[titleLabel]->=20-|", options: [], metrics: ["leftPadding": style.leftPadding], views: ["titleLabel": titleLabel as Any])
             addConstraints(constraints)
         }
         if style.shouldTitleCenterVertically {
-            let centerY = NSLayoutConstraint(item: titleLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0)
+            let centerY = NSLayoutConstraint(item: titleLabel as Any, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0)
             addConstraint(centerY)
         } else {
-            let vConstraints = NSLayoutConstraint(item: titleLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: style.bottomPadding)
+            let vConstraints = NSLayoutConstraint(item: titleLabel as Any, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: style.bottomPadding)
             addConstraint(vConstraints)
         }
     }

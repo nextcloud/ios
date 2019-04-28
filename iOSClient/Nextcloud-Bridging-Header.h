@@ -13,7 +13,6 @@
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
 #import "CCSynchronize.h"
-
 #import "OCActivity.h"
 #import "OCUserProfile.h"
 #import "OCCapabilities.h"
@@ -23,3 +22,4 @@
 #import "OCNotificationsAction.h"
 #import "NCNetworkingEndToEnd.h"
 #import "NCRichDocumentTemplate.h"
+#import "HCFeatures.h"

@@ -38,7 +38,12 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
+    @objc dynamic var businessSize: String = ""
+    @objc dynamic var businessType = ""
     @objc dynamic var dateSearchContentTypeImageVideo = NSDate.distantPast
+    @objc dynamic var city = ""
+    @objc dynamic var company = ""
+    @objc dynamic var country = ""
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false
@@ -51,12 +56,26 @@ class tableAccount: Object {
     @objc dynamic var quotaRelative: Double = 0
     @objc dynamic var quotaTotal: Double = 0
     @objc dynamic var quotaUsed: Double = 0
+    @objc dynamic var role = ""
     @objc dynamic var startDirectoryPhotosTab = ""
     @objc dynamic var twitter = ""
     @objc dynamic var url = ""
     @objc dynamic var user = ""
     @objc dynamic var userID = ""
     @objc dynamic var webpage = ""
+    @objc dynamic var zip = ""
+    // HC
+    @objc dynamic var hcIsTrial: Bool = false
+    @objc dynamic var hcTrialExpired: Bool = false
+    @objc dynamic var hcTrialRemainingSec: Double = 0
+    @objc dynamic var hcTrialEndTime: NSDate? = nil
+    @objc dynamic var hcAccountRemoveExpired: Bool = false
+    @objc dynamic var hcAccountRemoveRemainingSec: Double = 0
+    @objc dynamic var hcAccountRemoveTime: NSDate? = nil
+    
+    override static func primaryKey() -> String {
+        return "account"
+    }
 }
 
 class tableActivity: Object {

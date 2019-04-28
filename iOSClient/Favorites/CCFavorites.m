@@ -293,7 +293,7 @@
             
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataSection.fileID]];
             if (metadata)
-                [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
+                [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true uploadStatusForcedStart:false];
         }
     }
 }

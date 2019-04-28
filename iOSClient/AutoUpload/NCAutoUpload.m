@@ -437,13 +437,11 @@
         });
     }
     
-    // end loading
+    // end loadingcand reload
     dispatch_async(dispatch_get_main_queue(), ^{
         [_hud hideHud];
-    });
-    
-    // reload
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_NULL];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_NULL];
+    });    
 }
 
 - (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset

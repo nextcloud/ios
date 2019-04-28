@@ -425,7 +425,7 @@
     url = [NSURL URLWithString:serverFileUrl];
     request = [NSMutableURLRequest requestWithURL:url];
         
-    NSData *authData = [[NSString stringWithFormat:@"%@:%@", tableAccount.user, tableAccount.password] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *authData = [[NSString stringWithFormat:@"%@:%@", tableAccount.user, [CCUtility getPassword:tableAccount.account]] dataUsingEncoding:NSUTF8StringEncoding];
     NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
@@ -655,8 +655,9 @@
                 
                 if ([extensionAsset isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
                     
-                    UIImage *image = [UIImage imageWithData:imageData];
-                    imageData = UIImageJPEGRepresentation(image, 1.0);
+                    CIImage *ciImage = [CIImage imageWithData:imageData];
+                    CIContext *context = [CIContext context];
+                    imageData = [context JPEGRepresentationOfImage:ciImage colorSpace:ciImage.colorSpace options:@{}];
                     NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     metadata.fileNameView = metadata.fileName;
@@ -827,7 +828,7 @@
             // Get the last metadata
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", tableAccount.account, metadata.serverUrl]];
             
-            error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&e2eeMetadata fileID:directory.fileID user:tableAccount.user userID:tableAccount.userID password:tableAccount.password url:tableAccount.url];
+            error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&e2eeMetadata fileID:directory.fileID user:tableAccount.user userID:tableAccount.userID password: [CCUtility getPassword:tableAccount.account] url:tableAccount.url];
             if (error == nil) {
                 if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eeMetadata privateKey:[CCUtility getEndToEndPrivateKey:tableAccount.account] serverUrl:metadata.serverUrl account:tableAccount.account url:tableAccount.url] == false) {
                     
@@ -885,7 +886,7 @@
     url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName] encodeString:NSUTF8StringEncoding]];
     request = [NSMutableURLRequest requestWithURL:url];
         
-    NSData *authData = [[NSString stringWithFormat:@"%@:%@", tableAccount.user, tableAccount.password] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *authData = [[NSString stringWithFormat:@"%@:%@", tableAccount.user, [CCUtility getPassword:tableAccount.account]] dataUsingEncoding:NSUTF8StringEncoding];
     NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
     [request setHTTPMethod:@"PUT"];
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
@@ -936,7 +937,7 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
                 // Send Metadata
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl fileNameRename:nil fileNameNewRename:nil account:tableAccount.account user:tableAccount.user userID:tableAccount.userID password:tableAccount.password url:tableAccount.url];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl fileNameRename:nil fileNameNewRename:nil account:tableAccount.account user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -1059,15 +1060,32 @@
         // Mark error only if not Cancelled Task
         if (errorCode == kCFURLErrorCancelled)  {
             
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:tempFileID] error:nil];
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
+            if (metadata.status == k_metadataStatusUploadForcedStart) {
+                
+                errorCode = 0;
+                
+                metadata.session = k_upload_session;
+                metadata.sessionError = @"";
+                metadata.sessionTaskIdentifier = 0;
+                metadata.status = k_metadataStatusInUpload;
+                metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
 
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                
+            } else {
+                
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:tempFileID] error:nil];
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
+                
+                errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
+            }
+            
         } else {
 
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
+            
+            errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
         }
-        
-        errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
         
     } else {
             
@@ -1146,7 +1164,7 @@
             
             if (tableLock) {
                 
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] unlockEndToEndFolderEncryptedOnServerUrl:serverUrl fileID:tableLock.fileID token:tableLock.token user:tableAccount.user userID:tableAccount.userID password:tableAccount.password url:tableAccount.url];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] unlockEndToEndFolderEncryptedOnServerUrl:serverUrl fileID:tableLock.fileID token:tableLock.token user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
                 if (error) {
 #ifndef EXTENSION
                     dispatch_async(dispatch_get_main_queue(), ^{

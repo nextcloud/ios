@@ -163,7 +163,7 @@
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"mail"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"email"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
     */
@@ -200,8 +200,8 @@
 {
     self.form.delegate = nil;
     
-    // ----------------------
-    
+    // ------------------------------------------------------------------
+
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowSimplyPasscode = [self.form formRowWithTag:@"simplypasscode"];
     XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];

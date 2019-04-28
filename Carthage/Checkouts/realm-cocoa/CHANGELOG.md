@@ -1,3 +1,52 @@
+3.14.1 Release notes (2019-04-04)
+=============================================================
+
+### Fixed
+
+* Fix "Cannot find interface declaration for 'RealmSwiftObject', superclass of
+  'MyRealmObjectClass'" errors when building for a simulator with Xcode 10.2
+  with "Install Objective-C Compatibility Header" enabled.
+
+### Compatibility
+
+* File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.11.0 or later.
+
+3.14.0 Release notes (2019-03-27)
+=============================================================
+
+### Enhancements
+
+* Reduce memory usage when committing write transactions.
+* Improve performance of compacting encrypted Realm files.
+  ([PR #3221](https://github.com/realm/realm-core/pull/3221)).
+* Add a Xcode 10.2 build to the release package.
+
+### Fixed
+
+* Fix a memory leak whenever Realm makes a HTTP(s) request to the Realm Object
+  Server (Issue [#6058](https://github.com/realm/realm-cocoa/issues/6058), since 3.8.0).
+* Fix an assertion failure when creating an object in a synchronized Realm
+  after creating an object with a null int primary key in the same write
+  transaction.
+  ([PR #3227](https://github.com/realm/realm-core/pull/3227)).
+* Fix some new warnings when building with Xcode 10.2 beta.
+* Properly clean up sync sessions when the last Realm object using the session
+  is deallocated while the session is explicitly suspended (since 3.9.0).
+
+### Compatibility
+
+* File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.11.0 or later.
+* Carthage release for Swift is built with Xcode 10.2.
+
+### Internal
+
+* Throw an exception rather than crashing with an assertion failure in more
+  cases when opening invalid Realm files.
+* Upgrade to REALM_CORE_VERSION=5.14.0
+* Upgrade to REALM_SYNC_VERSION=3.15.1
+
 3.13.1 Release notes (2019-01-03)
 =============================================================
 

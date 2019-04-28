@@ -90,7 +90,7 @@ class CCNotification: UITableViewController {
                         
                         let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
                         
-                        if let index = listOfNotifications.index(where: {$0.idNotification == notification.idNotification})  {
+                        if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification.idNotification})  {
                             self.appDelegate.listOfNotifications.removeObject(at: index)
                         }
                         
@@ -133,7 +133,7 @@ class CCNotification: UITableViewController {
                                     
                                     let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
                                     
-                                    if let index = listOfNotifications.index(where: {$0.idNotification == notification.idNotification})  {
+                                    if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification.idNotification})  {
                                         self.appDelegate.listOfNotifications.removeObject(at: index)
                                     }
                                     

@@ -29,11 +29,18 @@
 @property BOOL enabled;
 
 @property (nonatomic, strong) NSString *address;
+@property (nonatomic, strong) NSString *businessSize;
+@property (nonatomic, strong) NSString *businessType;
+@property (nonatomic, strong) NSString *city;
+@property (nonatomic, strong) NSString *company;
+@property (nonatomic, strong) NSString *country;
 @property (nonatomic, strong) NSString *displayName;
 @property (nonatomic, strong) NSString *email;
 @property (nonatomic, strong) NSString *phone;
+@property (nonatomic, strong) NSString *role;
 @property (nonatomic, strong) NSString *twitter;
 @property (nonatomic, strong) NSString *webpage;
+@property (nonatomic, strong) NSString *zip;
 
 @property double quota;
 @property double quotaFree;

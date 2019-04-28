@@ -23,8 +23,6 @@
 
 #import "AppDelegate.h"
 #import <JDStatusBarNotification/JDStatusBarNotification.h>
-
-#import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 #import "CCGraphics.h"
 #import "CCSynchronize.h"
@@ -34,10 +32,9 @@
 #import <Crashlytics/Crashlytics.h>
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
-#import "Firebase.h"
 #import "NCPushNotificationEncryption.h"
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -101,9 +98,9 @@ PKPushRegistry *pushRegistry;
     if ([self upgrade]) {
     
         // Set account, if no exists clear all
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-        if (account == nil) {
+        if (tableAccount == nil) {
         
             // remove all the keys Chain
             [CCUtility deleteAllChainStore];
@@ -113,7 +110,7 @@ PKPushRegistry *pushRegistry;
 
         } else {
         
-            [self settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
+            [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
         }
     }
     
@@ -149,28 +146,18 @@ PKPushRegistry *pushRegistry;
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
     
-    /*
-    // Firebase - Push Notification
-    @try {
-        [FIRApp configure];
-    } @catch (NSException *exception) {
-        NSLog(@"[LOG] Something went wrong while configuring Firebase");
-    }
-    */
-    
     // Push Notification
     pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
     pushRegistry.delegate = self;
     pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+    
+    [application registerForRemoteNotifications];
     
     // Display notification (sent via APNS)
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
     UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
     [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
     }];
-    
-    [application registerForRemoteNotifications];
-    [FIRMessaging messaging].delegate = self;
     
     // setting Reachable in back
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -215,7 +202,9 @@ PKPushRegistry *pushRegistry;
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Fabric
-    [Fabric with:@[[Crashlytics class]]];
+    if (![CCUtility getDisableCrashservice]) {
+        [Fabric with:@[[Crashlytics class]]];
+    }
     
     // Store review
     if ([[NCUtility sharedInstance] isSimulatorOrTestFlight] == false) {
@@ -254,6 +243,9 @@ PKPushRegistry *pushRegistry;
     
     NSLog(@"[LOG] Read active directory");
     [self.activeMain readFileReloadFolder];
+    
+    NSLog(@"[LOG] Required unsubscribing / subscribing");
+    [self pushNotification];
 }
 
 //
@@ -411,14 +403,17 @@ PKPushRegistry *pushRegistry;
     if (self.activeAccount.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
         return;
     
-    NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
-    
-    if (![token isEqualToString:self.pushKitToken]) {
-        if (token != nil) {
-            // unsubscribing + subscribing
-            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl withSubscribing:true];
-        } else {
-            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl];
+    for (tableAccount *result in [[NCManageDatabase sharedInstance] getAllAccount]) {
+        
+        NSString *token = [CCUtility getPushNotificationToken:result.account];
+        
+        if (![token isEqualToString:self.pushKitToken]) {
+            if (token != nil) {
+                // unsubscribing + subscribing
+                [self unsubscribingNextcloudServerPushNotification:result.account url:result.url withSubscribing:true];
+            } else {
+                [self subscribingNextcloudServerPushNotification:result.account url:result.url];
+            }
         }
     }
 }
@@ -500,86 +495,6 @@ PKPushRegistry *pushRegistry;
     completionHandler();
 }
 
-/*
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
-    NSLog(@"Push notification: %@", userInfo);
-    
-    NSUInteger fetchResult = UIBackgroundFetchResultNoData;
-    NSString *message = [userInfo objectForKey:@"subject"];
-    
-    if (message) {
-        for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
-            if ([CCUtility getPushNotificationPrivateKey:result.account]) {
-                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:result.account]];
-                if (decryptedMessage) {
-                    
-                    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-                    
-                    NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                    
-                    NSString *app = [json objectForKey:@"app"];
-                    NSString *subject = [json objectForKey:@"subject"];
-                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
-                    
-                    if ([app isEqualToString:@"spreed"]) {
-                        content.title = @"Nextcloud Talk";
-                    } else {
-                        content.title = app.capitalizedString;
-                    }
-                    content.title = [NSString stringWithFormat:@"%@ (%@)", content.title, result.account];
-                    
-                    if (subject) {
-                        content.body = subject;
-                    } else {
-                        content.body = @"Nextcloud notification";
-                    }
-                    
-                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
-                        //
-                    }];
-                    
-                    content.sound = [UNNotificationSound defaultSound];
-                    
-                    NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
-                    
-                    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
-                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-                    
-                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-                    
-                    fetchResult = UIBackgroundFetchResultNewData;
-                    break;
-                }
-            }
-        }
-    }
-    
-    completionHandler(fetchResult);
-}
-
-- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken
-{
-
-    // test
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
-    
-    NSLog(@"FCM registration token: %@", fcmToken);
-    
-    NSString *token = [CCUtility getPushNotificationToken:self.activeAccount];
-    if (![token isEqualToString:fcmToken]) {
-        if (token != nil) {
-            // unsubscribing + subscribing
-            [self unsubscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
-        } else {
-            [self subscribingNextcloudServerPushNotification:self.activeAccount url:self.activeUrl token:fcmToken];
-        }
-    }
-}
-*/
-
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type
 {
     self.pushKitToken = [self stringWithDeviceToken:credentials.token];
@@ -592,7 +507,8 @@ PKPushRegistry *pushRegistry;
     NSString *message = [payload.dictionaryPayload objectForKey:@"subject"];
     
     if (message) {
-        for (tableAccount *result in  [[NCManageDatabase sharedInstance] getAllAccount]) {
+        NSArray *results = [[NCManageDatabase sharedInstance] getAllAccount];
+        for (tableAccount *result in results) {
             if ([CCUtility getPushNotificationPrivateKey:result.account]) {
                 NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:result.account]];
                 if (decryptedMessage) {
@@ -614,7 +530,12 @@ PKPushRegistry *pushRegistry;
                     } else {
                         content.title = app.capitalizedString;
                     }
-                    content.title = [NSString stringWithFormat:@"%@ - %@ (%@)", content.title, result.displayName, domain];
+                    if (results.count == 1) {
+                        content.title = content.title;
+                    } else {
+                        content.title = content.title;
+                        content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain];
+                    }
                     if (subject) {
                         content.body = subject;
                     } else {
@@ -1669,6 +1590,14 @@ PKPushRegistry *pushRegistry;
             [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:nil];
             [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:nil];
             [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:nil];
+        }
+    }
+    
+    if (([actualVersion compare:@"2.23.4" options:NSNumericSearch] == NSOrderedAscending)) {
+        NSArray *records = [[NCManageDatabase sharedInstance] getAllAccount];
+        for (tableAccount *record in records) {
+            [CCUtility setPassword:record.account password:record.password];
+            [[NCManageDatabase sharedInstance] removePasswordAccount:record.account];
         }
     }
 

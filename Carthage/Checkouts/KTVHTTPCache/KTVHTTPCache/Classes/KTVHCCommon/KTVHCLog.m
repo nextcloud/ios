@@ -7,15 +7,15 @@
 //
 
 #import "KTVHCLog.h"
-#import "KTVHCPathTools.h"
+#import "KTVHCPathTool.h"
 
 #import <UIKit/UIKit.h>
 
 @interface KTVHCLog ()
 
-@property (nonatomic, strong) NSLock * lock;
-@property (nonatomic, strong) NSFileHandle * writingHandle;
-@property (nonatomic, strong) NSMutableArray <NSError *> * internalErrors;
+@property (nonatomic, strong) NSLock *lock;
+@property (nonatomic, strong) NSFileHandle *writingHandle;
+@property (nonatomic, strong) NSMutableDictionary<NSURL *, NSError *> *internalErrors;
 
 @end
 
@@ -23,7 +23,7 @@
 
 + (instancetype)log
 {
-    static KTVHCLog * obj = nil;
+    static KTVHCLog *obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         obj = [[self alloc] init];
@@ -33,54 +33,49 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.consoleLogEnable = NO;
         self.recordLogEnable = NO;
         self.lock = [[NSLock alloc] init];
-        self.internalErrors = [NSMutableArray array];
+        self.internalErrors = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
 - (void)addRecordLog:(NSString *)log
 {
-    if (!self.recordLogEnable)
-    {
+    if (!self.recordLogEnable) {
         return;
     }
-    if (log.length <= 0)
-    {
+    if (log.length <= 0) {
         return;
     }
     [self.lock lock];
-    NSString * string = [NSString stringWithFormat:@"%@  %@\n", [NSDate date], log];
-    NSData * data = [string dataUsingEncoding:NSUTF8StringEncoding];
-    if (!self.writingHandle)
-    {
-        [KTVHCPathTools deleteFileAtPath:[KTVHCPathTools logPath]];
-        [KTVHCPathTools createFileAtPath:[KTVHCPathTools logPath]];
-        self.writingHandle = [NSFileHandle fileHandleForWritingAtPath:[KTVHCPathTools logPath]];
+    NSString *string = [NSString stringWithFormat:@"%@  %@\n", [NSDate date], log];
+    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    if (!self.writingHandle) {
+        [KTVHCPathTool deleteFileAtPath:[KTVHCPathTool logPath]];
+        [KTVHCPathTool createFileAtPath:[KTVHCPathTool logPath]];
+        self.writingHandle = [NSFileHandle fileHandleForWritingAtPath:[KTVHCPathTool logPath]];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
     }
     [self.writingHandle writeData:data];
     [self.lock unlock];
 }
 
-- (NSString *)recordLogFilePath
+- (NSURL *)recordLogFileURL
 {
-    NSString * path = nil;
+    NSURL *URL = nil;
     [self.lock lock];
-    long long size = [KTVHCPathTools sizeOfItemAtPath:[KTVHCPathTools logPath]];
-    if (size > 0)
-    {
-        path = [KTVHCPathTools logPath];
+    long long size = [KTVHCPathTool sizeAtPath:[KTVHCPathTool logPath]];
+    if (size > 0) {
+        URL = [NSURL fileURLWithPath:[KTVHCPathTool logPath]];
     }
     [self.lock unlock];
-    return path;
+    return URL;
 }
 
-- (void)deleteRecordLog
+- (void)deleteRecordLogFile
 {
     [self.lock lock];
     [self.writingHandle synchronizeFile];
@@ -90,41 +85,47 @@
     [self.lock unlock];
 }
 
-- (NSError *)lastError
+- (void)addError:(NSError *)error forURL:(NSURL *)URL
 {
-    if (self.internalErrors.count > 0)
-    {
-        return self.internalErrors.lastObject;
+    if (!URL || ![error isKindOfClass:[NSError class]]) {
+        return;
     }
-    return nil;
+    [self.lock lock];
+    [self.internalErrors setObject:error forKey:URL];
+    [self.lock unlock];
 }
 
-- (NSArray<NSError *> *)allErrors
+- (NSDictionary<NSURL *,NSError *> *)errors
 {
-    if (self.internalErrors.count > 0)
-    {
-        return [self.internalErrors copy];
-    }
-    return nil;
+    [self.lock lock];
+    NSDictionary<NSURL *,NSError *> *ret = [self.internalErrors copy];
+    [self.lock unlock];
+    return ret;
 }
 
-- (void)addError:(NSError *)error
+- (NSError *)errorForURL:(NSURL *)URL
 {
-    if (error && [error isKindOfClass:[NSError class]])
-    {
-        if (self.internalErrors.count >= 20)
-        {
-            [self.internalErrors removeObjectAtIndex:0];
-        }
-        [self.internalErrors addObject:error];
+    if (!URL) {
+        return nil;
     }
+    [self.lock lock];
+    NSError *ret = [self.internalErrors objectForKey:URL];
+    [self.lock unlock];
+    return ret;
+}
+
+- (void)cleanErrorForURL:(NSURL *)URL
+{
+    [self.lock lock];
+    [self.internalErrors removeObjectForKey:URL];
+    [self.lock unlock];
 }
 
 #pragma mark - UIApplicationWillTerminateNotification
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
-    [self deleteRecordLog];
+    [self deleteRecordLogFile];
 }
 
 @end

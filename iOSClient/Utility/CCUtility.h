@@ -150,6 +150,17 @@
 + (NSInteger)getMediaWidthImage;
 + (void)setMediaWidthImage:(NSInteger)width;
 
++ (BOOL)getDisableCrashservice;
++ (void)setDisableCrashservice:(BOOL)disable;
+
++ (void)setPassword:(NSString *)account password:(NSString *)password;
++ (NSString *)getPassword:(NSString *)account;
+
++ (void)setHCBusinessType:(NSString *)professions;
++ (NSString *)getHCBusinessType;
+
++ (NSData *)getDatabaseEncryptionKey;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
@@ -236,5 +247,6 @@
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
 + (NSString *)URLEncodeStringFromString:(NSString *)string;
++ (NSString*)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
 
 @end

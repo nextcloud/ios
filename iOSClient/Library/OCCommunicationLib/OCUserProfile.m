@@ -30,12 +30,20 @@
     self = [super init];
     
     self.id = @"";
+    
     self.address = @"";
+    self.businessSize = @"";
+    self.businessType = @"";
+    self.city = @"";
+    self.company = @"";
+    self.country = @"";
     self.displayName = @"";
     self.email = @"";
     self.phone = @"";
+    self.role = @"";
     self.twitter = @"";
     self.webpage = @"";
+    self.zip = @"";
     
     return self;
 }

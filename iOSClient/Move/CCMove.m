@@ -50,15 +50,15 @@
 {
     [super viewDidLoad];
     
-    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if (recordAccount) {
+    if (tableAccount) {
         
-        activeAccount = recordAccount.account;
-        activePassword = recordAccount.password;
-        activeUrl = recordAccount.url;
-        activeUser = recordAccount.user;
-        activeUserID = recordAccount.userID;
+        activeAccount = tableAccount.account;
+        activePassword = [CCUtility getPassword:tableAccount.account];
+        activeUrl = tableAccount.url;
+        activeUser = tableAccount.user;
+        activeUserID = tableAccount.userID;
         
     } else {
         

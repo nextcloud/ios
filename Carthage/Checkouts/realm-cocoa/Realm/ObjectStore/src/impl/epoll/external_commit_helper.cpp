@@ -18,6 +18,7 @@
 
 #include "impl/external_commit_helper.hpp"
 #include "impl/realm_coordinator.hpp"
+#include "util/fifo.hpp"
 
 #include <realm/util/assert.hpp>
 #include <realm/group_shared_options.hpp>
@@ -29,8 +30,6 @@
 #include <stdlib.h>
 #include <sys/epoll.h>
 #include <sys/time.h>
-#include <sys/stat.h>
-#include <system_error>
 #include <unistd.h>
 
 #ifdef __ANDROID__
@@ -115,36 +114,35 @@ ExternalCommitHelper::ExternalCommitHelper(RealmCoordinator& parent)
 : m_parent(parent)
 {
     std::string path;
-    std::string temporary_dir = SharedGroupOptions::get_sys_tmp_dir();
-    if (temporary_dir.empty()) {
-        path = parent.get_path() + ".note";
-    } else {
-        // The fifo is always created in the temporary directory if it is provided.
-        // See https://github.com/realm/realm-java/issues/3140
-        // We create .note file on the temp directory always for simplicity no matter where the Realm file is.
-        // Hash collisions are okay here because they just result in doing extra work.
-        path = util::format("%1%2_realm.note", temporary_dir, std::hash<std::string>()(parent.get_path()));
-    }
+    std::string temp_dir = util::normalize_dir(parent.get_config().fifo_files_fallback_path);
+    std::string sys_temp_dir = util::normalize_dir(SharedGroupOptions::get_sys_tmp_dir());
 
-    // Create and open the named pipe
-    int ret = mkfifo(path.c_str(), 0600);
-    if (ret == -1) {
-        int err = errno;
-        // the fifo already existing isn't an error
-        if (err != EEXIST) {
-            // Workaround for a mkfifo bug on Blackberry devices:
-            // When the fifo already exists, mkfifo fails with error ENOSYS which is not correct.
-            // In this case, we use stat to check if the path exists and it is a fifo.
-            struct stat stat_buf;
-            if (err == ENOSYS && stat(path.c_str(), &stat_buf) == 0) {
-                if ((stat_buf.st_mode & S_IFMT) != S_IFIFO) {
-                    throw std::runtime_error(path + " exists and it is not a fifo.");
-                }
-            }
-            else {
-                throw std::system_error(err, std::system_category());
-            }
-        }
+    // Object Store needs to create a named pipe in order to coordinate notifications.
+    // This can be a problem on some file systems (e.g. FAT32) or due to security policies in SELinux. Most commonly
+    // it is a problem when saving Realms on external storage: https://stackoverflow.com/questions/2740321/how-to-create-named-pipe-mkfifo-in-android
+    //
+    // For this reason we attempt to create this file in a temporary location known to be safe to write these files.
+    //
+    // In order of priority we attempt to write the file in the following locations:
+    //  1) Next to the Realm file itself
+    //  2) A location defined by `Realm::Config::fifo_files_fallback_path`
+    //  3) A location defined by `SharedGroupOptions::set_sys_tmp_dir()`
+    //
+    // Core has a similar policy for its named pipes.
+    //
+    // Also see https://github.com/realm/realm-java/issues/3140
+    // Note that hash collisions are okay here because they just result in doing extra work instead of resulting
+    // in correctness problems.
+
+    path = parent.get_path() + ".note";
+    bool fifo_created = util::try_create_fifo(path);
+    if (!fifo_created && !temp_dir.empty()) {
+        path = util::format("%1realm_%2.note", temp_dir, std::hash<std::string>()(parent.get_path()));
+        fifo_created = util::try_create_fifo(path);
+    }
+    if (!fifo_created && !sys_temp_dir.empty()) {
+        path = util::format("%1realm_%2.note", sys_temp_dir, std::hash<std::string>()(parent.get_path()));
+        util::create_fifo(path);
     }
 
     m_notify_fd = open(path.c_str(), O_RDWR);
@@ -154,7 +152,7 @@ ExternalCommitHelper::ExternalCommitHelper(RealmCoordinator& parent)
 
     // Make writing to the pipe return -1 when the pipe's buffer is full
     // rather than blocking until there's space available
-    ret = fcntl(m_notify_fd, F_SETFL, O_NONBLOCK);
+    int ret = fcntl(m_notify_fd, F_SETFL, O_NONBLOCK);
     if (ret == -1) {
         throw std::system_error(errno, std::system_category());
     }

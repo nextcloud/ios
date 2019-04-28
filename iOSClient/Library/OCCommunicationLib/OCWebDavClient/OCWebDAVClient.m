@@ -39,7 +39,6 @@
 #import "OCFrameworkConstants.h"
 #import "OCCommunication.h"
 #import "UtilsFramework.h"
-#import "AFURLSessionManager.h"
 #import "NSString+Encode.h"
 #import "OCConstants.h"
 
@@ -48,7 +47,6 @@
 #define k_server_information_json @"status.php"
 #define k_api_header_request @"OCS-APIREQUEST"
 #define k_group_sharee_type 1
-
 
 NSString const *OCWebDAVContentTypeKey		= @"getcontenttype";
 NSString const *OCWebDAVETagKey				= @"getetag";
@@ -1323,6 +1321,50 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:path parameters:nil  timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
     
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    
+    [operation resume];
+}
+
+#pragma mark - Third Parts
+
+- (void)getHCUserProfile:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id responseObject, NSError *error))failure {
+    
+    _requestMethod = @"GET";
+    
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    
+    [operation resume];
+}
+
+- (void)putHCUserProfile:(NSString*)serverPath data:(NSString *)data onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id responseObject, NSError *error))failure {
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"POST";
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    [request setHTTPBody:[[NSString stringWithFormat: @"data=%@",data] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    
+    [operation resume];
+}
+
+- (void)getHCFeatures:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id responseObject, NSError *error))failure {
+    
+    _requestMethod = @"GET";
+    
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     

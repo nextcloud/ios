@@ -23,7 +23,7 @@
 
 import Foundation
 import TLPhotoPicker
-import Zip
+import ZIPFoundation
 
 //MARK: - Main Common
 
@@ -97,9 +97,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
     }
     
-    @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool) {
+    @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool, uploadStatusForcedStart: Bool) {
         
         var actionReloadDatasource = k_action_NULL
+        var metadata = metadata
         
         if metadata.session.count == 0 {
             return
@@ -156,6 +157,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if metadata.session.count > 0 && metadata.session.contains("upload") {
                 for task in uploadTasks {
                     if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        if uploadStatusForcedStart {
+                            metadata.status = Int(k_metadataStatusUploadForcedStart)
+                            metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+                        }
                         task.cancel()
                         cancel = true
                     }
@@ -199,7 +204,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     
                     // Cancel Task
                     if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                        self.cancelTransferMetadata(metadata, reloadDatasource: false)
+                        self.cancelTransferMetadata(metadata, reloadDatasource: false, uploadStatusForcedStart: false)
                     }
                 }
             }
@@ -475,14 +480,15 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(metadata.fileID) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
+                    cell.imageVisualEffect.isHidden = false
+                    cell.imageVisualEffect.alpha = 0.4
                 } else {
                     cell.imageSelect.isHidden = true
-                    cell.backgroundView = nil
+                    cell.imageVisualEffect.isHidden = true
                 }
             } else {
                 cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
+                cell.imageVisualEffect.isHidden = true
             }
         }
     }
@@ -1093,7 +1099,7 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
             
         let tabViewControllers = tabBarController.viewControllers!
-        guard let toIndex = tabViewControllers.index(of: viewController) else {
+        guard let toIndex = tabViewControllers.firstIndex(of: viewController) else {
                 
             if let vc = viewController as? UINavigationController {
                 vc.popToRootViewController(animated: true);
@@ -1112,7 +1118,7 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         let tabViewControllers = viewControllers!
         let fromView = selectedViewController!.view!
         let toView = tabViewControllers[toIndex].view!
-        let fromIndex = tabViewControllers.index(of: selectedViewController!)
+        let fromIndex = tabViewControllers.firstIndex(of: selectedViewController!)
             
         guard fromIndex != toIndex else {return}
             
@@ -1224,12 +1230,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
                     do {
-                        Zip.addCustomFileExtension("imi")
-                        
                         let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
                         let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
                         
-                        try Zip.unzipFile(source, destination: destination, overwrite: true, password: nil)
+                        try FileManager().unzipItem(at: source, to: destination)
                         
                         let nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
                         let pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
@@ -1238,9 +1242,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         if let fileHandle = FileHandle(forReadingAtPath: annoPath) {
                             let data = fileHandle.readData(ofLength: 4)
                             if data.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                                Zip.addCustomFileExtension("imm")
                                 do {
-                                    try Zip.unzipFile(annoPath.url, destination: pathArchiveImagemeter.url, overwrite: true, password: nil)
+                                    try FileManager().unzipItem(at: annoPath.url, to: pathArchiveImagemeter.url)
                                 } catch {
                                     appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                                     return

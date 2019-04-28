@@ -15,9 +15,9 @@
 
 + (instancetype)server;
 
-@property (nonatomic, assign, readonly) BOOL running;
+@property (nonatomic, readonly, getter=isRunning) BOOL running;
 
-- (void)start:(NSError **)error;
+- (BOOL)start:(NSError **)error;
 - (void)stop;
 
 - (NSURL *)URLWithOriginalURL:(NSURL *)URL;

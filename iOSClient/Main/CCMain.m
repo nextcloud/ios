@@ -1213,7 +1213,7 @@
         if ([CCUtility isEndToEndEnabled:account]) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                 NSString *metadata;
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata fileID:metadataFolderFileID user:tableAccount.user userID:tableAccount.userID password:tableAccount.password url:tableAccount.url];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata fileID:metadataFolderFileID user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (error) {
                         if (error.code != kOCErrorServerPathNotFound)
@@ -1851,7 +1851,7 @@
             
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataSection.fileID]];
             if (metadata)
-                [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
+                [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true uploadStatusForcedStart:false];
         }
     }
 }
@@ -2293,8 +2293,7 @@
     if (tableAccount) {
             
         // LOGIN
-            
-        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
     
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];

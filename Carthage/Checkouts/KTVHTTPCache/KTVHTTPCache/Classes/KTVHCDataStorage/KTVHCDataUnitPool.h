@@ -21,7 +21,7 @@
 
 - (long long)totalCacheLength;
 
-- (NSArray <KTVHCDataCacheItem *> *)allCacheItem;
+- (NSArray<KTVHCDataCacheItem *> *)allCacheItem;
 - (KTVHCDataCacheItem *)cacheItemWithURL:(NSURL *)URL;
 
 - (void)deleteUnitWithURL:(NSURL *)URL;

@@ -568,6 +568,57 @@
     [UICKeyChainStore setString:widthString forKey:@"mediaWidthImage" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getDisableCrashservice
+{
+    return [[UICKeyChainStore stringForKey:@"crashservice" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setDisableCrashservice:(BOOL)disable
+{
+    NSString *sDisable = (disable) ? @"true" : @"false";
+    [UICKeyChainStore setString:sDisable forKey:@"crashservice" service:k_serviceShareKeyChain];
+}
+
++ (void)setPassword:(NSString *)account password:(NSString *)password
+{
+    NSString *key = [@"password" stringByAppendingString:account];
+    [UICKeyChainStore setString:password forKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPassword:(NSString *)account
+{
+    NSString *key = [@"password" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setHCBusinessType:(NSString *)professions
+{
+    [UICKeyChainStore setString:professions forKey:@"businessType" service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getHCBusinessType
+{
+    return [UICKeyChainStore stringForKey:@"businessType" service:k_serviceShareKeyChain];
+}
+
++ (NSData *)getDatabaseEncryptionKey
+{
+    NSData *key = [UICKeyChainStore dataForKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+    if (key == nil) {
+        NSMutableData *key = [NSMutableData dataWithLength:64];
+        (void)SecRandomCopyBytes(kSecRandomDefault, key.length, (uint8_t *)key.mutableBytes);
+        [UICKeyChainStore setData:key forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+        return key;
+    } else {
+        return key;
+    }
+}
+
++ (void)setDatabaseEncryptionKey:(NSData *)data
+{
+    [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
@@ -588,8 +639,9 @@
 + (NSString *)getUserAgent
 {
     NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    NSString *userAgent = [[NCBrandOptions sharedInstance] userAgent];
     
-    return [NSString stringWithFormat:@"%@%@",@"Mozilla/5.0 (iOS) Nextcloud-iOS/",appVersion];
+    return [NSString stringWithFormat:@"Mozilla/5.0 (iOS) %@/%@", userAgent, appVersion];
 }
 
 + (NSString *)dateDiff:(NSDate *) convertedDate
@@ -1503,6 +1555,31 @@
     CFStringRef str = (__bridge CFStringRef)string;
     CFStringEncoding encoding = kCFStringEncodingUTF8;
     return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, str, NULL, charset, encoding));
+}
+
++ (NSString*)hexRepresentation:(NSData *)data spaces:(BOOL)spaces
+{
+    const unsigned char* bytes = (const unsigned char*)[data bytes];
+    NSUInteger nbBytes = [data length];
+    //If spaces is true, insert a space every this many input bytes (twice this many output characters).
+    static const NSUInteger spaceEveryThisManyBytes = 4UL;
+    //If spaces is true, insert a line-break instead of a space every this many spaces.
+    static const NSUInteger lineBreakEveryThisManySpaces = 4UL;
+    const NSUInteger lineBreakEveryThisManyBytes = spaceEveryThisManyBytes * lineBreakEveryThisManySpaces;
+    NSUInteger strLen = 2*nbBytes + (spaces ? nbBytes/spaceEveryThisManyBytes : 0);
+    
+    NSMutableString* hex = [[NSMutableString alloc] initWithCapacity:strLen];
+    for(NSUInteger i=0; i<nbBytes; ) {
+        [hex appendFormat:@"%02X", bytes[i]];
+        //We need to increment here so that the every-n-bytes computations are right.
+        ++i;
+        
+        if (spaces) {
+            if (i % lineBreakEveryThisManyBytes == 0) [hex appendString:@"\n"];
+            else if (i % spaceEveryThisManyBytes == 0) [hex appendString:@" "];
+        }
+    }
+    return hex;
 }
 
 @end

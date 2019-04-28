@@ -22,9 +22,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
-#import "AFURLSessionManager.h"
 #import "CCNetworking.h"
+@import AFNetworking;
 
 @interface OCNetworking : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate>
 
@@ -102,6 +101,12 @@
 
 - (void)listingTrashWithAccount:(NSString *)account path:(NSString *)path serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
 - (void)emptyTrashWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+
+#pragma mark ===== Third Parts =====
+
+- (void)getHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, OCUserProfile *userProfile, NSString *message, NSInteger errorCode))completion;
+- (void)putHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl address:(NSString *)address businesssize:(NSString *)businesssize businesstype:(NSString *)businesstype city:(NSString *)city company:(NSString *)company  country:(NSString *)country displayname:(NSString *)displayname email:(NSString *)email phone:(NSString *)phone role_:(NSString *)role_ twitter:(NSString *)twitter website:(NSString *)website zip:(NSString *)zip completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)getHCFeaturesWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, HCFeatures *features, NSString *message, NSInteger errorCode))completion;
 
 @end
 

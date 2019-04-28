@@ -208,10 +208,10 @@ open class DropdownMenu: UIView {
             }
         }
         
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant:0)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: tableViewHeight)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 0)])
-        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: 0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant:0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: tableViewHeight)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 0)])
+        NSLayoutConstraint.activate([NSLayoutConstraint.init(item: tableView as Any, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: 0)])
     }
     
     fileprivate func setupTopSeperatorView() {

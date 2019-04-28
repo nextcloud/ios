@@ -260,8 +260,8 @@ macro(build_realm_core)
     set(core_release_binary_dir "${SOURCE_DIR}/build.release")
     set(core_library_debug "${core_debug_binary_dir}/src/realm/${CMAKE_STATIC_LIBRARY_PREFIX}realm-dbg${CMAKE_STATIC_LIBRARY_SUFFIX}")
     set(core_library_release "${core_release_binary_dir}/src/realm/${CMAKE_STATIC_LIBRARY_PREFIX}realm${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    set(core_parser_library_debug "${core_debug_binary_dir}/src/realm/${CMAKE_STATIC_LIBRARY_PREFIX}realm-parser-dbg${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    set(core_parser_library_release "${core_release_binary_dir}/src/realm/${CMAKE_STATIC_LIBRARY_PREFIX}realm-parser${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(core_parser_library_debug "${core_debug_binary_dir}/src/realm/parser/${CMAKE_STATIC_LIBRARY_PREFIX}realm-parser-dbg${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(core_parser_library_release "${core_release_binary_dir}/src/realm/parser/${CMAKE_STATIC_LIBRARY_PREFIX}realm-parser${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     ExternalProject_Add_Step(realm-core ensure-libraries
         DEPENDEES build

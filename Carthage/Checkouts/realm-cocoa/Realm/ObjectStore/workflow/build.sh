@@ -27,7 +27,7 @@ if [ "${flavor}" = "android" ]; then
 fi
 
 if [ "${sync}" = "sync" ]; then
-    cmake_flags="${cmake_flags} -DREALM_ENABLE_SYNC=1"
+    cmake_flags="${cmake_flags} -DREALM_ENABLE_SYNC=1 -DREALM_ENABLE_SERVER=1"
 fi
 
 cmake ${cmake_flags} ..

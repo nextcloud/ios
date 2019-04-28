@@ -80,8 +80,9 @@
 
 #define k_maxErrorAutoUploadAll                         100
 
-// Name Default DB
+// Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
+#define k_databaseSchemaVersion                         49
 
 // Intro selector
 #define k_intro_login                                   0
@@ -165,6 +166,7 @@
 #define k_metadataStatusInUpload                        7
 #define k_metadataStatusUploading                       8
 #define k_metadataStatusUploadError                     9
+#define k_metadataStatusUploadForcedStart               10
 
 // Timer
 #define k_timerProcessAutoDownloadUpload                5
@@ -273,9 +275,6 @@
 #define k_action_MOD                                    1
 #define k_action_DEL                                    2
 
-// Nextcloud unsupported
-#define k_nextcloud_unsupported                         11
-
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
@@ -292,6 +291,9 @@
 #define k_layout_view_richdocument                      @"LayoutRichdocument"
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
+
+// Nextcloud unsupported
+#define k_nextcloud_unsupported                         13
 
 // Nextcloud version
 #define k_nextcloud_version_12_0                        12

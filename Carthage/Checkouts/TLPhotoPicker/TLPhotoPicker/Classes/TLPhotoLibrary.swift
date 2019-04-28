@@ -34,13 +34,13 @@ class TLPhotoLibrary {
         options.progressHandler = progressBlock
         let scale = min(UIScreen.main.scale,2)
         let targetSize = CGSize(width: size.width*scale, height: size.height*scale)
-        let requestId = self.imageManager.requestLivePhoto(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { (livePhoto, info) in
+        let requestID = self.imageManager.requestLivePhoto(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { (livePhoto, info) in
             let complete = (info?["PHImageResultIsDegradedKey"] as? Bool) == false
             if let livePhoto = livePhoto {
                 completionBlock(livePhoto,complete)
             }
         }
-        return requestId
+        return requestID
     }
     
     @discardableResult
@@ -49,10 +49,10 @@ class TLPhotoLibrary {
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .automatic
         options.progressHandler = progressBlock
-        let requestId = self.imageManager.requestPlayerItem(forVideo: asset, options: options, resultHandler: { playerItem, info in
+        let requestID = self.imageManager.requestPlayerItem(forVideo: asset, options: options, resultHandler: { playerItem, info in
             completionBlock(playerItem,info)
         })
-        return requestId
+        return requestID
     }
     
     @discardableResult
@@ -67,17 +67,17 @@ class TLPhotoLibrary {
         }
         let scale = min(UIScreen.main.scale,2)
         let targetSize = CGSize(width: size.width*scale, height: size.height*scale)
-        let requestId = self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { image, info in
+        let requestID = self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { image, info in
             let complete = (info?["PHImageResultIsDegradedKey"] as? Bool) == false
             if let image = image {
                 completionBlock(image,complete)
             }
         }
-        return requestId
+        return requestID
     }
     
-    func cancelPHImageRequest(requestId: PHImageRequestID) {
-        self.imageManager.cancelImageRequest(requestId)
+    func cancelPHImageRequest(requestID: PHImageRequestID) {
+        self.imageManager.cancelImageRequest(requestID)
     }
     
     @discardableResult
@@ -91,14 +91,14 @@ class TLPhotoLibrary {
         options.progressHandler = { (progress,error,stop,info) in
             progressBlock(progress)
         }
-        let requestId = PHCachingImageManager().requestImageData(for: asset, options: options) { (imageData, dataUTI, orientation, info) in
+        let requestID = PHCachingImageManager().requestImageData(for: asset, options: options) { (imageData, dataUTI, orientation, info) in
             if let data = imageData,let _ = info {
                 completionBlock(UIImage(data: data))
             }else{
                 completionBlock(nil)//error
             }
         }
-        return requestId
+        return requestID
     }
     
     @discardableResult

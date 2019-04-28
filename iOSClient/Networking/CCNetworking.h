@@ -23,11 +23,8 @@
 
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
-
 #import "OCCommunication.h"
 #import "OCFrameworkConstants.h"
-#import "AFURLSessionManager.h"
-#import "TWMessageBarManager.h"
 #import "PHAsset+Utility.h"
 #import "CCExifGeo.h"
 #import "CCGraphics.h"

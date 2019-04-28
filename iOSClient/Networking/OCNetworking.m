@@ -261,7 +261,7 @@
         completion(account, 0, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     }
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSURLSessionTask *sessionTask = [communication downloadFileSession:fileNameServerUrl toDestiny:fileNameLocalPath defaultPriority:YES onCommunication:communication progress:^(NSProgress *progress) {
@@ -330,7 +330,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
 
     NSURLSessionTask *sessionTask = [communication downloadFileSession:url toDestiny:fileNameLocalPath defaultPriority:YES onCommunication:communication progress:^(NSProgress *progress) {
@@ -371,7 +371,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSURLSessionTask *sessionTask = [communication uploadFileSession:fileNameLocalPath toDestiny:fileNameServerUrl onCommunication:communication progress:^(NSProgress *progress) {
@@ -430,7 +430,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication readFolder:serverUrl depth:depth withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
@@ -542,7 +542,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication readFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
@@ -600,7 +600,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication createFolder:path onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -652,7 +652,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication deleteFileOrFolder:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -685,7 +685,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication moveFileOrFolder:fileName toDestiny:fileNameTo onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -753,7 +753,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", fileName] depth:depth lteDateLastModified:lteDateLastModifiedString gteDateLastModified:gteDateLastModifiedString contentType:contentType withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
@@ -865,7 +865,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getRemotePreviewByServer:tableAccount.url ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:tableAccount.url] withWidth:width andHeight:height andA:1 andMode:@"cover" path:@"" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
         
@@ -899,7 +899,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getRemotePreviewByServer:tableAccount.url ofFilePath:@"" withWidth:0 andHeight:0 andA:0 andMode:@"" path:serverPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
         
@@ -941,7 +941,7 @@
         
         OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
         
-        [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+        [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
         [communication setUserAgent:[CCUtility getUserAgent]];
         [communication getRemotePreviewTrashByServer:tableAccount.url ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
             
@@ -987,7 +987,7 @@
 
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication listingFavorites:path folder:@"" withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
@@ -1066,7 +1066,7 @@
 
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication settingFavoriteServer:server andFileOrFolderPath:fileName favorite:favorite withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
         
@@ -1103,7 +1103,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication readSharedByServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
@@ -1136,7 +1136,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication shareFileOrFolderByServer:[tableAccount.url stringByAppendingString:@"/"] andFileOrFolderPath:[fileName encodeString:NSUTF8StringEncoding] andPassword:[password encodeString:NSUTF8StringEncoding] andPermission:permission andHideDownload:hideDownload onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
@@ -1171,7 +1171,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication shareWith:userOrGroup shareeType:shareeType inServer:[tableAccount.url stringByAppendingString:@"/"] andFileOrFolderPath:[fileName encodeString:NSUTF8StringEncoding] andPermissions:permission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -1204,7 +1204,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication updateShare:shareID ofServerPath:[tableAccount.url stringByAppendingString:@"/"] withPasswordProtect:[password encodeString:NSUTF8StringEncoding] andExpirationTime:expirationTime andPermissions:permission andHideDownload:hideDownload onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -1237,7 +1237,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication unShareFileOrFolderByServer:[tableAccount.url stringByAppendingString:@"/"] andIdRemoteShared:shareID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -1270,7 +1270,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication searchUsersAndGroupsWith:searchString forPage:1 with:50 ofServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer) {
         
@@ -1303,7 +1303,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getSharePermissionsFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
         
@@ -1328,7 +1328,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== API =====
+#pragma mark ===== VAR =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)getActivityWithAccount:(NSString *)account since:(NSInteger)since limit:(NSInteger)limit link:(NSString *)link completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
@@ -1347,7 +1347,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getActivityServer:[tableAccount.url stringByAppendingString:@"/"] since:since limit:limit previews:previews link:link onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
@@ -1380,7 +1380,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getExternalSitesServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
         
@@ -1404,43 +1404,6 @@
     }];
 }
 
-/*
-- (void)middlewarePing
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getMiddlewarePing:_metadataNet.serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
-        
-        [self complete];
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
-            else
-                [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        }
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        [self complete];
-    }];
-    
-}
-*/
-
 - (void)getNotificationWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *listOfNotifications, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
@@ -1450,7 +1413,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getNotificationServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
@@ -1483,7 +1446,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication setNotificationServer:serverUrl type:type onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -1516,7 +1479,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getCapabilitiesOfServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
         
@@ -1549,7 +1512,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication getUserProfileServer:[tableAccount.url stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
         
@@ -1586,13 +1549,16 @@
     
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
     NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
-    //proxyServerPath = @"http://127.0.0.1:8088";
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
-    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
+#ifdef DEBUG
+    proxyServerPath = @"http://127.0.0.1:8088";
+    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+#endif
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication subscribingNextcloudServerPush:url pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: proxyServerPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
@@ -1645,11 +1611,14 @@
     }
     
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
-    //proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+    
+#ifdef DEBUG
+    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+#endif
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication unsubscribingNextcloudServerPush:url onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
 
@@ -1748,7 +1717,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication createLinkRichdocuments:[tableAccount.url stringByAppendingString:@"/"] fileID:fileIDServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
         
@@ -1780,7 +1749,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication geTemplatesRichdocuments:[tableAccount.url stringByAppendingString:@"/"] typeTemplate:typeTemplate onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer) {
         
@@ -1812,7 +1781,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication createNewRichdocuments:[tableAccount.url stringByAppendingString:@"/"] path:fileName templateID:templateID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer) {
         
@@ -1846,7 +1815,7 @@
 
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication createAssetRichdocuments:[tableAccount.url stringByAppendingString:@"/"] path:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer) {
         
@@ -1883,7 +1852,7 @@
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication listingTrash:[serverUrl stringByAppendingString:path] depth:depth onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
@@ -1960,7 +1929,7 @@
 
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:tableAccount.password];
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication emptyTrash:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -1982,6 +1951,182 @@
         completion(account, message, errorCode);
     }];
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Third Parts =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, OCUserProfile *userProfile, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/settings/%@", serverUrl, tableAccount.userID];
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getHCUserProfile:serverPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
+        
+        completion(account, userProfile, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, nil,message, errorCode);
+    }];
+}
+
+- (void)putHCUserProfileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl address:(NSString *)address businesssize:(NSString *)businesssize businesstype:(NSString *)businesstype city:(NSString *)city company:(NSString *)company  country:(NSString *)country displayname:(NSString *)displayname email:(NSString *)email phone:(NSString *)phone role_:(NSString *)role_ twitter:(NSString *)twitter website:(NSString *)website zip:(NSString *)zip completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    // Create JSON
+    NSMutableDictionary *dataDic = [NSMutableDictionary new];
+    if (address) [dataDic setValue:address forKey:@"address"];
+    if (businesssize) {
+        if ([businesssize isEqualToString:@"1-4"]) { [dataDic setValue:[NSNumber numberWithInt:1] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"5-9"]) { [dataDic setValue:[NSNumber numberWithInt:5] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"10-19"]) { [dataDic setValue:[NSNumber numberWithInt:10] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"20-49"]) { [dataDic setValue:[NSNumber numberWithInt:20] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"50-99"]) { [dataDic setValue:[NSNumber numberWithInt:50] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"100-249"]) { [dataDic setValue:[NSNumber numberWithInt:100] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"250-499"]) { [dataDic setValue:[NSNumber numberWithInt:250] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"500-999"]) { [dataDic setValue:[NSNumber numberWithInt:500] forKey:@"businesssize"]; }
+        else if ([businesssize isEqualToString:@"1000+"]) { [dataDic setValue:[NSNumber numberWithInt:1000] forKey:@"businesssize"]; }
+    }
+    if (businesstype) [dataDic setValue:businesstype forKey:@"businesstype"];
+    if (city) [dataDic setValue:city forKey:@"city"];
+    if (company) [dataDic setValue:company forKey:@"company"];
+    if (country) [dataDic setValue:country forKey:@"country"];
+    if (displayname) [dataDic setValue:displayname forKey:@"displayname"];
+    if (email) [dataDic setValue:email forKey:@"email"];
+    if (phone) [dataDic setValue:phone forKey:@"phone"];
+    if (role_) [dataDic setValue:role_ forKey:@"role"];
+    if (twitter) [dataDic setValue:twitter forKey:@"twitter"];
+    if (website) [dataDic setValue:website forKey:@"website"];
+    if (zip) [dataDic setValue:zip forKey:@"zip"];
+    NSString *data = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:dataDic options:0 error:nil] encoding:NSUTF8StringEncoding];
+
+    NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/settings/%@", serverUrl, tableAccount.userID];
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication putHCUserProfile:serverPath data:data onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        completion(account, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, message, errorCode);
+    }];
+}
+
+- (void)getHCFeaturesWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *account, HCFeatures *features, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    }
+    
+    NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/features/%@", serverUrl, tableAccount.userID];
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+        
+    [communication getHCFeatures:serverPath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, HCFeatures *features, NSString *redirectedServer) {
+        
+        completion(account, features, nil, 0);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, nil,message, errorCode);
+    }];
+}
+
+/*
+ - (void)middlewarePing
+ {
+ OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+ 
+ [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+ [communication setUserAgent:[CCUtility getUserAgent]];
+ 
+ [communication getMiddlewarePing:_metadataNet.serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
+ 
+ [self complete];
+ 
+ } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+ 
+ NSInteger errorCode = response.statusCode;
+ if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+ errorCode = error.code;
+ 
+ // Error
+ if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)]) {
+ 
+ if (errorCode == 503)
+ [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
+ else
+ [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+ }
+ 
+ // Request trusted certificated
+ if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
+ [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+ 
+ [self complete];
+ }];
+ 
+ }
+ */
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  didReceiveChallenge =====
