@@ -71,7 +71,6 @@ class NCBrandColor: NSObject {
     }()
     
     @objc public let brand:                             String = "Nextcloud"
-    @objc public var brandInitials:                     String = "nc"                                               // Don't touch me !!
     @objc public let mailMe:                            String = "ios@nextcloud.com"
     @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2019"
     @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
@@ -114,9 +113,7 @@ class NCBrandColor: NSObject {
         
         if folderBrandAutoUpload != "" {
             folderDefaultAutoUpload = folderBrandAutoUpload
-        }
-        
-        brandInitials = brandInitials.lowercased()
+        }        
     }
 }
 

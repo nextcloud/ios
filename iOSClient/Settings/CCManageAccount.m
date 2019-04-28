@@ -232,8 +232,8 @@
     
     // Section : THIRT PART -------------------------------------------
 
-    if ([NCBrandOptions.sharedInstance.brandInitials isEqualToString:@"hc"]) {
-    
+#if defined(HC)
+
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_job_", nil)];
         [form addFormSection:section];
         
@@ -284,7 +284,7 @@
         row.action.viewControllerClass = [HCEditProfile class];
         if (listAccount.count == 0) row.disabled = @YES;
         [section addFormRow:row];
-    }
+#endif
     
     self.form = form;
     

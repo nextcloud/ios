@@ -377,7 +377,6 @@
 		F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F61BAC56E9003FC03E /* CCCellMain.xib */; };
 		F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */; };
 		F77D49A91DC238E500CDC568 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading.gif */; };
-		F77D9ACB22672CAD00C981EA /* HCEditProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77D9ACA22672CAD00C981EA /* HCEditProfile.swift */; };
 		F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F77EB62A1EC0B50A003F814F /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
@@ -1124,7 +1123,6 @@
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
 		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77D49A71DC238E500CDC568 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
-		F77D9ACA22672CAD00C981EA /* HCEditProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HCEditProfile.swift; sourceTree = "<group>"; };
 		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
 		F781996722636BFA00EBDF6A /* HCFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCFeatures.h; sourceTree = "<group>"; };
@@ -2345,7 +2343,6 @@
 				F7ACE42C1BAC0268006C0017 /* CCManageAccount.h */,
 				F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */,
 				F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */,
-				F77D9ACA22672CAD00C981EA /* HCEditProfile.swift */,
 				F7ACE42E1BAC0268006C0017 /* CCManageAutoUpload.h */,
 				F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */,
 				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
@@ -3635,7 +3632,6 @@
 				F762CAFA1EACB66200B38484 /* XLFormDateCell.m in Sources */,
 				F70022B91EC4C9100080073F /* OCCommunication.m in Sources */,
 				F762CB181EACB66200B38484 /* XLFormValidationStatus.m in Sources */,
-				F77D9ACB22672CAD00C981EA /* HCEditProfile.swift in Sources */,
 				F73B4EF91F470D9100BBEE4B /* LangEsperantoModel.cpp in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
