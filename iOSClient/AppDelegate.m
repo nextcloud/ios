@@ -261,7 +261,19 @@ PKPushRegistry *pushRegistry;
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
-    }    
+    }
+    
+    // Brand
+#if defined(HC)
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    if (account.hcIsTrial == true) {
+        
+        HCTrial *vc = [[UIStoryboard storyboardWithName:@"HCTrial" bundle:nil] instantiateInitialViewController];
+        vc.account = account;
+        
+        [self.window.rootViewController presentViewController:vc animated:YES completion:nil];
+    }
+#endif
 }
 
 //
