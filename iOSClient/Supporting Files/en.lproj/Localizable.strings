@@ -246,7 +246,7 @@
 "_format_compatibility_"        = "Most Compatible";
 "_format_compatibility_footer_" = "\"Most compatible\" will save, when possible, photos as JPEG";
 "_privacy_"                     = "Privacy";
-"_privacy_footer_"              = "Nextcloud iOS uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting "Disable crash reporter" to ON;
+"_privacy_footer_"              = "Nextcloud iOS uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 
