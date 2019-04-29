@@ -1559,6 +1559,25 @@
                     capabilities.richdocumentsDirectEditing = [[richdocuments valueForKey:@"direct_editing"] boolValue];
                     capabilities.richdocumentsMimetypes = [richdocuments valueForKey:@"mimetypes"];
                 }
+                
+                //Handwerkcloud
+                
+                NSDictionary *handwerkcloudDic = [capabilitiesDict valueForKey:@"handwerkcloud"];
+                if (handwerkcloudDic) {
+                    NSNumber *isHandwerkcloudEnabledNumber = (NSNumber*)[handwerkcloudDic valueForKey:@"enabled"];
+                    capabilities.isHandwerkcloudEnabled = isHandwerkcloudEnabledNumber.boolValue;
+                    
+                    if ([handwerkcloudDic valueForKey:@"shop_url"] && ![[handwerkcloudDic valueForKey:@"shop_url"] isEqual:[NSNull null]])
+                        capabilities.HCShopUrl = [handwerkcloudDic valueForKey:@"shop_url"];
+                }
+                
+                //Imagemeter
+                
+                NSDictionary *imagemeterDic = [capabilitiesDict valueForKey:@"imagemeter"];
+                if (imagemeterDic) {
+                    NSNumber *isImagemeterEnabledNumber = (NSNumber*)[imagemeterDic valueForKey:@"enabled"];
+                    capabilities.isImagemeterEnabled = isImagemeterEnabledNumber.boolValue;
+                }
             }
         
             successRequest(response, capabilities, request.redirectedServer);

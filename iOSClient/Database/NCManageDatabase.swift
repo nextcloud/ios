@@ -810,12 +810,15 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.isFileSharingShareByMailEnabled = capabilities.isFileSharingShareByMailEnabled
                 resultCapabilities.isFileSharingShareByMailPassword = capabilities.isFileSharingShareByMailPassword
                 resultCapabilities.isFileSharingShareByMailUploadFilesDrop = capabilities.isFileSharingShareByMailUploadFilesDrop
+                // HC
+                resultCapabilities.isHandwerkcloudEnabled = capabilities.isHandwerkcloudEnabled
+                resultCapabilities.HCShopUrl = capabilities.hcShopUrl
+                // Imagemeter
+                resultCapabilities.isImagemeterEnabled = capabilities.isImagemeterEnabled
                 
                 if result == nil {
                     realm.add(resultCapabilities)
                 }
-                
-                
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)

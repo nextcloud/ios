@@ -108,4 +108,11 @@
 @property (nonatomic) BOOL isActivityV2Enabled;
 @property (nonatomic, strong) NSString *activityV2;
 
+// HC
+@property (nonatomic) BOOL isHandwerkcloudEnabled;
+@property (nonatomic, strong) NSString *HCShopUrl;
+
+// Imagemeter
+@property (nonatomic) BOOL isImagemeterEnabled;
+
 @end
