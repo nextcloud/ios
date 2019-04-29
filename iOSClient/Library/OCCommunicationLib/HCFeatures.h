@@ -29,9 +29,16 @@
 @property double trialRemainingSec;
 @property double trialEndTime;
 @property (nonatomic, strong) NSString *trialEnd;
+
 @property BOOL accountRemoveExpired;
 @property double accountRemoveRemainingSec;
 @property double accountRemoveTime;
 @property (nonatomic, strong) NSString *accountRemove;
+
+@property (nonatomic, strong) NSString *nextGroupExpirationGroup;
+@property BOOL nextGroupExpirationGroupExpired;
+@property double nextGroupExpirationExpiresTime;
+@property (nonatomic, strong) NSString *nextGroupExpirationExpires;
+
 
 @end

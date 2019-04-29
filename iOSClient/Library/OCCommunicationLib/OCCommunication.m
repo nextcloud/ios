@@ -3259,7 +3259,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] User Profile : %@",jsongParsed);
+        NSLog(@"[LOG] User Profile Features : %@",jsongParsed);
         
         if (jsongParsed && jsongParsed.allKeys > 0) {
             
@@ -3298,6 +3298,21 @@
                 
                 if ([data valueForKey:@"account_remove"] && ![[data valueForKey:@"account_remove"] isKindOfClass:[NSNull class]])
                     features.accountRemove = [data valueForKey:@"account_remove"];
+                
+                NSDictionary *nextGroupExpirationDic = [data valueForKey:@"next_group_expiration"];
+                if (nextGroupExpirationDic) {
+                    if ([nextGroupExpirationDic valueForKey:@"group"] && ![[nextGroupExpirationDic valueForKey:@"group"] isKindOfClass:[NSNull class]])
+                        features.nextGroupExpirationGroup = [data valueForKey:@"group"];
+                    
+                    if ([nextGroupExpirationDic valueForKey:@"group_expired"] && ![[nextGroupExpirationDic valueForKey:@"group_expired"] isKindOfClass:[NSNull class]])
+                        features.nextGroupExpirationGroupExpired = [[nextGroupExpirationDic valueForKey:@"group_expired"] boolValue];
+                    
+                    if ([nextGroupExpirationDic valueForKey:@"expires_time"] && ![[nextGroupExpirationDic valueForKey:@"expires_time"] isKindOfClass:[NSNull class]])
+                        features.nextGroupExpirationExpiresTime = [[nextGroupExpirationDic valueForKey:@"expires_time"] integerValue];
+                    
+                    if ([nextGroupExpirationDic valueForKey:@"expires"] && ![[nextGroupExpirationDic valueForKey:@"expires"] isKindOfClass:[NSNull class]])
+                        features.nextGroupExpirationExpires = [data valueForKey:@"expires"];
+                }
                 
                 successRequest(response, features, request.redirectedServer);
                 
