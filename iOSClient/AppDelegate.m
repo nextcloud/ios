@@ -1483,6 +1483,46 @@ PKPushRegistry *pushRegistry;
 // Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
+    NSString *scheme = url.scheme;
+    if ([scheme isEqualToString:@"nextcloud"]) {
+        NSString *action = url.host;
+        if ([action isEqualToString:@"open-file"]) {
+            NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+            NSArray *queryItems = urlComponents.queryItems;
+            NSString *user = [self valueForKey:@"user" fromQueryItems:queryItems];
+            NSString *fileURLString = [self valueForKey:@"url" fromQueryItems:queryItems];
+            NSURL *fileURL = [NSURL URLWithString:fileURLString];
+            
+            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+            if (activeAccount) {
+                NSURL *activeAccountURL = [NSURL URLWithString:activeAccount.url];
+                NSString *activeAccountUser = activeAccount.user;
+                if ([activeAccountURL.host isEqualToString:fileURL.host] && [user isEqualToString:activeAccountUser]) {
+                    // Open the file
+                } else {
+                    tableAccount *matchedAccount = nil;
+                    NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts];
+                    for (tableAccount *account in accounts) {
+                        NSURL *accountURL = [NSURL URLWithString:account.url];
+                        NSString *accountUser = account.user;
+                        if ([accountURL.host isEqualToString:fileURL.host] && [user isEqualToString:accountUser]) {
+                            matchedAccount = account;
+                        }
+                    }
+                    if (matchedAccount) {
+                        // Change account and open the file
+                    } else {
+                        // Show add account dialog
+                    }
+                }
+            } else {
+                // Show add account dialog
+            }
+        }
+        
+        return YES;
+    }
+    
     NSError *error;
     NSLog(@"[LOG] the path is: %@", url.path);
         
