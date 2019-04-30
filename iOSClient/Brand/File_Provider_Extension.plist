@@ -19,7 +19,12 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.23.5</string>
 	<key>CFBundleVersion</key>
-	<string>0</string>
+	<string>1</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionFileProviderDocumentGroup</key>
