@@ -247,6 +247,7 @@
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
 + (NSString *)URLEncodeStringFromString:(NSString *)string;
-+ (NSString*)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
++ (NSString *)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
++ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
 
 @end

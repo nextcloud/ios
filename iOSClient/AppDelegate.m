@@ -1495,20 +1495,23 @@ PKPushRegistry *pushRegistry;
 // Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return YES;
+    
     NSString *scheme = url.scheme;
     if ([scheme isEqualToString:@"nextcloud"]) {
         NSString *action = url.host;
         if ([action isEqualToString:@"open-file"]) {
             NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
             NSArray *queryItems = urlComponents.queryItems;
-            NSString *user = [self valueForKey:@"user" fromQueryItems:queryItems];
-            NSString *fileURLString = [self valueForKey:@"url" fromQueryItems:queryItems];
+            NSString *user = [CCUtility valueForKey:@"user" fromQueryItems:queryItems];
+            NSString *fileURLString = [CCUtility valueForKey:@"url" fromQueryItems:queryItems];
             NSURL *fileURL = [NSURL URLWithString:fileURLString];
             
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-            if (activeAccount) {
-                NSURL *activeAccountURL = [NSURL URLWithString:activeAccount.url];
-                NSString *activeAccountUser = activeAccount.user;
+            if (account) {
+                NSURL *activeAccountURL = [NSURL URLWithString:account.url];
+                NSString *activeAccountUser = account.user;
                 if ([activeAccountURL.host isEqualToString:fileURL.host] && [user isEqualToString:activeAccountUser]) {
                     // Open the file
                 } else {
@@ -1527,8 +1530,6 @@ PKPushRegistry *pushRegistry;
                         // Show add account dialog
                     }
                 }
-            } else {
-                // Show add account dialog
             }
         }
         
