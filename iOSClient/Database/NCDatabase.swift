@@ -185,6 +185,11 @@ class tableCapabilities: Object {
     @objc dynamic var isFileSharingShareByMailEnabled: Bool = false
     @objc dynamic var isFileSharingShareByMailPassword: Bool = false
     @objc dynamic var isFileSharingShareByMailUploadFilesDrop: Bool = false
+    // HC
+    @objc dynamic var isHandwerkcloudEnabled: Bool = false
+    @objc dynamic var HCShopUrl = ""
+    // Imagemeter
+    @objc dynamic var isImagemeterEnabled: Bool = false
 }
 
 class tableCertificates: Object {

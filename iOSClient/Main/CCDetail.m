@@ -26,7 +26,6 @@
 #import "CCMain.h"
 #import "NCUchardet.h"
 #import "NCBridgeSwift.h"
-#import <KTVHTTPCache/KTVHTTPCache.h>
 
 #import "NCBridgeSwift.h"
 

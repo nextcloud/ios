@@ -39,6 +39,8 @@
         self.spreedFeatures = @"";
         
         self.richdocumentsMimetypes = [NSArray new];
+        
+        self.HCShopUrl = @"";
     }
     return self;
 }
