@@ -532,7 +532,7 @@ PKPushRegistry *pushRegistry;
                     
                     NSString *app = [json objectForKey:@"app"];
                     NSString *subject = [json objectForKey:@"subject"];
-                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
+                    //NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
                     
                     NSURL *url = [NSURL URLWithString:result.url];
                     NSString *domain = [url host];
@@ -540,7 +540,7 @@ PKPushRegistry *pushRegistry;
                     if ([app isEqualToString:@"spreed"]) {
                         content.title = @"Nextcloud Talk";
                     } else {
-                        content.title = app.capitalizedString;
+                        content.title = NSLocalizedString(app.capitalizedString, nil);
                     }
                     if (results.count == 1) {
                         content.title = content.title;
@@ -555,10 +555,12 @@ PKPushRegistry *pushRegistry;
                     }
                     content.sound = [UNNotificationSound defaultSound];
 
+                    /*
                     [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
                         //
                     }];
-                                        
+                    */
+                    
                     NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
                     
                     UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];

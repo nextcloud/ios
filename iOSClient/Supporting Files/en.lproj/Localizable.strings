@@ -750,3 +750,8 @@
 "_voice_memo_stop_"         = "tap to stop";
 "_voice_memo_filename_"     = "voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
+
+// Dictionary App push Notification
+"Suspicious_Login"          = "Suspicious Login";
+
+
