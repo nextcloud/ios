@@ -1284,7 +1284,7 @@ PKPushRegistry *pushRegistry;
         sizeUpload = sizeUpload + metadata.size;
     }
     
-    NSLog(@"%@", [NSString stringWithFormat:@"[LOG] -PROCESS-AUTO-UPLOAD- | Download %ld - %@ | Upload %ld - %@", counterDownload, [CCUtility transformedSize:sizeDownload], counterUpload, [CCUtility transformedSize:sizeUpload]]);
+    NSLog(@"%@", [NSString stringWithFormat:@"[LOG] PROCESS-AUTO-UPLOAD | Download %ld - %@ | Upload %ld - %@", counterDownload, [CCUtility transformedSize:sizeDownload], counterUpload, [CCUtility transformedSize:sizeUpload]]);
     
     // ------------------------- <selector Download> -------------------------
     
