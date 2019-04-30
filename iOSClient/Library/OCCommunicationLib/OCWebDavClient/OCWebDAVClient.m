@@ -449,13 +449,12 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     //We add the cookies of that URL
     request = [UtilsFramework getRequestWithCookiesByRequest:request andOriginalUrlServer:self.originalUrlServer];
-    
-    NSURL *localDestinationUrl = [NSURL fileURLWithPath:localDestination];
-    
+        
     NSURLSessionDownloadTask *downloadTask = [sharedOCCommunication.downloadSessionManager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull progress) {
         downloadProgress(progress);
     } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-        return localDestinationUrl;
+        [[NSFileManager defaultManager] removeItemAtURL:[NSURL fileURLWithPath:localDestination] error:nil];
+        return [NSURL fileURLWithPath:localDestination];
     } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
         if (error) {
             failure(response, error);
