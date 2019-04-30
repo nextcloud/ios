@@ -1505,22 +1505,22 @@ PKPushRegistry *pushRegistry;
             NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
             NSArray *queryItems = urlComponents.queryItems;
             NSString *user = [CCUtility valueForKey:@"user" fromQueryItems:queryItems];
-            NSString *fileURLString = [CCUtility valueForKey:@"url" fromQueryItems:queryItems];
-            NSURL *fileURL = [NSURL URLWithString:fileURLString];
+            NSString *path = [CCUtility valueForKey:@"path" fromQueryItems:queryItems];
+            NSString *link = [CCUtility valueForKey:@"link" fromQueryItems:queryItems];
             
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             if (account) {
                 NSURL *activeAccountURL = [NSURL URLWithString:account.url];
                 NSString *activeAccountUser = account.user;
-                if ([activeAccountURL.host isEqualToString:fileURL.host] && [user isEqualToString:activeAccountUser]) {
+                if ([link containsString:activeAccountURL.host] && [user isEqualToString:activeAccountUser]) {
                     // Open the file
                 } else {
                     tableAccount *matchedAccount = nil;
-                    NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts];
+                    NSArray *accounts = [[NCManageDatabase sharedInstance] getAllAccount];
                     for (tableAccount *account in accounts) {
                         NSURL *accountURL = [NSURL URLWithString:account.url];
                         NSString *accountUser = account.user;
-                        if ([accountURL.host isEqualToString:fileURL.host] && [user isEqualToString:accountUser]) {
+                        if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
                             matchedAccount = account;
                         }
                     }
