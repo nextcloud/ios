@@ -1987,18 +1987,44 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    @objc func getTableMedias(predicate: NSPredicate) -> [tableMetadata]? {
+    @objc func getTablesMedia(account: String) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableMedia.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-        
-        if (results.count > 0) {
-            return Array(results.map { tableMetadata.init(value:$0) })
-        } else {
+        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(byKeyPath: "date", ascending: false)
+        if results.count == 0 {
             return nil
         }
+    
+        let directoryLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account))
+        if directoryLocked.count == 0 {
+            return Array(results.map { tableMetadata.init(value:$0) })
+        }
+        
+        var metadatas = [tableMetadata]()
+        let arrayServerUrlLocked = Array(directoryLocked.map { $0.serverUrl })
+        var oldServerUrl = ""
+        var lock = false
+
+        for result in results {
+            if result.serverUrl != oldServerUrl {
+                var foundLock = false
+                oldServerUrl = result.serverUrl
+                for serverUrlLocked in arrayServerUrlLocked {
+                    if result.serverUrl.contains(serverUrlLocked) {
+                        foundLock = true
+                        break
+                    }
+                }
+                lock = foundLock
+            }
+            if !lock {
+                metadatas.append(tableMetadata.init(value: result))
+            }
+        }
+        
+        return metadatas
     }
     
     func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (isDifferent: Bool, newInsert: Int) {
