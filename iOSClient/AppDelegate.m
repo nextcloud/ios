@@ -1516,28 +1516,33 @@ PKPushRegistry *pushRegistry;
             NSString *user = [CCUtility valueForKey:@"user" fromQueryItems:queryItems];
             NSString *path = [CCUtility valueForKey:@"path" fromQueryItems:queryItems];
             NSString *link = [CCUtility valueForKey:@"link" fromQueryItems:queryItems];
-            
+            tableAccount *matchedAccount = nil;
+
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             if (account) {
                 NSURL *activeAccountURL = [NSURL URLWithString:account.url];
                 NSString *activeAccountUser = account.user;
                 if ([link containsString:activeAccountURL.host] && [user isEqualToString:activeAccountUser]) {
-                    // Open the file
+                    matchedAccount = account;
                 } else {
-                    tableAccount *matchedAccount = nil;
                     NSArray *accounts = [[NCManageDatabase sharedInstance] getAllAccount];
                     for (tableAccount *account in accounts) {
                         NSURL *accountURL = [NSURL URLWithString:account.url];
                         NSString *accountUser = account.user;
                         if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
-                            matchedAccount = account;
+                            matchedAccount = [[NCManageDatabase sharedInstance] setAccountActive:account.account];
+                            [self settingActiveAccount:matchedAccount.account activeUrl:matchedAccount.url activeUser:matchedAccount.user activeUserID:matchedAccount.userID activePassword:[CCUtility getPassword:matchedAccount.account]];
+                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
                         }
                     }
-                    if (matchedAccount) {
-                        // Change account and open the file
-                    } else {
-                        // Show add account dialog
-                    }
+                }
+                
+                if (matchedAccount) {
+                    
+                    
+                    
+                } else {
+                    // Show add account dialog
                 }
             }
         }
