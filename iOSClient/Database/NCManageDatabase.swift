@@ -2084,6 +2084,29 @@ class NCManageDatabase: NSObject {
         return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
     }
     
+    @objc func alignTableMedia(account: String) {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        do {
+            try realm.write {
+                
+                let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account))
+                for result in results {
+                    guard let metadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", result.fileID)).first else {
+                        continue
+                    }
+                    realm.delete(result)
+                    realm.add(tableMedia.init(value: metadata))
+                 }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            realm.cancelWrite()
+        }
+    }
+    
     //MARK: -
     //MARK: Table Photo Library
     

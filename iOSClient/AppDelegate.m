@@ -221,9 +221,16 @@ PKPushRegistry *pushRegistry;
 //
 - (void)applicationWillResignActive:(UIApplication *)application
 {
+    // Test Maintenance
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
     [_activeMain closeAllMenu];
     
     [self updateApplicationIconBadgeNumber];
+    
+    // Align Table Media
+    [[NCManageDatabase sharedInstance] alignTableMediaWithAccount:self.activeAccount];
 }
 
 //
