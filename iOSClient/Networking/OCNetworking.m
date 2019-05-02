@@ -250,6 +250,56 @@
     [task resume];
 }
 
+- (void)downloadContentsOfUrl:(NSString *)serverUrl completion:(void(^)(NSData *data, NSString *message, NSInteger errorCode))completion
+{
+    // Remove stored cookies
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in [storage cookies])
+    {
+        [storage deleteCookie:cookie];
+    }
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serverUrl] cachePolicy:0 timeoutInterval:20.0];
+    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            
+            if (error) {
+                
+                NSString *message;
+                NSInteger errorCode;
+                
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+                errorCode = httpResponse.statusCode;
+                
+                if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                    errorCode = error.code;
+                
+                // Error
+                if (errorCode == 503)
+                    message = NSLocalizedString(@"_server_error_retry_", nil);
+                else
+                    message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+                
+                completion(nil, message, errorCode);
+                
+            } else {
+            
+                completion(data, nil, 0);
+            }
+        });
+        
+    }];
+    
+    [task resume];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== download / upload =====
 #pragma --------------------------------------------------------------------------------------------

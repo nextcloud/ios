@@ -83,14 +83,16 @@ class NCService: NSObject {
                         let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
                         
-                        if let imageData = try? Data(contentsOf: URL(string: backgroundURL)!) {
-                            if let image = UIImage(data: imageData) {
-                                try? FileManager.default.removeItem(atPath: fileNamePath)
-                                if let data = image.pngData() {
-                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                        OCNetworking.sharedManager()?.downloadContents(ofUrl: backgroundURL, completion: { (data, message, errorCode) in
+                            if errorCode == 0 {
+                                if let image = UIImage(data: data!) {
+                                    try? FileManager.default.removeItem(atPath: fileNamePath)
+                                    if let data = image.pngData() {
+                                        try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                                    }
                                 }
                             }
-                        }
+                        })
                         
                         DispatchQueue.main.async {
                             self.appDelegate.settingThemingColorBrand()
@@ -250,17 +252,19 @@ class NCService: NSObject {
                 
                 DispatchQueue.global().async {
                     
-                    let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
-                    if let imageData = try? Data(contentsOf: URL(string: address)!) {
-                        if let image = UIImage(data: imageData) {
-                            try? FileManager.default.removeItem(atPath: fileNamePath)
-                            if let data = image.pngData() {
-                                try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                    OCNetworking.sharedManager()?.downloadContents(ofUrl: avatarUrl, completion: { (data, message, errorCode) in
+                        if errorCode == 0 {
+                            if let image = UIImage(data: data!) {
+                                try? FileManager.default.removeItem(atPath: fileNamePath)
+                                if let data = image.pngData() {
+                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                                }
                             }
                         }
-                    }
+                    })
                     
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
