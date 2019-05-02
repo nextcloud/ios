@@ -2094,10 +2094,11 @@ class NCManageDatabase: NSObject {
                 
                 let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account))
                 for result in results {
-                    guard let metadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", result.fileID)).first else {
+                    let fileID = result.fileID
+                    realm.delete(result)
+                    guard let metadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", fileID)).first else {
                         continue
                     }
-                    realm.delete(result)
                     realm.add(tableMedia.init(value: metadata))
                  }
             }
