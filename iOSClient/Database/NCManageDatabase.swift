@@ -1997,13 +1997,12 @@ class NCManageDatabase: NSObject {
             return nil
         }
     
-        let directoryLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account))
-        if directoryLocked.count == 0 {
+        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
+        if serversUrlLocked.count == 0 {
             return Array(results.map { tableMetadata.init(value:$0) })
         }
         
         var metadatas = [tableMetadata]()
-        let arrayServerUrlLocked = Array(directoryLocked.map { $0.serverUrl })
         var oldServerUrl = ""
         var lock = false
 
@@ -2011,7 +2010,7 @@ class NCManageDatabase: NSObject {
             if result.serverUrl != oldServerUrl {
                 var foundLock = false
                 oldServerUrl = result.serverUrl
-                for serverUrlLocked in arrayServerUrlLocked {
+                for serverUrlLocked in serversUrlLocked {
                     if result.serverUrl.contains(serverUrlLocked) {
                         foundLock = true
                         break
