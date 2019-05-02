@@ -39,8 +39,26 @@ class NCManageDatabase: NSObject {
             
             fileURL: databaseFilePath,
             schemaVersion: UInt64(k_databaseSchemaVersion),
-
-                shouldCompactOnLaunch: { totalBytes, usedBytes in
+            
+            migrationBlock: { migration, oldSchemaVersion in
+                
+                if oldSchemaVersion < 41 {
+                    migration.deleteData(forType: tableActivity.className())
+                    migration.deleteData(forType: tableMetadata.className())
+                    migration.deleteData(forType: tableDirectory.className())
+                }
+                
+                /*
+                 if oldSchemaVersion < 44 {
+                 migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                 let account = oldObject!["account"] as! String
+                 let password = oldObject!["password"] as! String
+                 }
+                 }
+                 */
+                
+            }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                
                 // totalBytes refers to the size of the file on disk in bytes (data + free space)
                 // usedBytes refers to the number of bytes used by data in the file
                 
@@ -60,25 +78,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: UInt64(k_databaseSchemaVersion),
-            
-            migrationBlock: { migration, oldSchemaVersion in
-                
-                if oldSchemaVersion < 41 {
-                    migration.deleteData(forType: tableActivity.className())
-                    migration.deleteData(forType: tableMetadata.className())
-                    migration.deleteData(forType: tableDirectory.className())
-                }
-                
-                /*
-                if oldSchemaVersion < 44 {
-                    migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                        let account = oldObject!["account"] as! String
-                        let password = oldObject!["password"] as! String
-                    }
-                }
-                */
-            }
+            schemaVersion: UInt64(k_databaseSchemaVersion)
         )
         
         Realm.Configuration.defaultConfiguration = config
