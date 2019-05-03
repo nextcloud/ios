@@ -2005,8 +2005,6 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(byKeyPath: "date", ascending: false)
         if results.count == 0 {
             return nil
-        } else if !update {
-            return Array(results.map { tableMetadata.init(value:$0) })
         }
         
         let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
@@ -2018,20 +2016,23 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 for result in results {
-                    // Update record
-                    var metadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", result.fileID)).first
-                    if metadata != nil {
-                        realm.delete(result)
-                        realm.add(tableMedia.init(value: metadata!))
-                    } else {
-                        metadata = tableMetadata.init(value: result)
+                    var metadata = tableMetadata.init(value: result)
+                
+                    // Update
+                    if update {
+                        if let tableMetadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", result.fileID)).first {
+                            realm.delete(result)
+                            realm.add(tableMedia.init(value: tableMetadata))
+                            metadata = tableMetadata
+                        }
                     }
+                
                     // Verify Lock
-                    if (serversUrlLocked.count > 0) && (metadata!.serverUrl != oldServerUrl) {
+                    if (serversUrlLocked.count > 0) && (metadata.serverUrl != oldServerUrl) {
                         var foundLock = false
-                        oldServerUrl = metadata!.serverUrl
+                        oldServerUrl = metadata.serverUrl
                         for serverUrlLocked in serversUrlLocked {
-                            if metadata!.serverUrl.contains(serverUrlLocked) {
+                            if metadata.serverUrl.contains(serverUrlLocked) {
                                 foundLock = true
                                 break
                             }
@@ -2039,7 +2040,7 @@ class NCManageDatabase: NSObject {
                         isValidMetadata = !foundLock
                     }
                     if isValidMetadata {
-                        metadatas.append(tableMetadata.init(value: metadata!))
+                        metadatas.append(tableMetadata.init(value: metadata))
                     }
                 }
             }
