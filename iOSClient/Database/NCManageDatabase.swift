@@ -1987,7 +1987,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    @objc func getTablesMedia(account: String) -> [tableMetadata]? {
+    @objc func getTablesMedia(account: String, update: Bool) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -1995,8 +1995,10 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(byKeyPath: "date", ascending: false)
         if results.count == 0 {
             return nil
+        } else if !update {
+            return Array(results.map { tableMetadata.init(value:$0) })
         }
-    
+        
         let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
         
         var metadatas = [tableMetadata]()

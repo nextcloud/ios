@@ -502,7 +502,7 @@ extension NCMedia {
         
         DispatchQueue.global().async {
             
-            let metadatas = NCManageDatabase.sharedInstance.getTablesMedia(account: self.appDelegate.activeAccount)
+            let metadatas = NCManageDatabase.sharedInstance.getTablesMedia(account: self.appDelegate.activeAccount, update: loadNetworkDatasource)
             self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
