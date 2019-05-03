@@ -2051,7 +2051,7 @@ class NCManageDatabase: NSObject {
         return metadatas
     }
     
-    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (isDifferent: Bool, newInsert: Int) {
+    func createTableMedia(_ metadatasSource: [tableMetadata], lteDate: Date, gteDate: Date, account: String) -> (isDifferent: Bool, newInsert: Int) {
 
         let realm = try! Realm()
         realm.refresh()
@@ -2064,6 +2064,34 @@ class NCManageDatabase: NSObject {
         
         var isDifferent: Bool = false
         var newInsert: Int = 0
+        
+        var oldServerUrl = ""
+        var isValidMetadata = true
+        
+        var metadatas = [tableMetadata]()
+        
+        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
+        if (serversUrlLocked.count > 0) {
+            for metadata in metadatasSource {
+                // Verify Lock
+                if (metadata.serverUrl != oldServerUrl) {
+                    var foundLock = false
+                    oldServerUrl = metadata.serverUrl
+                    for serverUrlLocked in serversUrlLocked {
+                        if metadata.serverUrl.contains(serverUrlLocked) {
+                            foundLock = true
+                            break
+                        }
+                    }
+                    isValidMetadata = !foundLock
+                }
+                if isValidMetadata {
+                    metadatas.append(tableMetadata.init(value: metadata))
+                }
+            }
+        } else {
+            metadatas = metadatasSource
+        }
         
         do {
             try realm.write {
