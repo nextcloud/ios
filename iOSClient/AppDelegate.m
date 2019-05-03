@@ -270,7 +270,7 @@ PKPushRegistry *pushRegistry;
     // Brand
 #if defined(HC)
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-    if (account.hcIsTrial == true) {
+    if (account.hcIsTrial == true || account.hcTrialExpired == true || account.hcNextGroupExpirationGroupExpired == true) {
         
         HCTrial *vc = [[UIStoryboard storyboardWithName:@"HCTrial" bundle:nil] instantiateInitialViewController];
         vc.account = account;

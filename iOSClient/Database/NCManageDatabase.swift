@@ -515,6 +515,7 @@ class NCManageDatabase: NSObject {
                 } else {
                     result.hcTrialEndTime = nil
                 }
+                
                 result.hcAccountRemoveExpired = features.accountRemoveExpired
                 result.hcAccountRemoveRemainingSec = features.accountRemoveRemainingSec
                 if features.accountRemoveTime > 0 {
@@ -522,6 +523,15 @@ class NCManageDatabase: NSObject {
                 } else {
                     result.hcAccountRemoveTime = nil
                 }
+                
+                result.hcNextGroupExpirationGroup = features.nextGroupExpirationGroup
+                result.hcNextGroupExpirationGroupExpired = features.nextGroupExpirationGroupExpired
+                if features.nextGroupExpirationExpiresTime > 0 {
+                    result.hcNextGroupExpirationExpiresTime = Date(timeIntervalSince1970: features.nextGroupExpirationExpiresTime) as NSDate
+                } else {
+                    result.hcNextGroupExpirationExpiresTime = nil
+                }
+                result.hcNextGroupExpirationExpires = features.nextGroupExpirationExpires
                 
                 returnAccount = result
             }
