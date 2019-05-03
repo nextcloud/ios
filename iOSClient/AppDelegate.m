@@ -228,9 +228,6 @@ PKPushRegistry *pushRegistry;
     [_activeMain closeAllMenu];
     
     [self updateApplicationIconBadgeNumber];
-    
-    // Align Table Media
-    [[NCManageDatabase sharedInstance] alignTableMediaWithAccount:self.activeAccount];
 }
 
 //
