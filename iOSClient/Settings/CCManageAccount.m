@@ -271,7 +271,23 @@
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"company"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         row.value = tableAccount.company;
         [section addFormRow:row];
+    
+        if (tableAccount.hcIsTrial) {
         
+            section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_trial_", nil)];
+            [form addFormSection:section];
+            
+            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"trial" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_trial_expired_day_", nil)];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+            [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+            [row.cellConfig setObject:[UIColor redColor] forKey:@"detailTextLabel.textColor"];
+            [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"timer"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
+            NSInteger numberOfDays = tableAccount.hcTrialRemainingSec / (24*3600);
+            row.value = [@(numberOfDays) stringValue];
+            [section addFormRow:row];
+        }
+    
         section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
         

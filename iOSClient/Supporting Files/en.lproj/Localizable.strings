@@ -206,6 +206,8 @@
 "_advanced_"                    = "Advanced";
 "_disable_files_app_"           = "Disable Files App integration";
 "_disable_files_app_footer_"    = "Do not permit the access of files across the Apple Files application";
+"_trial_"                       = "Trial";
+"_trial_expired_day_"           = "Days remaining";
 
 // Manage AutoUpload
 
