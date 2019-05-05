@@ -1536,7 +1536,27 @@ PKPushRegistry *pushRegistry;
                 
                 if (matchedAccount) {
                     
+                    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
                     
+                    if (splitViewController.isCollapsed) {
+                        
+                        UITabBarController *tbc = splitViewController.viewControllers.firstObject;
+                        for (UINavigationController *nvc in tbc.viewControllers) {
+                            
+                            if ([nvc.topViewController isKindOfClass:[CCDetail class]])
+                                [nvc popToRootViewControllerAnimated:NO];
+                        }
+                        
+                        [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
+                        
+                    } else {
+                        
+                        UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
+                        [nvcDetail popToRootViewControllerAnimated:NO];
+                        
+                        UITabBarController *tbc = splitViewController.viewControllers.firstObject;
+                        [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
+                    }
                     
                 } else {
                     // Show add account dialog
