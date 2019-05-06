@@ -75,7 +75,6 @@
 
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;
-- (void)tableViewReloadData;
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
