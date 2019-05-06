@@ -2970,7 +2970,7 @@
             if (aViewController.fromType == CCBKPasscodeFromLockDirectory) {
                 
                 // possiamo procedere alla prossima directory
-                [self performSegueDirectoryWithControlPasscode:false];
+                [self performSegueDirectoryWithControlPasscode:false metadata:self.metadata scrollToFileName:self.scrollToFileName];
                 
                 // avviamo la sessione Passcode Lock con now
                 appDelegate.sessionePasscodeLock = [NSDate date];
@@ -4121,7 +4121,7 @@
     
     if (self.metadata.directory) {
         
-        [self performSegueDirectoryWithControlPasscode:true];
+        [self performSegueDirectoryWithControlPasscode:true metadata:self.metadata scrollToFileName:self.scrollToFileName];
     }
 }
 
@@ -4231,15 +4231,18 @@
 }
 
 // can i go to next viewcontroller
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode
+- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileName:(NSString *)scrollToFileName
 {
     NSString *nomeDir;
-
+    
+    self.metadata = metadata;
+    self.scrollToFileName = scrollToFileName;
+    
     if (self.tableView.editing == NO) {
         
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
         
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadata.account, lockServerUrl]];
         
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
         if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil && controlPasscode) {
@@ -4276,15 +4279,15 @@
         }
         
         // E2EE Check enable
-        if (self.metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
+        if (metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
             
             [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
             return;
         }
         
-        nomeDir = self.metadata.fileName;
+        nomeDir = metadata.fileName;
         
-        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:nomeDir];
+        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:nomeDir];
     
         CCMain *viewController = [appDelegate.listMainVC objectForKey:serverUrlPush];
         
@@ -4293,7 +4296,8 @@
             viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMain"];
             
             viewController.serverUrl = serverUrlPush;
-            viewController.titleMain = self.metadata.fileName;
+            viewController.titleMain = metadata.fileName;
+            viewController.scrollToFileName = scrollToFileName;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -4304,7 +4308,8 @@
            
             if (viewController.isViewLoaded) {
                 
-                viewController.titleMain = self.metadata.fileName;
+                viewController.titleMain = metadata.fileName;
+                viewController.scrollToFileName = scrollToFileName;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {
