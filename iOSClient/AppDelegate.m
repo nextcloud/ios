@@ -1560,21 +1560,21 @@ PKPushRegistry *pushRegistry;
                     [CATransaction begin];
                     [CATransaction setCompletionBlock:^{
                         
-                        NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", account.url, k_webDAV, path];
+                        NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
 
                         if ([path containsString:@"/"]) {
                             
                             // Push
                             NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                            NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", account.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
+                            NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
                             
-                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:account.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
                             [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata scrollToFileNamePath:fileNamePath];
                             
                         } else {
                             
                             // Reload folder
-                            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", account.url, k_webDAV];
+                            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.url, k_webDAV];
                             
                             self.activeMain.scrollToFileNamePath = fileNamePath;
                             [self.activeMain readFolder:serverUrl];
