@@ -1558,6 +1558,13 @@ PKPushRegistry *pushRegistry;
                         [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
                     }
                     
+                    NSString *fileName = [path lastPathComponent];
+                    NSString *serverUrl = [NSString stringWithFormat:@"%@%@/%@", account.url, k_webDAV, [path stringByDeletingLastPathComponent]];
+                                        
+                    tableMetadata *metadata = [CCUtility createMetadataWithAccount:account.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:fileName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                    
+                    NSLog(@"x");
+                    
                 } else {
                     // Show add account dialog
                 }
