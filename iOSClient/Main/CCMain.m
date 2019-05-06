@@ -2970,7 +2970,7 @@
             if (aViewController.fromType == CCBKPasscodeFromLockDirectory) {
                 
                 // possiamo procedere alla prossima directory
-                [self performSegueDirectoryWithControlPasscode:false metadata:self.metadata scrollToFileName:self.scrollToFileName];
+                [self performSegueDirectoryWithControlPasscode:false metadata:self.metadata scrollToFileNamePath:self.scrollToFileNamePath];
                 
                 // avviamo la sessione Passcode Lock con now
                 appDelegate.sessionePasscodeLock = [NSDate date];
@@ -3755,11 +3755,11 @@
     //
     [self.tableView reloadEmptyDataSet];
     
-    // scrollToFileName
-    if (self.scrollToFileName != nil && withScrollToFileName) {
+    // scrollToFileNamePath
+    if (self.scrollToFileNamePath != nil && withScrollToFileName ) {
         for (NSString *key in sectionDataSource.allRecordsDataSource) {
             tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
-            if ([metadata.fileName isEqualToString:self.scrollToFileName]) {
+            if ([metadata.fileName isEqualToString:self.scrollToFileNamePath]) {
                 for (NSString *key in sectionDataSource.fileIDIndexPath) {
                     if ([key isEqualToString:metadata.fileID]) {
                         NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
@@ -3774,7 +3774,7 @@
                 }
             }
         }
-        self.scrollToFileName = nil;
+        self.scrollToFileNamePath = nil;
     }
 }
 
@@ -4143,7 +4143,7 @@
     
     if (self.metadata.directory) {
         
-        [self performSegueDirectoryWithControlPasscode:true metadata:self.metadata scrollToFileName:self.scrollToFileName];
+        [self performSegueDirectoryWithControlPasscode:true metadata:self.metadata scrollToFileNamePath:self.scrollToFileNamePath];
     }
 }
 
@@ -4253,12 +4253,12 @@
 }
 
 // can i go to next viewcontroller
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileName:(NSString *)scrollToFileName
+- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileNamePath:(NSString *)scrollToFileNamePath
 {
     NSString *nomeDir;
     
     self.metadata = metadata;
-    self.scrollToFileName = scrollToFileName;
+    self.scrollToFileNamePath = scrollToFileNamePath;
     
     if (self.tableView.editing == NO) {
         
@@ -4319,7 +4319,7 @@
             
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = metadata.fileName;
-            viewController.scrollToFileName = scrollToFileName;
+            viewController.scrollToFileNamePath = scrollToFileNamePath;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -4331,7 +4331,7 @@
             if (viewController.isViewLoaded) {
                 
                 viewController.titleMain = metadata.fileName;
-                viewController.scrollToFileName = scrollToFileName;
+                viewController.scrollToFileNamePath = scrollToFileNamePath;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {

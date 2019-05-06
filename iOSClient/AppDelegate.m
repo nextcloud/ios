@@ -1535,7 +1535,6 @@ PKPushRegistry *pushRegistry;
                 }
                 
                 if (matchedAccount) {
-                    
                     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
                     
                     if (splitViewController.isCollapsed) {
@@ -1558,19 +1557,32 @@ PKPushRegistry *pushRegistry;
                         [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
                     }
                     
-                    NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", account.url, k_webDAV, path]];
-                    NSString *fileName = [path lastPathComponent];
-
-                    if ([self.activeMain.serverUrl isEqualToString:serverUrl]) {
-                        self.activeMain.scrollToFileName = fileName;
-                        [self.activeMain readFolder:serverUrl];
-                    } else {
-                        NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                        NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", account.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-
-                        tableMetadata *metadata = [CCUtility createMetadataWithAccount:account.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
-                        [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata scrollToFileName:fileName];
-                    }
+                    // GoTo home
+                    [CATransaction begin];
+                    [CATransaction setCompletionBlock:^{
+                        
+                        if ([path containsString:@"/"]) {
+                            
+                            // Push
+                            NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                            NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", account.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
+                            
+                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:account.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                            [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata scrollToFileNamePath:path];
+                            
+                        } else {
+                            
+                            // Reload folder
+                            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", account.url, k_webDAV];
+                            
+                            self.activeMain.scrollToFileNamePath = path;
+                            [self.activeMain readFolder:serverUrl];
+                        }
+                        
+                    }];
+                    
+                    [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
+                    [CATransaction commit];
                     
                 } else {
                     // Show add account dialog
