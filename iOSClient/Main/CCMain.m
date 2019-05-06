@@ -3759,7 +3759,8 @@
     if (self.scrollToFileNamePath != nil && withScrollToFileName ) {
         for (NSString *key in sectionDataSource.allRecordsDataSource) {
             tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
-            if ([metadata.fileName isEqualToString:self.scrollToFileNamePath]) {
+            NSString *metadataFileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
+            if ([metadataFileNamePath isEqualToString:self.scrollToFileNamePath]) {
                 for (NSString *key in sectionDataSource.fileIDIndexPath) {
                     if ([key isEqualToString:metadata.fileID]) {
                         NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
