@@ -3756,7 +3756,7 @@
     [self.tableView reloadEmptyDataSet];
     
     // scrollToFileNamePath
-    if (self.scrollToFileNamePath != nil && withScrollToFileName ) {
+    if (self.scrollToFileNamePath != nil && withScrollToFileName) {
         for (NSString *key in sectionDataSource.allRecordsDataSource) {
             tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
             NSString *metadataFileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
@@ -3764,13 +3764,8 @@
                 for (NSString *key in sectionDataSource.fileIDIndexPath) {
                     if ([key isEqualToString:metadata.fileID]) {
                         NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
-                        CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-                        if (cell) {
-                            cell.backgroundColor = [NCBrandColor sharedInstance].brandElement;
-                            [UIView animateWithDuration:3.0 animations:^{
-                                cell.backgroundColor = [UIColor whiteColor];
-                            }];
-                        }
+                        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+                        [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
                     }
                 }
             }
@@ -4257,9 +4252,6 @@
 - (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileNamePath:(NSString *)scrollToFileNamePath
 {
     NSString *nomeDir;
-    
-    self.metadata = metadata;
-    self.scrollToFileNamePath = scrollToFileNamePath;
     
     if (self.tableView.editing == NO) {
         
