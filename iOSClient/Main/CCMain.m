@@ -3767,7 +3767,7 @@
                         CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
                         if (cell) {
                             cell.backgroundColor = [NCBrandColor sharedInstance].brandElement;
-                            [UIView animateWithDuration:2.0 animations:^{
+                            [UIView animateWithDuration:3.0 animations:^{
                                 cell.backgroundColor = [UIColor whiteColor];
                             }];
                         }
