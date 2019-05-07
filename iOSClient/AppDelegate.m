@@ -1515,6 +1515,18 @@ PKPushRegistry *pushRegistry;
             NSString *link = [CCUtility valueForKey:@"link" fromQueryItems:queryItems];
             tableAccount *matchedAccount = nil;
 
+            // verify parameter
+            if (user.length == 0 || path.length == 0 || [[NSURL URLWithString:link] host].length == 0) {
+                
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_error_parameter_schema_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                
+                [alertController addAction:okAction];
+                [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
+                
+                return YES;
+            }
+            
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             if (account) {
                 NSURL *activeAccountURL = [NSURL URLWithString:account.url];
@@ -1579,7 +1591,6 @@ PKPushRegistry *pushRegistry;
                             self.activeMain.scrollToFileNamePath = fileNamePath;
                             [self.activeMain readFolder:serverUrl];
                         }
-                        
                     }];
                     
                     [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
