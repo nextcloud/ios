@@ -1586,7 +1586,15 @@ PKPushRegistry *pushRegistry;
                     [CATransaction commit];
                     
                 } else {
-                    // Show add account dialog
+                    
+                    NSString *domain = [[NSURL URLWithString:link] host];
+                    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"_account_not_available_", nil), user];
+                    
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    
+                    [alertController addAction:okAction];
+                    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
                 }
             }
         }
