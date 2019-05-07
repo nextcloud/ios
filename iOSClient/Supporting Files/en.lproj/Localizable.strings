@@ -101,6 +101,7 @@
 "_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 "_start_"                   = "Start";
 "_purchase_"                = "Purchase";
+"_account_not_available_"   = "The user %@ on server %@ do not exists, please add it to be able to read the file %@";
 
 // App
 
