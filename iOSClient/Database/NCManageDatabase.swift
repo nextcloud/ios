@@ -2002,7 +2002,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(byKeyPath: "date", ascending: false)
+        let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(by: sortProperties)// d(byKeyPath: "date", ascending: false)
         if results.count == 0 {
             return nil
         }
