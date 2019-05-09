@@ -246,6 +246,9 @@ class NCUtility: NSObject {
                     return closure(nil)
                 }
             })
+            
+        } else {
+            return closure(imageNamePath)
         }
     }
     
