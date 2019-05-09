@@ -654,18 +654,19 @@ extension NCTrash {
                     if self.datasource[item].fileID.contains(self.scrollToFileID) {
                         let indexPath = IndexPath(item: item, section: 0)
                         self.collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
-                        self.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: UICollectionView.ScrollPosition(rawValue: 1))
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             if let cell = self.collectionView.cellForItem(at: indexPath) as? NCTrashListCell {
-                                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
-                                UIView.animate(withDuration: 1.0, animations: {
-                                    cell.backgroundColor = .white
-                                })
+                                cell.layer.borderWidth = 1
+                                cell.layer.borderColor = NCBrandColor.sharedInstance.brand.cgColor
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    cell.layer.borderWidth = 0
+                                    cell.layer.borderColor = UIColor.clear.cgColor
+                                }
                             }
                         }
+                        self.scrollToFileID = ""
                     }
                 }
-                self.scrollToFileID = ""
             }
         }        
     }
