@@ -105,6 +105,10 @@ class NCService: NSObject {
                 
             } else {
                 
+                if errorCode == kOCErrorServerUnauthorized {
+                    self.appDelegate.errorServerUnauthorized = true
+                }
+                
                 print("[LOG] It has been changed user during networking process, error.")
             }
         })
@@ -293,7 +297,7 @@ class NCService: NSObject {
                     }
                 })
                 
-                // HC
+                // Get Handwerkcloud
                 if (capabilities!.isHandwerkcloudEnabled) {
                     self.requestHC()
                 }
@@ -301,6 +305,10 @@ class NCService: NSObject {
             } else if errorCode != 0 {
                 
                 self.appDelegate.settingThemingColorBrand()
+                
+                if errorCode == kOCErrorServerUnauthorized {
+                    self.appDelegate.errorServerUnauthorized = true
+                }
                 
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
