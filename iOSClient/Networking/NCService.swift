@@ -43,10 +43,8 @@ class NCService: NSObject {
         }
         
         self.requestUserProfile()
-        self.requestServerCapabilities()
         self.requestServerStatus()
-        self.requestListTrash()
-        
+       
         // Thirt Part
 #if HC
         self.requestHC()
@@ -55,6 +53,81 @@ class NCService: NSObject {
 
     //MARK: -
     //MARK: Internal request Service API NC
+    
+    private func requestUserProfile() {
+        
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
+            return
+        }
+        
+        OCNetworking.sharedManager().getUserProfile(withAccount: appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                // Update User (+ userProfile.id) & active account & account network
+                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!, HCProperties: false) else {
+                    self.appDelegate.messageNotification("Accopunt", description: "Internal error : account not found on DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                    return
+                }
+                
+                let user = tableAccount.user
+                let url = tableAccount.url
+                
+                self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: CCUtility.getPassword(tableAccount.account))
+                
+                // Call func thath required the userdID
+                self.appDelegate.activeFavorites.listingFavorites()
+                self.appDelegate.activeMedia.reloadDataSource(loadNetworkDatasource: true)
+                NCFunctionMain.sharedInstance.synchronizeOffline()
+                
+                DispatchQueue.global().async {
+                    
+                    let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
+                    
+                    OCNetworking.sharedManager()?.downloadContents(ofUrl: avatarUrl, completion: { (data, message, errorCode) in
+                        if errorCode == 0 {
+                            if let image = UIImage(data: data!) {
+                                try? FileManager.default.removeItem(atPath: fileNamePath)
+                                if let data = image.pngData() {
+                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                                }
+                            }
+                        }
+                    })
+                    
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    }
+                }
+                
+                // Get Capabilities
+                self.requestServerCapabilities()
+                
+            } else if errorCode != 0 {
+                
+                print("Get user profile failure error")
+                
+            } else {
+                
+                print("[LOG] It has been changed user during networking process, error.")
+            }
+        })
+    }
+    
+    private func requestServerStatus() {
+        
+        OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, message, errorCode) in
+            if errorCode == 0 {
+                if serverProductName == "owncloud" {
+                    self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                } else if versionMajor <= k_nextcloud_unsupported {
+                    self.appDelegate.messageNotification("_warning_", description: "_warning_unsupported_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                }
+            }
+            
+        })
+    }
     
     private func requestServerCapabilities() {
         
@@ -112,7 +185,7 @@ class NCService: NSObject {
                 
                 // ------ GET OTHER SERVICE -------------------------------------------------------------
                 
-                // Read Notification
+                // Get Notification
                 if (capabilities!.isNotificationServerEnabled) {
                     
                     OCNetworking.sharedManager().getNotificationWithAccount(account!, completion: { (account, listOfNotifications, message, errorCode) in
@@ -175,7 +248,7 @@ class NCService: NSObject {
                     }
                 }
                 
-                // Read External Sites
+                // Get External Sites
                 if (capabilities!.isExternalSitesServerEnabled) {
                     
                     OCNetworking.sharedManager().getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
@@ -195,12 +268,13 @@ class NCService: NSObject {
                     NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
                 }
                 
-                // Read Share
+                // Get Share
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
                     self.appDelegate.activeMain.readShare(withAccount: account, openWindow: false, metadata: nil)
                 }
                 
+                // Get Activity
                 if (capabilities!.isActivityV2Enabled) {
                     
                     OCNetworking.sharedManager().getActivityWithAccount(account!, since: 0, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
@@ -212,6 +286,18 @@ class NCService: NSObject {
                     })
                 }
                 
+                // Get Trash List
+                let pathTrash = k_dav + "/trashbin/" + (self.appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)! + "/trash/"
+                
+                OCNetworking.sharedManager().listingTrash(withAccount: account, path: pathTrash, serverUrl: self.appDelegate.activeUrl, depth: "infinity", completion: { (account, item, message, errorCode) in
+                    if errorCode == 0 && account == self.appDelegate.activeAccount {
+                        DispatchQueue.global().async {
+                            NCManageDatabase.sharedInstance.deleteTrash(filePath: nil, account: account!)
+                            NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+                        }
+                    }
+                })
+              
             } else if errorCode != 0 {
                 
                 self.appDelegate.settingThemingColorBrand()
@@ -224,98 +310,11 @@ class NCService: NSObject {
         })
     }
     
-    private func requestUserProfile() {
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-        
-        OCNetworking.sharedManager().getUserProfile(withAccount: appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                
-                // Update User (+ userProfile.id) & active account & account network
-                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!, HCProperties: false) else {
-                    self.appDelegate.messageNotification("Accopunt", description: "Internal error : account not found on DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
-                    return
-                }
-                
-                let user = tableAccount.user
-                let url = tableAccount.url
-                
-                self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: CCUtility.getPassword(tableAccount.account))
-                
-                // Call func thath required the userdID
-                self.appDelegate.activeFavorites.listingFavorites()
-                self.appDelegate.activeMedia.reloadDataSource(loadNetworkDatasource: true)
-                NCFunctionMain.sharedInstance.synchronizeOffline()
-                
-                DispatchQueue.global().async {
-                    
-                    let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
-                    
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: avatarUrl, completion: { (data, message, errorCode) in
-                        if errorCode == 0 {
-                            if let image = UIImage(data: data!) {
-                                try? FileManager.default.removeItem(atPath: fileNamePath)
-                                if let data = image.pngData() {
-                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
-                                }
-                            }
-                        }
-                    })
-                    
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
-                    }
-                }
-                
-            } else if errorCode != 0 {
-                
-                print("Get user profile failure error")
-               
-            } else {
-                
-                print("[LOG] It has been changed user during networking process, error.")
-            }
-        })
-    }
-    
     @objc public func middlewarePing() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
-    }
-    
-    private func requestServerStatus() {
-
-        OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, message, errorCode) in
-            if errorCode == 0 {
-                if serverProductName == "owncloud" {
-                    self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
-                } else if versionMajor <= k_nextcloud_unsupported {
-                    self.appDelegate.messageNotification("_warning_", description: "_warning_unsupported_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
-                }
-            }
-            
-        })
-    }
-    
-    private func requestListTrash() {
-        
-        let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-        let path = k_dav + "/trashbin/" + userID! + "/trash/"
-        
-        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, depth: "infinity", completion: { (account, item, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                DispatchQueue.global().async {
-                    NCManageDatabase.sharedInstance.deleteTrash(filePath: nil, account: account!)
-                    NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-                }
-            }
-        })
     }
     
     //MARK: -
