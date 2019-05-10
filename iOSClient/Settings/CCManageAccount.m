@@ -60,6 +60,7 @@
         
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableCapabilities *tableCapabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:tableAccount.account];
 
     // Section : ACCOUNTS -------------------------------------------
     
@@ -232,7 +233,7 @@
     
     // Section : THIRT PART -------------------------------------------
 
-#if defined(HC)
+    if (tableCapabilities.isHandwerkcloudEnabled) {
 
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_job_", nil)];
         [form addFormSection:section];
@@ -297,10 +298,12 @@
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"editUserProfile"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+#if defined(HC)
         row.action.viewControllerClass = [HCEditProfile class];
+#endif
         if (listAccount.count == 0) row.disabled = @YES;
         [section addFormRow:row];
-#endif
+    }
     
     self.form = form;
     

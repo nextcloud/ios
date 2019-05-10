@@ -44,11 +44,6 @@ class NCService: NSObject {
         
         self.requestUserProfile()
         self.requestServerStatus()
-       
-        // Thirt Part
-#if HC
-        self.requestHC()
-#endif
     }
 
     //MARK: -
@@ -297,6 +292,11 @@ class NCService: NSObject {
                         }
                     }
                 })
+                
+                // HC
+                if (capabilities!.isHandwerkcloudEnabled) {
+                    self.requestHC()
+                }
               
             } else if errorCode != 0 {
                 
