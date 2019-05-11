@@ -34,7 +34,7 @@
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -343,6 +343,7 @@ PKPushRegistry *pushRegistry;
                 _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
+                    [_timerServerUnauthorized invalidate];
                     [_activeLoginWeb open:viewController];
                 });
             }
@@ -374,6 +375,7 @@ PKPushRegistry *pushRegistry;
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
+                    [_timerServerUnauthorized invalidate];
                     [_activeLoginWeb open:viewController];
                 });
             }
@@ -386,6 +388,7 @@ PKPushRegistry *pushRegistry;
             _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
             
             dispatch_async(dispatch_get_main_queue(), ^ {
+                [_timerServerUnauthorized invalidate];
                 [_activeLoginWeb open:viewController];
             });
             
@@ -398,11 +401,25 @@ PKPushRegistry *pushRegistry;
                 _activeLogin.loginType = loginType;
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
+                    [_timerServerUnauthorized invalidate];
                     [viewController presentViewController:_activeLogin animated:YES completion:nil];
                 });
             }
         }
     }
+}
+
+- (void)loginSuccess:(NSInteger)loginType
+{
+    self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
+}
+- (void)webDismiss
+{
+    self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
+}
+- (void)loginDismiss
+{
+    self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

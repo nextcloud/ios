@@ -476,6 +476,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))        
     }
+    
+    func loginDismiss() {
+        //
+    }
 }
 
 extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{

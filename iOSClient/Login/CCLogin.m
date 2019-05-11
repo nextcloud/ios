@@ -398,6 +398,7 @@
 
 - (IBAction)handleAnnulla:(id)sender
 {
+    [self.delegate loginDismiss];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

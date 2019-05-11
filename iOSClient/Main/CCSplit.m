@@ -181,7 +181,12 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];    
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+}
+
+- (void)loginDismiss
+{
+    //
 }
 
 #pragma --------------------------------------------------------------------------------------------
