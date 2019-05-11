@@ -137,6 +137,9 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    // Stop timer
+    [appDelegate.timerServerUnauthorized invalidate];
 }
 
 //

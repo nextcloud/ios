@@ -388,6 +388,12 @@
 
 - (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
+    // No Password
+    if ([CCUtility getPassword:metadata.account].length == 0) {
+        [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_bad_username_password_", nil) errorCode:kOCErrorServerUnauthorized];
+        return;
+    }
+    
     // File exists ?
     tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
@@ -529,6 +535,8 @@
     [appDelegate.listProgressMetadata removeObjectForKey:fileID];
 #endif
     
+     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+    
     if (errorCode != 0) {
         
         if (errorCode == kCFURLErrorCancelled) {
@@ -537,6 +545,9 @@
             
         } else {
             
+            if (metadata && errorCode == kOCErrorServerUnauthorized)
+                [CCUtility setPassword:metadata.account password:nil];
+
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         }
         
@@ -546,7 +557,6 @@
         
     } else {
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         if (!metadata) {
             
             NSLog(@"[LOG] Serious error internal download : metadata not found %@ ", fileName);
@@ -602,6 +612,12 @@
 
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
+    // Password nil
+    if ([CCUtility getPassword:metadata.account].length == 0) {
+        [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_bad_username_password_", nil) errorCode:kOCErrorServerUnauthorized];
+        return;
+    }
+    
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
@@ -1082,6 +1098,9 @@
             
         } else {
 
+            if (metadata && errorCode == kOCErrorServerUnauthorized)
+                [CCUtility setPassword:metadata.account password:nil];
+            
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
             
             errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];

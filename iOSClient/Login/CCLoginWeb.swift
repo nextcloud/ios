@@ -55,7 +55,10 @@ public class CCLoginWeb: UIViewController {
         let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
-        vc.present(webVC, animated: false, completion: nil)
+        vc.present(webVC, animated: false) {
+            // Stop timer
+            self.appDelegate.timerServerUnauthorized.invalidate()
+        }
     }
 }
 
