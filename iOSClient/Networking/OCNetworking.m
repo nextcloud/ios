@@ -351,13 +351,15 @@
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         
         NSString *message;
-        NSInteger errorCode;
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        errorCode = httpResponse.statusCode;
+        NSInteger errorCode = ((NSHTTPURLResponse*)response).statusCode;
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -392,13 +394,15 @@
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         
         NSString *message;
-        NSInteger errorCode;
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        errorCode = httpResponse.statusCode;
-        
+        NSInteger errorCode = ((NSHTTPURLResponse*)response).statusCode;
+
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -440,13 +444,15 @@
     } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
         
         NSString *message;
-        NSInteger errorCode;
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        errorCode = httpResponse.statusCode;
+        NSInteger errorCode = ((NSHTTPURLResponse*)response).statusCode;
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -557,10 +563,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -622,10 +633,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -671,8 +687,14 @@
             message = [CCError manageErrorOC:response.statusCode error:error];
         
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         completion(account, nil, nil, message, errorCode);
         
@@ -711,10 +733,15 @@
     } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -743,13 +770,25 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        NSString *message = [CCError manageErrorOC:response.statusCode error:error];
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
-        completion(account, message, error.code);
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, message, errorCode);
         
     } errorBeforeRequest:^(NSError *error) {
         
@@ -842,10 +881,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -927,8 +972,14 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -961,8 +1012,14 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1002,10 +1059,15 @@
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
             NSString *message;
-            
             NSInteger errorCode = response.statusCode;
+            
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
+            
+            // Server Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [CCUtility setPassword:account password:nil];
+            }
             
             // Error
             if (errorCode == 503)
@@ -1090,10 +1152,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1125,10 +1192,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1161,10 +1233,16 @@
         
     } failureRequest :^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1194,11 +1272,17 @@
                 
     } failureRequest :^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1229,11 +1313,17 @@
                 
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1262,11 +1352,17 @@
                 
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
 
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1295,11 +1391,17 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1328,11 +1430,17 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1361,10 +1469,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1406,10 +1520,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1438,10 +1557,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1471,10 +1596,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1504,10 +1635,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1537,10 +1674,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1570,10 +1713,16 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1624,8 +1773,14 @@
            
             NSString *message;
             NSInteger errorCode = response.statusCode;
+            
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
+            
+            // Server Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [CCUtility setPassword:account password:nil];
+            }
             
             // Error
             if (errorCode == 503)
@@ -1640,9 +1795,15 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
     
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
+        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1680,8 +1841,14 @@
             
             NSString *message;
             NSInteger errorCode = response.statusCode;
+            
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
+            
+            // Server Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [CCUtility setPassword:account password:nil];
+            }
             
             // Error
             if (errorCode == 503)
@@ -1696,8 +1863,14 @@
 
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1725,10 +1898,8 @@
         if (error) {
             
             NSString *message;
-            NSInteger errorCode;
-            
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-            errorCode = httpResponse.statusCode;
+            NSInteger errorCode = httpResponse.statusCode;
             
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
@@ -1777,8 +1948,14 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1809,8 +1986,14 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1841,8 +2024,14 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1874,10 +2063,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1953,10 +2147,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1989,8 +2188,14 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -2027,10 +2232,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -2090,10 +2300,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
@@ -2126,10 +2341,15 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        }
         
         // Error
         if (errorCode == 503)
