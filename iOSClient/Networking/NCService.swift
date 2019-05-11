@@ -106,7 +106,7 @@ class NCService: NSObject {
             } else {
                 
                 if errorCode == kOCErrorServerUnauthorized {
-                    self.appDelegate.errorServerUnauthorized = true
+                    CCUtility.setPassword(account, password: nil)
                 }
                 
                 print("[LOG] It has been changed user during networking process, error.")
@@ -307,7 +307,7 @@ class NCService: NSObject {
                 self.appDelegate.settingThemingColorBrand()
                 
                 if errorCode == kOCErrorServerUnauthorized {
-                    self.appDelegate.errorServerUnauthorized = true
+                    CCUtility.setPassword(account, password: nil)
                 }
                 
             } else {

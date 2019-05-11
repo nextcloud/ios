@@ -67,7 +67,6 @@
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
-@property BOOL errorServerUnauthorized;
 
 // Network Share
 @property (nonatomic, strong) NSMutableDictionary *sharesID;
