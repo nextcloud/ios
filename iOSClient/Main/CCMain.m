@@ -1131,8 +1131,6 @@
                 [self readFolder:metadata.serverUrl];
             }
             
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
@@ -1263,8 +1261,6 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
@@ -1326,9 +1322,7 @@
             
         } else {
             
-            if (errorCode == kOCErrorServerUnauthorized) {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
             } else if (errorCode != 0) {
                 [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
@@ -1516,9 +1510,7 @@
                 
             } else if (errorCode != 0) {
                 
-                if (errorCode == kOCErrorServerUnauthorized) {
-                    [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-                } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                if (errorCode == NSURLErrorServerCertificateUntrusted) {
                     [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
                 } else if (errorCode == kOCErrorServerPathNotFound) {
                 
@@ -1603,9 +1595,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized) {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
             } else if (errorCode == kOCErrorServerPathNotFound) {
             
@@ -1813,9 +1803,7 @@
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
             
-            if (errorCode == kOCErrorServerUnauthorized) {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
             } else if (errorCode != 0) {
                 [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
@@ -1931,10 +1919,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
     }];
     
@@ -1957,10 +1942,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
@@ -1992,10 +1974,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
@@ -2019,10 +1998,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
@@ -2048,10 +2024,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
 
     }];
@@ -2073,10 +2046,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
@@ -2164,8 +2134,6 @@
                 [appDelegate startLoadAutoDownloadUpload];
             }
             
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {

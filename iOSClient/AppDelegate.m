@@ -200,6 +200,7 @@ PKPushRegistry *pushRegistry;
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
+    self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
 
     // Fabric
     if (![CCUtility getDisableCrashservice]) {
@@ -311,8 +312,19 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Login =====
+#pragma mark ===== Login / checkPassword: ServerUnauthorized =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)checkPassword
+{
+    // test
+    if (self.activeAccount.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
+        return;
+    
+    if ([CCUtility getPassword:self.activeAccount].length == 0) {
+        [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
+    }
+}
 
 - (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
 {
