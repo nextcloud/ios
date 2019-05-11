@@ -318,7 +318,7 @@ PKPushRegistry *pushRegistry;
 - (void)checkPassword
 {
     // test
-    if (self.activeAccount.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
