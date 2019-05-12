@@ -311,6 +311,8 @@
         completion(account, 0, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, 0, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, 0, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
@@ -362,7 +364,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -384,6 +386,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -409,7 +413,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -431,6 +435,8 @@
         completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -463,7 +469,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -492,6 +498,8 @@
         completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *url = tableAccount.url;
@@ -586,7 +594,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -606,6 +614,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -660,7 +670,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -680,6 +690,8 @@
         completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *path = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
@@ -717,7 +729,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         completion(account, nil, nil, message, errorCode);
@@ -746,6 +758,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    }  else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -768,7 +782,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -788,6 +802,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    }  else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -810,7 +826,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -847,6 +863,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    }  else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
@@ -925,7 +943,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -992,6 +1010,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
@@ -1018,7 +1038,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1038,6 +1058,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1062,7 +1084,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1082,6 +1104,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
@@ -1114,7 +1138,7 @@
             if (errorCode == kOCErrorServerUnauthorized) {
                 [CCUtility setPassword:account password:nil];
             } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [CCUtility setCertificateError:YES];
+                [CCUtility setCertificateError:account error:YES];
             }
             
             // Error
@@ -1139,6 +1163,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -1211,7 +1237,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1231,6 +1257,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *server = [tableAccount.url stringByAppendingString:k_dav];
@@ -1255,7 +1283,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1279,6 +1307,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1301,7 +1331,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1322,6 +1352,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1344,7 +1376,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1367,6 +1399,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1389,7 +1423,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1410,6 +1444,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1432,7 +1468,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1453,6 +1489,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1475,7 +1513,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1496,6 +1534,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1518,7 +1558,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1539,6 +1579,8 @@
         completion(account, 0, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, 0, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, 0, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1561,7 +1603,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1588,6 +1630,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
@@ -1615,7 +1659,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1635,6 +1679,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1657,7 +1703,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1678,6 +1724,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1700,7 +1748,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1721,6 +1769,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1743,7 +1793,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1764,6 +1814,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1786,7 +1838,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1807,6 +1859,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1829,7 +1883,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1854,6 +1908,8 @@
         completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
@@ -1891,7 +1947,7 @@
             if (errorCode == kOCErrorServerUnauthorized) {
                 [CCUtility setPassword:account password:nil];
             } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [CCUtility setCertificateError:YES];
+                [CCUtility setCertificateError:account error:YES];
             }
             
             // Error
@@ -1915,7 +1971,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -1935,6 +1991,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
@@ -1965,7 +2023,7 @@
             if (errorCode == kOCErrorServerUnauthorized) {
                 [CCUtility setPassword:account password:nil];
             } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [CCUtility setCertificateError:YES];
+                [CCUtility setCertificateError:account error:YES];
             }
             
             // Error
@@ -1989,7 +2047,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2054,6 +2112,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *fileIDServer = [[NCUtility sharedInstance] convertFileIDClientToFileIDServer:fileID];
@@ -2078,7 +2138,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2098,6 +2158,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -2120,7 +2182,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2140,6 +2202,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -2162,7 +2226,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2182,6 +2246,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:tableAccount.url];
@@ -2206,7 +2272,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2230,6 +2296,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -2294,7 +2362,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2314,6 +2382,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *path = [NSString stringWithFormat:@"%@%@/trashbin/%@/trash", tableAccount.url, k_dav, tableAccount.userID];
@@ -2338,7 +2408,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2362,6 +2432,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/settings/%@", serverUrl, tableAccount.userID];
@@ -2387,7 +2459,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2407,6 +2479,8 @@
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     // Create JSON
@@ -2459,7 +2533,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error
@@ -2479,6 +2553,8 @@
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
     } else if ([CCUtility getPassword:account].length == 0) {
         completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/features/%@", serverUrl, tableAccount.userID];
@@ -2504,7 +2580,7 @@
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:YES];
+            [CCUtility setCertificateError:account error:YES];
         }
         
         // Error

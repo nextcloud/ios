@@ -24,6 +24,7 @@
 #import "CCUtility.h"
 #import "CCCertificate.h"
 #import "NCBridgeSwift.h"
+#import "AppDelegate.h"
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
@@ -139,33 +140,37 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
     X509_free(x509cert);
 }
 
-- (void)presentViewControllerCertificateWithTitle:(NSString *)title viewController:(UIViewController *)viewController delegate:(id)delegate
-{    
-    if (![viewController isKindOfClass:[UIViewController class]])
-        return;
-    
+- (void)presentViewControllerCertificateWithAccount:(NSString *)account delegate:(id)delegate
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     _delegate = delegate;
+    
+    // Stop timer error network
+    [appDelegate.timerErrorNetworking invalidate];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
     
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                                                            
             [[CCCertificate sharedManager] acceptCertificate];
-            [CCUtility setCertificateError:NO];
+            if (account != nil) [CCUtility setCertificateError:account error:NO];
+            [appDelegate startTimerErrorNetworking];
             
             if([self.delegate respondsToSelector:@selector(trustedCerticateAccepted)])
                 [self.delegate trustedCerticateAccepted];
         }]];
     
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_no_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                                           
+            
+            [appDelegate startTimerErrorNetworking];
+
             if([self.delegate respondsToSelector:@selector(trustedCerticateDenied)])
                 [self.delegate trustedCerticateDenied];
         }]];
         
-        [viewController presentViewController:alertController animated:YES completion:nil];
+        [appDelegate.window.rootViewController presentViewController:alertController animated:YES completion:nil];
     });
 }
 

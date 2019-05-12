@@ -161,8 +161,8 @@
 
 + (NSData *)getDatabaseEncryptionKey;
 
-+ (BOOL)getCertificateError;
-+ (void)setCertificateError:(BOOL)error;
++ (BOOL)getCertificateError:(NSString *)account;
++ (void)setCertificateError:(NSString *)account error:(BOOL)error;
 
 // ===== Varius =====
 

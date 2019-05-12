@@ -327,8 +327,8 @@ PKPushRegistry *pushRegistry;
     }
     
     // check certificate untrusted (-1202)
-    if ([CCUtility getCertificateError]) {
-        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) viewController:self.window.rootViewController delegate:self];
+    if ([CCUtility getCertificateError:self.activeAccount]) {
+        [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:self.activeAccount delegate:self];
     }
 }
 

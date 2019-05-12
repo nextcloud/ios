@@ -619,23 +619,26 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getCertificateError
++ (BOOL)getCertificateError:(NSString *)account
 {
-    NSString *error = [UICKeyChainStore stringForKey:@"certificateError" service:k_serviceShareKeyChain];
+    NSString *key = [@"certificateError" stringByAppendingString:account];
+    NSString *error = [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
     
     if (error == nil) {
         
-        [self setCertificateError:NO];
+        [self setCertificateError:account error:NO];
         return  NO;
     }
     
     return [error boolValue];
 }
 
-+ (void)setCertificateError:(BOOL)error
++ (void)setCertificateError:(NSString *)account error:(BOOL)error
 {
+    NSString *key = [@"certificateError" stringByAppendingString:account];
     NSString *sError = (error) ? @"true" : @"false";
-    [UICKeyChainStore setString:sError forKey:@"certificateError" service:k_serviceShareKeyChain];
+    
+    [UICKeyChainStore setString:sError forKey:key service:k_serviceShareKeyChain];
 }
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====

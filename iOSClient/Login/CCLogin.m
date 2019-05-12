@@ -138,7 +138,7 @@
 {
     [super viewDidAppear:animated];
     
-    // Stop timer
+    // Stop timer error network
     [appDelegate.timerErrorNetworking invalidate];
 }
 
@@ -213,7 +213,7 @@
             
             if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:nil delegate:self];
                 
             } else {
                 

@@ -392,6 +392,9 @@
     if ([CCUtility getPassword:metadata.account].length == 0) {
         [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_bad_username_password_", nil) errorCode:kOCErrorServerUnauthorized];
         return;
+    } else if ([CCUtility getCertificateError:metadata.account]) {
+        [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) errorCode:NSURLErrorServerCertificateUntrusted];
+        return;
     }
     
     // File exists ?
@@ -548,7 +551,7 @@
             if (metadata && errorCode == kOCErrorServerUnauthorized)
                 [CCUtility setPassword:metadata.account password:nil];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
-                [CCUtility setCertificateError:YES];
+                [CCUtility setCertificateError:metadata.account error:YES];
 
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         }
@@ -617,6 +620,9 @@
     // Password nil
     if ([CCUtility getPassword:metadata.account].length == 0) {
         [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_bad_username_password_", nil) errorCode:kOCErrorServerUnauthorized];
+        return;
+    } else if ([CCUtility getCertificateError:metadata.account]) {
+        [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) errorCode:NSURLErrorServerCertificateUntrusted];
         return;
     }
     
@@ -1103,7 +1109,7 @@
             if (metadata && errorCode == kOCErrorServerUnauthorized)
                 [CCUtility setPassword:metadata.account password:nil];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
-                [CCUtility setCertificateError:YES];
+                [CCUtility setCertificateError:metadata.account error:YES];
             
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
             
