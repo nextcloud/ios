@@ -329,6 +329,9 @@
         // Remove search mode
         [self cancelSearchBar];
         
+        // Clear error certificate
+        [CCUtility setCertificateError:appDelegate.activeAccount error:NO];
+        
         // populate shared Link & User
         NSArray *results = [[NCManageDatabase sharedInstance] getSharesWithAccount:appDelegate.activeAccount];
         if (results) {
