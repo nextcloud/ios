@@ -325,6 +325,11 @@ PKPushRegistry *pushRegistry;
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
         [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
     }
+    
+    // check certificate untrusted (-1202)
+    if ([CCUtility getCertificateError]) {
+        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) viewController:self.window.rootViewController delegate:self];
+    }
 }
 
 - (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector

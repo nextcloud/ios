@@ -153,6 +153,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                                                            
             [[CCCertificate sharedManager] acceptCertificate];
+            [CCUtility setCertificateError:NO];
             
             if([self.delegate respondsToSelector:@selector(trustedCerticateAccepted)])
                 [self.delegate trustedCerticateAccepted];

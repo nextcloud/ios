@@ -547,6 +547,8 @@
             
             if (metadata && errorCode == kOCErrorServerUnauthorized)
                 [CCUtility setPassword:metadata.account password:nil];
+            else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
+                [CCUtility setCertificateError:YES];
 
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         }
@@ -1100,6 +1102,8 @@
 
             if (metadata && errorCode == kOCErrorServerUnauthorized)
                 [CCUtility setPassword:metadata.account password:nil];
+            else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
+                [CCUtility setCertificateError:YES];
             
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
             

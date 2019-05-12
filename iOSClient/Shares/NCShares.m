@@ -204,8 +204,6 @@
             
             [self reloadDatasource];
             
-        } if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {

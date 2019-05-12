@@ -361,6 +361,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -406,6 +408,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -458,6 +462,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -579,6 +585,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -651,6 +659,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -706,6 +716,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         completion(account, nil, nil, message, errorCode);
@@ -755,6 +767,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -795,6 +809,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -908,6 +924,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -999,6 +1017,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1041,6 +1061,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1091,6 +1113,8 @@
             // Server Unauthorized
             if (errorCode == kOCErrorServerUnauthorized) {
                 [CCUtility setPassword:account password:nil];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [CCUtility setCertificateError:YES];
             }
             
             // Error
@@ -1186,6 +1210,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1228,6 +1254,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1272,6 +1300,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1313,6 +1343,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1356,6 +1388,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1397,6 +1431,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1438,6 +1474,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1479,6 +1517,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1520,6 +1560,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1572,6 +1614,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1612,6 +1656,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1653,6 +1699,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1694,6 +1742,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1735,6 +1785,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1776,6 +1828,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1836,6 +1890,8 @@
             // Server Unauthorized
             if (errorCode == kOCErrorServerUnauthorized) {
                 [CCUtility setPassword:account password:nil];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [CCUtility setCertificateError:YES];
             }
             
             // Error
@@ -1858,6 +1914,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -1906,6 +1964,8 @@
             // Server Unauthorized
             if (errorCode == kOCErrorServerUnauthorized) {
                 [CCUtility setPassword:account password:nil];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [CCUtility setCertificateError:YES];
             }
             
             // Error
@@ -1928,6 +1988,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2015,6 +2077,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2055,6 +2119,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2095,6 +2161,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2137,6 +2205,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2223,6 +2293,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2265,6 +2337,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2312,6 +2386,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2382,6 +2458,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error
@@ -2425,6 +2503,8 @@
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:YES];
         }
         
         // Error

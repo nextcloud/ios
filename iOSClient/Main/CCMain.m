@@ -1131,8 +1131,6 @@
                 [self readFolder:metadata.serverUrl];
             }
             
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
@@ -1261,8 +1259,6 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
@@ -1322,9 +1318,7 @@
             
         } else {
             
-            if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-            } else if (errorCode != 0) {
+            if (errorCode != 0) {
                 [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
@@ -1510,9 +1504,7 @@
                 
             } else if (errorCode != 0) {
                 
-                if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                    [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-                } else if (errorCode == kOCErrorServerPathNotFound) {
+                if (errorCode == kOCErrorServerPathNotFound) {
                 
                     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                     NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, fileNameNew];
@@ -1595,9 +1587,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-            } else if (errorCode == kOCErrorServerPathNotFound) {
+            if (errorCode == kOCErrorServerPathNotFound) {
             
                 NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                 NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
@@ -1803,9 +1793,7 @@
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
             
-            if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-            } else if (errorCode != 0) {
+            if (errorCode != 0) {
                 [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
@@ -2134,8 +2122,6 @@
                 [appDelegate startLoadAutoDownloadUpload];
             }
             
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
