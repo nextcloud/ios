@@ -140,10 +140,13 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
     X509_free(x509cert);
 }
 
-- (void)presentViewControllerCertificateWithAccount:(NSString *)account delegate:(id)delegate
+- (void)presentViewControllerCertificateWithAccount:(NSString *)account viewController:(UIViewController *)viewController delegate:(id)delegate
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     _delegate = delegate;
+    
+    if (![viewController isKindOfClass:[UIViewController class]])
+        return;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     
@@ -167,7 +170,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
                 [self.delegate trustedCerticateDenied];
         }]];
         
-        [appDelegate.window.rootViewController presentViewController:alertController animated:YES completion:^{
+        [viewController presentViewController:alertController animated:YES completion:^{
             // Stop timer error network
             [appDelegate.timerErrorNetworking invalidate];
         }];

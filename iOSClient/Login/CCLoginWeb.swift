@@ -65,7 +65,7 @@ public class CCLoginWeb: UIViewController {
 extension CCLoginWeb: SwiftModalWebVCDelegate {
     
     public func didStartLoading() {
-        print("Started loading.")
+        //print("Started loading.")
     }
     
     public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
@@ -145,7 +145,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
     }
 
     public func didFinishLoading(success: Bool, url: URL) {
-        print("Finished loading. Success: \(success).")
+        //print("Finished loading. Success: \(success).")
     }
     
     public func webDismiss() {

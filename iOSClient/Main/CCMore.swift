@@ -481,7 +481,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
 extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
     
     public func didStartLoading() {
-        print("Started loading.")
+        //print("Started loading.")
     }
     
     public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
@@ -500,15 +500,15 @@ extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
     }
     
     public func didFinishLoading(success: Bool) {
-        print("Finished loading. Success: \(success).")
+        //print("Finished loading. Success: \(success).")
     }
     
     public func didFinishLoading(success: Bool, url: URL) {
-        print("Finished loading. Success: \(success).")
+        //print("Finished loading. Success: \(success).")
     }
     
     public func webDismiss() {
-        print("Web dismiss.")
+        //print("Web dismiss.")
     }
 }
 

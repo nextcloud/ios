@@ -41,7 +41,7 @@
 - (BOOL)acceptCertificate;
 - (void)saveCertificate:(SecTrustRef) trust withName:(NSString *) certName;
 
-- (void)presentViewControllerCertificateWithAccount:(NSString *)account delegate:(id)delegate;
+- (void)presentViewControllerCertificateWithAccount:(NSString *)account viewController:(UIViewController *)viewController delegate:(id)delegate;
 
 @end
 

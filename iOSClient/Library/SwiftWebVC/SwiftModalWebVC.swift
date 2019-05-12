@@ -85,7 +85,7 @@ extension SwiftModalWebVC: SwiftWebVCDelegate {
     }
     
     public func didFinishLoading(success: Bool) {
-        print("Finished loading. Success: \(success).")
+        //print("Finished loading. Success: \(success).")
     }
     
     public func didFinishLoading(success: Bool, url: URL) {
