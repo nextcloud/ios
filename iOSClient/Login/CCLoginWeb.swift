@@ -57,7 +57,7 @@ public class CCLoginWeb: UIViewController {
 
         vc.present(webVC, animated: false) {
             // Stop timer
-            self.appDelegate.timerServerUnauthorized.invalidate()
+            self.appDelegate.timerErrorNetworking.invalidate()
         }
     }
 }

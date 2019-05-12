@@ -200,7 +200,7 @@ PKPushRegistry *pushRegistry;
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
-    [self startTimerServerUnauthorized];
+    [self startTimerErrorNetworking];
 
     // Fabric
     if (![CCUtility getDisableCrashservice]) {
@@ -312,15 +312,16 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Login / checkPassword: ServerUnauthorized =====
+#pragma mark ===== Login / checkErrorNetworking =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)checkPassword
+- (void)checkErrorNetworking
 {
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
+    // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
         [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
     }
@@ -411,12 +412,12 @@ PKPushRegistry *pushRegistry;
 }
 - (void)webDismiss
 {
-    [self startTimerServerUnauthorized];
+    [self startTimerErrorNetworking];
 }
 
-- (void)startTimerServerUnauthorized
+- (void)startTimerErrorNetworking
 {
-    self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
+    self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:k_timerErrorNetworking target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

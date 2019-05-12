@@ -139,7 +139,7 @@
     [super viewDidAppear:animated];
     
     // Stop timer
-    [appDelegate.timerServerUnauthorized invalidate];
+    [appDelegate.timerErrorNetworking invalidate];
 }
 
 //
@@ -148,7 +148,7 @@
     [super viewDidDisappear:animated];
     
     // Start timer
-    [appDelegate startTimerServerUnauthorized];
+    [appDelegate startTimerErrorNetworking];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

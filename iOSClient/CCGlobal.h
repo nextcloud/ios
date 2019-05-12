@@ -171,7 +171,7 @@
 // Timer
 #define k_timerProcessAutoDownloadUpload                5
 #define k_timerUpdateApplicationIconBadgeNumber         3
-#define k_timerServerUnauthorized                       3
+#define k_timerErrorNetworking                          3
 
 // ConcurrentOperation
 #define k_maxHTTPConnectionsPerHost                     5
