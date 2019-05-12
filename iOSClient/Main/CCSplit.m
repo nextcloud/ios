@@ -181,12 +181,9 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
+    [appDelegate startTimerServerUnauthorized];
+    
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-}
-
-- (void)loginDismiss
-{
-    //
 }
 
 #pragma --------------------------------------------------------------------------------------------

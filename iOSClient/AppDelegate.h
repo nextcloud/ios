@@ -138,6 +138,9 @@
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 
+// Timer Server Unauthorized
+- (void)startTimerServerUnauthorized;
+
 // Login View
 - (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
 

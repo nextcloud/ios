@@ -200,7 +200,7 @@ PKPushRegistry *pushRegistry;
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
-    self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
+    [self startTimerServerUnauthorized];
 
     // Fabric
     if (![CCUtility getDisableCrashservice]) {
@@ -411,9 +411,15 @@ PKPushRegistry *pushRegistry;
 }
 - (void)webDismiss
 {
-    self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
+    [self startTimerServerUnauthorized];
 }
+
 - (void)loginDismiss
+{
+    [self startTimerServerUnauthorized];
+}
+
+- (void)startTimerServerUnauthorized
 {
     self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
 }
