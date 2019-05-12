@@ -145,9 +145,6 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     _delegate = delegate;
     
-    // Stop timer error network
-    [appDelegate.timerErrorNetworking invalidate];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
@@ -170,7 +167,10 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
                 [self.delegate trustedCerticateDenied];
         }]];
         
-        [appDelegate.window.rootViewController presentViewController:alertController animated:YES completion:nil];
+        [appDelegate.window.rootViewController presentViewController:alertController animated:YES completion:^{
+            // Stop timer error network
+            [appDelegate.timerErrorNetworking invalidate];
+        }];
     });
 }
 

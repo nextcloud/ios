@@ -146,6 +146,7 @@
 + (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account;
 + (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature;
 + (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
++ (void)clearAllKeysPushNotification:(NSString *)account;
 
 + (NSInteger)getMediaWidthImage;
 + (void)setMediaWidthImage:(NSInteger)width;

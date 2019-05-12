@@ -551,6 +551,16 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)clearAllKeysPushNotification:(NSString *)account
+{
+    [self setPushNotificationPublicKey:account data:nil];
+    [self setPushNotificationSubscribingPublicKey:account publicKey:nil];
+    [self setPushNotificationPrivateKey:account data:nil];
+    [self setPushNotificationToken:account token:nil];
+    [self setPushNotificationDeviceIdentifier:account deviceIdentifier:nil];
+    [self setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
+}
+
 + (NSInteger)getMediaWidthImage
 {
     NSString *width = [UICKeyChainStore stringForKey:@"mediaWidthImage" service:k_serviceShareKeyChain];
