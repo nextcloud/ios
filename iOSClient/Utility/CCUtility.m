@@ -619,6 +619,24 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getCertificateError
+{
+    NSString *error = [UICKeyChainStore stringForKey:@"certificateError" service:k_serviceShareKeyChain];
+    
+    if (error == nil) {
+        
+        [self setCertificateError:NO];
+        return  NO;
+    }
+    
+    return [error boolValue];
+}
+
++ (void)setCertificateError:(BOOL)error
+{
+    NSString *sError = (error) ? @"true" : @"false";
+    [UICKeyChainStore setString:sError forKey:@"certificateError" service:k_serviceShareKeyChain];
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

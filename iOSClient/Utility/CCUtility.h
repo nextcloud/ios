@@ -161,6 +161,9 @@
 
 + (NSData *)getDatabaseEncryptionKey;
 
++ (BOOL)getCertificateError;
++ (void)setCertificateError:(BOOL)error;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
