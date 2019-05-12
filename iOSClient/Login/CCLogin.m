@@ -146,6 +146,9 @@
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+    
+    // Start timer
+    [appDelegate startTimerServerUnauthorized];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -401,7 +404,6 @@
 
 - (IBAction)handleAnnulla:(id)sender
 {
-    [self.delegate loginDismiss];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -414,11 +414,6 @@ PKPushRegistry *pushRegistry;
     [self startTimerServerUnauthorized];
 }
 
-- (void)loginDismiss
-{
-    [self startTimerServerUnauthorized];
-}
-
 - (void)startTimerServerUnauthorized
 {
     self.timerServerUnauthorized = [NSTimer scheduledTimerWithTimeInterval:k_timerServerUnauthorized target:self selector:@selector(checkPassword) userInfo:nil repeats:YES];
