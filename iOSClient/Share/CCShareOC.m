@@ -295,7 +295,12 @@
                 
             if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
             else row.title = item.shareWithDisplayName;
-                
+            
+            //If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
+            if (![item.uidOwner isEqualToString:appDelegate.activeUserID]) {
+                row.disabled = @YES;
+            }
+            
             [section addFormRow:row];
                 
             // add users
