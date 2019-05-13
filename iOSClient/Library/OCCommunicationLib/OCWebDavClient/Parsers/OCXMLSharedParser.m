@@ -196,7 +196,36 @@
         }
         
     } else if ([elementName isEqualToString:@"hide_download"]) {
+        
         _currentShared.hideDownload = [_xmlChars boolValue];
+        
+    } else if ([elementName isEqualToString:@"note"]) {
+        
+        _currentShared.note = _xmlChars;
+        
+    } else if ([elementName isEqualToString:@"label"]) {
+        
+        _currentShared.label = _xmlChars;
+        
+    } else if ([elementName isEqualToString:@"displayname_file_owner"]) {
+        
+        _currentShared.displayNameFileOwner = _xmlChars;
+        
+    } else if ([elementName isEqualToString:@"mimetype"]) {
+        
+        _currentShared.mimeType = _xmlChars;
+        
+    } else if ([elementName isEqualToString:@"storage_id"]) {
+        
+        _currentShared.storageID = _xmlChars;
+        
+    } else if ([elementName isEqualToString:@"file_parent"]) {
+        
+        _currentShared.fileParent = _xmlChars;
+        
+    } else if ([elementName isEqualToString:@"file_target"]) {
+        
+        _currentShared.fileTarget = _xmlChars;
     }
 }
 
