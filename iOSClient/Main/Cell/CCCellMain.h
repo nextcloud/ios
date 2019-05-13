@@ -36,6 +36,4 @@
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
-@property BOOL canShareEdit;
-
 @end

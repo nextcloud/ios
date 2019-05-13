@@ -518,7 +518,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.shared.image = nil
             cell.local.image = nil
             cell.shared.isUserInteractionEnabled = false
-            cell.canShareEdit = true
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             
@@ -543,18 +542,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if metadataFolder != nil {
                 isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
                 isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
-            }
-            
-            // backport show reshares for NC16+
-            if sharesLink != nil || sharesUserAndGroup != nil || isShare || isMounted {
-                cell.canShareEdit = false
-                if sharesLink != nil {
-                    let shareDto = appDelegate.sharesID.object(forKey: sharesLink!) as? OCSharedDto
-                    print(shareDto!.uidOwner + ", " + shareDto!.shareWith)
-                    if shareDto != nil && (shareDto?.uidOwner == appDelegate.activeUserID || shareDto?.shareWith == appDelegate.activeUserID) {
-                         cell.canShareEdit = true
-                    }
-                }
             }
             
             if metadata.directory {
