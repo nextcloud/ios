@@ -2003,7 +2003,7 @@ class NCManageDatabase: NSObject {
         realm.refresh()
         
         let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(by: sortProperties)// d(byKeyPath: "date", ascending: false)
+        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(by: sortProperties)
         if results.count == 0 {
             return nil
         }
@@ -2014,33 +2014,26 @@ class NCManageDatabase: NSObject {
         var oldServerUrl = ""
         var isValidMetadata = true
 
-        do {
-            try realm.write {
-                for result in results {
-                    let metadata = tableMetadata.init(value: result)
-                
-                    // Verify Lock
-                    if (serversUrlLocked.count > 0) && (metadata.serverUrl != oldServerUrl) {
-                        var foundLock = false
-                        oldServerUrl = metadata.serverUrl
-                        for serverUrlLocked in serversUrlLocked {
-                            if metadata.serverUrl.contains(serverUrlLocked) {
-                                foundLock = true
-                                break
-                            }
-                        }
-                        isValidMetadata = !foundLock
-                    }
-                    if isValidMetadata {
-                        metadatas.append(tableMetadata.init(value: metadata))
+        for result in results {
+            let metadata = tableMetadata.init(value: result)
+        
+            // Verify Lock
+            if (serversUrlLocked.count > 0) && (metadata.serverUrl != oldServerUrl) {
+                var foundLock = false
+                oldServerUrl = metadata.serverUrl
+                for serverUrlLocked in serversUrlLocked {
+                    if metadata.serverUrl.contains(serverUrlLocked) {
+                        foundLock = true
+                        break
                     }
                 }
+                isValidMetadata = !foundLock
             }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            realm.cancelWrite()
+            if isValidMetadata {
+                metadatas.append(tableMetadata.init(value: metadata))
+            }
         }
-        
+      
         return metadatas
     }
     
@@ -2128,6 +2121,33 @@ class NCManageDatabase: NSObject {
         }
         
         return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
+    }
+    
+    @objc func AlignMediaMetadata(account: String) {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(by: sortProperties)
+        if results.count == 0 {
+            return
+        }
+        
+        do {
+            try realm.write {
+                for result in results {
+                    if let tableMetadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", result.fileID)).first {
+                        if result.etag != tableMetadata.etag {
+                            realm.add(tableMedia.init(value: tableMetadata), update: true)
+                        }
+                    }
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            realm.cancelWrite()
+        }
     }
     
     //MARK: -
