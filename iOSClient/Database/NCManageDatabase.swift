@@ -1997,7 +1997,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    @objc func getTablesMedia(account: String, update: Bool) -> [tableMetadata]? {
+    @objc func getTablesMedia(account: String) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2017,16 +2017,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 for result in results {
-                    var metadata = tableMetadata.init(value: result)
-                
-                    // Update
-                    if update {
-                        if let tableMetadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", result.fileID)).first {
-                            realm.delete(result)
-                            realm.add(tableMedia.init(value: tableMetadata))
-                            metadata = tableMetadata
-                        }
-                    }
+                    let metadata = tableMetadata.init(value: result)
                 
                     // Verify Lock
                     if (serversUrlLocked.count > 0) && (metadata.serverUrl != oldServerUrl) {
