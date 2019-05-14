@@ -22,6 +22,7 @@
 //
 
 #import "CCCellMain.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCCellMain
 
@@ -41,6 +42,14 @@
 
     // Configure the view for the selected state
     self.contentView.preservesSuperviewLayoutMargins = NO;
+}
+
+- (void)blink
+{
+    self.viewBlink.backgroundColor = [[NCBrandColor sharedInstance] brand];
+    [UIView animateWithDuration:2 animations:^{
+        self.viewBlink.backgroundColor = [UIColor whiteColor];
+    }];
 }
 
 @end

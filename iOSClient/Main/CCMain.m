@@ -3729,12 +3729,7 @@
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                             CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
                             if (cell) {
-                                cell.layer.borderWidth = 1;
-                                cell.layer.borderColor = [[NCBrandColor sharedInstance] brand].CGColor;
-                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                                    cell.layer.borderWidth = 0;
-                                    cell.layer.borderColor = [UIColor clearColor].CGColor;
-                                });
+                                [cell blink];
                             }
                         });
                     }
