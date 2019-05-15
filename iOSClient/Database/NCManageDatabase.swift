@@ -2123,33 +2123,6 @@ class NCManageDatabase: NSObject {
         return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
     }
     
-    @objc func AlignMediaMetadata(account: String) {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(by: sortProperties)
-        if results.count == 0 {
-            return
-        }
-        
-        do {
-            try realm.write {
-                for result in results {
-                    if let tableMetadata = realm.objects(tableMetadata.self).filter(NSPredicate(format: "fileID == %@", result.fileID)).first {
-                        if result.etag != tableMetadata.etag {
-                            realm.add(tableMedia.init(value: tableMetadata), update: true)
-                        }
-                    }
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            realm.cancelWrite()
-        }
-    }
-    
     //MARK: -
     //MARK: Table Photo Library
     
