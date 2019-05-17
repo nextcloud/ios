@@ -3727,10 +3727,12 @@
                         [UIView animateWithDuration:0.5 animations:^{
                             [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
                         } completion:^(BOOL finished) {
-                            CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-                            if (cell) {
-                                [cell blink];
-                            }
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                                if (cell) {
+                                    [cell blink];
+                                }
+                            });
                         }];
                     }
                 }
