@@ -46,7 +46,7 @@
 
 - (void)blink
 {
-    self.viewBlink.backgroundColor = [[NCBrandColor sharedInstance] brand];
+    self.viewBlink.backgroundColor = [[[NCBrandColor sharedInstance] brand] colorWithAlphaComponent:.3];
     [UIView animateWithDuration:2 animations:^{
         self.viewBlink.backgroundColor = [UIColor whiteColor];
     }];

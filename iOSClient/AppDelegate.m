@@ -1607,9 +1607,10 @@ PKPushRegistry *pushRegistry;
                                 [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
                             }
                             
-                            [CATransaction begin];
-                            [CATransaction setCompletionBlock:^{
-                                
+                            [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
+                            
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                            
                                 NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
 
                                 if ([path containsString:@"/"]) {
@@ -1629,11 +1630,8 @@ PKPushRegistry *pushRegistry;
                                     self.activeMain.scrollToFileNamePath = fileNamePath;
                                     [self.activeMain readFolder:serverUrl];
                                 }
-                            }];
-                            
-                            [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
-                            [CATransaction commit];
-                            
+                            });
+                        
                         } else {
                             
                             NSString *domain = [[NSURL URLWithString:link] host];

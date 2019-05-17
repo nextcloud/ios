@@ -3111,7 +3111,6 @@
 {
     CGPoint touch = [gestureRecognizer locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
-    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     
     self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
@@ -3725,13 +3724,14 @@
                 for (NSString *key in sectionDataSource.fileIDIndexPath) {
                     if ([key isEqualToString:metadata.fileID]) {
                         NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
-                        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                        [UIView animateWithDuration:0.5 animations:^{
+                            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                        } completion:^(BOOL finished) {
                             CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
                             if (cell) {
                                 [cell blink];
                             }
-                        });
+                        }];
                     }
                 }
                 self.scrollToFileNamePath = nil;
