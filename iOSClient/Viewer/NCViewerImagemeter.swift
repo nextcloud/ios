@@ -124,7 +124,7 @@ class NCViewerImagemeter: NSObject {
                     continue
                 }
                 
-                let center = IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
+                let center = IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center?.x ?? 0, y: element.center?.y ?? 0, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
                 
                 let button = UIButton()
                 button.frame = CGRect(x: center.x - dimButton/2, y: center.y - dimButton/2, width: dimButton, height: dimButton)
