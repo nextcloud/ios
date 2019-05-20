@@ -38,5 +38,12 @@ class NCGridMediaCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+    
+    func blink() {
+        self.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+        UIView.animate(withDuration: 2) {
+            self.backgroundColor = .clear
+        }
+    }
 }
 
