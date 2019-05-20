@@ -1241,12 +1241,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     if let fileHandle = FileHandle(forReadingAtPath: annoPath) {
                         let dataFormat = fileHandle.readData(ofLength: 1)
                         if dataFormat.starts(with: [0x01]) {
-                            do {
-                                let data = try Data(contentsOf: URL(fileURLWithPath:annoPath))
-                                print(data)
-                            } catch {
-                                print(error)
-                            }
+                            appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                            return;
                         }
                         let dataZip = fileHandle.readData(ofLength: 4)
                         if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
