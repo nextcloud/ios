@@ -699,6 +699,7 @@
 "_server_response_error_"               = "Server response content error";
 "_no_nextcloud_found_"                  = "Nextcloud server not found";
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
+"_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
 
 // BKPasscode
 

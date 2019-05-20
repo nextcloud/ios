@@ -87,7 +87,7 @@ class NCViewerImagemeter: NSObject {
                 audioImagemeter()
                 
             } else {
-                appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                appDelegate.messageNotification("_error_", description: "_error_json_decoding_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
             }
             
         } catch {
