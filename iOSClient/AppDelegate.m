@@ -1586,57 +1586,58 @@ PKPushRegistry *pushRegistry;
                         
                         if (matchedAccount) {
                             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+                            UITabBarController *tbc;
                             
                             if (splitViewController.isCollapsed) {
                                 
-                                UITabBarController *tbc = splitViewController.viewControllers.firstObject;
+                                tbc = splitViewController.viewControllers.firstObject;
                                 for (UINavigationController *nvc in tbc.viewControllers) {
                                     
                                     if ([nvc.topViewController isKindOfClass:[CCDetail class]])
                                         [nvc popToRootViewControllerAnimated:NO];
                                 }
                                 
-                                [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
-                                
                             } else {
                                 
                                 UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
                                 [nvcDetail popToRootViewControllerAnimated:NO];
                                 
-                                UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                                [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
+                                tbc = splitViewController.viewControllers.firstObject;
                             }
                             
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                            
-                                [CATransaction begin];
-                                [CATransaction setCompletionBlock:^{
-                                    
-                                    NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
-                                    
-                                    if ([path containsString:@"/"]) {
-                                        
-                                        // Push
-                                        NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                                        NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                        tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
-                                        
-                                        [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata scrollToFileNamePath:fileNamePath];
-                                        
-                                    } else {
-                                        
-                                        // Reload folder
-                                        NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.url, k_webDAV];
-                                        
-                                        self.activeMain.scrollToFileNamePath = fileNamePath;
-                                        [self.activeMain readFolder:serverUrl];
-                                    }
-                                }];
                                 
-                                [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
-                                [CATransaction commit];
+                                [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
+                                
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                    
+                                    [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
+                                    
+                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                        
+                                        NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
+                                        
+                                        if ([path containsString:@"/"]) {
+                                            
+                                            // Push
+                                            NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                                            NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
+                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                                            
+                                            [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata scrollToFileNamePath:fileNamePath];
+                                            
+                                        } else {
+                                            
+                                            // Reload folder
+                                            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.url, k_webDAV];
+                                            
+                                            self.activeMain.scrollToFileNamePath = fileNamePath;
+                                            [self.activeMain readFolder:serverUrl];
+                                        }
+                                    });
+                                });
                             });
-                        
+              
                         } else {
                             
                             NSString *domain = [[NSURL URLWithString:link] host];
