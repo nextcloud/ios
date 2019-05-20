@@ -26,8 +26,6 @@
 
 @interface CCCellMain : MGSwipeTableCell
 
-@property(nonatomic, weak) IBOutlet UIView *viewBlink;
-
 @property(nonatomic, weak) IBOutlet UIImageView *file;
 @property(nonatomic, weak) IBOutlet UIImageView *status;
 @property(nonatomic, weak) IBOutlet UIImageView *favorite;
@@ -37,7 +35,5 @@
 
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
-
-- (void)blink;
 
 @end

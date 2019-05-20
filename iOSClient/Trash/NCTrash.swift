@@ -657,15 +657,7 @@ extension NCTrash {
                             self.collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
                         }, completion: { (finished) in
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                if self.collectionView.collectionViewLayout == self.listLayout {
-                                    if let cell = self.collectionView.cellForItem(at: indexPath) as? NCTrashListCell {
-                                        cell.blink()
-                                    }
-                                } else {
-                                    if let cell = self.collectionView.cellForItem(at: indexPath) as? NCGridCell {
-                                        cell.blink()
-                                    }
-                                }
+                                NCUtility.sharedInstance.blink(cell: self.collectionView.cellForItem(at: indexPath))
                             }
                         })
                         self.scrollToFileID = ""

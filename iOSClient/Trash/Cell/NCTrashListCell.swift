@@ -62,13 +62,6 @@ class NCTrashListCell: UICollectionViewCell {
     @IBAction func touchUpInsideRestore(_ sender: Any) {
         delegate?.tapRestoreListItem(with: fileID, sender: sender)
     }
-    
-    func blink() {
-        self.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
-        UIView.animate(withDuration: 2) {
-            self.backgroundColor = .clear
-        }
-    }
 }
 
 protocol NCTrashListCellDelegate {

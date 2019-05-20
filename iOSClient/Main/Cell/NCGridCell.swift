@@ -94,13 +94,6 @@ class NCGridCell: UICollectionViewCell {
             labelTitleTrailing.constant = labelTitleTrailingConstant
         }
     }
-    
-    func blink() {
-        self.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
-        UIView.animate(withDuration: 2) {
-            self.backgroundColor = .clear
-        }
-    }
 }
 
 protocol NCGridCellDelegate {
