@@ -513,6 +513,14 @@
 		F7D4238A1F0596C6009C9782 /* ThumbsMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423741F0596C6009C9782 /* ThumbsMainToolbar.m */; };
 		F7D4238B1F0596C6009C9782 /* ThumbsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423761F0596C6009C9782 /* ThumbsViewController.m */; };
 		F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423781F0596C6009C9782 /* UIXToolbarView.m */; };
+		F7D4B6852295663D000C2C86 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67D2295663D000C2C86 /* GoogleAppMeasurement.framework */; };
+		F7D4B6862295663D000C2C86 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67E2295663D000C2C86 /* FirebaseCore.framework */; };
+		F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67F2295663D000C2C86 /* FirebaseAnalytics.framework */; };
+		F7D4B6882295663D000C2C86 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6802295663D000C2C86 /* GoogleUtilities.framework */; };
+		F7D4B6892295663D000C2C86 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6812295663D000C2C86 /* nanopb.framework */; };
+		F7D4B68A2295663D000C2C86 /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6822295663D000C2C86 /* FIRAnalyticsConnector.framework */; };
+		F7D4B68B2295663D000C2C86 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6832295663D000C2C86 /* FirebaseInstanceID.framework */; };
+		F7D4B68C2295663D000C2C86 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6842295663D000C2C86 /* FirebaseCoreDiagnostics.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
 		F7D7B0D42245271100E6FE36 /* IMImagemeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B0D32245271100E6FE36 /* IMImagemeter.swift */; };
 		F7DFB7E0219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
@@ -1328,6 +1336,14 @@
 		F7D423771F0596C6009C9782 /* UIXToolbarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIXToolbarView.h; sourceTree = "<group>"; };
 		F7D423781F0596C6009C9782 /* UIXToolbarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIXToolbarView.m; sourceTree = "<group>"; };
 		F7D4B67B22956610000C2C86 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
+		F7D4B67D2295663D000C2C86 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAppMeasurement.framework; sourceTree = "<group>"; };
+		F7D4B67E2295663D000C2C86 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
+		F7D4B67F2295663D000C2C86 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		F7D4B6802295663D000C2C86 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleUtilities.framework; sourceTree = "<group>"; };
+		F7D4B6812295663D000C2C86 /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = nanopb.framework; sourceTree = "<group>"; };
+		F7D4B6822295663D000C2C86 /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
+		F7D4B6832295663D000C2C86 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		F7D4B6842295663D000C2C86 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		F7D532461F5D4123006568B1 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D5324D1F5D4137006568B1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D532541F5D4155006568B1 /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1453,6 +1469,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
+				F7D4B68C2295663D000C2C86 /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
 				F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */,
@@ -1460,17 +1477,21 @@
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
+				F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */,
 				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
+				F7D4B68B2295663D000C2C86 /* FirebaseInstanceID.framework in Frameworks */,
 				F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */,
 				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
+				F7D4B6892295663D000C2C86 /* nanopb.framework in Frameworks */,
 				F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */,
 				F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */,
 				F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */,
+				F7D4B6852295663D000C2C86 /* GoogleAppMeasurement.framework in Frameworks */,
 				F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */,
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
@@ -1479,6 +1500,9 @@
 				F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */,
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7C40BE321998C060004137E /* PDFGenerator.framework in Frameworks */,
+				F7D4B6862295663D000C2C86 /* FirebaseCore.framework in Frameworks */,
+				F7D4B68A2295663D000C2C86 /* FIRAnalyticsConnector.framework in Frameworks */,
+				F7D4B6882295663D000C2C86 /* GoogleUtilities.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
@@ -2645,9 +2669,25 @@
 		F7D4B67A22956610000C2C86 /* Firebase */ = {
 			isa = PBXGroup;
 			children = (
+				F7D4B67C2295663D000C2C86 /* Analytics */,
 				F7D4B67B22956610000C2C86 /* Firebase.h */,
 			);
 			path = Firebase;
+			sourceTree = "<group>";
+		};
+		F7D4B67C2295663D000C2C86 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				F7D4B67D2295663D000C2C86 /* GoogleAppMeasurement.framework */,
+				F7D4B67E2295663D000C2C86 /* FirebaseCore.framework */,
+				F7D4B67F2295663D000C2C86 /* FirebaseAnalytics.framework */,
+				F7D4B6802295663D000C2C86 /* GoogleUtilities.framework */,
+				F7D4B6812295663D000C2C86 /* nanopb.framework */,
+				F7D4B6822295663D000C2C86 /* FIRAnalyticsConnector.framework */,
+				F7D4B6832295663D000C2C86 /* FirebaseInstanceID.framework */,
+				F7D4B6842295663D000C2C86 /* FirebaseCoreDiagnostics.framework */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		F7D7B0D52245377800E6FE36 /* Imagemeter */ = {

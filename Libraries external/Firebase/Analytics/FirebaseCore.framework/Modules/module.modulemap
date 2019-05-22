@@ -1,0 +1,6 @@
+framework module FirebaseCore {
+umbrella header "FirebaseCore.h"
+export *
+module * { export * }
+  link framework "Foundation"
+}
