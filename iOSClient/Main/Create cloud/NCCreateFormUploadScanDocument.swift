@@ -125,17 +125,20 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         // Section: Text recognition
         
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
-        form.addFormSection(section)
+        if NCBrandOptions.sharedInstance.useMLVision {
         
-        row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
-        row.value = 0
+            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
+            form.addFormSection(section)
+            
+            row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
+            row.value = 0
+            
+            row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+            
+            section.addFormRow(row)
+        }
         
-        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        
-        section.addFormRow(row)
-
         // Section: File
         
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_file_creation_", comment: ""))
@@ -403,33 +406,35 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             return
         }
         
-        let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
-
         // Text Recognition TXT
-        if rowTextRecognition.value as! Int == 1 && fileType == "TXT" {
-            
-            var textFile = ""
-            
-            for image in self.arrayImages {
+        if NCBrandOptions.sharedInstance.useMLVision {
+            let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
+        
+            if rowTextRecognition.value as! Int == 1 && fileType == "TXT" {
                 
-                guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
-                    continue
-                }
+                var textFile = ""
                 
-                for textBlock in features {
+                for image in self.arrayImages {
                     
-                    guard let text = textBlock.value else {
+                    guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
                         continue
                     }
                     
-                    textFile = textFile + text + "\n\n"
-                }
-                
-                do {
-                    try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
-                } catch {
-                    self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
-                    return
+                    for textBlock in features {
+                        
+                        guard let text = textBlock.value else {
+                            continue
+                        }
+                        
+                        textFile = textFile + text + "\n\n"
+                    }
+                    
+                    do {
+                        try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
+                    } catch {
+                        self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                        return
+                    }
                 }
             }
         }
@@ -449,53 +454,57 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                 }
                 
                 // Text Recognition
-                if rowTextRecognition.value as! Int == 1 {
+                if NCBrandOptions.sharedInstance.useMLVision {
+                    let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
                     
-                    let page = PDFPage.image(UIImage(data: data)!)
-                    
-                    guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
-                        continue
-                    }
-                    
-                    do {
-                        let data = try PDFGenerator.generated(by: [page])
-                        let nddata = NSMutableData(data: data)
+                    if rowTextRecognition.value as! Int == 1 {
                         
-                        /*
-                        UIGraphicsBeginPDFContextToData(nddata, CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                        let page = PDFPage.image(UIImage(data: data)!)
                         
-                        for textBlock in features {
-                            for textLine in textBlock.lines {
-                                for textElement in textLine.elements {
-                                    
-                                    let font = UIFont.systemFont(ofSize: 10, weight: UIFont.Weight.regular)
-                                    
-                                    let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
-                                    paragraphStyle.alignment = NSTextAlignment.left
-                                    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                                    
-                                    let textFontAttributes = [
-                                        NSAttributedString.Key.font: font,
-                                        NSAttributedString.Key.foregroundColor: UIColor.red,
-                                        NSAttributedString.Key.paragraphStyle: paragraphStyle
-                                    ]
-                                    
-                                    let text:NSString = textElement.value! as NSString
-                                    
-                                    text.draw(in: textElement.bounds, withAttributes: textFontAttributes)
-                                }
-                            }
+                        guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
+                            continue
                         }
                         
-                        UIGraphicsEndPDFContext()
-                        */
+                        do {
+                            let data = try PDFGenerator.generated(by: [page])
+                            let nddata = NSMutableData(data: data)
+                            
+                            /*
+                            UIGraphicsBeginPDFContextToData(nddata, CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                            
+                            for textBlock in features {
+                                for textLine in textBlock.lines {
+                                    for textElement in textLine.elements {
+                             
+                                        let font = UIFont.systemFont(ofSize: 10, weight: UIFont.Weight.regular)
+                             
+                                        let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+                                        paragraphStyle.alignment = NSTextAlignment.left
+                                        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+                             
+                                        let textFontAttributes = [
+                                            NSAttributedString.Key.font: font,
+                                            NSAttributedString.Key.foregroundColor: UIColor.red,
+                                            NSAttributedString.Key.paragraphStyle: paragraphStyle
+                                        ]
+                             
+                                        let text:NSString = textElement.value! as NSString
+                             
+                                        text.draw(in: textElement.bounds, withAttributes: textFontAttributes)
+                                    }
+                                }
+                            }
+                            
+                            UIGraphicsEndPDFContext()
+                            */
 
-                        let page = PDFPage.binary(nddata as Data)
-                        pdfPages.append(page)
-                        
-                    } catch (let error) {
-                        print(error)
-                        continue
+                            let page = PDFPage.binary(nddata as Data)
+                            pdfPages.append(page)
+                            
+                        } catch (let error) {
+                            print(error)
+                            continue
+                        }
                     }
                     
                 } else {
