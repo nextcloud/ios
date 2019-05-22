@@ -1327,6 +1327,7 @@
 		F7D423761F0596C6009C9782 /* ThumbsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbsViewController.m; sourceTree = "<group>"; };
 		F7D423771F0596C6009C9782 /* UIXToolbarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIXToolbarView.h; sourceTree = "<group>"; };
 		F7D423781F0596C6009C9782 /* UIXToolbarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIXToolbarView.m; sourceTree = "<group>"; };
+		F7D4B67B22956610000C2C86 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
 		F7D532461F5D4123006568B1 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D5324D1F5D4137006568B1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D532541F5D4155006568B1 /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1609,6 +1610,7 @@
 			children = (
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F7A377131EB2364A002856D3 /* Fabric */,
+				F7D4B67A22956610000C2C86 /* Firebase */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
 				F7540EE11D5B238600C3FFA8 /* openssl */,
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
@@ -2638,6 +2640,14 @@
 				F7D423781F0596C6009C9782 /* UIXToolbarView.m */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		F7D4B67A22956610000C2C86 /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				F7D4B67B22956610000C2C86 /* Firebase.h */,
+			);
+			path = Firebase;
 			sourceTree = "<group>";
 		};
 		F7D7B0D52245377800E6FE36 /* Imagemeter */ = {
