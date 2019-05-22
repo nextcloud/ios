@@ -86,6 +86,10 @@
 		F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A1A1EE590930086BD69 /* NCSharesCell.m */; };
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
+		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
+		F72382C12295856A005B8A07 /* TextDetector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BC22958569005B8A07 /* TextDetector.framework */; };
+		F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */; };
+		F72382C32295856A005B8A07 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BF22958569005B8A07 /* GoogleToolboxForMac.framework */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
@@ -528,7 +532,6 @@
 		F7D4B6992295666E000C2C86 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6922295666E000C2C86 /* GoogleToolboxForMac.framework */; };
 		F7D4B69A2295666E000C2C86 /* FirebaseMLCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */; };
 		F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */; };
-		F7D4B6A8229567BC000C2C86 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6A7229567BC000C2C86 /* FirebaseMLVisionTextModel.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
 		F7D7B0D42245271100E6FE36 /* IMImagemeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B0D32245271100E6FE36 /* IMImagemeter.swift */; };
 		F7DFB7E0219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
@@ -730,6 +733,10 @@
 		F7169A4C1EE59C640086BD69 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
+		F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVisionTextModel.framework; sourceTree = "<group>"; };
+		F72382BC22958569005B8A07 /* TextDetector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TextDetector.framework; sourceTree = "<group>"; };
+		F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleMVTextDetectorResources.bundle; sourceTree = "<group>"; };
+		F72382BF22958569005B8A07 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
@@ -1359,7 +1366,6 @@
 		F7D4B6922295666E000C2C86 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
 		F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLCommon.framework; sourceTree = "<group>"; };
 		F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileVision.framework; sourceTree = "<group>"; };
-		F7D4B6A7229567BC000C2C86 /* FirebaseMLVisionTextModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVisionTextModel.framework; sourceTree = "<group>"; };
 		F7D532461F5D4123006568B1 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D5324D1F5D4137006568B1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D532541F5D4155006568B1 /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1503,13 +1509,15 @@
 				F7D4B68B2295663D000C2C86 /* FirebaseInstanceID.framework in Frameworks */,
 				F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */,
 				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
+				F72382C12295856A005B8A07 /* TextDetector.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
+				F72382C32295856A005B8A07 /* GoogleToolboxForMac.framework in Frameworks */,
 				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
 				F7D4B6892295663D000C2C86 /* nanopb.framework in Frameworks */,
 				F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */,
 				F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */,
-				F7D4B6A8229567BC000C2C86 /* FirebaseMLVisionTextModel.framework in Frameworks */,
+				F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */,
 				F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */,
 				F7D4B6952295666E000C2C86 /* Protobuf.framework in Frameworks */,
 				F7D4B6852295663D000C2C86 /* GoogleAppMeasurement.framework in Frameworks */,
@@ -1716,6 +1724,25 @@
 				F7169A1B1EE590930086BD69 /* NCSharesCell.xib */,
 			);
 			path = Shares;
+			sourceTree = "<group>";
+		};
+		F72382BA22958569005B8A07 /* MLVisionTextModel */ = {
+			isa = PBXGroup;
+			children = (
+				F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */,
+				F72382BC22958569005B8A07 /* TextDetector.framework */,
+				F72382BD22958569005B8A07 /* Resources */,
+				F72382BF22958569005B8A07 /* GoogleToolboxForMac.framework */,
+			);
+			path = MLVisionTextModel;
+			sourceTree = "<group>";
+		};
+		F72382BD22958569005B8A07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		F728CE741BF6322C00E69702 /* Share */ = {
@@ -2695,7 +2722,7 @@
 			children = (
 				F7D4B67C2295663D000C2C86 /* Analytics */,
 				F7D4B68D2295666E000C2C86 /* MLVision */,
-				F7D4B6A6229567BC000C2C86 /* MLVisionTextModel */,
+				F72382BA22958569005B8A07 /* MLVisionTextModel */,
 				F7D4B67B22956610000C2C86 /* Firebase.h */,
 			);
 			path = Firebase;
@@ -2728,14 +2755,6 @@
 				F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */,
 			);
 			path = MLVision;
-			sourceTree = "<group>";
-		};
-		F7D4B6A6229567BC000C2C86 /* MLVisionTextModel */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4B6A7229567BC000C2C86 /* FirebaseMLVisionTextModel.framework */,
-			);
-			path = MLVisionTextModel;
 			sourceTree = "<group>";
 		};
 		F7D7B0D52245377800E6FE36 /* Imagemeter */ = {
@@ -3298,6 +3317,7 @@
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				F762CB9A1EACB84400B38484 /* icon-success@2x.png in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
+				F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */,
 				F7F54CEE1E5B14C700E19C62 /* ImageSelectedSmallOff.png in Resources */,
 				F760F79721F21F61006B1A73 /* StickerCollectionViewCell.xib in Resources */,
 				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
@@ -4106,6 +4126,9 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)\"/Libraries external/Firebase\"/**",
 					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
+					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
+					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
+					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
@@ -4151,6 +4174,9 @@
 					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)\"/Libraries external/Firebase\"/**",
+					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
+					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
+					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
 					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
