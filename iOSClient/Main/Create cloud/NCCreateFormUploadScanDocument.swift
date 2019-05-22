@@ -25,6 +25,7 @@
 import Foundation
 import PDFGenerator
 import WeScan
+import GoogleMobileVision
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
@@ -39,8 +40,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     var titleServerUrl = ""
     var arrayImages = [UIImage]()
     var fileName = CCUtility.createFileNameDate("scan", extension: "pdf")
-    var password : PDFPassword = ""
+    var password: PDFPassword = ""
     var fileType = "PDF"
+    var ocr = true
+    
+    var textDetector: GMVDetector?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -119,6 +123,19 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         section.addFormRow(row)
         
+        // Section: Text recognition
+        
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
+        form.addFormSection(section)
+        
+        row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
+        row.value = 0
+        
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        
+        section.addFormRow(row)
+
         // Section: File
         
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_file_creation_", comment: ""))
@@ -151,6 +168,36 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
+        
+        if formRow.tag == "textRecognition" {
+            
+            let rowCompressionQuality: XLFormRowDescriptor = self.form.formRow(withTag: "compressionQuality")!
+            let rowFileTape: XLFormRowDescriptor = self.form.formRow(withTag: "filetype")!
+            let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!
+            let rowPassword: XLFormRowDescriptor = self.form.formRow(withTag: "password")!
+           
+            self.form.delegate = nil
+            
+            if newValue as! Int == 1 {
+                rowFileTape.selectorOptions = ["PDF","TXT"]
+                rowFileTape.value = "TXT"
+                fileType = "TXT"
+                rowPassword.disabled = true
+                rowCompressionQuality.disabled = true
+            } else {
+                rowFileTape.selectorOptions = ["PDF","JPG"]
+                rowFileTape.value = "PDF"
+                fileType = "PDF"
+                rowPassword.disabled = false
+                rowCompressionQuality.disabled = false
+            }
+            
+            rowFileName.value = createFileName(rowFileName.value as? String)
+            self.updateFormRow(rowFileName)
+            self.tableView.reloadData()
+
+            self.form.delegate = self
+        }
         
         if formRow.tag == "fileName" {
             
@@ -210,24 +257,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
             let rowPassword : XLFormRowDescriptor  = self.form.formRow(withTag: "password")!
             
-            // rowFileName
-            guard var name = rowFileName.value else {
-                return
-            }
-            if name as! String == "" {
-                name = CCUtility.createFileNameDate("scan", extension: "pdf") ?? "scan.pdf"
-            }
-            
-            let ext = (name as! NSString).pathExtension.uppercased()
-            var newFileName = ""
-            
-            if (ext == "") {
-                newFileName = name as! String + "." + fileType.lowercased()
-            } else {
-                newFileName = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
-            }
-            
-            rowFileName.value = newFileName
+            rowFileName.value = createFileName(rowFileName.value as? String)
             
             self.updateFormRow(rowFileName)
             
@@ -254,6 +284,28 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         }
     }
     
+    func createFileName(_ fileName: String?) -> String {
+        
+        var name: String = ""
+        var newFileName: String = ""
+        
+        if fileName == nil || fileName == "" {
+            name = CCUtility.createFileNameDate("scan", extension: "pdf") ?? "scan.pdf"
+        } else {
+            name = fileName!
+        }
+        
+        let ext = (name as NSString).pathExtension.uppercased()
+        
+        if (ext == "") {
+            newFileName = name + "." + fileType.lowercased()
+        } else {
+            newFileName = (name as NSString).deletingPathExtension + "." + fileType.lowercased()
+        }
+        
+        return newFileName
+    }
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -277,6 +329,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         //        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
+        
+        textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
     }
     
     // MARK: - Action
@@ -349,6 +403,37 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             return
         }
         
+        let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
+
+        // Text Recognition TXT
+        if rowTextRecognition.value as! Int == 1 && fileType == "TXT" {
+            
+            var textFile = ""
+            
+            for image in self.arrayImages {
+                
+                guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
+                    continue
+                }
+                
+                for textBlock in features {
+                    
+                    guard let text = textBlock.value else {
+                        continue
+                    }
+                    
+                    textFile = textFile + text + "\n\n"
+                }
+                
+                do {
+                    try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
+                } catch {
+                    self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                    return
+                }
+            }
+        }
+        
         if fileType == "PDF" {
             
             var pdfPages = [PDFPage]()
@@ -362,8 +447,62 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                     self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                     return
                 }
-                let page = PDFPage.image(UIImage(data: data)!)
-                pdfPages.append(page)
+                
+                // Text Recognition
+                if rowTextRecognition.value as! Int == 1 {
+                    
+                    let page = PDFPage.image(UIImage(data: data)!)
+                    
+                    guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
+                        continue
+                    }
+                    
+                    do {
+                        let data = try PDFGenerator.generated(by: [page])
+                        let nddata = NSMutableData(data: data)
+                        
+                        /*
+                        UIGraphicsBeginPDFContextToData(nddata, CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                        
+                        for textBlock in features {
+                            for textLine in textBlock.lines {
+                                for textElement in textLine.elements {
+                                    
+                                    let font = UIFont.systemFont(ofSize: 10, weight: UIFont.Weight.regular)
+                                    
+                                    let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+                                    paragraphStyle.alignment = NSTextAlignment.left
+                                    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+                                    
+                                    let textFontAttributes = [
+                                        NSAttributedString.Key.font: font,
+                                        NSAttributedString.Key.foregroundColor: UIColor.red,
+                                        NSAttributedString.Key.paragraphStyle: paragraphStyle
+                                    ]
+                                    
+                                    let text:NSString = textElement.value! as NSString
+                                    
+                                    text.draw(in: textElement.bounds, withAttributes: textFontAttributes)
+                                }
+                            }
+                        }
+                        
+                        UIGraphicsEndPDFContext()
+                        */
+
+                        let page = PDFPage.binary(nddata as Data)
+                        pdfPages.append(page)
+                        
+                    } catch (let error) {
+                        print(error)
+                        continue
+                    }
+                    
+                } else {
+                
+                    let page = PDFPage.image(UIImage(data: data)!)
+                    pdfPages.append(page) 
+                }
             }
             
             do {

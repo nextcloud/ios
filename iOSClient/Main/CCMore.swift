@@ -121,7 +121,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         functionMenu.append(item)
         
         // ITEM : Scan
-#if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
             item = OCExternalSites.init()
             item.name = "_scanned_images_"
@@ -129,7 +128,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             item.url = "openStoryboardScan"
             functionMenu.append(item)
         }
-#endif
         
         // ITEM : Trash
         let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount)
