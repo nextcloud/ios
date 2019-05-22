@@ -4125,10 +4125,6 @@
 					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)\"/Libraries external/Firebase\"/**",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
@@ -4174,10 +4170,6 @@
 					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)\"/Libraries external/Firebase\"/**",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
-					"$(PROJECT_DIR)/Libraries\\ external/Firebase/MLVisionTextModel",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
