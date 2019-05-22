@@ -521,6 +521,13 @@
 		F7D4B68A2295663D000C2C86 /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6822295663D000C2C86 /* FIRAnalyticsConnector.framework */; };
 		F7D4B68B2295663D000C2C86 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6832295663D000C2C86 /* FirebaseInstanceID.framework */; };
 		F7D4B68C2295663D000C2C86 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6842295663D000C2C86 /* FirebaseCoreDiagnostics.framework */; };
+		F7D4B6952295666E000C2C86 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B68E2295666E000C2C86 /* Protobuf.framework */; };
+		F7D4B6962295666E000C2C86 /* GTMSessionFetcher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B68F2295666E000C2C86 /* GTMSessionFetcher.framework */; };
+		F7D4B6972295666E000C2C86 /* GoogleAPIClientForREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6902295666E000C2C86 /* GoogleAPIClientForREST.framework */; };
+		F7D4B6982295666E000C2C86 /* FirebaseMLVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6912295666E000C2C86 /* FirebaseMLVision.framework */; };
+		F7D4B6992295666E000C2C86 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6922295666E000C2C86 /* GoogleToolboxForMac.framework */; };
+		F7D4B69A2295666E000C2C86 /* FirebaseMLCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */; };
+		F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
 		F7D7B0D42245271100E6FE36 /* IMImagemeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B0D32245271100E6FE36 /* IMImagemeter.swift */; };
 		F7DFB7E0219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
@@ -1344,6 +1351,13 @@
 		F7D4B6822295663D000C2C86 /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
 		F7D4B6832295663D000C2C86 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		F7D4B6842295663D000C2C86 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
+		F7D4B68E2295666E000C2C86 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Protobuf.framework; sourceTree = "<group>"; };
+		F7D4B68F2295666E000C2C86 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GTMSessionFetcher.framework; sourceTree = "<group>"; };
+		F7D4B6902295666E000C2C86 /* GoogleAPIClientForREST.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAPIClientForREST.framework; sourceTree = "<group>"; };
+		F7D4B6912295666E000C2C86 /* FirebaseMLVision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVision.framework; sourceTree = "<group>"; };
+		F7D4B6922295666E000C2C86 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLCommon.framework; sourceTree = "<group>"; };
+		F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileVision.framework; sourceTree = "<group>"; };
 		F7D532461F5D4123006568B1 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D5324D1F5D4137006568B1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D532541F5D4155006568B1 /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1470,8 +1484,11 @@
 			files = (
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7D4B68C2295663D000C2C86 /* FirebaseCoreDiagnostics.framework in Frameworks */,
+				F7D4B6992295666E000C2C86 /* GoogleToolboxForMac.framework in Frameworks */,
 				F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
+				F7D4B69A2295666E000C2C86 /* FirebaseMLCommon.framework in Frameworks */,
+				F7D4B6962295666E000C2C86 /* GTMSessionFetcher.framework in Frameworks */,
 				F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */,
 				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
@@ -1491,21 +1508,25 @@
 				F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */,
 				F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */,
 				F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */,
+				F7D4B6952295666E000C2C86 /* Protobuf.framework in Frameworks */,
 				F7D4B6852295663D000C2C86 /* GoogleAppMeasurement.framework in Frameworks */,
 				F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */,
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
 				F7C40C102199BA5D0004137E /* Realm.framework in Frameworks */,
+				F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */,
 				F75153242226920200323DDC /* FastScroll.framework in Frameworks */,
 				F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */,
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7C40BE321998C060004137E /* PDFGenerator.framework in Frameworks */,
+				F7D4B6982295666E000C2C86 /* FirebaseMLVision.framework in Frameworks */,
 				F7D4B6862295663D000C2C86 /* FirebaseCore.framework in Frameworks */,
 				F7D4B68A2295663D000C2C86 /* FIRAnalyticsConnector.framework in Frameworks */,
 				F7D4B6882295663D000C2C86 /* GoogleUtilities.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
+				F7D4B6972295666E000C2C86 /* GoogleAPIClientForREST.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2670,6 +2691,7 @@
 			isa = PBXGroup;
 			children = (
 				F7D4B67C2295663D000C2C86 /* Analytics */,
+				F7D4B68D2295666E000C2C86 /* MLVision */,
 				F7D4B67B22956610000C2C86 /* Firebase.h */,
 			);
 			path = Firebase;
@@ -2688,6 +2710,20 @@
 				F7D4B6842295663D000C2C86 /* FirebaseCoreDiagnostics.framework */,
 			);
 			path = Analytics;
+			sourceTree = "<group>";
+		};
+		F7D4B68D2295666E000C2C86 /* MLVision */ = {
+			isa = PBXGroup;
+			children = (
+				F7D4B68E2295666E000C2C86 /* Protobuf.framework */,
+				F7D4B68F2295666E000C2C86 /* GTMSessionFetcher.framework */,
+				F7D4B6902295666E000C2C86 /* GoogleAPIClientForREST.framework */,
+				F7D4B6912295666E000C2C86 /* FirebaseMLVision.framework */,
+				F7D4B6922295666E000C2C86 /* GoogleToolboxForMac.framework */,
+				F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */,
+				F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */,
+			);
+			path = MLVision;
 			sourceTree = "<group>";
 		};
 		F7D7B0D52245377800E6FE36 /* Imagemeter */ = {
