@@ -292,7 +292,7 @@
     [self setTitle];
     
     // Reload Table View
-    [self tableViewReloadDataWithScrollToFileName:false];
+    [self tableViewReloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1202,7 +1202,7 @@
         // reload
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
         
-        [self tableViewReloadDataWithScrollToFileName:false];
+        [self tableViewReloadData];
     }
     
     // E2EE Is encrypted folder get metadata
@@ -1256,7 +1256,7 @@
     
     _loadingFolder = YES;
 
-    [self tableViewReloadDataWithScrollToFileName:false];
+    [self tableViewReloadData];
     
     [[OCNetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
@@ -1906,7 +1906,7 @@
                 }
             }
             
-            [self tableViewReloadDataWithScrollToFileName:false];
+            [self tableViewReloadData];
             
         } else if (errorCode != 0) {
             
@@ -1939,7 +1939,7 @@
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadDataWithScrollToFileName:false];
+        [self tableViewReloadData];
     }];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -1971,7 +1971,7 @@
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadDataWithScrollToFileName:false];
+        [self tableViewReloadData];
     }];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -1995,7 +1995,7 @@
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadDataWithScrollToFileName:false];
+        [self tableViewReloadData];
     }];
     
     
@@ -2043,7 +2043,7 @@
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadDataWithScrollToFileName:false];
+        [self tableViewReloadData];
     }];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2943,7 +2943,7 @@
                     [appDelegate messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
                 }
                 
-                [self tableViewReloadDataWithScrollToFileName:false];
+                [self tableViewReloadData];
             }
         }
             break;
@@ -3546,7 +3546,7 @@
         
         sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO sorted:@"fileName" ascending:NO activeAccount:appDelegate.activeAccount];
 
-        [self tableViewReloadDataWithScrollToFileName:false];
+        [self tableViewReloadData];
         
         if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
             
@@ -3602,13 +3602,13 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 sectionDataSource = sectionDataSourceTemp;
-                [self tableViewReloadDataWithScrollToFileName:true];
+                [self tableViewReloadData];
             });
         });
         
     } else {
         
-        [self tableViewReloadDataWithScrollToFileName:true];
+        [self tableViewReloadData];
 
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
@@ -3634,7 +3634,7 @@
     
     if (withReloadData) {
         sectionDataSource = sectionDataSourceTemp;
-        [self tableViewReloadDataWithScrollToFileName:false];
+        [self tableViewReloadData];
     }
     
     return sectionDataSourceTemp;
@@ -3695,7 +3695,7 @@
     [self setTitle];
 }
 
-- (void)tableViewReloadDataWithScrollToFileName:(BOOL)withScrollToFileName
+- (void)tableViewReloadData
 {
     // store selected cells before relod
     NSArray *indexPaths = [self.tableView indexPathsForSelectedRows];
