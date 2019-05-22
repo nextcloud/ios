@@ -30,6 +30,8 @@
     
     self.trialEnd = @"";
     self.accountRemove = @"";
+    self.nextGroupExpirationGroup = @"";
+    self.nextGroupExpirationExpires = @"";
     
     return self;
 }

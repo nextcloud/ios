@@ -55,14 +55,17 @@ public class CCLoginWeb: UIViewController {
         let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
-        vc.present(webVC, animated: false, completion: nil)
+        vc.present(webVC, animated: false) {
+            // Stop timer
+            self.appDelegate.timerErrorNetworking.invalidate()
+        }
     }
 }
 
 extension CCLoginWeb: SwiftModalWebVCDelegate {
     
     public func didStartLoading() {
-        print("Started loading.")
+        //print("Started loading.")
     }
     
     public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
@@ -142,7 +145,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
     }
 
     public func didFinishLoading(success: Bool, url: URL) {
-        print("Finished loading. Success: \(success).")
+        //print("Finished loading. Success: \(success).")
     }
     
     public func webDismiss() {

@@ -190,68 +190,66 @@ class NCUtility: NSObject {
         
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
-            guard let imageData = try? Data(contentsOf:iconURL) else {
-                return closure(nil)
-            }
-            
-            if let image = UIImage.init(data: imageData) {
+            OCNetworking.sharedManager()?.downloadContents(ofUrl: iconURL.absoluteString, completion: { (data, message, errorCode) in
                 
-                var newImage: UIImage = image
+                if errorCode == 0 && data != nil {
                 
-                if width != nil {
-                    
-                    let ratio = image.size.height / image.size.width
-                    let newSize = CGSize(width: width!, height: width! * ratio)
-                    
-                    let renderFormat = UIGraphicsImageRendererFormat.default()
-                    renderFormat.opaque = false
-                    let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
-                    newImage = renderer.image {
-                        (context) in
-                        image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-                    }
-                }
-                
-                guard let pngImageData = newImage.pngData() else {
-                    return closure(nil)
-                }
-                
-                CCUtility.write(pngImageData, fileNamePath: imageNamePath)
-                
-            } else {
-                
-                let task = URLSession(configuration: .default).dataTask(with: iconURL) { (data, response, error) in
-                    guard error == nil,  response != nil, data != nil else {
-                        return closure(nil)
-                    }
-                    
-                    guard let svgImage: SVGKImage = SVGKImage(data: data) else {
-                        return closure(nil)
-                    }
-                    
-                    if width != nil {
-                        let scale = svgImage.size.height / svgImage.size.width
-                        svgImage.size = CGSize(width: width!, height: width! * scale)
-                    }
-                    
-                    guard let image: UIImage = svgImage.uiImage else {
-                        return closure(nil)
-                    }
-                    guard let pngImageData = image.pngData() else {
-                        return closure(nil)
-                    }
-                    
-                    CCUtility.write(pngImageData, fileNamePath: imageNamePath)
-                    
-                    DispatchQueue.main.async {
+                    if let image = UIImage.init(data: data!) {
+                        
+                        var newImage: UIImage = image
+                        
+                        if width != nil {
+                            
+                            let ratio = image.size.height / image.size.width
+                            let newSize = CGSize(width: width!, height: width! * ratio)
+                            
+                            let renderFormat = UIGraphicsImageRendererFormat.default()
+                            renderFormat.opaque = false
+                            let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
+                            newImage = renderer.image {
+                                (context) in
+                                image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
+                            }
+                        }
+                        
+                        guard let pngImageData = newImage.pngData() else {
+                            return closure(nil)
+                        }
+                        
+                        CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                        
+                        return closure(imageNamePath)
+                        
+                    } else {
+                        
+                        guard let svgImage: SVGKImage = SVGKImage(data: data) else {
+                            return closure(nil)
+                        }
+                            
+                        if width != nil {
+                            let scale = svgImage.size.height / svgImage.size.width
+                            svgImage.size = CGSize(width: width!, height: width! * scale)
+                        }
+                            
+                        guard let image: UIImage = svgImage.uiImage else {
+                            return closure(nil)
+                        }
+                        guard let pngImageData = image.pngData() else {
+                            return closure(nil)
+                        }
+                            
+                        CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                            
                         return closure(imageNamePath)
                     }
+                } else {
+                    return closure(nil)
                 }
-                task.resume()
-            }
+            })
+            
+        } else {
+            return closure(imageNamePath)
         }
-        
-        return closure(imageNamePath)
     }
     
     @objc func startActivityIndicator(view: UIView, bottom: CGFloat) {
@@ -311,6 +309,19 @@ class NCUtility: NSObject {
         let hour = Int(seconds / 3600)
         return String(format: "%02d:%02d:%02d", hour, min, sec)
     }
-
+    
+    @objc func blink(cell: AnyObject?) {
+        if let cell = cell as? UITableViewCell {
+            cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+            UIView.animate(withDuration: 2) {
+                cell.backgroundColor = .clear
+            }
+        } else if let cell = cell as? UICollectionViewCell {
+            cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+            UIView.animate(withDuration: 2) {
+                cell.backgroundColor = .clear
+            }
+        }
+    }
 }
 

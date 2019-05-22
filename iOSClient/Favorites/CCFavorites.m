@@ -179,10 +179,6 @@
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:appDelegate.activeMain loginType:k_login_Modify_Password selector:k_intro_login];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
@@ -246,10 +242,6 @@
             
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
             
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:appDelegate.activeMain loginType:k_login_Modify_Password selector:k_intro_login];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {

@@ -304,6 +304,16 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                         "<d:depth>infinity</d:depth>"
                     "</d:scope>"
                 "</d:from>"
+                "<d:orderby>"
+                    "<d:order>"
+                        "<d:prop><d:getlastmodified/></d:prop>"
+                        "<d:descending/>"
+                    "</d:order>"
+                    "<d:order>"
+                        "<d:prop><d:displayname/></d:prop>"
+                        "<d:descending/>"
+                    "</d:order>"
+                "</d:orderby>"
                 "<d:where><d:and><d:or>", userID, folder];
         
         for (NSString *type in contentType) {

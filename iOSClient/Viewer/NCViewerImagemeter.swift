@@ -87,7 +87,7 @@ class NCViewerImagemeter: NSObject {
                 audioImagemeter()
                 
             } else {
-                appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                appDelegate.messageNotification("_error_", description: "_error_json_decoding_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
             }
             
         } catch {
@@ -124,7 +124,7 @@ class NCViewerImagemeter: NSObject {
                     continue
                 }
                 
-                let center = IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center.x, y: element.center.y, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
+                let center = IMImagemeterCodable.sharedInstance.convertCoordinate(x: element.center?.x ?? 0, y: element.center?.y ?? 0, width: imagemeterView.bounds.width, height: imagemeterView.imageHeightConstraint.constant)
                 
                 let button = UIButton()
                 button.frame = CGRect(x: center.x - dimButton/2, y: center.y - dimButton/2, width: dimButton, height: dimButton)

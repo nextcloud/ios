@@ -46,6 +46,7 @@
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
+@property (nonatomic, strong) NSTimer *timerErrorNetworking;
 
 // For LMMediaPlayerView
 @property (strong, nonatomic) UIWindow *window;
@@ -136,6 +137,9 @@
 
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
+
+// Timer Error Networking
+- (void)startTimerErrorNetworking;
 
 // Login View
 - (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;

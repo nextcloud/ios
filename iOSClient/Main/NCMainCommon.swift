@@ -241,8 +241,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
         
         // Share
-        let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
-        let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName)
+        let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName) as? String
+        let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName) as? String
         var isShare = false
         var isMounted = false
         
@@ -534,8 +534,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: tableView, indexPath: indexPath)
             
             // Share
-            let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
-            let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName)
+            let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName) as? String
+            let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName) as? String
             var isShare = false
             var isMounted = false
             
@@ -1229,32 +1229,26 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
-                    do {
-                        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
-                        let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
-                        
-                        try FileManager().unzipItem(at: source, to: destination)
-                        
-                        let nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
-                        let pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
-                        let annoPath = (pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm")
-                        
-                        if let fileHandle = FileHandle(forReadingAtPath: annoPath) {
-                            let data = fileHandle.readData(ofLength: 4)
-                            if data.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                                do {
-                                    try FileManager().unzipItem(at: annoPath.url, to: pathArchiveImagemeter.url)
-                                } catch {
-                                    appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                                    return
-                                }
-                            }
-                            fileHandle.closeFile()
+                    let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+                    let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                    
+                    try? FileManager().unzipItem(at: source, to: destination)
+                    
+                    let nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
+                    let pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
+                    let annoPath = (pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm")
+                    
+                    if let fileHandle = FileHandle(forReadingAtPath: annoPath) {
+                        let dataFormat = fileHandle.readData(ofLength: 1)
+                        if dataFormat.starts(with: [0x01]) {
+                            appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                            return;
                         }
-                        
-                    } catch {
-                        appDelegate.messageNotification("_error_", description: "_error_decompressing_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                        return
+                        let dataZip = fileHandle.readData(ofLength: 4)
+                        if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
+                            try? FileManager().unzipItem(at: annoPath.url, to: pathArchiveImagemeter.url)
+                        }
+                        fileHandle.closeFile()
                     }
                 }
                 

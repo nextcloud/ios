@@ -33,7 +33,7 @@ class IMImagemeterCodable: NSObject {
         }
         
         struct color: Codable {
-            let rgba: [Int]
+            let rgba: [Int]?
         }
         
         struct end_pt: Codable {
@@ -114,7 +114,7 @@ class IMImagemeterCodable: NSObject {
         struct elements: Codable {
             let id: Int
             let class_: String
-            let center: coordinates
+            let center: coordinates?
             let width: CGFloat?
             let arrows: [end_pt]?
             let text: String?

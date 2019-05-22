@@ -250,6 +250,56 @@
     [task resume];
 }
 
+- (void)downloadContentsOfUrl:(NSString *)serverUrl completion:(void(^)(NSData *data, NSString *message, NSInteger errorCode))completion
+{
+    // Remove stored cookies
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in [storage cookies])
+    {
+        [storage deleteCookie:cookie];
+    }
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serverUrl] cachePolicy:0 timeoutInterval:20.0];
+    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            
+            if (error) {
+                
+                NSString *message;
+                NSInteger errorCode;
+                
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+                errorCode = httpResponse.statusCode;
+                
+                if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                    errorCode = error.code;
+                
+                // Error
+                if (errorCode == 503)
+                    message = NSLocalizedString(@"_server_error_retry_", nil);
+                else
+                    message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+                
+                completion(nil, message, errorCode);
+                
+            } else {
+            
+                completion(data, nil, 0);
+            }
+        });
+        
+    }];
+    
+    [task resume];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== download / upload =====
 #pragma --------------------------------------------------------------------------------------------
@@ -259,6 +309,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, 0, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, 0, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, 0, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
@@ -301,13 +355,17 @@
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         
         NSString *message;
-        NSInteger errorCode;
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        errorCode = httpResponse.statusCode;
+        NSInteger errorCode = ((NSHTTPURLResponse*)response).statusCode;
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -326,6 +384,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -342,13 +404,17 @@
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         
         NSString *message;
-        NSInteger errorCode;
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        errorCode = httpResponse.statusCode;
-        
+        NSInteger errorCode = ((NSHTTPURLResponse*)response).statusCode;
+
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -367,6 +433,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -390,13 +460,17 @@
     } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
         
         NSString *message;
-        NSInteger errorCode;
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        errorCode = httpResponse.statusCode;
+        NSInteger errorCode = ((NSHTTPURLResponse*)response).statusCode;
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -422,6 +496,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *url = tableAccount.url;
@@ -507,10 +585,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -527,6 +612,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -572,10 +661,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -592,6 +688,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *path = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
@@ -621,8 +721,16 @@
             message = [CCError manageErrorOC:response.statusCode error:error];
         
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         completion(account, nil, nil, message, errorCode);
         
@@ -648,6 +756,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    }  else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -661,10 +773,17 @@
     } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -681,6 +800,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    }  else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -693,13 +816,27 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        NSString *message = [CCError manageErrorOC:response.statusCode error:error];
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
-        completion(account, message, error.code);
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, message, errorCode);
         
     } errorBeforeRequest:^(NSError *error) {
         
@@ -724,6 +861,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    }  else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
@@ -792,10 +933,18 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -859,6 +1008,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
@@ -877,8 +1030,16 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -895,6 +1056,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -911,8 +1076,16 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -929,6 +1102,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
@@ -952,10 +1129,17 @@
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
             NSString *message;
-            
             NSInteger errorCode = response.statusCode;
+            
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
+            
+            // Server Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [CCUtility setPassword:account password:nil];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [CCUtility setCertificateError:account error:YES];
+            }
             
             // Error
             if (errorCode == 503)
@@ -977,6 +1161,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -1040,10 +1228,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1060,6 +1255,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *server = [tableAccount.url stringByAppendingString:k_dav];
@@ -1075,10 +1274,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1099,6 +1305,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1111,10 +1321,18 @@
         
     } failureRequest :^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1132,6 +1350,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1144,11 +1366,19 @@
                 
     } failureRequest :^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1167,6 +1397,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1179,11 +1413,19 @@
                 
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1200,6 +1442,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1212,11 +1458,19 @@
                 
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
 
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1233,6 +1487,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1245,11 +1503,19 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1266,6 +1532,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1278,11 +1548,19 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1299,6 +1577,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, 0, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, 0, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, 0, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1311,10 +1593,18 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1338,6 +1628,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
@@ -1356,10 +1650,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1376,6 +1677,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1388,10 +1693,18 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1409,6 +1722,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1421,10 +1738,18 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1442,6 +1767,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1454,10 +1783,18 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1475,6 +1812,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1487,10 +1828,18 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1508,6 +1857,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1520,10 +1873,18 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = @"";
+        NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503) {
@@ -1545,6 +1906,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, nil, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
@@ -1574,8 +1939,16 @@
            
             NSString *message;
             NSInteger errorCode = response.statusCode;
+            
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
+            
+            // Server Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [CCUtility setPassword:account password:nil];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [CCUtility setCertificateError:account error:YES];
+            }
             
             // Error
             if (errorCode == 503)
@@ -1590,9 +1963,17 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
     
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1608,6 +1989,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
@@ -1630,8 +2015,16 @@
             
             NSString *message;
             NSInteger errorCode = response.statusCode;
+            
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
+            
+            // Server Unauthorized
+            if (errorCode == kOCErrorServerUnauthorized) {
+                [CCUtility setPassword:account password:nil];
+            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+                [CCUtility setCertificateError:account error:YES];
+            }
             
             // Error
             if (errorCode == 503)
@@ -1646,8 +2039,16 @@
 
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1675,10 +2076,8 @@
         if (error) {
             
             NSString *message;
-            NSInteger errorCode;
-            
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-            errorCode = httpResponse.statusCode;
+            NSInteger errorCode = httpResponse.statusCode;
             
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
@@ -1711,6 +2110,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *fileIDServer = [[NCUtility sharedInstance] convertFileIDClientToFileIDServer:fileID];
@@ -1727,8 +2130,16 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1745,6 +2156,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1759,8 +2174,16 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1777,6 +2200,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1791,8 +2218,16 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1809,6 +2244,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:tableAccount.url];
@@ -1824,10 +2263,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1848,6 +2294,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -1903,10 +2353,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1923,6 +2380,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *path = [NSString stringWithFormat:@"%@%@/trashbin/%@/trash", tableAccount.url, k_dav, tableAccount.userID];
@@ -1939,8 +2400,16 @@
         
         NSString *message;
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1961,6 +2430,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/settings/%@", serverUrl, tableAccount.userID];
@@ -1977,10 +2450,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -1997,6 +2477,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     // Create JSON
@@ -2040,10 +2524,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)
@@ -2060,6 +2551,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
         completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
     NSString *serverPath = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/handwerkcloud/api/v1/features/%@", serverUrl, tableAccount.userID];
@@ -2076,10 +2571,17 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;
-        
         NSInteger errorCode = response.statusCode;
+        
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [CCUtility setPassword:account password:nil];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
         
         // Error
         if (errorCode == 503)

@@ -137,12 +137,18 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    // Stop timer error network
+    [appDelegate.timerErrorNetworking invalidate];
 }
 
 //
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+    
+    // Start timer
+    [appDelegate startTimerErrorNetworking];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -207,7 +213,7 @@
             
             if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:nil viewController:self delegate:self];
                 
             } else {
                 

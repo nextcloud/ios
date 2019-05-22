@@ -22,6 +22,7 @@
 //
 
 #import "CCCellMain.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCCellMain
 

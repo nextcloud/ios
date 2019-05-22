@@ -59,9 +59,12 @@
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
+@property (nonatomic, strong) NSString *scrollToFileNamePath;
+
 @property BOOL isSelectedMode;
 
 - (void)shouldPerformSegue:(tableMetadata *)metadata;
+- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileNamePath:(NSString *)scrollToFileNamePath;
 
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata;
 
@@ -73,7 +76,6 @@
 
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;
-- (void)tableViewReloadData;
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 

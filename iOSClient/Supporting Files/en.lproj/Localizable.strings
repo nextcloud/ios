@@ -101,6 +101,8 @@
 "_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 "_start_"                   = "Start";
 "_purchase_"                = "Purchase";
+"_account_not_available_"   = "The account %@ of %@ do not exists, please add it to be able to read the file %@";
+"_error_parameter_schema_"  = "Wrong parameters, impossible to continue";
 
 // App
 
@@ -206,6 +208,8 @@
 "_advanced_"                    = "Advanced";
 "_disable_files_app_"           = "Disable Files App integration";
 "_disable_files_app_footer_"    = "Do not permit the access of files across the Apple Files application";
+"_trial_"                       = "Trial";
+"_trial_expired_day_"           = "Days remaining";
 
 // Manage AutoUpload
 
@@ -695,6 +699,7 @@
 "_server_response_error_"               = "Server response content error";
 "_no_nextcloud_found_"                  = "Nextcloud server not found";
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
+"_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
 
 // BKPasscode
 
@@ -750,3 +755,8 @@
 "_voice_memo_stop_"         = "tap to stop";
 "_voice_memo_filename_"     = "voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
+
+// Dictionary App push Notification
+"Suspicious_Login"          = "Suspicious Login";
+
+

@@ -39,8 +39,26 @@ class NCManageDatabase: NSObject {
             
             fileURL: databaseFilePath,
             schemaVersion: UInt64(k_databaseSchemaVersion),
-
-                shouldCompactOnLaunch: { totalBytes, usedBytes in
+            
+            migrationBlock: { migration, oldSchemaVersion in
+                
+                if oldSchemaVersion < 41 {
+                    migration.deleteData(forType: tableActivity.className())
+                    migration.deleteData(forType: tableMetadata.className())
+                    migration.deleteData(forType: tableDirectory.className())
+                }
+                
+                /*
+                 if oldSchemaVersion < 44 {
+                 migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                 let account = oldObject!["account"] as! String
+                 let password = oldObject!["password"] as! String
+                 }
+                 }
+                 */
+                
+            }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                
                 // totalBytes refers to the size of the file on disk in bytes (data + free space)
                 // usedBytes refers to the number of bytes used by data in the file
                 
@@ -60,25 +78,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: UInt64(k_databaseSchemaVersion),
-            
-            migrationBlock: { migration, oldSchemaVersion in
-                
-                if oldSchemaVersion < 41 {
-                    migration.deleteData(forType: tableActivity.className())
-                    migration.deleteData(forType: tableMetadata.className())
-                    migration.deleteData(forType: tableDirectory.className())
-                }
-                
-                /*
-                if oldSchemaVersion < 44 {
-                    migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                        let account = oldObject!["account"] as! String
-                        let password = oldObject!["password"] as! String
-                    }
-                }
-                */
-            }
+            schemaVersion: UInt64(k_databaseSchemaVersion)
         )
         
         Realm.Configuration.defaultConfiguration = config
@@ -515,6 +515,7 @@ class NCManageDatabase: NSObject {
                 } else {
                     result.hcTrialEndTime = nil
                 }
+                
                 result.hcAccountRemoveExpired = features.accountRemoveExpired
                 result.hcAccountRemoveRemainingSec = features.accountRemoveRemainingSec
                 if features.accountRemoveTime > 0 {
@@ -522,6 +523,15 @@ class NCManageDatabase: NSObject {
                 } else {
                     result.hcAccountRemoveTime = nil
                 }
+                
+                result.hcNextGroupExpirationGroup = features.nextGroupExpirationGroup
+                result.hcNextGroupExpirationGroupExpired = features.nextGroupExpirationGroupExpired
+                if features.nextGroupExpirationExpiresTime > 0 {
+                    result.hcNextGroupExpirationExpiresTime = Date(timeIntervalSince1970: features.nextGroupExpirationExpiresTime) as NSDate
+                } else {
+                    result.hcNextGroupExpirationExpiresTime = nil
+                }
+                result.hcNextGroupExpirationExpires = features.nextGroupExpirationExpires
                 
                 returnAccount = result
             }
@@ -1987,21 +1997,47 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    @objc func getTableMedias(predicate: NSPredicate) -> [tableMetadata]? {
+    @objc func getTablesMedia(account: String) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableMedia.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-        
-        if (results.count > 0) {
-            return Array(results.map { tableMetadata.init(value:$0) })
-        } else {
+        let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+        let results = realm.objects(tableMedia.self).filter(NSPredicate(format: "account == %@", account)).sorted(by: sortProperties)
+        if results.count == 0 {
             return nil
         }
+        
+        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
+        
+        var metadatas = [tableMetadata]()
+        var oldServerUrl = ""
+        var isValidMetadata = true
+
+        for result in results {
+            let metadata = tableMetadata.init(value: result)
+        
+            // Verify Lock
+            if (serversUrlLocked.count > 0) && (metadata.serverUrl != oldServerUrl) {
+                var foundLock = false
+                oldServerUrl = metadata.serverUrl
+                for serverUrlLocked in serversUrlLocked {
+                    if metadata.serverUrl.contains(serverUrlLocked) {
+                        foundLock = true
+                        break
+                    }
+                }
+                isValidMetadata = !foundLock
+            }
+            if isValidMetadata {
+                metadatas.append(tableMetadata.init(value: metadata))
+            }
+        }
+      
+        return metadatas
     }
     
-    func createTableMedia(_ metadatas: [tableMetadata], lteDate: Date, gteDate: Date,account: String) -> (isDifferent: Bool, newInsert: Int) {
+    func createTableMedia(_ metadatasSource: [tableMetadata], lteDate: Date, gteDate: Date, account: String) -> (isDifferent: Bool, newInsert: Int) {
 
         let realm = try! Realm()
         realm.refresh()
@@ -2014,6 +2050,34 @@ class NCManageDatabase: NSObject {
         
         var isDifferent: Bool = false
         var newInsert: Int = 0
+        
+        var oldServerUrl = ""
+        var isValidMetadata = true
+        
+        var metadatas = [tableMetadata]()
+        
+        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
+        if (serversUrlLocked.count > 0) {
+            for metadata in metadatasSource {
+                // Verify Lock
+                if (metadata.serverUrl != oldServerUrl) {
+                    var foundLock = false
+                    oldServerUrl = metadata.serverUrl
+                    for serverUrlLocked in serversUrlLocked {
+                        if metadata.serverUrl.contains(serverUrlLocked) {
+                            foundLock = true
+                            break
+                        }
+                    }
+                    isValidMetadata = !foundLock
+                }
+                if isValidMetadata {
+                    metadatas.append(tableMetadata.init(value: metadata))
+                }
+            }
+        } else {
+            metadatas = metadatasSource
+        }
         
         do {
             try realm.write {

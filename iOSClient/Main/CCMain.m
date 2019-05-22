@@ -292,7 +292,7 @@
     [self setTitle];
     
     // Reload Table View
-    [self tableViewReloadData];
+    [self tableViewReloadDataWithScrollToFileName:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -328,6 +328,9 @@
                 
         // Remove search mode
         [self cancelSearchBar];
+        
+        // Clear error certificate
+        [CCUtility setCertificateError:appDelegate.activeAccount error:NO];
         
         // populate shared Link & User
         NSArray *results = [[NCManageDatabase sharedInstance] getSharesWithAccount:appDelegate.activeAccount];
@@ -1131,10 +1134,6 @@
                 [self readFolder:metadata.serverUrl];
             }
             
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
@@ -1203,7 +1202,7 @@
         // reload
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
         
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:false];
     }
     
     // E2EE Is encrypted folder get metadata
@@ -1257,16 +1256,12 @@
     
     _loadingFolder = YES;
 
-    [self tableViewReloadData];
+    [self tableViewReloadDataWithScrollToFileName:false];
     
     [[OCNetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
@@ -1326,11 +1321,7 @@
             
         } else {
             
-            if (errorCode == kOCErrorServerUnauthorized) {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-            } else if (errorCode != 0) {
+            if (errorCode != 0) {
                 [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
@@ -1516,11 +1507,7 @@
                 
             } else if (errorCode != 0) {
                 
-                if (errorCode == kOCErrorServerUnauthorized) {
-                    [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-                } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                    [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-                } else if (errorCode == kOCErrorServerPathNotFound) {
+                if (errorCode == kOCErrorServerPathNotFound) {
                 
                     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                     NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, fileNameNew];
@@ -1603,11 +1590,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized) {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-            } else if (errorCode == kOCErrorServerPathNotFound) {
+            if (errorCode == kOCErrorServerPathNotFound) {
             
                 NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                 NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
@@ -1813,11 +1796,7 @@
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp]];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
             
-            if (errorCode == kOCErrorServerUnauthorized) {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
-            } else if (errorCode != 0) {
+            if (errorCode != 0) {
                 [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
@@ -1927,14 +1906,11 @@
                 }
             }
             
-            [self tableViewReloadData];
+            [self tableViewReloadDataWithScrollToFileName:false];
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
     }];
     
@@ -1957,16 +1933,13 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:false];
     }];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -1992,16 +1965,13 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:false];
     }];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2019,16 +1989,13 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:false];
     }];
     
     
@@ -2048,10 +2015,7 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
 
     }];
@@ -2073,16 +2037,13 @@
             
         } else if (errorCode != 0) {
             
-            if (errorCode == kOCErrorServerUnauthorized)
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-            else
-                [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         if (_shareOC)
             [_shareOC reloadData];
         
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:false];
     }];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2164,10 +2125,6 @@
                 [appDelegate startLoadAutoDownloadUpload];
             }
             
-        } else if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
@@ -2970,7 +2927,7 @@
             if (aViewController.fromType == CCBKPasscodeFromLockDirectory) {
                 
                 // possiamo procedere alla prossima directory
-                [self performSegueDirectoryWithControlPasscode:false];
+                [self performSegueDirectoryWithControlPasscode:false metadata:self.metadata scrollToFileNamePath:self.scrollToFileNamePath];
                 
                 // avviamo la sessione Passcode Lock con now
                 appDelegate.sessionePasscodeLock = [NSDate date];
@@ -2986,7 +2943,7 @@
                     [appDelegate messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
                 }
                 
-                [self tableViewReloadData];
+                [self tableViewReloadDataWithScrollToFileName:false];
             }
         }
             break;
@@ -3318,17 +3275,15 @@
                                     }];
         }
         
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [self.metadata.serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
-            
-            [actionSheet addButtonWithTitle:titoloLock
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        [self performSelector:@selector(comandoLockPassword) withObject:nil];
-                                    }];
-        }
+    
+        [actionSheet addButtonWithTitle:titoloLock
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                 height:50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    [self performSelector:@selector(comandoLockPassword) withObject:nil];
+                                }];
         
         if (!self.metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
 
@@ -3376,14 +3331,16 @@
                                     }];
         }
         
+        
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDestructive
                                 handler:^(AHKActionSheet *as) {
-                                    [self actionDelete:indexPath];
-                                }];
+                                        [self actionDelete:indexPath];
+        }];
+        
 
         [actionSheet show];
     }
@@ -3443,6 +3400,8 @@
                                     }];
         }
         
+        
+            
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
@@ -3474,6 +3433,7 @@
                                     
                                     [self presentViewController:alertController animated:YES completion:nil];
                                 }];
+        
         
         if (!_metadataFolder.e2eEncrypted) {
 
@@ -3586,7 +3546,7 @@
         
         sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO sorted:@"fileName" ascending:NO activeAccount:appDelegate.activeAccount];
 
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:false];
         
         if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
             
@@ -3642,13 +3602,13 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 sectionDataSource = sectionDataSourceTemp;
-                [self tableViewReloadData];
+                [self tableViewReloadDataWithScrollToFileName:true];
             });
         });
         
     } else {
         
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:true];
 
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
@@ -3674,7 +3634,7 @@
     
     if (withReloadData) {
         sectionDataSource = sectionDataSourceTemp;
-        [self tableViewReloadData];
+        [self tableViewReloadDataWithScrollToFileName:false];
     }
     
     return sectionDataSourceTemp;
@@ -3735,7 +3695,7 @@
     [self setTitle];
 }
 
-- (void)tableViewReloadData
+- (void)tableViewReloadDataWithScrollToFileName:(BOOL)withScrollToFileName
 {
     // store selected cells before relod
     NSArray *indexPaths = [self.tableView indexPathsForSelectedRows];
@@ -3754,6 +3714,32 @@
     
     //
     [self.tableView reloadEmptyDataSet];
+    
+    // scrollToFileNamePath
+    if (self.scrollToFileNamePath != nil) {
+        for (NSString *key in sectionDataSource.allRecordsDataSource) {
+            tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
+            NSString *metadataFileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
+            if ([metadataFileNamePath isEqualToString:self.scrollToFileNamePath]) {
+                for (NSString *key in sectionDataSource.fileIDIndexPath) {
+                    if ([key isEqualToString:metadata.fileID]) {
+                        NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
+                        [UIView animateWithDuration:0.5 animations:^{
+                            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                        } completion:^(BOOL finished) {
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                                if (cell) {
+                                    [[NCUtility sharedInstance] blinkWithCell:cell];
+                                }
+                            });
+                        }];
+                    }
+                }
+                self.scrollToFileNamePath = nil;
+            }
+        }
+    }
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -4121,7 +4107,7 @@
     
     if (self.metadata.directory) {
         
-        [self performSegueDirectoryWithControlPasscode:true];
+        [self performSegueDirectoryWithControlPasscode:true metadata:self.metadata scrollToFileNamePath:self.scrollToFileNamePath];
     }
 }
 
@@ -4231,15 +4217,15 @@
 }
 
 // can i go to next viewcontroller
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode
+- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileNamePath:(NSString *)scrollToFileNamePath
 {
     NSString *nomeDir;
-
+    
     if (self.tableView.editing == NO) {
         
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
         
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadata.account, lockServerUrl]];
         
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
         if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil && controlPasscode) {
@@ -4276,15 +4262,15 @@
         }
         
         // E2EE Check enable
-        if (self.metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
+        if (metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
             
             [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
             return;
         }
         
-        nomeDir = self.metadata.fileName;
+        nomeDir = metadata.fileName;
         
-        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:nomeDir];
+        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:nomeDir];
     
         CCMain *viewController = [appDelegate.listMainVC objectForKey:serverUrlPush];
         
@@ -4293,7 +4279,8 @@
             viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMain"];
             
             viewController.serverUrl = serverUrlPush;
-            viewController.titleMain = self.metadata.fileName;
+            viewController.titleMain = metadata.fileName;
+            viewController.scrollToFileNamePath = scrollToFileNamePath;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -4304,7 +4291,8 @@
            
             if (viewController.isViewLoaded) {
                 
-                viewController.titleMain = self.metadata.fileName;
+                viewController.titleMain = metadata.fileName;
+                viewController.scrollToFileNamePath = scrollToFileNamePath;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {

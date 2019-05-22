@@ -31,7 +31,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var scrollToFileID = ""
-    var scrollToIndexPath: IndexPath?
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -653,19 +652,19 @@ extension NCTrash {
             if self.scrollToFileID != "" {
                 for item in 0...self.datasource.count-1 {
                     if self.datasource[item].fileID.contains(self.scrollToFileID) {
-                        self.scrollToIndexPath = IndexPath(item: item, section: 0)
-                        self.collectionView.scrollToItem(at: self.scrollToIndexPath!, at: .top, animated: true)
-                        if let cell = self.collectionView.cellForItem(at: self.scrollToIndexPath!) as? NCTrashListCell {
-                            cell.backgroundColor = NCBrandColor.sharedInstance.brandElement
-                            UIView.animate(withDuration: 1.0, animations: {
-                                cell.backgroundColor = .white
-                            })
-                        }
+                        let indexPath = IndexPath(item: item, section: 0)
+                        UIView.animate(withDuration: 0.5, animations: {
+                            self.collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
+                        }, completion: { (finished) in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                NCUtility.sharedInstance.blink(cell: self.collectionView.cellForItem(at: indexPath))
+                            }
+                        })
+                        self.scrollToFileID = ""
                     }
                 }
-                self.scrollToFileID = ""
             }
-        }
+        }        
     }
     
     @objc func loadListingTrash() {
@@ -677,8 +676,6 @@ extension NCTrash {
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-            } else if errorCode == kOCErrorServerUnauthorized {
-                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {
@@ -709,9 +706,7 @@ extension NCTrash {
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
                 self.loadDatasource()
-            } else if errorCode == kOCErrorServerUnauthorized {
-                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
-            } else if errorCode != 0 {
+            }  else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
@@ -724,8 +719,6 @@ extension NCTrash {
         OCNetworking.sharedManager().emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
-            } else if errorCode == kOCErrorServerUnauthorized {
-                self.appDelegate.openLoginView(self, delegate: self.appDelegate.activeMain, loginType: Int(k_login_Modify_Password), selector: Int(k_intro_login))
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {

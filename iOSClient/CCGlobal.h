@@ -82,7 +82,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         50
+#define k_databaseSchemaVersion                         51
 
 // Intro selector
 #define k_intro_login                                   0
@@ -171,6 +171,7 @@
 // Timer
 #define k_timerProcessAutoDownloadUpload                5
 #define k_timerUpdateApplicationIconBadgeNumber         3
+#define k_timerErrorNetworking                          3
 
 // ConcurrentOperation
 #define k_maxHTTPConnectionsPerHost                     5

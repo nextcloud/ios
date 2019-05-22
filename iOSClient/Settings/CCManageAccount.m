@@ -60,6 +60,7 @@
         
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableCapabilities *tableCapabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:tableAccount.account];
 
     // Section : ACCOUNTS -------------------------------------------
     
@@ -232,7 +233,7 @@
     
     // Section : THIRT PART -------------------------------------------
 
-#if defined(HC)
+    if (tableCapabilities.isHandwerkcloudEnabled) {
 
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_job_", nil)];
         [form addFormSection:section];
@@ -271,7 +272,23 @@
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"company"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         row.value = tableAccount.company;
         [section addFormRow:row];
+    
+        if (tableAccount.hcIsTrial) {
         
+            section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_trial_", nil)];
+            [form addFormSection:section];
+            
+            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"trial" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_trial_expired_day_", nil)];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+            [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+            [row.cellConfig setObject:[UIColor redColor] forKey:@"detailTextLabel.textColor"];
+            [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"timer"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
+            NSInteger numberOfDays = tableAccount.hcTrialRemainingSec / (24*3600);
+            row.value = [@(numberOfDays) stringValue];
+            [section addFormRow:row];
+        }
+    
         section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
         
@@ -281,10 +298,12 @@
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"editUserProfile"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+#if defined(HC)
         row.action.viewControllerClass = [HCEditProfile class];
+#endif
         if (listAccount.count == 0) row.disabled = @YES;
         [section addFormRow:row];
-#endif
+    }
     
     self.form = form;
     
@@ -385,26 +404,33 @@
         XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
         
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", pickerAccount.rowDescriptor.value]];
+        NSString *account = tableAccount.account;
         
-        if (tableAccount) {
+        if (account) {
             
-            [appDelegate unsubscribingNextcloudServerPushNotification:tableAccount.account url:tableAccount.url withSubscribing:false];
+            [appDelegate unsubscribingNextcloudServerPushNotification:account url:tableAccount.url withSubscribing:false];
         
-            [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:tableAccount.account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:tableAccount.account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
+            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
         
             // Clear active user
             [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+            
+            // Clear keychain
+            [CCUtility clearAllKeysEndToEnd:account];
+            [CCUtility clearAllKeysPushNotification:account];
+            [CCUtility setPassword:account password:nil];
+            [CCUtility setCertificateError:account error:NO];
         }
         
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];

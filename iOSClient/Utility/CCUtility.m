@@ -551,6 +551,16 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)clearAllKeysPushNotification:(NSString *)account
+{
+    [self setPushNotificationPublicKey:account data:nil];
+    [self setPushNotificationSubscribingPublicKey:account publicKey:nil];
+    [self setPushNotificationPrivateKey:account data:nil];
+    [self setPushNotificationToken:account token:nil];
+    [self setPushNotificationDeviceIdentifier:account deviceIdentifier:nil];
+    [self setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
+}
+
 + (NSInteger)getMediaWidthImage
 {
     NSString *width = [UICKeyChainStore stringForKey:@"mediaWidthImage" service:k_serviceShareKeyChain];
@@ -619,6 +629,27 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getCertificateError:(NSString *)account
+{
+    NSString *key = [@"certificateError" stringByAppendingString:account];
+    NSString *error = [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    
+    if (error == nil) {
+        
+        [self setCertificateError:account error:NO];
+        return  NO;
+    }
+    
+    return [error boolValue];
+}
+
++ (void)setCertificateError:(NSString *)account error:(BOOL)error
+{
+    NSString *key = [@"certificateError" stringByAppendingString:account];
+    NSString *sError = (error) ? @"true" : @"false";
+    
+    [UICKeyChainStore setString:sError forKey:key service:k_serviceShareKeyChain];
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1580,6 +1611,13 @@
         }
     }
     return hex;
+}
+
++ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
+    NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
+    return queryItem.value;
 }
 
 @end

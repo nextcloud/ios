@@ -146,6 +146,7 @@
 + (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account;
 + (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature;
 + (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
++ (void)clearAllKeysPushNotification:(NSString *)account;
 
 + (NSInteger)getMediaWidthImage;
 + (void)setMediaWidthImage:(NSInteger)width;
@@ -160,6 +161,9 @@
 + (NSString *)getHCBusinessType;
 
 + (NSData *)getDatabaseEncryptionKey;
+
++ (BOOL)getCertificateError:(NSString *)account;
++ (void)setCertificateError:(NSString *)account error:(BOOL)error;
 
 // ===== Varius =====
 
@@ -247,6 +251,7 @@
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
 + (NSString *)URLEncodeStringFromString:(NSString *)string;
-+ (NSString*)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
++ (NSString *)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
++ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
 
 @end
