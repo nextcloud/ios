@@ -8,7 +8,7 @@ github "ealeksandrov/EAIntroView" == 2.12.0
 github "calimarkus/JDStatusBarNotification" == 1.6.0
 github "ChangbaDevs/KTVHTTPCache" == 2.0.0
 github "jdg/MBProgressHUD" == 1.1.0
-github "realm/realm-cocoa" == 3.14.1
+github "realm/realm-cocoa" == 3.15.0
 github "SVGKit/SVGKit" == 2.1.0
 github "WeTransfer/WeScan" == 1.1.0
 github "malcommac/SwiftRichString" == 3.0.0

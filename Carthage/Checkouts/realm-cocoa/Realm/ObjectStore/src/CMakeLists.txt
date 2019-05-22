@@ -28,6 +28,7 @@ set(HEADERS
     execution_context_id.hpp
     feature_checks.hpp
     index_set.hpp
+    keypath_helpers.hpp
     list.hpp
     object.hpp
     object_accessor.hpp
