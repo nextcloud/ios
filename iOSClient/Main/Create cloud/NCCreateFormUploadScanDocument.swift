@@ -473,7 +473,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                     
                     if rowTextRecognition.value as! Int == 1 {
                         if let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] {
-                            
                             for textBlock in features {
                                 for textLine in textBlock.lines {
                                     
