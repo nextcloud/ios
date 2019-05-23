@@ -144,16 +144,20 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_file_creation_", comment: ""))
         form.addFormSection(section)
         
+        row = XLFormRowDescriptor(tag: "filetype", rowType: XLFormRowDescriptorTypeSelectorSegmentedControl, title: NSLocalizedString("_file_type_", comment: ""))
+        
         if arrayImages.count == 1 {
-            row = XLFormRowDescriptor(tag: "filetype", rowType: XLFormRowDescriptorTypeSelectorSegmentedControl, title: NSLocalizedString("_file_type_", comment: ""))
             row.selectorOptions = ["PDF","JPG"]
-            row.value = "PDF"
-            
-            row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brand
-            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-            
-            section.addFormRow(row)
+        } else {
+            row.selectorOptions = ["PDF"]
         }
+        row.value = "PDF"
+
+        row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brand
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+            
+        section.addFormRow(row)
+        
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
@@ -182,13 +186,17 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             self.form.delegate = nil
             
             if newValue as! Int == 1 {
-                rowFileTape.selectorOptions = ["PDF","TXT"]
+                rowFileTape.selectorOptions = ["TXT"] //["PDF","TXT"]
                 rowFileTape.value = "TXT"
                 fileType = "TXT"
                 rowPassword.disabled = true
                 rowCompressionQuality.disabled = true
             } else {
-                rowFileTape.selectorOptions = ["PDF","JPG"]
+                if arrayImages.count == 1 {
+                    rowFileTape.selectorOptions = ["PDF","JPG"]
+                } else {
+                    rowFileTape.selectorOptions = ["PDF"]
+                }
                 rowFileTape.value = "PDF"
                 fileType = "PDF"
                 rowPassword.disabled = false
