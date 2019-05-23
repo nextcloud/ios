@@ -195,7 +195,7 @@ extension NCActivity: UITableViewDataSource {
                         OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                             if errorCode == 0 {
                                 do {
-                                    try data!.write(to: fileNameLocalPath.url, options: .atomic)
+                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                                 } catch { return }
                                 cell.icon.image = UIImage(data: data!)
                             }
@@ -222,7 +222,7 @@ extension NCActivity: UITableViewDataSource {
                         OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                             if errorCode == 0 {
                                 do {
-                                    try data!.write(to: fileNameLocalPath.url, options: .atomic)
+                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                                 } catch { return }
                                 cell.avatar.image = UIImage(data: data!)
                             }

@@ -996,12 +996,12 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
         if filetype == "PNG" {
             do {
-                try image.pngData()?.write(to: path.url, options: .atomic)
+                try image.pngData()?.write(to: NSURL(fileURLWithPath:path) as URL, options: .atomic)
             } catch { return }
         } else if filetype == "JPG" {
             let imageData = image.jpegData(compressionQuality: 1)
             do {
-                try imageData?.write(to: path.url)
+                try imageData?.write(to: NSURL(fileURLWithPath:path) as URL)
             } catch { return }
         }
         // write icon
@@ -1246,7 +1246,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         }
                         let dataZip = fileHandle.readData(ofLength: 4)
                         if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                            try? FileManager().unzipItem(at: annoPath.url, to: pathArchiveImagemeter.url)
+                            try? FileManager().unzipItem(at: NSURL(fileURLWithPath: annoPath) as URL, to: NSURL(fileURLWithPath: pathArchiveImagemeter) as URL)
                         }
                         fileHandle.closeFile()
                     }

@@ -78,7 +78,7 @@ class NCViewerImagemeter: NSObject {
         
         do {
             
-            let annoPath = (pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm").url
+            let annoPath = NSURL(fileURLWithPath: pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm") as URL
             let annoData = try Data(contentsOf: annoPath, options: .mappedIfSafe)
             if let annotation = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData) {
                 
