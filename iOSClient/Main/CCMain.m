@@ -3613,6 +3613,30 @@
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
     
+    // BLINK
+    if (self.blinkFileNamePath != nil) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+            for (NSString *key in sectionDataSource.allRecordsDataSource) {
+                tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
+                NSString *metadataFileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
+                if ([metadataFileNamePath isEqualToString:self.blinkFileNamePath]) {
+                    for (NSString *key in sectionDataSource.fileIDIndexPath) {
+                        if ([key isEqualToString:metadata.fileID]) {
+                            NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
+                            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                                if (cell) {
+                                    self.blinkFileNamePath = nil;
+                                    [[NCUtility sharedInstance] blinkWithCell:cell];
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 - (CCSectionDataSourceMetadata *)queryDatasourceWithReloadData:(BOOL)withReloadData serverUrl:(NSString *)serverUrl
@@ -3712,33 +3736,7 @@
     if (self.tableView.editing)
         [self setTitle];
     
-    //
     [self.tableView reloadEmptyDataSet];
-    
-    // blinkFileNamePath
-    if (self.blinkFileNamePath != nil) {
-        for (NSString *key in sectionDataSource.allRecordsDataSource) {
-            tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
-            NSString *metadataFileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
-            if ([metadataFileNamePath isEqualToString:self.blinkFileNamePath]) {
-                for (NSString *key in sectionDataSource.fileIDIndexPath) {
-                    if ([key isEqualToString:metadata.fileID]) {
-                        NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
-                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                                CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-                                if (cell && [self.tableView.visibleCells containsObject:cell]) {
-                                    self.blinkFileNamePath = nil;
-                                    [[NCUtility sharedInstance] blinkWithCell:cell];
-                                }
-                            });
-                        });
-                    }
-                }
-            }
-        }
-    }
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
