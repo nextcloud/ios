@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import PDFGenerator
 
 @available(iOS 11, *)
 
@@ -254,7 +253,7 @@ class DragDropViewController: UIViewController {
                     let fileName = item.dragItem.localObject as! NSString
                     let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + (fileName as String)
                     
-                    guard let data = try? Data(contentsOf: fileNamePathAt.url) else {
+                    guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)) else {
                         return
                     }
                     guard let image =  UIImage(data: data) else {
@@ -345,7 +344,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
             
-            guard let data = try? Data(contentsOf: fileNamePath.url) else {
+            guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)) else {
                 return cell
             }
             

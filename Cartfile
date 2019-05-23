@@ -1,7 +1,6 @@
 github "tilltue/TLPhotoPicker" == 1.8.5
 github "kishikawakatsumi/UICKeyChainStore" == 2.1.2
 github "danielsaidi/Sheeeeeeeeet" == 1.2.2
-github "sgr-ksmt/PDFGenerator" == 2.1
 github "MortimerGoro/MGSwipeTableCell" == 1.6.8
 github "dzenbot/DZNEmptyDataSet" == 1.8.1
 github "ealeksandrov/EAIntroView" == 2.12.0
