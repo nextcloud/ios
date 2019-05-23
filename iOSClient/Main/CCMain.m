@@ -1129,8 +1129,8 @@
         
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
             
-            // Change etag, read folder
-            if ([metadata.etag isEqualToString:directory.etag] == NO) {
+            // Change etag, read folder or BLINK 
+            if ([metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
                 [self readFolder:metadata.serverUrl];
             }
             
@@ -2927,7 +2927,7 @@
             if (aViewController.fromType == CCBKPasscodeFromLockDirectory) {
                 
                 // possiamo procedere alla prossima directory
-                [self performSegueDirectoryWithControlPasscode:false metadata:self.metadata scrollToFileNamePath:self.scrollToFileNamePath];
+                [self performSegueDirectoryWithControlPasscode:false metadata:self.metadata blinkFileNamePath:self.blinkFileNamePath];
                 
                 // avviamo la sessione Passcode Lock con now
                 appDelegate.sessionePasscodeLock = [NSDate date];
@@ -3715,28 +3715,27 @@
     //
     [self.tableView reloadEmptyDataSet];
     
-    // scrollToFileNamePath
-    if (self.scrollToFileNamePath != nil) {
+    // blinkFileNamePath
+    if (self.blinkFileNamePath != nil) {
         for (NSString *key in sectionDataSource.allRecordsDataSource) {
             tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
             NSString *metadataFileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
-            if ([metadataFileNamePath isEqualToString:self.scrollToFileNamePath]) {
+            if ([metadataFileNamePath isEqualToString:self.blinkFileNamePath]) {
                 for (NSString *key in sectionDataSource.fileIDIndexPath) {
                     if ([key isEqualToString:metadata.fileID]) {
                         NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:key];
-                        [UIView animateWithDuration:0.5 animations:^{
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                             [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
-                        } completion:^(BOOL finished) {
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                                 CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-                                if (cell) {
+                                if (cell && [self.tableView.visibleCells containsObject:cell]) {
+                                    self.blinkFileNamePath = nil;
                                     [[NCUtility sharedInstance] blinkWithCell:cell];
                                 }
                             });
-                        }];
+                        });
                     }
                 }
-                self.scrollToFileNamePath = nil;
             }
         }
     }
@@ -4107,7 +4106,7 @@
     
     if (self.metadata.directory) {
         
-        [self performSegueDirectoryWithControlPasscode:true metadata:self.metadata scrollToFileNamePath:self.scrollToFileNamePath];
+        [self performSegueDirectoryWithControlPasscode:true metadata:self.metadata blinkFileNamePath:self.blinkFileNamePath];
     }
 }
 
@@ -4217,7 +4216,7 @@
 }
 
 // can i go to next viewcontroller
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileNamePath:(NSString *)scrollToFileNamePath
+- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata blinkFileNamePath:(NSString *)blinkFileNamePath
 {
     NSString *nomeDir;
     
@@ -4280,7 +4279,7 @@
             
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = metadata.fileName;
-            viewController.scrollToFileNamePath = scrollToFileNamePath;
+            viewController.blinkFileNamePath = blinkFileNamePath;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -4292,7 +4291,7 @@
             if (viewController.isViewLoaded) {
                 
                 viewController.titleMain = metadata.fileName;
-                viewController.scrollToFileNamePath = scrollToFileNamePath;
+                viewController.blinkFileNamePath = blinkFileNamePath;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {

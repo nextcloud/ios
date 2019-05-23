@@ -59,12 +59,12 @@
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
-@property (nonatomic, strong) NSString *scrollToFileNamePath;
+@property (nonatomic, strong) NSString *blinkFileNamePath;
 
 @property BOOL isSelectedMode;
 
 - (void)shouldPerformSegue:(tableMetadata *)metadata;
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata scrollToFileNamePath:(NSString *)scrollToFileNamePath;
+- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata blinkFileNamePath:(NSString *)blinkFileNamePath;
 
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata;
 

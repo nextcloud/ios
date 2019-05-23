@@ -311,15 +311,17 @@ class NCUtility: NSObject {
     }
     
     @objc func blink(cell: AnyObject?) {
-        if let cell = cell as? UITableViewCell {
-            cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
-            UIView.animate(withDuration: 2) {
-                cell.backgroundColor = .clear
-            }
-        } else if let cell = cell as? UICollectionViewCell {
-            cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
-            UIView.animate(withDuration: 2) {
-                cell.backgroundColor = .clear
+        DispatchQueue.main.async {
+            if let cell = cell as? UITableViewCell {
+                cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+                UIView.animate(withDuration: 2) {
+                    cell.backgroundColor = .clear
+                }
+            } else if let cell = cell as? UICollectionViewCell {
+                cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+                UIView.animate(withDuration: 2) {
+                    cell.backgroundColor = .clear
+                }
             }
         }
     }
