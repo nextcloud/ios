@@ -41,7 +41,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     var fileName = CCUtility.createFileNameDate("scan", extension: "pdf")
     var password: String = ""
     var fileType = "PDF"
-    var ocr = true
     
     var textDetector: GMVDetector?
     
@@ -449,7 +448,12 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         if fileType == "PDF" {
             
             let pdfData = NSMutableData()
-            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+            if password.count > 0 {
+                let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String : password, kCGPDFContextOwnerPassword as String : password]
+                UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
+            } else {
+                UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+            }
             let context = UIGraphicsGetCurrentContext()
             
             for image in self.arrayImages {
