@@ -472,13 +472,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                                     
                                     let bounds = textLine.bounds
                                     let text = textLine.value!
+                                    let fontColor = UIColor.red
                                     
-                                    print(text)
+                                    //print(text)
                                     
                                     let font = UIFont.systemFont(ofSize: bounds.size.height, weight: .regular)
                                     let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: text, in: bounds, fontDescriptor: font.fontDescriptor)
                                     
-                                    text.draw(in: bounds, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: UIColor.red])
+                                    text.draw(in: bounds, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
                                 }
                             }
                         }
