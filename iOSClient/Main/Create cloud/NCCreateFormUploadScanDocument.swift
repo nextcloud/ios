@@ -479,6 +479,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                                     let bounds = textLine.bounds
                                     let text = textLine.value!
                                     
+                                    print(text)
+                                    
                                     let font = UIFont.systemFont(ofSize: bounds.size.height, weight: .regular)
                                     let bestFittingFont = UIFont.bestFittingFont(for: text, in: bounds, fontDescriptor: font.fontDescriptor, additionalAttributes: nil)
                                     let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
