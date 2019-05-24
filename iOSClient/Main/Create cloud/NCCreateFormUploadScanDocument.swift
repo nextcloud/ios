@@ -472,7 +472,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                                     
                                     let bounds = textLine.bounds
                                     let text = textLine.value!
-                                    let fontColor = UIColor.red
+                                    var fontColor = UIColor.clear
+                                    
+#if targetEnvironment(simulator)
+                                    fontColor = UIColor.red
+#endif
                                     
                                     //print(text)
                                     
