@@ -265,20 +265,20 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             
             let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
             let rowPassword : XLFormRowDescriptor  = self.form.formRow(withTag: "password")!
-            
+
             rowFileName.value = createFileName(rowFileName.value as? String)
             
             self.updateFormRow(rowFileName)
             
             // rowPassword
-            if fileType == "JPG" {
+            if fileType == "JPG" || fileType == "TXT" {
                 rowPassword.value = ""
                 password = ""
                 rowPassword.disabled = true
             } else {
                 rowPassword.disabled = false
             }
-            
+        
             self.updateFormRow(rowPassword)
         }
     }
@@ -458,21 +458,15 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             
             for image in self.arrayImages {
                 
-                let imageCompress = changeImageFromQuality(image, dpiQuality: dpiQuality)
-                guard let data = imageCompress.jpegData(compressionQuality: 0.5) else {
-                    self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
-                    return
-                }
-                
-                UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: imageCompress.size.width, height: imageCompress.size.height), nil)
-                UIImageView.init(image: UIImage(data: data)!).layer.render(in: context!)
+                UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                UIImageView.init(image:image).layer.render(in: context!)
                 
                 // Text Recognition
                 if NCBrandOptions.sharedInstance.useMLVision {
                     let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
                     
                     if rowTextRecognition.value as! Int == 1 {
-                        if let features = self.textDetector?.features(in: imageCompress, options: nil) as? [GMVTextBlockFeature] {
+                        if let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] {
                             for textBlock in features {
                                 for textLine in textBlock.lines {
                                     
@@ -482,12 +476,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                                     print(text)
                                     
                                     let font = UIFont.systemFont(ofSize: bounds.size.height, weight: .regular)
-                                    let bestFittingFont = UIFont.bestFittingFont(for: text, in: bounds, fontDescriptor: font.fontDescriptor, additionalAttributes: nil)
-                                    let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
-                                    paragraphStyle.alignment = NSTextAlignment.natural
+                                    let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: text, in: bounds, fontDescriptor: font.fontDescriptor)
                                     
-                                    let textFontAttributes = [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: UIColor.red]
-                                    text.draw(in: bounds, withAttributes: textFontAttributes)
+                                    text.draw(in: bounds, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: UIColor.red])
                                 }
                             }
                         }
@@ -681,35 +672,3 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     }
 }
 
-extension UIFont {
-    
-    /**
-     Will return the best font conforming to the descriptor which will fit in the provided bounds.
-     */
-    static func bestFittingFontSize(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, additionalAttributes: [NSAttributedString.Key: Any]? = nil) -> CGFloat {
-        let constrainingDimension = min(bounds.width, bounds.height)
-        let properBounds = CGRect(origin: .zero, size: bounds.size)
-        var attributes = additionalAttributes ?? [:]
-        
-        let infiniteBounds = CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
-        var bestFontSize: CGFloat = constrainingDimension
-        
-        for fontSize in stride(from: bestFontSize, through: 0, by: -1) {
-            let newFont = UIFont(descriptor: fontDescriptor, size: fontSize)
-            attributes[.font] = newFont
-            
-            let currentFrame = text.boundingRect(with: infiniteBounds, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes, context: nil)
-            
-            if properBounds.contains(currentFrame) {
-                bestFontSize = fontSize
-                break
-            }
-        }
-        return bestFontSize
-    }
-    
-    static func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, additionalAttributes: [NSAttributedString.Key: Any]? = nil) -> UIFont {
-        let bestSize = bestFittingFontSize(for: text, in: bounds, fontDescriptor: fontDescriptor, additionalAttributes: additionalAttributes)
-        return UIFont(descriptor: fontDescriptor, size: bestSize)
-    }
-}
