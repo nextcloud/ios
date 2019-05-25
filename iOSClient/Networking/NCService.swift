@@ -285,20 +285,6 @@ class NCService: NSObject {
                     })
                 }
                 
-                // Get Trash List
-                /*
-                let pathTrash = k_dav + "/trashbin/" + (self.appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)! + "/trash/"
-                
-                OCNetworking.sharedManager().listingTrash(withAccount: account, path: pathTrash, serverUrl: self.appDelegate.activeUrl, depth: "infinity", completion: { (account, item, message, errorCode) in
-                    if errorCode == 0 && account == self.appDelegate.activeAccount {
-                        DispatchQueue.global().async {
-                            NCManageDatabase.sharedInstance.deleteTrash(filePath: nil, account: account!)
-                            NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-                        }
-                    }
-                })
-                */
-                
                 // Get Handwerkcloud
                 if (capabilities!.isHandwerkcloudEnabled) {
                     self.requestHC()
