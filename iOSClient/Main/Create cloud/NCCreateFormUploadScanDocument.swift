@@ -413,34 +413,30 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         }
         
         // Text Recognition TXT
-        if NCBrandOptions.sharedInstance.useMLVision {
-            let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
-        
-            if rowTextRecognition.value as! Int == 1 && fileType == "TXT" {
+        if fileType == "TXT" && NCBrandOptions.sharedInstance.useMLVision && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
+            
+            var textFile = ""
+            
+            for image in self.arrayImages {
                 
-                var textFile = ""
+                guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
+                    continue
+                }
                 
-                for image in self.arrayImages {
+                for textBlock in features {
                     
-                    guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
+                    guard let text = textBlock.value else {
                         continue
                     }
                     
-                    for textBlock in features {
-                        
-                        guard let text = textBlock.value else {
-                            continue
-                        }
-                        
-                        textFile = textFile + text + "\n\n"
-                    }
-                    
-                    do {
-                        try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
-                    } catch {
-                        self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
-                        return
-                    }
+                    textFile = textFile + text + "\n\n"
+                }
+                
+                do {
+                    try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
+                } catch {
+                    self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                    return
                 }
             }
         }
@@ -456,38 +452,41 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             }
             let context = UIGraphicsGetCurrentContext()
             
-            for image in self.arrayImages {
+            for var image in self.arrayImages {
                 
-                UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
-                UIImageView.init(image:image).layer.render(in: context!)
-                
-                // Text Recognition
-                if NCBrandOptions.sharedInstance.useMLVision {
-                    let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
+                if NCBrandOptions.sharedInstance.useMLVision && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
                     
-                    if rowTextRecognition.value as! Int == 1 {
-                        if let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] {
-                            for textBlock in features {
-                                for textLine in textBlock.lines {
-                                    
-                                    let bounds = textLine.bounds
-                                    let text = textLine.value!
-                                    var fontColor = UIColor.clear
-                                    
-#if targetEnvironment(simulator)
-                                    fontColor = UIColor.red
-#endif
-                                    
-                                    //print(text)
-                                    
-                                    let font = UIFont.systemFont(ofSize: bounds.size.height, weight: .regular)
-                                    let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: text, in: bounds, fontDescriptor: font.fontDescriptor)
-                                    
-                                    text.draw(in: bounds, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
-                                }
+                    UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                    UIImageView.init(image:image).layer.render(in: context!)
+                    
+                    if let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] {
+                        for textBlock in features {
+                            for textLine in textBlock.lines {
+                                
+                                let bounds = textLine.bounds
+                                let text = textLine.value!
+                                var fontColor = UIColor.clear
+                                
+                                #if targetEnvironment(simulator)
+                                fontColor = UIColor.red
+                                #endif
+                                
+                                //print(text)
+                                
+                                let font = UIFont.systemFont(ofSize: bounds.size.height, weight: .regular)
+                                let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: text, in: bounds, fontDescriptor: font.fontDescriptor)
+                                
+                                text.draw(in: bounds, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
                             }
                         }
                     }
+                    
+                } else {
+                    
+                    image = changeImageFromQuality(image, dpiQuality: dpiQuality)
+                    
+                    UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                    UIImageView.init(image:image).layer.render(in: context!)
                 }
             }
             

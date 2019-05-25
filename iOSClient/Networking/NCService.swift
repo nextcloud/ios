@@ -286,6 +286,7 @@ class NCService: NSObject {
                 }
                 
                 // Get Trash List
+                /*
                 let pathTrash = k_dav + "/trashbin/" + (self.appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)! + "/trash/"
                 
                 OCNetworking.sharedManager().listingTrash(withAccount: account, path: pathTrash, serverUrl: self.appDelegate.activeUrl, depth: "infinity", completion: { (account, item, message, errorCode) in
@@ -296,6 +297,7 @@ class NCService: NSObject {
                         }
                     }
                 })
+                */
                 
                 // Get Handwerkcloud
                 if (capabilities!.isHandwerkcloudEnabled) {
