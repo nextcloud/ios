@@ -70,7 +70,9 @@ public class SwiftWebVC: UIViewController {
     
     
     lazy var webView: WKWebView = {
-        var tempWebView = WKWebView(frame: UIScreen.main.bounds)
+        let config = WKWebViewConfiguration()
+        config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+        var tempWebView = WKWebView(frame: UIScreen.main.bounds, configuration: config)
         tempWebView.uiDelegate = self
         tempWebView.navigationDelegate = self
         return tempWebView;
