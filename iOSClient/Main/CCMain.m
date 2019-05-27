@@ -1529,7 +1529,7 @@
                                     return;
                                 }
                                 
-                                [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
+                                [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:@"" fileID:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
                                 
                             } else {
                                 
