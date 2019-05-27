@@ -759,5 +759,6 @@
 
 // Dictionary App push Notification
 "Suspicious_Login"          = "Suspicious Login";
+"Admin_Notifications"       = "Notification";
 
 
