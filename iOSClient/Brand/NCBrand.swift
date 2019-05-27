@@ -94,7 +94,7 @@ class NCBrandColor: NSObject {
     @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
     
     // Module
-    @objc public let useMLVision:                       Bool = true
+    @objc public let useMLVision:                       Bool = false
     
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
