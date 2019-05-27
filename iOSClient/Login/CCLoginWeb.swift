@@ -75,7 +75,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
         if (urlString.hasPrefix(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true) {
             
             let keyValue = url.path.components(separatedBy: "&")
-            if (keyValue.count == 3) {
+            if (keyValue.count >= 3) {
                 
                 if (keyValue[0].contains("server:") && keyValue[1].contains("user:") && keyValue[2].contains("password:")) {
                 
