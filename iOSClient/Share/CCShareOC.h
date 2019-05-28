@@ -37,6 +37,8 @@
 
 @property (nonatomic, weak) IBOutlet UIImageView *fileImageView;
 @property (nonatomic, weak) IBOutlet UILabel *labelTitle;
+@property (nonatomic, weak) IBOutlet UILabel *labelSharedWithYouBy;
+
 @property (nonatomic, weak) IBOutlet UIButton *endButton;
 
 @property (nonatomic, strong) NSString *serverUrl;
