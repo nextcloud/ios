@@ -1129,8 +1129,8 @@
         
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
             
-            // Change etag, read folder or BLINK 
-            if ([metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
+            // Read folder: No record, Change etag or BLINK
+            if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
                 [self readFolder:metadata.serverUrl];
             }
             
