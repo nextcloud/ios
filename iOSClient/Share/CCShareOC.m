@@ -297,7 +297,7 @@
             else row.title = item.shareWithDisplayName;
             
             //If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
-            if (![item.uidOwner isEqualToString:appDelegate.activeUserID]) {
+            if (![item.uidOwner isEqualToString:appDelegate.activeUserID] && ![item.uidFileOwner isEqualToString:appDelegate.activeUserID]) { //displayNameFileOwner
                 row.disabled = @YES;
             }
             
