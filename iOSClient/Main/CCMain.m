@@ -1863,6 +1863,14 @@
 
 - (void)readShareWithAccount:(NSString *)account openWindow:(BOOL)openWindow metadata:(tableMetadata *)metadata
 {
+    /*
+    NSString *path = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
+      
+    [[OCNetworking sharedManager] readShareWithAccount:account path:path completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
+        
+    }];
+    */
+    
     [[OCNetworking sharedManager] readShareWithAccount:account completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
         
         [_hud hideHud];

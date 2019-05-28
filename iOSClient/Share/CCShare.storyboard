@@ -40,7 +40,7 @@
                                     <action selector="endButtonAction:" destination="FgK-eH-DI1" eventType="touchDown" id="Ibi-H5-8Lo"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qJU-ls-kRT">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qJU-ls-kRT">
                                 <rect key="frame" x="74" y="57" width="232" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="Vdr-Qz-Db3"/>
