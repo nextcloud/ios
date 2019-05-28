@@ -279,7 +279,7 @@
     XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
     [section.formRows removeAllObjects];
     [self.itemsShareWith removeAllObjects];
-        
+    
     if ([self.itemsUserAndGroupLink count] > 0) {
     
         for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
