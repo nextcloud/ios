@@ -1139,6 +1139,10 @@
                                        
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
 {
+    if (metadataFileName == nil || serverUrl == nil || activeUrl == nil) {
+        return @"";
+    }
+    
     NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl] withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
