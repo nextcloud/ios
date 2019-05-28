@@ -30,7 +30,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
-    var scrollToFileID = ""
+    var blinkFileID: String?
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -649,18 +649,15 @@ extension NCTrash {
         
         reloadDataThenPerform {
             // GoTo FileID
-            if self.scrollToFileID != "" {
+            if self.blinkFileID != nil {
                 for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].fileID.contains(self.scrollToFileID) {
+                    if self.datasource[item].fileID.contains(self.blinkFileID!) {
                         let indexPath = IndexPath(item: item, section: 0)
-                        UIView.animate(withDuration: 0.5, animations: {
-                            self.collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
-                        }, completion: { (finished) in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                NCUtility.sharedInstance.blink(cell: self.collectionView.cellForItem(at: indexPath))
-                            }
-                        })
-                        self.scrollToFileID = ""
+                        self.collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.blinkFileID = nil
+                            NCUtility.sharedInstance.blink(cell: self.collectionView.cellForItem(at: indexPath))
+                        }
                     }
                 }
             }
