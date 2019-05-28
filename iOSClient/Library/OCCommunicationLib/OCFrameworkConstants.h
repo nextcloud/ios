@@ -41,7 +41,8 @@
 #define k_domain_error_code @"com.owncloud"
 
 //Url to access to Shared API to create
-#define k_url_acces_shared_api @"ocs/v1.php/apps/files_sharing/api/v1/shares"
+//#define k_url_acces_shared_api @"ocs/v1.php/apps/files_sharing/api/v1/shares"
+#define k_url_acces_shared_api @"ocs/v2.php/apps/files_sharing/api/v1/shares"
 
 //Url to access to Remote Shared API
 #define k_url_acces_remote_shared_api @"ocs/v1.php/apps/files_sharing/api/v1/remote_shares"
