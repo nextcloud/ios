@@ -326,6 +326,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         viewController.blinkFileID = result.fileID
                         viewController.path = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
+                    } else {
+                        appDelegate.messageNotification("_error_", description: "_trash_file_not_found_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                     }
                 }
             }

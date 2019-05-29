@@ -509,6 +509,7 @@
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
 "_activity_file_not_present_"       = "File no longer present";
+"_trash_file_not_found_"            = "It seems that the file is not in the trash, go to the trash to update it and try again";
 
 // List Shares
 

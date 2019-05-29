@@ -226,17 +226,18 @@
         if (withDB) {
             
             [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableTrash class] account:appDelegate.activeAccount];
             
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
             
