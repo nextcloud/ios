@@ -3123,8 +3123,6 @@
         titleFavorite = NSLocalizedString(@"_add_favorites_", nil);
     }
     
-    BOOL canShare = [self.metadata.permissions containsString:k_permission_can_share];
-    
     if (self.metadata.directory) {
         
         // calcolo lockServerUrl
@@ -3190,7 +3188,7 @@
                                     else [self settingFavorite:self.metadata favorite:YES];
                                 }];
         
-        if (!lockDirectory && !isFolderEncrypted && canShare) {
+        if (!lockDirectory && !isFolderEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
@@ -3379,7 +3377,7 @@
                                     else [self settingFavorite:self.metadata favorite:YES];
                                 }];
         
-        if (!_metadataFolder.e2eEncrypted && canShare) {
+        if (!_metadataFolder.e2eEncrypted) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
