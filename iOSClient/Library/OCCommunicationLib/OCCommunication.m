@@ -3117,14 +3117,20 @@
 - (void)fullTextSearch:(NSString *)serverPath providers:(NSString *)providers text:(NSString *)text page:(NSInteger)page options:(NSString *)options size:(NSInteger)size onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_fulltextsearch];
-    //serverPath = [
+    serverPath = [NSString stringWithFormat:@"?providers:%@", providers];
+    serverPath = [NSString stringWithFormat:@"?search:%@", text];
+    serverPath = [NSString stringWithFormat:@"?page:%lu", page];
+    serverPath = [NSString stringWithFormat:@"?options:%@", options];
+    serverPath = [NSString stringWithFormat:@"?size:%lu", size];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request geTemplatesRichdocuments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
-        
+    [request fullTextSearch:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+    
         NSData *responseData = (NSData*) response;
         
         //Parse
