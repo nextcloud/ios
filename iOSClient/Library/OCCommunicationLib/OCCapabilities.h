@@ -115,4 +115,7 @@
 // Imagemeter
 @property (nonatomic) BOOL isImagemeterEnabled;
 
+// Fulltextsearch
+@property (nonatomic) BOOL isFulltextsearchEnabled;
+
 @end

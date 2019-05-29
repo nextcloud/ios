@@ -194,6 +194,8 @@ class tableCapabilities: Object {
     @objc dynamic var HCShopUrl = ""
     // Imagemeter
     @objc dynamic var isImagemeterEnabled: Bool = false
+    // Fulltextsearch
+    @objc dynamic var isFulltextsearchEnabled: Bool = false
 }
 
 class tableCertificates: Object {

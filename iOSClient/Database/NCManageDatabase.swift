@@ -825,6 +825,8 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.HCShopUrl = capabilities.hcShopUrl
                 // Imagemeter
                 resultCapabilities.isImagemeterEnabled = capabilities.isImagemeterEnabled
+                // Fulltextsearch
+                resultCapabilities.isFulltextsearchEnabled = capabilities.isFulltextsearchEnabled
                 
                 if result == nil {
                     realm.add(resultCapabilities)
