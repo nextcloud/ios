@@ -287,7 +287,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         indicator.color = NCBrandColor.sharedInstance.brand
         indicator.startAnimating()
         
-         OCNetworking.sharedManager().geTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
+         OCNetworking.sharedManager().getTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, listOfTemplate, message, errorCode) in
             
             self.indicator.stopAnimating()
 
