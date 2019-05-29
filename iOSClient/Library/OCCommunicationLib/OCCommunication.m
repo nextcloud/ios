@@ -3119,9 +3119,9 @@
     serverPath = [serverPath stringByAppendingString:k_url_fulltextsearch];
     serverPath = [NSString stringWithFormat:@"?providers:%@", providers];
     serverPath = [NSString stringWithFormat:@"?search:%@", text];
-    serverPath = [NSString stringWithFormat:@"?page:%lu", page];
+    serverPath = [NSString stringWithFormat:@"?page:%ld", (long) page];
     serverPath = [NSString stringWithFormat:@"?options:%@", options];
-    serverPath = [NSString stringWithFormat:@"?size:%lu", size];
+    serverPath = [NSString stringWithFormat:@"?size:%ld", (long) size];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
