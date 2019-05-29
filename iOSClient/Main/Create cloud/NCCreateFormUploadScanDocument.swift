@@ -24,7 +24,7 @@
 
 import Foundation
 import WeScan
-import GoogleMobileVision
+//import GoogleMobileVision
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
@@ -42,7 +42,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     var password: String = ""
     var fileType = "PDF"
     
-    var textDetector: GMVDetector?
+    //var textDetector: GMVDetector?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -339,7 +339,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
         
-        textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
+        //textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
     }
     
     // MARK: - Action
@@ -419,6 +419,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             
             for image in self.arrayImages {
                 
+                /*
                 guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
                     continue
                 }
@@ -431,6 +432,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                     
                     textFile = textFile + text + "\n\n"
                 }
+                */
                 
                 do {
                     try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
@@ -459,6 +461,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                     UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                     UIImageView.init(image:image).layer.render(in: context!)
                     
+                    /*
                     if let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] {
                         for textBlock in features {
                             for textLine in textBlock.lines {
@@ -480,6 +483,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                             }
                         }
                     }
+                    */
                     
                 } else {
                     
