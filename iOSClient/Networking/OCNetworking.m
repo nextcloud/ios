@@ -1362,8 +1362,11 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication readSharedByServer:[tableAccount.url stringByAppendingString:@"/"] andPath:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfShared, NSString *redirectedServer) {
+        
         completion(account, listOfShared, nil, 0);
+        
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
         NSString *message;
         NSInteger errorCode = response.statusCode;
         
