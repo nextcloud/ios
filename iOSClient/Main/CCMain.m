@@ -1316,6 +1316,12 @@
        
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
+            /*
+            [[OCNetworking sharedManager] fullTextSearchWithAccount:appDelegate.activeAccount text:_searchFileName page:1 completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
+                NSLog(@"x");
+            }];
+            */
+            
             _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
             [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
             
@@ -1863,7 +1869,6 @@
 
 - (void)readShareWithAccount:(NSString *)account openWindow:(BOOL)openWindow metadata:(tableMetadata *)metadata
 {
-    //[[OCNetworking sharedManager] readShareWithAccount:account completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
     [[OCNetworking sharedManager] readShareWithAccount:account path:@"/" completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
         
         [_hud hideHud];

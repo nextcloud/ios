@@ -3077,22 +3077,12 @@
 
 #pragma mark - Fulltextsearch
 
-- (void)fullTextSearch:(NSString *)serverPath providers:(NSString *)providers text:(NSString *)text page:(NSInteger)page options:(NSString *)options size:(NSInteger)size onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)fullTextSearch:(NSString *)serverPath data:(NSString *)data onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_fulltextsearch];
-    serverPath = [NSString stringWithFormat:@"?providers:%@", providers];
-    serverPath = [NSString stringWithFormat:@"?search:%@", text];
-    serverPath = [NSString stringWithFormat:@"?page:%ld", (long) page];
-    serverPath = [NSString stringWithFormat:@"?options:%@", options];
-    serverPath = [NSString stringWithFormat:@"?size:%ld", (long) size];
-    serverPath = [serverPath stringByAppendingString:@"?format=json"];
-    
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request fullTextSearch:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+    [request fullTextSearch:serverPath data:data onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
     
         NSData *responseData = (NSData*) response;
         

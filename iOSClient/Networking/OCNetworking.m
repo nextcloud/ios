@@ -2346,13 +2346,19 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    NSString *options = [NSString stringWithFormat:@"\"files_within_dir\": \"\", \"files_local\": \"\", \"files_extension\": \"\""];
+    // Create JSON
+    NSMutableDictionary *dataDic = [NSMutableDictionary new];
+    [dataDic setValue:@"files" forKey:@"providers"];
+    [dataDic setValue:text forKey:@"search"];
+    [dataDic setValue:[NSNumber numberWithInteger:page] forKey:@"page"];
+    [dataDic setValue:[NSNumber numberWithInt:20] forKey:@"size"];
+    NSString *data = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:dataDic options:0 error:nil] encoding:NSUTF8StringEncoding];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication fullTextSearch:[tableAccount.url stringByAppendingString:@"/"] providers:@"files" text:text page:page options:options size:20 onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
+    [communication fullTextSearch:[tableAccount.url stringByAppendingString:@"/"] data:data onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         completion(account, items, nil, 0);
 

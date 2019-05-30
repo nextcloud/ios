@@ -84,7 +84,7 @@
 #define k_url_insert_assets_to_richdocuments @"apps/richdocuments/assets"
 
 //Url for fulltextsearch
-#define k_url_fulltextsearch @"apps/apps/fulltextsearch/v1/remote"
+#define k_url_fulltextsearch @"index.php/apps/fulltextsearch/v1/remote"
 
 //Version of the server that have share API
 #define k_version_support_shared [NSArray arrayWithObjects:  @"5", @"0", @"27", nil]
