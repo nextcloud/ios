@@ -842,7 +842,6 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request listSharedByServer:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         if (successRequest) {
             NSData *responseData = (NSData*) responseObject;
@@ -874,7 +873,6 @@
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
-    
     
     [request listSharedByServer:serverPath andPath:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         if (successRequest) {
@@ -908,7 +906,6 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request shareByLinkFileOrFolderByServer:serverPath andPath:filePath andPassword:password andPermission:permission andHideDownload:hideDownload onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
@@ -919,44 +916,39 @@
         
         [parser initParserWithData:responseData];
         
-        switch (parser.statusCode) {
-            case kOCSharedAPISuccessful:
-            {
-                NSString *url = parser.url;
-                NSString *token = parser.token;
+        if (parser.statusCode == kOCSharedAPISuccessful || parser.statusCode == kOCShareeAPISuccessful) {
+            
+            NSString *url = parser.url;
+            NSString *token = parser.token;
+            
+            if (url != nil) {
                 
-                if (url != nil) {
-                    
-                    successRequest(response, url, request.redirectedServer);
-                    
-                }else if (token != nil){
-                    //We remove the \n and the empty spaces " "
-                    token = [token stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-                    token = [token stringByReplacingOccurrencesOfString:@" " withString:@""];
-                    
-                    successRequest(response, token, request.redirectedServer);
-                    
-                }else{
-                    
-                    NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
-                    failureRequest(response, error, request.redirectedServer);
-                }
+                successRequest(response, url, request.redirectedServer);
                 
-                break;
-            }
+            } else if (token != nil) {
                 
-            default:
-            {
+                //We remove the \n and the empty spaces " "
+                token = [token stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+                token = [token stringByReplacingOccurrencesOfString:@" " withString:@""];
+                
+                successRequest(response, token, request.redirectedServer);
+                
+            } else {
+                
                 NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
                 failureRequest(response, error, request.redirectedServer);
             }
+            
+        } else {
+            
+            NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
+            failureRequest(response, error, request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
     }];
 }
-
 
 - (void) shareFileOrFolderByServer: (NSString *) serverPath andFileOrFolderPath: (NSString *) filePath
                    onCommunication:(OCCommunication *)sharedOCCommunication
@@ -969,7 +961,6 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request shareByLinkFileOrFolderByServer:serverPath andPath:filePath onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
@@ -980,39 +971,34 @@
         
         [parser initParserWithData:responseData];
         
-        switch (parser.statusCode) {
-            case kOCSharedAPISuccessful:
-            {
-                NSString *url = parser.url;
-                NSString *token = parser.token;
+        if (parser.statusCode == kOCSharedAPISuccessful || parser.statusCode == kOCShareeAPISuccessful) {
+            
+            NSString *url = parser.url;
+            NSString *token = parser.token;
+            
+            if (url != nil) {
                 
-                if (url != nil) {
-                    
-                    successRequest(response, url, request.redirectedServer);
-                    
-                }else if (token != nil){
-                    //We remove the \n and the empty spaces " "
-                    token = [token stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-                    token = [token stringByReplacingOccurrencesOfString:@" " withString:@""];
-                    
-                    successRequest(response, token, request.redirectedServer);
-                    
-                }else{
-                    
-                    NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
-                    failureRequest(response, error, request.redirectedServer);
-                }
-
-                break;
-            }
+                successRequest(response, url, request.redirectedServer);
                 
-            default:
-            {
+            } else if (token != nil) {
+                //We remove the \n and the empty spaces " "
+                token = [token stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+                token = [token stringByReplacingOccurrencesOfString:@" " withString:@""];
+                
+                successRequest(response, token, request.redirectedServer);
+                
+            } else {
+                
                 NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
                 failureRequest(response, error, request.redirectedServer);
             }
-        }
 
+        } else {
+            
+            NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
+            failureRequest(response, error, request.redirectedServer);
+        }
+        
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
     }];
@@ -1029,7 +1015,6 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request shareWith:userOrGroup shareeType:shareeType inServer:serverPath andPath:filePath andPermissions:permissions onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         NSData *responseData = (NSData*) responseObject;
         
@@ -1039,20 +1024,12 @@
         
         [parser initParserWithData:responseData];
         
-        switch (parser.statusCode) {
-            case kOCSharedAPISuccessful:
-            {
-                successRequest(response, request.redirectedServer);
-                break;
-            }
-                
-            default:
-            {
-                NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
-                failureRequest(response, error, request.redirectedServer);
-            }
+        if (parser.statusCode == kOCSharedAPISuccessful || parser.statusCode == kOCShareeAPISuccessful) {
+            successRequest(response, request.redirectedServer);
+        } else {
+            NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
+            failureRequest(response, error, request.redirectedServer);
         }
-        
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
@@ -1071,7 +1048,6 @@
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
-    
     
     [request unShareFileOrFolderByServer:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         if (successRequest) {
@@ -1095,7 +1071,6 @@
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
-    
     
     [request isShareFileOrFolderByServer:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         if (successRequest) {
@@ -1136,14 +1111,12 @@
                     successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest
       failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
     
-    
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_shared_api];
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"/%ld",(long)shareId]];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
-    
     
     [request updateShareItem:shareId ofServerPath:serverPath withPasswordProtect:password andExpirationTime:expirationTime andPermissions:permissions andHideDownload:hideDownload onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
@@ -1155,21 +1128,13 @@
         
         [parser initParserWithData:responseData];
         
-        
-        switch (parser.statusCode) {
-            case kOCSharedAPISuccessful:
-            {
-                successRequest(response, request.redirectedServer);
-                break;
-            }
-            
-            default:
-            {
-                NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
-                failureRequest(response, error, request.redirectedServer);
-            }
+        if (parser.statusCode == kOCSharedAPISuccessful || parser.statusCode == kOCShareeAPISuccessful) {
+            successRequest(response, request.redirectedServer);
+        } else {
+            NSError *error = [UtilsFramework getErrorWithCode:parser.statusCode andCustomMessageFromTheServer:parser.message];
+            failureRequest(response, error, request.redirectedServer);
         }
-
+        
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
          failureRequest(response, error, request.redirectedServer);
     }];
@@ -1185,8 +1150,6 @@
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
-    
-    
     
     [request searchUsersAndGroupsWith:searchString forPage:page with:resultsPerPage ofServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
