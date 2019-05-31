@@ -23,16 +23,24 @@
 
 import Foundation
 
-class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
+class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     
-    var detail: CCDetail!
-    var webView: WKWebView!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var detail: CCDetail!
+   
+    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+        super.init(frame: frame, configuration: configuration)
 
-    @objc static let sharedInstance: NCViewerRichdocument = {
-        let instance = NCViewerRichdocument()
-        return instance
-    }()
+        let contentController = configuration.userContentController
+        contentController.add(self, name: "RichDocumentsMobileInterface")
+        
+        autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        navigationDelegate = self
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
     
     @objc func viewRichDocumentAt(_ link: String, detail: CCDetail) {
         
@@ -45,27 +53,14 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
             detail.navigationController?.setNavigationBarHidden(true, animated: false)
         }
         
-        let contentController = WKUserContentController()
-        contentController.add(self, name: "RichDocumentsMobileInterface")
-        let configuration = WKWebViewConfiguration()
-        configuration.userContentController = contentController
-        
-        webView = WKWebView(frame: detail.view.bounds, configuration: configuration)
-        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//        webView.scrollView.showsHorizontalScrollIndicator = true
-//        webView.scrollView.showsVerticalScrollIndicator = true
-        webView.navigationDelegate = self
-        
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
         let userAgent : String = CCUtility.getUserAgent()
-        webView.customUserAgent = userAgent
-        webView.load(request)
-        
-        detail.view.addSubview(webView)
+        customUserAgent = userAgent
+        load(request)        
     }
     
     @objc func keyboardDidShow(notification: Notification) {
@@ -73,11 +68,11 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
         //print("keyboardFrame: \(keyboardFrame)")
-        webView.frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
+        frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        webView.frame = detail.view.bounds
+        frame = detail.view.bounds
     }
     
     //MARK: -
@@ -87,8 +82,8 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         if (message.name == "RichDocumentsMobileInterface") {
             
             if message.body as! String == "close" {
-
-                self.webView.removeFromSuperview()
+                
+                removeFromSuperview()
                 
                 self.detail.navigationController?.popViewController(animated: true)
 //                detail.navigationController?.setNavigationBarHidden(false, animated: false)
@@ -128,7 +123,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
             OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
-                    self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+                    self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
                 } else if errorCode != 0 {
                     self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
                 } else {
@@ -143,7 +138,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
-                self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+                self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
             } else {
@@ -151,6 +146,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
             }
         })
     }
+    
     
     //MARK: -
 
@@ -172,35 +168,5 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCUtility.sharedInstance.stopActivityIndicator()
-    }
-     
-    //MARK: -
-    
-    @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
-        
-        if appDelegate.reachability.isReachable() == false {
-            return false
-        }
-        
-        guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
-            return false
-        }
-        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: metadata.account) else {
-            return false
-        }
-        
-        if richdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
-            
-            let mimeTypeArray = mimeType.components(separatedBy: ".")
-            let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-            
-            for richdocumentMimetype: String in richdocumentsMimetypes {
-                if richdocumentMimetype.contains(mimeType) {
-                    return true
-                }
-            }
-        }
-        
-        return false
     }
 }

@@ -4087,9 +4087,13 @@
                     
                     [self shouldPerformSegue:self.metadata];
                     
-                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCViewerRichdocument sharedInstance] isRichDocument:self.metadata]) {
+                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
                     
-                    [self shouldPerformSegue:self.metadata];
+                    if (appDelegate.reachability.isReachable) {
+                        [self shouldPerformSegue:self.metadata];
+                    } else {
+                        [appDelegate messageNotification:@"_info_" description:@"_go_online_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                    }
                     
                 } else {
                    

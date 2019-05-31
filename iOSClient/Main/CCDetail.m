@@ -226,7 +226,7 @@
         }
         
         // RichDocument
-        if ([[NCViewerRichdocument sharedInstance] isRichDocument:self.metadataDetail]) {
+        if ([[NCUtility sharedInstance] isRichDocument:self.metadataDetail] && appDelegate.reachability.isReachable) {
             
             [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
             
@@ -235,7 +235,9 @@
                     
                     if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                         
-                        [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
+                        self.richDocument = [[NCViewerRichdocument alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                        [self.view addSubview:self.richDocument];
+                        [self.richDocument viewRichDocumentAt:link detail:self];
 
                     } else {
                         
@@ -253,7 +255,9 @@
                 
             } else {
                 
-                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:self.metadataDetail.url detail:self];
+                self.richDocument = [[NCViewerRichdocument alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                [self.view addSubview:self.richDocument];
+                [self.richDocument viewRichDocumentAt:self.metadataDetail.url detail:self];
             }
             
             return;

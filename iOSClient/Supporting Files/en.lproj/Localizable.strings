@@ -655,6 +655,7 @@
 "_create_new_document_"             = "Create new document";
 "_create_new_spreadsheet_"          = "Create new spreadsheet";
 "_create_new_presentation_"         = "Create new presentation";
+"_go_online_"                       = "Go online to see the document";
 
 // Intro
 

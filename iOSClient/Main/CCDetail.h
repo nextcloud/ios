@@ -33,6 +33,7 @@
 
 @class tableMetadata;
 @class NCViewerImagemeter;
+@class NCViewerRichdocument;
 
 @interface CCDetail : UIViewController <MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
@@ -57,6 +58,9 @@
 // PDF
 @property (nonatomic, strong) ReaderViewController *readerPDFViewController;
 @property (nonatomic, strong) NSString *passwordPDF;
+
+// RichDocument
+@property (nonatomic, strong) NCViewerRichdocument *richDocument;
 
 // IM
 @property (nonatomic, strong) NCViewerImagemeter *imagemeter;

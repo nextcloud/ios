@@ -1223,7 +1223,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
                 if uti == nil {
                     uti = ""
-                } else if uti!.contains("opendocument") && !NCViewerRichdocument.sharedInstance.isRichDocument(metadata) {
+                } else if uti!.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
                     metadata.typeFile = k_metadataTypeFile_unknown
                 }
                 
