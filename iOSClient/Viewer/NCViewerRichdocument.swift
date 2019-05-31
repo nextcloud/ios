@@ -38,6 +38,9 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         
         self.detail = detail
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
         if (UIDevice.current.userInterfaceIdiom == .phone) {
             detail.navigationController?.setNavigationBarHidden(true, animated: false)
         }
@@ -63,6 +66,18 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         webView.load(request)
         
         detail.view.addSubview(webView)
+    }
+    
+    @objc func keyboardDidShow(notification: Notification) {
+        guard let info = notification.userInfo else { return }
+        guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let keyboardFrame = frameInfo.cgRectValue
+        //print("keyboardFrame: \(keyboardFrame)")
+        webView.frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
+    }
+    
+    @objc func keyboardWillHide(notification: Notification) {
+        webView.frame = detail.view.bounds
     }
     
     //MARK: -
