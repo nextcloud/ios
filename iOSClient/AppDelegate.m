@@ -575,20 +575,13 @@ PKPushRegistry *pushRegistry;
                     
                     if ([app isEqualToString:@"spreed"]) {
                         content.title = @"Nextcloud Talk";
+                        if (results.count > 1) { content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
+                        if (subject) { content.body = subject; }
                     } else {
-                        content.title = NSLocalizedString(app.capitalizedString, nil);
+                        if (results.count > 1) { content.title = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
+                        if (subject) { content.body = subject; }
                     }
-                    if (results.count == 1) {
-                        content.title = content.title;
-                    } else {
-                        content.title = content.title;
-                        content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain];
-                    }
-                    if (subject) {
-                        content.body = subject;
-                    } else {
-                        content.body = @"Nextcloud notification";
-                    }
+                    
                     content.sound = [UNNotificationSound defaultSound];
 
                     /*
