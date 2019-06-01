@@ -337,6 +337,10 @@
         
         url = sharedLink;
         
+    } else if (self.itemShareLink.url) {
+        
+        url = self.itemShareLink.url;
+        
     } else {
 
         url = [NSString stringWithFormat:@"%@/%@%@", appDelegate.activeUrl, k_share_link_middle_part_url_after_version_8, sharedLink];
