@@ -115,6 +115,18 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     }
     
     //MARK: -
+
+    @objc func grabFocus() {
+    
+        let functionJS = "OCA.RichDocuments.documentsMain.postGrabFocus()"
+        evaluateJavaScript(functionJS) { (result, error) in
+            let text = result as? String
+            print(text)
+        }
+
+    }
+    
+    //MARK: -
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
         

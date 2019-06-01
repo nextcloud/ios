@@ -34,6 +34,8 @@
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
 
+@class NCViewerRichdocument;
+
 @interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
 PKPushRegistry *pushRegistry;
@@ -251,6 +253,11 @@ PKPushRegistry *pushRegistry;
     
     NSLog(@"[LOG] Required unsubscribing / subscribing");
     [self pushNotification];
+    
+    NSLog(@"[LOG] RichDocument");
+    if (self.activeDetail.richDocument) {
+        [self.activeDetail.richDocument grabFocus];
+    }
 }
 
 //
