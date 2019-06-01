@@ -3095,52 +3095,8 @@
         
         if (jsongParsed && jsongParsed.allKeys > 0) {
             
-            NSMutableArray *list = [NSMutableArray new];
-            
-            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
-            NSDictionary *meta = [ocs valueForKey:@"meta"];
-            NSDictionary *data = [ocs valueForKey:@"data"];
-            
-            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
-            
-            if (statusCode == kOCUserProfileAPISuccessful) {
-                
-                for (NSDictionary *dicDatas in data) {
-                    
-                    NCRichDocumentTemplate *template = [NCRichDocumentTemplate new];
-                    
-                    if ([dicDatas valueForKey:@"id"] && ![[dicDatas valueForKey:@"id"] isEqual:[NSNull null]])
-                        template.templateID = [[dicDatas valueForKey:@"id"] integerValue];
-                    
-                    if ([dicDatas valueForKey:@"delete"] && ![[dicDatas valueForKey:@"delete"] isKindOfClass:[NSNull class]])
-                        template.delete = [dicDatas valueForKey:@"delete"];
-                    
-                    if ([dicDatas valueForKey:@"extension"] && ![[dicDatas valueForKey:@"extension"] isKindOfClass:[NSNull class]])
-                        template.extension = [dicDatas valueForKey:@"extension"];
-                    
-                    if ([dicDatas valueForKey:@"name"] && ![[dicDatas valueForKey:@"name"] isKindOfClass:[NSNull class]])
-                        template.name = [dicDatas valueForKey:@"name"];
-                    
-                    if ([dicDatas valueForKey:@"preview"] && ![[dicDatas valueForKey:@"preview"] isKindOfClass:[NSNull class]])
-                        template.preview = [dicDatas valueForKey:@"preview"];
-                    
-                    if ([dicDatas valueForKey:@"type"] && ![[dicDatas valueForKey:@"type"] isKindOfClass:[NSNull class]])
-                        template.type = [dicDatas valueForKey:@"type"];
-                    
-                    [list addObject:template];
-                }
-                
-                successRequest(response, list, request.redirectedServer);
-                
-            } else {
-                
-                NSString *message = (NSString *)[meta objectForKey:@"message"];
-                if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedString(@"_server_response_error_", nil);
-                }
-                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
-            }
-            
+            successRequest(response, nil, request.redirectedServer);
+       
         } else {
             failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
