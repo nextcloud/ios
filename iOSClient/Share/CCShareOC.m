@@ -194,6 +194,8 @@
     XLFormRowDescriptor *rowExpirationDateSwitch = [self.form formRowWithTag:@"expirationDateSwitch"];
     
     XLFormRowDescriptor *rowSendLinkTo = [self.form formRowWithTag:@"sendLinkTo"];
+    
+    XLFormRowDescriptor *rowFindUser = [self.form formRowWithTag:@"findUser"];
 
     // Share Link
     if ([self.shareLink length] > 0) {
@@ -315,6 +317,23 @@
     } else {
             
         section.footerTitle = @"";
+    }
+    
+    // canShare
+    BOOL canShare = [self.metadata.permissions containsString:k_permission_can_share];
+    if (! canShare) {
+        
+        rowShareLinkSwitch.disabled = @YES;
+        rowShareLinkPermission.disabled = @YES;
+        rowPassword.disabled = @YES;
+        rowHideDownload.disabled = @YES;
+        rowExpirationDate.disabled = @YES;
+        rowExpirationDateSwitch.disabled = @YES;
+        rowSendLinkTo.disabled = @YES;
+        rowFindUser.disabled = @YES;
+        
+        XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
+        [section.formRows removeAllObjects];
     }
     
     self.form.disabled = NO;
