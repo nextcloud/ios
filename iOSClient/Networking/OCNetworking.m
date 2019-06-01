@@ -2352,6 +2352,14 @@
     [dataDic setValue:text forKey:@"search"];
     [dataDic setValue:[NSNumber numberWithInteger:page] forKey:@"page"];
     [dataDic setValue:[NSNumber numberWithInt:20] forKey:@"size"];
+    
+    NSMutableDictionary *options = [NSMutableDictionary new];
+    [options setValue:@"" forKey:@"files_within_dir"];
+    [options setValue:@"" forKey:@"files_local"];
+    [options setValue:@"" forKey:@"files_extension"];
+    
+    [dataDic setValue:options forKey:@"options"];
+    
     NSString *data = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:dataDic options:0 error:nil] encoding:NSUTF8StringEncoding];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;

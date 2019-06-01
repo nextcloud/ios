@@ -3079,6 +3079,8 @@
 
 - (void)fullTextSearch:(NSString *)serverPath data:(NSString *)data onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
+    serverPath = [serverPath stringByAppendingString:k_url_fulltextsearch];
+    
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     

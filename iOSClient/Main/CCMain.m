@@ -1316,11 +1316,14 @@
        
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            /*
-            [[OCNetworking sharedManager] fullTextSearchWithAccount:appDelegate.activeAccount text:_searchFileName page:1 completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
-                NSLog(@"x");
-            }];
-            */
+#if TARGET_OS_SIMULATOR
+            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
+            if (capabilities.isFulltextsearchEnabled) {
+                [[OCNetworking sharedManager] fullTextSearchWithAccount:appDelegate.activeAccount text:_searchFileName page:1 completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
+                    NSLog(@"x");
+                }];
+            }
+#endif
             
             _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
             [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
