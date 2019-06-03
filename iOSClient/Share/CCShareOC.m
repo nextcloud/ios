@@ -309,7 +309,9 @@
             [self.itemsShareWith addObject:item];
             
             // shared with you by
-            self.labelSharedWithYouBy.text = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_shared_with_you_by_", nil), item.displayNameFileOwner];
+            if (![item.uidFileOwner isEqualToString:appDelegate.activeUserID]) {
+                self.labelSharedWithYouBy.text = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_shared_with_you_by_", nil), item.displayNameFileOwner];
+            }
         }
             
         section.footerTitle = NSLocalizedString(@"_user_sharee_footer_", nil);
