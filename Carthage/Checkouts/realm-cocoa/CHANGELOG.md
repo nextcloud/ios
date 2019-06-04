@@ -1,3 +1,70 @@
+3.15.0 Release notes (2019-05-06)
+=============================================================
+
+The minimum version of Realm Object Server has been increased to 3.21.0 and
+attempting to connect to older versions will produce protocol mismatch errors.
+Realm Cloud has already been upgraded to this version, and users using that do
+not need to worry about this.
+
+### Enhancements
+
+* Add `createdAt`, `updatedAt`, `expiresAt` and `timeToLive` properties to
+  `RLMSyncSubscription`/`SyncSubscription`. These properties will be `nil` for
+  subscriptions created with older versions of Realm, but will be automatically
+  populated for newly-created subscriptions.
+* Add support for transient subscriptions by setting the `timeToLive` when
+  creating the subscription. The next time a subscription is created or updated
+  after that time has elapsed the subscription will be automatically removed.
+* Add support for updating existing subscriptions with a new query or limit.
+  This is done by passing `update: true` (in swift) or setting
+  `options.overwriteExisting = YES` (in obj-c) when creating the subscription,
+  which will make it update the existing subscription with the same name rather
+  than failing if one already exists with that name.
+* Add an option to include the objects from
+  `RLMLinkingObjects`/`LinkingObjects` properties in sync subscriptions,
+  similarly to how `RLMArray`/`List` automatically pull in the contained
+  objects.
+* Improve query performance for chains of OR conditions (or an IN condition) on
+  an unindexed integer or string property.
+  ([Core PR #2888](https://github.com/realm/realm-core/pull/2888) and
+  [Core PR #3250](https://github.com/realm/realm-core/pull/3250)).
+* Improve query performance for equality conditions on indexed integer properties.
+  ([Core PR #3272](https://github.com/realm/realm-core/pull/3272)).
+* Adjust the file allocation algorithm to reduce fragmentation caused by large
+  numbers of small blocks.
+* Improve file allocator logic to reduce fragmentation and improve commit
+  performance after many writes. ([Core PR #3278](https://github.com/realm/realm-core/pull/3278)).
+
+### Fixed
+
+* Making a query that compares two integer properties could cause a
+  segmentation fault on x86 (i.e. macOS only).
+  ([Core PR #3253](https://github.com/realm/realm-core/pull/3256)).
+* The `downloadable_bytes` parameter passed to sync progress callbacks reported
+  a value which correlated to the amount of data left to download, but not
+  actually the number of bytes which would be downloaded.
+
+### Compatibility
+
+* File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.21.0 or later.
+* Carthage release for Swift is built with Xcode 10.2.1.
+
+3.14.2 Release notes (2019-04-25)
+=============================================================
+
+### Enhancements
+
+* Updating `RLMSyncManager.customRequestHeaders` will immediately update all
+  currently active sync session with the new headers rather than requiring
+  manually closing the Realm and reopening it.
+
+### Compatibility
+
+* File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.11.0 or later.
+* Carthage release for Swift is built with Xcode 10.2.1.
+
 3.14.1 Release notes (2019-04-04)
 =============================================================
 
@@ -11,6 +78,7 @@
 
 * File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
 * Realm Object Server: 3.11.0 or later.
+* Carthage release for Swift is built with Xcode 10.2.
 
 3.14.0 Release notes (2019-03-27)
 =============================================================

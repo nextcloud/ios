@@ -2888,6 +2888,15 @@ TEST_CASE("results: set property value on all objects", "[batch_updates]") {
         realm->cancel_transaction();
     }
 
+    SECTION("set property values removes object from Results") {
+        realm->begin_transaction();
+        Results results(realm, table->where().equal(2,0));
+        CHECK(results.size() == 2);
+        r.set_property_value(ctx, "int", util::Any(INT64_C(42)));
+        CHECK(results.size() == 0);
+        realm->cancel_transaction();
+    }
+
     SECTION("set property value") {
         realm->begin_transaction();
 

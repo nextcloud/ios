@@ -76,7 +76,7 @@ std::shared_ptr<RealmCoordinator> RealmCoordinator::get_existing_coordinator(Str
     return it == s_coordinators_per_path.end() ? nullptr : it->second.lock();
 }
 
-void RealmCoordinator::create_sync_session()
+void RealmCoordinator::create_sync_session(bool force_client_reset)
 {
 #if REALM_ENABLE_SYNC
     if (m_sync_session)
@@ -94,7 +94,7 @@ void RealmCoordinator::create_sync_session()
 
     auto sync_config = *m_config.sync_config;
     sync_config.validate_sync_history = false;
-    m_sync_session = SyncManager::shared().get_session(m_config.path, sync_config);
+    m_sync_session = SyncManager::shared().get_session(m_config.path, sync_config, force_client_reset);
 
     std::weak_ptr<RealmCoordinator> weak_self = shared_from_this();
     SyncSession::Internal::set_sync_transact_callback(*m_sync_session,
@@ -106,6 +106,8 @@ void RealmCoordinator::create_sync_session()
                 self->m_notifier->notify_others();
         }
     });
+#else
+    static_cast<void>(force_client_reset);
 #endif
 }
 
@@ -183,6 +185,34 @@ void RealmCoordinator::set_config(const Realm::Config& config)
     }
 }
 
+std::shared_ptr<Realm> RealmCoordinator::get_cached_realm(Realm::Config const& config)
+{
+    if (!config.cache)
+        return nullptr;
+    AnyExecutionContextID execution_context(config.execution_context);
+    for (auto& cached_realm : m_weak_realm_notifiers) {
+        if (!cached_realm.is_cached_for_execution_context(execution_context))
+            continue;
+        // can be null if we jumped in between ref count hitting zero and
+        // unregister_realm() getting the lock
+        if (auto realm = cached_realm.realm()) {
+            // If the file is uninitialized and was opened without a schema,
+            // do the normal schema init
+            if (realm->schema_version() == ObjectStore::NotVersioned)
+                break;
+
+            // Otherwise if we have a realm schema it needs to be an exact
+            // match (even having the same properties but in different
+            // orders isn't good enough)
+            if (config.schema && realm->schema() != *config.schema)
+                throw MismatchedConfigException("Realm at path '%1' already opened on current thread with different schema.", config.path);
+
+            return realm;
+        }
+    }
+    return nullptr;
+}
+
 std::shared_ptr<Realm> RealmCoordinator::get_realm(Realm::Config config)
 {
     // realm must be declared before lock so that the mutex is released before
@@ -190,8 +220,16 @@ std::shared_ptr<Realm> RealmCoordinator::get_realm(Realm::Config config)
     // to acquire the same lock
     std::shared_ptr<Realm> realm;
     std::unique_lock<std::mutex> lock(m_realm_mutex);
+    do_get_realm(std::move(config), realm, lock);
+    return realm;
+}
 
+void RealmCoordinator::do_get_realm(Realm::Config config, std::shared_ptr<Realm>& realm,
+                                    std::unique_lock<std::mutex>& realm_lock)
+{
     set_config(config);
+    if ((realm = get_cached_realm(config)))
+        return;
 
     auto schema = std::move(config.schema);
     auto migration_function = std::move(config.migration_function);
@@ -199,57 +237,65 @@ std::shared_ptr<Realm> RealmCoordinator::get_realm(Realm::Config config)
     auto audit_factory = std::move(config.audit_factory);
     config.schema = {};
 
-    if (config.cache) {
-        AnyExecutionContextID execution_context(config.execution_context);
-        for (auto& cached_realm : m_weak_realm_notifiers) {
-            if (!cached_realm.is_cached_for_execution_context(execution_context))
-                continue;
-            // can be null if we jumped in between ref count hitting zero and
-            // unregister_realm() getting the lock
-            if ((realm = cached_realm.realm())) {
-                // If the file is uninitialized and was opened without a schema,
-                // do the normal schema init
-                if (realm->schema_version() == ObjectStore::NotVersioned)
-                    break;
-
-                // Otherwise if we have a realm schema it needs to be an exact
-                // match (even having the same properties but in different
-                // orders isn't good enough)
-                if (schema && realm->schema() != *schema)
-                    throw MismatchedConfigException("Realm at path '%1' already opened on current thread with different schema.", config.path);
-
-                return realm;
-            }
+    bool should_initialize_notifier = !config.immutable() && config.automatic_change_notifications;
+    realm = Realm::make_shared_realm(std::move(config), shared_from_this());
+    if (!m_notifier && should_initialize_notifier) {
+        try {
+            m_notifier = std::make_unique<ExternalCommitHelper>(*this);
+        }
+        catch (std::system_error const& ex) {
+            throw RealmFileException(RealmFileException::Kind::AccessError, get_path(), ex.code().message(), "");
         }
     }
-
-    if (!realm) {
-        bool should_initialize_notifier = !config.immutable() && config.automatic_change_notifications;
-        realm = Realm::make_shared_realm(std::move(config), shared_from_this());
-        if (!m_notifier && should_initialize_notifier) {
-            try {
-                m_notifier = std::make_unique<ExternalCommitHelper>(*this);
-            }
-            catch (std::system_error const& ex) {
-                throw RealmFileException(RealmFileException::Kind::AccessError, get_path(), ex.code().message(), "");
-            }
-        }
-        m_weak_realm_notifiers.emplace_back(realm, realm->config().cache);
-    }
+    m_weak_realm_notifiers.emplace_back(realm, realm->config().cache);
 
     if (realm->config().sync_config)
-        create_sync_session();
+        create_sync_session(false);
 
     if (!m_audit_context && audit_factory)
         m_audit_context = audit_factory();
 
     if (schema) {
-        lock.unlock();
+        realm_lock.unlock();
         realm->update_schema(std::move(*schema), config.schema_version, std::move(migration_function),
                              std::move(initialization_function));
     }
+}
 
-    return realm;
+void RealmCoordinator::get_realm(Realm::Config config,
+                                 std::function<void(std::shared_ptr<Realm>, std::exception_ptr)> callback)
+{
+#if REALM_ENABLE_SYNC
+    if (config.sync_config) {
+        std::unique_lock<std::mutex> lock(m_realm_mutex);
+        set_config(config);
+        create_sync_session(!File::exists(m_config.path));
+        m_sync_session->wait_for_download_completion([callback, self = shared_from_this()](std::error_code ec) {
+            if (ec)
+                callback(nullptr, std::make_exception_ptr(std::system_error(ec)));
+            else {
+                std::shared_ptr<Realm> realm;
+                try {
+                    realm = self->get_realm();
+                }
+                catch (...) {
+                    return callback(nullptr, std::current_exception());
+                }
+                callback(realm, nullptr);
+            }
+        });
+        return;
+    }
+#endif
+
+    std::shared_ptr<Realm> realm;
+    try {
+        realm = get_realm(std::move(config));
+    }
+    catch (...) {
+        return callback(nullptr, std::current_exception());
+    }
+    callback(realm, nullptr);
 }
 
 std::shared_ptr<Realm> RealmCoordinator::get_realm()
@@ -925,7 +971,7 @@ void RealmCoordinator::process_available_async(Realm& realm)
 
 void RealmCoordinator::set_transaction_callback(std::function<void(VersionID, VersionID)> fn)
 {
-    create_sync_session();
+    create_sync_session(false);
     m_transaction_callback = std::move(fn);
 }
 

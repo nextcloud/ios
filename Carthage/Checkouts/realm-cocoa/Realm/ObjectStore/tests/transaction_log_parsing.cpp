@@ -67,7 +67,7 @@ public:
         }
 
         validate(c);
-        return c;
+        return std::move(c);
     }
 
     explicit operator bool() const { return m_realm->is_in_transaction(); }

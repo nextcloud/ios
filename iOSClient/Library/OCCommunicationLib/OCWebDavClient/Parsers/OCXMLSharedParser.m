@@ -211,6 +211,10 @@
         
         _currentShared.displayNameFileOwner = _xmlChars;
         
+    } else if ([elementName isEqualToString:@"url"]) {
+        
+        _currentShared.url = _xmlChars;
+        
     } else if ([elementName isEqualToString:@"mimetype"]) {
         
         _currentShared.mimeType = _xmlChars;

@@ -70,6 +70,9 @@ public:
     template<typename ValueType, typename ContextType>
     ValueType get_property_value(ContextType& ctx, StringData prop_name);
 
+    template<typename ValueType, typename ContextType>
+    ValueType get_property_value(ContextType& ctx, const Property& property);
+
     // create an Object from a native representation
     template<typename ValueType, typename ContextType>
     static Object create(ContextType& ctx, std::shared_ptr<Realm> const& realm,
