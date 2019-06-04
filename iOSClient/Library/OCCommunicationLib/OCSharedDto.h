@@ -51,6 +51,7 @@ typedef enum {
 @property (nonatomic, copy) NSString *token;
 @property NSInteger storage;
 @property NSInteger mailSend;
+@property (nonatomic, copy) NSString *url;
 @property (nonatomic, copy) NSString *uidOwner;
 @property (nonatomic, copy) NSString *shareWithDisplayName;
 @property (nonatomic, copy) NSString *displayNameOwner;

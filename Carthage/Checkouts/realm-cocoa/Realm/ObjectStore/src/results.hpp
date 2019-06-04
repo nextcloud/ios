@@ -345,10 +345,13 @@ void Results::set_property_value(ContextType& ctx, StringData prop_name, ValueTy
         throw ModifyPrimaryKeyException(m_object_schema->name, prop->name);
     }
 
-    // Update all objects in this ResultSets
-    size_t size = this->size();
+    // Update all objects in this ResultSets. Use snapshot to avoid correctness problems if the
+    // object is removed from the TableView after the property update as well as avoiding to
+    // re-evaluating the query too many times.
+    auto snapshot = this->snapshot();
+    size_t size = snapshot.size();
     for (size_t i = 0; i < size; ++i) {
-        Object obj(m_realm, *m_object_schema, get(i));
+        Object obj(m_realm, *m_object_schema, snapshot.get(i));
         obj.set_property_value_impl(ctx, *prop, value, true, false, false);
     }
 }

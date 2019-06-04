@@ -17,6 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "catch.hpp"
+#include "util/test_file.hpp"
 
 #include "object_schema.hpp"
 #include "object_store.hpp"
@@ -84,6 +85,33 @@ struct StringMaker<SchemaChange> {
     REQUIRE_THROWS_WITH(expr, Catch::Matchers::Contains(msg))
 
 TEST_CASE("ObjectSchema") {
+
+    SECTION("Aliases are still present in schema returned from the Realm") {
+        TestFile config;
+        config.schema_version = 1;
+        config.schema = Schema{
+                {"object", {
+                   {"value", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "alias"}
+               }},
+        };
+
+        auto realm = Realm::get_shared_realm(config);
+        REQUIRE(realm->schema().find("object")->property_for_name("value")->public_name == "alias");
+    }
+
+    SECTION("looking up properties by alias matches name if alias is not set") {
+        auto schema = Schema{
+            {"object", {
+               {"value", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "alias"},
+               {"other_value", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}}
+            }},
+        };
+
+        REQUIRE(schema.find("object")->property_for_public_name("value") == nullptr);
+        REQUIRE(schema.find("object")->property_for_public_name("alias")->name == "value");
+        REQUIRE(schema.find("object")->property_for_public_name("other_value")->name == "other_value");
+    }
+
     SECTION("from a Group") {
         Group g;
         TableRef pk = g.add_table("pk");
@@ -530,6 +558,94 @@ TEST_CASE("Schema") {
             REQUIRE_THROWS_CONTAINING(schema.validate(),
                 "- Type 'object1' appears more than once in the schema.\n"
                 "- Type 'object2' appears more than once in the schema.");
+        }
+
+        SECTION("rejects properties with the same name") {
+            Schema schema = {
+                {"object", {
+                    {"child", PropertyType::Object|PropertyType::Nullable, "object"},
+                    {"parent", PropertyType::Int},
+                    {"field1", PropertyType::Int},
+                    {"field2", PropertyType::String},
+                    {"field1", PropertyType::String},
+                    {"field2", PropertyType::String},
+                    {"field1", PropertyType::Int},
+                }, {
+                    {"parent", PropertyType::Array|PropertyType::LinkingObjects, "object", "child"}
+                }}
+            };
+
+            REQUIRE_THROWS_CONTAINING(schema.validate(),
+                  "- Property 'field1' appears more than once in the schema for type 'object'.\n"
+                  "- Property 'field2' appears more than once in the schema for type 'object'.\n"
+                  "- Property 'parent' appears more than once in the schema for type 'object'.");
+        }
+
+        SECTION("rejects schema if all properties have the same name") {
+            Schema schema = {
+                {"object", {
+                    {"field", PropertyType::Int},
+                    {"otherField", PropertyType::Int},
+                    {"field", PropertyType::Int},
+                    {"otherField", PropertyType::Int},
+                    {"field", PropertyType::Int},
+                    {"otherField", PropertyType::Int},
+                    {"field", PropertyType::Int},
+                    {"otherField", PropertyType::Int},
+                    {"field", PropertyType::Int},
+                    {"otherField", PropertyType::Int},
+                }}
+            };
+
+            REQUIRE_THROWS_CONTAINING(schema.validate(),
+                    "- Property 'field' appears more than once in the schema for type 'object'.\n"
+                    "- Property 'otherField' appears more than once in the schema for type 'object'.");
+        }
+
+        SECTION("rejects properties with the same alias") {
+            Schema schema = {
+                {"object", {
+                    {"child", PropertyType::Object|PropertyType::Nullable, "object"},
+
+                    // Alias == Name on computed property
+                    {"parentA", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "_parent"},
+
+                    // Name == Alias on other property
+                    {"fieldA", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "_field1"},
+                    {"fieldB", PropertyType::String, Property::IsPrimary{false}, Property::IsIndexed{false}, "_field2"},
+                    {"fieldC", PropertyType::String, Property::IsPrimary{false}, Property::IsIndexed{false}, "_field1"},
+                    {"fieldD", PropertyType::String, Property::IsPrimary{false}, Property::IsIndexed{false}, "_field2"},
+                    {"fieldE", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "_field1"},
+
+                    // Name == Alias
+                    {"fieldF", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "fieldF"},
+                }, {
+                    // Computed property alias == name on persisted property
+                    {"parentB", PropertyType::Array|PropertyType::LinkingObjects, "object", "child", "_parent"}
+                }}
+            };
+
+            REQUIRE_THROWS_CONTAINING(schema.validate(),
+                  "- Alias '_field1' appears more than once in the schema for type 'object'.\n"
+                  "- Alias '_field2' appears more than once in the schema for type 'object'.\n"
+                  "- Alias '_parent' appears more than once in the schema for type 'object'.");
+        }
+
+        SECTION("rejects properties whose name conflicts with an alias for another property") {
+            Schema schema = {
+                {"object", {
+                    {"child", PropertyType::Object|PropertyType::Nullable, "object"},
+                    {"field1", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "field2"},
+                    {"field2", PropertyType::Int, Property::IsPrimary{false}, Property::IsIndexed{false}, "parent"},
+                }, {
+                    {"parent", PropertyType::Array|PropertyType::LinkingObjects, "object", "child", "field1"}
+                }}
+            };
+
+            REQUIRE_THROWS_CONTAINING(schema.validate(),
+                  "- Property 'object.parent' has an alias 'field1' that conflicts with a property of the same name.\n"
+                  "- Property 'object.field1' has an alias 'field2' that conflicts with a property of the same name.\n"
+                  "- Property 'object.field2' has an alias 'parent' that conflicts with a property of the same name.");
         }
     }
 

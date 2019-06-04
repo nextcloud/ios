@@ -261,6 +261,16 @@ public:
     // encryption key will raise an exception.
     static SharedRealm get_shared_realm(Config config);
 
+    // Open a Realm and then pass it to the callback.
+    //
+    // If SyncConfig is set, the callback will not be invoked until the latest
+    // Realm state has been fully downloaded. This will result in the callback
+    // being invoked on a different thread. The calling code should normally
+    // dispatch back to the desired thread and obtain a new reference to the
+    // Realm, only using the reference passed to the callback to keep the file
+    // open while this is happening.
+    static void get_shared_realm(Config config, std::function<void(SharedRealm, std::exception_ptr)> callback);
+
     // Updates a Realm to a given schema, using the Realm's pre-set schema mode.
     void update_schema(Schema schema, uint64_t version=0,
                        MigrationFunction migration_function=nullptr,

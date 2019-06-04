@@ -33,6 +33,7 @@
 #include "impl/realm_coordinator.hpp"
 
 #include <realm/group.hpp>
+#include <realm/util/scope_exit.hpp>
 
 namespace realm {
 class TestHelper {
@@ -175,10 +176,7 @@ TEST_CASE("SharedRealm: get_shared_realm()") {
         realm::util::remove_dir(config.path + ".note");
         realm::util::remove_dir_recursive(fallback_dir);
     }
-#endif
 
-// Windows doesn't use fifos
-#ifndef _WIN32
     SECTION("automatically append dir separator to end of fallback path") {
         std::string fallback_dir = tmp_dir() + "/fallback";
         realm::util::try_make_dir(fallback_dir);
@@ -444,6 +442,103 @@ TEST_CASE("SharedRealm: get_shared_realm()") {
         Realm::get_shared_realm(config);
         REQUIRE(object_schema == &*realm->schema().find("object"));
     }
+}
+
+TEST_CASE("SharedRealm: get_shared_realm() with callback") {
+    TestFile local_config;
+    local_config.schema_version = 1;
+    local_config.schema = Schema{
+        {"object", {
+            {"value", PropertyType::Int}
+        }},
+    };
+
+    SECTION("immediately invokes callback for non-sync realms") {
+        bool called = false;
+        Realm::get_shared_realm(local_config, [&](auto realm, auto error) {
+            REQUIRE(realm);
+            REQUIRE(!error);
+            called = true;
+        });
+        REQUIRE(called);
+    }
+
+#if REALM_ENABLE_SYNC
+    if (!util::EventLoop::has_implementation())
+        return;
+
+    auto cleanup = util::make_scope_exit([=]() noexcept { SyncManager::shared().reset_for_testing(); });
+    SyncManager::shared().configure(tmp_dir(), SyncManager::MetadataMode::NoEncryption);
+
+    SyncServer server;
+    SyncTestFile config(server, "default");
+    config.cache = false;
+    config.schema = Schema{
+        {"object", {
+            {"value", PropertyType::Int},
+        }},
+    };
+    SyncTestFile config2(server, "default");
+    config2.cache = false;
+    config2.schema = config.schema;
+
+    SECTION("can open synced Realms that don't already exist") {
+        std::atomic<bool> called{false};
+        Realm::get_shared_realm(config, [&](auto realm, auto error) {
+            REQUIRE(realm);
+            REQUIRE(!error);
+            called = true;
+
+            REQUIRE(realm->read_group().get_table("class_object"));
+        });
+        util::EventLoop::main().run_until([&]{ return called.load(); });
+        REQUIRE(called);
+    }
+
+    SECTION("downloads Realms which exist on the server") {
+        {
+            auto realm = Realm::get_shared_realm(config2);
+            realm->begin_transaction();
+            sync::create_object(realm->read_group(), *realm->read_group().get_table("class_object"));
+            realm->commit_transaction();
+            wait_for_upload(*realm);
+        }
+
+        std::atomic<bool> called{false};
+        Realm::get_shared_realm(config, [&](auto realm, auto error) {
+            REQUIRE(realm);
+            REQUIRE(!error);
+            called = true;
+
+            REQUIRE(realm->read_group().get_table("class_object")->size() == 1);
+        });
+        util::EventLoop::main().run_until([&]{ return called.load(); });
+        REQUIRE(called);
+    }
+
+    SECTION("downloads latest state for Realms which already exist locally") {
+        wait_for_upload(*Realm::get_shared_realm(config));
+
+        {
+            auto realm = Realm::get_shared_realm(config2);
+            realm->begin_transaction();
+            sync::create_object(realm->read_group(), *realm->read_group().get_table("class_object"));
+            realm->commit_transaction();
+            wait_for_upload(*realm);
+        }
+
+        std::atomic<bool> called{false};
+        Realm::get_shared_realm(config, [&](auto realm, auto error) {
+            REQUIRE(realm);
+            REQUIRE(!error);
+            called = true;
+
+            REQUIRE(realm->read_group().get_table("class_object")->size() == 1);
+        });
+        util::EventLoop::main().run_until([&]{ return called.load(); });
+        REQUIRE(called);
+    }
+#endif
 }
 
 TEST_CASE("SharedRealm: notifications") {

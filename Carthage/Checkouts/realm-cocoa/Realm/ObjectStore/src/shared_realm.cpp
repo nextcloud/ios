@@ -182,8 +182,9 @@ void Realm::open_with_config(const Config& config,
             SharedGroupOptions options;
             options.durability = config.in_memory ? SharedGroupOptions::Durability::MemOnly :
                                                     SharedGroupOptions::Durability::Full;
-
-            options.temp_dir = util::normalize_dir(config.fifo_files_fallback_path);
+            if (!config.fifo_files_fallback_path.empty()) {
+                options.temp_dir = util::normalize_dir(config.fifo_files_fallback_path);
+            }
             options.encryption_key = config.encryption_key.data();
             options.allow_file_format_upgrade = !config.disable_format_upgrade &&
                                                 config.schema_mode != SchemaMode::ResetFile;
@@ -269,6 +270,12 @@ SharedRealm Realm::get_shared_realm(Config config)
 {
     auto coordinator = RealmCoordinator::get_coordinator(config.path);
     return coordinator->get_realm(std::move(config));
+}
+
+void Realm::get_shared_realm(Config config, std::function<void(SharedRealm, std::exception_ptr)> callback)
+{
+    auto coordinator = RealmCoordinator::get_coordinator(config.path);
+    coordinator->get_realm(std::move(config), callback);
 }
 
 void Realm::set_schema(Schema const& reference, Schema schema)

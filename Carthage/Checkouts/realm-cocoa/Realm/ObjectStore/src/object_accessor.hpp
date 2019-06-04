@@ -57,6 +57,12 @@ void Object::set_property_value(ContextType& ctx, StringData prop_name, ValueTyp
 }
 
 template <typename ValueType, typename ContextType>
+ValueType Object::get_property_value(ContextType& ctx, const Property& property)
+{
+    return get_property_value_impl<ValueType>(ctx, property);
+}
+
+template <typename ValueType, typename ContextType>
 ValueType Object::get_property_value(ContextType& ctx, StringData prop_name)
 {
     return get_property_value_impl<ValueType>(ctx, property_for_name(prop_name));
