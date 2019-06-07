@@ -171,10 +171,7 @@
     
     [[OCNetworking sharedManager] shareWithAccount:appDelegate.activeAccount fileName:fileName password:password permission:permission hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-        } else if (errorCode != 0) {
-            
+        if (errorCode != 0 || [account isEqualToString:appDelegate.activeAccount]) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
@@ -186,18 +183,7 @@
 {
     [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:[share integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-            // rimuoviamo la condivisione da db
-            NSArray *result = [[NCManageDatabase sharedInstance] unShare:share fileName:metadata.fileName serverUrl:metadata.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:account];
-            
-            if (result) {
-                appDelegate.sharesLink = result[0];
-                appDelegate.sharesUserAndGroup = result[1];
-            }
-            
-        } else if (errorCode != 0) {
-            
+        if (errorCode != 0 || [account isEqualToString:appDelegate.activeAccount]) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
@@ -209,10 +195,7 @@
 {
     [[OCNetworking sharedManager] shareUpdateAccount:appDelegate.activeAccount shareID:[share integerValue] password:password permission:permission expirationTime:expirationTime hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-        } else if (errorCode != 0) {
-            
+        if (errorCode != 0 || [account isEqualToString:appDelegate.activeAccount]) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
