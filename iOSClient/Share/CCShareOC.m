@@ -243,12 +243,24 @@
         
         if (errorCode == 0) {
             
+            for (OCSharedDto *item in items)
+                [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+            
+            NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
+            if (result) {
+                appDelegate.sharesLink = result[0];
+                appDelegate.sharesUserAndGroup = result[1];
+            }
+            
             self.shareLink = [appDelegate.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
             self.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
             
             self.itemShareLink = [appDelegate.sharesID objectForKey:self.shareLink];
             if ([self.shareUserAndGroup length] > 0) self.itemsUserAndGroupLink = [self.shareUserAndGroup componentsSeparatedByString:@","];
             else self.itemsUserAndGroupLink = nil;
+            
+        } else {
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         self.form.delegate = nil;
