@@ -240,8 +240,11 @@
         
         if (errorCode == 0) {
             
-            for (OCSharedDto *item in items)
+            [appDelegate.sharesID removeAllObjects];
+
+            for (OCSharedDto *item in items) {
                 [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+            }
             
             NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
             if (result) {
