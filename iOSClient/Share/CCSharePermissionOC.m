@@ -161,6 +161,27 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Networking =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
+{
+    [[OCNetworking sharedManager] shareUpdateAccount:appDelegate.activeAccount shareID:[share integerValue] password:password permission:permission expirationTime:expirationTime hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+            
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }        
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Button =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -180,9 +201,7 @@
         permission = [UtilsFramework getPermissionsValueByCanEdit:[rowEdit.value boolValue] andCanCreate:[rowCreate.value boolValue] andCanChange:[rowChange.value boolValue] andCanDelete:[rowDelete.value boolValue] andCanShare:[rowShare.value boolValue] andIsFolder:shareDto.isDirectory];
     
     if (permission != shareDto.permissions)
-        [self.delegate updateShare:self.idRemoteShared metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:permission hideDownload:false];
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+        [self updateShare:self.idRemoteShared metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:permission hideDownload:false];
 }
 
 @end

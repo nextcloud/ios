@@ -29,11 +29,7 @@
 
 @class tableMetadata;
 
-@protocol CCSharePermissionOCDelegate;
-
 @interface CCSharePermissionOC : XLFormViewController
-
-@property (nonatomic, weak) id <CCSharePermissionOCDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UIButton *endButton;
 @property (nonatomic, strong) NSString *idRemoteShared;
@@ -41,11 +37,5 @@
 @property (nonatomic, strong) NSString *serverUrl;
 
 - (IBAction)endButtonAction:(id)sender;
-
-@end
-
-@protocol CCSharePermissionOCDelegate
-
-- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload;
 
 @end

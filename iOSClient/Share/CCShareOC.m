@@ -161,6 +161,71 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Networking =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
+{
+    NSString *fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
+    
+    [[OCNetworking sharedManager] shareWithAccount:appDelegate.activeAccount fileName:fileName password:password permission:permission hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+        [self reloadData];
+    }];
+}
+
+- (void)unShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl
+{
+    [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:[share integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            // rimuoviamo la condivisione da db
+            NSArray *result = [[NCManageDatabase sharedInstance] unShare:share fileName:metadata.fileName serverUrl:metadata.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:account];
+            
+            if (result) {
+                appDelegate.sharesLink = result[0];
+                appDelegate.sharesUserAndGroup = result[1];
+            }
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+        [self reloadData];
+    }];
+}
+
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
+{
+    [[OCNetworking sharedManager] shareUpdateAccount:appDelegate.activeAccount shareID:[share integerValue] password:password permission:permission expirationTime:expirationTime hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+        [self reloadData];
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Reload Data =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -388,7 +453,8 @@
     [self deselectFormRow:rowDescriptor];
     
     self.shareUserOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareUserOC"];
-    self.shareUserOC.delegate = self;
+    self.shareUserOC.metadata = self.metadata;
+    self.shareUserOC.serverUrl = self.serverUrl;
     self.shareUserOC.itemsShareWith = self.itemsShareWith;
     self.shareUserOC.isDirectory = self.metadata.directory;
     
@@ -401,7 +467,6 @@
     [self deselectFormRow:rowDescriptor];
     
     self.sharePermissionOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCSharePermissionOC"];
-    self.sharePermissionOC.delegate = self;
     self.sharePermissionOC.idRemoteShared = rowDescriptor.tag;
     self.sharePermissionOC.metadata = self.metadata;
     self.sharePermissionOC.serverUrl = self.serverUrl;
@@ -434,7 +499,7 @@
                     NSString *password = alertController.textFields.firstObject.text;
                     XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
                     rowPassword.value = password;
-                    [self.delegate share:self.metadata serverUrl:self.serverUrl password:password permission:1 hideDownload:false];
+                    [self share:self.metadata serverUrl:self.serverUrl password:password permission:1 hideDownload:false];
                     [self disableForm];
                 }];
                 
@@ -447,21 +512,21 @@
                 
             } else {
                 
-                [self.delegate share:self.metadata serverUrl:self.serverUrl password:@"" permission:1 hideDownload:false];
+                [self share:self.metadata serverUrl:self.serverUrl password:@"" permission:1 hideDownload:false];
                 [self disableForm];
             }
             
         } else {
             
             // unshare
-            [self.delegate unShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl];
+            [self unShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl];
             [self disableForm];
         }
     }
     
     if ([rowDescriptor.tag isEqualToString:@"shareLinkPermission"]) {
         
-        [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:[self getShareLinkPermission:newValue] hideDownload:false];
+        [self updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:[self getShareLinkPermission:newValue] hideDownload:false];
         [self disableForm];
     }
     
@@ -469,7 +534,7 @@
         
         BOOL hideDownload = [newValue boolValue];
         
-        [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:0 hideDownload:hideDownload];
+        [self updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:0 hideDownload:hideDownload];
         [self disableForm];
     }
     
@@ -478,7 +543,7 @@
         // remove expiration date
         if ([[rowDescriptor.value valueData] boolValue] == NO) {
             
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:@"" permission:0 hideDownload:false];
+            [self updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:@"" permission:0 hideDownload:false];
             [self disableForm];
             
         } else {
@@ -487,7 +552,7 @@
             XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
             NSString *expirationDate = [self convertDateInServerFormat:rowExpirationDate.value];
             
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0 hideDownload:false];
+            [self updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0 hideDownload:false];
             [self disableForm];
         }
     }
@@ -499,7 +564,7 @@
     
     if ([formRow.rowType isEqualToString:@"button"] && idRemoteShared > 0) {
         
-        [self.delegate unShare:formRow.tag metadata:self.metadata serverUrl:self.serverUrl];
+        [self unShare:formRow.tag metadata:self.metadata serverUrl:self.serverUrl];
         [self disableForm];
     }
 }
@@ -529,7 +594,7 @@
         
             NSString *expirationDate = [self convertDateInServerFormat:rowDescriptor.value];
         
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0 hideDownload:false];
+            [self updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0 hideDownload:false];
             [self disableForm];
         }
         
@@ -561,7 +626,7 @@
                 
                 if (self.shareLink) {
                     
-                    [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:0 hideDownload:false];
+                    [self updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:0 hideDownload:false];
                     [self disableForm];
                 }
             }
@@ -581,31 +646,6 @@
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
     
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== User & Group =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getUserAndGroup:(NSString *)find
-{
-    [self.delegate getUserAndGroup:find];
-}
-
-- (void)reloadUserAndGroup:(NSArray *)items
-{
-    if (self.shareUserOC)
-        [self.shareUserOC reloadUserAndGroup:items];
-}
-
-- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission
-{
-    [self.delegate shareUserAndGroup:user shareeType:shareeType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
-}
-
-- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
-{
-    [self.delegate updateShare:share metadata:metadata serverUrl:serverUrl password:password expirationTime:expirationTime permission:permission hideDownload:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------

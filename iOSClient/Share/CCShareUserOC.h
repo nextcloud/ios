@@ -27,11 +27,9 @@
 #import "OCShareUser.h"
 #import "OCConstants.h"
 
-@protocol CCShareUserOCDelegate;
+@class tableMetadata;
 
 @interface CCShareUserOC : XLFormViewController
-
-@property (nonatomic, weak) id <CCShareUserOCDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UIButton *endButton;
 
@@ -39,18 +37,14 @@
 @property (nonatomic, strong) NSArray *itemsShareWith;
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSString *directUser;
+@property (nonatomic, strong) tableMetadata *metadata;
+@property (nonatomic, strong) NSString *serverUrl;
+
 @property BOOL isDirectory;
 @property NSInteger shareType;
 
 - (IBAction)endButtonAction:(id)sender;
 
 - (void)reloadUserAndGroup:(NSArray *)items;
-
-@end
-
-@protocol CCShareUserOCDelegate
-
-- (void)getUserAndGroup:(NSString *)find;
-- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission;
 
 @end

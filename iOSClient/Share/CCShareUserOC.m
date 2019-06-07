@@ -109,6 +109,45 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Networking =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl
+{
+    NSString *fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
+    
+    [[OCNetworking sharedManager] shareUserGroupWithAccount:appDelegate.activeAccount userOrGroup:user fileName:fileName permission:permission shareeType:shareeType completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+    }];
+}
+
+- (void)getUserAndGroup:(NSString *)find
+{
+    [[OCNetworking sharedManager] getUserGroupWithAccount:appDelegate.activeAccount searchString:find completion:^(NSString *account, NSArray *item, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            [self reloadUserAndGroup:item];
+            
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Button =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -126,7 +165,7 @@
         if (self.users.count > 0 && [num integerValue] < self.users.count) {
             
             OCShareUser *item = [self.users objectAtIndex:[num integerValue]];
-            [self.delegate shareUserAndGroup:item.name shareeType:item.shareeType permission:permission];
+            [self shareUserAndGroup:item.name shareeType:item.shareeType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
         }
     }
     
@@ -136,11 +175,10 @@
         if ([self.directUser length] > 0 && [self.directUser isEqualToString:appDelegate.activeUser] == NO) {
         
             // User/Group/Federate
-            [self.delegate shareUserAndGroup:self.directUser shareeType:self.shareType permission:permission];
+            [self shareUserAndGroup:self.directUser shareeType:self.shareType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
         }
     }
     
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -184,7 +222,7 @@
         rowDescriptor.value = [rowDescriptor.value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
         if ([rowDescriptor.value length] > 1)
-            [self.delegate getUserAndGroup:rowDescriptor.value];
+            [self getUserAndGroup:rowDescriptor.value];
     }
 }
 

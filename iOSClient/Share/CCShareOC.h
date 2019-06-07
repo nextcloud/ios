@@ -29,7 +29,7 @@
 
 @class tableMetadata;
 
-@interface CCShareOC : XLFormViewController <CCShareUserOCDelegate, CCSharePermissionOCDelegate>
+@interface CCShareOC : XLFormViewController
 
 @property (nonatomic, weak) IBOutlet UIImageView *fileImageView;
 @property (nonatomic, weak) IBOutlet UILabel *labelTitle;
