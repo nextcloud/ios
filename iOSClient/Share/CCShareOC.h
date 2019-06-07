@@ -29,7 +29,11 @@
 
 @class tableMetadata;
 
+@protocol CCShareOCDelegate;
+
 @interface CCShareOC : XLFormViewController
+
+@property (nonatomic, weak) id <CCShareOCDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UIImageView *fileImageView;
 @property (nonatomic, weak) IBOutlet UILabel *labelTitle;
@@ -49,5 +53,11 @@
 @property (nonatomic, weak) CCSharePermissionOC *sharePermissionOC;
 
 - (IBAction)endButtonAction:(id)sender;
+
+@end
+
+@protocol CCShareOCDelegate
+
+- (void)readShareServer;
 
 @end

@@ -1881,6 +1881,8 @@
         // Apriamo la view
         _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
         
+        _shareOC.delegate = self;
+        
         _shareOC.metadata = metadata;
         _shareOC.serverUrl = metadata.serverUrl;
         
@@ -1890,6 +1892,11 @@
         [_shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
         [self presentViewController:_shareOC animated:YES completion:nil];
     }
+}
+
+- (void)readShareServer
+{
+    
 }
 
 - (void)tapActionShared:(UITapGestureRecognizer *)tapGesture

@@ -270,11 +270,7 @@ class NCService: NSObject {
                 // Get Share Server
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
-                    OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            self.appDelegate.updateShares(items)
-                        }
-                    })
+                    self.appDelegate.activeMain.readShareServer()
                 }
                 
                 // Get Activity

@@ -42,7 +42,7 @@
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         self.itemsShareWith = [[NSMutableArray alloc] init];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:@"ShareReloadDatasource" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:@"ShareReloadDatasource" object:nil];
 
         [self initializeForm];
     }
@@ -135,7 +135,7 @@
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = [UIColor blackColor];
     
-    [self reloadData];
+    [self reloadDatasource];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]]) {
         
@@ -173,14 +173,12 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [self reloadData];
-            
         } else if (errorCode != 0) {
             
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
-        [self reloadData];
+        [self reloadDatasource];
     }];
 }
 
@@ -198,14 +196,12 @@
                 appDelegate.sharesUserAndGroup = result[1];
             }
             
-            [self reloadData];
-            
         } else if (errorCode != 0) {
             
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
-        [self reloadData];
+        [self reloadDatasource];
     }];
 }
 
@@ -215,14 +211,12 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [self reloadData];
-            
         } else if (errorCode != 0) {
             
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
-        [self reloadData];
+        [self reloadDatasource];
     }];
 }
 
@@ -230,12 +224,13 @@
 #pragma mark ===== Reload Data =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadData
+- (void)reloadDatasource
 {    
     // bugfix
     if (!self.serverUrl || !self.metadata) {
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self.delegate readShareServer];
             [self dismissViewControllerAnimated:YES completion:nil];
         });
         
@@ -494,7 +489,7 @@
                     [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                 }];
                 UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                    [self reloadData];
+                    [self reloadDatasource];
                 }];
                 UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                     NSString *password = alertController.textFields.firstObject.text;
@@ -611,14 +606,14 @@
             
             [appDelegate messageNotification:@"_share_link_" description:@"_password_obligatory_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 
-            [self reloadData];
+            [self reloadDatasource];
             
         } else {
         
             // if the password is not changed or is 0 lenght
             if ([[self.itemShareLink shareWith] isEqualToString:password]) {
                 
-                [self reloadData];
+                [self reloadDatasource];
                 
             } else {
                 
@@ -643,8 +638,9 @@
 {
     [self.tableView endEditing:YES];
     
-    // reload delegate
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+    
+    [self.delegate readShareServer];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
