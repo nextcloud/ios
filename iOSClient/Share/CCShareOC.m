@@ -40,7 +40,7 @@
     if (self) {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        self.itemsShareWith = [[NSMutableArray alloc] init];
+        self.itemsShareWith = [NSMutableArray new];
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:@"ShareReloadDatasource" object:nil];
 
@@ -237,6 +237,20 @@
         return;
     }
     
+    XLFormRowDescriptor *rowShareLinkSwitch = [self.form formRowWithTag:@"shareLinkSwitch"];
+    XLFormRowDescriptor *rowShareLinkPermission = [self.form formRowWithTag:@"shareLinkPermission"];
+    if (self.metadata.directory) {
+        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_upload_modify_", nil), NSLocalizedString(@"_share_link_upload_", nil)];
+    } else {
+        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_modify_", nil)];
+    }
+    XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
+    XLFormRowDescriptor *rowHideDownload = [self.form formRowWithTag:@"hideDownload"];
+    XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
+    XLFormRowDescriptor *rowExpirationDateSwitch = [self.form formRowWithTag:@"expirationDateSwitch"];
+    XLFormRowDescriptor *rowSendLinkTo = [self.form formRowWithTag:@"sendLinkTo"];
+    XLFormRowDescriptor *rowFindUser = [self.form formRowWithTag:@"findUser"];
+    
     NSString *path = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
 
     [[OCNetworking sharedManager] readShareWithAccount:appDelegate.activeAccount path:path completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
@@ -260,22 +274,11 @@
             else self.itemsUserAndGroupLink = nil;
             
         } else {
+            
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         self.form.delegate = nil;
-        
-        XLFormRowDescriptor *rowShareLinkSwitch = [self.form formRowWithTag:@"shareLinkSwitch"];
-        XLFormRowDescriptor *rowShareLinkPermission = [self.form formRowWithTag:@"shareLinkPermission"];
-        XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
-        XLFormRowDescriptor *rowHideDownload = [self.form formRowWithTag:@"hideDownload"];
-        
-        XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
-        XLFormRowDescriptor *rowExpirationDateSwitch = [self.form formRowWithTag:@"expirationDateSwitch"];
-        
-        XLFormRowDescriptor *rowSendLinkTo = [self.form formRowWithTag:@"sendLinkTo"];
-        
-        XLFormRowDescriptor *rowFindUser = [self.form formRowWithTag:@"findUser"];
         
         // Share Link
         if ([self.shareLink length] > 0) {
@@ -304,11 +307,7 @@
         }
         
         // Permission
-        if (self.metadata.directory) {
-            rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_upload_modify_", nil), NSLocalizedString(@"_share_link_upload_", nil)];
-        } else {
-            rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_modify_", nil)];
-        }
+       
         if (self.itemShareLink.permissions > 0 && self.itemShareLink.shareType == shareTypeLink) {
             switch (self.itemShareLink.permissions) {
                 case 1:
