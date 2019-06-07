@@ -237,6 +237,15 @@
         return;
     }
     
+    NSString *path = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
+
+    [[OCNetworking sharedManager] readShareWithAccount:appDelegate.activeAccount path:path completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
+        
+        NSLog(@"x");
+    }];
+    
+    return;
+    
     self.shareLink = [appDelegate.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
     self.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
 

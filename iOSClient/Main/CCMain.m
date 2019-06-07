@@ -1872,31 +1872,48 @@
 
 - (void)openShareWithMetadata:(tableMetadata *)metadata
 {
-    if (_shareOC) {
+    // Apriamo la view
+    CCShareOC *shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
         
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ShareReloadDatasource" object:nil userInfo:nil];
+    shareOC.delegate = self;
         
-    } else if (metadata) {
+    shareOC.metadata = metadata;
+    shareOC.serverUrl = metadata.serverUrl;
         
-        // Apriamo la view
-        _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
+    shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
+    shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
         
-        _shareOC.delegate = self;
-        
-        _shareOC.metadata = metadata;
-        _shareOC.serverUrl = metadata.serverUrl;
-        
-        _shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
-        _shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
-        
-        [_shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
-        [self presentViewController:_shareOC animated:YES completion:nil];
-    }
+    [shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:shareOC animated:YES completion:nil];
 }
 
 - (void)readShareServer
 {
-    
+    [[OCNetworking sharedManager] readShareWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            [appDelegate.sharesID removeAllObjects];
+            
+            for (OCSharedDto *item in items)
+                [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+            
+            NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
+            if (result) {
+                appDelegate.sharesLink = result[0];
+                appDelegate.sharesUserAndGroup = result[1];
+            }
+            
+            // Notify Shares View
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            
+            [self tableViewReloadData];
+            
+        } else if (errorCode != 0) {
+            
+            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+    }];
 }
 
 - (void)tapActionShared:(UITapGestureRecognizer *)tapGesture
