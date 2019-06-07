@@ -29,11 +29,7 @@
 
 @class tableMetadata;
 
-@protocol CCShareOCDelegate;
-
 @interface CCShareOC : XLFormViewController <CCShareUserOCDelegate, CCSharePermissionOCDelegate>
-
-@property (nonatomic, weak) id <CCShareOCDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UIImageView *fileImageView;
 @property (nonatomic, weak) IBOutlet UILabel *labelTitle;
@@ -56,16 +52,5 @@
 - (void)reloadUserAndGroup:(NSArray *)items;
 
 - (IBAction)endButtonAction:(id)sender;
-
-@end
-
-@protocol CCShareOCDelegate
-
-- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload;
-- (void)unShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl;
-- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission hideDownload:(BOOL)hideDownload;
-
-- (void)getUserAndGroup:(NSString *)find;
-- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl;
 
 @end
