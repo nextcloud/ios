@@ -81,7 +81,7 @@
 
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID action:(NSInteger)action;
 
-- (void)readShareWithAccount:(NSString *)account openWindow:(BOOL)openWindow metadata:(tableMetadata *)metadata;
+- (void)readShareWithAccount:(NSString *)account metadata:(tableMetadata *)metadata;
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;

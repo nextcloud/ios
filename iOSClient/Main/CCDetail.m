@@ -591,7 +591,7 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser shareButtonPressedForPhotoAtIndex:(NSUInteger)index
 {
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
-    [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:metadata];
+    [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:metadata];
 }
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
@@ -988,7 +988,7 @@
 
 - (void)shareButtonPressed:(UIBarButtonItem *)sender
 {
-    [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount openWindow:YES metadata:self.metadataDetail];
+    [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:self.metadataDetail];
 }
 
 - (void)deleteButtonPressed:(UIBarButtonItem *)sender

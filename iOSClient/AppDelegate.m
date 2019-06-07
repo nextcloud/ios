@@ -624,6 +624,27 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Update Share =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)updateShares:(NSArray *)items
+{
+    [self.sharesID removeAllObjects];
+    
+    for (OCSharedDto *item in items)
+        [self.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+    
+    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:self.sharesID activeUrl:self.activeUrl account:self.activeAccount];
+    if (result) {
+        self.sharesLink = result[0];
+        self.sharesUserAndGroup = result[1];
+    }
+    
+    // Notify Shares View
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
 #pragma --------------------------------------------------------------------------------------------
 

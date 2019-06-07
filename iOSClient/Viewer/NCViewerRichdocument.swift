@@ -109,7 +109,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             }
             
             if message.body as! String == "share" {
-                appDelegate.activeMain.readShare(withAccount: appDelegate.activeAccount, openWindow: true, metadata: self.detail.metadataDetail)
+                appDelegate.activeMain.readShare(withAccount: appDelegate.activeAccount, metadata: self.detail.metadataDetail)
             }
         }
     }
@@ -118,12 +118,13 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
 
     @objc func grabFocus() {
     
+        /*
         let functionJS = "OCA.RichDocuments.documentsMain.postGrabFocus()"
         evaluateJavaScript(functionJS) { (result, error) in
             let text = result as? String
             print(text)
         }
-
+        */
     }
     
     //MARK: -

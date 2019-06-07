@@ -267,10 +267,14 @@ class NCService: NSObject {
                     NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
                 }
                 
-                // Get Share
+                // Get Share Server
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
-                    self.appDelegate.activeMain.readShare(withAccount: account, openWindow: false, metadata: nil)
+                    OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            self.appDelegate.updateShares(items)
+                        }
+                    })
                 }
                 
                 // Get Activity
