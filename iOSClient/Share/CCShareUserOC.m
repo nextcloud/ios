@@ -166,19 +166,19 @@
             
             OCShareUser *item = [self.users objectAtIndex:[num integerValue]];
             [self shareUserAndGroup:item.name shareeType:item.shareeType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
+            
+            return;
         }
     }
     
-    // start share with a user if not be i 
-    if ([self.directUser isEqual:[NSNull null]] == NO) {
-    
-        if ([self.directUser length] > 0 && [self.directUser isEqualToString:appDelegate.activeUser] == NO) {
+    if ([self.directUser isEqual:[NSNull null]] == NO && [self.directUser length] > 0 && [self.directUser isEqualToString:appDelegate.activeUser] == NO) {
         
-            // User/Group/Federate
-            [self shareUserAndGroup:self.directUser shareeType:self.shareType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
-        }
-    }
+        [self shareUserAndGroup:self.directUser shareeType:self.shareType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
+        
+    } else {
     
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
