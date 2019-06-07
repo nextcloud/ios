@@ -241,178 +241,177 @@
 
     [[OCNetworking sharedManager] readShareWithAccount:appDelegate.activeAccount path:path completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
         
-        NSLog(@"x");
-    }];
-    
-    return;
-    
-    self.shareLink = [appDelegate.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
-    self.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
-
-    self.itemShareLink = [appDelegate.sharesID objectForKey:self.shareLink];
-    if ([self.shareUserAndGroup length] > 0) self.itemsUserAndGroupLink = [self.shareUserAndGroup componentsSeparatedByString:@","];
-    else self.itemsUserAndGroupLink = nil;
-
-    self.form.delegate = nil;
-
-    XLFormRowDescriptor *rowShareLinkSwitch = [self.form formRowWithTag:@"shareLinkSwitch"];
-    XLFormRowDescriptor *rowShareLinkPermission = [self.form formRowWithTag:@"shareLinkPermission"];
-    XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
-    XLFormRowDescriptor *rowHideDownload = [self.form formRowWithTag:@"hideDownload"];
-    
-    XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
-    XLFormRowDescriptor *rowExpirationDateSwitch = [self.form formRowWithTag:@"expirationDateSwitch"];
-    
-    XLFormRowDescriptor *rowSendLinkTo = [self.form formRowWithTag:@"sendLinkTo"];
-    
-    XLFormRowDescriptor *rowFindUser = [self.form formRowWithTag:@"findUser"];
-
-    // Share Link
-    if ([self.shareLink length] > 0) {
-        
-        [rowShareLinkSwitch setValue:@1];
-        
-        rowShareLinkPermission.disabled = @NO;
-        rowPassword.disabled = @NO;
-        rowHideDownload.disabled = @NO;
-        rowExpirationDate.disabled = @NO;
-        rowExpirationDateSwitch.disabled = @NO;
-        
-        rowSendLinkTo.disabled = @NO;
-        
-    } else {
-        
-        [rowShareLinkSwitch setValue:@0];
-        
-        rowShareLinkPermission.disabled = @YES;
-        rowPassword.disabled = @YES;
-        rowHideDownload.disabled = @YES;
-        rowExpirationDate.disabled = @YES;
-        rowExpirationDateSwitch.disabled = @YES;
-        
-        rowSendLinkTo.disabled = @YES;
-    }
-    
-    // Permission
-    if (self.metadata.directory) {
-        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_upload_modify_", nil), NSLocalizedString(@"_share_link_upload_", nil)];
-    } else {
-        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_modify_", nil)];
-    }
-    if (self.itemShareLink.permissions > 0 && self.itemShareLink.shareType == shareTypeLink) {
-        switch (self.itemShareLink.permissions) {
-            case 1:
-                rowShareLinkPermission.value = NSLocalizedString(@"_share_link_readonly_", nil);
-                break;
-            case 3:
-                rowShareLinkPermission.value = NSLocalizedString(@"_share_link_modify_", nil);
-                break;
-            case 4:
-                rowShareLinkPermission.value = NSLocalizedString(@"_share_link_upload_", nil);
-                break;
-            case 15:
-                rowShareLinkPermission.value = NSLocalizedString(@"_share_link_upload_modify_", nil);
-                break;
-            default:
-                break;
+        if (errorCode == 0) {
+            
+            self.shareLink = [appDelegate.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
+            self.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
+            
+            self.itemShareLink = [appDelegate.sharesID objectForKey:self.shareLink];
+            if ([self.shareUserAndGroup length] > 0) self.itemsUserAndGroupLink = [self.shareUserAndGroup componentsSeparatedByString:@","];
+            else self.itemsUserAndGroupLink = nil;
         }
-    } else {
-        rowShareLinkPermission.value = NSLocalizedString(@"_share_link_readonly_", nil);
-    }
-    
-    // Password
-    if ([[self.itemShareLink shareWith] length] > 0 && self.itemShareLink.shareType == shareTypeLink)
-        rowPassword.value = [self.itemShareLink shareWith];
-    else
-        rowPassword.value = @"";
-    
-    // Hide Download
-    if (self.itemShareLink.hideDownload) rowHideDownload.value = @1;
-    else rowHideDownload.value = @0;
-    
-    // Expiration Date
-    if (self.itemShareLink.expirationDate) {
         
-        rowExpirationDateSwitch.value = @1;
-        NSDate *expireDate;
+        self.form.delegate = nil;
         
-        if (self.itemShareLink.expirationDate) expireDate = [NSDate dateWithTimeIntervalSince1970: self.itemShareLink.expirationDate];
-        else expireDate = [self tomorrow];
+        XLFormRowDescriptor *rowShareLinkSwitch = [self.form formRowWithTag:@"shareLinkSwitch"];
+        XLFormRowDescriptor *rowShareLinkPermission = [self.form formRowWithTag:@"shareLinkPermission"];
+        XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
+        XLFormRowDescriptor *rowHideDownload = [self.form formRowWithTag:@"hideDownload"];
         
-        rowExpirationDate.value = expireDate;
+        XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
+        XLFormRowDescriptor *rowExpirationDateSwitch = [self.form formRowWithTag:@"expirationDateSwitch"];
         
-    } else {
+        XLFormRowDescriptor *rowSendLinkTo = [self.form formRowWithTag:@"sendLinkTo"];
         
-        rowExpirationDateSwitch.value = @0;
-        rowExpirationDate.value = [self tomorrow];
-    }
-    
-    // User & Group
-    XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
-    [section.formRows removeAllObjects];
-    [self.itemsShareWith removeAllObjects];
-    
-    if ([self.itemsUserAndGroupLink count] > 0) {
-    
-        for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
+        XLFormRowDescriptor *rowFindUser = [self.form formRowWithTag:@"findUser"];
+        
+        // Share Link
+        if ([self.shareLink length] > 0) {
             
-            OCSharedDto *item = [appDelegate.sharesID objectForKey:idRemoteShared];
+            [rowShareLinkSwitch setValue:@1];
             
-            XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:idRemoteShared rowType:XLFormRowDescriptorTypeButton];
-
-            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-            //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
-            [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"textLabel.textColor"];
-            row.action.formSelector = @selector(sharePermissionButton:);
-                
-            if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
-            else row.title = item.shareWithDisplayName;
+            rowShareLinkPermission.disabled = @NO;
+            rowPassword.disabled = @NO;
+            rowHideDownload.disabled = @NO;
+            rowExpirationDate.disabled = @NO;
+            rowExpirationDateSwitch.disabled = @NO;
             
-            //If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
-            if (![item.uidOwner isEqualToString:appDelegate.activeUserID] && ![item.uidFileOwner isEqualToString:appDelegate.activeUserID]) {
-                row.disabled = @YES;
-            }
+            rowSendLinkTo.disabled = @NO;
             
-            [section addFormRow:row];
-                
-            // add users
-            [self.itemsShareWith addObject:item];
+        } else {
             
-            // shared with you by
-            if (![item.uidFileOwner isEqualToString:appDelegate.activeUserID]) {
-                self.labelSharedWithYouBy.text = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_shared_with_you_by_", nil), item.displayNameFileOwner];
-            }
+            [rowShareLinkSwitch setValue:@0];
+            
+            rowShareLinkPermission.disabled = @YES;
+            rowPassword.disabled = @YES;
+            rowHideDownload.disabled = @YES;
+            rowExpirationDate.disabled = @YES;
+            rowExpirationDateSwitch.disabled = @YES;
+            
+            rowSendLinkTo.disabled = @YES;
         }
-            
-        section.footerTitle = NSLocalizedString(@"_user_sharee_footer_", nil);
-
-    } else {
-            
-        section.footerTitle = @"";
-    }
-    
-    // canShare
-    BOOL canShare = [self.metadata.permissions containsString:k_permission_can_share];
-    if (! canShare) {
         
-        rowShareLinkSwitch.disabled = @YES;
-        rowShareLinkPermission.disabled = @YES;
-        rowPassword.disabled = @YES;
-        rowHideDownload.disabled = @YES;
-        rowExpirationDate.disabled = @YES;
-        rowExpirationDateSwitch.disabled = @YES;
-        rowSendLinkTo.disabled = @YES;
-        rowFindUser.disabled = @YES;
+        // Permission
+        if (self.metadata.directory) {
+            rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_upload_modify_", nil), NSLocalizedString(@"_share_link_upload_", nil)];
+        } else {
+            rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_modify_", nil)];
+        }
+        if (self.itemShareLink.permissions > 0 && self.itemShareLink.shareType == shareTypeLink) {
+            switch (self.itemShareLink.permissions) {
+                case 1:
+                    rowShareLinkPermission.value = NSLocalizedString(@"_share_link_readonly_", nil);
+                    break;
+                case 3:
+                    rowShareLinkPermission.value = NSLocalizedString(@"_share_link_modify_", nil);
+                    break;
+                case 4:
+                    rowShareLinkPermission.value = NSLocalizedString(@"_share_link_upload_", nil);
+                    break;
+                case 15:
+                    rowShareLinkPermission.value = NSLocalizedString(@"_share_link_upload_modify_", nil);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            rowShareLinkPermission.value = NSLocalizedString(@"_share_link_readonly_", nil);
+        }
         
+        // Password
+        if ([[self.itemShareLink shareWith] length] > 0 && self.itemShareLink.shareType == shareTypeLink)
+            rowPassword.value = [self.itemShareLink shareWith];
+        else
+            rowPassword.value = @"";
+        
+        // Hide Download
+        if (self.itemShareLink.hideDownload) rowHideDownload.value = @1;
+        else rowHideDownload.value = @0;
+        
+        // Expiration Date
+        if (self.itemShareLink.expirationDate) {
+            
+            rowExpirationDateSwitch.value = @1;
+            NSDate *expireDate;
+            
+            if (self.itemShareLink.expirationDate) expireDate = [NSDate dateWithTimeIntervalSince1970: self.itemShareLink.expirationDate];
+            else expireDate = [self tomorrow];
+            
+            rowExpirationDate.value = expireDate;
+            
+        } else {
+            
+            rowExpirationDateSwitch.value = @0;
+            rowExpirationDate.value = [self tomorrow];
+        }
+        
+        // User & Group
         XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
         [section.formRows removeAllObjects];
-    }
-    
-    self.form.disabled = NO;
-    
-    [self.tableView reloadData];
-    
-    self.form.delegate = self;
+        [self.itemsShareWith removeAllObjects];
+        
+        if ([self.itemsUserAndGroupLink count] > 0) {
+            
+            for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
+                
+                OCSharedDto *item = [appDelegate.sharesID objectForKey:idRemoteShared];
+                
+                XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:idRemoteShared rowType:XLFormRowDescriptorTypeButton];
+                
+                [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+                //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
+                [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"textLabel.textColor"];
+                row.action.formSelector = @selector(sharePermissionButton:);
+                
+                if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
+                else row.title = item.shareWithDisplayName;
+                
+                //If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
+                if (![item.uidOwner isEqualToString:appDelegate.activeUserID] && ![item.uidFileOwner isEqualToString:appDelegate.activeUserID]) {
+                    row.disabled = @YES;
+                }
+                
+                [section addFormRow:row];
+                
+                // add users
+                [self.itemsShareWith addObject:item];
+                
+                // shared with you by
+                if (![item.uidFileOwner isEqualToString:appDelegate.activeUserID]) {
+                    self.labelSharedWithYouBy.text = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_shared_with_you_by_", nil), item.displayNameFileOwner];
+                }
+            }
+            
+            section.footerTitle = NSLocalizedString(@"_user_sharee_footer_", nil);
+            
+        } else {
+            
+            section.footerTitle = @"";
+        }
+        
+        // canShare
+        BOOL canShare = [self.metadata.permissions containsString:k_permission_can_share];
+        if (! canShare) {
+            
+            rowShareLinkSwitch.disabled = @YES;
+            rowShareLinkPermission.disabled = @YES;
+            rowPassword.disabled = @YES;
+            rowHideDownload.disabled = @YES;
+            rowExpirationDate.disabled = @YES;
+            rowExpirationDateSwitch.disabled = @YES;
+            rowSendLinkTo.disabled = @YES;
+            rowFindUser.disabled = @YES;
+            
+            XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
+            [section.formRows removeAllObjects];
+        }
+        
+        self.form.disabled = NO;
+        
+        [self.tableView reloadData];
+        
+        self.form.delegate = self;
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
