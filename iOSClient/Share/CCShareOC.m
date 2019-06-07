@@ -42,8 +42,6 @@
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         self.itemsShareWith = [NSMutableArray new];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:@"ShareReloadDatasource" object:nil];
-
         [self initializeForm];
     }
     return self;
@@ -132,10 +130,15 @@
     
     self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
+    XLFormRowDescriptor *rowShareLinkPermission = [self.form formRowWithTag:@"shareLinkPermission"];
+    if (self.metadata.directory) {
+        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_upload_modify_", nil), NSLocalizedString(@"_share_link_upload_", nil)];
+    } else {
+        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_modify_", nil)];
+    }
+    
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = [UIColor blackColor];
-    
-    [self reloadDatasource];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]]) {
         
@@ -161,6 +164,18 @@
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self reloadDatasource];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Networking =====
 #pragma --------------------------------------------------------------------------------------------
@@ -171,7 +186,7 @@
     
     [[OCNetworking sharedManager] shareWithAccount:appDelegate.activeAccount fileName:fileName password:password permission:permission hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode != 0 || [account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode != 0) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
@@ -183,7 +198,7 @@
 {
     [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:[share integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode != 0 || [account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode != 0) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
@@ -195,7 +210,7 @@
 {
     [[OCNetworking sharedManager] shareUpdateAccount:appDelegate.activeAccount shareID:[share integerValue] password:password permission:permission expirationTime:expirationTime hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode != 0 || [account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode != 0) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
@@ -222,11 +237,6 @@
     
     XLFormRowDescriptor *rowShareLinkSwitch = [self.form formRowWithTag:@"shareLinkSwitch"];
     XLFormRowDescriptor *rowShareLinkPermission = [self.form formRowWithTag:@"shareLinkPermission"];
-    if (self.metadata.directory) {
-        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_upload_modify_", nil), NSLocalizedString(@"_share_link_upload_", nil)];
-    } else {
-        rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_modify_", nil)];
-    }
     XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
     XLFormRowDescriptor *rowHideDownload = [self.form formRowWithTag:@"hideDownload"];
     XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];

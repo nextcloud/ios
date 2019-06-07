@@ -118,14 +118,7 @@
     
     [[OCNetworking sharedManager] shareUserGroupWithAccount:appDelegate.activeAccount userOrGroup:user fileName:fileName permission:permission shareeType:shareeType completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ShareReloadDatasource" object:nil userInfo:nil];
-            
-            [self dismissViewControllerAnimated:YES completion:nil];
-
-        } else if (errorCode != 0) {
-            
+        if (errorCode != 0) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
     }];
@@ -135,15 +128,11 @@
 {
     [[OCNetworking sharedManager] getUserGroupWithAccount:appDelegate.activeAccount searchString:find completion:^(NSString *account, NSArray *item, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
+        if (errorCode == 0) {
             [self reloadUserAndGroup:item];
-            
-        } else if (errorCode != 0) {
-            
+        } else {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
-        
     }];
 }
 
@@ -166,19 +155,15 @@
             
             OCShareUser *item = [self.users objectAtIndex:[num integerValue]];
             [self shareUserAndGroup:item.name shareeType:item.shareeType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
-            
-            return;
         }
     }
     
+    // add manual user
     if ([self.directUser isEqual:[NSNull null]] == NO && [self.directUser length] > 0 && [self.directUser isEqualToString:appDelegate.activeUser] == NO) {
-        
         [self shareUserAndGroup:self.directUser shareeType:self.shareType permission:permission metadata:self.metadata serverUrl:self.serverUrl];
-        
-    } else {
-    
-        [self dismissViewControllerAnimated:YES completion:nil];
     }
+        
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

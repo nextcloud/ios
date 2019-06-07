@@ -168,16 +168,11 @@
 {
     [[OCNetworking sharedManager] shareUpdateAccount:appDelegate.activeAccount shareID:[share integerValue] password:password permission:permission expirationTime:expirationTime hideDownload:hideDownload completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ShareReloadDatasource" object:nil userInfo:nil];
-            
-            [self dismissViewControllerAnimated:YES completion:nil];
-            
-        } else if (errorCode != 0) {
-            
+        if (errorCode != 0) {
             [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        }        
+        }
+        
+        [self dismissViewControllerAnimated:YES completion:nil];
     }];
 }
 
