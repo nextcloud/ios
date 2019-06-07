@@ -357,7 +357,7 @@
         
         metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.activeAccount, table.serverUrl, table.fileName]];
         if (metadata) {
-            [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:metadata];
+            [appDelegate.activeMain openShareWithMetadata:metadata];
         }
     }
 }

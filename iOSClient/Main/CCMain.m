@@ -1870,8 +1870,30 @@
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readShareWithAccount:(NSString *)account metadata:(tableMetadata *)metadata
+- (void)openShareWithMetadata:(tableMetadata *)metadata
 {
+    if (_shareOC) {
+        
+        [_shareOC reloadData];
+        
+    } else if (metadata) {
+        
+        // Apriamo la view
+        _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
+        
+        _shareOC.delegate = self;
+        _shareOC.metadata = metadata;
+        _shareOC.serverUrl = metadata.serverUrl;
+        
+        _shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
+        _shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
+        
+        [_shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
+        [self presentViewController:_shareOC animated:YES completion:nil];
+    }
+    
+    
+    /*
     [[OCNetworking sharedManager] readShareWithAccount:account path:@"/" completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
         
         [_hud hideHud];
@@ -1921,6 +1943,7 @@
     }];
     
     [_hud visibleIndeterminateHud];
+    */
 }
 
 - (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission hideDownload:(BOOL)hideDownload
@@ -1933,7 +1956,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [self readShareWithAccount:account metadata:metadata];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
             
         } else if (errorCode != 0) {
             
@@ -1965,7 +1988,7 @@
                 appDelegate.sharesUserAndGroup = result[1];
             }
             
-            [self readShareWithAccount:account metadata:metadata];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
             
         } else if (errorCode != 0) {
             
@@ -1989,7 +2012,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [self readShareWithAccount:account metadata:metadata];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
             
         } else if (errorCode != 0) {
             
@@ -2037,7 +2060,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [self readShareWithAccount:account metadata:metadata];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
             
         } else if (errorCode != 0) {
             
@@ -2060,8 +2083,9 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata)
-        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:metadata];
+    if (metadata) {
+        [self openShareWithMetadata:metadata];
+    }
 }
 
 - (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
@@ -3199,7 +3223,7 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:self.metadata];
+                                        [self openShareWithMetadata:self.metadata];
                                     }];
         }
         
@@ -3388,7 +3412,7 @@
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
-                                            [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:self.metadata];
+                                            [self openShareWithMetadata:self.metadata];
                                         }];
         }
         

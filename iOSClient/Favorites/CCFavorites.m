@@ -257,7 +257,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     if (metadata)
-        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:metadata];
+        [appDelegate.activeMain openShareWithMetadata:metadata];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -476,7 +476,7 @@
     // Share
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
         
-        [appDelegate.activeMain readShareWithAccount:appDelegate.activeAccount metadata:metadata];
+        [appDelegate.activeMain openShareWithMetadata:metadata];
     }];
     
     // NO Directory
