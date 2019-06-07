@@ -40,9 +40,10 @@
     if (self) {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
         self.itemsShareWith = [[NSMutableArray alloc] init];
-        
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:@"ShareReloadDatasource" object:nil];
+
         [self initializeForm];
     }
     return self;
@@ -172,7 +173,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            [self reloadData];
             
         } else if (errorCode != 0) {
             
@@ -197,7 +198,7 @@
                 appDelegate.sharesUserAndGroup = result[1];
             }
             
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            [self reloadData];
             
         } else if (errorCode != 0) {
             
@@ -214,7 +215,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            [self reloadData];
             
         } else if (errorCode != 0) {
             

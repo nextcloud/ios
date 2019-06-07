@@ -640,6 +640,7 @@ PKPushRegistry *pushRegistry;
         self.sharesUserAndGroup = result[1];
     }
     
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ShareReloadDatasource" object:nil userInfo:nil];
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
 }
 

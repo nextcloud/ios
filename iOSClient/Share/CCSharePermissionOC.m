@@ -170,7 +170,7 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ShareReloadDatasource" object:nil userInfo:nil];
             
             [self dismissViewControllerAnimated:YES completion:nil];
             

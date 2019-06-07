@@ -1874,7 +1874,7 @@
 {
     if (_shareOC) {
         
-        [_shareOC reloadData];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ShareReloadDatasource" object:nil userInfo:nil];
         
     } else if (metadata) {
         

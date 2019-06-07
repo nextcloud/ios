@@ -48,9 +48,6 @@
 @property (nonatomic, weak) CCShareUserOC *shareUserOC;
 @property (nonatomic, weak) CCSharePermissionOC *sharePermissionOC;
 
-- (void)reloadData;
-- (void)reloadUserAndGroup:(NSArray *)items;
-
 - (IBAction)endButtonAction:(id)sender;
 
 @end
