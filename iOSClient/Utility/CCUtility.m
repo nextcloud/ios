@@ -1283,6 +1283,7 @@
     metadata.fileID = fileID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
+    metadata.primaryKey = [account stringByAppendingString:fileID];
     metadata.serverUrl = serverUrl;
     metadata.size = size;
     metadata.status = status;
@@ -1293,7 +1294,7 @@
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory account:(NSString *)account isFolderEncrypted:(BOOL)isFolderEncrypted
 {
     tableMetadata *metadata = [tableMetadata new];
     NSString *fileNameView;
@@ -1303,12 +1304,12 @@
     
     // E2EE find the fileName for fileNameView
     if (isFolderEncrypted) {
-        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", activeAccount, serverUrl, fileName]];
+        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, serverUrl, fileName]];
         if (tableE2eEncryption)
             fileNameView = tableE2eEncryption.fileName;
     }
     
-    metadata.account = activeAccount;
+    metadata.account = account;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
     metadata.directory = itemDto.isDirectory;
     metadata.e2eEncrypted = itemDto.isEncrypted;
@@ -1320,6 +1321,7 @@
     metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
+    metadata.primaryKey = [account stringByAppendingString:itemDto.ocId];
     metadata.serverUrl = serverUrl;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.size = itemDto.size;
