@@ -48,7 +48,7 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableDirectory.className())
                 }
                 
-                if oldSchemaVersion < 64 {
+                if oldSchemaVersion < 54 {
                     migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
                         newObject!["primaryKey"] = (oldObject!["account"] as! String) + (oldObject!["fileID"] as! String)
                     }
