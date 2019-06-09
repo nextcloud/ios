@@ -48,14 +48,14 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableDirectory.className())
                 }
                 
-                /*
-                 if oldSchemaVersion < 44 {
-                 migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                 let account = oldObject!["account"] as! String
-                 let password = oldObject!["password"] as! String
-                 }
-                 }
-                 */
+                if oldSchemaVersion < 64 {
+                    migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
+                        newObject!["primaryKey"] = (oldObject!["account"] as! String) + (oldObject!["fileID"] as! String)
+                    }
+                    migration.enumerateObjects(ofType: tableMedia.className()) { oldObject, newObject in
+                        newObject!["primaryKey"] = (oldObject!["account"] as! String) + (oldObject!["fileID"] as! String)
+                    }
+                }
                 
             }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                 
@@ -1607,6 +1607,9 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
+        // create primaryKey
+        metadata.primaryKey = metadata.account + metadata.fileID
+        
         let serverUrl = metadata.serverUrl
         let account = metadata.account
         
@@ -1639,6 +1642,9 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 for metadata in metadatas {
+                    // create primaryKey
+                    metadata.primaryKey = metadata.account + metadata.fileID
+                     
                     directoryToClearDate[metadata.serverUrl] = metadata.account
                     realm.add(metadata, update: true)
                 }
@@ -1689,9 +1695,7 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.write {
-            
                 let results = realm.objects(tableMetadata.self).filter("fileID == %@", fileID)
-        
                 for result in results {
                     result.serverUrl = serverUrlTo
                 }
@@ -1708,9 +1712,7 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.write {
-                
                 let results = realm.objects(tableMetadata.self).filter("fileID == %@", fileID)
-                
                 for result in results {
                     result.serverUrl = serverUrl
                 }
@@ -1728,7 +1730,6 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.write {
-                
                 result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first
                 if result != nil {
                     result!.fileName = fileNameTo
