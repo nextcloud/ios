@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -177,7 +177,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="153.5" y="410.5" width="107" height="75"/>
+                                <rect key="frame" x="95.5" y="369.5" width="223" height="157.5"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -608,6 +608,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="UOD-r3-Kgi"/>
                     <connections>
+                        <outlet property="disclosureIndicator" destination="Lgd-72-bTD" id="nUk-W9-H48"/>
                         <outlet property="labelQuota" destination="DAP-np-Q1J" id="d1L-oC-pxP"/>
                         <outlet property="labelQuotaExternalSite" destination="vfl-ZC-XFd" id="Zdx-nY-00O"/>
                         <outlet property="labelUsername" destination="aqE-Wq-B1A" id="UMl-sE-W5x"/>
@@ -624,9 +625,9 @@
     </scenes>
     <resources>
         <image name="avatar" width="25" height="25"/>
-        <image name="disclosureIndicator" width="13" height="14"/>
-        <image name="logo" width="107" height="75.599998474121094"/>
-        <image name="tabBarPlus" width="40" height="40"/>
+        <image name="disclosureIndicator" width="26" height="28"/>
+        <image name="logo" width="223" height="157.5"/>
+        <image name="tabBarPlus" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="45n-bF-9RO"/>

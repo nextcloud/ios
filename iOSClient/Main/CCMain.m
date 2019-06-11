@@ -575,6 +575,8 @@
 
 - (UIImage *)getImageLogoHome
 {
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
         UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
@@ -593,20 +595,19 @@
             
         } else {
             
-            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-            
-            if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
-                return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[UIColor blackColor]];
-            else
-                return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[UIColor whiteColor]];
+            return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:[NCBrandColor sharedInstance].brandText];
         }
         
     } else {
         
-        if ([appDelegate.reachability isReachable] == NO)
+        if ([appDelegate.reachability isReachable] == NO) {
+            
             return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-        else
-            return [UIImage imageNamed:@"themingLogo"];
+            
+        } else {
+            
+            return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:[NCBrandColor sharedInstance].brandText];
+        }
     }
 }
 

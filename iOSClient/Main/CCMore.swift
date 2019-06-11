@@ -27,6 +27,7 @@ import UIKit
 class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, CCLoginDelegateWeb {
 
     @IBOutlet weak var themingBackground: UIImageView!
+    @IBOutlet weak var disclosureIndicator: UIImageView!
     @IBOutlet weak var themingAvatar: UIImageView!
     @IBOutlet weak var labelUsername: UILabel!
     @IBOutlet weak var tableView: UITableView!
@@ -219,6 +220,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         } else {
             themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         }
+        
+        labelUsername.textColor = NCBrandColor.sharedInstance.brandText
+        
+        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)
         
         if (self.isViewLoaded && (self.view.window != nil)) {
             appDelegate.changeTheming(self)

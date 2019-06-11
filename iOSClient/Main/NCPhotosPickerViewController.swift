@@ -82,11 +82,11 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
+        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.icon
+        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.icon
         
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.brand
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.icon
-        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.icon)
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.icon
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.graySoft
+        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.graySoft)
     }
 }
