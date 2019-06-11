@@ -118,13 +118,8 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
 
     @objc func grabFocus() {
     
-        /*
         let functionJS = "OCA.RichDocuments.documentsMain.postGrabFocus()"
-        evaluateJavaScript(functionJS) { (result, error) in
-            let text = result as? String
-            print(text)
-        }
-        */
+        evaluateJavaScript(functionJS) { (result, error) in }
     }
     
     //MARK: -
