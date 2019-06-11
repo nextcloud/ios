@@ -54,7 +54,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        contentContainerView.backgroundColor = NCBrandColor.sharedInstance.brand
+        contentContainerView.backgroundColor = UIColor.lightGray
         voiceRecordHUD.update(0.0)
         voiceRecordHUD.fillColor = UIColor.green
         durationLabel.text = ""

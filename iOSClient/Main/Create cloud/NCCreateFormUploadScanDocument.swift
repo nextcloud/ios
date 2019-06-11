@@ -84,6 +84,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textLabel.textColor"] = UIColor.black
         
         section.addFormRow(row)
         

@@ -71,7 +71,8 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        
+        row.cellConfig["textLabel.color"] = UIColor.black
+
         section.addFormRow(row)
         
         // Section: File Name
@@ -87,7 +88,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        
+
         section.addFormRow(row)
         
         self.form = form
