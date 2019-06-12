@@ -23,8 +23,8 @@
 
 import UIKit
 
-class CCNotification: UITableViewController {
-
+class CCNotification: UITableViewController, CCNotificationCelllDelegate {
+    
     var resultSearchController = UISearchController()
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -69,6 +69,7 @@ class CCNotification: UITableViewController {
         self.tableView.reloadData()
     }
     
+    /*
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
@@ -164,6 +165,7 @@ class CCNotification: UITableViewController {
             return buttons
         }
     }
+    */
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -182,7 +184,7 @@ class CCNotification: UITableViewController {
         let selectionColor : UIView = UIView.init()
         selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
         cell.selectedBackgroundView = selectionColor
-        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
+        cell.delegate = self
         
         if self.resultSearchController.isActive {
             
@@ -206,9 +208,21 @@ class CCNotification: UITableViewController {
             //
             //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
             //
+            cell.notification = notification
             cell.date.text = CCUtility.dateDiff(notification.date)
+            cell.date.textColor = .gray
             cell.subject.text = notification.subject
+            cell.subject.textColor = .black
             cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
+            cell.message.textColor = .gray
+            
+            // Action
+            if notification.actions.count == 0 {
+                cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
+            } else {
+                cell.remove.isHidden = true
+                cell.remove.isEnabled = false
+            }
         }
         
         return cell
@@ -248,6 +262,35 @@ class CCNotification: UITableViewController {
             }
         }
     }
+    
+    // MARK: tap Action
+    
+    func tapRemove(with notification: OCNotifications?) {
+        if notification != nil {
+            OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification!.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
+                
+                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                    
+                    let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+                    
+                    if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                        self.appDelegate.listOfNotifications.removeObject(at: index)
+                    }
+                    
+                    self.reloadDatasource()
+                    
+                    if self.appDelegate.listOfNotifications.count == 0 {
+                        self.viewClose()
+                    }
+                    
+                } else if errorCode != 0 {
+                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                } else {
+                    print("[LOG] It has been changed user during networking process, error.")
+                }
+            })
+        }
+    }
 
 }
 
@@ -255,10 +298,24 @@ class CCNotification: UITableViewController {
 
 class CCNotificationCell: UITableViewCell {
     
+    var delegate: CCNotificationCelllDelegate?
+    var notification: OCNotifications?
+
     @IBOutlet weak var icon : UIImageView!
     @IBOutlet weak var date: UILabel!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var message: UILabel!
-    
     @IBOutlet weak var remove: UIButton!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+    
+    @IBAction func touchUpInsideRemove(_ sender: Any) {
+        delegate?.tapRemove(with: notification)
+    }
+}
+
+protocol CCNotificationCelllDelegate {
+    func tapRemove(with notification: OCNotifications?)
 }

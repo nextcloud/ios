@@ -67,6 +67,9 @@
                                                 <constraint firstAttribute="width" constant="20" id="YaB-cW-gAT"/>
                                             </constraints>
                                             <state key="normal" image="exit"/>
+                                            <connections>
+                                                <action selector="touchUpInsideRemove:" destination="R1c-h5-BOp" eventType="touchUpInside" id="Wlp-VM-Vf2"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
