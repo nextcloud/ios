@@ -182,6 +182,7 @@ class CCNotification: UITableViewController {
         let selectionColor : UIView = UIView.init()
         selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
         cell.selectedBackgroundView = selectionColor
+        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
         
         if self.resultSearchController.isActive {
             
@@ -258,4 +259,6 @@ class CCNotificationCell: UITableViewCell {
     @IBOutlet weak var date: UILabel!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var message: UILabel!
+    
+    @IBOutlet weak var remove: UIButton!
 }
