@@ -216,12 +216,46 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
             cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
             cell.message.textColor = .gray
             
+            cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
+            
+            cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
+            cell.primary.setTitleColor(.white, for: .normal)
+            cell.primary.layer.cornerRadius = 15
+            cell.primary.layer.masksToBounds = true
+            cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brand.cgColor
+            
+            cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
+            cell.secondary.setTitleColor(.gray, for: .normal)
+            cell.secondary.layer.cornerRadius = 15
+            cell.secondary.layer.masksToBounds = true
+            cell.secondary.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.1).cgColor
+            cell.secondary.layer.borderWidth = 0.3
+            cell.secondary.layer.borderColor = UIColor.gray.cgColor
+            
             // Action
             if notification.actions.count == 0 {
-                cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
+                
+                cell.primary.isEnabled = false
+                cell.primary.isHidden = true
+                cell.secondary.isEnabled = false
+                cell.secondary.isHidden = true
+                cell.messageBottomMargin.constant = 10
+                
             } else {
-                cell.remove.isHidden = true
-                cell.remove.isEnabled = false
+                
+                for action in notification.actions {
+                    
+                    let label = (action as! OCNotificationsAction).label
+                    let primary = (action as! OCNotificationsAction).primary
+                    
+                    if primary {
+                        cell.primary.setTitle(label, for: .normal)
+                    } else {
+                        cell.secondary.setTitle(label, for: .normal)
+                    }
+                }
+                
+                cell.messageBottomMargin.constant = 40
             }
         }
         
@@ -266,32 +300,62 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     // MARK: tap Action
     
     func tapRemove(with notification: OCNotifications?) {
-        if notification != nil {
-            OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification!.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
+        
+        OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification!.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
-                    
-                    let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
-                    
-                    if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                        self.appDelegate.listOfNotifications.removeObject(at: index)
-                    }
-                    
-                    self.reloadDatasource()
-                    
-                    if self.appDelegate.listOfNotifications.count == 0 {
-                        self.viewClose()
-                    }
-                    
-                } else if errorCode != 0 {
-                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                } else {
-                    print("[LOG] It has been changed user during networking process, error.")
+                let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+                
+                if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                    self.appDelegate.listOfNotifications.removeObject(at: index)
                 }
-            })
-        }
+                
+                self.reloadDatasource()
+                
+                if self.appDelegate.listOfNotifications.count == 0 {
+                    self.viewClose()
+                }
+                
+            } else if errorCode != 0 {
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+            }
+        })
     }
 
+    func tapAction(with notification: OCNotifications?, label: String) {
+        
+        for action in notification!.actions {
+            
+            if (action as! OCNotificationsAction).label == label {
+                
+                OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (action as! OCNotificationsAction).link, type: (action as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
+                    
+                    if errorCode == 0 && account == self.appDelegate.activeAccount {
+                        
+                        let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+                        
+                        if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                            self.appDelegate.listOfNotifications.removeObject(at: index)
+                        }
+                        
+                        self.reloadDatasource()
+                        
+                        if self.appDelegate.listOfNotifications.count == 0 {
+                            self.viewClose()
+                        }
+                        
+                    } else if errorCode != 0 {
+                        self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    } else {
+                        print("[LOG] It has been changed user during networking process, error.")
+                    }
+                })
+            }
+        }
+    }
 }
 
 // MARK: - Class UITableViewCell
@@ -306,6 +370,10 @@ class CCNotificationCell: UITableViewCell {
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var message: UILabel!
     @IBOutlet weak var remove: UIButton!
+    @IBOutlet weak var primary: UIButton!
+    @IBOutlet weak var secondary: UIButton!
+
+    @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -314,8 +382,19 @@ class CCNotificationCell: UITableViewCell {
     @IBAction func touchUpInsideRemove(_ sender: Any) {
         delegate?.tapRemove(with: notification)
     }
+    
+    @IBAction func touchUpInsidePrimary(_ sender: Any) {
+        let button = sender as! UIButton
+        delegate?.tapAction(with: notification, label: button.titleLabel!.text!)
+    }
+    
+    @IBAction func touchUpInsideSecondary(_ sender: Any) {
+        let button = sender as! UIButton
+        delegate?.tapAction(with: notification, label: button.titleLabel!.text!)
+    }
 }
 
 protocol CCNotificationCelllDelegate {
     func tapRemove(with notification: OCNotifications?)
+    func tapAction(with notification: OCNotifications?, label: String)
 }
