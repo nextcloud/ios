@@ -575,8 +575,6 @@
 
 - (UIImage *)getImageLogoHome
 {
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
         UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
