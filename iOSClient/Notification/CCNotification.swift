@@ -95,6 +95,37 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
             cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement)
         }
         
+        // get user
+        if let parameter = notification.subjectRichParameters as?  Dictionary<String, Any> {
+            if let user = parameter["user"] as? Dictionary<String, Any> {
+                if let name = user["id"] as? String {
+                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + name + ".png"
+                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            cell.avatar.isHidden = false
+                            cell.avatarLeadingMargin.constant = 50
+                            cell.avatar.image = image
+                        }
+                    } else {
+                        DispatchQueue.global().async {
+                            let url = self.appDelegate.activeUrl + k_avatar + name + "/128"
+                            let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                            OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                                if errorCode == 0 && data?.count ?? 0 > 0 {
+                                    do {
+                                        try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                    } catch { return }
+                                    cell.avatar.isHidden = false
+                                    cell.avatarLeadingMargin.constant = 50
+                                    cell.avatar.image = UIImage(data: data!)
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
+        
         //
         //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
         //
@@ -224,6 +255,7 @@ class CCNotificationCell: UITableViewCell {
     var notification: OCNotifications?
 
     @IBOutlet weak var icon : UIImageView!
+    @IBOutlet weak var avatar : UIImageView!
     @IBOutlet weak var date: UILabel!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var message: UILabel!
@@ -231,6 +263,7 @@ class CCNotificationCell: UITableViewCell {
     @IBOutlet weak var primary: UIButton!
     @IBOutlet weak var secondary: UIButton!
 
+    @IBOutlet weak var avatarLeadingMargin: NSLayoutConstraint!
     @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
     
     override func awakeFromNib() {

@@ -1704,7 +1704,7 @@
                     if ([data valueForKey:@"subjectRich"] && ![[data valueForKey:@"subjectRich"] isEqual:[NSNull null]])
                         notification.subjectRich = [data valueForKey:@"subjectRich"];
                     
-                    if ([data valueForKey:@"subjectRichParameters"] && ![[data valueForKey:@"subjectRichParameters"] isEqual:[NSNull null]])
+                    if ([data valueForKey:@"subjectRichParameters"] && ![[data valueForKey:@"subjectRichParameters"] isEqual:[NSNull null]] && [[data valueForKey:@"subjectRichParameters"] count] > 0)
                         notification.subjectRichParameters = [data valueForKey:@"subjectRichParameters"];
                     
                     if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
@@ -1713,7 +1713,7 @@
                     if ([data valueForKey:@"messageRich"] && ![[data valueForKey:@"messageRich"] isEqual:[NSNull null]])
                         notification.messageRich = [data valueForKey:@"messageRich"];
                     
-                    if ([data valueForKey:@"messageRichParameters"] && ![[data valueForKey:@"messageRichParameters"] isEqual:[NSNull null]])
+                    if ([data valueForKey:@"messageRichParameters"] && ![[data valueForKey:@"messageRichParameters"] isEqual:[NSNull null]] && [[data valueForKey:@"messageRichParameters"] count] > 0)
                         notification.messageRichParameters = [data valueForKey:@"messageRichParameters"];
                     
                     if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
