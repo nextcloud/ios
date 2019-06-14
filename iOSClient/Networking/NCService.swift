@@ -201,6 +201,7 @@ class NCService: NSObject {
                                 var new = ""
                                 
                                 for notification in listOfNotifications! {
+                                    // download icon
                                     let id = (notification as! OCNotifications).idNotification
                                     if let icon = (notification as! OCNotifications).icon {
                                         

@@ -25,7 +25,6 @@ import UIKit
 
 class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     
-    var resultSearchController = UISearchController()
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     override func viewDidLoad() {
@@ -71,140 +70,96 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if self.resultSearchController.isActive {
-            return 0
-        } else {
-            let numRecord = appDelegate.listOfNotifications.count
-            return numRecord
-        }
+    
+        let numRecord = appDelegate.listOfNotifications.count
+        return numRecord
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
-        
-        let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
-        cell.selectedBackgroundView = selectionColor
         cell.delegate = self
         
-        if self.resultSearchController.isActive {
+        let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
+        let urlIcon = URL(string: notification.icon)
+        var image : UIImage?
+        
+        if let urlIcon = urlIcon {
+            let pathFileName = CCUtility.getDirectoryUserData() + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
+            image = UIImage(contentsOfFile: pathFileName)
+        }
+        
+        if let image = image {
+            cell.icon.image = CCGraphics.changeThemingColorImage(image, multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+        } else {
+            cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement)
+        }
+        
+        //
+        //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
+        //
+        cell.notification = notification
+        cell.date.text = CCUtility.dateDiff(notification.date)
+        cell.date.textColor = .gray
+        cell.subject.text = notification.subject
+        cell.subject.textColor = .black
+        cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
+        cell.message.textColor = .gray
+        
+        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
+        
+        cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
+        cell.primary.setTitleColor(.white, for: .normal)
+        cell.primary.layer.cornerRadius = 15
+        cell.primary.layer.masksToBounds = true
+        cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brand.cgColor
+        
+        cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
+        cell.secondary.setTitleColor(.gray, for: .normal)
+        cell.secondary.layer.cornerRadius = 15
+        cell.secondary.layer.masksToBounds = true
+        cell.secondary.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.1).cgColor
+        cell.secondary.layer.borderWidth = 0.3
+        cell.secondary.layer.borderColor = UIColor.gray.cgColor
+        
+        // Action
+        if notification.actions.count == 0 {
+            
+            cell.primary.isEnabled = false
+            cell.primary.isHidden = true
+            
+            cell.secondary.isEnabled = false
+            cell.secondary.isHidden = true
+            
+            cell.messageBottomMargin.constant = 10
             
         } else {
             
-            let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
-            let urlIcon = URL(string: notification.icon)
-            var image : UIImage?
-            
-            if let urlIcon = urlIcon {
-                let pathFileName = CCUtility.getDirectoryUserData() + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
-                image = UIImage(contentsOfFile: pathFileName)
-            }
-            
-            if let image = image {
-                cell.icon.image = CCGraphics.changeThemingColorImage(image, multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
-            } else {
-                cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement)
-            }
-            
-            //
-            //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
-            //
-            cell.notification = notification
-            cell.date.text = CCUtility.dateDiff(notification.date)
-            cell.date.textColor = .gray
-            cell.subject.text = notification.subject
-            cell.subject.textColor = .black
-            cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
-            cell.message.textColor = .gray
-            
-            cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
-            
-            cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
-            cell.primary.setTitleColor(.white, for: .normal)
-            cell.primary.layer.cornerRadius = 15
-            cell.primary.layer.masksToBounds = true
-            cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brand.cgColor
-            
-            cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
-            cell.secondary.setTitleColor(.gray, for: .normal)
-            cell.secondary.layer.cornerRadius = 15
-            cell.secondary.layer.masksToBounds = true
-            cell.secondary.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.1).cgColor
-            cell.secondary.layer.borderWidth = 0.3
-            cell.secondary.layer.borderColor = UIColor.gray.cgColor
-            
-            // Action
-            if notification.actions.count == 0 {
+            for action in notification.actions {
                 
-                cell.primary.isEnabled = false
-                cell.primary.isHidden = true
-                cell.secondary.isEnabled = false
-                cell.secondary.isHidden = true
-                cell.messageBottomMargin.constant = 10
+                let label = (action as! OCNotificationsAction).label
+                let primary = (action as! OCNotificationsAction).primary
                 
-            } else {
-                
-                for action in notification.actions {
-                    
-                    let label = (action as! OCNotificationsAction).label
-                    let primary = (action as! OCNotificationsAction).primary
-                    
-                    if primary {
-                        cell.primary.setTitle(label, for: .normal)
-                    } else {
-                        cell.secondary.setTitle(label, for: .normal)
-                    }
+                if primary {
+                    cell.primary.setTitle(label, for: .normal)
+                } else {
+                    cell.secondary.setTitle(label, for: .normal)
                 }
-                
-                cell.messageBottomMargin.constant = 40
             }
+            
+            cell.messageBottomMargin.constant = 40
         }
         
         return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    // MARK: - Get Image from url
-    
-    func getDataFromUrl(url: URL, completion: @escaping (_ data: Data?, _  response: URLResponse?, _ error: Error?) -> Void) {
-        URLSession.shared.dataTask(with: url) {
-            (data, response, error) in
-            completion(data, response, error)
-            }.resume()
-    }
-    
-    func downloadImage(url: URL) {
-        
-        print("Download Started")
-        getDataFromUrl(url: url) { (data, response, error)  in
-            guard let data = data, error == nil else { return }
-            let fileName = response?.suggestedFilename ?? url.lastPathComponent
-            print("Download Finished")
-            DispatchQueue.main.async() { () -> Void in
-                
-                do {
-                    let pathFileName = CCUtility.getDirectoryUserData() + "/" + fileName
-                    try data.write(to: URL(fileURLWithPath: pathFileName), options: .atomic)
-                    
-                    self.reloadDatasource()
-                } catch {
-                    print(error)
-                }
-            }
-        }
     }
     
     // MARK: tap Action
     
     func tapRemove(with notification: OCNotifications?) {
         
-        OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification!.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
+        let serverUrl = self.appDelegate.activeUrl + "/" + k_url_acces_remote_notification_api + "/" + String(notification!.idNotification)
+        
+        OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: serverUrl, type: "DELETE", completion: { (account, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
