@@ -95,7 +95,10 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
             cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement)
         }
         
-        // get user
+        // Avatar
+        cell.avatar.isHidden = true
+        cell.avatarLeadingMargin.constant = 10
+
         if let parameter = notification.subjectRichParameters as?  Dictionary<String, Any> {
             if let user = parameter["user"] as? Dictionary<String, Any> {
                 if let name = user["id"] as? String {
