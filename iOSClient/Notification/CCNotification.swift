@@ -44,7 +44,8 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         self.tableView.tableFooterView = UIView()
         self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 50.0
-
+        self.tableView.allowsSelection = false
+        
         // Register to receive notification reload data
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadDatasource), name: Notification.Name("notificationReloadData"), object: nil)
 
@@ -68,104 +69,6 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     @objc func reloadDatasource() {
         self.tableView.reloadData()
     }
-    
-    /*
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
-        
-        let notification = appDelegate.listOfNotifications.object(at: editActionsForRowAt.row) as! OCNotifications
-        
-        // No Action request
-        if notification.actions.count == 0 {
-            
-            let remove = UITableViewRowAction(style: .normal, title: NSLocalizedString("_remove_", comment: "")) { action, index in
-
-                tableView.setEditing(false, animated: true)
-
-                OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(notification.idNotification)", type: "DELETE", completion: { (account, message, errorCode) in
-                    
-                    if errorCode == 0 && account == self.appDelegate.activeAccount {
-                        
-                        let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
-                        
-                        if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification.idNotification})  {
-                            self.appDelegate.listOfNotifications.removeObject(at: index)
-                        }
-                        
-                        self.reloadDatasource()
-                        
-                        if self.appDelegate.listOfNotifications.count == 0 {
-                            self.viewClose()
-                        }
-                        
-                    } else if errorCode != 0 {
-                        self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                    } else {
-                        print("[LOG] It has been changed user during networking process, error.")
-                    }
-                })
-            }
-            
-            remove.backgroundColor = .red
- 
-            return [remove]
- 
-        } else {
-        // Action request
-            
-            var buttons = [UITableViewRowAction]()
-            
-            for action in notification.actions {
-                
-                let button = UITableViewRowAction(style: .normal, title: (action as! OCNotificationsAction).label) { action, index in
-                    
-                    for actionNotification in notification.actions {
-                        
-                        if (actionNotification as! OCNotificationsAction).label == action.title  {
-                            
-                            tableView.setEditing(false, animated: true)
-
-                            OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (actionNotification as! OCNotificationsAction).link, type: (actionNotification as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
-                                
-                                if errorCode == 0 && account == self.appDelegate.activeAccount {
-                                    
-                                    let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
-                                    
-                                    if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification.idNotification})  {
-                                        self.appDelegate.listOfNotifications.removeObject(at: index)
-                                    }
-                                    
-                                    self.reloadDatasource()
-                                    
-                                    if self.appDelegate.listOfNotifications.count == 0 {
-                                        self.viewClose()
-                                    }
-                                    
-                                } else if errorCode != 0 {
-                                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                                } else {
-                                    print("[LOG] It has been changed user during networking process, error.")
-                                }
-                            })
-                        }
-                    }
-                }
-                if (action as! OCNotificationsAction).type == "DELETE" {
-                    button.backgroundColor = .red
-                } else {
-                    button.backgroundColor = .green
-                }
-                
-                buttons.append(button)
-            }
-            
-            return buttons
-        }
-    }
-    */
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
