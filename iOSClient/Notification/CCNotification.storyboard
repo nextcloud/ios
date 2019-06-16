@@ -72,10 +72,10 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sMh-G7-FLo">
-                                            <rect key="frame" x="265" y="146.5" width="100" height="30"/>
+                                            <rect key="frame" x="245" y="146.5" width="120" height="30"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="30" id="n50-CF-ODl"/>
-                                                <constraint firstAttribute="width" constant="100" id="tiI-55-Qu5"/>
+                                                <constraint firstAttribute="width" constant="120" id="tiI-55-Qu5"/>
                                             </constraints>
                                             <state key="normal" title="primary"/>
                                             <connections>
@@ -83,10 +83,10 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="obR-h7-TUC">
-                                            <rect key="frame" x="155" y="146.5" width="100" height="30"/>
+                                            <rect key="frame" x="115" y="146.5" width="120" height="30"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="30" id="Vko-Ob-nuj"/>
-                                                <constraint firstAttribute="width" constant="100" id="sVc-6c-vO4"/>
+                                                <constraint firstAttribute="width" constant="120" id="sVc-6c-vO4"/>
                                             </constraints>
                                             <state key="normal" title="secondary"/>
                                             <connections>
