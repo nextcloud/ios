@@ -181,6 +181,17 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                 }
             }
             
+            let widthPrimary = cell.primary.intrinsicContentSize.width + 30;
+            let widthSecondary = cell.secondary.intrinsicContentSize.width + 30;
+            
+            if widthPrimary > widthSecondary {
+                cell.primaryWidth.constant = widthPrimary
+                cell.secondaryWidth.constant = widthPrimary
+            } else {
+                cell.primaryWidth.constant = widthSecondary
+                cell.secondaryWidth.constant = widthSecondary
+            }
+            
             cell.messageBottomMargin.constant = 40
         }
         
@@ -268,6 +279,8 @@ class CCNotificationCell: UITableViewCell {
 
     @IBOutlet weak var avatarLeadingMargin: NSLayoutConstraint!
     @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
+    @IBOutlet weak var primaryWidth: NSLayoutConstraint!
+    @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -140,8 +140,10 @@
                                     <outlet property="message" destination="9fz-sr-8Gv" id="3Zx-pz-gEK"/>
                                     <outlet property="messageBottomMargin" destination="FnM-0E-rXs" id="Pf6-Au-H7E"/>
                                     <outlet property="primary" destination="sMh-G7-FLo" id="oyl-c8-sTP"/>
+                                    <outlet property="primaryWidth" destination="tiI-55-Qu5" id="8H6-cf-vtP"/>
                                     <outlet property="remove" destination="9mD-Qe-1wu" id="r1h-mr-5U9"/>
                                     <outlet property="secondary" destination="obR-h7-TUC" id="oeU-ya-VU7"/>
+                                    <outlet property="secondaryWidth" destination="sVc-6c-vO4" id="fVg-jk-phh"/>
                                     <outlet property="subject" destination="pg1-7p-7Rz" id="FP7-vS-vEk"/>
                                 </connections>
                             </tableViewCell>
