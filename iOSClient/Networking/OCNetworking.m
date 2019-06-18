@@ -165,7 +165,7 @@
     }];
 }
 
-- (void)serverStatusUrl:(NSString *)serverUrl completion:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, NSString *message, NSInteger errorCode))completion
+- (void)serverStatusUrl:(NSString *)serverUrl completion:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, BOOL extendedSupport,NSString *message, NSInteger errorCode))completion
 {
     NSString *urlTest = [serverUrl stringByAppendingString:k_serverStatus];
     
@@ -204,7 +204,7 @@
                 else
                     message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
                 
-                completion(nil, 0, 0, 0, message, errorCode);
+                completion(nil, 0, 0, 0, false, message, errorCode);
                 
             } else {
                 
@@ -216,11 +216,13 @@
                 NSInteger versionMicro = 0;
                 NSInteger versionMinor = 0;
                 
+                BOOL extendedSupport = FALSE;
+                
                 NSError *error;
                 NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
                 
                 if (error) {
-                    completion(nil, 0, 0, 0, NSLocalizedString(@"_no_nextcloud_found_", nil), k_CCErrorInternalError);
+                    completion(nil, 0, 0, 0, extendedSupport, NSLocalizedString(@"_no_nextcloud_found_", nil), k_CCErrorInternalError);
                     return;
                 }
                 
@@ -241,7 +243,9 @@
                     versionMicro = [arrayVersion[2] integerValue];
                 }
                 
-                completion(serverProductName, versionMajor, versionMicro, versionMinor, nil, 0);
+                extendedSupport = [[jsongParsed valueForKey:@"extendedSupport"] boolValue];
+
+                completion(serverProductName, versionMajor, versionMicro, versionMinor, extendedSupport, nil, 0);
             }
         });
         
