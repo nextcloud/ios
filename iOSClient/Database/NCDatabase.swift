@@ -196,6 +196,8 @@ class tableCapabilities: Object {
     @objc dynamic var isImagemeterEnabled: Bool = false
     // Fulltextsearch
     @objc dynamic var isFulltextsearchEnabled: Bool = false
+    // Extended Support
+    @objc dynamic var isExtendedSupportEnabled: Bool = false
 }
 
 class tableCertificates: Object {

@@ -1548,6 +1548,13 @@
                     NSNumber *isFulltextsearchEnabledNumber = (NSNumber*)[fulltextsearchDic valueForKey:@"remote"];
                     capabilities.isFulltextsearchEnabled = isFulltextsearchEnabledNumber.boolValue;
                 }
+                
+                //extendedSupport
+                NSDictionary *extendedSupportDic = [capabilitiesDict valueForKey:@"extendedSupport"];
+                if (extendedSupportDic) {
+                    NSNumber *isExtendedSupportEnabled = (NSNumber*)[extendedSupportDic valueForKey:@"enabled"];
+                    capabilities.isExtendedSupportEnabled = isExtendedSupportEnabled.boolValue;
+                }
             }
         
             successRequest(response, capabilities, request.redirectedServer);

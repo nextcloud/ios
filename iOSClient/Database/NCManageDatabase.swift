@@ -827,6 +827,8 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.isImagemeterEnabled = capabilities.isImagemeterEnabled
                 // Fulltextsearch
                 resultCapabilities.isFulltextsearchEnabled = capabilities.isFulltextsearchEnabled
+                // Extended Support
+                resultCapabilities.isExtendedSupportEnabled = capabilities.isExtendedSupportEnabled
                 
                 if result == nil {
                     realm.add(resultCapabilities)
