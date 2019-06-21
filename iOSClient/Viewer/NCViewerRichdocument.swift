@@ -111,6 +111,15 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if message.body as! String == "share" {
                 appDelegate.activeMain.openShare(with: self.detail.metadataDetail)
             }
+            
+            if message.body as! String == "downloadAs" {
+                
+            }
+            
+            if message.body as! String == "documentLoaded" {
+                
+            }
+            
         }
     }
     
