@@ -365,7 +365,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             
             NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             
-            let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+            let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, encode:true, completion: { (account, message, errorCode) in
                 
                 if account == self.appDelegate.activeAccount && errorCode == 0 {
                     

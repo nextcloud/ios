@@ -319,7 +319,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
 
-        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, encode:true, completion: { (account, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])

@@ -237,7 +237,7 @@
                         
                         self.richDocument = [[NCViewerRichdocument alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                         [self.view addSubview:self.richDocument];
-                        [self.richDocument viewRichDocumentAt:link detail:self];
+                        [self.richDocument viewRichDocumentAt:link detail:self metadata:self.metadataDetail];
 
                     } else {
                         
@@ -257,7 +257,7 @@
                 
                 self.richDocument = [[NCViewerRichdocument alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                 [self.view addSubview:self.richDocument];
-                [self.richDocument viewRichDocumentAt:self.metadataDetail.url detail:self];
+                [self.richDocument viewRichDocumentAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
             }
             
             return;
@@ -982,8 +982,8 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
         [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    
-    [docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
+    else
+        [docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
 }
 
 - (void)shareButtonPressed:(UIBarButtonItem *)sender

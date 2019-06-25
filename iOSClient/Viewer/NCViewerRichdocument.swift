@@ -27,6 +27,8 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var detail: CCDetail!
+    var metadata: tableMetadata!
+    var documentInteractionController: UIDocumentInteractionController!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         super.init(frame: frame, configuration: configuration)
@@ -42,9 +44,10 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         super.init(coder: coder)
     }
     
-    @objc func viewRichDocumentAt(_ link: String, detail: CCDetail) {
+    @objc func viewRichDocumentAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
         
         self.detail = detail
+        self.metadata = metadata
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -81,7 +84,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         if (message.name == "RichDocumentsMobileInterface") {
             
-            if message.body as! String == "close" {
+            if message.body as? String == "close" {
                 
                 removeFromSuperview()
                 
@@ -90,7 +93,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 self.detail.navigationController?.navigationBar.topItem?.title = ""
             }
             
-            if message.body as! String == "insertGraphic" {
+            if message.body as? String == "insertGraphic" {
                 
                 let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                 let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
@@ -108,18 +111,39 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 self.detail.present(navigationController, animated: true, completion: nil)
             }
             
-            if message.body as! String == "share" {
+            if message.body as? String == "share" {
                 appDelegate.activeMain.openShare(with: self.detail.metadataDetail)
             }
             
-            if message.body as! String == "downloadAs" {
-                
+            if let param = message.body as? Dictionary<AnyHashable,Any> {
+                if param["MessageName"] as? String == "downloadAs" {
+                    if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                         if let url = values["URL"] as? String {
+                            guard let filename = values["Type"] as? String else {
+                                return
+                            }
+                            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + filename + ".pdf"
+                            let account = metadata.account
+                            
+                            _ = OCNetworking.sharedManager()?.download(withAccount: account, url: url, fileNameLocalPath: fileNameLocalPath, encode:false, completion: { (account, message, errorCode) in
+                                if errorCode == 0 && account == self.metadata.account {
+                                    if filename == "print" {
+                                        self.documentInteractionController = UIDocumentInteractionController()
+                                        self.documentInteractionController.url = URL(fileURLWithPath: fileNameLocalPath)
+                                        self.documentInteractionController.presentOptionsMenu(from: self.appDelegate.window.rootViewController!.view.bounds, in: self.appDelegate.window.rootViewController!.view, animated: true)
+                                    }
+                                } else {
+                                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                                }
+                            })
+                        }
+                    }
+                }
             }
             
-            if message.body as! String == "documentLoaded" {
-                
+            if message.body as? String == "documentLoaded" {
+                print("documentLoaded")
             }
-            
         }
     }
     
