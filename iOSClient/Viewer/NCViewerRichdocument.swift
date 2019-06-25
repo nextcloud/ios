@@ -118,25 +118,28 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if let param = message.body as? Dictionary<AnyHashable,Any> {
                 if param["MessageName"] as? String == "downloadAs" {
                     if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
-                         if let url = values["URL"] as? String {
-                            guard let filename = values["Type"] as? String else {
-                                return
-                            }
-                            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + filename + ".pdf"
-                            let account = metadata.account
-                            
-                            _ = OCNetworking.sharedManager()?.download(withAccount: account, url: url, fileNameLocalPath: fileNameLocalPath, encode:false, completion: { (account, message, errorCode) in
-                                if errorCode == 0 && account == self.metadata.account {
-                                    if filename == "print" {
-                                        self.documentInteractionController = UIDocumentInteractionController()
-                                        self.documentInteractionController.url = URL(fileURLWithPath: fileNameLocalPath)
-                                        self.documentInteractionController.presentOptionsMenu(from: self.appDelegate.window.rootViewController!.view.bounds, in: self.appDelegate.window.rootViewController!.view, animated: true)
-                                    }
-                                } else {
-                                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                                }
-                            })
+                        guard let urlString = values["URL"] as? String else {
+                            return
                         }
+                        guard let url = URL(string: urlString) else {
+                            return
+                        }
+                        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                            return
+                        }
+                        let filename = (components.path as NSString).lastPathComponent
+                        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + filename
+                    
+                        _ = OCNetworking.sharedManager()?.download(withAccount: metadata.account, url: urlString, fileNameLocalPath: fileNameLocalPath, encode:false, completion: { (account, message, errorCode) in
+                            if errorCode == 0 && account == self.metadata.account {
+                                self.documentInteractionController = UIDocumentInteractionController()
+                                self.documentInteractionController.url = URL(fileURLWithPath: fileNameLocalPath)
+                                self.documentInteractionController.presentOptionsMenu(from: self.appDelegate.window.rootViewController!.view.bounds, in: self.appDelegate.window.rootViewController!.view, animated: true)
+                            } else {
+                                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                            }
+                        })
+                        
                     }
                 }
             }
