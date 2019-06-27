@@ -81,7 +81,7 @@
 #define k_url_create_new_mobile_richdocuments @"ocs/v2.php/apps/richdocuments/api/v1/templates/new"
 
 //Url to insert files directly from your Nextcloud to a richdocuments
-#define k_url_insert_assets_to_richdocuments @"apps/richdocuments/assets"
+#define k_url_insert_assets_to_richdocuments @"index.php/apps/richdocuments/assets"
 
 //Url for fulltextsearch
 #define k_url_fulltextsearch @"index.php/apps/fulltextsearch/v1/remote"
