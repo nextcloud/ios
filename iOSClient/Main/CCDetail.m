@@ -228,6 +228,13 @@
         // RichDocument
         if ([[NCUtility sharedInstance] isRichDocument:self.metadataDetail] && appDelegate.reachability.isReachable) {
             
+            // if is open do not reload
+            if (self.richDocument.metadata.fileID == self.metadataDetail.fileID) {
+                if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                    [self.navigationController setNavigationBarHidden:true];
+                return;
+            }
+            
             [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
             
             if ([self.metadataDetail.url isEqualToString:@""]) {

@@ -27,7 +27,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var detail: CCDetail!
-    var metadata: tableMetadata!
+    @objc var metadata: tableMetadata!
     var documentInteractionController: UIDocumentInteractionController!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
