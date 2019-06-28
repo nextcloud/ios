@@ -112,7 +112,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             }
             
             if message.body as? String == "share" {
-                appDelegate.activeMain.openShare(with: self.detail.metadataDetail)
+                appDelegate.activeMain.openShare(with: metadata)
             }
             
             if let param = message.body as? Dictionary<AnyHashable,Any> {
