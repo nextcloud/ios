@@ -141,6 +141,14 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                         })
                         
                     }
+                } else if param["MessageName"] as? String == "fileRename" {
+                    if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                        guard let newName = values["NewName"] as? String else {
+                            return
+                        }
+                        metadata.fileName = newName
+                        metadata.fileNameView = newName
+                    }
                 }
             }
             
