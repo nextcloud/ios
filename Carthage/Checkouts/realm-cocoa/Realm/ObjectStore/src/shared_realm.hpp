@@ -32,6 +32,7 @@
 #include <memory>
 
 namespace realm {
+class AsyncOpenTask;
 class AuditInterface;
 class BindingContext;
 class Group;
@@ -261,15 +262,19 @@ public:
     // encryption key will raise an exception.
     static SharedRealm get_shared_realm(Config config);
 
-    // Open a Realm and then pass it to the callback.
+    // Get a Realm for the given execution context (or current thread if `none`)
+    // from the thread safe reference. May return a cached Realm or create a new one.
+    static SharedRealm get_shared_realm(ThreadSafeReference<Realm>, util::Optional<AbstractExecutionContextID> = util::none);
+
+#if REALM_ENABLE_SYNC
+    // Open a synchronized Realm and make sure it is fully up to date before
+    // returning it.
     //
-    // If SyncConfig is set, the callback will not be invoked until the latest
-    // Realm state has been fully downloaded. This will result in the callback
-    // being invoked on a different thread. The calling code should normally
-    // dispatch back to the desired thread and obtain a new reference to the
-    // Realm, only using the reference passed to the callback to keep the file
-    // open while this is happening.
-    static void get_shared_realm(Config config, std::function<void(SharedRealm, std::exception_ptr)> callback);
+    // It is possible to both cancel the download and listen to download progress
+    // using the `AsyncOpenTask` returned. Note that the download doesn't actually
+    // start until you call `AsyncOpenTask::start(callback)`
+    static std::shared_ptr<AsyncOpenTask> get_synchronized_realm(Config config);
+#endif
 
     // Updates a Realm to a given schema, using the Realm's pre-set schema mode.
     void update_schema(Schema schema, uint64_t version=0,

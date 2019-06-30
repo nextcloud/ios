@@ -196,7 +196,7 @@ ExternalCommitHelper::~ExternalCommitHelper()
 
 void ExternalCommitHelper::listen()
 {
-    pthread_setname_np("RLMRealm notification listener");
+    pthread_setname_np("Realm notification listener");
 
     // Set up the kqueue
     // EVFILT_READ indicates that we care about data being available to read
@@ -214,11 +214,11 @@ void ExternalCommitHelper::listen()
         // Wait for data to become on either fd
         // Return code is number of bytes available or -1 on error
         ret = kevent(m_kq, nullptr, 0, &event, 1, nullptr);
-        assert(ret >= 0);
-        if (ret == 0) {
+        if (ret == 0 || (ret < 0 && errno == EINTR)) {
             // Spurious wakeup; just wait again
             continue;
         }
+        assert(ret > 0);
 
         // Check which file descriptor had activity: if it's the shutdown
         // pipe, then someone called -stop; otherwise it's the named pipe
