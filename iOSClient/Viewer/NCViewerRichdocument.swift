@@ -111,6 +111,11 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if message.body as! String == "share" {
                 appDelegate.activeMain.openShare(with: self.detail.metadataDetail)
             }
+
+	    // Javascript cannot do this by itself, so help out.
+            if message.body as! String == "paste" {
+                self.paste(self)
+            }
         }
     }
     
