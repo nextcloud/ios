@@ -385,7 +385,7 @@
     // Registeration domain File Provider
 #if TARGET_OS_SIMULATOR
     if (@available(iOS 13, *) ) {
-        //[FileProviderDomain.sharedInstance registerDomain];
+        [FileProviderDomain.sharedInstance registerDomain];
     }
 #endif
     
