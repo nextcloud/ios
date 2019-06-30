@@ -379,8 +379,16 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl fileID:nil action:k_action_NULL];
     }
     
-    // Registered push notification
+    // Registeration push notification
     [appDelegate pushNotification];
+    
+    // Registeration domain File Provider
+#if TARGET_OS_SIMULATOR
+    if (@available(iOS 13, *) ) {
+        //[FileProviderDomain.sharedInstance registerDomain];
+    }
+#endif
+    
 }
 
 #pragma --------------------------------------------------------------------------------------------
