@@ -33,7 +33,7 @@ extension FileProviderExtension {
         
         let path = metadata.serverUrl + "/" + metadata.fileName
 
-        OCNetworking.sharedManager().deleteFileOrFolder(withAccount: providerData.account, path: path, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().deleteFileOrFolder(withAccount: fileProviderData.sharedInstance.account, path: path, completion: { (account, message, errorCode) in
             if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                 self.deleteFileSystem(for: metadata, serverUrl: metadata.serverUrl, itemIdentifier: itemIdentifier)
             }
@@ -44,14 +44,14 @@ extension FileProviderExtension {
         
         let fileNamePath = CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue)!
         do {
-            try self.providerData.fileManager.removeItem(atPath: fileNamePath)
+            try fileProviderUtility.sharedInstance.fileManager.removeItem(atPath: fileNamePath)
         } catch let error {
             print("error: \(error)")
         }
         
         if metadata.directory {
             let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
-            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: providerData.account)
+            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: fileProviderData.sharedInstance.account)
         }
         
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
@@ -64,25 +64,21 @@ extension FileProviderExtension {
     
     func settingFavorite(_ favorite: Bool, withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata) {
         
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: self.providerData.accountUrl)
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)
 
-        OCNetworking.sharedManager().settingFavorite(withAccount: providerData.account, fileName: fileNamePath, favorite: favorite, completion: { (account, message, errorCode) in
-            if errorCode == 0 && account == self.providerData.account {
+        OCNetworking.sharedManager().settingFavorite(withAccount: metadata.account, fileName: fileNamePath, favorite: favorite, completion: { (account, message, errorCode) in
+            if errorCode == 0 && account == metadata.account {
                 // Change DB
                 metadata.favorite = favorite
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
             } else {
                 // Errore, remove from listFavoriteIdentifierRank
-                self.providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+                fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                 
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-                
-                self.providerData.queueTradeSafe.sync(flags: .barrier) {
-                    self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                    self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                }
-                
-                self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
         })
     }
@@ -102,21 +98,18 @@ extension FileProviderExtension {
             return
         }
         
-        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             return
         }
         
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
         // Register for bytesSent
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
-        providerData.queueTradeSafe.sync(flags: .barrier) {
-            self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        
-        self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
@@ -125,7 +118,7 @@ extension FileProviderExtension {
             return
         }
         
-        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             return
         }
         
@@ -133,11 +126,9 @@ extension FileProviderExtension {
         if errorCode == 0 {
             
             // Remove temp fileID
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                let itemIdentifier = NSFileProviderItemIdentifier(CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false))
-                self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-                self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-            }
+            let itemIdentifier = NSFileProviderItemIdentifier(CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false))
+            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
+            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
             
             // Recreate ico
             CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
@@ -147,12 +138,9 @@ extension FileProviderExtension {
             metadata.sessionSelector = ""
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
-            let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            }
+            let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier)
+            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             
             uploadFileImportDocument()
             
@@ -163,24 +151,21 @@ extension FileProviderExtension {
             metadata.status = Int(k_metadataStatusUploadError)
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
-            let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-            
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            }
+            let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier)
+            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
-        self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
     }
     
     func uploadFileImportDocument() {
         
-        let tableMetadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d OR status == %d)", providerData.account, k_upload_session_extension, k_metadataStatusInUpload, k_metadataStatusUploading), sorted: "fileName", ascending: true)
+        let tableMetadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d OR status == %d)", fileProviderData.sharedInstance.account, k_upload_session_extension, k_metadataStatusInUpload, k_metadataStatusUploading), sorted: "fileName", ascending: true)
         
         if (tableMetadatas == nil || (tableMetadatas!.count < Int(k_maxConcurrentOperation))) {
             
-            guard let metadataForUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", providerData.account, k_upload_session_extension, k_metadataStatusWaitUpload)) else {
+            guard let metadataForUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", fileProviderData.sharedInstance.account, k_upload_session_extension, k_metadataStatusWaitUpload)) else {
                 return
             }
             
@@ -194,15 +179,15 @@ extension FileProviderExtension {
         var itemIdentifierForUpload = itemIdentifier
         
         // Is itemIdentifier = fileName [Apple Works and ... ?]
-        if itemIdentifier.rawValue.contains(fileName) && providerData.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@ AND fileName == %@", providerData.account, itemIdentifier.rawValue, fileName)) else {
+        if itemIdentifier.rawValue.contains(fileName) && fileProviderUtility.sharedInstance.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@ AND fileName == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue, fileName)) else {
                 return
             }
-            itemIdentifierForUpload = providerData.getItemIdentifier(metadata: metadata)
-            _ = providerData.moveFile(CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue, toPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifierForUpload.rawValue)
+            itemIdentifierForUpload = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+            _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue, toPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifierForUpload.rawValue)
         }
         
-        guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifierForUpload) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifierForUpload) else {
             return
         }
         

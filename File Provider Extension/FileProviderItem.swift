@@ -75,10 +75,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var isDownload = false
     var isUpload = false
 
-    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
+    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         
         self.parentItemIdentifier = parentItemIdentifier
-        self.itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
+        self.itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
                 
         self.contentModificationDate = metadata.date as Date
         self.creationDate = metadata.date as Date
@@ -91,24 +91,20 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // This is a file
         if (!metadata.directory) {
             
-            let fileIdentifier =  CCUtility.getDirectoryProviderStorageFileID(self.itemIdentifier.rawValue, fileNameView: metadata.fileNameView)!
-            var fileSize = 0 as Double
-         
-            do {
-                let attributes = try FileManager.default.attributesOfItem(atPath: fileIdentifier)
-                fileSize = attributes[FileAttributeKey.size] as! Double
-            } catch let error {
-                print("error: \(error)")
-            }
-            
-            // Download
-            if fileSize == 0 {
+            self.documentSize = NSNumber(value: metadata.size)
+           
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+            if tableLocalFile == nil {
                 self.isDownloaded = false
                 self.isMostRecentVersionDownloaded = false
             } else {
-                self.documentSize = NSNumber(value:fileSize)
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
+            }
+            
+            // Download
+            if (metadata.session == k_download_session_extension && metadata.status != k_metadataStatusDownloadError) {
+                self.isDownloading = true
             }
             
             // Upload
@@ -128,11 +124,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         } else {
             
             // Favorite directory
-            let rank = providerData.listFavoriteIdentifierRank[metadata.fileID]
+            let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.fileID]
             if (rank == nil) {
                 favoriteRank = nil
             } else {
-                favoriteRank = providerData.listFavoriteIdentifierRank[metadata.fileID]
+                favoriteRank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.fileID]
             }
         }
         

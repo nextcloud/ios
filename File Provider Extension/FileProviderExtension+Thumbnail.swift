@@ -30,15 +30,9 @@ extension FileProviderExtension {
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
         
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            completionHandler(NSFileProviderError(.notAuthenticated))
-            return Progress(totalUnitCount:0)
-        }
-        
         for itemIdentifier in itemIdentifiers {
             
-            guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 
                 counterProgress += 1
                 if (counterProgress == progress.totalUnitCount) {
@@ -53,9 +47,9 @@ extension FileProviderExtension {
                 let width = NCUtility.sharedInstance.getScreenWidthForPreview()
                 let height = NCUtility.sharedInstance.getScreenHeightForPreview()
                 
-                OCNetworking.sharedManager().downloadPreview(withAccount: providerData.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, preview, message, errorCode) in
+                OCNetworking.sharedManager().downloadPreview(withAccount: metadata.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, preview, message, errorCode) in
                    
-                    if errorCode == 0 && account == self.providerData.account {
+                    if errorCode == 0 && account == metadata.account {
                         do {
                             let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
                             let data = try Data.init(contentsOf: url)
