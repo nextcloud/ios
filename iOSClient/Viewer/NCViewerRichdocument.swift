@@ -155,6 +155,10 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if message.body as? String == "documentLoaded" {
                 print("documentLoaded")
             }
+            
+            if message.body as? String == "paste" {
+                self.paste(self)
+            }
         }
     }
     
