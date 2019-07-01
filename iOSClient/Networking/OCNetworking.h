@@ -103,6 +103,11 @@
 
 - (void)fullTextSearchWithAccount:(NSString *)account text:(NSString *)text page:(NSInteger)page completion:(void(^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
 
+#pragma mark ===== Remore wipe =====
+
+- (void)getRemoteWipeStatusWithAccount:(NSString *)account completion:(void(^)(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode))completion;
+- (void)setRemoteWipeCompletitionWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+
 #pragma mark ===== Trash =====
 
 - (void)listingTrashWithAccount:(NSString *)account path:(NSString *)path serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;

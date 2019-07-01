@@ -3116,6 +3116,56 @@
     }];
 }
 
+#pragma mark - Remore wipe
+
+- (void)getRemoteWipeStatus:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, BOOL wipe, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [NSString stringWithFormat:@"%@%@/check?token=%@", serverPath, k_url_get_wipe, self.userID];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getSetRemoteWipe:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+    
+        NSData *responseData = (NSData*) response;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            successRequest(response, false, request.redirectedServer);
+            
+        } else {
+            
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)setRemoteWipeCompletition:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [NSString stringWithFormat:@"%@%@/success?token=%@", serverPath, k_url_get_wipe, self.userID];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getSetRemoteWipe:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+        
+        successRequest(response, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
 #pragma mark - Third Parts
 
 - (void)getHCUserProfile:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
