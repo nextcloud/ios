@@ -88,9 +88,8 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 
                 removeFromSuperview()
                 
-                self.detail.navigationController?.popViewController(animated: true)
-//                detail.navigationController?.setNavigationBarHidden(false, animated: false)
-                self.detail.navigationController?.navigationBar.topItem?.title = ""
+                detail.navigationController?.popViewController(animated: true)
+                detail.navigationController?.navigationBar.topItem?.title = ""
             }
             
             if message.body as? String == "insertGraphic" {
@@ -139,7 +138,6 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                             }
                         })
-                        
                     }
                 } else if param["MessageName"] as? String == "fileRename" {
                     if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
