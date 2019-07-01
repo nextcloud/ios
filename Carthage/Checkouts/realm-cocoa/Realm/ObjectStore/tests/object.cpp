@@ -715,81 +715,101 @@ TEST_CASE("object") {
         REQUIRE(callback_called);
     }
 
-    SECTION("set existing fields to null with update") {
-        AnyDict initial_values{
-            {"pk", INT64_C(1)},
-            {"bool", true},
-            {"int", INT64_C(5)},
-            {"float", 2.2f},
-            {"double", 3.3},
-            {"string", "hello"s},
-            {"data", "olleh"s},
-            {"date", Timestamp(10, 20)},
+    for (auto diffed_update : {false, true}) {
+        SECTION("set existing fields to null with update "s + (diffed_update ? "(diffed)" : "(all)")) {
+            AnyDict initial_values{
+                {"pk", INT64_C(1)},
+                {"bool", true},
+                {"int", INT64_C(5)},
+                {"float", 2.2f},
+                {"double", 3.3},
+                {"string", "hello"s},
+                {"data", "olleh"s},
+                {"date", Timestamp(10, 20)},
 
-            {"bool array", AnyVec{true, false}},
-            {"int array", AnyVec{INT64_C(5), INT64_C(6)}},
-            {"float array", AnyVec{1.1f, 2.2f}},
-            {"double array", AnyVec{3.3, 4.4}},
-            {"string array", AnyVec{"a"s, "b"s, "c"s}},
-            {"data array", AnyVec{"d"s, "e"s, "f"s}},
-            {"date array", AnyVec{}},
-            {"object array", AnyVec{AnyDict{{"value", INT64_C(20)}}}},
-        };
-        r->begin_transaction();
-        auto obj = Object::create(d, r, *r->schema().find("all optional types"), util::Any(initial_values));
+                {"bool array", AnyVec{true, false}},
+                {"int array", AnyVec{INT64_C(5), INT64_C(6)}},
+                {"float array", AnyVec{1.1f, 2.2f}},
+                {"double array", AnyVec{3.3, 4.4}},
+                {"string array", AnyVec{"a"s, "b"s, "c"s}},
+                {"data array", AnyVec{"d"s, "e"s, "f"s}},
+                {"date array", AnyVec{}},
+                {"object array", AnyVec{AnyDict{{"value", INT64_C(20)}}}},
+            };
+            r->begin_transaction();
+            auto obj = Object::create(d, r, *r->schema().find("all optional types"), util::Any(initial_values));
 
-        // Missing fields in dictionary do not update anything
-        Object::create(d, r, *r->schema().find("all optional types"), util::Any(AnyDict{{"pk", INT64_C(1)}}), true);
+            // Missing fields in dictionary do not update anything
+            Object::create(d, r, *r->schema().find("all optional types"),
+                           util::Any(AnyDict{{"pk", INT64_C(1)}}), true, diffed_update);
 
-        REQUIRE(any_cast<bool>(obj.get_property_value<util::Any>(d, "bool")) == true);
-        REQUIRE(any_cast<int64_t>(obj.get_property_value<util::Any>(d, "int")) == 5);
-        REQUIRE(any_cast<float>(obj.get_property_value<util::Any>(d, "float")) == 2.2f);
-        REQUIRE(any_cast<double>(obj.get_property_value<util::Any>(d, "double")) == 3.3);
-        REQUIRE(any_cast<std::string>(obj.get_property_value<util::Any>(d, "string")) == "hello");
-        REQUIRE(any_cast<Timestamp>(obj.get_property_value<util::Any>(d, "date")) == Timestamp(10, 20));
+            REQUIRE(any_cast<bool>(obj.get_property_value<util::Any>(d, "bool")) == true);
+            REQUIRE(any_cast<int64_t>(obj.get_property_value<util::Any>(d, "int")) == 5);
+            REQUIRE(any_cast<float>(obj.get_property_value<util::Any>(d, "float")) == 2.2f);
+            REQUIRE(any_cast<double>(obj.get_property_value<util::Any>(d, "double")) == 3.3);
+            REQUIRE(any_cast<std::string>(obj.get_property_value<util::Any>(d, "string")) == "hello");
+            REQUIRE(any_cast<Timestamp>(obj.get_property_value<util::Any>(d, "date")) == Timestamp(10, 20));
 
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "bool array")).get<util::Optional<bool>>(0) == true);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "int array")).get<util::Optional<int64_t>>(0) == 5);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "float array")).get<util::Optional<float>>(0) == 1.1f);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "double array")).get<util::Optional<double>>(0) == 3.3);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "string array")).get<StringData>(0) == "a");
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "date array")).size() == 0);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "bool array")).get<util::Optional<bool>>(0) == true);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "int array")).get<util::Optional<int64_t>>(0) == 5);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "float array")).get<util::Optional<float>>(0) == 1.1f);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "double array")).get<util::Optional<double>>(0) == 3.3);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "string array")).get<StringData>(0) == "a");
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "date array")).size() == 0);
 
-        AnyDict null_values{
-            {"pk", INT64_C(1)},
-            {"bool", util::Any()},
-            {"int", util::Any()},
-            {"float", util::Any()},
-            {"double", util::Any()},
-            {"string", util::Any()},
-            {"data", util::Any()},
-            {"date", util::Any()},
+            // Set all properties to null
+            AnyDict null_values{
+                {"pk", INT64_C(1)},
+                {"bool", util::Any()},
+                {"int", util::Any()},
+                {"float", util::Any()},
+                {"double", util::Any()},
+                {"string", util::Any()},
+                {"data", util::Any()},
+                {"date", util::Any()},
 
-            {"bool array", AnyVec{util::Any()}},
-            {"int array", AnyVec{util::Any()}},
-            {"float array", AnyVec{util::Any()}},
-            {"double array", AnyVec{util::Any()}},
-            {"string array", AnyVec{util::Any()}},
-            {"data array", AnyVec{util::Any()}},
-            {"date array", AnyVec{Timestamp()}},
-        };
-        Object::create(d, r, *r->schema().find("all optional types"), util::Any(null_values), true);
+                {"bool array", AnyVec{util::Any()}},
+                {"int array", AnyVec{util::Any()}},
+                {"float array", AnyVec{util::Any()}},
+                {"double array", AnyVec{util::Any()}},
+                {"string array", AnyVec{util::Any()}},
+                {"data array", AnyVec{util::Any()}},
+                {"date array", AnyVec{Timestamp()}},
+            };
+            Object::create(d, r, *r->schema().find("all optional types"), util::Any(null_values), true, diffed_update);
 
-        REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "bool").has_value());
-        REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "int").has_value());
-        REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "float").has_value());
-        REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "double").has_value());
-        REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "string").has_value());
-        REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "data").has_value());
-        REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "date").has_value());
+            REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "bool").has_value());
+            REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "int").has_value());
+            REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "float").has_value());
+            REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "double").has_value());
+            REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "string").has_value());
+            REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "data").has_value());
+            REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "date").has_value());
 
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "bool array")).get<util::Optional<bool>>(0) == util::none);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "int array")).get<util::Optional<int64_t>>(0) == util::none);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "float array")).get<util::Optional<float>>(0) == util::none);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "double array")).get<util::Optional<double>>(0) == util::none);
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "string array")).get<StringData>(0) == StringData());
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "data array")).get<BinaryData>(0) == BinaryData());
-        REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "date array")).get<Timestamp>(0) == Timestamp());
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "bool array")).get<util::Optional<bool>>(0) == util::none);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "int array")).get<util::Optional<int64_t>>(0) == util::none);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "float array")).get<util::Optional<float>>(0) == util::none);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "double array")).get<util::Optional<double>>(0) == util::none);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "string array")).get<StringData>(0) == StringData());
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "data array")).get<BinaryData>(0) == BinaryData());
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "date array")).get<Timestamp>(0) == Timestamp());
+
+            // Set all properties back to non-null
+            Object::create(d, r, *r->schema().find("all optional types"), util::Any(initial_values), true, diffed_update);
+            REQUIRE(any_cast<bool>(obj.get_property_value<util::Any>(d, "bool")) == true);
+            REQUIRE(any_cast<int64_t>(obj.get_property_value<util::Any>(d, "int")) == 5);
+            REQUIRE(any_cast<float>(obj.get_property_value<util::Any>(d, "float")) == 2.2f);
+            REQUIRE(any_cast<double>(obj.get_property_value<util::Any>(d, "double")) == 3.3);
+            REQUIRE(any_cast<std::string>(obj.get_property_value<util::Any>(d, "string")) == "hello");
+            REQUIRE(any_cast<Timestamp>(obj.get_property_value<util::Any>(d, "date")) == Timestamp(10, 20));
+
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "bool array")).get<util::Optional<bool>>(0) == true);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "int array")).get<util::Optional<int64_t>>(0) == 5);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "float array")).get<util::Optional<float>>(0) == 1.1f);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "double array")).get<util::Optional<double>>(0) == 3.3);
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "string array")).get<StringData>(0) == "a");
+            REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "date array")).size() == 0);
+        }
     }
 
     SECTION("create throws for duplicate pk if update is not specified") {

@@ -272,11 +272,25 @@ SharedRealm Realm::get_shared_realm(Config config)
     return coordinator->get_realm(std::move(config));
 }
 
-void Realm::get_shared_realm(Config config, std::function<void(SharedRealm, std::exception_ptr)> callback)
+SharedRealm Realm::get_shared_realm(ThreadSafeReference<Realm> ref, util::Optional<AbstractExecutionContextID> execution_context)
+{
+    REALM_ASSERT(ref.m_realm);
+    auto& config = ref.m_realm->config();
+    auto coordinator = RealmCoordinator::get_coordinator(config.path);
+    if (auto realm = coordinator->get_cached_realm(config, execution_context))
+        return realm;
+    coordinator->bind_to_context(*ref.m_realm, execution_context);
+    ref.m_realm->m_execution_context = execution_context;
+    return std::move(ref.m_realm);
+}
+
+#if REALM_ENABLE_SYNC
+std::shared_ptr<AsyncOpenTask> Realm::get_synchronized_realm(Config config)
 {
     auto coordinator = RealmCoordinator::get_coordinator(config.path);
-    coordinator->get_realm(std::move(config), callback);
+    return coordinator->get_synchronized_realm(std::move(config));
 }
+#endif
 
 void Realm::set_schema(Schema const& reference, Schema schema)
 {
@@ -806,6 +820,9 @@ void Realm::notify()
 
     if (m_binding_context) {
         m_binding_context->before_notify();
+        if (is_closed() || is_in_transaction()) {
+            return;
+        }
     }
 
     auto cleanup = util::make_scope_exit([this]() noexcept { m_is_sending_notifications = false; });
