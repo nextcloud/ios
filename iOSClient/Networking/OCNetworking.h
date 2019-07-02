@@ -105,6 +105,7 @@
 
 #pragma mark ===== Remore wipe =====
 
+- (void)checkRemoteWipe:(NSString *)account;
 - (void)getRemoteWipeStatusWithAccount:(NSString *)account completion:(void(^)(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode))completion;
 - (void)setRemoteWipeCompletitionWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 

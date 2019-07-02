@@ -106,7 +106,7 @@ class NCService: NSObject {
             } else {
                 
                 if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
-                    CCUtility.setPassword(account, password: nil)
+                    OCNetworking.sharedManager()?.checkRemoteWipe(account)
                 }
                 
                 print("[LOG] It has been changed user during networking process, error.")
@@ -298,7 +298,7 @@ class NCService: NSObject {
                 self.appDelegate.settingThemingColorBrand()
                 
                 if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
-                    CCUtility.setPassword(account, password: nil)
+                    OCNetworking.sharedManager()?.checkRemoteWipe(account)
                 }
                 
             } else {

@@ -366,7 +366,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -415,7 +415,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -471,7 +471,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -596,7 +596,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -672,7 +672,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -731,7 +731,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -784,7 +784,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -828,7 +828,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -945,7 +945,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1040,7 +1040,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1086,7 +1086,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1140,7 +1140,7 @@
             
             // Server Unauthorized
             if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-                [CCUtility setPassword:account password:nil];
+                [[OCNetworking sharedManager] checkRemoteWipe:account];
             } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 [CCUtility setCertificateError:account error:YES];
             }
@@ -1239,7 +1239,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1285,7 +1285,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1333,7 +1333,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1379,7 +1379,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1424,7 +1424,7 @@
 
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1471,7 +1471,7 @@
 
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1516,7 +1516,7 @@
 
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1561,7 +1561,7 @@
 
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1606,7 +1606,7 @@
 
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1651,7 +1651,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1707,7 +1707,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1751,7 +1751,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1796,7 +1796,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1841,7 +1841,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1886,7 +1886,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1931,7 +1931,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1995,7 +1995,7 @@
             
             // Server Unauthorized
             if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-                [CCUtility setPassword:account password:nil];
+                [[OCNetworking sharedManager] checkRemoteWipe:account];
             } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 [CCUtility setCertificateError:account error:YES];
             }
@@ -2018,8 +2018,8 @@
             errorCode = error.code;
     
         // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            [CCUtility setPassword:account password:nil];
+        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2071,7 +2071,7 @@
             
             // Server Unauthorized
             if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-                [CCUtility setPassword:account password:nil];
+                [[OCNetworking sharedManager] checkRemoteWipe:account];
             } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 [CCUtility setCertificateError:account error:YES];
             }
@@ -2094,8 +2094,8 @@
             errorCode = error.code;
         
         // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            [CCUtility setPassword:account password:nil];
+        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2186,7 +2186,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2230,7 +2230,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2274,7 +2274,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2320,7 +2320,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2384,7 +2384,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2402,6 +2402,11 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Remore wipe =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)checkRemoteWipe:(NSString *)account
+{
+    [CCUtility setPassword:account password:nil];
+}
 
 - (void)getRemoteWipeStatusWithAccount:(NSString *)account completion:(void(^)(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode))completion
 {
@@ -2432,7 +2437,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2476,7 +2481,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2566,7 +2571,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2612,7 +2617,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2663,7 +2668,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2737,7 +2742,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2784,7 +2789,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [CCUtility setPassword:account password:nil];
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
