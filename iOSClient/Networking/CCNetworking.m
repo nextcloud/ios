@@ -548,7 +548,7 @@
             
         } else {
             
-            if (metadata && errorCode == kOCErrorServerUnauthorized)
+            if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
                 [CCUtility setPassword:metadata.account password:nil];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
                 [CCUtility setCertificateError:metadata.account error:YES];
@@ -1106,7 +1106,7 @@
             
         } else {
 
-            if (metadata && errorCode == kOCErrorServerUnauthorized)
+            if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
                 [CCUtility setPassword:metadata.account password:nil];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
                 [CCUtility setCertificateError:metadata.account error:YES];

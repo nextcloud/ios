@@ -105,7 +105,7 @@ class NCService: NSObject {
                 
             } else {
                 
-                if errorCode == kOCErrorServerUnauthorized {
+                if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
                     CCUtility.setPassword(account, password: nil)
                 }
                 
@@ -297,7 +297,7 @@ class NCService: NSObject {
                 
                 self.appDelegate.settingThemingColorBrand()
                 
-                if errorCode == kOCErrorServerUnauthorized {
+                if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
                     CCUtility.setPassword(account, password: nil)
                 }
                 
