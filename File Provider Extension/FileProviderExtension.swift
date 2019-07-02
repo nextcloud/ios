@@ -81,20 +81,14 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
 #if targetEnvironment(simulator)
             
-            if #available(iOS 13, *) {
-                if containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer && self.domain?.identifier.rawValue == nil {
+            if containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer && self.domain?.identifier.rawValue == nil {
+                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
+            } else if self.domain?.identifier.rawValue != nil {
+                if fileProviderData.sharedInstance.setupActiveAccount(domain: self.domain?.identifier.rawValue) == false {
                     throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-                } else if self.domain?.identifier.rawValue != nil {
-                    if fileProviderData.sharedInstance.setupActiveAccount(domain: self.domain?.identifier.rawValue) == false {
-                        throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-                    }
-                } else {
-                    if fileProviderData.sharedInstance.setupActiveAccount(itemIdentifier: containerItemIdentifier) == false {
-                        throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-                    }
                 }
             } else {
-                if fileProviderData.sharedInstance.setupActiveAccount(domain: nil) == false {
+                if fileProviderData.sharedInstance.setupActiveAccount(itemIdentifier: containerItemIdentifier) == false {
                     throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
                 }
             }
