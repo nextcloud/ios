@@ -2405,7 +2405,14 @@
 
 - (void)checkRemoteWipe:(NSString *)account
 {
-    [CCUtility setPassword:account password:nil];
+    [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
+        
+        if (wipe == false) {
+            [CCUtility setPassword:account password:nil];
+        } else {
+            
+        }
+    }];
 }
 
 - (void)getRemoteWipeStatusWithAccount:(NSString *)account completion:(void(^)(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode))completion

@@ -99,10 +99,6 @@ class NCService: NSObject {
                 // Get Capabilities
                 self.requestServerCapabilities()
                 
-            } else if errorCode != 0 {
-                
-                print("Get user profile failure error")
-                
             } else {
                 
                 if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {

@@ -680,7 +680,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Remore wipe
 
-- (void)getSetRemoteWipe:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+- (void)getSetRemoteWipe:(NSString *)serverPath token:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 #pragma mark - Trash
 

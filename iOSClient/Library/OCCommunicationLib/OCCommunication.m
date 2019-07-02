@@ -3120,12 +3120,12 @@
 
 - (void)getRemoteWipeStatus:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, BOOL wipe, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@%@/check?token=%@", serverPath, k_url_get_wipe, self.userID];
+    serverPath = [NSString stringWithFormat:@"%@/%@/check", serverPath, k_url_get_wipe];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request getSetRemoteWipe:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+    [request getSetRemoteWipe:serverPath token:self.userID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
     
         NSData *responseData = (NSData*) response;
         
@@ -3151,12 +3151,12 @@
 
 - (void)setRemoteWipeCompletition:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@%@/success?token=%@", serverPath, k_url_get_wipe, self.userID];
+    serverPath = [NSString stringWithFormat:@"%@/%@/success", serverPath, k_url_get_wipe];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request getSetRemoteWipe:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+    [request getSetRemoteWipe:serverPath token:self.userID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
         
         successRequest(response, request.redirectedServer);
         
