@@ -2409,24 +2409,18 @@
     if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_17_0) {
         [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
             
-            if (wipe == false) {
-                [CCUtility setPassword:account password:nil];
-            } else {
-                // remove account
+            if (wipe) {
                 
 #ifndef EXTENSION
-                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                
-                [appDelegate unsubscribingNextcloudServerPushNotification:account url:appDelegate.activeUrl withSubscribing:false];
-                [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] deleteAccount:account withChangeUser:true];
 #endif
-                [[NCUtility sharedInstance] removeAccountOnDBKeychain:account];
-
-                // new account
+            } else {
                 
+                [CCUtility setPassword:account password:nil];
             }
         }];
     } else {
+        
         [CCUtility setPassword:account password:nil];
     }
 }

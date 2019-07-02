@@ -433,7 +433,7 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Setting Active Account for all APP =====
+#pragma mark ===== Account =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword
@@ -446,6 +446,25 @@ PKPushRegistry *pushRegistry;
     
     // Setting Account to CCNetworking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
+}
+
+- (void)deleteAccount:(NSString *)account withChangeUser:(BOOL)withChangeUser
+{
+    [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
+    [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+    
+    [[NCUtility sharedInstance] removeAccountOnDBKeychain:account];
+    
+    if (withChangeUser) {
+        NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+        if ([listAccount count] > 0) {
+            tableAccount *newAccount = listAccount[0];
+            [self settingActiveAccount:newAccount.account activeUrl:newAccount.url activeUser:newAccount.user activeUserID:newAccount.userID activePassword:[CCUtility getPassword:newAccount.account]];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+        } else {
+            [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+        }
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -144,8 +144,9 @@
 // Login View
 - (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
 
-// Setting Active Account
+// Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
+- (void)deleteAccount:(NSString *)account withChangeUser:(BOOL)withChangeUser;
 
 // Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;

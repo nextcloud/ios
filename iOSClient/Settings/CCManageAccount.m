@@ -407,11 +407,7 @@
         NSString *account = tableAccount.account;
         
         if (account) {
-            
-            [appDelegate unsubscribingNextcloudServerPushNotification:account url:tableAccount.url withSubscribing:false];
-            [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
-            
-            [[NCUtility sharedInstance] removeAccountOnDBKeychain:account];
+            [appDelegate deleteAccount:account withChangeUser:false];
         }
         
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
