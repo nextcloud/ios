@@ -2405,14 +2405,19 @@
 
 - (void)checkRemoteWipe:(NSString *)account
 {
-    [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
-        
-        if (wipe == false) {
-            [CCUtility setPassword:account password:nil];
-        } else {
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
+    if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_17_0) {
+        [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
             
-        }
-    }];
+            if (wipe == false) {
+                [CCUtility setPassword:account password:nil];
+            } else {
+                
+            }
+        }];
+    } else {
+        [CCUtility setPassword:account password:nil];
+    }
 }
 
 - (void)getRemoteWipeStatusWithAccount:(NSString *)account completion:(void(^)(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode))completion

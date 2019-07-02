@@ -3125,7 +3125,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request getSetRemoteWipe:serverPath token:self.userID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+    [request getSetRemoteWipe:serverPath token:self.password onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
     
         NSData *responseData = (NSData*) response;
         
@@ -3156,7 +3156,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request getSetRemoteWipe:serverPath token:self.userID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
+    [request getSetRemoteWipe:serverPath token:self.password onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  _Nonnull response) {
         
         successRequest(response, request.redirectedServer);
         
