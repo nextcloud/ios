@@ -2412,6 +2412,17 @@
             if (wipe == false) {
                 [CCUtility setPassword:account password:nil];
             } else {
+                // remove account
+                
+#ifndef EXTENSION
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                
+                [appDelegate unsubscribingNextcloudServerPushNotification:account url:appDelegate.activeUrl withSubscribing:false];
+                [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+#endif
+                [[NCUtility sharedInstance] removeAccountOnDBKeychain:account];
+
+                // new account
                 
             }
         }];

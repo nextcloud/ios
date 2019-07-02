@@ -409,28 +409,9 @@
         if (account) {
             
             [appDelegate unsubscribingNextcloudServerPushNotification:account url:tableAccount.url withSubscribing:false];
-        
-            [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
-            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
-        
-            // Clear active user
             [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
             
-            // Clear keychain
-            [CCUtility clearAllKeysEndToEnd:account];
-            [CCUtility clearAllKeysPushNotification:account];
-            [CCUtility setPassword:account password:nil];
-            [CCUtility setCertificateError:account error:NO];
+            [[NCUtility sharedInstance] removeAccountOnDBKeychain:account];
         }
         
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
