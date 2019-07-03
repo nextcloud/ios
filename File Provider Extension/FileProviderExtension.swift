@@ -77,9 +77,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // Check account
         if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            
-#if targetEnvironment(simulator)
-            
             if containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer && self.domain?.identifier.rawValue == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
             } else if self.domain?.identifier.rawValue != nil {
@@ -91,11 +88,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                     throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
                 }
             }
-#else
-            if fileProviderData.sharedInstance.setupActiveAccount(domain: nil) == false {
-                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-            }
-#endif            
         }
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
