@@ -88,16 +88,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         self.typeIdentifier = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
         self.versionIdentifier = metadata.etag.data(using: .utf8)
         
-        // This is a file
         if (!metadata.directory) {
             
             self.documentSize = NSNumber(value: metadata.size)
            
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile == nil {
-                //                self.isDownloaded = false
+                // self.isDownloaded = false
             } else {
-                //                self.isDownloaded = true
+                // self.isDownloaded = true
             }
             
             // Download
