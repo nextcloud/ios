@@ -95,16 +95,18 @@ class FileProviderItem: NSObject, NSFileProviderItem {
            
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile == nil {
-                self.isDownloaded = false
-                self.isMostRecentVersionDownloaded = false
+//                self.isDownloaded = false
+                self.isMostRecentVersionDownloaded = true
             } else {
-                self.isDownloaded = true
+//                self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
             }
             
             // Download
             if (metadata.session == k_download_session_extension && metadata.status != k_metadataStatusDownloadError) {
                 self.isDownloading = true
+            } else {
+                self.isDownloading = false
             }
             
             // Upload
