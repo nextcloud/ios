@@ -60,7 +60,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     }()
     
     override init() {
-        
         super.init()
         
         // Create directory File Provider Storage
@@ -152,6 +151,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+            
+            // Update
+            fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            
             return item
         }
     }

@@ -224,7 +224,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     itemsDelete.append(itemIdentifier)
                 }
             }
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem.removeAll()
         } else {
             for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem {
                 let account = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier)
@@ -234,7 +233,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     itemsDelete.append(itemIdentifier)
                 }
             }
-            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem.removeAll()
         }
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)

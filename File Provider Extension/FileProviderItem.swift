@@ -57,7 +57,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     // Tracking Versions
     var versionIdentifier: Data?                                    // A data value used to determine when the item changes
-    var isMostRecentVersionDownloaded: Bool = false                 // A Boolean value that indicates whether the item is the most recent version downloaded from the server
+    var isMostRecentVersionDownloaded: Bool = true                 // A Boolean value that indicates whether the item is the most recent version downloaded from the server
 
     // Monitoring File Transfers
     var isUploading: Bool = false                                   // A Boolean value that indicates whether the item is currently uploading to your remote server
@@ -95,11 +95,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
            
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile == nil {
-//                self.isDownloaded = false
-                self.isMostRecentVersionDownloaded = true
+                //                self.isDownloaded = false
             } else {
-//                self.isDownloaded = true
-                self.isMostRecentVersionDownloaded = true
+                //                self.isDownloaded = true
             }
             
             // Download
@@ -112,11 +110,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             // Upload
             if (metadata.session == k_upload_session_extension && metadata.status != k_metadataStatusUploadError) {
                 isUpload = true
-                self.isDownloaded = true
-                self.isMostRecentVersionDownloaded = true
                 self.isUploading = true
                 self.isUploaded = false
-            }
+            } 
             
             // Error ?
             if metadata.sessionError != "" {
