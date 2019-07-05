@@ -380,7 +380,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)search:(NSString *)path folder:(NSString *)folder startWith:(NSString *)startWith dateLastModified:(NSString *)dateLastModified user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+- (void)search:(NSString *)path folderStartWith:(NSString *)folderStartWith dateLastModified:(NSString *)dateLastModified numberOfItem:(NSInteger)numberOfItem userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
     NSString *body = @"";
     
@@ -390,10 +390,12 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_search];
     
-    
     body = [NSString stringWithFormat: @""
             "<?xml version=\"1.0\"?>"
                 "<d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
+                "<d:limit>"
+                    "<d:nresults>10</d:nresults>"
+                "</d:limit>"
                 "<d:basicsearch>"
                     "<d:select>"
                         "<d:prop>"
@@ -414,16 +416,16 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                     "<d:from>"
                         "<d:scope>"
                             "<d:href>/files/%@%@</d:href>"
-                            "<d:depth>infinity</d:depth>"
+                            "<d:depth>1</d:depth>"
                         "</d:scope>"
                     "</d:from>"
                     "<d:orderby>"
                         "<d:order>"
-                            "<d:prop><d:getlastmodified/></d:prop>"
+                            "<d:prop><d:displayname/></d:prop>"
                             "<d:descending/>"
                         "</d:order>"
                         "<d:order>"
-                            "<d:prop><d:displayname/></d:prop>"
+                            "<d:prop><d:getlastmodified/></d:prop>"
                             "<d:descending/>"
                         "</d:order>"
                     "</d:orderby>"
@@ -435,7 +437,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                     "</d:or></d:and></d:where>"
                 "</d:basicsearch>"
                 "</d:searchrequest>"
-    , userID, folder, dateLastModified];
+    ,userID, folderStartWith, dateLastModified];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
