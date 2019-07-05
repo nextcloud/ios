@@ -961,6 +961,60 @@
     }];
 }
 
+- (void)searchWithAccount:(NSString *)account folder:(NSString *)folder startWith:(NSString *)startWith serverUrl:(NSString *)serverUrl dateLastModified:(NSDate *)dateLastModified numberOfItem:(NSInteger)numberOfItem completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    }  else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
+    }
+    
+    NSString *path = [tableAccount.url stringByAppendingString:k_dav];
+    NSString *folderStartWith = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [dateFormatter setLocale:enUSPOSIXLocale];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+    NSString *dateLastModifiedString = [dateFormatter stringFromDate:dateLastModified];
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    [communication search:path folderStartWith:folderStartWith dateLastModified:dateLastModifiedString numberOfItem:10 withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        
+        completion(account, nil, nil, 0);
+
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+        
+        NSString *message;
+        NSInteger errorCode = response.statusCode;
+        
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
+            [[OCNetworking sharedManager] checkRemoteWipe:account];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
+        // Error
+        if (errorCode == 503) {
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        } else {
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        }
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== downloadPreview =====
 #pragma --------------------------------------------------------------------------------------------
