@@ -383,8 +383,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 - (void)search:(NSString *)path folder:(NSString *)folder startWith:(NSString *)startWith dateLastModified:(NSString *)dateLastModified user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
     NSString *body = @"";
-    NSString *whereType = @"";
-    NSString *whereDate = @"";
     
     NSParameterAssert(success);
     
@@ -395,53 +393,49 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     body = [NSString stringWithFormat: @""
             "<?xml version=\"1.0\"?>"
-            "<d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
-            "<d:basicsearch>"
-            "<d:select>"
-            "<d:prop>"
-            "<d:getlastmodified />"
-            "<d:getetag />"
-            "<d:getcontenttype />"
-            "<d:resourcetype/>"
-            "<d:getcontentlength />"
-            "<oc:fileid/>"
-            "<oc:id/>"
-            "<oc:permissions />"
-            "<oc:size />"
-            "<oc:favorite/>"
-            "<nc:is-encrypted/>"
-            "<nc:has-preview/>"
-            "</d:prop>"
-            "</d:select>"
-            "<d:from>"
-            "<d:scope>"
-            "<d:href>/files/%@%@</d:href>"
-            "<d:depth>infinity</d:depth>"
-            "</d:scope>"
-            "</d:from>"
-            "<d:orderby>"
-            "<d:order>"
-            "<d:prop><d:getlastmodified/></d:prop>"
-            "<d:descending/>"
-            "</d:order>"
-            "<d:order>"
-            "<d:prop><d:displayname/></d:prop>"
-            "<d:descending/>"
-            "</d:order>"
-            "</d:orderby>"
-            "<d:where><d:and><d:or>", userID, folder];
-    
-    /*
-    for (NSString *type in contentType) {
-        whereType = [NSString stringWithFormat: @"%@<d:like><d:prop><d:getcontenttype/></d:prop><d:literal>%@</d:literal></d:like>", whereType, type];
-    }
-    */
-    
-    body = [NSString stringWithFormat: @"%@%@</d:or><d:or>", body, whereType];
-    
-    whereDate = [NSString stringWithFormat: @"%@<d:gte><d:prop><d:getlastmodified/></d:prop><d:literal>%@</d:literal></d:gte>", whereDate, dateLastModified];
-    
-    body = [NSString stringWithFormat: @"%@%@</d:or></d:and></d:where></d:basicsearch></d:searchrequest>", body, whereDate];
+                "<d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
+                "<d:basicsearch>"
+                    "<d:select>"
+                        "<d:prop>"
+                            "<d:getlastmodified />"
+                            "<d:getetag />"
+                            "<d:getcontenttype />"
+                            "<d:resourcetype/>"
+                            "<d:getcontentlength />"
+                            "<oc:fileid/>"
+                            "<oc:id/>"
+                            "<oc:permissions />"
+                            "<oc:size />"
+                            "<oc:favorite/>"
+                            "<nc:is-encrypted/>"
+                            "<nc:has-preview/>"
+                        "</d:prop>"
+                    "</d:select>"
+                    "<d:from>"
+                        "<d:scope>"
+                            "<d:href>/files/%@%@</d:href>"
+                            "<d:depth>infinity</d:depth>"
+                        "</d:scope>"
+                    "</d:from>"
+                    "<d:orderby>"
+                        "<d:order>"
+                            "<d:prop><d:getlastmodified/></d:prop>"
+                            "<d:descending/>"
+                        "</d:order>"
+                        "<d:order>"
+                            "<d:prop><d:displayname/></d:prop>"
+                            "<d:descending/>"
+                        "</d:order>"
+                    "</d:orderby>"
+                    "<d:where><d:and><d:or>"
+                        "<d:gte>"
+                            "<d:prop><d:getlastmodified/></d:prop>"
+                            "<d:literal>%@</d:literal>"
+                        "</d:gte>"
+                    "</d:or></d:and></d:where>"
+                "</d:basicsearch>"
+                "</d:searchrequest>"
+    , userID, folder, dateLastModified];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
