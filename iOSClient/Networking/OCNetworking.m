@@ -973,7 +973,7 @@
     }
     
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
-    NSString *folderStartWith = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
+    NSString *folderStartWith = @""; //[serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
@@ -985,7 +985,7 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication search:path folderStartWith:folderStartWith dateLastModified:dateLastModifiedString numberOfItem:10 withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    [communication search:path folderStartWith:folderStartWith dateLastModified:dateLastModifiedString numberOfItem:numberOfItem withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         completion(account, nil, nil, 0);
 

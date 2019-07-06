@@ -421,9 +421,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     body = [NSString stringWithFormat: @""
             "<?xml version=\"1.0\"?>"
                 "<d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
-                "<d:limit>"
-                    "<d:nresults>10</d:nresults>"
-                "</d:limit>"
                 "<d:basicsearch>"
                     "<d:select>"
                         "<d:prop>"
@@ -444,7 +441,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                     "<d:from>"
                         "<d:scope>"
                             "<d:href>/files/%@%@</d:href>"
-                            "<d:depth>1</d:depth>"
+                            "<d:depth>0</d:depth>"
                         "</d:scope>"
                     "</d:from>"
                     "<d:orderby>"
@@ -463,9 +460,14 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             "<d:literal>%@</d:literal>"
                         "</d:gte>"
                     "</d:or></d:and></d:where>"
+            
+                    "<d:limit>"
+                        "<d:nresults>%@</d:nresults>"
+                    "</d:limit>"
+            
                 "</d:basicsearch>"
                 "</d:searchrequest>"
-    ,userID, folderStartWith, dateLastModified];
+    ,userID, folderStartWith, dateLastModified, [@(numberOfItem) stringValue]];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
