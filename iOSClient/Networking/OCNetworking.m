@@ -961,7 +961,7 @@
     }];
 }
 
-- (void)searchWithAccount:(NSString *)account folder:(NSString *)folder startWith:(NSString *)startWith serverUrl:(NSString *)serverUrl dateLastModified:(NSDate *)dateLastModified numberOfItem:(NSInteger)numberOfItem completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
+- (void)searchWithAccount:(NSString *)account folderPath:(NSString *)folderPath startWith:(NSString *)startWith dateLastModified:(NSDate *)dateLastModified numberOfItem:(NSInteger)numberOfItem completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -973,7 +973,9 @@
     }
     
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
-    NSString *folderStartWith = @""; //[serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
+    NSString *folderStartWith = [folderPath stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
+    folderStartWith = [NSString stringWithFormat:@"%@/%@", folderStartWith, startWith];
+    folderStartWith = [folderStartWith stringByAppendingString:@"%"];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];

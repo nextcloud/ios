@@ -54,7 +54,7 @@
 - (void)deleteFileOrFolderWithAccount:(NSString *)account path:(NSString *)path completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 - (void)moveFileOrFolderWithAccount:(NSString *)account fileName:(NSString *)fileName fileNameTo:(NSString *)fileNameTo completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 - (void)searchWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl contentType:(NSArray *)contentType lteDateLastModified:(NSDate *)lteDateLastModified gteDateLastModified:(NSDate *)gteDateLastModified depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion;
-- (void)searchWithAccount:(NSString *)account folder:(NSString *)folder startWith:(NSString *)startWith serverUrl:(NSString *)serverUrl dateLastModified:(NSDate *)dateLastModified numberOfItem:(NSInteger)numberOfItem completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion;
+- (void)searchWithAccount:(NSString *)account folderPath:(NSString *)folderPath startWith:(NSString *)startWith dateLastModified:(NSDate *)dateLastModified numberOfItem:(NSInteger)numberOfItem completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== downloadPreview =====
 

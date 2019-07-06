@@ -441,7 +441,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                     "<d:from>"
                         "<d:scope>"
                             "<d:href>/files/%@%@</d:href>"
-                            "<d:depth>0</d:depth>"
+                            "<d:depth>1</d:depth>"
                         "</d:scope>"
                     "</d:from>"
                     "<d:orderby>"
@@ -460,11 +460,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             "<d:literal>%@</d:literal>"
                         "</d:gte>"
                     "</d:or></d:and></d:where>"
-            
                     "<d:limit>"
                         "<d:nresults>%@</d:nresults>"
                     "</d:limit>"
-            
                 "</d:basicsearch>"
                 "</d:searchrequest>"
     ,userID, folderStartWith, dateLastModified, [@(numberOfItem) stringValue]];

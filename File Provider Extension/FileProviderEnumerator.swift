@@ -147,7 +147,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     
                     if fileProviderData.sharedInstance.listServerUrlEtag[serverUrl] == nil || fileProviderData.sharedInstance.listServerUrlEtag[serverUrl] != metadata!.etag || metadatasFromDB == nil {
                         
-                        OCNetworking.sharedManager()?.search(withAccount: fileProviderData.sharedInstance.account, folder: "", startWith: "a", serverUrl: fileProviderData.sharedInstance.accountUrl, dateLastModified: nil, numberOfItem: 2, completion: { (account, metadatas, message, errorCode) in
+                        OCNetworking.sharedManager()?.search(withAccount: fileProviderData.sharedInstance.account, folderPath: serverUrl, startWith:"", dateLastModified: nil, numberOfItem: 2, completion: { (account, metadatas, message, errorCode) in
                             print(message ?? "NO MESSAGE")
                         })
                         
