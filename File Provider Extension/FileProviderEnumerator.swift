@@ -142,9 +142,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // +++ TEST +++
+            /*
             OCNetworking.sharedManager()?.search(withAccount: fileProviderData.sharedInstance.account, folder: serverUrl, fileName:"", dateLastModified: nil, numberOfItem: 2, completion: { (account, metadatas, message, errorCode) in
                 print(message ?? "NO MESSAGE")
             })
+            */
             // ++++++++++++
             
             OCNetworking.sharedManager().readFile(withAccount: fileProviderData.sharedInstance.account, serverUrl: serverUrlForFileName, fileName: fileName, completion: { (account, metadata, message, errorCode) in
