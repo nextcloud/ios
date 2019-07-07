@@ -141,15 +141,17 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 serverUrlForFileName = (serverUrl as NSString).deletingLastPathComponent
             }
             
+            // +++ TEST +++
+            OCNetworking.sharedManager()?.search(withAccount: fileProviderData.sharedInstance.account, folder: serverUrl, fileName:"", dateLastModified: nil, numberOfItem: 2, completion: { (account, metadatas, message, errorCode) in
+                print(message ?? "NO MESSAGE")
+            })
+            // ++++++++++++
+            
             OCNetworking.sharedManager().readFile(withAccount: fileProviderData.sharedInstance.account, serverUrl: serverUrlForFileName, fileName: fileName, completion: { (account, metadata, message, errorCode) in
 
                 if errorCode == 0 && account == fileProviderData.sharedInstance.account {
                     
                     if fileProviderData.sharedInstance.listServerUrlEtag[serverUrl] == nil || fileProviderData.sharedInstance.listServerUrlEtag[serverUrl] != metadata!.etag || metadatasFromDB == nil {
-                        
-                        OCNetworking.sharedManager()?.search(withAccount: fileProviderData.sharedInstance.account, folderPath: serverUrl, startWith:"", dateLastModified: nil, numberOfItem: 2, completion: { (account, metadatas, message, errorCode) in
-                            print(message ?? "NO MESSAGE")
-                        })
                         
                         OCNetworking.sharedManager().readFolder(withAccount: fileProviderData.sharedInstance.account, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
                             

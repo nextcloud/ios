@@ -961,7 +961,7 @@
     }];
 }
 
-- (void)searchWithAccount:(NSString *)account folderPath:(NSString *)folderPath startWith:(NSString *)startWith dateLastModified:(NSDate *)dateLastModified numberOfItem:(NSInteger)numberOfItem completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
+- (void)searchWithAccount:(NSString *)account folder:(NSString *)folder fileName:(NSString *)fileName dateLastModified:(NSDate *)dateLastModified numberOfItem:(NSInteger)numberOfItem completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -973,9 +973,9 @@
     }
     
     NSString *path = [tableAccount.url stringByAppendingString:k_dav];
-    NSString *folderStartWith = [folderPath stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
-    folderStartWith = [NSString stringWithFormat:@"%@/%@", folderStartWith, startWith];
-    folderStartWith = [folderStartWith stringByAppendingString:@"%"];
+    
+    folder = [folder stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:tableAccount.url] withString:@""];
+    fileName = [fileName stringByAppendingString:@"%"];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
@@ -987,7 +987,7 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication search:path folderStartWith:folderStartWith dateLastModified:dateLastModifiedString numberOfItem:numberOfItem withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    [communication search:path folder:folder fileName:fileName dateLastModified:dateLastModifiedString numberOfItem:numberOfItem withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         completion(account, nil, nil, 0);
 

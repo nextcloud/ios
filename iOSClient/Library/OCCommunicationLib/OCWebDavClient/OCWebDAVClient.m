@@ -408,7 +408,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)search:(NSString *)path folderStartWith:(NSString *)folderStartWith dateLastModified:(NSString *)dateLastModified numberOfItem:(NSInteger)numberOfItem userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName dateLastModified:(NSString *)dateLastModified numberOfItem:(NSInteger)numberOfItem userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
     NSString *body = @"";
     
@@ -454,6 +454,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             "<d:descending/>"
                         "</d:order>"
                     "</d:orderby>"
+            
+                    "<d:where>"
+                        "<d:like>"
+                            "<d:prop><d:displayname/></d:prop>"
+                            "<d:literal>%@</d:literal>"
+                        "</d:like>"
+                    "</d:where>"
             /*
                     "<d:where><d:and><d:or>"
                         "<d:gte>"
@@ -462,12 +469,12 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                         "</d:gte>"
                     "</d:or></d:and></d:where>"
             */
-                "<d:limit>"
+                    "<d:limit>"
                         "<d:nresults>%@</d:nresults>"
                     "</d:limit>"
                 "</d:basicsearch>"
                 "</d:searchrequest>"
-    ,userID, folderStartWith, [@(numberOfItem) stringValue]];
+    ,userID, folder, fileName, [@(numberOfItem) stringValue]];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
