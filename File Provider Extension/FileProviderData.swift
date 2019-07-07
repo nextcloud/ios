@@ -99,7 +99,10 @@ class fileProviderData: NSObject {
                 account = tableAccount.account
                 accountUser = tableAccount.user
                 accountUserID = tableAccount.userID
-                accountPassword = CCUtility.getPassword(tableAccount.account)
+                guard let password = CCUtility.getPassword(tableAccount.account) else {
+                    return false
+                }
+                accountPassword = password
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 

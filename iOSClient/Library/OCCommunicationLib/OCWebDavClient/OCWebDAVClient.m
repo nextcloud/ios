@@ -454,18 +454,20 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             "<d:descending/>"
                         "</d:order>"
                     "</d:orderby>"
+            /*
                     "<d:where><d:and><d:or>"
                         "<d:gte>"
                             "<d:prop><d:getlastmodified/></d:prop>"
                             "<d:literal>%@</d:literal>"
                         "</d:gte>"
                     "</d:or></d:and></d:where>"
-                    "<d:limit>"
+            */
+                "<d:limit>"
                         "<d:nresults>%@</d:nresults>"
                     "</d:limit>"
                 "</d:basicsearch>"
                 "</d:searchrequest>"
-    ,userID, folderStartWith, dateLastModified, [@(numberOfItem) stringValue]];
+    ,userID, folderStartWith, [@(numberOfItem) stringValue]];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
