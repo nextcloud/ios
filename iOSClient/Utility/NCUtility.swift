@@ -23,6 +23,7 @@
 
 import Foundation
 import SVGKit
+import KTVHTTPCache
 
 class NCUtility: NSObject {
 
@@ -374,25 +375,49 @@ class NCUtility: NSObject {
         return false
     }
     
-    @objc func removeAccountOnDBKeychain(_ account: String) {
+    @objc func removeAccountOnDBKeychain(_ account: String?, onlyLocalFile: Bool) {
         
-        NCManageDatabase.sharedInstance.clearTable(tableAccount.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableActivity.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableActivitySubjectRich.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableCapabilities.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableDirectory.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableE2eEncryption.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableExternalSites.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableLocalFile.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableMetadata.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tablePhotoLibrary.self, account: account)
-        NCManageDatabase.sharedInstance.clearTable(tableShare.self, account: account)
-
-        CCUtility.clearAllKeysEnd(toEnd: account)
-        CCUtility.clearAllKeysPushNotification(account)
-        CCUtility.setCertificateError(account, error: false)
-        CCUtility.setPassword(account, password: nil)
+        if onlyLocalFile {
+            NCManageDatabase.sharedInstance.clearTable(tableLocalFile.self, account: account)
+        } else {
+            NCManageDatabase.sharedInstance.clearTable(tableAccount.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableActivity.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableActivitySubjectRich.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableCapabilities.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableDirectory.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableE2eEncryption.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableExternalSites.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableLocalFile.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableMetadata.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tablePhotoLibrary.self, account: account)
+            NCManageDatabase.sharedInstance.clearTable(tableShare.self, account: account)
+        }
+        
+        if (account != nil ) {
+            CCUtility.clearAllKeysEnd(toEnd: account)
+            CCUtility.clearAllKeysPushNotification(account)
+            CCUtility.setCertificateError(account, error: false)
+            CCUtility.setPassword(account, password: nil)
+        }
+    }
+    
+    @objc func removeAllSettings() {
+        
+        URLCache.shared.memoryCapacity = 0
+        URLCache.shared.diskCapacity = 0
+        CCNetworking.shared()?.invalidateAndCancelAllSession()
+        KTVHTTPCache.cacheDeleteAllCaches()
+        
+        CCUtility.emptyDirectoryProviderStorage()
+        CCUtility.emptyDocumentsDirectory()
+        CCUtility.emptyLibraryDirectory()
+        CCUtility.emptyGroupApplicationSupport()
+        CCUtility.emptyTemporaryDirectory()
+        
+        CCUtility.createDirectoryStandard()
+        
+        CCUtility.deleteAllChainStore()
     }
 }
 

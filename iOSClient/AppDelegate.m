@@ -51,78 +51,21 @@ PKPushRegistry *pushRegistry;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSString *path;
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    
-    NSLog(@"[LOG] Start program group -----------------");
-    NSLog(@"%@", [dirGroup path]);    
-    NSLog(@"[LOG] Start program application -----------");
-    NSLog(@"%@", [[CCUtility getDirectoryDocuments] stringByDeletingLastPathComponent]);
-    NSLog(@"[LOG] -------------------------------------");
-
-    // create Directory Documents
-    path = [CCUtility getDirectoryDocuments];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory audio => Library, Application Support, audio
-    path = [CCUtility getDirectoryAudio];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-
-    // create Directory database Nextcloud
-    path = [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
-
-    // create Directory User Data
-    path = [[dirGroup URLByAppendingPathComponent:k_appUserData] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory Provider Storage
-    path = [CCUtility getDirectoryProviderStorage];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory Scan
-    path = [[dirGroup URLByAppendingPathComponent:k_appScan] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // Directory Excluded From Backup
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage]];
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData]];
+    [CCUtility createDirectoryStandard];
     
     // Verify upgrade
     if ([self upgrade]) {
-    
         // Set account, if no exists clear all
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
         if (tableAccount == nil) {
-        
             // remove all the keys Chain
             [CCUtility deleteAllChainStore];
-    
             // remove all the App group key
             [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
-
         } else {
-        
             [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
         }
     }
-    
-#ifdef DEBUG
-    NSLog(@"[LOG] Copy DB on Documents directory");
-    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path]];
-    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
-    [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
-    [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
-#endif
     
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
@@ -453,7 +396,7 @@ PKPushRegistry *pushRegistry;
     [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
     [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
     
-    [[NCUtility sharedInstance] removeAccountOnDBKeychain:account];
+    [[NCUtility sharedInstance] removeAccountOnDBKeychain:account onlyLocalFile:false];
     
     if (withChangeUser) {
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];

@@ -887,6 +887,66 @@
     return fileName;
 }
 
++ (void)createDirectoryStandard
+{
+    NSString *path;
+    NSURL *dirGroup = [CCUtility getDirectoryGroup];
+    
+    NSLog(@"[LOG] Dir Group");
+    NSLog(@"%@", [dirGroup path]);
+    NSLog(@"[LOG] Program application ");
+    NSLog(@"%@", [[CCUtility getDirectoryDocuments] stringByDeletingLastPathComponent]);
+    
+    // create Directory Documents
+    path = [CCUtility getDirectoryDocuments];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    // create Directory audio => Library, Application Support, audio
+    path = [CCUtility getDirectoryAudio];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    // create Directory database Nextcloud
+    path = [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
+    
+    // create Directory User Data
+    path = [[dirGroup URLByAppendingPathComponent:k_appUserData] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    // create Directory Provider Storage
+    path = [CCUtility getDirectoryProviderStorage];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    // create Directory Scan
+    path = [[dirGroup URLByAppendingPathComponent:k_appScan] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    // create Directory Temp
+    path = NSTemporaryDirectory();
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    // Directory Excluded From Backup
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData]];
+    
+#ifdef DEBUG
+    NSLog(@"[LOG] Copy DB on Documents directory");
+    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path]];
+    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
+    [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
+#endif
+}
+
 + (NSURL *)getDirectoryGroup
 {
     NSURL *path = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
@@ -1045,6 +1105,57 @@
     
     if (fileSize > 0) return true;
     else return false;
+}
+
++ (void)emptyGroupApplicationSupport
+{
+    NSString *file;
+    NSURL *dirGroup = [CCUtility getDirectoryGroup];
+    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
+    
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
+    
+    while (file = [enumerator nextObject])
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+}
+
++ (void)emptyLibraryDirectory
+{
+    NSString *file;
+    NSString *dirIniziale;
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+    dirIniziale = [paths objectAtIndex:0];
+    
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
+    
+    while (file = [enumerator nextObject])
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+}
+
++ (void)emptyDocumentsDirectory
+{
+    NSString *file;
+    NSString *dirIniziale;
+    
+    dirIniziale = [CCUtility getDirectoryDocuments];
+    
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
+    
+    while (file = [enumerator nextObject])
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+}
+
++ (void)emptyTemporaryDirectory
+{
+    NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
+    for (NSString *file in tmpDirectory)
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
+}
+
++ (void)emptyDirectoryProviderStorage
+{
+    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
 }
 
 + (NSString *)getTitleSectionDate:(NSDate *)date

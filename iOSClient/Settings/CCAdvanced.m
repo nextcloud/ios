@@ -210,17 +210,15 @@
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
         
-        [self emptyDocumentsDirectory];
+        [CCUtility emptyDocumentsDirectory];
         NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
         for (NSString *file in tmpDirectory)
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
         
         [KTVHTTPCache cacheDeleteAllCaches];
-        
-        //[self recalculateSize];
-        
+                
         // Clear Database
-        
+
         [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:appDelegate.activeAccount];
 
         if (withDB) {
@@ -299,27 +297,9 @@
         [self.hud visibleIndeterminateHud];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                        
-            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-            [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
-            [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
-                        
             [[NCManageDatabase sharedInstance] removeDB];
-            
-            [CCUtility deleteAllChainStore];
-            
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
-            
-            [self emptyDocumentsDirectory];
-            
-            [self emptyLibraryDirectory];
-            
-            [self emptyGroupApplicationSupport];
-            
-            NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-            for (NSString *file in tmpDirectory)
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
+            [NCUtility.sharedInstance removeAllSettings];
             
             [self.hud hideHud];
             
@@ -336,49 +316,6 @@
     alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
     [self presentViewController:alertController animated:YES completion:nil];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == Utility ==
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)emptyGroupApplicationSupport
-{
-    NSString *file;
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
-}
-
-- (void)emptyLibraryDirectory
-{
-    NSString *file;
-    NSString *dirIniziale;
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-    dirIniziale = [paths objectAtIndex:0];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
-}
-
-- (void)emptyDocumentsDirectory
-{
-    NSString *file;
-    NSString *dirIniziale;
-    
-    dirIniziale = [CCUtility getDirectoryDocuments];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
 }
 
 @end

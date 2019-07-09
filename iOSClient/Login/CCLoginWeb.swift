@@ -122,7 +122,11 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         
                         // STOP Intro
                         CCUtility.setIntro(true)
-                                                
+                        
+                        // NO account found, clear
+                        if NCManageDatabase.sharedInstance.getAccounts() == nil {
+                        }
+                        
                         // Add new account
                         NCManageDatabase.sharedInstance.deleteAccount(account)
                         NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)

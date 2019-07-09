@@ -184,6 +184,8 @@
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension;
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal;
 
++ (void)createDirectoryStandard;
+
 + (NSURL *)getDirectoryGroup;
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
 + (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
@@ -199,6 +201,12 @@
 + (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
+
++ (void)emptyGroupApplicationSupport;
++ (void)emptyLibraryDirectory;
++ (void)emptyDocumentsDirectory;
++ (void)emptyTemporaryDirectory;
++ (void)emptyDirectoryProviderStorage;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
