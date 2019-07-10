@@ -1146,9 +1146,7 @@
 + (void)emptyDocumentsDirectory
 {
     NSString *file;
-    NSString *dirIniziale;
-    
-    dirIniziale = [CCUtility getDirectoryDocuments];
+    NSString *dirIniziale = [CCUtility getDirectoryDocuments];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
     
@@ -1158,14 +1156,29 @@
 
 + (void)emptyTemporaryDirectory
 {
-    NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-    for (NSString *file in tmpDirectory)
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
+    NSString *file;
+    NSString *dirIniziale = NSTemporaryDirectory();
+    
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
+    
+    while (file = [enumerator nextObject])
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", dirIniziale, file] error:NULL];
+}
+
++ (void)emptyLibraryDirectory
+{
+    NSString *file;
+    NSString *dirIniziale = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
+    
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
+    
+    while (file = [enumerator nextObject])
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", dirIniziale, file] error:NULL];
 }
 
 + (NSString *)getTitleSectionDate:(NSDate *)date
 {
-    NSString * title;
+    NSString *title;
     NSDate *today = [NSDate date];
     NSDate *yesterday = [today dateByAddingTimeInterval: -86400.0];
     

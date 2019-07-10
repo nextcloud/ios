@@ -208,6 +208,7 @@
 + (void)emptyGroupDirectoryProviderStorage;
 + (void)emptyDocumentsDirectory;
 + (void)emptyTemporaryDirectory;
++ (void)emptyLibraryDirectory;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

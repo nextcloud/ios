@@ -401,8 +401,10 @@ class NCUtility: NSObject {
             CCUtility.emptyGroupLibraryDirectory()
         }
         CCUtility.emptyGroupCaches()
+        
         CCUtility.emptyDocumentsDirectory()
         CCUtility.emptyTemporaryDirectory()
+        CCUtility.emptyLibraryDirectory()
         
         CCUtility.createDirectoryStandard()
         
