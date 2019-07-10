@@ -369,12 +369,13 @@
                     
                 } else {
                     
-                    // STOP Intro
-                    [CCUtility setIntro:YES];
-                    
                     // NO account found, clear
                     if ([NCManageDatabase.sharedInstance getAccounts] == nil) {
+                        [NCUtility.sharedInstance removeAllSettings];
                     }
+                    
+                    // STOP Intro
+                    [CCUtility setIntro:YES];
                     
                     [[NCManageDatabase sharedInstance] deleteAccount:account];
                     [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];

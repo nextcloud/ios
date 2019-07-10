@@ -374,5 +374,26 @@ class NCUtility: NSObject {
         
         return false
     }
+    
+    @objc func removeAllSettings() {
+        
+        CCNetworking.shared()?.invalidateAndCancelAllSession()
+        URLCache.shared.memoryCapacity = 0
+        URLCache.shared.diskCapacity = 0
+        KTVHTTPCache.cacheDeleteAllCaches()
+        
+        NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeUser: true)
+        
+        CCUtility.emptyGroupDirectoryProviderStorage()
+        CCUtility.emptyGroupLibraryDirectory()
+        CCUtility.emptyGroupCaches()
+        CCUtility.emptyDocumentsDirectory()
+        CCUtility.emptyTemporaryDirectory()
+        CCUtility.emptyLibraryDirectory()
+        
+        CCUtility.createDirectoryStandard()
+        
+        CCUtility.deleteAllChainStore()
+    }
 }
 
