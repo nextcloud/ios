@@ -1109,32 +1109,23 @@
 
 + (void)emptyGroupApplicationSupport
 {
-    NSString *file;
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
+    NSString *path = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
     
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 + (void)emptyGroupCaches
 {
-    NSString *file;
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_appCaches] path];
+    NSString *path = [[dirGroup URLByAppendingPathComponent:k_appCaches] path];
     
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 + (void)emptyGroupLibraryDirectory
 {
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
 }
 
@@ -1145,35 +1136,18 @@
 
 + (void)emptyDocumentsDirectory
 {
-    NSString *file;
-    NSString *dirIniziale = [CCUtility getDirectoryDocuments];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryDocuments] error:nil];
 }
 
 + (void)emptyTemporaryDirectory
 {
-    NSString *file;
-    NSString *dirIniziale = NSTemporaryDirectory();
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", dirIniziale, file] error:NULL];
+    [[NSFileManager defaultManager] removeItemAtPath:NSTemporaryDirectory() error:nil];
 }
 
 + (void)emptyLibraryDirectory
 {
-    NSString *file;
-    NSString *dirIniziale = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", dirIniziale, file] error:NULL];
+    NSString *path = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 + (NSString *)getTitleSectionDate:(NSDate *)date
