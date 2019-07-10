@@ -111,7 +111,7 @@
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(clearCache:);
+    row.action.formSelector = @selector(clearCacheRequest:);
     [section addFormRow:row];
 
     // Section EXIT --------------------------------------------------------
@@ -198,7 +198,7 @@
 #pragma mark === Clear Cache ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)removeAllFilesWithDB:(BOOL)withDB
+- (void)clearCache
 {
     [appDelegate maintenanceMode:YES];
     
@@ -206,42 +206,11 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
-        
-        [CCUtility emptyDocumentsDirectory];
-        NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-        for (NSString *file in tmpDirectory)
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
-        
-        [KTVHTTPCache cacheDeleteAllCaches];
-                
-        // Clear Database
+        [[NCUtility sharedInstance] removeAccount:appDelegate.activeAccount removeKeychain:false];
+        [[NCUtility sharedInstance] removeAllSettingsWithRemoveKeychain:false];
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+        [appDelegate.filterFileID removeAllObjects];
 
-        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:appDelegate.activeAccount];
-
-        if (withDB) {
-            
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableTrash class] account:appDelegate.activeAccount];
-            
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-            
-            [appDelegate.filterFileID removeAllObjects];
-        }
-        
         [appDelegate maintenanceMode:NO];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -253,7 +222,7 @@
     });
 }
 
-- (void)clearCache:(XLFormRowDescriptor *)sender
+- (void)clearCacheRequest:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
@@ -262,13 +231,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action) {
-                                                           [self removeAllFilesWithDB:NO];
-                                                       }]];
-
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_cache_and_db_", nil)
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
-                                                           [self removeAllFilesWithDB:YES];
+                                                           [self clearCache];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -299,7 +262,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
             [[NCManageDatabase sharedInstance] removeDB];
-            [NCUtility.sharedInstance removeAllSettings];
+            [NCUtility.sharedInstance removeAllSettingsWithRemoveKeychain:true];
             
             [self.hud hideHud];
             
