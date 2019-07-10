@@ -377,7 +377,6 @@ class NCUtility: NSObject {
     
     @objc func removeAllSettings() {
         
-        CCNetworking.shared()?.invalidateAndCancelAllSession()
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
         KTVHTTPCache.cacheDeleteAllCaches()
