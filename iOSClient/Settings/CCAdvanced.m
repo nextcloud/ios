@@ -204,9 +204,9 @@
     
     [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [[NCUtility sharedInstance] removeAccount:appDelegate.activeAccount removeKeychain:false];
+        [[NCUtility sharedInstance] clearDBAccount:appDelegate.activeAccount removeUser:false];
         [[NCUtility sharedInstance] removeAllSettingsWithRemoveKeychain:false];
         [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         [appDelegate.filterFileID removeAllObjects];
@@ -259,7 +259,7 @@
         
         [self.hud visibleIndeterminateHud];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
             [[NCManageDatabase sharedInstance] removeDB];
             [NCUtility.sharedInstance removeAllSettingsWithRemoveKeychain:true];
