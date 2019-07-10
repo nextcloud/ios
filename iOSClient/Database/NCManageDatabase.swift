@@ -111,6 +111,30 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func clearDatabase(account: String?, removeUser: Bool) {
+        
+        self.clearTable(tableActivity.self, account: account)
+        self.clearTable(tableActivityPreview.self, account: account)
+        self.clearTable(tableActivitySubjectRich.self, account: account)
+        self.clearTable(tableCapabilities.self, account: account)
+        self.clearTable(tableDirectory.self, account: account)
+        self.clearTable(tableE2eEncryption.self, account: account)
+        self.clearTable(tableE2eEncryptionLock.self, account: account)
+        self.clearTable(tableExternalSites.self, account: account)
+        self.clearTable(tableGPS.self, account: nil)
+        self.clearTable(tableLocalFile.self, account: account)
+        self.clearTable(tableMedia.self, account: account)
+        self.clearTable(tableMetadata.self, account: account)
+        self.clearTable(tablePhotoLibrary.self, account: account)
+        self.clearTable(tableShare.self, account: account)
+        self.clearTable(tableTag.self, account: account)
+        self.clearTable(tableTrash.self, account: account)
+        
+        if removeUser {
+            self.clearTable(tableAccount.self, account: account)
+        }
+    }
+    
     @objc func removeDB() {
         
         let realmURL = Realm.Configuration.defaultConfiguration.fileURL!

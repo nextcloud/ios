@@ -1119,18 +1119,24 @@
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
 }
 
-+ (void)emptyLibraryDirectory
++ (void)emptyGroupCaches
 {
     NSString *file;
-    NSString *dirIniziale;
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-    dirIniziale = [paths objectAtIndex:0];
+    NSURL *dirGroup = [CCUtility getDirectoryGroup];
+    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_appCaches] path];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
     
     while (file = [enumerator nextObject])
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+}
+
+
++ (void)emptyLibraryDirectory
+{
+    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
 }
 
 + (void)emptyDocumentsDirectory

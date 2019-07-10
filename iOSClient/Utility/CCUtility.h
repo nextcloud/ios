@@ -203,6 +203,7 @@
 + (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 
 + (void)emptyGroupApplicationSupport;
++ (void)emptyGroupCaches;
 + (void)emptyLibraryDirectory;
 + (void)emptyDocumentsDirectory;
 + (void)emptyTemporaryDirectory;

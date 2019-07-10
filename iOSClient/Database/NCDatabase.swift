@@ -110,6 +110,23 @@ class tableActivity: Object {
     }
 }
 
+class tableActivityPreview: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var source = ""
+    @objc dynamic var link = ""
+    @objc dynamic var mimeType = ""
+    @objc dynamic var fileId: Int = 0
+    @objc dynamic var view = ""
+    @objc dynamic var isMimeTypeIcon: Bool = false
+    
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+}
+
 class tableActivitySubjectRich: Object {
     
     @objc dynamic var account = ""
@@ -122,23 +139,6 @@ class tableActivitySubjectRich: Object {
     @objc dynamic var path = ""
     @objc dynamic var type = ""
     
-    override static func primaryKey() -> String {
-        return "idPrimaryKey"
-    }
-}
-
-class tableActivityPreview: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var idPrimaryKey = ""
-    @objc dynamic var idActivity: Int = 0
-    @objc dynamic var source = ""
-    @objc dynamic var link = ""
-    @objc dynamic var mimeType = ""
-    @objc dynamic var fileId: Int = 0
-    @objc dynamic var view = ""
-    @objc dynamic var isMimeTypeIcon: Bool = false
-
     override static func primaryKey() -> String {
         return "idPrimaryKey"
     }
@@ -299,7 +299,7 @@ class tableLocalFile: Object {
     }
 }
 
-class tableMetadata: Object {
+class tableMedia: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
@@ -324,13 +324,13 @@ class tableMetadata: Object {
     @objc dynamic var status: Int = 0
     @objc dynamic var typeFile = ""
     @objc dynamic var url = ""
-
+    
     override static func primaryKey() -> String {
         return "primaryKey"
     }
 }
 
-class tableMedia: Object {
+class tableMetadata: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""

@@ -207,7 +207,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         [[NCUtility sharedInstance] clearDBAccount:appDelegate.activeAccount removeUser:false];
-        [[NCUtility sharedInstance] removeAllSettingsWithRemoveKeychain:false];
+        [[NCUtility sharedInstance] removeAllSettingsWithRemoveKeychain:false removeApplicationSupport:false];
         [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         [appDelegate.filterFileID removeAllObjects];
 
@@ -262,7 +262,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
             [[NCManageDatabase sharedInstance] removeDB];
-            [NCUtility.sharedInstance removeAllSettingsWithRemoveKeychain:true];
+            [NCUtility.sharedInstance removeAllSettingsWithRemoveKeychain:true removeApplicationSupport:true];
             
             [self.hud hideHud];
             
