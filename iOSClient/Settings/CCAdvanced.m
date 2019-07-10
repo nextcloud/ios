@@ -206,12 +206,14 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-        [[NSURLCache sharedURLCache] setDiskCapacity:0];
-        [KTVHTTPCache cacheDeleteAllCaches];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [[NCMainCommon sharedInstance] cancelAllTransfer];
 
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+            [[NSURLCache sharedURLCache] setDiskCapacity:0];
+            [KTVHTTPCache cacheDeleteAllCaches];
+            
             [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeUser:false];
             
             [CCUtility emptyGroupDirectoryProviderStorage];
@@ -275,20 +277,24 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
             [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
-            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-            [[NSURLCache sharedURLCache] setDiskCapacity:0];
-            [KTVHTTPCache cacheDeleteAllCaches];
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                
+                [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+                [[NSURLCache sharedURLCache] setDiskCapacity:0];
+                [KTVHTTPCache cacheDeleteAllCaches];
 
-            [[NCManageDatabase sharedInstance] removeDB];
-            
-            [CCUtility emptyGroupDirectoryProviderStorage];
-            [CCUtility emptyGroupApplicationSupport];
-            [CCUtility emptyGroupCaches];
-            [CCUtility emptyDocumentsDirectory];
-            [CCUtility emptyTemporaryDirectory];
-            [CCUtility emptyLibraryDirectory];
-            
-            [CCUtility deleteAllChainStore];
+                [[NCManageDatabase sharedInstance] removeDB];
+                
+                [CCUtility emptyGroupDirectoryProviderStorage];
+                [CCUtility emptyGroupApplicationSupport];
+                [CCUtility emptyGroupCaches];
+                [CCUtility emptyDocumentsDirectory];
+                [CCUtility emptyTemporaryDirectory];
+                [CCUtility emptyLibraryDirectory];
+                
+                [CCUtility deleteAllChainStore];
+            });
             
             [self.hud hideHud];
             

@@ -181,14 +181,12 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
     }
     
-    @objc func cancelAllTransfer(view: UIView) {
+    @objc func cancelAllTransfer() {
         
         // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d AND status != %d", k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true)  {
                 
                 for metadata in metadatas {
@@ -211,8 +209,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.reloadDatasource(ServerUrl: nil, fileID: nil, action: k_action_NULL)
-            NCUtility.sharedInstance.stopActivityIndicator()
+            return
         }
     }
     
