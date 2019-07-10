@@ -396,8 +396,13 @@ PKPushRegistry *pushRegistry;
     [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
     [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
     
-    [[NCUtility sharedInstance] clearDBAccount:account removeUser:true];
-    
+    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:account removeUser:true];
+
+    [CCUtility clearAllKeysEndToEnd:account];
+    [CCUtility clearAllKeysPushNotification:account];
+    [CCUtility setCertificateError:account error:false];
+    [CCUtility setPassword:account password:nil];
+       
     if (withChangeUser) {
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
         if ([listAccount count] > 0) {

@@ -206,14 +206,28 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [[NCUtility sharedInstance] clearDBAccount:appDelegate.activeAccount removeUser:false];
-        [[NCUtility sharedInstance] removeAllSettingsWithRemoveKeychain:false removeApplicationSupport:false];
-        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-        [appDelegate.filterFileID removeAllObjects];
-
-        [appDelegate maintenanceMode:NO];
+        [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
+        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+        [KTVHTTPCache cacheDeleteAllCaches];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+            [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeUser:false];
+            
+            [CCUtility emptyGroupDirectoryProviderStorage];
+            [CCUtility emptyGroupLibraryDirectory];
+            [CCUtility emptyGroupCaches];
+            [CCUtility emptyDocumentsDirectory];
+            [CCUtility emptyTemporaryDirectory];
+            [CCUtility emptyLibraryDirectory];
+            [CCUtility createDirectoryStandard];
+
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+            [appDelegate.filterFileID removeAllObjects];
+
+            [appDelegate maintenanceMode:NO];
+        
             // Close HUD
             [self.hud hideHud];
             // Inizialized home
@@ -261,8 +275,21 @@
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
+            [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
+            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+            [[NSURLCache sharedURLCache] setDiskCapacity:0];
+            [KTVHTTPCache cacheDeleteAllCaches];
+
             [[NCManageDatabase sharedInstance] removeDB];
-            [NCUtility.sharedInstance removeAllSettingsWithRemoveKeychain:true removeApplicationSupport:true];
+            
+            [CCUtility emptyGroupDirectoryProviderStorage];
+            [CCUtility emptyGroupApplicationSupport];
+            [CCUtility emptyGroupCaches];
+            [CCUtility emptyDocumentsDirectory];
+            [CCUtility emptyTemporaryDirectory];
+            [CCUtility emptyLibraryDirectory];
+            
+            [CCUtility deleteAllChainStore];
             
             [self.hud hideHud];
             

@@ -374,43 +374,5 @@ class NCUtility: NSObject {
         
         return false
     }
-    
-    @objc func clearDBAccount(_ account: String?, removeUser: Bool) {
-        
-        NCManageDatabase.sharedInstance.clearDatabase(account: account, removeUser: removeUser)
-        
-        if (account != nil && removeUser) {            
-            CCUtility.clearAllKeysEnd(toEnd: account)
-            CCUtility.clearAllKeysPushNotification(account)
-            CCUtility.setCertificateError(account, error: false)
-            CCUtility.setPassword(account, password: nil)
-        }
-    }
-    
-    @objc func removeAllSettings(removeKeychain: Bool, removeApplicationSupport: Bool) {
-        
-        URLCache.shared.memoryCapacity = 0
-        URLCache.shared.diskCapacity = 0
-        CCNetworking.shared()?.invalidateAndCancelAllSession()
-        KTVHTTPCache.cacheDeleteAllCaches()
-        
-        CCUtility.emptyGroupDirectoryProviderStorage()
-        if removeApplicationSupport {
-            CCUtility.emptyGroupApplicationSupport()
-        } else {
-            CCUtility.emptyGroupLibraryDirectory()
-        }
-        CCUtility.emptyGroupCaches()
-        
-        CCUtility.emptyDocumentsDirectory()
-        CCUtility.emptyTemporaryDirectory()
-        CCUtility.emptyLibraryDirectory()
-        
-        CCUtility.createDirectoryStandard()
-        
-        if removeKeychain {
-            CCUtility.deleteAllChainStore()
-        }
-    }
 }
 
