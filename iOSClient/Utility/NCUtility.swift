@@ -394,11 +394,11 @@ class NCUtility: NSObject {
         CCNetworking.shared()?.invalidateAndCancelAllSession()
         KTVHTTPCache.cacheDeleteAllCaches()
         
-        CCUtility.emptyDirectoryProviderStorage()
+        CCUtility.emptyGroupDirectoryProviderStorage()
         if removeApplicationSupport {
             CCUtility.emptyGroupApplicationSupport()
         } else {
-            CCUtility.emptyLibraryDirectory()
+            CCUtility.emptyGroupLibraryDirectory()
         }
         CCUtility.emptyGroupCaches()
         CCUtility.emptyDocumentsDirectory()

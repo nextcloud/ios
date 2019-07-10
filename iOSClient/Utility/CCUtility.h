@@ -204,10 +204,10 @@
 
 + (void)emptyGroupApplicationSupport;
 + (void)emptyGroupCaches;
-+ (void)emptyLibraryDirectory;
++ (void)emptyGroupLibraryDirectory;
++ (void)emptyGroupDirectoryProviderStorage;
 + (void)emptyDocumentsDirectory;
 + (void)emptyTemporaryDirectory;
-+ (void)emptyDirectoryProviderStorage;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
