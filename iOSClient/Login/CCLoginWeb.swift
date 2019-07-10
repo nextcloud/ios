@@ -120,7 +120,6 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     
                     if (loginType == k_login_Add || loginType == k_login_Add_Forced) {
                         
-    
                         // NO account found, clear
                         if NCManageDatabase.sharedInstance.getAccounts() == nil {
                             NCUtility.sharedInstance.removeAllSettings()

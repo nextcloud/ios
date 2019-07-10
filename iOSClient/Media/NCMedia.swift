@@ -496,7 +496,7 @@ extension NCMedia {
 
     public func reloadDataSource(loadNetworkDatasource: Bool) {
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
@@ -522,7 +522,7 @@ extension NCMedia {
     
     func deleteItems() {
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
@@ -555,7 +555,7 @@ extension NCMedia {
 #endif
         // -----------------
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
@@ -641,7 +641,7 @@ extension NCMedia {
         
         isDistantPast = false
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
@@ -663,7 +663,7 @@ extension NCMedia {
     
     private func selectSearchSections() {
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
