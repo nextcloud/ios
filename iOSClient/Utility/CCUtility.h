@@ -203,12 +203,10 @@
 + (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 
 + (void)emptyGroupApplicationSupport;
-+ (void)emptyGroupCaches;
 + (void)emptyGroupLibraryDirectory;
 + (void)emptyGroupDirectoryProviderStorage;
 + (void)emptyDocumentsDirectory;
 + (void)emptyTemporaryDirectory;
-+ (void)emptyLibraryDirectory;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

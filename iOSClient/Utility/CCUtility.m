@@ -1115,14 +1115,6 @@
     [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
-+ (void)emptyGroupCaches
-{
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *path = [[dirGroup URLByAppendingPathComponent:k_appCaches] path];
-    
-    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
-}
-
 + (void)emptyGroupLibraryDirectory
 {
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
@@ -1142,12 +1134,6 @@
 + (void)emptyTemporaryDirectory
 {
     [[NSFileManager defaultManager] removeItemAtPath:NSTemporaryDirectory() error:nil];
-}
-
-+ (void)emptyLibraryDirectory
-{
-    NSString *path = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
-    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 + (NSString *)getTitleSectionDate:(NSDate *)date
