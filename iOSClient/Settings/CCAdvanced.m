@@ -218,8 +218,10 @@
             
             [CCUtility emptyGroupDirectoryProviderStorage];
             [CCUtility emptyGroupLibraryDirectory];
+            
             [CCUtility emptyDocumentsDirectory];
             [CCUtility emptyTemporaryDirectory];
+            
             [CCUtility createDirectoryStandard];
 
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
@@ -286,6 +288,7 @@
                 
                 [CCUtility emptyGroupDirectoryProviderStorage];
                 [CCUtility emptyGroupApplicationSupport];
+                
                 [CCUtility emptyDocumentsDirectory];
                 [CCUtility emptyTemporaryDirectory];
                 
