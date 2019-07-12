@@ -212,9 +212,9 @@ class IMImagemeter: NSObject {
         return instance
     }()
     
-    func getBundleDirectory(metadata: tableMetadata) -> (Found: Bool, bundleDirectory: String, immPath: String) {
+    func getBundleDirectory(metadata: tableMetadata) -> (error: Bool, bundleDirectory: String, immPath: String) {
 
-        var found = false
+        var error = true
         var bundleDirectory = ""
         var immPath = ""
         
@@ -224,13 +224,13 @@ class IMImagemeter: NSObject {
             archive.forEach({ (entry) in
                 let pathComponents = (entry.path as NSString).pathComponents
                 if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
-                    found = true
+                    error = false
                     bundleDirectory = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + pathComponents.first!
                     immPath = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + entry.path
                 }
             })
         }
         
-        return(found, bundleDirectory, immPath)
+        return(error, bundleDirectory, immPath)
     }
 }
