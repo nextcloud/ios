@@ -24,7 +24,10 @@
 
 import Foundation
 import WeScan
-//import GoogleMobileVision
+
+#if GOOGLEMOBILEVISION
+import GoogleMobileVision
+#endif
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
@@ -42,7 +45,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     var password: String = ""
     var fileType = "PDF"
     
-    //var textDetector: GMVDetector?
+    #if GOOGLEMOBILEVISION
+    var textDetector: GMVDetector?
+    #endif
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -124,19 +129,19 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         // Section: Text recognition
         
-        if NCBrandOptions.sharedInstance.useMLVision {
         
-            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
-            form.addFormSection(section)
+        #if GOOGLEMOBILEVISION
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
+        form.addFormSection(section)
             
-            row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
-            row.value = 0
+        row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
+        row.value = 0
             
-            row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
-            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
             
-            section.addFormRow(row)
-        }
+        section.addFormRow(row)
+        #endif
         
         // Section: File
         
@@ -340,7 +345,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
         
-        //textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
+        #if GOOGLEMOBILEVISION
+        textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
+        #endif
     }
     
     // MARK: - Action
@@ -413,14 +420,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             return
         }
         
+        #if GOOGLEMOBILEVISION
         // Text Recognition TXT
-        if fileType == "TXT" && NCBrandOptions.sharedInstance.useMLVision && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
+        if fileType == "TXT" && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
             
             var textFile = ""
             
             for image in self.arrayImages {
                 
-                /*
                 guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
                     continue
                 }
@@ -433,7 +440,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                     
                     textFile = textFile + text + "\n\n"
                 }
-                */
                 
                 do {
                     try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
@@ -443,6 +449,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                 }
             }
         }
+        #endif
         
         if fileType == "PDF" {
             
@@ -457,12 +464,12 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             
             for var image in self.arrayImages {
                 
-                if NCBrandOptions.sharedInstance.useMLVision && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
+                #if GOOGLEMOBILEVISION
+                if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
                     
                     UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                     UIImageView.init(image:image).layer.render(in: context!)
                     
-                    /*
                     if let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] {
                         for textBlock in features {
                             for textLine in textBlock.lines {
@@ -484,7 +491,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                             }
                         }
                     }
-                    */
                     
                 } else {
                     
@@ -493,6 +499,12 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
                     UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                     UIImageView.init(image:image).layer.render(in: context!)
                 }
+                #else
+                image = changeImageFromQuality(image, dpiQuality: dpiQuality)
+                
+                UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                UIImageView.init(image:image).layer.render(in: context!)
+                #endif
             }
             
             UIGraphicsEndPDFContext();
