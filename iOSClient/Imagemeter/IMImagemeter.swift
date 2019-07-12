@@ -22,8 +22,16 @@
 //
 
 import Foundation
+import ZIPFoundation
+
+//MARK: - IMImagemeterCodable
 
 class IMImagemeterCodable: NSObject {
+    
+    @objc static let sharedInstance: IMImagemeterCodable = {
+        let instance = IMImagemeterCodable()
+        return instance
+    }()
     
     struct imagemeterAnnotation: Codable {
         
@@ -168,11 +176,6 @@ class IMImagemeterCodable: NSObject {
         }
     }
     
-    @objc static let sharedInstance: IMImagemeterCodable = {
-        let instance = IMImagemeterCodable()
-        return instance
-    }()
-    
     func decoderAnnotetion(_ annotation: Data) -> imagemeterAnnotation? {
         
         let jsonDecoder = JSONDecoder.init()
@@ -197,5 +200,37 @@ class IMImagemeterCodable: NSObject {
         let factorY = factor * y + height/2
         
         return(factorX, factorY)
+    }
+}
+
+//MARK: - IMImagemeter
+
+class IMImagemeter: NSObject {
+
+    static let sharedInstance: IMImagemeter = {
+        let instance = IMImagemeter()
+        return instance
+    }()
+    
+    func getBundleDirectory(metadata: tableMetadata) -> (Found: Bool, bundleDirectory: String, immPath: String) {
+
+        var found = false
+        var bundleDirectory = ""
+        var immPath = ""
+        
+        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+        
+        if let archive = Archive(url: source, accessMode: .read) {
+            archive.forEach({ (entry) in
+                let pathComponents = (entry.path as NSString).pathComponents
+                if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
+                    found = true
+                    bundleDirectory = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + pathComponents.first!
+                    immPath = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + entry.path
+                }
+            })
+        }
+        
+        return(found, bundleDirectory, immPath)
     }
 }

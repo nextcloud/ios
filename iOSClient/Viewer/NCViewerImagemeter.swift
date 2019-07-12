@@ -28,9 +28,6 @@ class NCViewerImagemeter: NSObject {
     private var imagemeterView: IMImagemeterView!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-    private var nameArchiveImagemeter: String = ""
-    private var pathArchiveImagemeter: String = ""
     
     private var annotation: IMImagemeterCodable.imagemeterAnnotation?
     
@@ -68,9 +65,8 @@ class NCViewerImagemeter: NSObject {
             }
         }
         
-        nameArchiveImagemeter = (metadata.fileNameView as NSString).deletingPathExtension
-        pathArchiveImagemeter = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + nameArchiveImagemeter
-        
+        let bundleDirectory = IMImagemeter.sharedInstance.getBundleDirectory(metadata: metadata)
+
         self.imagemeterView = IMImagemeterView.instanceFromNib() as? IMImagemeterView
         self.imagemeterView.frame = CGRect(x: 0, y: 0, width: Int(detail.view.frame.width), height: Int(detail.view.frame.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1)
         
@@ -78,8 +74,7 @@ class NCViewerImagemeter: NSObject {
         
         do {
             
-            let annoPath = NSURL(fileURLWithPath: pathArchiveImagemeter + "/anno-" + nameArchiveImagemeter + ".imm") as URL
-            let annoData = try Data(contentsOf: annoPath, options: .mappedIfSafe)
+            let annoData = try Data(contentsOf: NSURL(fileURLWithPath: bundleDirectory.immPath) as URL, options: .mappedIfSafe)
             if let annotation = IMImagemeterCodable.sharedInstance.decoderAnnotetion(annoData) {
                 
                 self.annotation = annotation
@@ -102,7 +97,8 @@ class NCViewerImagemeter: NSObject {
         }
         
         let imageFilename = annotation.image.filename
-        if let image = UIImage(contentsOfFile: pathArchiveImagemeter + "/" + imageFilename) {
+        let bundleDirectory = IMImagemeter.sharedInstance.getBundleDirectory(metadata: metadata)
+        if let image = UIImage(contentsOfFile: bundleDirectory.bundleDirectory + "/" + imageFilename) {
             
             let factor = image.size.width / image.size.height
             
@@ -179,7 +175,8 @@ class NCViewerImagemeter: NSObject {
             if element.id == sender.tag {
                 do {
 
-                    let fileNamePath =  pathArchiveImagemeter + "/" + element.audio_recording!.recording_filename
+                    let bundleDirectory = IMImagemeter.sharedInstance.getBundleDirectory(metadata: metadata)
+                    let fileNamePath =  bundleDirectory.bundleDirectory + "/" + element.audio_recording!.recording_filename
                     try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
                     audioPlayer.delegate = self
                     audioPlayer.prepareToPlay()

@@ -1226,30 +1226,19 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
-                    var pathArchive = ""
-                    var pathArchiveImm = ""
-                    
                     let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
                     let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
 
                     try? FileManager().unzipItem(at: source, to: destination)
                     
-                    if let archive = Archive(url: source, accessMode: .read) {
-                        archive.forEach({ (entry) in
-                            let pathComponents = (entry.path as NSString).pathComponents
-                            if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
-                                pathArchive = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + pathComponents.first!
-                                pathArchiveImm = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID) + "/" + entry.path
-                            }
-                        })
-                    }
+                    let bundleDirectory = IMImagemeter.sharedInstance.getBundleDirectory(metadata: metadata)
                     
-                    if pathArchive == "" {
+                    if !bundleDirectory.Found {
                         appDelegate.messageNotification("_error_", description: "File format imagemeter error. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                         return
                     }
                     
-                    if let fileHandle = FileHandle(forReadingAtPath: pathArchiveImm) {
+                    if let fileHandle = FileHandle(forReadingAtPath: bundleDirectory.immPath) {
                         let dataFormat = fileHandle.readData(ofLength: 1)
                         if dataFormat.starts(with: [0x01]) {
                             appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -1257,7 +1246,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         }
                         let dataZip = fileHandle.readData(ofLength: 4)
                         if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                            try? FileManager().unzipItem(at: NSURL(fileURLWithPath: pathArchiveImm) as URL, to: NSURL(fileURLWithPath: pathArchive) as URL)
+                            try? FileManager().unzipItem(at: NSURL(fileURLWithPath: bundleDirectory.immPath) as URL, to: NSURL(fileURLWithPath: bundleDirectory.bundleDirectory) as URL)
                         }
                         fileHandle.closeFile()
                     }
