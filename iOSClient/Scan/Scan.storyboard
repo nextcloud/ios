@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bdK-eL-mz4">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bdK-eL-mz4">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -158,7 +158,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Gy-eG-A0f">
-                                <rect key="frame" x="18" y="136" width="30" height="30"/>
+                                <rect key="frame" x="20" y="102" width="30" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="A6e-zC-q5t"/>
                                     <constraint firstAttribute="width" constant="30" id="U2p-ow-Iad"/>
@@ -183,17 +183,30 @@
                                     <action selector="indexChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="yeI-C2-uGJ"/>
                                 </connections>
                             </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fqr-e6-s3n" userLabel="transferDown">
+                                <rect key="frame" x="18" y="172" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="YPl-DJ-aNS"/>
+                                    <constraint firstAttribute="width" constant="30" id="yGb-Y2-8Oj"/>
+                                </constraints>
+                                <state key="normal" title="+" image="transferDown"/>
+                                <connections>
+                                    <action selector="transferDownWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IXg-q4-MB7"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="YHy-9G-ngy" secondAttribute="trailing" id="3ff-G8-wiq"/>
+                            <constraint firstItem="Fqr-e6-s3n" firstAttribute="top" secondItem="jwq-kF-6Nq" secondAttribute="bottom" constant="-60" id="5FJ-rD-ncI"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jwq-kF-6Nq" secondAttribute="trailing" id="6EM-YK-lEy"/>
+                            <constraint firstItem="jwq-kF-6Nq" firstAttribute="top" secondItem="0Gy-eG-A0f" secondAttribute="bottom" constant="-60" id="8D3-HY-PIM"/>
                             <constraint firstItem="YHy-9G-ngy" firstAttribute="top" secondItem="jwq-kF-6Nq" secondAttribute="bottom" constant="8" id="90f-NC-udY"/>
-                            <constraint firstItem="0Gy-eG-A0f" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="18" id="BNZ-HM-6yi"/>
+                            <constraint firstItem="0Gy-eG-A0f" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="BNZ-HM-6yi"/>
                             <constraint firstItem="jwq-kF-6Nq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="57" id="ELU-RG-o16"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Ew2-9q-DKl"/>
                             <constraint firstItem="YHy-9G-ngy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="FvJ-EK-Evb"/>
-                            <constraint firstItem="0Gy-eG-A0f" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="72" id="O4H-NJ-Mot"/>
+                            <constraint firstItem="Fqr-e6-s3n" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="18" id="UJ4-nd-oV8"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="aU0-Bn-B6T"/>
                             <constraint firstItem="jwq-kF-6Nq" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="dyH-ym-lrb"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="b3i-bF-ITj" secondAttribute="bottom" constant="11" id="iCt-vj-sDA"/>
@@ -223,6 +236,7 @@
                         <outlet property="labelTitlePDFzone" destination="YHy-9G-ngy" id="hQk-4n-stD"/>
                         <outlet property="save" destination="LAS-W8-RG6" id="Dan-xp-JAB"/>
                         <outlet property="segmentControlFilter" destination="b3i-bF-ITj" id="lPr-xp-LVI"/>
+                        <outlet property="transferDown" destination="Fqr-e6-s3n" id="8e4-CK-FQQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -252,8 +266,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="add" width="37.5" height="37.5"/>
+        <image name="add" width="25" height="25"/>
         <image name="deleteScan" width="25" height="25"/>
         <image name="rotate" width="25" height="25"/>
+        <image name="transferDown" width="330" height="330"/>
     </resources>
 </document>
