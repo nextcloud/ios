@@ -157,6 +157,11 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if message.body as? String == "paste" {
                 self.paste(self)
             }
+
+	    // Javascript cannot do this by itself, so help out.
+            if message.body as! String == "paste" {
+                self.paste(self)
+            }
         }
     }
     
