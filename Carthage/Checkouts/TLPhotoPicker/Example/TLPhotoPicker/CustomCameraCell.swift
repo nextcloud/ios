@@ -27,7 +27,6 @@ class CustomCameraCell: TLPhotoCollectionViewCell, AVCaptureFileOutputRecordingD
     var videoDeviceInput: AVCaptureDeviceInput!
     
     @IBOutlet private weak var previewView: PreviewView!
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         if Platform.isSimulator {
@@ -103,7 +102,8 @@ class CustomCameraCell: TLPhotoCollectionViewCell, AVCaptureFileOutputRecordingD
         if Platform.isSimulator {
             return
         }
-        sessionQueue.async {
+        sessionQueue.async { [weak self] in
+            guard let `self` = self else { return }
             if self.setupResult == .success {
                 self.session.stopRunning()
                 self.isSessionRunning = self.session.isRunning

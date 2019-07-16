@@ -53,10 +53,10 @@ extension PopupViewProtocol where Self: UIView {
 }
 
 open class TLAlbumPopView: UIView,PopupViewProtocol {
-    @IBOutlet var bgView: UIView!
-    @IBOutlet var popupView: UIView!
+    @IBOutlet open var bgView: UIView!
+    @IBOutlet open var popupView: UIView!
     @IBOutlet var popupViewHeight: NSLayoutConstraint!
-    @IBOutlet var tableView: UITableView!
+    @IBOutlet open var tableView: UITableView!
     @objc var originalFrame = CGRect.zero
     @objc var show = false
     
@@ -69,7 +69,7 @@ open class TLAlbumPopView: UIView,PopupViewProtocol {
         self.popupView.layer.cornerRadius = 5.0
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapBgView))
         self.bgView.addGestureRecognizer(tapGesture)
-        self.tableView.register(UINib(nibName: "TLCollectionTableViewCell", bundle: Bundle(for: TLCollectionTableViewCell.self)), forCellReuseIdentifier: "TLCollectionTableViewCell")
+        self.tableView.register(UINib(nibName: "TLCollectionTableViewCell", bundle: TLBundle.bundle()), forCellReuseIdentifier: "TLCollectionTableViewCell")
     }
     
     @objc func tapBgView() {
