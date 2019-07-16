@@ -148,6 +148,13 @@ class DragDropViewController: UIViewController {
             }
         }
         
+        // Save button
+        if imagesDestination.count == 0 {
+            save.isEnabled = false
+        } else {
+            save.isEnabled = true
+        }
+        
         collectionViewDestination.reloadData()
     }
     
