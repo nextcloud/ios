@@ -40,12 +40,8 @@ class NCViewerDocumentWeb: NSObject {
             return
         }
         
-        guard let rootView = UIApplication.shared.keyWindow else {
-            return
-        }
-        
         if #available(iOS 11.0, *) {
-            safeAreaBottom = Int(rootView.safeAreaInsets.bottom)
+            safeAreaBottom = Int((UIApplication.shared.keyWindow?.safeAreaInsets.bottom)!)
         }
         
         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
@@ -70,7 +66,7 @@ class NCViewerDocumentWeb: NSObject {
         preferences.javaScriptEnabled = true
         configuration.preferences = preferences
         
-        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: Int(rootView.bounds.size.width), height: Int(rootView.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1), configuration: configuration)
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: Int(detail.view.bounds.size.width), height: Int(detail.view.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1), configuration: configuration)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         webView.isOpaque = false
