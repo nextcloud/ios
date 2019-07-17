@@ -1879,19 +1879,35 @@
 
 - (void)openShareWithMetadata:(tableMetadata *)metadata
 {
+#ifdef DEBUG
+
+    UINavigationController *shareNavigationController = [[UIStoryboard storyboardWithName:@"NCShare" bundle:nil] instantiateInitialViewController];
+    NCShare *shareViewController = (NCShare *)shareNavigationController.topViewController;
+    
+    shareViewController.metadata = metadata;
+    shareViewController.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
+    shareViewController.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];;
+    
+    [shareNavigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:shareNavigationController animated:YES completion:nil];
+    
+#else
+
     // Apriamo la view
     CCShareOC *shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
-        
+    
     shareOC.delegate = self;
-        
+    
     shareOC.metadata = metadata;
     shareOC.serverUrl = metadata.serverUrl;
-        
+    
     shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
     shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
-        
+    
     [shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:shareOC animated:YES completion:nil];
+    
+#endif
 }
 
 - (void)readShareServer
