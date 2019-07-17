@@ -1,6 +1,6 @@
 //
 //  NCBridgeSwift.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 11/05/17.
 //  Copyright © 2017 Marino Faggiana. All rights reserved.

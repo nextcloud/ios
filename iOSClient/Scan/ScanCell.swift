@@ -1,6 +1,6 @@
 //
 //  ScanCell.swift
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 21/08/18.
 //  Copyright (c) 2018 Marino Faggiana. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  CCFavorites.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

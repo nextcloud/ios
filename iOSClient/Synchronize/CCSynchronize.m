@@ -1,6 +1,6 @@
 //
 //  CCSynchronize.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  NCNetworkingEndToEnd.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 29/10/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

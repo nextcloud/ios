@@ -1,9 +1,9 @@
 //
-//  CCExifGeo.h
+//  NCShare.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 03/02/16.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 17/07/2019.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -21,18 +21,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreLocation/CoreLocation.h>
-#import <ImageIO/ImageIO.h>
-#import <UIKit/UIKit.h>
+import Foundation
+import Parchment
 
-@class tableMetadata;
+class NCShare: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
 
-@interface CCExifGeo : NSObject
+    }
 
-+ (CCExifGeo *)sharedInstance;
-
-- (void)setExifLocalTableEtag:(tableMetadata *)metadata;
-- (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
-
-@end
+}

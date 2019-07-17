@@ -1,6 +1,6 @@
 //
 //  NCManageAutoUploadFileName.swift
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 19/07/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

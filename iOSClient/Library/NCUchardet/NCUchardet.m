@@ -1,6 +1,6 @@
 //
 //  NCUchardet.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 16/08/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

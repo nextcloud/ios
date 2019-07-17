@@ -1,6 +1,6 @@
 //
 //  CCShareInfoCMOC.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 07/03/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

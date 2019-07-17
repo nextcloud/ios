@@ -1,6 +1,6 @@
 //
 //  CCShareOC.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 13/11/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

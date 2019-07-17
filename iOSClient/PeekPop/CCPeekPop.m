@@ -1,6 +1,6 @@
 //
 //  CCPeekPop.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 26/08/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

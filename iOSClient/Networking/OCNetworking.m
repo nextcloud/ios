@@ -1,6 +1,6 @@
 //
 //  OCnetworking.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 10/05/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
