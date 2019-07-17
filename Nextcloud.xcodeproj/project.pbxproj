@@ -53,6 +53,8 @@
 		F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
 		F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
+		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
+		F700510322DF6897003A3356 /* Parchment.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F700510222DF6897003A3356 /* Parchment.framework */; };
 		F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */; };
 		F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEC2199E55F003F38DA /* SVGKit.framework */; };
 		F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */; };
@@ -694,6 +696,8 @@
 		F700229E1EC4C9100080073F /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
 		F700229F1EC4C9100080073F /* UtilsFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilsFramework.h; sourceTree = "<group>"; };
 		F70022A01EC4C9100080073F /* UtilsFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilsFramework.m; sourceTree = "<group>"; };
+		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
+		F700510222DF6897003A3356 /* Parchment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parchment.framework; path = Carthage/Build/iOS/Parchment.framework; sourceTree = "<group>"; };
 		F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadVoiceNote.swift; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -1533,6 +1537,7 @@
 				F7D4B6982295666E000C2C86 /* FirebaseMLVision.framework in Frameworks */,
 				F7D4B6862295663D000C2C86 /* FirebaseCore.framework in Frameworks */,
 				F7D4B68A2295663D000C2C86 /* FIRAnalyticsConnector.framework in Frameworks */,
+				F700510322DF6897003A3356 /* Parchment.framework in Frameworks */,
 				F7D4B6882295663D000C2C86 /* GoogleUtilities.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
@@ -1752,6 +1757,7 @@
 				F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */,
 				F7CD0FF91C8DDA7D006520C5 /* CCSharePermissionOC.h */,
 				F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */,
+				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F78316861C0CB3CA00C43975 /* CCShareUserOC.h */,
 				F78316871C0CB3CA00C43975 /* CCShareUserOC.m */,
 				F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */,
@@ -2982,6 +2988,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F700510222DF6897003A3356 /* Parchment.framework */,
 				F7421EAE2294044B00C4B7C1 /* Accelerate.framework */,
 				F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */,
 				F7267A81225DFCE100D6DB7D /* AFNetworking.framework */,
@@ -3316,6 +3323,7 @@
 				F760F77C21F21F61006B1A73 /* StickersViewController.xib in Resources */,
 				F762CB1B1EACB66200B38484 /* XLForm.bundle in Resources */,
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
+				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,
 				F762CB9A1EACB84400B38484 /* icon-success@2x.png in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
 				F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */,
@@ -3425,6 +3433,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/AFNetworking.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZIPFoundation.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Parchment.framework",
 			);
 			outputPaths = (
 			);
