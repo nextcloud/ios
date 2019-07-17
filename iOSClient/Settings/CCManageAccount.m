@@ -21,7 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <JDStatusBarNotification/JDStatusBarNotification.h>
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"

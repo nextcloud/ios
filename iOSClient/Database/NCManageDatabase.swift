@@ -217,7 +217,7 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.write {
-                realm.add(account, update: true)
+                realm.add(account, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -683,7 +683,7 @@ class NCManageDatabase: NSObject {
                                         addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
                                         addObjectActivitySubjectRich.type = dict["type"] as? String ?? ""
 
-                                        realm.add(addObjectActivitySubjectRich, update: true)
+                                        realm.add(addObjectActivitySubjectRich, update: .all)
                                     }
                                 }
                             }
@@ -703,7 +703,7 @@ class NCManageDatabase: NSObject {
                             addObjectActivityPreview.view = activityPreview["view"] as? String ?? ""
                             addObjectActivityPreview.isMimeTypeIcon = activityPreview["isMimeTypeIcon"] as? Bool ?? false
                             
-                            realm.add(addObjectActivityPreview, update: true)
+                            realm.add(addObjectActivityPreview, update: .all)
                         }
                     }
                     
@@ -714,7 +714,7 @@ class NCManageDatabase: NSObject {
                     addObjectActivity.objectId = activity.object_id
                     addObjectActivity.objectName = activity.object_name
                     
-                    realm.add(addObjectActivity, update: true)
+                    realm.add(addObjectActivity, update: .all)
                 }
             }
         } catch let error {
@@ -995,7 +995,7 @@ class NCManageDatabase: NSObject {
         }
         addObject.serverUrl = serverUrl
         
-        realm.add(addObject, update: true)
+        realm.add(addObject, update: .all)
         
         do {
             try realm.commitWrite()
@@ -1058,7 +1058,7 @@ class NCManageDatabase: NSObject {
                 }
                 directory.directoryID = CCUtility.createDirectoyID(fromAccount: account, serverUrl: directory.serverUrl)
                 
-                realm.add(directory, update: true)
+                realm.add(directory, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -1082,7 +1082,7 @@ class NCManageDatabase: NSObject {
                 
                 result.dateReadDirectory = nil
                 result.etag = ""
-                realm.add(result, update: true)
+                realm.add(result, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -1229,7 +1229,7 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.write {
-                realm.add(e2e, update: true)
+                realm.add(e2e, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -1365,7 +1365,7 @@ class NCManageDatabase: NSObject {
         addObject.serverUrl = serverUrl
         addObject.token = token
                 
-        realm.add(addObject, update: true)
+        realm.add(addObject, update: .all)
         
         do {
             try realm.commitWrite()
@@ -1520,7 +1520,7 @@ class NCManageDatabase: NSObject {
                 addObject.fileName = metadata.fileName
                 addObject.size = metadata.size
             
-                realm.add(addObject, update: true)
+                realm.add(addObject, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -1643,7 +1643,7 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.write {
-                realm.add(metadata, update: true)
+                realm.add(metadata, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -1672,7 +1672,7 @@ class NCManageDatabase: NSObject {
                     metadata.primaryKey = metadata.account + metadata.fileID
                      
                     directoryToClearDate[metadata.serverUrl] = metadata.account
-                    realm.add(metadata, update: true)
+                    realm.add(metadata, update: .all)
                 }
             }
         } catch let error {
@@ -1784,7 +1784,7 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.write {
-                realm.add(metadata, update: true)
+                realm.add(metadata, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -2129,7 +2129,7 @@ class NCManageDatabase: NSObject {
                     newInsert = numInsert - numDelete
                     
                     realm.delete(results)
-                    realm.add(photos, update: true)
+                    realm.add(photos, update: .all)
                 }
             }
         } catch let error {
@@ -2192,7 +2192,7 @@ class NCManageDatabase: NSObject {
                         
                         addObject.idAsset = "\(account)\(asset.localIdentifier)\(creationDateString)"
 
-                        realm.add(addObject, update: true)
+                        realm.add(addObject, update: .all)
                     }
                 }
             } catch let error {
@@ -2522,7 +2522,7 @@ class NCManageDatabase: NSObject {
                 addObject.fileID = fileID
                 addObject.tagIOS = tagIOS
     
-                realm.add(addObject, update: true)
+                realm.add(addObject, update: .all)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -2581,7 +2581,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 for trash in trashs {
-                    realm.add(trash, update: true)
+                    realm.add(trash, update: .all)
                 }
             }
         } catch let error {
