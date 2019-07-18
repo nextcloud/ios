@@ -35,18 +35,26 @@ class NCShare: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
+        // load preview
+        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView)) {
+            pagingViewController.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
+        } else {
+            if metadata!.iconName.count > 0 {
+                pagingViewController.image = UIImage.init(named: metadata!.iconName)
+            } else if metadata!.directory {
+                let image = UIImage.init(named: "folder")!
+                pagingViewController.image = CCGraphics.changeThemingColorImage(image, width: image.size.width*2, height: image.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
+            } else {
+                pagingViewController.image = UIImage.init(named: "file")
+            }
+        }
         
-        let activityViewController = storyboard.instantiateViewController(withIdentifier: "activity")
-        let commentsViewController = storyboard.instantiateViewController(withIdentifier: "comments")
-        let sharingViewController = storyboard.instantiateViewController(withIdentifier: "sharing")
-    
-        let pagingViewController = FixedPagingViewController(viewControllers: [
-            activityViewController,
-            commentsViewController,
-            sharingViewController
-        ])
-        
+        // Navigation Controller
+        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray)
+        image = image?.withRenderingMode(.alwaysOriginal)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
+
+        // Pagination
         addChild(pagingViewController)
         view.addSubview(pagingViewController.view)
         pagingViewController.didMove(toParent: self)
@@ -69,30 +77,8 @@ class NCShare: UIViewController {
             pagingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
         
-        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray)
-        image = image?.withRenderingMode(.alwaysOriginal)
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
-        
-        let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata?.fileID, fileNameView: metadata?.fileNameView))
-        
-        
-        
-        /*
-        if iconFileExists {
-        
-            cell.file.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
-        } else {
-            if metadata.iconName.count > 0 {
-                cell.file.image = UIImage.init(named: metadata.iconName)
-            } else {
-                cell.file.image = UIImage.init(named: "file")
-            }
-        }
-        */
-        
         // Set our data source and delegate.
         pagingViewController.dataSource = self
-        pagingViewController.delegate = self
     }
     
     @objc func exitTapped() {
@@ -103,68 +89,52 @@ class NCShare: UIViewController {
 extension NCShare: PagingViewControllerDataSource {
     
     func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, viewControllerForIndex index: Int) -> UIViewController {
-        let viewController = TableViewController()
         
-        // Inset the table view with the height of the menu height.
-        let height = pagingViewController.options.menuHeight + CustomPagingView.HeaderHeight
-        let insets = UIEdgeInsets(top: height, left: 0, bottom: 0, right: 0)
-        viewController.tableView.contentInset = insets
-        viewController.tableView.scrollIndicatorInsets = insets
-        viewController.tableView.delegate = self
-        
-        return viewController
+        var viewController: UIViewController?
+        let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
+
+        switch index {
+        case 0:
+            viewController = storyboard.instantiateViewController(withIdentifier: "activity")
+        case 1:
+            viewController = storyboard.instantiateViewController(withIdentifier: "comments")
+        case 2:
+            viewController = storyboard.instantiateViewController(withIdentifier: "sharing")
+        default:
+           print("")
+        }
+
+        return viewController!
     }
     
     func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, pagingItemForIndex index: Int) -> T {
-        return PagingIndexItem(index: index, title: "View \(index)") as! T
+        switch index {
+        case 0:
+            return PagingIndexItem(index: index, title: "activity") as! T
+        case 1:
+            return PagingIndexItem(index: index, title: "comments") as! T
+        case 2:
+            return PagingIndexItem(index: index, title: "sharing") as! T
+        default:
+            return PagingIndexItem(index: index, title: "") as! T
+        }
     }
     
     func numberOfViewControllers<T>(in: PagingViewController<T>) -> Int{
         return 3
     }
-    
-}
-
-extension NCShare: PagingViewControllerDelegate {
-    
-    func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, didScrollToItem pagingItem: T, startingViewController: UIViewController?, destinationViewController: UIViewController, transitionSuccessful: Bool) {
-        guard let startingViewController = startingViewController as? TableViewController else { return }
-        guard let destinationViewController = destinationViewController as? TableViewController else { return }
-        
-        // Set the delegate on the currently selected view so that we can
-        // listen to the scroll view delegate.
-        if transitionSuccessful {
-            startingViewController.tableView.delegate = nil
-            destinationViewController.tableView.delegate = self
-        }
-    }
-    
-    func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, willScrollToItem pagingItem: T, startingViewController: UIViewController, destinationViewController: UIViewController) {
-        guard let destinationViewController = destinationViewController as? TableViewController else { return }
-        
-        // Update the content offset based on the height of the header view.
-        if let pagingView = pagingViewController.view as? CustomPagingView {
-            if let headerHeight = pagingView.headerHeightConstraint?.constant {
-                let offset = headerHeight + pagingViewController.options.menuHeight
-                destinationViewController.tableView.contentOffset = CGPoint(x: 0, y: -offset)
-            }
-        }
-    }
-    
 }
 
 class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
     
     public var image: UIImage?
-    func setx() {
-    
-    }
-    
+   
     override func loadView() {
         view = NCShareHeader(
             options: options,
             collectionView: collectionView,
-            pageView: pageViewController.view
+            pageView: pageViewController.view,
+            image: image
         )
     }
 }
@@ -177,13 +147,24 @@ class NCShareHeader: PagingView {
     var headerHeightConstraint: NSLayoutConstraint?
     
     private lazy var headerView: UIImageView = {
-        let view = UIImageView(image: UIImage(named: "file"))
-        view.contentMode = .scaleAspectFill
+        let view = UIImageView(image: self.image!)
+        view.contentMode = .scaleAspectFit
         view.clipsToBounds = true
         return view
     }()
     
+    public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, image: UIImage?) {
+        super.init(options: options, collectionView: collectionView, pageView: pageView)
+        
+        self.image = image
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func setupConstraints() {
+        
         addSubview(headerView)
         
         pageView.translatesAutoresizingMaskIntoConstraints = false
