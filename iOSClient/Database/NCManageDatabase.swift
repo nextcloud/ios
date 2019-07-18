@@ -722,14 +722,27 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getActivity(predicate: NSPredicate) -> [tableActivity] {
+    @objc func getActivity(predicate: NSPredicate, filterFileID: String?) -> [tableActivity] {
         
         let realm = try! Realm()
         realm.refresh()
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-        
-        return Array(results.map { tableActivity.init(value:$0) })
+        if filterFileID != nil {
+            var resultsFilter = [tableActivity]()
+            for result in results {
+                let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account = %@ && idActivity == %d", result.account, result.idActivity)
+                for resultActivitySubjectRich in resultsActivitySubjectRich {
+                    if filterFileID!.contains(resultActivitySubjectRich.id) {
+                        resultsFilter.append(result)
+                        break
+                    }
+                }
+            }
+            return Array(resultsFilter.map { tableActivity.init(value:$0) })
+        } else {
+            return Array(results.map { tableActivity.init(value:$0) })
+        }
     }
     
     @objc func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {

@@ -35,6 +35,9 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     var activities = [tableActivity]()
     var sectionDate = [Date]()
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    var refreshControlEnable: Bool = true
+    var didSelectItemEnable: Bool = true
+    var filterFileID: String?
     
     var loadingActivity = false
 
@@ -48,13 +51,15 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
-        tableView.refreshControl = refreshControl
         tableView.contentInset = insets
         
         // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadActivityRefreshing), for: .valueChanged)
+        if refreshControlEnable {
+            tableView.refreshControl = refreshControl
+            refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+            refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+            refreshControl.addTarget(self, action: #selector(loadActivityRefreshing), for: .valueChanged)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,7 +110,8 @@ class activityTableViewCell: UITableViewCell {
     var idActivity: Int = 0
     var account: String = ""
     var activityPreviews = [tableActivityPreview]()
-    
+    var didSelectItemEnable: Bool = true
+
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -175,6 +181,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.image = nil
             cell.avatar.isHidden = true
             cell.subjectTrailingConstraint.constant = 10
+            cell.didSelectItemEnable = self.didSelectItemEnable
             
             // icon
             if activity.icon.count > 0 {
@@ -309,6 +316,11 @@ extension NCActivity: UITableViewDataSourcePrefetching {
 extension activityTableViewCell: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        // Select not permitted
+        if !didSelectItemEnable {
+            return
+        }
         
         let activityPreview = activityPreviews[indexPath.row]
         
@@ -511,7 +523,7 @@ extension NCActivity {
         
         sectionDate.removeAll()
         
-        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
+        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), filterFileID: filterFileID)
         for tableActivity in activities {
             guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
                 continue
@@ -530,7 +542,7 @@ extension NCActivity {
             return Calendar.current.date(byAdding: components, to: startDate)!
         }()
         
-        return NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
+        return NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]), filterFileID: filterFileID)
     }
     
     @objc func loadActivityRefreshing() {

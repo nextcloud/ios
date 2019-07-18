@@ -78,33 +78,33 @@ extension NCShare: PagingViewControllerDataSource {
     
     func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, viewControllerForIndex index: Int) -> UIViewController {
         
-        var viewController: UIViewController?
         let height = pagingViewController.options.menuHeight + NCSharePagingView.HeaderHeight
         
         switch index {
         case 0:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
             viewController.insets = UIEdgeInsets(top: height, left: 0, bottom: 0, right: 0)
+            viewController.refreshControlEnable = false
+            viewController.didSelectItemEnable = false
+            viewController.filterFileID = metadata!.fileID
             return viewController
         case 1:
-            viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments")
+            return UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments")
         case 2:
-            viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing")
+            return UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing")
         default:
-           print("")
+            return UIViewController()
         }
-
-        return viewController!
     }
     
     func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, pagingItemForIndex index: Int) -> T {
         switch index {
         case 0:
-            return PagingIndexItem(index: index, title: "activity") as! T
+            return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: "")) as! T
         case 1:
-            return PagingIndexItem(index: index, title: "comments") as! T
+            return PagingIndexItem(index: index, title: NSLocalizedString("_comments_", comment: "")) as! T
         case 2:
-            return PagingIndexItem(index: index, title: "sharing") as! T
+            return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: "")) as! T
         default:
             return PagingIndexItem(index: index, title: "") as! T
         }
