@@ -79,15 +79,17 @@ extension NCShare: PagingViewControllerDataSource {
     func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, viewControllerForIndex index: Int) -> UIViewController {
         
         var viewController: UIViewController?
-        let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
-
+        let height = pagingViewController.options.menuHeight + NCSharePagingView.HeaderHeight
+        
         switch index {
         case 0:
-            viewController = storyboard.instantiateViewController(withIdentifier: "activity")
+            let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
+            viewController.insets = UIEdgeInsets(top: height, left: 0, bottom: 0, right: 0)
+            return viewController
         case 1:
-            viewController = storyboard.instantiateViewController(withIdentifier: "comments")
+            viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments")
         case 2:
-            viewController = storyboard.instantiateViewController(withIdentifier: "sharing")
+            viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing")
         default:
            print("")
         }

@@ -30,11 +30,11 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
     private let refreshControl = UIRefreshControl()
 
     var activities = [tableActivity]()
     var sectionDate = [Date]()
+    var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     
     var loadingActivity = false
 
@@ -49,6 +49,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
         tableView.refreshControl = refreshControl
+        tableView.contentInset = insets
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
