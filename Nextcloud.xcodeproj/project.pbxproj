@@ -152,6 +152,7 @@
 		F73B4F141F470D9100BBEE4B /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EE71F470D9100BBEE4B /* nsUTF8Prober.cpp */; };
 		F73B4F151F470D9100BBEE4B /* symbols.cmake in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EEA1F470D9100BBEE4B /* symbols.cmake */; };
 		F73B4F171F470D9100BBEE4B /* uchardet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */; };
+		F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */; };
 		F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
 		F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
 		F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */; };
@@ -832,6 +833,7 @@
 		F73B4EEA1F470D9100BBEE4B /* symbols.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbols.cmake; sourceTree = "<group>"; };
 		F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uchardet.cpp; sourceTree = "<group>"; };
 		F73B4EED1F470D9100BBEE4B /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
+		F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCShareHeaderView.xib; sourceTree = "<group>"; };
 		F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBridgeSwift.h; sourceTree = "<group>"; };
 		F73CC0581E813DFF006E3047 /* BKPasscodeDummyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeDummyViewController.h; sourceTree = "<group>"; };
 		F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeDummyViewController.m; sourceTree = "<group>"; };
@@ -1760,6 +1762,7 @@
 				F7CD0FF91C8DDA7D006520C5 /* CCSharePermissionOC.h */,
 				F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */,
 				F700510022DF63AC003A3356 /* NCShare.storyboard */,
+				F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
 				F78316861C0CB3CA00C43975 /* CCShareUserOC.h */,
 				F78316871C0CB3CA00C43975 /* CCShareUserOC.m */,
@@ -3371,6 +3374,7 @@
 				F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */,
 				F7D423491F0596AC009C9782 /* Reader-Mark-Y@3x.png in Resources */,
 				F7D423421F0596AC009C9782 /* Reader-Export@2x.png in Resources */,
+				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7F54CE91E5B14C700E19C62 /* ImageSelectedOff@2x.png in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
 				F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */,

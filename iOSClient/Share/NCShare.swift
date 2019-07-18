@@ -35,19 +35,7 @@ class NCShare: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // load preview
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView)) {
-            pagingViewController.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
-        } else {
-            if metadata!.iconName.count > 0 {
-                pagingViewController.image = UIImage.init(named: metadata!.iconName)
-            } else if metadata!.directory {
-                let image = UIImage.init(named: "folder")!
-                pagingViewController.image = CCGraphics.changeThemingColorImage(image, width: image.size.width*2, height: image.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
-            } else {
-                pagingViewController.image = UIImage.init(named: "file")
-            }
-        }
+        pagingViewController.metadata = metadata
         
         // Navigation Controller
         var image = CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray)
@@ -128,35 +116,29 @@ extension NCShare: PagingViewControllerDataSource {
 class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
     
     public var image: UIImage?
-   
+    public var metadata: tableMetadata?
+
     override func loadView() {
-        view = NCShareHeader(
+        view = NCSharePagingView(
             options: options,
             collectionView: collectionView,
             pageView: pageViewController.view,
-            image: image
+            metadata: metadata
         )
     }
 }
 
-class NCShareHeader: PagingView {
+class NCSharePagingView: PagingView {
     
     static let HeaderHeight: CGFloat = 200
-    var image: UIImage?
+    var metadata: tableMetadata?
     
     var headerHeightConstraint: NSLayoutConstraint?
     
-    private lazy var headerView: UIImageView = {
-        let view = UIImageView(image: self.image!)
-        view.contentMode = .scaleAspectFit
-        view.clipsToBounds = true
-        return view
-    }()
-    
-    public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, image: UIImage?) {
+    public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, metadata: tableMetadata?) {
         super.init(options: options, collectionView: collectionView, pageView: pageView)
         
-        self.image = image
+        self.metadata = metadata
     }
     
     required init?(coder: NSCoder) {
@@ -165,6 +147,27 @@ class NCShareHeader: PagingView {
     
     override func setupConstraints() {
         
+        let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
+        
+        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView)) {
+            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
+        } else {
+            if metadata!.iconName.count > 0 {
+                headerView.imageView.image = UIImage.init(named: metadata!.iconName)
+            } else if metadata!.directory {
+                let image = UIImage.init(named: "folder")!
+                headerView.imageView.image = CCGraphics.changeThemingColorImage(image, width: image.size.width*2, height: image.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
+            } else {
+                headerView.imageView.image = UIImage.init(named: "file")
+            }
+        }
+        headerView.fileName.text = metadata?.fileNameView
+        if metadata!.favorite {
+            headerView.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)
+        } else {
+            headerView.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.textInfo), for: .normal)
+        }
+        headerView.info.text = CCUtility.transformedSize(metadata!.size) + ", " + CCUtility.dateDiff(metadata!.date as Date)
         addSubview(headerView)
         
         pageView.translatesAutoresizingMaskIntoConstraints = false
@@ -172,7 +175,7 @@ class NCShareHeader: PagingView {
         headerView.translatesAutoresizingMaskIntoConstraints = false
         
         headerHeightConstraint = headerView.heightAnchor.constraint(
-            equalToConstant: NCShareHeader.HeaderHeight
+            equalToConstant: NCSharePagingView.HeaderHeight
         )
         headerHeightConstraint?.isActive = true
         
@@ -192,4 +195,12 @@ class NCShareHeader: PagingView {
             pageView.topAnchor.constraint(equalTo: topAnchor)
         ])
     }
+}
+
+class NCShareHeaderView: UIView {
+
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var fileName: UILabel!
+    @IBOutlet weak var info: UILabel!
+    @IBOutlet weak var favorite: UIButton!
 }
