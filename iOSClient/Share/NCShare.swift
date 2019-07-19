@@ -252,6 +252,14 @@ class NCShare: UIViewController {
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         addShareLinkButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 40, height: 40, color: UIColor.gray), for: .normal)
 
-        shareLinkImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 200, height: 200, color: NCBrandColor.sharedInstance.nextcloud)
+        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 200, height: 200, color: NCBrandColor.sharedInstance.nextcloud)
+        let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 200, height: 200, color: UIColor.white)
+
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: 200, height: 200), false, 0.0)
+        bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: 200, height: 200)))
+        topImage?.draw(in: CGRect(origin:  CGPoint(x: 50, y: 50), size: CGSize(width: 100, height: 100)))
+        
+        shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()        
     }
 }
