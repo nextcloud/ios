@@ -93,7 +93,10 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.metadata = metadata!
             return viewController
         case 2:
-            return UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing")
+            let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
+            viewController.metadata = metadata!
+            viewController.height = height
+            return viewController
         default:
             return UIViewController()
         }
@@ -231,9 +234,21 @@ class NCShare: UIViewController {
     
     var metadata: tableMetadata?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var height: CGFloat = 0
     
+    @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
+    @IBOutlet weak var searchField: UITextField!
+    @IBOutlet weak var returnSearchButton: UIButton!
+    @IBOutlet weak var shareLinkImage: UIImageView!
+    @IBOutlet weak var shareLinkLabel: UILabel!
+    @IBOutlet weak var addShareLinkButton: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        viewContainerConstraint.constant = height
+        
+        returnSearchButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "arrowRight"), width: 40, height: 40, color: NCBrandColor.sharedInstance.textInfo), for: .normal)
+
     }
 }
