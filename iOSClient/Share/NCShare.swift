@@ -235,14 +235,15 @@ class NCShare: UIViewController {
     var metadata: tableMetadata?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var height: CGFloat = 0
-    
+    private var shareLinkMenuView: NCShareLinkMenuView?
+
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var returnSearchButton: UIButton!
     @IBOutlet weak var shareLinkImage: UIImageView!
     @IBOutlet weak var shareLinkLabel: UILabel!
     @IBOutlet weak var addShareLinkButton: UIButton!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -263,6 +264,10 @@ class NCShare: UIViewController {
         
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
+        
+        // Menu
+        shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
+        
     }
 }
 
