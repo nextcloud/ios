@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Share-->
+        <!--Share Paging-->
         <scene sceneID="ipe-g4-f5a">
             <objects>
-                <viewController id="UdT-J4-zvv" customClass="NCShare" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="UdT-J4-zvv" customClass="NCSharePaging" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xka-e7-U7G">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -57,12 +57,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="l4G-HZ-s1x" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1032" y="528"/>
+            <point key="canvasLocation" x="2236" y="-388"/>
         </scene>
-        <!--View Controller-->
+        <!--Share-->
         <scene sceneID="Iqh-6B-MEV">
             <objects>
-                <viewController storyboardIdentifier="sharing" id="bgO-Rz-2M1" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="sharing" id="bgO-Rz-2M1" customClass="NCShare" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aV2-U6-JTf">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -72,7 +72,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Te-U6-4XT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1720" y="528"/>
+            <point key="canvasLocation" x="2235" y="404"/>
         </scene>
     </scenes>
 </document>

@@ -3208,9 +3208,9 @@
         NSData *responseData = (NSData*) response;
         
         //Parse
-        NSError *error;
-        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] URL Asset : %@",jsongParsed);
+        //NSError *error;
+        //NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        //NSLog(@"[LOG] URL Asset : %@",jsongParsed);
 
         successRequest(response, nil, request.redirectedServer);
         

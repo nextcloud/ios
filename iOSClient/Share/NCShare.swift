@@ -24,7 +24,7 @@
 import Foundation
 import Parchment
 
-class NCShare: UIViewController {
+class NCSharePaging: UIViewController {
     
     private let pagingViewController = NCShareHeaderViewController()
     
@@ -74,7 +74,7 @@ class NCShare: UIViewController {
     }
 }
 
-extension NCShare: PagingViewControllerDataSource {
+extension NCSharePaging: PagingViewControllerDataSource {
     
     func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, viewControllerForIndex index: Int) -> UIViewController {
         
@@ -209,6 +209,8 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var favorite: UIButton!
 }
 
+// MARK: - Comments
+
 class NCShareComments: UIViewController {
     
     var metadata: tableMetadata?
@@ -220,5 +222,18 @@ class NCShareComments: UIViewController {
         OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata?.fileID, completion: { (account, list, message, errorCode) in
             print("ciao")
         })
+    }
+}
+
+// MARK: - Share
+
+class NCShare: UIViewController {
+    
+    var metadata: tableMetadata?
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
     }
 }

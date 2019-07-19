@@ -1882,7 +1882,7 @@
 #ifdef DEBUG
 
     UINavigationController *shareNavigationController = [[UIStoryboard storyboardWithName:@"NCShare" bundle:nil] instantiateInitialViewController];
-    NCShare *shareViewController = (NCShare *)shareNavigationController.topViewController;
+    NCSharePaging *shareViewController = (NCSharePaging *)shareNavigationController.topViewController;
     
     shareViewController.metadata = metadata;
     shareViewController.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
