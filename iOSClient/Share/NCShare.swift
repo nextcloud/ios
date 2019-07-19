@@ -248,6 +248,8 @@ class NCShare: UIViewController {
         
         viewContainerConstraint.constant = height
         
+        searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
+        
         returnSearchButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "arrowRight"), width: 40, height: 40, color: UIColor.gray), for: .normal)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         addShareLinkButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 40, height: 40, color: UIColor.gray), for: .normal)
@@ -260,6 +262,13 @@ class NCShare: UIViewController {
         topImage?.draw(in: CGRect(origin:  CGPoint(x: 50, y: 50), size: CGSize(width: 100, height: 100)))
         
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()        
+        UIGraphicsEndImageContext()
     }
+}
+
+
+class NCShareLinkMenuView: UIView {
+    
+    @IBOutlet weak var switchAllowEditing: UISwitch!
+    @IBOutlet weak var labelAllowEditing: UILabel!
 }

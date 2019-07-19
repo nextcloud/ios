@@ -464,6 +464,7 @@
 "_enforce_password_protection_" = "Enforce password protection";
 "_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 "_shared_with_you_by_"          = "Shared with you by";
+"_shareLinksearch_placeholder_" = "Name, federated cloudID or email address...";
 
 // Share Permission
 

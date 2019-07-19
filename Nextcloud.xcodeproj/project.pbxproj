@@ -539,6 +539,7 @@
 		F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
 		F7D7B0D42245271100E6FE36 /* IMImagemeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B0D32245271100E6FE36 /* IMImagemeter.swift */; };
+		F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */; };
 		F7DFB7E0219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
 		F7DFB7E1219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
 		F7DFB7E2219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
@@ -1384,6 +1385,7 @@
 		F7D6650620FF341600BFBA9E /* NCMainCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainCommon.swift; sourceTree = "<group>"; };
 		F7D7B0D32245271100E6FE36 /* IMImagemeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMImagemeter.swift; sourceTree = "<group>"; };
 		F7DE9AB01F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkMenuView.xib; sourceTree = "<group>"; };
 		F7DFB7DE219C312D00680748 /* NCRichDocumentTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCRichDocumentTemplate.h; sourceTree = "<group>"; };
 		F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCRichDocumentTemplate.m; sourceTree = "<group>"; };
 		F7DFB7EA219C5A2E00680748 /* NCCreateMenuAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateMenuAdd.swift; sourceTree = "<group>"; };
@@ -1764,6 +1766,7 @@
 				F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */,
 				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */,
+				F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
 				F78316861C0CB3CA00C43975 /* CCShareUserOC.h */,
 				F78316871C0CB3CA00C43975 /* CCShareUserOC.m */,
@@ -3340,6 +3343,7 @@
 				F7B2DEF11F976859007CF4D2 /* english.txt in Resources */,
 				F7F54D051E5B14C800E19C62 /* VideoOverlay@3x.png in Resources */,
 				F7F54D011E5B14C700E19C62 /* UIBarButtonItemGrid@2x.png in Resources */,
+				F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
 				F7F54CE71E5B14C700E19C62 /* ImageError@3x.png in Resources */,
 				F760F78F21F21F61006B1A73 /* PhotoCropEditorBorder@3x.png in Resources */,

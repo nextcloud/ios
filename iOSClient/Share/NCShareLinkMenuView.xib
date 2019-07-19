@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina3_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NCShareLinkMenuView" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sjf-wF-y07" userLabel="SwitchAllowEditing">
+                    <rect key="frame" x="10" y="10" width="51" height="31"/>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Allow editing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IHP-P8-rm2">
+                    <rect key="frame" x="69" y="17.5" width="241" height="16"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="sjf-wF-y07" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="10" id="EW6-D3-tml"/>
+                <constraint firstItem="IHP-P8-rm2" firstAttribute="centerY" secondItem="sjf-wF-y07" secondAttribute="centerY" id="HiA-pE-L6l"/>
+                <constraint firstItem="IHP-P8-rm2" firstAttribute="leading" secondItem="sjf-wF-y07" secondAttribute="trailing" constant="10" id="RtP-OI-XwJ"/>
+                <constraint firstItem="sjf-wF-y07" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="TFC-63-muN"/>
+                <constraint firstAttribute="trailing" secondItem="IHP-P8-rm2" secondAttribute="trailing" constant="10" id="Zsj-Ja-2wq"/>
+            </constraints>
+            <connections>
+                <outlet property="labelAllowEditing" destination="IHP-P8-rm2" id="bfP-WI-ryB"/>
+                <outlet property="switchAllowEditing" destination="sjf-wF-y07" id="8J2-kj-Ugp"/>
+            </connections>
+            <point key="canvasLocation" x="-9.375" y="293.75"/>
+        </view>
+    </objects>
+</document>

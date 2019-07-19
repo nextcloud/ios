@@ -62,12 +62,6 @@
             </connections>
             <point key="canvasLocation" x="-9.375" y="293.75"/>
         </view>
-        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="UoN-dd-uRc">
-            <rect key="frame" x="0.0" y="0.0" width="46" height="30"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <state key="normal" title="Button"/>
-            <point key="canvasLocation" x="1322" y="380"/>
-        </button>
     </objects>
     <resources>
         <image name="favorite" width="300" height="300"/>
