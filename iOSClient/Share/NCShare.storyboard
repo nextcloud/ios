@@ -44,25 +44,10 @@
             </objects>
             <point key="canvasLocation" x="334.78260869565219" y="-167.41071428571428"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="tNH-9u-08n">
-            <objects>
-                <viewController storyboardIdentifier="activity" id="Q5S-G4-EEF" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="7uF-QZ-62w">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="USS-2P-JRO"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="NcC-LH-u4T" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="335" y="528"/>
-        </scene>
-        <!--View Controller-->
+        <!--Share Comments-->
         <scene sceneID="R3f-Og-D1Y">
             <objects>
-                <viewController storyboardIdentifier="comments" id="GMr-2Y-4vs" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="comments" id="GMr-2Y-4vs" customClass="NCShareComments" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5MM-pX-rNX">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

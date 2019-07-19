@@ -89,7 +89,9 @@ extension NCShare: PagingViewControllerDataSource {
             viewController.filterFileID = metadata!.fileID
             return viewController
         case 1:
-            return UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments")
+            let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
+            viewController.metadata = metadata!
+            return viewController
         case 2:
             return UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing")
         default:
@@ -205,4 +207,18 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var favorite: UIButton!
+}
+
+class NCShareComments: UIViewController {
+    
+    var metadata: tableMetadata?
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata?.fileID, completion: { (account, list, message, errorCode) in
+            print("ciao")
+        })
+    }
 }

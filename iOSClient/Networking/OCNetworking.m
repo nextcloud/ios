@@ -2709,7 +2709,7 @@
 #pragma mark ===== Comments =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getCommentsWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *list, NSString *message, NSInteger errorCode))completion
+- (void)getCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *list, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2725,7 +2725,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getComments:tableAccount.url fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer) {
+    [communication getComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer) {
         
         completion(account, list, nil, 0);
 
