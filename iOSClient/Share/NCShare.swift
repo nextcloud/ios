@@ -271,8 +271,8 @@ class NCShare: UIViewController {
         
         // Menu
         shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        let shareLinkMenuViewX = self.view.bounds.width-(shareLinkMenuView?.frame.width)!-35
-        let shareLinkMenuViewY = height+80
+        let shareLinkMenuViewX = self.view.bounds.width-(shareLinkMenuView?.frame.width)! - 40
+        let shareLinkMenuViewY = height + 10
         shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: (shareLinkMenuView?.frame.width)!, height: height+(shareLinkMenuView?.frame.height)!)
         self.view.addSubview(shareLinkMenuView!)
     }
@@ -294,8 +294,29 @@ class NCShareLinkMenuView: UIView {
     @IBOutlet weak var switchAllowEditing: UISwitch!
     @IBOutlet weak var labelAllowEditing: UILabel!
     
-    private let width: CGFloat = 200
-    private let height: CGFloat = 200
+    @IBOutlet weak var switchHideDownload: UISwitch!
+    @IBOutlet weak var labelHideDownload: UILabel!
+    
+    @IBOutlet weak var switchPasswordProtect: UISwitch!
+    @IBOutlet weak var labelPasswordProtect: UILabel!
+    @IBOutlet weak var fieldPasswordProtect: UITextField!
+    
+    @IBOutlet weak var switchSetExpirationDate: UISwitch!
+    @IBOutlet weak var labelSetExpirationDate: UILabel!
+    @IBOutlet weak var fieldSetExpirationDate: UITextField!
+    
+    @IBOutlet weak var imageNoteToRecipient: UIImageView!
+    @IBOutlet weak var labelNoteToRecipient: UILabel!
+    @IBOutlet weak var textViewNoteToRecipient: UITextView!
+    
+    @IBOutlet weak var buttonDeleteShareLink: UIButton!
+    @IBOutlet weak var labelDeleteShareLink: UILabel!
+    
+    @IBOutlet weak var buttonAddAnotherLink: UIButton!
+    @IBOutlet weak var labelAddAnotherLink: UILabel!
+    
+    private let width: CGFloat = 250
+    private let height: CGFloat = 320
     
     override func awakeFromNib() {
         
@@ -313,5 +334,12 @@ class NCShareLinkMenuView: UIView {
         layer.cornerRadius = 5
         
         switchAllowEditing.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchHideDownload.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchPasswordProtect.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        
+        imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor.black)
+        buttonDeleteShareLink.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor.black), for: .normal)
+        buttonAddAnotherLink.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor.black), for: .normal)
     }
 }
