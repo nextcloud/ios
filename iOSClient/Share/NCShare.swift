@@ -238,9 +238,6 @@ class NCShare: UIViewController {
 
     var height: CGFloat = 0
     
-    private let shareLinkMenuViewWidth: CGFloat = 200
-    private let shareLinkMenuViewHeight: CGFloat = 200
-
     private let iconShare: CGFloat = 200
 
     
@@ -274,10 +271,9 @@ class NCShare: UIViewController {
         
         // Menu
         shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        shareLinkMenuView?.frame = CGRect(x: self.view.bounds.width-shareLinkMenuViewWidth-35, y: height+80, width: shareLinkMenuViewWidth, height: height+shareLinkMenuViewHeight)
-        shareLinkMenuView?.layer.borderColor = UIColor.lightGray.cgColor
-        shareLinkMenuView?.layer.borderWidth = 1
-        shareLinkMenuView?.isHidden = true
+        let shareLinkMenuViewX = self.view.bounds.width-(shareLinkMenuView?.frame.width)!-35
+        let shareLinkMenuViewY = height+80
+        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: (shareLinkMenuView?.frame.width)!, height: height+(shareLinkMenuView?.frame.height)!)
         self.view.addSubview(shareLinkMenuView!)
     }
 }
@@ -298,7 +294,24 @@ class NCShareLinkMenuView: UIView {
     @IBOutlet weak var switchAllowEditing: UISwitch!
     @IBOutlet weak var labelAllowEditing: UILabel!
     
+    private let width: CGFloat = 200
+    private let height: CGFloat = 200
+    
     override func awakeFromNib() {
+        
+        self.frame.size.width = width
+        self.frame.size.height = height
+
+        isHidden = true
+
+        layer.borderColor = UIColor.lightGray.cgColor
+        layer.borderWidth = 0.5
+        layer.cornerRadius = 5
+        layer.masksToBounds = false
+        layer.shadowOffset = CGSize(width: 2, height: 2)
+        layer.shadowOpacity = 0.2
+        layer.cornerRadius = 5
+        
         switchAllowEditing.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
     }
 }
