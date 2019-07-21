@@ -108,6 +108,9 @@
                                             <constraint firstAttribute="height" constant="30" id="zc5-W6-SXG"/>
                                         </constraints>
                                         <state key="normal" image="add"/>
+                                        <connections>
+                                            <action selector="touchUpInsideAddShareLink:" destination="bgO-Rz-2M1" eventType="touchUpInside" id="hrJ-Bm-XgB"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

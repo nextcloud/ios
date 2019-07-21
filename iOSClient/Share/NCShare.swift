@@ -234,9 +234,16 @@ class NCShare: UIViewController {
     
     var metadata: tableMetadata?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var height: CGFloat = 0
     private var shareLinkMenuView: NCShareLinkMenuView?
 
+    var height: CGFloat = 0
+    
+    private let shareLinkMenuViewWidth: CGFloat = 200
+    private let shareLinkMenuViewHeight: CGFloat = 200
+
+    private let iconShare: CGFloat = 200
+
+    
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var returnSearchButton: UIButton!
@@ -258,22 +265,40 @@ class NCShare: UIViewController {
         let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 200, height: 200, color: NCBrandColor.sharedInstance.nextcloud)
         let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 200, height: 200, color: UIColor.white)
 
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: 200, height: 200), false, 0.0)
-        bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: 200, height: 200)))
-        topImage?.draw(in: CGRect(origin:  CGPoint(x: 50, y: 50), size: CGSize(width: 100, height: 100)))
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: iconShare, height: iconShare), false, 0.0)
+        bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: iconShare, height: iconShare)))
+        topImage?.draw(in: CGRect(origin:  CGPoint(x: iconShare/4, y: iconShare/4), size: CGSize(width: iconShare/2, height: iconShare/2)))
         
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
         // Menu
         shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        
+        shareLinkMenuView?.frame = CGRect(x: self.view.bounds.width-shareLinkMenuViewWidth-35, y: height+80, width: shareLinkMenuViewWidth, height: height+shareLinkMenuViewHeight)
+        shareLinkMenuView?.layer.borderColor = UIColor.lightGray.cgColor
+        shareLinkMenuView?.layer.borderWidth = 1
+        shareLinkMenuView?.isHidden = true
+        self.view.addSubview(shareLinkMenuView!)
     }
 }
 
+// MARK: - AddShareLink
+
+extension NCShare {
+    
+    @IBAction func touchUpInsideAddShareLink(_ sender: Any) {
+        shareLinkMenuView?.isHidden = false
+    }
+}
+
+// MARK: - hareLinkMenuView
 
 class NCShareLinkMenuView: UIView {
     
     @IBOutlet weak var switchAllowEditing: UISwitch!
     @IBOutlet weak var labelAllowEditing: UILabel!
+    
+    override func awakeFromNib() {
+        switchAllowEditing.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+    }
 }
