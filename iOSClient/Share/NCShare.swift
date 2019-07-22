@@ -230,23 +230,23 @@ class NCShareComments: UIViewController {
 
 // MARK: - Share
 
-class NCShare: UIViewController {
+class NCShare: UIViewController, UIGestureRecognizerDelegate {
     
     var metadata: tableMetadata?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    public var height: CGFloat = 0
+    private let iconShare: CGFloat = 200
+    private var viewMenuShareLink: UIView?
     private var shareLinkMenuView: NCShareLinkMenuView?
 
-    var height: CGFloat = 0
-    
-    private let iconShare: CGFloat = 200
-
-    
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var returnSearchButton: UIButton!
     @IBOutlet weak var shareLinkImage: UIImageView!
     @IBOutlet weak var shareLinkLabel: UILabel!
     @IBOutlet weak var addShareLinkButton: UIButton!
+    @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -261,20 +261,12 @@ class NCShare: UIViewController {
 
         let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 200, height: 200, color: NCBrandColor.sharedInstance.nextcloud)
         let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 200, height: 200, color: UIColor.white)
-
         UIGraphicsBeginImageContextWithOptions(CGSize(width: iconShare, height: iconShare), false, 0.0)
         bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: iconShare, height: iconShare)))
         topImage?.draw(in: CGRect(origin:  CGPoint(x: iconShare/4, y: iconShare/4), size: CGSize(width: iconShare/2, height: iconShare/2)))
-        
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        // Menu
-        shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        let shareLinkMenuViewX = self.view.bounds.width-(shareLinkMenuView?.frame.width)! - 40
-        let shareLinkMenuViewY = height + 10
-        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: (shareLinkMenuView?.frame.width)!, height: height+(shareLinkMenuView?.frame.height)!)
-        self.view.addSubview(shareLinkMenuView!)
     }
 }
 
@@ -283,7 +275,29 @@ class NCShare: UIViewController {
 extension NCShare {
     
     @IBAction func touchUpInsideAddShareLink(_ sender: Any) {
-        shareLinkMenuView?.isHidden = false
+        
+        let window = UIApplication.shared.keyWindow!
+        viewMenuShareLink = UIView(frame: window.bounds)
+        viewMenuShareLink?.backgroundColor = UIColor.red
+        window.addSubview(viewMenuShareLink!)
+        
+        let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
+        let shareLinkMenuViewX = self.view.bounds.width-(shareLinkMenuView?.frame.width)! - 40
+        let shareLinkMenuViewY = height + 10
+        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: (shareLinkMenuView?.frame.width)!, height: (shareLinkMenuView?.frame.height)!)
+        viewMenuShareLink?.addSubview(shareLinkMenuView!)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapHandler))
+        tap.delegate = self
+        viewMenuShareLink?.addGestureRecognizer(tap)
+    }
+    
+    @objc func tapHandler(gesture: UITapGestureRecognizer) {
+        viewMenuShareLink?.removeFromSuperview()
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return gestureRecognizer.view == touch.view
     }
 }
 
@@ -316,14 +330,12 @@ class NCShareLinkMenuView: UIView {
     @IBOutlet weak var labelAddAnotherLink: UILabel!
     
     private let width: CGFloat = 250
-    private let height: CGFloat = 320
+    private let height: CGFloat = 400
     
     override func awakeFromNib() {
         
         self.frame.size.width = width
         self.frame.size.height = height
-
-        isHidden = true
 
         layer.borderColor = UIColor.lightGray.cgColor
         layer.borderWidth = 0.5

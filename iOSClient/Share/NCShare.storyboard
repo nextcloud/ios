@@ -152,6 +152,7 @@
                         <outlet property="searchField" destination="iSO-mc-0TB" id="1vY-Js-dGQ"/>
                         <outlet property="shareLinkImage" destination="8Cj-cK-AKZ" id="dIZ-nv-gyf"/>
                         <outlet property="shareLinkLabel" destination="SQW-aQ-ydN" id="nBK-WJ-oKy"/>
+                        <outlet property="tableView" destination="c94-b9-Sim" id="ZlE-Fh-kaR"/>
                         <outlet property="viewContainerConstraint" destination="aXO-v9-CBF" id="R19-WO-im5"/>
                     </connections>
                 </viewController>
