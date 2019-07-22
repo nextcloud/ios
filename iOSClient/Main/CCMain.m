@@ -1885,8 +1885,8 @@
     NCSharePaging *shareViewController = (NCSharePaging *)shareNavigationController.topViewController;
     
     shareViewController.metadata = metadata;
-    shareViewController.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
-    shareViewController.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];;
+    shareViewController.shareLink = [appDelegate.sharesLink objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
+    shareViewController.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];;
     
     [shareNavigationController setModalPresentationStyle:UIModalPresentationPageSheet];
     [self presentViewController:shareNavigationController animated:YES completion:nil];

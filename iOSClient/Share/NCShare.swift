@@ -96,6 +96,8 @@ extension NCSharePaging: PagingViewControllerDataSource {
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
             viewController.metadata = metadata!
             viewController.height = height
+            viewController.shareLink = shareLink
+            viewController.shareUserAndGroup = shareUserAndGroup
             return viewController
         default:
             return UIViewController()
@@ -235,7 +237,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
     var metadata: tableMetadata?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
+    public var shareLink: String = ""
+    public var shareUserAndGroup: String = ""
     public var height: CGFloat = 0
+    
     private let iconShare: CGFloat = 200
     private var viewMenuShareLink: UIView?
     private var shareLinkMenuView: NCShareLinkMenuView?
