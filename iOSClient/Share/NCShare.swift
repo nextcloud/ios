@@ -266,7 +266,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
         topImage?.draw(in: CGRect(origin:  CGPoint(x: iconShare/4, y: iconShare/4), size: CGSize(width: iconShare/2, height: iconShare/2)))
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        
     }
 }
 
@@ -276,14 +275,15 @@ extension NCShare {
     
     @IBAction func touchUpInsideAddShareLink(_ sender: Any) {
         
+        let globalPoint = self.view!.superview?.convert(self.view.frame.origin, to: nil)
+
         let window = UIApplication.shared.keyWindow!
         viewMenuShareLink = UIView(frame: window.bounds)
-        viewMenuShareLink?.backgroundColor = UIColor.red
         window.addSubview(viewMenuShareLink!)
         
         let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        let shareLinkMenuViewX = self.view.bounds.width-(shareLinkMenuView?.frame.width)! - 40
-        let shareLinkMenuViewY = height + 10
+        let shareLinkMenuViewX = self.view.bounds.width - (shareLinkMenuView?.frame.width)! - 40 + globalPoint!.x
+        let shareLinkMenuViewY = height + 10 + globalPoint!.y
         shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: (shareLinkMenuView?.frame.width)!, height: (shareLinkMenuView?.frame.height)!)
         viewMenuShareLink?.addSubview(shareLinkMenuView!)
         
@@ -330,7 +330,7 @@ class NCShareLinkMenuView: UIView {
     @IBOutlet weak var labelAddAnotherLink: UILabel!
     
     private let width: CGFloat = 250
-    private let height: CGFloat = 400
+    private let height: CGFloat = 500
     
     override func awakeFromNib() {
         

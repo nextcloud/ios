@@ -1888,7 +1888,7 @@
     shareViewController.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
     shareViewController.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];;
     
-    [shareNavigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [shareNavigationController setModalPresentationStyle:UIModalPresentationPageSheet];
     [self presentViewController:shareNavigationController animated:YES completion:nil];
     
 #else
