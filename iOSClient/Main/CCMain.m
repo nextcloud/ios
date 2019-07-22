@@ -1918,14 +1918,15 @@
             for (OCSharedDto *item in items)
                 [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
             
-            // V2
+#ifdef DEBUG
             [[NCManageDatabase sharedInstance] updateShareV2:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
-            //
+#else
             NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
             if (result) {
                 appDelegate.sharesLink = result[0];
                 appDelegate.sharesUserAndGroup = result[1];
             }
+#endif
             
             // Notify Shares View
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];

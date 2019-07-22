@@ -378,10 +378,37 @@ class tablePhotoLibrary: Object {
 class tableShare: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var displayNameFileOwner = ""
+    @objc dynamic var displayNameOwner = ""
+    @objc dynamic var isDirectory: Bool = false
+    @objc dynamic var expirationDate: NSDate? = nil
     @objc dynamic var fileName = ""
+    @objc dynamic var fileParent = ""
+    @objc dynamic var fileSource: Int = 0
+    @objc dynamic var fileTarget = ""
+    @objc dynamic var hideDownload: Bool = false
+    @objc dynamic var idRemoteShared: Int = 0
+    @objc dynamic var itemSource: Int = 0
+    @objc dynamic var label = ""
+    @objc dynamic var mailSend: Int = 0
+    @objc dynamic var mimeType = ""
+    @objc dynamic var note = ""
+    @objc dynamic var path = ""
+    @objc dynamic var parent: Int = 0
+    @objc dynamic var permissions: Int = 0
     @objc dynamic var serverUrl = ""
+    @objc dynamic var sharedDate: NSDate? = nil
     @objc dynamic var shareLink = ""
+    @objc dynamic var shareType: Int = 0
     @objc dynamic var shareUserAndGroup = ""
+    @objc dynamic var shareWith = ""
+    @objc dynamic var shareWithDisplayName = ""
+    @objc dynamic var storage: Int = 0
+    @objc dynamic var storageID = ""
+    @objc dynamic var token = ""
+    @objc dynamic var uidOwner = ""
+    @objc dynamic var uidFileOwner = ""
+    @objc dynamic var url = ""
 }
 
 class tableTag: Object {

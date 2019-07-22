@@ -2259,43 +2259,28 @@ class NCManageDatabase: NSObject {
     @objc func addShareLink(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String]? {
         
         let realm = try! Realm()
-
+        
         realm.beginWrite()
-
-        let addObject = tableShare()
         
-        addObject.account = account
-        addObject.fileName = fileName
-        addObject.serverUrl = serverUrl
-        addObject.shareLink = share
+        // Verify if exists
+        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl).first
         
-        realm.add(addObject)
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
+        if result != nil {
+            
+            result?.shareLink = share
+            
+        } else {
+            
+            // Add new
+            let addObject = tableShare()
+            
+            addObject.account = account
+            addObject.fileName = fileName
+            addObject.serverUrl = serverUrl
+            addObject.shareLink = share
+            
+            realm.add(addObject)
         }
-
-        return ["\(serverUrl)\(fileName)" : share]
-    }
-
-    @objc func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String]? {
-        
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        // Add new
-        let addObject = tableShare()
-        
-        addObject.account = account
-        addObject.fileName = fileName
-        addObject.serverUrl = serverUrl
-        addObject.shareUserAndGroup = share
-        
-        realm.add(addObject)
         
         do {
             try realm.commitWrite()
@@ -2307,6 +2292,93 @@ class NCManageDatabase: NSObject {
         return ["\(serverUrl)\(fileName)" : share]
     }
     
+    @objc func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String]? {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        // Verify if exists
+        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl).first
+        
+        if result != nil {
+            
+            result?.shareUserAndGroup = share
+            
+        } else {
+            
+            // Add new
+            let addObject = tableShare()
+            
+            addObject.account = account
+            addObject.fileName = fileName
+            addObject.serverUrl = serverUrl
+            addObject.shareUserAndGroup = share
+            
+            realm.add(addObject)
+        }
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return nil
+        }
+        
+        return ["\(serverUrl)\(fileName)" : share]
+    }
+    
+    @objc func addShareV2(shareLink: String, shareUserAndGroup: String, fileName: String, serverUrl: String, account: String, sharedDto: OCSharedDto) {
+        
+        let realm = try! Realm()
+
+        realm.beginWrite()
+
+        let addObject = tableShare()
+        
+        addObject.account = account
+        addObject.displayNameFileOwner = sharedDto.displayNameFileOwner
+        addObject.displayNameOwner = sharedDto.displayNameOwner
+        addObject.expirationDate =  Date(timeIntervalSince1970: TimeInterval(sharedDto.expirationDate)) as NSDate
+        addObject.fileParent = sharedDto.fileParent
+        addObject.fileTarget = sharedDto.fileTarget
+        addObject.hideDownload = sharedDto.hideDownload
+        addObject.idRemoteShared = sharedDto.idRemoteShared
+        addObject.isDirectory = sharedDto.isDirectory
+        addObject.itemSource = sharedDto.itemSource
+        addObject.label = sharedDto.label
+        addObject.mailSend = sharedDto.mailSend
+        addObject.mimeType = sharedDto.mimeType
+        addObject.note = sharedDto.note
+        addObject.path = sharedDto.path
+        addObject.permissions = sharedDto.permissions
+        addObject.parent = sharedDto.parent
+        addObject.sharedDate = Date(timeIntervalSince1970: TimeInterval(sharedDto.sharedDate)) as NSDate
+        addObject.shareType = sharedDto.shareType
+        addObject.shareWith = sharedDto.shareWith
+        addObject.shareWithDisplayName = sharedDto.shareWithDisplayName
+        addObject.storage = sharedDto.storage
+        addObject.storageID = sharedDto.storageID
+        addObject.token = sharedDto.token
+        addObject.url = sharedDto.url
+        addObject.uidOwner = sharedDto.uidOwner
+        addObject.uidFileOwner = sharedDto.uidFileOwner
+
+        addObject.fileName = fileName
+        addObject.serverUrl = serverUrl
+        addObject.shareLink = shareLink
+        addObject.shareUserAndGroup = shareUserAndGroup
+        
+        realm.add(addObject)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+    }
+
     @objc func unShare(_ share: String, fileName: String, serverUrl: String, sharesLink: [String:String], sharesUserAndGroup: [String:String], account: String) -> [Any]? {
         
         var sharesLink = sharesLink
@@ -2403,49 +2475,29 @@ class NCManageDatabase: NSObject {
             let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
             let fileName = NSString(string: fullPath).lastPathComponent
             var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
-            
             if serverUrl.hasSuffix("/") {
                 serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
             }
             
             if itemOCSharedDto.idRemoteShared > 0 {
-                _ = self.addShareLink("\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
+                _ = self.addShareV2(shareLink: "\(itemOCSharedDto.idRemoteShared)", shareUserAndGroup: "", fileName: fileName, serverUrl: serverUrl, account: account, sharedDto: itemOCSharedDto)
             }
         }
         
         // Manage sharesUserAndGroup
         
-        var paths = [String:[String]]()
-        
         for itemOCSharedDto in itemsUsersAndGroups {
             
-            if paths[itemOCSharedDto.path] != nil {
-                
-                var share : [String] = paths[itemOCSharedDto.path]!
-                share.append("\(itemOCSharedDto.idRemoteShared)")
-                paths[itemOCSharedDto.path] = share
-                
-            } else {
-                
-                paths[itemOCSharedDto.path] = ["\(itemOCSharedDto.idRemoteShared)"]
-            }
-        }
-        
-        for (path, idsRemoteSharedArray) in paths {
-            
-            let idsRemoteShared = idsRemoteSharedArray.joined(separator: ",")
-            
-            print("[LOG] share \(String(describing: idsRemoteShared))")
-            
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(path)"
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
             let fileName = NSString(string: fullPath).lastPathComponent
             var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
-            
             if serverUrl.hasSuffix("/") {
                 serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
             }
             
-            _ = self.addShareUserAndGroup(idsRemoteShared, fileName: fileName, serverUrl: serverUrl, account: account)
+            if itemOCSharedDto.idRemoteShared > 0 {
+                _ = self.addShareV2(shareLink: "", shareUserAndGroup: "\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account, sharedDto: itemOCSharedDto)
+            }
         }
     }
     
