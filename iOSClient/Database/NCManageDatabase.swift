@@ -2620,6 +2620,16 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
     
+    @objc func getTableSharesV2(metadata: tableMetadata) -> [tableShare]? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "fileName", ascending: true)
+        
+        return Array(results.map { tableShare.init(value:$0) })
+    }
+    
     //MARK: -
     //MARK: Table Tag
     

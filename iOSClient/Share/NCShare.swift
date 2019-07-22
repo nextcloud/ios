@@ -238,6 +238,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
     private let iconShare: CGFloat = 200
     private var viewMenuShareLink: UIView?
     private var shareLinkMenuView: NCShareLinkMenuView?
+    private var sharesTable: [tableShare]?
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
@@ -265,6 +266,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
         topImage?.draw(in: CGRect(origin:  CGPoint(x: iconShare/4, y: iconShare/4), size: CGSize(width: iconShare/2, height: iconShare/2)))
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
+        
+        sharesTable = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
