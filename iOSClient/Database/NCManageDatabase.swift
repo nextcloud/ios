@@ -2262,25 +2262,14 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        // Verify if exists
-        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl).first
+        let addObject = tableShare()
         
-        if result != nil {
-            
-            result?.shareLink = share
-            
-        } else {
+        addObject.account = account
+        addObject.fileName = fileName
+        addObject.serverUrl = serverUrl
+        addObject.shareLink = share
         
-            // Add new
-            let addObject = tableShare()
-            
-            addObject.account = account
-            addObject.fileName = fileName
-            addObject.serverUrl = serverUrl
-            addObject.shareLink = share
-            
-            realm.add(addObject)
-        }
+        realm.add(addObject)
         
         do {
             try realm.commitWrite()
