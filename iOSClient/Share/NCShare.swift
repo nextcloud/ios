@@ -267,6 +267,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        viewMenuShareLink?.removeFromSuperview()
+    }
 }
 
 // MARK: - AddShareLink
@@ -283,8 +287,11 @@ extension NCShare {
         
         let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
         let shareLinkMenuViewX = self.view.bounds.width - (shareLinkMenuView?.frame.width)! - 40 + globalPoint!.x
-        let shareLinkMenuViewY = height + 10 + globalPoint!.y
-        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: (shareLinkMenuView?.frame.width)!, height: (shareLinkMenuView?.frame.height)!)
+        var shareLinkMenuViewY = height + 10 + globalPoint!.y
+        if (self.view.bounds.height - (height + 10))  < shareLinkMenuView!.height {
+            shareLinkMenuViewY = shareLinkMenuViewY - height
+        }
+        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView!.width, height: shareLinkMenuView!.height)
         viewMenuShareLink?.addSubview(shareLinkMenuView!)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapHandler))
@@ -329,8 +336,8 @@ class NCShareLinkMenuView: UIView {
     @IBOutlet weak var buttonAddAnotherLink: UIButton!
     @IBOutlet weak var labelAddAnotherLink: UILabel!
     
-    private let width: CGFloat = 250
-    private let height: CGFloat = 500
+    public let width: CGFloat = 250
+    public let height: CGFloat = 470
     
     override func awakeFromNib() {
         
