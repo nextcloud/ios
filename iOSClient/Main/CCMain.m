@@ -1883,10 +1883,7 @@
 
     UINavigationController *shareNavigationController = [[UIStoryboard storyboardWithName:@"NCShare" bundle:nil] instantiateInitialViewController];
     NCSharePaging *shareViewController = (NCSharePaging *)shareNavigationController.topViewController;
-    
     shareViewController.metadata = metadata;
-    shareViewController.shareLink = [appDelegate.sharesLink objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
-    shareViewController.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];;
     
     [shareNavigationController setModalPresentationStyle:UIModalPresentationPageSheet];
     [self presentViewController:shareNavigationController animated:YES completion:nil];
@@ -1921,6 +1918,9 @@
             for (OCSharedDto *item in items)
                 [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
             
+            // V2
+            [[NCManageDatabase sharedInstance] updateShareV2:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
+            //
             NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
             if (result) {
                 appDelegate.sharesLink = result[0];

@@ -2287,25 +2287,15 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        // Verify if exists
-        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl).first
+        // Add new
+        let addObject = tableShare()
         
-        if result != nil {
-            
-            result?.shareUserAndGroup = share
-            
-        } else {
-            
-            // Add new
-            let addObject = tableShare()
-                
-            addObject.account = account
-            addObject.fileName = fileName
-            addObject.serverUrl = serverUrl
-            addObject.shareUserAndGroup = share
-                
-            realm.add(addObject)
-        }
+        addObject.account = account
+        addObject.fileName = fileName
+        addObject.serverUrl = serverUrl
+        addObject.shareUserAndGroup = share
+        
+        realm.add(addObject)
         
         do {
             try realm.commitWrite()
@@ -2385,6 +2375,77 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func updateShareV2(_ items: [String:OCSharedDto], activeUrl: String, account: String) {
+        
+        self.removeShareActiveAccount(account: account)
+        
+        var itemsLink = [OCSharedDto]()
+        var itemsUsersAndGroups = [OCSharedDto]()
+        
+        for (_, itemOCSharedDto) in items {
+            
+            if (itemOCSharedDto.shareType == Int(shareTypeLink.rawValue)) {
+                itemsLink.append(itemOCSharedDto)
+            }
+            
+            if (itemOCSharedDto.shareWith.count > 0 && (itemOCSharedDto.shareType == Int(shareTypeUser.rawValue) || itemOCSharedDto.shareType == Int(shareTypeGroup.rawValue) || itemOCSharedDto.shareType == Int(shareTypeRemote.rawValue)  )) {
+                itemsUsersAndGroups.append(itemOCSharedDto)
+            }
+        }
+        
+        // Manage sharesLink
+        
+        for itemOCSharedDto in itemsLink {
+            
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
+            let fileName = NSString(string: fullPath).lastPathComponent
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
+            
+            if serverUrl.hasSuffix("/") {
+                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
+            }
+            
+            if itemOCSharedDto.idRemoteShared > 0 {
+                _ = self.addShareLink("\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
+            }
+        }
+        
+        // Manage sharesUserAndGroup
+        
+        var paths = [String:[String]]()
+        
+        for itemOCSharedDto in itemsUsersAndGroups {
+            
+            if paths[itemOCSharedDto.path] != nil {
+                
+                var share : [String] = paths[itemOCSharedDto.path]!
+                share.append("\(itemOCSharedDto.idRemoteShared)")
+                paths[itemOCSharedDto.path] = share
+                
+            } else {
+                
+                paths[itemOCSharedDto.path] = ["\(itemOCSharedDto.idRemoteShared)"]
+            }
+        }
+        
+        for (path, idsRemoteSharedArray) in paths {
+            
+            let idsRemoteShared = idsRemoteSharedArray.joined(separator: ",")
+            
+            print("[LOG] share \(String(describing: idsRemoteShared))")
+            
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(path)"
+            let fileName = NSString(string: fullPath).lastPathComponent
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
+            
+            if serverUrl.hasSuffix("/") {
+                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
+            }
+            
+            _ = self.addShareUserAndGroup(idsRemoteShared, fileName: fileName, serverUrl: serverUrl, account: account)
         }
     }
     
@@ -2506,7 +2567,7 @@ class NCManageDatabase: NSObject {
         
         return Array(results)
     }
-
+    
     //MARK: -
     //MARK: Table Tag
     
