@@ -1919,7 +1919,7 @@
                 [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
             
 #ifdef DEBUG
-            [[NCManageDatabase sharedInstance] updateShareV2:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] updateShareV2:items activeUrl:appDelegate.activeUrl account:account];
 #else
             NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
             if (result) {

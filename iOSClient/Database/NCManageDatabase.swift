@@ -2328,7 +2328,7 @@ class NCManageDatabase: NSObject {
         return ["\(serverUrl)\(fileName)" : share]
     }
     
-    @objc func addShareV2(shareLink: String, shareUserAndGroup: String, fileName: String, serverUrl: String, account: String, sharedDto: OCSharedDto) {
+    @objc func addShareV2(fileName: String, serverUrl: String, account: String, sharedDto: OCSharedDto) {
         
         let realm = try! Realm()
 
@@ -2368,8 +2368,6 @@ class NCManageDatabase: NSObject {
 
         addObject.fileName = fileName
         addObject.serverUrl = serverUrl
-        addObject.shareLink = shareLink
-        addObject.shareUserAndGroup = shareUserAndGroup
         
         realm.add(addObject)
         
@@ -2452,27 +2450,11 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func updateShareV2(_ items: [String:OCSharedDto], activeUrl: String, account: String) {
+    @objc func updateShareV2(_ items: [OCSharedDto], activeUrl: String, account: String) {
         
         self.removeShareActiveAccount(account: account)
         
-        var itemsLink = [OCSharedDto]()
-        var itemsUsersAndGroups = [OCSharedDto]()
-        
-        for (_, itemOCSharedDto) in items {
-            
-            if (itemOCSharedDto.shareType == Int(shareTypeLink.rawValue)) {
-                itemsLink.append(itemOCSharedDto)
-            }
-            
-            if (itemOCSharedDto.shareWith.count > 0 && (itemOCSharedDto.shareType == Int(shareTypeUser.rawValue) || itemOCSharedDto.shareType == Int(shareTypeGroup.rawValue) || itemOCSharedDto.shareType == Int(shareTypeRemote.rawValue)  )) {
-                itemsUsersAndGroups.append(itemOCSharedDto)
-            }
-        }
-        
-        // Manage sharesLink
-        
-        for itemOCSharedDto in itemsLink {
+        for itemOCSharedDto in items {
             
             let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
             let fileName = NSString(string: fullPath).lastPathComponent
@@ -2480,26 +2462,8 @@ class NCManageDatabase: NSObject {
             if serverUrl.hasSuffix("/") {
                 serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
             }
-            
-            if itemOCSharedDto.idRemoteShared > 0 {
-                _ = self.addShareV2(shareLink: "\(itemOCSharedDto.idRemoteShared)", shareUserAndGroup: "", fileName: fileName, serverUrl: serverUrl, account: account, sharedDto: itemOCSharedDto)
-            }
-        }
-        
-        // Manage sharesUserAndGroup
-        
-        for itemOCSharedDto in itemsUsersAndGroups {
-            
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
-            let fileName = NSString(string: fullPath).lastPathComponent
-            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
-            if serverUrl.hasSuffix("/") {
-                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
-            }
-            
-            if itemOCSharedDto.idRemoteShared > 0 {
-                _ = self.addShareV2(shareLink: "", shareUserAndGroup: "\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account, sharedDto: itemOCSharedDto)
-            }
+                
+            addShareV2(fileName: fileName, serverUrl: serverUrl, account: account, sharedDto: itemOCSharedDto)
         }
     }
     

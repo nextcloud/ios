@@ -411,9 +411,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
     @IBOutlet weak var buttonAddAnotherLink: UIButton!
     @IBOutlet weak var labelAddAnotherLink: UILabel!
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     public let width: CGFloat = 250
     public let height: CGFloat = 470
     public var tableShare: tableShare?
+    public var metadata: tableMetadata?
     public var viewWindow: UIView?
     
     override func awakeFromNib() {
@@ -504,10 +507,57 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
             textViewNoteToRecipient.text = ""
         }
     }
+    
+    func readShareNetwork() {
+        OCNetworking.sharedManager()?.readShare(withAccount: metadata!.account, completion: { (account, items, message, errorCode) in
+            if errorCode == 0 {
+                let itemsOCSharedDto = items as! [OCSharedDto]
+                NCManageDatabase.sharedInstance.updateShareV2(itemsOCSharedDto, activeUrl: self.appDelegate.activeUrl, account: account!)
+                for item in itemsOCSharedDto {
+                    if self.tableShare!.idRemoteShared == item.idRemoteShared {
+                    }
+                }
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+            
+            
+        })
+    }
+    
+    func shareNetwork(password: String, permission: Int, hideDownload: Bool) {
+        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: metadata!.serverUrl, activeUrl: appDelegate.activeUrl)!
+        OCNetworking.sharedManager()?.share(withAccount: metadata!.account, fileName: fileName, password: password, permission: permission, hideDownload: hideDownload, completion: { (account, message, errorCode) in
+            if errorCode == 0 {
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+        })
+    }
+    
+    func unShareNetwork() {
+        OCNetworking.sharedManager()?.unshareAccount(metadata!.account, shareID: tableShare!.idRemoteShared, completion: { (account, message, errorCode) in
+            if errorCode == 0 {
+                
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+        })
+    }
+    
+    func updateShareNetwork(password: String?, permission: Int, expirationTime: String?, hideDownload: Bool) {
+        OCNetworking.sharedManager()?.shareUpdateAccount(metadata!.account, shareID: tableShare!.idRemoteShared, password: password, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
+            if errorCode == 0 {
+                
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+        })
+    }
 }
 
 // --------------------------------------------------------------------------------------------
-// ===== Networking =====
+// ===== Utility =====
 // --------------------------------------------------------------------------------------------
 
 class NCShareUtility: NSObject {
