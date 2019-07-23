@@ -271,7 +271,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     @IBAction func touchUpInsideAddShareLink(_ sender: Any) {
-        NCShareUtility.sharedInstance.openViewMenuShareLink(view: self.view, height: height, idRemoteShared: 0)
+        
+        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        if shares.firstShareLink != nil {
+            tapMenu(with: shares.firstShareLink!.idRemoteShared, sender: sender)
+        } else {
+            tapMenu(with: 0, sender: sender)
+        }
     }
     
     func tapCopy(with idRemoteShared: Int, sender: Any) {
