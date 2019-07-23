@@ -259,7 +259,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         addShareLinkButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 40, height: 40, color: UIColor.gray), for: .normal)
 
-        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 200, height: 200, color: NCBrandColor.sharedInstance.nextcloud)
+        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 200, height: 200, color: NCBrandColor.sharedInstance.customer)
         let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 200, height: 200, color: UIColor.white)
         UIGraphicsBeginImageContextWithOptions(CGSize(width: iconShare, height: iconShare), false, 0.0)
         bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: iconShare, height: iconShare)))
@@ -267,11 +267,52 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
         shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        sharesTable = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         viewMenuShareLink?.removeFromSuperview()
+    }
+}
+
+extension NCShare: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
+}
+
+extension NCShare: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        var numOfRows = 0
+        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        
+        if shares.share != nil {
+            numOfRows = shares.share!.count
+        }
+        
+        return numOfRows
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        let tableShare = shares.share![indexPath.row]
+        
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? activityTableViewCell {
+           
+            
+            return cell
+        }
+        
+        return UITableViewCell()
     }
 }
 

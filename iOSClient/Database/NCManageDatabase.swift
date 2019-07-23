@@ -2620,14 +2620,19 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
     
-    @objc func getTableSharesV2(metadata: tableMetadata) -> [tableShare]? {
+    func getTableSharesV2(metadata: tableMetadata) -> (firstShareLink: tableShare?,  share: [tableShare]?) {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "fileName", ascending: true)
-        
-        return Array(results.map { tableShare.init(value:$0) })
+        let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareLink != ''", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "fileName", ascending: true).first
+        if firstShareLink == nil {
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "fileName", ascending: true)
+            return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
+        } else {
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareLink != %@", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink!.shareLink).sorted(byKeyPath: "fileName", ascending: true)
+            return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
+        }
     }
     
     //MARK: -
