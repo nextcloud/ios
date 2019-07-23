@@ -457,6 +457,52 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
     
     func loadData(_ tableShare: tableShare?) {
         self.tableShare = tableShare
+        
+        // Allow editing
+        if tableShare != nil && tableShare!.permissions > 1 {
+            switchAllowEditing.setOn(true, animated: true)
+        } else {
+            switchAllowEditing.setOn(false, animated: true)
+        }
+        
+        // Hide download
+        if tableShare != nil && tableShare!.hideDownload {
+            switchHideDownload.setOn(true, animated: true)
+        } else {
+            switchHideDownload.setOn(false, animated: true)
+        }
+        
+        // Password protect
+        if tableShare != nil && tableShare!.shareWith.count > 0 {
+            switchPasswordProtect.setOn(true, animated: true)
+            fieldPasswordProtect.isEnabled = true
+            fieldPasswordProtect.text = tableShare!.shareWith
+        } else {
+            switchPasswordProtect.setOn(false, animated: true)
+            fieldPasswordProtect.isEnabled = false
+            fieldPasswordProtect.text = ""
+        }
+        
+        // Set expiration date
+        if tableShare != nil && tableShare!.expirationDate != nil {
+            switchSetExpirationDate.setOn(true, animated: true)
+            switchSetExpirationDate.isEnabled = true
+            let dateFormatter = DateFormatter()
+            dateFormatter.formatterBehavior = .behavior10_4
+            dateFormatter.dateStyle = .short
+            fieldSetExpirationDate.text = dateFormatter.string(from: tableShare!.expirationDate! as Date)
+        } else {
+            switchSetExpirationDate.setOn(false, animated: true)
+            switchSetExpirationDate.isEnabled = false
+            fieldSetExpirationDate.text = ""
+        }
+        
+        // Note to recipient
+        if tableShare != nil {
+            textViewNoteToRecipient.text = tableShare!.note
+        } else {
+            textViewNoteToRecipient.text = ""
+        }
     }
 }
 

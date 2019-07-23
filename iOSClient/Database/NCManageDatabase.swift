@@ -2339,7 +2339,9 @@ class NCManageDatabase: NSObject {
         addObject.account = account
         addObject.displayNameFileOwner = sharedDto.displayNameFileOwner
         addObject.displayNameOwner = sharedDto.displayNameOwner
-        addObject.expirationDate =  Date(timeIntervalSince1970: TimeInterval(sharedDto.expirationDate)) as NSDate
+        if sharedDto.expirationDate > 0 {
+            addObject.expirationDate =  Date(timeIntervalSince1970: TimeInterval(sharedDto.expirationDate)) as NSDate
+        }
         addObject.fileParent = sharedDto.fileParent
         addObject.fileTarget = sharedDto.fileTarget
         addObject.hideDownload = sharedDto.hideDownload
