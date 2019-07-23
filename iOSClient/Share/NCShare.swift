@@ -270,12 +270,16 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         viewMenuShareLink?.removeFromSuperview()
     }
     
+    @IBAction func touchUpInsideAddShareLink(_ sender: Any) {
+        NCShareUtility.sharedInstance.openViewMenuShareLink(view: self.view, height: height, idRemoteShared: 0)
+    }
+    
     func tapCopy(with idRemoteShared: Int, sender: Any) {
         
     }
     
     func tapMenu(with idRemoteShared: Int, sender: Any) {
-        
+        NCShareUtility.sharedInstance.openViewMenuShareLink(view: self.view, height: height, idRemoteShared: idRemoteShared)
     }
 }
 
@@ -356,44 +360,9 @@ protocol NCShareLinkCellDelegate {
     func tapMenu(with idRemoteShared: Int, sender: Any)
 }
 
-// MARK: - AddShareLink
-
-extension NCShare {
-    
-    @IBAction func touchUpInsideAddShareLink(_ sender: Any) {
-        
-        let globalPoint = self.view!.superview?.convert(self.view.frame.origin, to: nil)
-
-        let window = UIApplication.shared.keyWindow!
-        viewMenuShareLink = UIView(frame: window.bounds)
-        window.addSubview(viewMenuShareLink!)
-        
-        let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        let shareLinkMenuViewX = self.view.bounds.width - (shareLinkMenuView?.frame.width)! - 40 + globalPoint!.x
-        var shareLinkMenuViewY = height + 10 + globalPoint!.y
-        if (self.view.bounds.height - (height + 10))  < shareLinkMenuView!.height {
-            shareLinkMenuViewY = shareLinkMenuViewY - height
-        }
-        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView!.width, height: shareLinkMenuView!.height)
-        viewMenuShareLink?.addSubview(shareLinkMenuView!)
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tapHandler))
-        tap.delegate = self
-        viewMenuShareLink?.addGestureRecognizer(tap)
-    }
-    
-    @objc func tapHandler(gesture: UITapGestureRecognizer) {
-        viewMenuShareLink?.removeFromSuperview()
-    }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return gestureRecognizer.view == touch.view
-    }
-}
-
 // MARK: - hareLinkMenuView
 
-class NCShareLinkMenuView: UIView {
+class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var switchAllowEditing: UISwitch!
     @IBOutlet weak var labelAllowEditing: UILabel!
@@ -422,6 +391,7 @@ class NCShareLinkMenuView: UIView {
     public let width: CGFloat = 250
     public let height: CGFloat = 470
     public var idRemoteShared: Int = 0
+    public var viewWindow: UIView?
     
     override func awakeFromNib() {
         
@@ -445,6 +415,22 @@ class NCShareLinkMenuView: UIView {
         buttonDeleteShareLink.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor.black), for: .normal)
         buttonAddAnotherLink.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor.black), for: .normal)
     }
+    
+    func addTap(view: UIView) {
+        self.viewWindow = view
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapHandler))
+        tap.delegate = self
+        viewWindow?.addGestureRecognizer(tap)
+    }
+    
+    @objc func tapHandler(gesture: UITapGestureRecognizer) {
+        viewWindow?.removeFromSuperview()
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return gestureRecognizer.view == touch.view
+    }
 }
 
 class NCShareUtility: NSObject {
@@ -466,6 +452,26 @@ class NCShareUtility: NSObject {
         UIGraphicsEndImageContext()
         
         return image
+    }
+    
+    func openViewMenuShareLink(view: UIView, height: CGFloat, idRemoteShared: Int) {
+        
+        let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
+        
+        let window = UIApplication.shared.keyWindow!
+        let viewWindow = UIView(frame: window.bounds)
+        window.addSubview(viewWindow)
+        
+        let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
+        shareLinkMenuView?.idRemoteShared = idRemoteShared
+        shareLinkMenuView?.addTap(view: viewWindow)
+        let shareLinkMenuViewX = view.bounds.width - (shareLinkMenuView?.frame.width)! - 40 + globalPoint!.x
+        var shareLinkMenuViewY = height + 10 + globalPoint!.y
+        if (view.bounds.height - (height + 10))  < shareLinkMenuView!.height {
+            shareLinkMenuViewY = shareLinkMenuViewY - height
+        }
+        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView!.width, height: shareLinkMenuView!.height)
+        viewWindow.addSubview(shareLinkMenuView!)
     }
 }
 
