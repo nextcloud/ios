@@ -228,14 +228,13 @@ class NCShareComments: UIViewController {
 
 // MARK: - Share
 
-class NCShare: UIViewController, UIGestureRecognizerDelegate {
+class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate {
     
     var metadata: tableMetadata?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     public var height: CGFloat = 0
     
-    private let iconShare: CGFloat = 200
     private var viewMenuShareLink: UIView?
     private var shareLinkMenuView: NCShareLinkMenuView?
     private var sharesTable: [tableShare]?
@@ -258,21 +257,25 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate {
         returnSearchButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "arrowRight"), width: 40, height: 40, color: UIColor.gray), for: .normal)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         addShareLinkButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 40, height: 40, color: UIColor.gray), for: .normal)
-
-        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 200, height: 200, color: NCBrandColor.sharedInstance.customer)
-        let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 200, height: 200, color: UIColor.white)
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: iconShare, height: iconShare), false, 0.0)
-        bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: iconShare, height: iconShare)))
-        topImage?.draw(in: CGRect(origin:  CGPoint(x: iconShare/4, y: iconShare/4), size: CGSize(width: iconShare/2, height: iconShare/2)))
-        shareLinkImage.image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        shareLinkImage.image = NCShareUtility.sharedInstance.createLinkAvatar()
         
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.allowsSelection = false
+        
+        tableView.register(UINib.init(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         viewMenuShareLink?.removeFromSuperview()
+    }
+    
+    func tapCopy(with idRemoteShared: Int, sender: Any) {
+        
+    }
+    
+    func tapMenu(with idRemoteShared: Int, sender: Any) {
+        
     }
 }
 
@@ -307,9 +310,9 @@ extension NCShare: UITableViewDataSource {
         let tableShare = shares.share![indexPath.row]
         
         if tableShare.shareLink != "" {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareLinkCell {
-                
-                
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
+                cell.idRemoteShared = tableShare.idRemoteShared
+                cell.delegate = self
                 return cell
             }
         }
@@ -320,10 +323,37 @@ extension NCShare: UITableViewDataSource {
 
 class NCShareLinkCell: UITableViewCell {
     
+    private let iconShare: CGFloat = 200
+    
+    var idRemoteShared: Int = 0
+    var delegate: NCShareLinkCellDelegate?
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonCopy: UIButton!
     @IBOutlet weak var buttonMenu: UIButton!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        imageItem.image = NCShareUtility.sharedInstance.createLinkAvatar()
+        labelTitle.text = NSLocalizedString("_share_link_", comment: "")
+        buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width:100, height: 100, color: UIColor.gray), for: .normal)
+        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
+    }
+    
+    @IBAction func touchUpInsideCopy(_ sender: Any) {
+        delegate?.tapCopy(with: idRemoteShared, sender: sender)
+    }
+    
+    @IBAction func touchUpInsideMenu(_ sender: Any) {
+        delegate?.tapMenu(with: idRemoteShared, sender: sender)
+    }
+}
+
+protocol NCShareLinkCellDelegate {
+    func tapCopy(with idRemoteShared: Int, sender: Any)
+    func tapMenu(with idRemoteShared: Int, sender: Any)
 }
 
 // MARK: - AddShareLink
@@ -391,6 +421,7 @@ class NCShareLinkMenuView: UIView {
     
     public let width: CGFloat = 250
     public let height: CGFloat = 470
+    public var idRemoteShared: Int = 0
     
     override func awakeFromNib() {
         
@@ -415,3 +446,26 @@ class NCShareLinkMenuView: UIView {
         buttonAddAnotherLink.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor.black), for: .normal)
     }
 }
+
+class NCShareUtility: NSObject {
+    @objc static let sharedInstance: NCShareUtility = {
+        let instance = NCShareUtility()
+        return instance
+    }()
+    
+    func createLinkAvatar() -> UIImage? {
+        
+        let size: CGFloat = 200
+        
+        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: NCBrandColor.sharedInstance.brand)
+        let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: size, height: size, color: UIColor.white)
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0.0)
+        bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
+        topImage?.draw(in: CGRect(origin:  CGPoint(x: size/4, y: size/4), size: CGSize(width: size/2, height: size/2)))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+}
+

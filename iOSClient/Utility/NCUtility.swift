@@ -26,7 +26,6 @@ import SVGKit
 import KTVHTTPCache
 
 class NCUtility: NSObject {
-
     @objc static let sharedInstance: NCUtility = {
         let instance = NCUtility()
         return instance
