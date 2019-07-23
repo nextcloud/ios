@@ -257,7 +257,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         returnSearchButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "arrowRight"), width: 100, height: 100, color: UIColor.gray), for: .normal)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         shareLinkImage.image = NCShareUtility.sharedInstance.createLinkAvatar()
-        
+        buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
@@ -272,10 +273,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
+        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        tapCopy(with: shares.firstShareLink, sender: sender)
     }
     
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
-        
         let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
         if shares.firstShareLink != nil {
             tapMenu(with: shares.firstShareLink!, sender: sender)
@@ -285,7 +287,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     func tapCopy(with tableShare: tableShare?, sender: Any) {
-        
+        NCShareUtility.sharedInstance.copyLink(tableShare: tableShare, viewController: self)
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
@@ -296,8 +298,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
         if shares.firstShareLink == nil {
             buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareAdd"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+            buttonCopy.isHidden = true
         } else {
             buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+            buttonCopy.isHidden = false
         }
     }
 }
@@ -499,6 +503,29 @@ class NCShareUtility: NSObject {
         }
         shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView!.width, height: shareLinkMenuView!.height)
         viewWindow.addSubview(shareLinkMenuView!)
+    }
+    
+    func copyLink(tableShare: tableShare?, viewController: UIViewController) {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        var url: String = ""
+
+        guard let tableShare = tableShare else { return }
+        
+        if tableShare.token.hasPrefix("http://") || tableShare.token.hasPrefix("https://") {
+            url = tableShare.token
+        } else if tableShare.url != "" {
+            url = tableShare.url
+        } else {
+            url = appDelegate.activeUrl + "/" + k_share_link_middle_part_url_after_version_8 + tableShare.token
+        }
+        
+        if let name = URL(string: url), !name.absoluteString.isEmpty {
+            let objectsToShare = [name]
+            
+            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            viewController.present(activityVC, animated: true, completion: nil)
+        }
     }
 }
 

@@ -99,13 +99,13 @@
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share link" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SQW-aQ-ydN">
-                                        <rect key="frame" x="53" y="75" width="276" height="18"/>
+                                        <rect key="frame" x="53" y="75" width="261" height="18"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qek-aQ-NjE" userLabel="ButtonMenu">
-                                        <rect key="frame" x="379" y="74" width="20" height="20"/>
+                                        <rect key="frame" x="374" y="74" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="BAT-jK-rUt"/>
                                             <constraint firstAttribute="height" constant="20" id="zc5-W6-SXG"/>
@@ -116,7 +116,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cLd-wD-cSC" userLabel="ButtonCopy">
-                                        <rect key="frame" x="339" y="74" width="20" height="20"/>
+                                        <rect key="frame" x="324" y="74" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="Bzl-zW-yzd"/>
                                             <constraint firstAttribute="height" constant="20" id="RIV-EC-kwC"/>
@@ -140,10 +140,10 @@
                                     <constraint firstAttribute="bottom" secondItem="c94-b9-Sim" secondAttribute="bottom" id="Svm-RV-vnl"/>
                                     <constraint firstItem="8Cj-cK-AKZ" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" constant="5" id="WlZ-CY-x4s"/>
                                     <constraint firstAttribute="trailing" secondItem="f5j-bG-pbj" secondAttribute="trailing" constant="5" id="Yb4-KO-nwi"/>
-                                    <constraint firstItem="Qek-aQ-NjE" firstAttribute="leading" secondItem="cLd-wD-cSC" secondAttribute="trailing" constant="20" id="bSw-vM-d12"/>
+                                    <constraint firstItem="Qek-aQ-NjE" firstAttribute="leading" secondItem="cLd-wD-cSC" secondAttribute="trailing" constant="30" id="bSw-vM-d12"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" constant="5" id="d8E-WM-YfC"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="top" secondItem="X2m-IC-J1u" secondAttribute="top" constant="20" id="jPM-Uo-0lS"/>
-                                    <constraint firstAttribute="trailing" secondItem="Qek-aQ-NjE" secondAttribute="trailing" constant="5" id="puY-4D-ARy"/>
+                                    <constraint firstAttribute="trailing" secondItem="Qek-aQ-NjE" secondAttribute="trailing" constant="10" id="puY-4D-ARy"/>
                                     <constraint firstItem="c94-b9-Sim" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" id="rvD-u3-Dug"/>
                                     <constraint firstItem="8Cj-cK-AKZ" firstAttribute="top" secondItem="iSO-mc-0TB" secondAttribute="bottom" constant="14" id="shO-sV-GWB"/>
                                     <constraint firstItem="cLd-wD-cSC" firstAttribute="centerY" secondItem="8Cj-cK-AKZ" secondAttribute="centerY" id="xia-sb-RNk"/>
