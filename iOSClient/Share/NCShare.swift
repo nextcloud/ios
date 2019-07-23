@@ -513,10 +513,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
                 NCManageDatabase.sharedInstance.addShareV2(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
-                for item in itemsOCSharedDto {
-                    if self.tableShare!.idRemoteShared == item.idRemoteShared {
-                    }
-                }
+                
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }

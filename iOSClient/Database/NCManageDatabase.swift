@@ -2585,14 +2585,26 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareLink != ''", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "fileName", ascending: true).first
+        let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == %d", metadata.account, metadata.serverUrl, metadata.fileName, Int(shareTypeLink.rawValue)).first
         if firstShareLink == nil {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "fileName", ascending: true)
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "idRemoteShared", ascending: true)
             return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
         } else {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareLink != %@", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink!.shareLink).sorted(byKeyPath: "fileName", ascending: true)
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idRemoteShared != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink!.idRemoteShared).sorted(byKeyPath: "idRemoteShared", ascending: true)
             return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
         }
+    }
+    
+    @objc func getTableShares(account: String, idRemoteShared: Int) -> tableShare? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableShare.self).filter("account = %@ AND idRemoteShared = %d", account, idRemoteShared).first else {
+            return nil
+        }
+        
+        return tableShare.init(value: result)
     }
     
     //MARK: -
