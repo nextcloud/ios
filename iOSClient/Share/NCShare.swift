@@ -237,14 +237,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     private var viewMenuShareLink: UIView?
     private var shareLinkMenuView: NCShareLinkMenuView?
-    private var sharesTable: [tableShare]?
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var returnSearchButton: UIButton!
     @IBOutlet weak var shareLinkImage: UIImageView!
     @IBOutlet weak var shareLinkLabel: UILabel!
-    @IBOutlet weak var addShareLinkButton: UIButton!
+    @IBOutlet weak var buttonCopy: UIButton!
+    @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
@@ -254,9 +254,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
-        returnSearchButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "arrowRight"), width: 40, height: 40, color: UIColor.gray), for: .normal)
+        returnSearchButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "arrowRight"), width: 100, height: 100, color: UIColor.gray), for: .normal)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
-        addShareLinkButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 40, height: 40, color: UIColor.gray), for: .normal)
         shareLinkImage.image = NCShareUtility.sharedInstance.createLinkAvatar()
         
         tableView.dataSource = self
@@ -264,28 +263,42 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         tableView.allowsSelection = false
         
         tableView.register(UINib.init(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
+        
+        reloadData()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         viewMenuShareLink?.removeFromSuperview()
     }
     
-    @IBAction func touchUpInsideAddShareLink(_ sender: Any) {
+    @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
+    }
+    
+    @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
         
         let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
         if shares.firstShareLink != nil {
-            tapMenu(with: shares.firstShareLink!.idRemoteShared, sender: sender)
+            tapMenu(with: shares.firstShareLink!, sender: sender)
         } else {
-            tapMenu(with: 0, sender: sender)
+            tapMenu(with: nil, sender: sender)
         }
     }
     
-    func tapCopy(with idRemoteShared: Int, sender: Any) {
+    func tapCopy(with tableShare: tableShare?, sender: Any) {
         
     }
     
-    func tapMenu(with idRemoteShared: Int, sender: Any) {
-        NCShareUtility.sharedInstance.openViewMenuShareLink(view: self.view, height: height, idRemoteShared: idRemoteShared)
+    func tapMenu(with tableShare: tableShare?, sender: Any) {
+        NCShareUtility.sharedInstance.openViewMenuShareLink(view: self.view, height: height, tableShare: tableShare)
+    }
+    
+    func reloadData() {
+        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        if shares.firstShareLink == nil {
+            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareAdd"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+        } else {
+            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+        }
     }
 }
 
@@ -321,7 +334,7 @@ extension NCShare: UITableViewDataSource {
         
         if tableShare.shareLink != "" {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
-                cell.idRemoteShared = tableShare.idRemoteShared
+                cell.tableShare = tableShare
                 cell.delegate = self
                 return cell
             }
@@ -335,7 +348,7 @@ class NCShareLinkCell: UITableViewCell {
     
     private let iconShare: CGFloat = 200
     
-    var idRemoteShared: Int = 0
+    var tableShare: tableShare?
     var delegate: NCShareLinkCellDelegate?
 
     @IBOutlet weak var imageItem: UIImageView!
@@ -353,20 +366,20 @@ class NCShareLinkCell: UITableViewCell {
     }
     
     @IBAction func touchUpInsideCopy(_ sender: Any) {
-        delegate?.tapCopy(with: idRemoteShared, sender: sender)
+        delegate?.tapCopy(with: tableShare, sender: sender)
     }
     
     @IBAction func touchUpInsideMenu(_ sender: Any) {
-        delegate?.tapMenu(with: idRemoteShared, sender: sender)
+        delegate?.tapMenu(with: tableShare, sender: sender)
     }
 }
 
 protocol NCShareLinkCellDelegate {
-    func tapCopy(with idRemoteShared: Int, sender: Any)
-    func tapMenu(with idRemoteShared: Int, sender: Any)
+    func tapCopy(with tableShare: tableShare?, sender: Any)
+    func tapMenu(with tableShare: tableShare?, sender: Any)
 }
 
-// MARK: - hareLinkMenuView
+// MARK: - ShareLinkMenuView
 
 class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
     
@@ -396,7 +409,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
     
     public let width: CGFloat = 250
     public let height: CGFloat = 470
-    public var idRemoteShared: Int = 0
+    public var tableShare: tableShare?
     public var viewWindow: UIView?
     
     override func awakeFromNib() {
@@ -437,7 +450,15 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return gestureRecognizer.view == touch.view
     }
+    
+    func loadData(_ tableShare: tableShare?) {
+        self.tableShare = tableShare
+    }
 }
+
+// --------------------------------------------------------------------------------------------
+// ===== Networking =====
+// --------------------------------------------------------------------------------------------
 
 class NCShareUtility: NSObject {
     @objc static let sharedInstance: NCShareUtility = {
@@ -460,7 +481,7 @@ class NCShareUtility: NSObject {
         return image
     }
     
-    func openViewMenuShareLink(view: UIView, height: CGFloat, idRemoteShared: Int) {
+    func openViewMenuShareLink(view: UIView, height: CGFloat, tableShare: tableShare?) {
         
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
         
@@ -469,8 +490,8 @@ class NCShareUtility: NSObject {
         window.addSubview(viewWindow)
         
         let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        shareLinkMenuView?.idRemoteShared = idRemoteShared
         shareLinkMenuView?.addTap(view: viewWindow)
+        shareLinkMenuView?.loadData(tableShare)
         let shareLinkMenuViewX = view.bounds.width - (shareLinkMenuView?.frame.width)! - 40 + globalPoint!.x
         var shareLinkMenuViewY = height + 10 + globalPoint!.y
         if (view.bounds.height - (height + 10))  < shareLinkMenuView!.height {
