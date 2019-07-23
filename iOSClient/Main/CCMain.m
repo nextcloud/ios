@@ -1913,14 +1913,14 @@
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
+#ifdef DEBUG
+            [[NCManageDatabase sharedInstance] addShareV2WithAccount:account activeUrl:appDelegate.activeUrl items:items];
+#else
             [appDelegate.sharesID removeAllObjects];
             
             for (OCSharedDto *item in items)
                 [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
             
-#ifdef DEBUG
-            [[NCManageDatabase sharedInstance] updateShareV2:items activeUrl:appDelegate.activeUrl account:account];
-#else
             NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
             if (result) {
                 appDelegate.sharesLink = result[0];

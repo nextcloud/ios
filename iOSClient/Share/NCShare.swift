@@ -512,7 +512,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
         OCNetworking.sharedManager()?.readShare(withAccount: metadata!.account, completion: { (account, items, message, errorCode) in
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
-                NCManageDatabase.sharedInstance.updateShareV2(itemsOCSharedDto, activeUrl: self.appDelegate.activeUrl, account: account!)
+                NCManageDatabase.sharedInstance.addShareV2(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
                 for item in itemsOCSharedDto {
                     if self.tableShare!.idRemoteShared == item.idRemoteShared {
                     }
