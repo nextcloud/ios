@@ -306,14 +306,24 @@ extension NCShare: UITableViewDataSource {
         let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
         let tableShare = shares.share![indexPath.row]
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? activityTableViewCell {
-           
-            
-            return cell
+        if tableShare.shareLink != "" {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareLinkCell {
+                
+                
+                return cell
+            }
         }
         
         return UITableViewCell()
     }
+}
+
+class NCShareLinkCell: UITableViewCell {
+    
+    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var buttonCopy: UIButton!
+    @IBOutlet weak var buttonMenu: UIButton!
 }
 
 // MARK: - AddShareLink
