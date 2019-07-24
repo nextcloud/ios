@@ -184,6 +184,9 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="25" id="wQO-6d-vWV"/>
                     </constraints>
+                    <connections>
+                        <action selector="buttonAddAnotherLinkWithSender:" destination="iN0-l3-epB" eventType="touchUpInside" id="1Ea-g9-pQ8"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
