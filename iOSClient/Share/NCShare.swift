@@ -23,6 +23,7 @@
 
 import Foundation
 import Parchment
+import FSCalendar
 
 class NCSharePaging: UIViewController {
     
@@ -297,7 +298,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
-        NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, height: height, tableShare: tableShare, metadata: metadata!)
+        NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, tableShare: tableShare, metadata: metadata!)
     }
     
     @objc func reloadData() {
@@ -405,7 +406,7 @@ protocol NCShareLinkCellDelegate {
 
 // MARK: - ShareLinkMenuView
 
-class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate {
+class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, FSCalendarDelegate {
     
     @IBOutlet weak var switchAllowEditing: UISwitch!
     @IBOutlet weak var labelAllowEditing: UILabel!
@@ -442,6 +443,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     private var tableShare: tableShare?
     public var metadata: tableMetadata?
     public var viewWindow: UIView?
+    private var viewWindowCalendar: UIView?
     
     override func awakeFromNib() {
         
@@ -454,7 +456,6 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.masksToBounds = false
         layer.shadowOffset = CGSize(width: 2, height: 2)
         layer.shadowOpacity = 0.2
-        layer.cornerRadius = 5
         
         switchAllowEditing.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchHideDownload.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
@@ -465,6 +466,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         textViewNoteToRecipient.layer.borderWidth = 0.5
         textViewNoteToRecipient.layer.masksToBounds = false
         textViewNoteToRecipient.layer.cornerRadius = 5
+        
+        fieldSetExpirationDate.inputView = UIView()
 
         imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor.black)
         imageDeleteShareLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor.black)
@@ -521,6 +524,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         if tableShare != nil && tableShare!.expirationDate != nil {
             switchSetExpirationDate.setOn(true, animated: false)
             switchSetExpirationDate.isEnabled = true
+            
             let dateFormatter = DateFormatter()
             dateFormatter.formatterBehavior = .behavior10_4
             dateFormatter.dateStyle = .short
@@ -585,6 +589,13 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: fieldPasswordProtect.text, permission: 0, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
+    @IBAction func fieldSetExpirationDate(sender: UITextField) {
+        
+        let calendar = NCShareCommon.sharedInstance.openCalendar(view: self, width: width, height: height)
+        calendar.calendar.delegate = self
+        viewWindowCalendar = calendar.viewWindow
+    }
+    
     @IBAction func buttonSendNoteToRecipient(sender: UIButton) {
         
         guard let tableShare = self.tableShare else { return }
@@ -628,6 +639,18 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     func updateShareWithError(idRemoteShared: Int) {
         reloadData(idRemoteShared: idRemoteShared)
     }
+    
+    // delegate calendar
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.formatterBehavior = .behavior10_4
+        dateFormatter.dateStyle = .short
+        fieldSetExpirationDate.text = dateFormatter.string(from:date)
+        fieldSetExpirationDate.endEditing(true)
+        
+        viewWindowCalendar?.removeFromSuperview()
+    }
 }
 
 // --------------------------------------------------------------------------------------------
@@ -655,7 +678,7 @@ class NCShareCommon: NSObject {
         return image
     }
     
-    func openViewMenuShareLink(view: UIView, height: CGFloat, tableShare: tableShare?, metadata: tableMetadata) {
+    func openViewMenuShareLink(view: UIView, tableShare: tableShare?, metadata: tableMetadata) {
         
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
         
@@ -667,13 +690,35 @@ class NCShareCommon: NSObject {
         shareLinkMenuView?.addTap(view: viewWindow)
         shareLinkMenuView?.metadata = metadata
         shareLinkMenuView?.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
-        let shareLinkMenuViewX = view.bounds.width - (shareLinkMenuView?.frame.width)! - 40 + globalPoint!.x
-        var shareLinkMenuViewY = height + 10 + globalPoint!.y
-        if (view.bounds.height - (height + 10))  < shareLinkMenuView!.height {
-            shareLinkMenuViewY = shareLinkMenuViewY - height
-        }
+        let shareLinkMenuViewX = view.bounds.width/2 - (shareLinkMenuView?.frame.width)!/2 + globalPoint!.x
+        let shareLinkMenuViewY = globalPoint!.y + 10
+       
         shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView!.width, height: shareLinkMenuView!.height)
         viewWindow.addSubview(shareLinkMenuView!)
+    }
+    
+    func openCalendar(view: UIView, width: CGFloat, height: CGFloat) -> (calendar: FSCalendar, viewWindow: UIView) {
+        
+        let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
+
+        let window = UIApplication.shared.keyWindow!
+        let viewWindow = UIView(frame: window.bounds)
+        window.addSubview(viewWindow)
+        
+        let calendar = FSCalendar(frame: CGRect(x: globalPoint!.x + 10, y: globalPoint!.y + 100, width: width - 20, height: 300))
+       
+        calendar.backgroundColor = .white
+        calendar.layer.borderColor = UIColor.lightGray.cgColor
+        calendar.layer.borderWidth = 0.5
+        calendar.layer.masksToBounds = false
+        calendar.layer.cornerRadius = 5
+        calendar.layer.masksToBounds = false
+        calendar.layer.shadowOffset = CGSize(width: 2, height: 2)
+        calendar.layer.shadowOpacity = 0.2
+        
+        viewWindow.addSubview(calendar)
+        
+        return(calendar: calendar, viewWindow: viewWindow)
     }
     
     func copyLink(tableShare: tableShare?, viewController: UIViewController) {

@@ -14,6 +14,7 @@ github "malcommac/SwiftRichString" == 3.0.0
 github "yannickl/QRCodeReader.swift" >= 10.1.0
 github "weichsel/ZIPFoundation" == 0.9.9
 github "rechsteiner/Parchment" == 1.6.0
+github "WenchaoD/FSCalendar"
 
 github "https://github.com/marinofaggiana/FastScroll" "master"
 github "https://github.com/marinofaggiana/AFNetworking" "master"

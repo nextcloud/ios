@@ -217,6 +217,7 @@
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
 		F7499A1C2247AD3A00A7D630 /* IMImagemeterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7499A1B2247AD3A00A7D630 /* IMImagemeterView.xib */; };
 		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74AFCE822E8B024003DE61F /* FSCalendar.framework */; };
 		F74E432620B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
 		F74E432720B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
@@ -861,6 +862,7 @@
 		F7496B81208F5651004B299C /* iOSClient.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = iOSClient.plist; sourceTree = "<group>"; };
 		F7496B83208F5652004B299C /* Share.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Share.plist; sourceTree = "<group>"; };
 		F7499A1B2247AD3A00A7D630 /* IMImagemeterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IMImagemeterView.xib; sourceTree = "<group>"; };
+		F74AFCE822E8B024003DE61F /* FSCalendar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FSCalendar.framework; path = Carthage/Build/iOS/FSCalendar.framework; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
 		F74E432420B5547700C2E54C /* NCNetworkingEndToEnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCNetworkingEndToEnd.h; sourceTree = "<group>"; };
@@ -1528,6 +1530,7 @@
 				F75153242226920200323DDC /* FastScroll.framework in Frameworks */,
 				F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */,
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
+				F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */,
 				F7D4B6982295666E000C2C86 /* FirebaseMLVision.framework in Frameworks */,
 				F7D4B6862295663D000C2C86 /* FirebaseCore.framework in Frameworks */,
 				F7D4B68A2295663D000C2C86 /* FIRAnalyticsConnector.framework in Frameworks */,
@@ -2977,6 +2980,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F74AFCE822E8B024003DE61F /* FSCalendar.framework */,
 				F700510222DF6897003A3356 /* Parchment.framework */,
 				F7421EAE2294044B00C4B7C1 /* Accelerate.framework */,
 				F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */,
@@ -3425,6 +3429,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/AFNetworking.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZIPFoundation.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Parchment.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/FSCalendar.framework",
 			);
 			outputPaths = (
 			);

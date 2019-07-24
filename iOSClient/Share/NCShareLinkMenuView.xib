@@ -99,7 +99,10 @@
                     </constraints>
                     <nil key="textColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <textInputTraits key="textInputTraits" textContentType="password"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <action selector="fieldSetExpirationDateWithSender:" destination="iN0-l3-epB" eventType="editingDidBegin" id="5Ou-k5-UM5"/>
+                    </connections>
                 </textField>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="file_txt" translatesAutoresizingMaskIntoConstraints="NO" id="F4T-wQ-tBU">
                     <rect key="frame" x="13" y="278" width="25" height="25"/>
