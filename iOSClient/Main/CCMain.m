@@ -74,6 +74,9 @@
     // Folder
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
+    
+    // Share
+    NSArray *shares;
 }
 @end
 
@@ -191,6 +194,9 @@
         [self searchEnabled:YES];
     }
     
+    // Get Shares
+    shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
+    
     // Query data source
     if (!_isSearchMode) {
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
@@ -296,7 +302,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Initizlize Mail =====
+#pragma mark ===== Initialization =====
 #pragma --------------------------------------------------------------------------------------------
 
 //
@@ -331,15 +337,6 @@
         
         // Clear error certificate
         [CCUtility setCertificateError:appDelegate.activeAccount error:NO];
-        
-        // populate shared Link & User
-        /*
-        NSArray *results = [[NCManageDatabase sharedInstance] getSharesWithAccount:appDelegate.activeAccount];
-        if (results) {
-            appDelegate.sharesLink = results[0];
-            appDelegate.sharesUserAndGroup = results[1];
-        }
-        */
         
         // Setting Theming
         [appDelegate settingThemingColorBrand];
@@ -3728,24 +3725,31 @@
         return [CCCellMain new];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shares:shares];
     
     // NORMAL - > MAIN
     
     if ([cell isKindOfClass:[CCCellMain class]]) {
         
-        NSString *shareLink = @""; //[appDelegate.sharesLink objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
-        NSString *shareUserAndGroup = @""; //[appDelegate.sharesUserAndGroup objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
         BOOL isShare = false;
         BOOL isMounted = false;
+        BOOL haveYouShare = false;
         
         if (_metadataFolder) {
             isShare = [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
             isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_metadataFolder.permissions containsString:k_permission_mounted];
         }
         
+        // have you share ?
+        for (tableShare *share in shares) {
+            if ([share.fileName isEqualToString:metadata.fileName]) {
+                haveYouShare = true;
+                break;
+            }
+        }
+
         // Share add Tap
-        if (isShare || isMounted || shareLink != nil || shareUserAndGroup != nil) {
+        if (isShare || isMounted || haveYouShare) {
             
             if (isShare || isMounted) {
                 
@@ -3756,7 +3760,7 @@
                 ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
                 [((CCCellMain *)cell).shared addGestureRecognizer:tap];
                 
-            } else if (shareLink != nil || shareUserAndGroup != nil) {
+            } else if (haveYouShare) {
                 
                 // You share
                 

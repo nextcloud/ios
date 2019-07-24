@@ -215,10 +215,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     //MARK: -
     
-    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool,source: UIViewController) {
+    func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectFileID: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController) {
         
         var image: UIImage?
         var isImagePreviewLoaded = false
+        var tableShare: tableShare?
         
         // Image Preview
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName)) {
@@ -232,14 +233,20 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             }
         }
         
+        // Share
+        if shares != nil {
+            for share in shares! {
+                if share.fileName == metadata.fileName {
+                    tableShare = share
+                    break
+                }
+            }
+        }
+        
         // Download preview
         if downloadThumbnail {
             NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: collectionView, indexPath: indexPath)
         }
-        
-        // Share
-        let sharesLink = "" //appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName) as? String
-        let sharesUserAndGroup = "" //appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName) as? String
         
         var isShare = false
         var isMounted = false
@@ -274,9 +281,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     image = UIImage.init(named: "folder_shared_with_me")
                 } else if isMounted {
                     image = UIImage.init(named: "folder_external")
-                } else if (sharesUserAndGroup != nil) {
+                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_shared_with_me")
-                } else if (sharesLink != nil) {
+                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_public")
                 } else {
                     image = UIImage.init(named: "folder")
@@ -317,10 +324,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 } else if (isMounted) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
-                } else if (sharesLink != nil) {
+                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
-                } else if (sharesUserAndGroup != nil) {
+                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
@@ -380,9 +387,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     image = UIImage.init(named: "folder_shared_with_me")
                 } else if isMounted {
                     image = UIImage.init(named: "folder_external")
-                } else if (sharesUserAndGroup != nil) {
+                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_shared_with_me")
-                } else if (sharesLink != nil) {
+                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_public")
                 } else {
                     image = UIImage.init(named: "folder")
@@ -425,10 +432,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 } else if (isMounted) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
-                } else if (sharesLink != nil) {
+                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
-                } else if (sharesUserAndGroup != nil) {
+                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                     cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
@@ -491,15 +498,26 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
     }
     
-    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String) -> UITableViewCell {
+    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, shares: [tableShare]?) -> UITableViewCell {
         
         var image: UIImage?
+        var tableShare: tableShare?
 
         // Create File System
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID)
         } else {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)
+        }
+        
+        // Share
+        if shares != nil {
+            for share in shares! {
+                if share.fileName == metadata.fileName {
+                    tableShare = share
+                    break
+                }
+            }
         }
         
         // CCCell
@@ -556,9 +574,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     image = UIImage.init(named: "folder_shared_with_me")
                 } else if isMounted {
                     image = UIImage.init(named: "folder_external")
-                } else if (sharesUserAndGroup != nil) {
+                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_shared_with_me")
-                } else if (sharesLink != nil) {
+                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_public")
                 } else {
                     image = UIImage.init(named: "folder")
@@ -613,9 +631,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (isMounted) {
                     cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (sharesLink != nil) {
+                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (sharesUserAndGroup != nil) {
+                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
                 }
             }

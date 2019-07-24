@@ -82,6 +82,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
     
+    private var shares: [tableShare]?
+    
     private let refreshControl = UIRefreshControl()
     
     //BKPasscodeViewController
@@ -161,6 +163,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         } else {
             collectionView.collectionViewLayout = gridLayout
         }
+        
+        // get shares
+        shares = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.activeAccount, serverUrl: serverUrl)
         
         loadDatasource(withLoadFolder: true)
     }
@@ -641,7 +646,7 @@ extension NCSelect: UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, downloadThumbnail: true, source: self)
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, downloadThumbnail: true, shares: shares, source: self)
         
         return cell
     }

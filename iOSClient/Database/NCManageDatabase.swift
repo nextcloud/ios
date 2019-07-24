@@ -2343,7 +2343,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getTableShares(account: String, idRemoteShared: Int) -> tableShare? {
+    func getTableShare(account: String, idRemoteShared: Int) -> tableShare? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2353,6 +2353,26 @@ class NCManageDatabase: NSObject {
         }
         
         return tableShare.init(value: result)
+    }
+    
+    @objc func getTableShares(account: String, serverUrl: String) -> [tableShare] {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
+
+        return Array(results.map { tableShare.init(value:$0) })
+    }
+    
+    @objc func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+        
+        return Array(results.map { tableShare.init(value:$0) })
     }
     
     //MARK: -
