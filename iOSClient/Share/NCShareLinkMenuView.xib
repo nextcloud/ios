@@ -32,6 +32,9 @@
                 </label>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="UIn-eq-hkP">
                     <rect key="frame" x="10" y="61" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchHideDownloadChangedWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="ZUj-2h-gQC"/>
+                    </connections>
                 </switch>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hide download" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KXo-cP-gkc">
                     <rect key="frame" x="69" y="69" width="241" height="15"/>

@@ -291,7 +291,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
-        NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, height: height, tableShare: tableShare)
+        NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, height: height, tableShare: tableShare, metadata: metadata!)
     }
     
     func reloadData() {
@@ -459,7 +459,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     }
     
     func loadData(idRemoteShared: Int) {
-        self.tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
+        tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
         
         // Allow editing
         if tableShare != nil && tableShare!.permissions > 1 {
@@ -511,6 +511,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func switchAllowEditingChanged(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
+        
         var permission = 0
         if sender.isOn {
             permission = 3
@@ -522,9 +523,17 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
+    @IBAction func switchHideDownloadChanged(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, expirationTime: nil, hideDownload: sender.isOn)
+    }
+    
     // delegate networking
     
-    func readShareCompleted(account: String, errorCode: Int) {
+    func readShareCompleted() {
         loadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
     }
     
@@ -566,7 +575,7 @@ class NCShareCommon: NSObject {
         return image
     }
     
-    func openViewMenuShareLink(view: UIView, height: CGFloat, tableShare: tableShare?) {
+    func openViewMenuShareLink(view: UIView, height: CGFloat, tableShare: tableShare?, metadata: tableMetadata) {
         
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
         
@@ -576,6 +585,7 @@ class NCShareCommon: NSObject {
         
         let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
         shareLinkMenuView?.addTap(view: viewWindow)
+        shareLinkMenuView?.metadata = metadata
         shareLinkMenuView?.loadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
         let shareLinkMenuViewX = view.bounds.width - (shareLinkMenuView?.frame.width)! - 40 + globalPoint!.x
         var shareLinkMenuViewY = height + 10 + globalPoint!.y
@@ -642,7 +652,7 @@ class NCShareNetworking: NSObject {
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
-            self.delegate?.readShareCompleted(account: account!, errorCode: errorCode)
+            self.delegate?.readShareCompleted()
         })
     }
     
@@ -687,7 +697,7 @@ class NCShareNetworking: NSObject {
 }
 
 protocol NCShareNetworkingDelegate {
-    func readShareCompleted(account: String, errorCode: Int)
+    func readShareCompleted()
     func shareCompleted(metadata: tableMetadata, errorCode: Int)
     func unShareCompleted(account: String, idRemoteShared: Int, errorCode: Int)
     func updateShareError(idRemoteShared: Int)
