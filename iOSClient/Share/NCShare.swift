@@ -396,7 +396,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBOutlet weak var switchPasswordProtect: UISwitch!
     @IBOutlet weak var labelPasswordProtect: UILabel!
     @IBOutlet weak var fieldPasswordProtect: UITextField!
-    
+    @IBOutlet weak var buttonSendPasswordProtect: UIButton!
+
     @IBOutlet weak var switchSetExpirationDate: UISwitch!
     @IBOutlet weak var labelSetExpirationDate: UILabel!
     @IBOutlet weak var fieldSetExpirationDate: UITextField!
@@ -480,10 +481,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             switchPasswordProtect.setOn(true, animated: false)
             fieldPasswordProtect.isEnabled = true
             fieldPasswordProtect.text = tableShare!.shareWith
+            buttonSendPasswordProtect.isEnabled = true
         } else {
             switchPasswordProtect.setOn(false, animated: false)
             fieldPasswordProtect.isEnabled = false
             fieldPasswordProtect.text = ""
+            buttonSendPasswordProtect.isEnabled = false
         }
         
         // Set expiration date
@@ -529,6 +532,29 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, expirationTime: nil, hideDownload: sender.isOn)
+    }
+    
+    @IBAction func switchPasswordProtectChanged(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        
+        if sender.isOn {
+            fieldPasswordProtect.isEnabled = true
+            fieldPasswordProtect.text = tableShare.shareWith
+            buttonSendPasswordProtect.isEnabled = true
+        } else {
+            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: "", permission: 0, expirationTime: nil, hideDownload: tableShare.hideDownload)
+        }
+    }
+    
+    @IBAction func buttonSendPasswordProtect(sender: UIButton) {
+        
+        guard let tableShare = self.tableShare else { return }
+        if fieldPasswordProtect.text == nil || fieldPasswordProtect.text == "" { return }
+        
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: fieldPasswordProtect.text, permission: 0, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     // delegate networking

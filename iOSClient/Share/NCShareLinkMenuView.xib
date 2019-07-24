@@ -47,6 +47,9 @@
                 </label>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="HDO-WC-RvJ">
                     <rect key="frame" x="10" y="112" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchPasswordProtectChangedWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="wGL-du-81Q"/>
+                    </connections>
                 </switch>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password protect" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HaY-OM-mQh">
                     <rect key="frame" x="69" y="120" width="241" height="15"/>
@@ -58,7 +61,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="e1F-PV-32s">
-                    <rect key="frame" x="69" y="145" width="241" height="30"/>
+                    <rect key="frame" x="69" y="145" width="206" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="tTv-8w-kxm"/>
                     </constraints>
@@ -147,6 +150,17 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SzO-tO-ghG" userLabel="Button Send Password Protect">
+                    <rect key="frame" x="285" y="147.5" width="25" height="25"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="25" id="aMX-i0-PEo"/>
+                        <constraint firstAttribute="height" constant="25" id="qlO-39-F5h"/>
+                    </constraints>
+                    <state key="normal" image="arrowRight"/>
+                    <connections>
+                        <action selector="buttonSendPasswordProtectWithSender:" destination="iN0-l3-epB" eventType="touchUpInside" id="LXR-OO-e8e"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -174,19 +188,21 @@
                 <constraint firstItem="dB8-1M-WZr" firstAttribute="top" secondItem="e1F-PV-32s" secondAttribute="bottom" constant="20" id="TIV-5L-Cza"/>
                 <constraint firstItem="dB8-1M-WZr" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="Ua2-93-05m"/>
                 <constraint firstItem="HaY-OM-mQh" firstAttribute="centerY" secondItem="HDO-WC-RvJ" secondAttribute="centerY" id="UcN-gf-Prv"/>
-                <constraint firstAttribute="trailing" secondItem="e1F-PV-32s" secondAttribute="trailing" constant="10" id="ZYT-R4-bqo"/>
                 <constraint firstAttribute="trailing" secondItem="IHP-P8-rm2" secondAttribute="trailing" constant="10" id="Zsj-Ja-2wq"/>
                 <constraint firstItem="F4T-wQ-tBU" firstAttribute="top" secondItem="ymk-0u-ddH" secondAttribute="bottom" constant="20" id="aj8-2w-ySe"/>
                 <constraint firstItem="0bK-Kl-hcs" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="13" id="bSd-GG-kS3"/>
                 <constraint firstItem="qll-9F-4DA" firstAttribute="leading" secondItem="dB8-1M-WZr" secondAttribute="trailing" constant="10" id="ciQ-HO-5Lo"/>
                 <constraint firstItem="HDO-WC-RvJ" firstAttribute="top" secondItem="UIn-eq-hkP" secondAttribute="bottom" constant="20" id="dex-mb-oRg"/>
                 <constraint firstItem="cna-iK-PD7" firstAttribute="centerY" secondItem="0bK-Kl-hcs" secondAttribute="centerY" id="fDj-O7-Xdr"/>
+                <constraint firstItem="SzO-tO-ghG" firstAttribute="leading" secondItem="e1F-PV-32s" secondAttribute="trailing" constant="10" id="g64-FV-9Ja"/>
                 <constraint firstItem="KXo-cP-gkc" firstAttribute="leading" secondItem="UIn-eq-hkP" secondAttribute="trailing" constant="10" id="grU-Jx-SqH"/>
+                <constraint firstItem="SzO-tO-ghG" firstAttribute="centerY" secondItem="e1F-PV-32s" secondAttribute="centerY" id="hgY-1O-212"/>
                 <constraint firstItem="Ff4-JE-zGU" firstAttribute="centerY" secondItem="CLA-UL-mYb" secondAttribute="centerY" id="htT-Up-zbh"/>
                 <constraint firstItem="ymk-0u-ddH" firstAttribute="top" secondItem="qll-9F-4DA" secondAttribute="bottom" constant="10" id="k4G-Yb-xBy"/>
                 <constraint firstItem="grT-sd-j7q" firstAttribute="leading" secondItem="F4T-wQ-tBU" secondAttribute="trailing" constant="31" id="kLi-Zi-SmS"/>
                 <constraint firstAttribute="trailing" secondItem="Ff4-JE-zGU" secondAttribute="trailing" constant="10" id="ljN-WF-OVS"/>
                 <constraint firstItem="e1F-PV-32s" firstAttribute="top" secondItem="HaY-OM-mQh" secondAttribute="bottom" constant="10" id="m5R-ms-HZh"/>
+                <constraint firstAttribute="trailing" secondItem="SzO-tO-ghG" secondAttribute="trailing" constant="10" id="mh2-EL-jLh"/>
                 <constraint firstAttribute="trailing" secondItem="hvx-5m-jip" secondAttribute="trailing" constant="10" id="pIn-yh-w1o"/>
                 <constraint firstAttribute="trailing" secondItem="KXo-cP-gkc" secondAttribute="trailing" constant="10" id="uDa-6r-K84"/>
                 <constraint firstAttribute="trailing" secondItem="qll-9F-4DA" secondAttribute="trailing" constant="10" id="vaT-9Q-m84"/>
@@ -198,6 +214,7 @@
             <connections>
                 <outlet property="buttonAddAnotherLink" destination="0bK-Kl-hcs" id="XMo-Cp-y6f"/>
                 <outlet property="buttonDeleteShareLink" destination="CLA-UL-mYb" id="epa-ZP-1vw"/>
+                <outlet property="buttonSendPasswordProtect" destination="SzO-tO-ghG" id="bgm-IF-zmu"/>
                 <outlet property="fieldPasswordProtect" destination="e1F-PV-32s" id="c1Y-0f-UYD"/>
                 <outlet property="fieldSetExpirationDate" destination="ymk-0u-ddH" id="W6o-xf-Zj2"/>
                 <outlet property="imageNoteToRecipient" destination="F4T-wQ-tBU" id="F4t-ay-Ub8"/>
@@ -219,6 +236,7 @@
     </objects>
     <resources>
         <image name="add" width="25" height="25"/>
+        <image name="arrowRight" width="329" height="329"/>
         <image name="file_txt" width="300" height="300"/>
         <image name="trash" width="300" height="300"/>
     </resources>
