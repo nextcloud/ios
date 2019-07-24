@@ -275,6 +275,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         shareLinkMenuView?.unLoad()
+        shareLinkMenuView = nil
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
@@ -294,6 +295,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     @objc func tapLinkMenuViewWindow(gesture: UITapGestureRecognizer) {
         shareLinkMenuView?.unLoad()
+        shareLinkMenuView = nil
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
@@ -491,6 +493,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     func unLoad() {
         viewWindowCalendar?.removeFromSuperview()
         viewWindow?.removeFromSuperview()
+        
+        viewWindowCalendar = nil
+        viewWindow = nil
     }
     
     func reloadData(idRemoteShared: Int) {
