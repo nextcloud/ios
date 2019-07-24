@@ -1747,10 +1747,10 @@
 		F728CE741BF6322C00E69702 /* Share */ = {
 			isa = PBXGroup;
 			children = (
-				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */,
-				F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */,
+				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F787704E22E7019900F287A9 /* NCShareLinkCell.xib */,
+				F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
 			);
 			path = Share;

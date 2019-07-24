@@ -107,7 +107,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="hvx-5m-jip">
-                    <rect key="frame" x="65" y="308" width="245" height="50"/>
+                    <rect key="frame" x="64" y="308" width="246" height="50"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="7Cg-Bg-6Tf"/>
@@ -161,14 +161,26 @@
                         <action selector="buttonSendPasswordProtectWithSender:" destination="iN0-l3-epB" eventType="touchUpInside" id="LXR-OO-e8e"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AXE-ta-uC8" userLabel="Button Send Password Protect">
+                    <rect key="frame" x="285" y="278" width="25" height="25"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="25" id="WjG-39-aup"/>
+                        <constraint firstAttribute="width" constant="25" id="zKE-Fg-nWa"/>
+                    </constraints>
+                    <state key="normal" image="arrowRight"/>
+                    <connections>
+                        <action selector="buttonSendNoteToRecipientWithSender:" destination="iN0-l3-epB" eventType="touchUpInside" id="hxy-ND-ZKC"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="e1F-PV-32s" firstAttribute="leading" secondItem="HDO-WC-RvJ" secondAttribute="trailing" constant="10" id="0Un-2w-9a3"/>
                 <constraint firstItem="grT-sd-j7q" firstAttribute="centerY" secondItem="F4T-wQ-tBU" secondAttribute="centerY" id="4KH-Py-OgY"/>
+                <constraint firstItem="AXE-ta-uC8" firstAttribute="centerY" secondItem="F4T-wQ-tBU" secondAttribute="centerY" id="53F-eV-3Jo"/>
                 <constraint firstItem="qll-9F-4DA" firstAttribute="centerY" secondItem="dB8-1M-WZr" secondAttribute="centerY" id="5QL-7q-jdE"/>
                 <constraint firstItem="CLA-UL-mYb" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="13" id="8lb-ki-xfh"/>
-                <constraint firstItem="hvx-5m-jip" firstAttribute="leading" secondItem="F4T-wQ-tBU" secondAttribute="trailing" constant="27" id="AG8-gi-XVa"/>
+                <constraint firstItem="hvx-5m-jip" firstAttribute="leading" secondItem="F4T-wQ-tBU" secondAttribute="trailing" constant="26" id="AG8-gi-XVa"/>
                 <constraint firstItem="0bK-Kl-hcs" firstAttribute="top" secondItem="CLA-UL-mYb" secondAttribute="bottom" constant="30" id="Bka-Hj-Arm"/>
                 <constraint firstAttribute="trailing" secondItem="ymk-0u-ddH" secondAttribute="trailing" constant="10" id="Chd-iQ-EdR"/>
                 <constraint firstItem="sjf-wF-y07" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="10" id="EW6-D3-tml"/>
@@ -177,6 +189,7 @@
                 <constraint firstItem="HDO-WC-RvJ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="GTl-Tq-cLY"/>
                 <constraint firstItem="IHP-P8-rm2" firstAttribute="centerY" secondItem="sjf-wF-y07" secondAttribute="centerY" id="HiA-pE-L6l"/>
                 <constraint firstItem="cna-iK-PD7" firstAttribute="leading" secondItem="0bK-Kl-hcs" secondAttribute="trailing" constant="31" id="Hic-qB-F0O"/>
+                <constraint firstAttribute="trailing" secondItem="AXE-ta-uC8" secondAttribute="trailing" constant="10" id="J2I-36-ULj"/>
                 <constraint firstAttribute="trailing" secondItem="cna-iK-PD7" secondAttribute="trailing" constant="10" id="LEz-3F-g5Q"/>
                 <constraint firstItem="ymk-0u-ddH" firstAttribute="leading" secondItem="dB8-1M-WZr" secondAttribute="trailing" constant="10" id="Nka-wr-Yvi"/>
                 <constraint firstAttribute="trailing" secondItem="grT-sd-j7q" secondAttribute="trailing" constant="5" id="Nyn-RD-jTz"/>
@@ -214,6 +227,7 @@
             <connections>
                 <outlet property="buttonAddAnotherLink" destination="0bK-Kl-hcs" id="XMo-Cp-y6f"/>
                 <outlet property="buttonDeleteShareLink" destination="CLA-UL-mYb" id="epa-ZP-1vw"/>
+                <outlet property="buttonSendNoteToRecipient" destination="AXE-ta-uC8" id="hAe-F8-ybi"/>
                 <outlet property="buttonSendPasswordProtect" destination="SzO-tO-ghG" id="bgm-IF-zmu"/>
                 <outlet property="fieldPasswordProtect" destination="e1F-PV-32s" id="c1Y-0f-UYD"/>
                 <outlet property="fieldSetExpirationDate" destination="ymk-0u-ddH" id="W6o-xf-Zj2"/>

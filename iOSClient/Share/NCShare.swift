@@ -405,7 +405,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBOutlet weak var imageNoteToRecipient: UIImageView!
     @IBOutlet weak var labelNoteToRecipient: UILabel!
     @IBOutlet weak var textViewNoteToRecipient: UITextView!
-    
+    @IBOutlet weak var buttonSendNoteToRecipient: UIButton!
+
     @IBOutlet weak var buttonDeleteShareLink: UIButton!
     @IBOutlet weak var labelDeleteShareLink: UILabel!
     
@@ -438,6 +439,11 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         switchPasswordProtect.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         
+        textViewNoteToRecipient.layer.borderColor = UIColor.lightGray.cgColor
+        textViewNoteToRecipient.layer.borderWidth = 0.5
+        textViewNoteToRecipient.layer.masksToBounds = false
+        textViewNoteToRecipient.layer.cornerRadius = 5
+
         imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor.black)
         buttonDeleteShareLink.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor.black), for: .normal)
         buttonAddAnotherLink.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor.black), for: .normal)
@@ -523,7 +529,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
-        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, expirationTime: nil, hideDownload: tableShare.hideDownload)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func switchHideDownloadChanged(sender: UISwitch) {
@@ -531,7 +537,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
-        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, expirationTime: nil, hideDownload: sender.isOn)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: nil, hideDownload: sender.isOn)
     }
     
     @IBAction func switchPasswordProtectChanged(sender: UISwitch) {
@@ -544,7 +550,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             buttonSendPasswordProtect.isEnabled = true
         } else {
             let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
-            networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: "", permission: 0, expirationTime: nil, hideDownload: tableShare.hideDownload)
+            networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: "", permission: 0, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
         }
     }
     
@@ -554,7 +560,16 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         if fieldPasswordProtect.text == nil || fieldPasswordProtect.text == "" { return }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
-        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: fieldPasswordProtect.text, permission: 0, expirationTime: nil, hideDownload: tableShare.hideDownload)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: fieldPasswordProtect.text, permission: 0, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
+    }
+    
+    @IBAction func buttonSendNoteToRecipient(sender: UIButton) {
+        
+        guard let tableShare = self.tableShare else { return }
+        if textViewNoteToRecipient.text == nil { return }
+        
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: textViewNoteToRecipient.text, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     // delegate networking
@@ -708,9 +723,9 @@ class NCShareNetworking: NSObject {
         })
     }
     
-    func updateShare(idRemoteShared: Int, password: String?, permission: Int, expirationTime: String?, hideDownload: Bool) {
+    func updateShare(idRemoteShared: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        OCNetworking.sharedManager()?.shareUpdateAccount(account, shareID: idRemoteShared, password: password, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.shareUpdateAccount(account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 self.readShare()

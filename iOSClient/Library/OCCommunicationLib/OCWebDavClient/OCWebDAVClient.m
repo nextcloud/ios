@@ -819,7 +819,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void) updateShareItem:(NSInteger)shareId ofServerPath:(NSString*)serverPath withPasswordProtect:(NSString*)password andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
+- (void) updateShareItem:(NSInteger)shareId ofServerPath:(NSString*)serverPath withPasswordProtect:(NSString*)password andNote:(NSString *)note andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
          onCommunication:(OCCommunication *)sharedOCCommunication
                  success:(void(^)(NSHTTPURLResponse *, id response))success
                  failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *error))failure{
@@ -832,6 +832,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     if (password) {
         self.postStringForShare = [NSString stringWithFormat:@"password=%@&",password];
+    } else if (note) {
+        self.postStringForShare = [NSString stringWithFormat:@"note=%@",note];
     } else if (expirationTime) {
         self.postStringForShare = [NSString stringWithFormat:@"expireDate=%@",expirationTime];
     } else if (permissions > 0) {
