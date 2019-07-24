@@ -269,8 +269,8 @@ class NCService: NSObject {
                 // Get Share Server
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
-                    let shareNetworking = NCShareNetworking.init(view: nil, delegate: nil)
-                    shareNetworking.readShare(account: self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl)
+                    let shareNetworking = NCShareNetworking.init(account: self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, view: nil, delegate: nil)
+                    shareNetworking.readShare()
                 }
                 
                 // Get Activity
