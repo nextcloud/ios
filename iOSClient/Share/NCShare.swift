@@ -336,7 +336,7 @@ extension NCShare: UITableViewDataSource {
         let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         let tableShare = shares.share![indexPath.row]
         
-        if tableShare.shareLink != "" {
+        if tableShare.shareType == Int(shareTypeLink.rawValue) {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.tableShare = tableShare
                 cell.delegate = self
@@ -463,39 +463,39 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate {
         
         // Allow editing
         if tableShare != nil && tableShare!.permissions > 1 {
-            switchAllowEditing.setOn(true, animated: true)
+            switchAllowEditing.setOn(true, animated: false)
         } else {
-            switchAllowEditing.setOn(false, animated: true)
+            switchAllowEditing.setOn(false, animated: false)
         }
         
         // Hide download
         if tableShare != nil && tableShare!.hideDownload {
-            switchHideDownload.setOn(true, animated: true)
+            switchHideDownload.setOn(true, animated: false)
         } else {
-            switchHideDownload.setOn(false, animated: true)
+            switchHideDownload.setOn(false, animated: false)
         }
         
         // Password protect
         if tableShare != nil && tableShare!.shareWith.count > 0 {
-            switchPasswordProtect.setOn(true, animated: true)
+            switchPasswordProtect.setOn(true, animated: false)
             fieldPasswordProtect.isEnabled = true
             fieldPasswordProtect.text = tableShare!.shareWith
         } else {
-            switchPasswordProtect.setOn(false, animated: true)
+            switchPasswordProtect.setOn(false, animated: false)
             fieldPasswordProtect.isEnabled = false
             fieldPasswordProtect.text = ""
         }
         
         // Set expiration date
         if tableShare != nil && tableShare!.expirationDate != nil {
-            switchSetExpirationDate.setOn(true, animated: true)
+            switchSetExpirationDate.setOn(true, animated: false)
             switchSetExpirationDate.isEnabled = true
             let dateFormatter = DateFormatter()
             dateFormatter.formatterBehavior = .behavior10_4
             dateFormatter.dateStyle = .short
             fieldSetExpirationDate.text = dateFormatter.string(from: tableShare!.expirationDate! as Date)
         } else {
-            switchSetExpirationDate.setOn(false, animated: true)
+            switchSetExpirationDate.setOn(false, animated: false)
             switchSetExpirationDate.isEnabled = false
             fieldSetExpirationDate.text = ""
         }

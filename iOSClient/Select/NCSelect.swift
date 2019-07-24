@@ -164,10 +164,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
             collectionView.collectionViewLayout = gridLayout
         }
         
-        // get shares
-        shares = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.activeAccount, serverUrl: serverUrl)
-        
         loadDatasource(withLoadFolder: true)
+
+        shares = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.activeAccount, serverUrl: serverUrl)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

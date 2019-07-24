@@ -180,13 +180,14 @@
 {
     NSString *shareString;
     
+      /*
     // Unshare Link
     if (tableShare.shareLink.length > 0) {
         
         shareString = tableShare.shareLink;
     }
     
-    /*
+  
     // Unshare User&Group
     NSArray *shareUserAndGroup = [tableShare.shareUserAndGroup componentsSeparatedByString:@","];
     for (NSString *share in shareUserAndGroup) {

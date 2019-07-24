@@ -398,9 +398,7 @@ class tableShare: Object {
     @objc dynamic var permissions: Int = 0
     @objc dynamic var serverUrl = ""
     @objc dynamic var sharedDate: NSDate? = nil
-    @objc dynamic var shareLink = ""
     @objc dynamic var shareType: Int = 0
-    @objc dynamic var shareUserAndGroup = ""
     @objc dynamic var shareWith = ""
     @objc dynamic var shareWithDisplayName = ""
     @objc dynamic var storage: Int = 0

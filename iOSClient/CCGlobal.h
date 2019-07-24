@@ -81,7 +81,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         56
+#define k_databaseSchemaVersion                         57
 
 // Intro selector
 #define k_intro_login                                   0
