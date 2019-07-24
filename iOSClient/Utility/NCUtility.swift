@@ -252,8 +252,10 @@ class NCUtility: NSObject {
         }
     }
     
-    @objc func startActivityIndicator(view: UIView, bottom: CGFloat) {
+    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat) {
     
+        guard let view = view else { return }
+        
         activityIndicator.color = NCBrandColor.sharedInstance.brand
         activityIndicator.hidesWhenStopped = true
             
