@@ -35,8 +35,6 @@
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
 #import "CCDetail.h"
-#import "CCShareOC.h"
-#import "CCShareInfoCMOC.h"
 #import "CCGraphics.h"
 #import "CCSection.h"
 #import "CCUtility.h"
@@ -47,7 +45,7 @@
 
 @class tableMetadata;
 
-@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCShareOCDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) tableMetadata *metadata;

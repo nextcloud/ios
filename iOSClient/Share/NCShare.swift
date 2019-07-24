@@ -273,12 +273,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
-        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         tapCopy(with: shares.firstShareLink, sender: sender)
     }
     
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
-        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         if shares.firstShareLink != nil {
             tapMenu(with: shares.firstShareLink!, sender: sender)
         } else {
@@ -295,7 +295,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     func reloadData() {
-        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         if shares.firstShareLink == nil {
             buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareAdd"), width: 100, height: 100, color: UIColor.gray), for: .normal)
             buttonCopy.isHidden = true
@@ -322,7 +322,7 @@ extension NCShare: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         var numOfRows = 0
-        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         
         if shares.share != nil {
             numOfRows = shares.share!.count
@@ -333,7 +333,7 @@ extension NCShare: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let shares = NCManageDatabase.sharedInstance.getTableSharesV2(metadata: metadata!)
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         let tableShare = shares.share![indexPath.row]
         
         if tableShare.shareLink != "" {
@@ -602,7 +602,7 @@ class NCShareNetworking: NSObject {
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
-                NCManageDatabase.sharedInstance.addShareV2(account: account!, activeUrl: activeUrl, items: itemsOCSharedDto)
+                NCManageDatabase.sharedInstance.addShare(account: account!, activeUrl: activeUrl, items: itemsOCSharedDto)
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }

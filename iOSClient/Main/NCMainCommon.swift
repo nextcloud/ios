@@ -238,8 +238,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
         
         // Share
-        let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName) as? String
-        let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName) as? String
+        let sharesLink = "" //appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName) as? String
+        let sharesUserAndGroup = "" //appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName) as? String
+        
         var isShare = false
         var isMounted = false
         
@@ -531,8 +532,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: tableView, indexPath: indexPath)
             
             // Share
-            let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName) as? String
-            let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName) as? String
+            let sharesLink = "" //appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName) as? String
+            let sharesUserAndGroup = "" //appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName) as? String
             var isShare = false
             var isMounted = false
             

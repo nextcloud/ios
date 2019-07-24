@@ -70,11 +70,6 @@ PKPushRegistry *pushRegistry;
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
-    // Initialization Share
-    self.sharesID = [NSMutableDictionary new];
-    self.sharesLink = [NSMutableDictionary new];
-    self.sharesUserAndGroup = [NSMutableDictionary new];
-    
     // Filter fileID
     self.filterFileID = [NSMutableArray new];
 

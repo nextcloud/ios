@@ -186,6 +186,7 @@
         shareString = tableShare.shareLink;
     }
     
+    /*
     // Unshare User&Group
     NSArray *shareUserAndGroup = [tableShare.shareUserAndGroup componentsSeparatedByString:@","];
     for (NSString *share in shareUserAndGroup) {
@@ -209,6 +210,7 @@
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
+    */
 }
 
 #pragma mark -

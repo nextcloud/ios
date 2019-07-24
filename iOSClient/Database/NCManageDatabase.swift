@@ -2256,79 +2256,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    @objc func addShareLink(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String]? {
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        // Verify if exists
-        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl).first
-        
-        if result != nil {
-            
-            result?.shareLink = share
-            
-        } else {
-            
-            // Add new
-            let addObject = tableShare()
-            
-            addObject.account = account
-            addObject.fileName = fileName
-            addObject.serverUrl = serverUrl
-            addObject.shareLink = share
-            
-            realm.add(addObject)
-        }
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
-        }
-        
-        return ["\(serverUrl)\(fileName)" : share]
-    }
-    
-    @objc func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String]? {
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        // Verify if exists
-        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl).first
-        
-        if result != nil {
-            
-            result?.shareUserAndGroup = share
-            
-        } else {
-            
-            // Add new
-            let addObject = tableShare()
-            
-            addObject.account = account
-            addObject.fileName = fileName
-            addObject.serverUrl = serverUrl
-            addObject.shareUserAndGroup = share
-            
-            realm.add(addObject)
-        }
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
-        }
-        
-        return ["\(serverUrl)\(fileName)" : share]
-    }
-    
-    @objc func addShareV2(account: String, activeUrl: String, items: [OCSharedDto]) {
+    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto]) {
         
         let realm = try! Realm()
 
@@ -2390,186 +2318,6 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func unShare(_ share: String, fileName: String, serverUrl: String, sharesLink: [String:String], sharesUserAndGroup: [String:String], account: String) -> [Any]? {
-        
-        var sharesLink = sharesLink
-        var sharesUserAndGroup = sharesUserAndGroup
-        
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let results = realm.objects(tableShare.self).filter("account = %@ AND (shareLink CONTAINS %@ OR shareUserAndGroup CONTAINS %@)", account, share, share)
-        
-        if (results.count > 0) {
-            
-            let result = results[0]
-            
-            if (result.shareLink.contains(share)) {
-                result.shareLink = ""
-            }
-                
-            if (result.shareUserAndGroup.contains(share)) {
-                    
-                var shares : [String] = result.shareUserAndGroup.components(separatedBy: ",")
-                if let index = shares.firstIndex(of:share) {
-                    shares.remove(at: index)
-                }
-                result.shareUserAndGroup = shares.joined(separator: ",")
-            }
-            
-            if (result.shareLink.count > 0) {
-                sharesLink.updateValue(result.shareLink, forKey:"\(serverUrl)\(fileName)")
-            } else {
-                sharesLink.removeValue(forKey: "\(serverUrl)\(fileName)")
-            }
-            
-            if (result.shareUserAndGroup.count > 0) {
-                sharesUserAndGroup.updateValue(result.shareUserAndGroup, forKey:"\(serverUrl)\(fileName)")
-            } else {
-                sharesUserAndGroup.removeValue(forKey: "\(serverUrl)\(fileName)")
-            }
-            
-            if (result.shareLink.count == 0 && result.shareUserAndGroup.count == 0) {
-                realm.delete(result)
-            }
-        }
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
-        }
-
-        return [sharesLink, sharesUserAndGroup]
-    }
-    
-    @objc func removeShareActiveAccount(account: String) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-            
-                let results = realm.objects(tableShare.self).filter("account = %@", account)
-
-                realm.delete(results)
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    @objc func updateShare(_ items: [String:OCSharedDto], activeUrl: String, account: String) -> [Any]? {
-        
-        var sharesLink = [String:String]()
-        var sharesUserAndGroup = [String:String]()
-
-        self.removeShareActiveAccount(account: account)
-     
-        var itemsLink = [OCSharedDto]()
-        var itemsUsersAndGroups = [OCSharedDto]()
-        
-        for (_, itemOCSharedDto) in items {
-            
-            if (itemOCSharedDto.shareType == Int(shareTypeLink.rawValue)) {
-                itemsLink.append(itemOCSharedDto)
-            }
-            
-            if (itemOCSharedDto.shareWith.count > 0 && (itemOCSharedDto.shareType == Int(shareTypeUser.rawValue) || itemOCSharedDto.shareType == Int(shareTypeGroup.rawValue) || itemOCSharedDto.shareType == Int(shareTypeRemote.rawValue)  )) {
-                itemsUsersAndGroups.append(itemOCSharedDto)
-            }
-        }
-        
-        // Manage sharesLink
-
-        for itemOCSharedDto in itemsLink {
-            
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
-            let fileName = NSString(string: fullPath).lastPathComponent
-            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
-            
-            if serverUrl.hasSuffix("/") {
-                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
-            }
-            
-            if itemOCSharedDto.idRemoteShared > 0 {
-                let sharesLinkReturn = self.addShareLink("\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
-                if sharesLinkReturn != nil {
-                    for (key,value) in sharesLinkReturn! {
-                        sharesLink.updateValue(value, forKey:key)
-                    }
-                }
-            }
-        }
-        
-        // Manage sharesUserAndGroup
-        
-        var paths = [String:[String]]()
-        
-        for itemOCSharedDto in itemsUsersAndGroups {
-            
-            if paths[itemOCSharedDto.path] != nil {
-                
-                var share : [String] = paths[itemOCSharedDto.path]!
-                share.append("\(itemOCSharedDto.idRemoteShared)")
-                paths[itemOCSharedDto.path] = share
-                
-            } else {
-                
-                paths[itemOCSharedDto.path] = ["\(itemOCSharedDto.idRemoteShared)"]
-            }
-        }
-        
-        for (path, idsRemoteSharedArray) in paths {
-            
-            let idsRemoteShared = idsRemoteSharedArray.joined(separator: ",")
-            
-            print("[LOG] share \(String(describing: idsRemoteShared))")
-            
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(path)"
-            let fileName = NSString(string: fullPath).lastPathComponent
-            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
-            
-            if serverUrl.hasSuffix("/") {
-                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
-            }
-            
-            let sharesUserAndGroupReturn = self.addShareUserAndGroup(idsRemoteShared, fileName: fileName, serverUrl: serverUrl, account: account)
-            if sharesUserAndGroupReturn != nil {
-                for (key,value) in sharesUserAndGroupReturn! {
-                    sharesUserAndGroup.updateValue(value, forKey:key)
-                }
-            }
-        }
-        
-        return [sharesLink, sharesUserAndGroup]
-    }
-    
-    @objc func getShares(account: String) -> [Any]? {
-
-        var sharesLink = [String:String]()
-        var sharesUserAndGroup = [String:String]()
-        
-        let realm = try! Realm()
-
-        let results = realm.objects(tableShare.self).filter("account = %@", account)
-        
-        for resultShare in results {
-            
-            if (resultShare.shareLink.count > 0) {
-                sharesLink = [resultShare.shareLink: "\(resultShare.serverUrl)\(resultShare.fileName)"]
-            }
-            
-            if (resultShare.shareUserAndGroup.count > 0) {
-                sharesUserAndGroup = [resultShare.shareUserAndGroup: "\(resultShare.serverUrl)\(resultShare.fileName)"]
-            }
-        }
-        
-        return [sharesLink, sharesUserAndGroup]
-    }
-    
     @objc func getTableShares(account: String) -> [tableShare]? {
         
         let realm = try! Realm()
@@ -2580,7 +2328,7 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
     
-    func getTableSharesV2(metadata: tableMetadata) -> (firstShareLink: tableShare?,  share: [tableShare]?) {
+    func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?,  share: [tableShare]?) {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2595,7 +2343,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getTableShares(account: String, idRemoteShared: Int) -> tableShare? {
+    func getTableShares(account: String, idRemoteShared: Int) -> tableShare? {
         
         let realm = try! Realm()
         realm.refresh()

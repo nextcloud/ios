@@ -69,11 +69,6 @@
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 
-// Network Share
-@property (nonatomic, strong) NSMutableDictionary *sharesID;
-@property (nonatomic, strong) NSMutableDictionary *sharesLink;
-@property (nonatomic, strong) NSMutableDictionary *sharesUserAndGroup;
-
 // UploadFromOtherUpp
 @property (nonatomic, strong) NSString *fileNameUpload;
 

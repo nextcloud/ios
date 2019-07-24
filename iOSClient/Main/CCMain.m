@@ -333,12 +333,14 @@
         [CCUtility setCertificateError:appDelegate.activeAccount error:NO];
         
         // populate shared Link & User
+        /*
         NSArray *results = [[NCManageDatabase sharedInstance] getSharesWithAccount:appDelegate.activeAccount];
         if (results) {
             appDelegate.sharesLink = results[0];
             appDelegate.sharesUserAndGroup = results[1];
         }
-                
+        */
+        
         // Setting Theming
         [appDelegate settingThemingColorBrand];
         
@@ -1879,65 +1881,12 @@
 
 - (void)openShareWithMetadata:(tableMetadata *)metadata
 {
-#ifdef DEBUG
-
     UINavigationController *shareNavigationController = [[UIStoryboard storyboardWithName:@"NCShare" bundle:nil] instantiateInitialViewController];
     NCSharePaging *shareViewController = (NCSharePaging *)shareNavigationController.topViewController;
     shareViewController.metadata = metadata;
     
     [shareNavigationController setModalPresentationStyle:UIModalPresentationPageSheet];
     [self presentViewController:shareNavigationController animated:YES completion:nil];
-    
-#else
-
-    // Apriamo la view
-    CCShareOC *shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
-    
-    shareOC.delegate = self;
-    
-    shareOC.metadata = metadata;
-    shareOC.serverUrl = metadata.serverUrl;
-    
-    shareOC.shareLink = [appDelegate.sharesLink objectForKey:metadata.fileID];
-    shareOC.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:metadata.fileID];
-    
-    [shareOC setModalPresentationStyle:UIModalPresentationFormSheet];
-    [self presentViewController:shareOC animated:YES completion:nil];
-    
-#endif
-}
-
-- (void)readShareServer
-{
-    [[OCNetworking sharedManager] readShareWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
-        
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-#ifdef DEBUG
-            [[NCManageDatabase sharedInstance] addShareV2WithAccount:account activeUrl:appDelegate.activeUrl items:items];
-#else
-            [appDelegate.sharesID removeAllObjects];
-            
-            for (OCSharedDto *item in items)
-                [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
-            
-            NSArray *result = [[NCManageDatabase sharedInstance] updateShare:appDelegate.sharesID activeUrl:appDelegate.activeUrl account:appDelegate.activeAccount];
-            if (result) {
-                appDelegate.sharesLink = result[0];
-                appDelegate.sharesUserAndGroup = result[1];
-            }
-#endif
-            
-            // Notify Shares View
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"SharesReloadDatasource" object:nil userInfo:nil];
-            
-            [self tableViewReloadData];
-            
-        } else if (errorCode != 0) {
-            
-            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        }
-    }];
 }
 
 - (void)tapActionShared:(UITapGestureRecognizer *)tapGesture
@@ -1960,13 +1909,6 @@
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata) {
-        
-        CCShareInfoCMOC *vc = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareInfoCMOC"];
-        
-        vc.metadata = metadata;
-        
-        [vc setModalPresentationStyle:UIModalPresentationFormSheet];
-        [self presentViewController:vc animated:YES completion:nil];
     }
 }
 
@@ -3792,8 +3734,8 @@
     
     if ([cell isKindOfClass:[CCCellMain class]]) {
         
-        NSString *shareLink = [appDelegate.sharesLink objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
-        NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
+        NSString *shareLink = @""; //[appDelegate.sharesLink objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
+        NSString *shareUserAndGroup = @""; //[appDelegate.sharesUserAndGroup objectForKey:[metadata.serverUrl stringByAppendingString:metadata.fileName]];
         BOOL isShare = false;
         BOOL isMounted = false;
         
