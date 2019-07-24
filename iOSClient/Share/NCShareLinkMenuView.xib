@@ -82,6 +82,9 @@
                 </button>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="dB8-1M-WZr">
                     <rect key="frame" x="10" y="195" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchSetExpirationDateWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="26x-ld-Jsj"/>
+                    </connections>
                 </switch>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Set expiration date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qll-9F-4DA">
                     <rect key="frame" x="70" y="203" width="240" height="15"/>

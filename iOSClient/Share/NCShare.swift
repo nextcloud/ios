@@ -531,15 +531,15 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         // Set expiration date
         if tableShare != nil && tableShare!.expirationDate != nil {
             switchSetExpirationDate.setOn(true, animated: false)
-            switchSetExpirationDate.isEnabled = true
-            
+            fieldSetExpirationDate.isEnabled = true
+
             let dateFormatter = DateFormatter()
             dateFormatter.formatterBehavior = .behavior10_4
             dateFormatter.dateStyle = .short
             fieldSetExpirationDate.text = dateFormatter.string(from: tableShare!.expirationDate! as Date)
         } else {
             switchSetExpirationDate.setOn(false, animated: false)
-            switchSetExpirationDate.isEnabled = false
+            fieldSetExpirationDate.isEnabled = false
             fieldSetExpirationDate.text = ""
         }
         
@@ -595,6 +595,19 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: fieldPasswordProtect.text, permission: 0, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
+    }
+    
+    @IBAction func switchSetExpirationDate(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        
+        if sender.isOn {
+            fieldSetExpirationDate.isEnabled = true
+            fieldSetExpirationDate(sender: fieldSetExpirationDate)
+        } else {
+            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: "", hideDownload: tableShare.hideDownload)
+        }
     }
     
     @IBAction func fieldSetExpirationDate(sender: UITextField) {
