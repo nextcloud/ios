@@ -228,7 +228,7 @@ class NCShareComments: UIViewController {
 
 // MARK: - Share
 
-class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate {
+class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareNetworkingDelegate {
     
     var metadata: tableMetadata?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -268,6 +268,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadData), name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil)
         
         reloadData()
+        
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
+        networking.readShare()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -284,7 +287,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         if shares.firstShareLink != nil {
             tapMenu(with: shares.firstShareLink!, sender: sender)
         } else {
-            tapMenu(with: nil, sender: sender)
+            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
+            networking.share(metadata: metadata!, password: "", permission: 1, hideDownload: false)
         }
     }
     
@@ -307,6 +311,19 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         }
         tableView.reloadData()
     }
+    
+    // NCShareNetworkingDelegate
+    func readShareCompleted(errorCode: Int) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+    }
+    
+    func shareCompleted(errorCode: Int) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+    }
+    
+    func unShareCompleted() { }
+    
+    func updateShareWithError(idRemoteShared: Int) { }
 }
 
 extension NCShare: UITableViewDelegate {
