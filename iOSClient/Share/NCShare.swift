@@ -231,14 +231,6 @@ class NCShareComments: UIViewController {
 
 class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareNetworkingDelegate {
     
-    var metadata: tableMetadata?
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-    public var height: CGFloat = 0
-    
-    private var viewMenuShareLink: UIView?
-    private var shareLinkMenuView: NCShareLinkMenuView?
-
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var returnSearchButton: UIButton!
@@ -248,6 +240,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    var metadata: tableMetadata?
+    public var height: CGFloat = 0
+    private var shareLinkMenuView: NCShareLinkMenuView?
+    private var shareLinkMenuViewWindow: UIView?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -275,7 +274,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        viewMenuShareLink?.removeFromSuperview()
+        shareLinkMenuView?.viewWindowCalendar?.removeFromSuperview()
+        shareLinkMenuViewWindow?.removeFromSuperview()
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
@@ -298,7 +298,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
-        NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, tableShare: tableShare, metadata: metadata!)
+        let views = NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, tableShare: tableShare, metadata: metadata!)
+        shareLinkMenuView = views.shareLinkMenuView
+        shareLinkMenuViewWindow = views.viewWindow
     }
     
     @objc func reloadData() {
@@ -442,8 +444,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     public let height: CGFloat = 470
     private var tableShare: tableShare?
     public var metadata: tableMetadata?
+    
     public var viewWindow: UIView?
-    private var viewWindowCalendar: UIView?
+    public var viewWindowCalendar: UIView?
     
     override func awakeFromNib() {
         
@@ -678,7 +681,7 @@ class NCShareCommon: NSObject {
         return image
     }
     
-    func openViewMenuShareLink(view: UIView, tableShare: tableShare?, metadata: tableMetadata) {
+    func openViewMenuShareLink(view: UIView, tableShare: tableShare?, metadata: tableMetadata) -> (shareLinkMenuView: NCShareLinkMenuView, viewWindow: UIView) {
         
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
         
@@ -686,15 +689,17 @@ class NCShareCommon: NSObject {
         let viewWindow = UIView(frame: window.bounds)
         window.addSubview(viewWindow)
         
-        let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as? NCShareLinkMenuView
-        shareLinkMenuView?.addTap(view: viewWindow)
-        shareLinkMenuView?.metadata = metadata
-        shareLinkMenuView?.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
-        let shareLinkMenuViewX = view.bounds.width/2 - (shareLinkMenuView?.frame.width)!/2 + globalPoint!.x
+        let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as! NCShareLinkMenuView
+        shareLinkMenuView.addTap(view: viewWindow)
+        shareLinkMenuView.metadata = metadata
+        shareLinkMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
+        let shareLinkMenuViewX = view.bounds.width/2 - shareLinkMenuView.frame.width/2 + globalPoint!.x
         let shareLinkMenuViewY = globalPoint!.y + 10
        
-        shareLinkMenuView?.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView!.width, height: shareLinkMenuView!.height)
-        viewWindow.addSubview(shareLinkMenuView!)
+        shareLinkMenuView.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView.width, height: shareLinkMenuView.height)
+        viewWindow.addSubview(shareLinkMenuView)
+        
+        return(shareLinkMenuView: shareLinkMenuView, viewWindow: viewWindow)
     }
     
     func openCalendar(view: UIView, width: CGFloat, height: CGFloat) -> (calendar: FSCalendar, viewWindow: UIView) {
