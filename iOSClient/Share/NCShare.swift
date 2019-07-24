@@ -274,8 +274,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        shareLinkMenuView?.viewWindowCalendar?.removeFromSuperview()
-        shareLinkMenuViewWindow?.removeFromSuperview()
+        shareLinkMenuView?.unLoad()
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
@@ -293,6 +292,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         }
     }
     
+    @objc func tapLinkMenuViewWindow(gesture: UITapGestureRecognizer) {
+        shareLinkMenuView?.unLoad()
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return gestureRecognizer.view == touch.view
+    }
+    
     func tapCopy(with tableShare: tableShare?, sender: Any) {
         NCShareCommon.sharedInstance.copyLink(tableShare: tableShare, viewController: self)
     }
@@ -301,6 +308,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         let views = NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, tableShare: tableShare, metadata: metadata!)
         shareLinkMenuView = views.shareLinkMenuView
         shareLinkMenuViewWindow = views.viewWindow
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
+        tap.delegate = self
+        shareLinkMenuViewWindow?.addGestureRecognizer(tap)
     }
     
     @objc func reloadData() {
@@ -373,15 +384,15 @@ extension NCShare: UITableViewDataSource {
 
 class NCShareLinkCell: UITableViewCell {
     
-    private let iconShare: CGFloat = 200
-    
-    var tableShare: tableShare?
-    var delegate: NCShareLinkCellDelegate?
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonCopy: UIButton!
     @IBOutlet weak var buttonMenu: UIButton!
+    
+    private let iconShare: CGFloat = 200
+    
+    var tableShare: tableShare?
+    var delegate: NCShareLinkCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -477,20 +488,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         imageAddAnotherLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor.black)
     }
     
-    func addTap(view: UIView) {
-        self.viewWindow = view
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tapHandler))
-        tap.delegate = self
-        viewWindow?.addGestureRecognizer(tap)
-    }
-    
-    @objc func tapHandler(gesture: UITapGestureRecognizer) {
+    func unLoad() {
+        viewWindowCalendar?.removeFromSuperview()
         viewWindow?.removeFromSuperview()
-    }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return gestureRecognizer.view == touch.view
     }
     
     func reloadData(idRemoteShared: Int) {
@@ -595,7 +595,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func fieldSetExpirationDate(sender: UITextField) {
         
         let calendar = NCShareCommon.sharedInstance.openCalendar(view: self, width: width, height: height)
-        calendar.calendar.delegate = self
+        calendar.calendarView.delegate = self
         viewWindowCalendar = calendar.viewWindow
     }
     
@@ -630,12 +630,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     }
     
     func shareCompleted(errorCode: Int) {
-        viewWindow?.removeFromSuperview()
+        unLoad()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
     }
     
     func unShareCompleted() {
-        viewWindow?.removeFromSuperview()
+        unLoad()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
     }
     
@@ -690,8 +690,8 @@ class NCShareCommon: NSObject {
         window.addSubview(viewWindow)
         
         let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as! NCShareLinkMenuView
-        shareLinkMenuView.addTap(view: viewWindow)
         shareLinkMenuView.metadata = metadata
+        shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
         let shareLinkMenuViewX = view.bounds.width/2 - shareLinkMenuView.frame.width/2 + globalPoint!.x
         let shareLinkMenuViewY = globalPoint!.y + 10
@@ -702,7 +702,7 @@ class NCShareCommon: NSObject {
         return(shareLinkMenuView: shareLinkMenuView, viewWindow: viewWindow)
     }
     
-    func openCalendar(view: UIView, width: CGFloat, height: CGFloat) -> (calendar: FSCalendar, viewWindow: UIView) {
+    func openCalendar(view: UIView, width: CGFloat, height: CGFloat) -> (calendarView: FSCalendar, viewWindow: UIView) {
         
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
 
@@ -723,7 +723,7 @@ class NCShareCommon: NSObject {
         
         viewWindow.addSubview(calendar)
         
-        return(calendar: calendar, viewWindow: viewWindow)
+        return(calendarView: calendar, viewWindow: viewWindow)
     }
     
     func copyLink(tableShare: tableShare?, viewController: UIViewController) {
