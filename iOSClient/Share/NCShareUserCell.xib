@@ -70,6 +70,9 @@
                             <constraint firstAttribute="width" constant="20" id="vLI-cJ-Jqx"/>
                         </constraints>
                         <state key="normal" image="shareMenu"/>
+                        <connections>
+                            <action selector="touchUpInsideMenu:" destination="qJF-Yc-gKE" eventType="touchUpInside" id="NJn-zI-QQX"/>
+                        </connections>
                     </button>
                 </subviews>
                 <constraints>

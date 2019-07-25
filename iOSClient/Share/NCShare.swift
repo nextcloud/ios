@@ -270,13 +270,17 @@ class NCShareUserCell: UITableViewCell {
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
     
-    // Can edit
     @IBAction func switchCanEditChanged(sender: UISwitch) {
         delegate?.switchCanEdit(with: tableShare, switch: sender.isOn, sender: sender)
+    }
+    
+    @IBAction func touchUpInsideMenu(_ sender: Any) {
+        delegate?.tapMenu(with: tableShare, sender: sender)
     }
 }
 
 protocol NCShareUserCellDelegate {
     func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: Any)
+    func tapMenu(with tableShare: tableShare?, sender: Any)
 }
 

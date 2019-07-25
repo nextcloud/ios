@@ -43,7 +43,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     public let width: CGFloat = 250
-    public let height: CGFloat = 340
+    public let height: CGFloat = 260
     private var tableShare: tableShare?
     public var metadata: tableMetadata?
     
