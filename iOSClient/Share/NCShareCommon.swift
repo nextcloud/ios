@@ -103,7 +103,7 @@ class NCShareCommon: NSObject {
         shareUserMenuView.viewWindow = viewWindow
         shareUserMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
         let shareUserMenuViewX = view.bounds.width/2 - shareUserMenuView.frame.width/2 + globalPoint!.x
-        let shareUserMenuViewY = globalPoint!.y + 10
+        let shareUserMenuViewY = globalPoint!.y + 100
         
         shareUserMenuView.frame = CGRect(x: shareUserMenuViewX, y: shareUserMenuViewY, width: shareUserMenuView.width, height: shareUserMenuView.height)
         viewWindow.addSubview(shareUserMenuView)

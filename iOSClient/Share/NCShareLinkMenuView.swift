@@ -148,6 +148,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
     }
     
+    // MARK: - IBAction
+
     // Allow editing
     @IBAction func switchAllowEditingChanged(sender: UISwitch) {
         
@@ -244,7 +246,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.share(metadata: metadata!, password: "", permission: 1, hideDownload: false)
     }
     
-    // delegate networking
+    // MARK: - Delegate networking
     
     func readShareCompleted(errorCode: Int) {
         reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
@@ -264,7 +266,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         reloadData(idRemoteShared: idRemoteShared)
     }
     
-    // delegate/appearance calendar
+    // MARK: - Delegate calendar
+    
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         
         if monthPosition == .previous || monthPosition == .next {

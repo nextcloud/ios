@@ -114,7 +114,49 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
     }
     
-    // delegate networking
+    // MARK: - IBAction
+
+    // Set expiration date
+    @IBAction func switchSetExpirationDate(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        
+        if sender.isOn {
+            fieldSetExpirationDate.isEnabled = true
+            fieldSetExpirationDate(sender: fieldSetExpirationDate)
+        } else {
+            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: "", hideDownload: tableShare.hideDownload)
+        }
+    }
+    
+    @IBAction func fieldSetExpirationDate(sender: UITextField) {
+        
+        let calendar = NCShareCommon.sharedInstance.openCalendar(view: self, width: width, height: height)
+        calendar.calendarView.delegate = self
+        viewWindowCalendar = calendar.viewWindow
+    }
+    
+    // Note to recipient
+    @IBAction func fieldNoteToRecipientDidEndOnExit(textField: UITextField) {
+        
+        guard let tableShare = self.tableShare else { return }
+        if fieldNoteToRecipient.text == nil { return }
+        
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: fieldNoteToRecipient.text, expirationTime: nil, hideDownload: tableShare.hideDownload)
+    }
+    
+    // Unshare
+    @IBAction func buttonUnshare(sender: UIButton) {
+        
+        guard let tableShare = self.tableShare else { return }
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        
+        networking.unShare(idRemoteShared: tableShare.idRemoteShared)
+    }
+    
+    // MARK: - Delegate networking
     
     func readShareCompleted(errorCode: Int) {
         reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
@@ -132,5 +174,41 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func updateShareWithError(idRemoteShared: Int) {
         reloadData(idRemoteShared: idRemoteShared)
+    }
+    
+    // MARK: - Delegate calendar
+
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        
+        if monthPosition == .previous || monthPosition == .next {
+            calendar.setCurrentPage(date, animated: true)
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.formatterBehavior = .behavior10_4
+            dateFormatter.dateStyle = .medium
+            fieldSetExpirationDate.text = dateFormatter.string(from:date)
+            fieldSetExpirationDate.endEditing(true)
+            
+            viewWindowCalendar?.removeFromSuperview()
+            
+            guard let tableShare = self.tableShare else { return }
+            
+            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            dateFormatter.dateFormat = "YYYY-MM-dd"
+            let expirationTime = dateFormatter.string(from: date)
+            networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: expirationTime, hideDownload: tableShare.hideDownload)
+        }
+    }
+    
+    func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
+        return date > Date()
+    }
+    
+    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleDefaultColorFor date: Date) -> UIColor? {
+        if date > Date() {
+            return UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1)
+        } else {
+            return UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
+        }
     }
 }

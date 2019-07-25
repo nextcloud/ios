@@ -29,6 +29,9 @@
                 </label>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="dB8-1M-WZr">
                     <rect key="frame" x="10" y="61" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchSetExpirationDateWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="A9c-YF-bXd"/>
+                    </connections>
                 </switch>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Set expiration date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qll-9F-4DA">
                     <rect key="frame" x="70" y="69" width="240" height="15"/>
@@ -47,6 +50,9 @@
                     <nil key="textColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <action selector="fieldSetExpirationDateWithSender:" destination="iN0-l3-epB" eventType="editingDidEndOnExit" id="WdF-Ie-Di0"/>
+                    </connections>
                 </textField>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="file_txt" translatesAutoresizingMaskIntoConstraints="NO" id="F4T-wQ-tBU">
                     <rect key="frame" x="13" y="144" width="25" height="25"/>
@@ -69,6 +75,9 @@
                     <nil key="textColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <action selector="fieldNoteToRecipientDidEndOnExitWithTextField:" destination="iN0-l3-epB" eventType="editingDidEndOnExit" id="q1P-u7-EBw"/>
+                    </connections>
                 </textField>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="trash" translatesAutoresizingMaskIntoConstraints="NO" id="hr8-Qe-xD0" userLabel="Image Delete Share Link">
                     <rect key="frame" x="13" y="224" width="25" height="25"/>
@@ -91,6 +100,9 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="25" id="fWP-XF-kQx"/>
                     </constraints>
+                    <connections>
+                        <action selector="buttonUnshareWithSender:" destination="iN0-l3-epB" eventType="touchUpInside" id="Nky-nT-rCz"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

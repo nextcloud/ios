@@ -159,12 +159,16 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     func updateShareWithError(idRemoteShared: Int) { }
 }
 
+// MARK: - UITableViewDelegate
+
 extension NCShare: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
 }
+
+// MARK: - UITableViewDataSource
 
 extension NCShare: UITableViewDataSource {
     
@@ -215,6 +219,8 @@ extension NCShare: UITableViewDataSource {
     }
 }
 
+// MARK: - NCShareLinkCell
+
 class NCShareLinkCell: UITableViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
@@ -249,6 +255,8 @@ protocol NCShareLinkCellDelegate {
     func tapCopy(with tableShare: tableShare?, sender: Any)
     func tapMenu(with tableShare: tableShare?, sender: Any)
 }
+
+// MARK: - NCShareUserCell
 
 class NCShareUserCell: UITableViewCell {
     
