@@ -307,6 +307,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NCShareCommon.sharedInstance.copyLink(tableShare: tableShare, viewController: self)
     }
     
+    func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: Any) {
+        print("x")
+    }
+    
     func tapMenu(with tableShare: tableShare?, sender: Any) {
         let views = NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, tableShare: tableShare, metadata: metadata!)
         shareLinkMenuView = views.shareLinkMenuView
@@ -384,6 +388,7 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.labelTitle.text = tableShare.shareWith
+                NCShareCommon.sharedInstance.downloadAvatar(user: tableShare.shareWith, cell: cell)
                 return cell
             }
         }
@@ -446,9 +451,15 @@ class NCShareUserCell: UITableViewCell {
         labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
+    
+    // Can edit
+    @IBAction func switchCanEditChanged(sender: UISwitch) {
+        delegate?.switchCanEdit(with: tableShare, switch: sender.isOn, sender: sender)
+    }
 }
 
 protocol NCShareUserCellDelegate {
+    func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: Any)
 }
 
 // MARK: - ShareLinkMenuView
@@ -755,6 +766,31 @@ class NCShareCommon: NSObject {
         return image
     }
     
+    func downloadAvatar(user: String, cell: NCShareUserCell) {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + user + ".png"
+        
+        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                cell.imageItem.image = image
+            }
+        } else {
+            DispatchQueue.global().async {
+                let url = appDelegate.activeUrl + k_avatar + user + "/128"
+                let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                    if errorCode == 0 {
+                        do {
+                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                        } catch { return }
+                        cell.imageItem.image = UIImage(data: data!)
+                    }
+                })
+            }
+        }
+    }
+    
     func openViewMenuShareLink(view: UIView, tableShare: tableShare?, metadata: tableMetadata) -> (shareLinkMenuView: NCShareLinkMenuView, viewWindow: UIView) {
         
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
@@ -833,31 +869,6 @@ class NCShareCommon: NSObject {
             let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             viewController.present(activityVC, animated: true, completion: nil)
         }
-    }
-    
-    func downloadAvatar(user: String) -> UIImage? {
-        
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + user + ".png"
-        
-        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-            return UIImage(contentsOfFile: fileNameLocalPath)
-        } else {
-            DispatchQueue.global().async {
-                let url = appDelegate.activeUrl + k_avatar + user + "/128"
-                let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                    if errorCode == 0 {
-                        do {
-                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                        } catch { return }
-                        //cell.avatar.image = UIImage(data: data!)
-                    }
-                })
-            }
-        }
-        
-        return nil
     }
 }
 
