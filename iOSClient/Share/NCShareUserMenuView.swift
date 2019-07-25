@@ -82,6 +82,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     }
     
     func reloadData(idRemoteShared: Int) {
+        
         tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
         guard let tableShare = self.tableShare else { return }
 
@@ -133,7 +134,6 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
                 permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata!.directory)
             } else {
                 permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata!.directory)
-
             }
         }
     
@@ -176,6 +176,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func buttonUnshare(sender: UIButton) {
         
         guard let tableShare = self.tableShare else { return }
+        
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         
         networking.unShare(idRemoteShared: tableShare.idRemoteShared)

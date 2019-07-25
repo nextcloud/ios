@@ -98,27 +98,29 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     }
     
     func reloadData(idRemoteShared: Int) {
-        tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
         
+        tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
+        guard let tableShare = self.tableShare else { return }
+
         // Allow editing
-        if tableShare != nil && tableShare!.permissions > Int(k_read_share_permission) {
+        if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
             switchAllowEditing.setOn(true, animated: false)
         } else {
             switchAllowEditing.setOn(false, animated: false)
         }
         
         // Hide download
-        if tableShare != nil && tableShare!.hideDownload {
+        if tableShare.hideDownload {
             switchHideDownload.setOn(true, animated: false)
         } else {
             switchHideDownload.setOn(false, animated: false)
         }
         
         // Password protect
-        if tableShare != nil && tableShare!.shareWith.count > 0 {
+        if tableShare.shareWith.count > 0 {
             switchPasswordProtect.setOn(true, animated: false)
             fieldPasswordProtect.isEnabled = true
-            fieldPasswordProtect.text = tableShare!.shareWith
+            fieldPasswordProtect.text = tableShare.shareWith
         } else {
             switchPasswordProtect.setOn(false, animated: false)
             fieldPasswordProtect.isEnabled = false
@@ -126,14 +128,14 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
         
         // Set expiration date
-        if tableShare != nil && tableShare!.expirationDate != nil {
+        if tableShare.expirationDate != nil {
             switchSetExpirationDate.setOn(true, animated: false)
             fieldSetExpirationDate.isEnabled = true
             
             let dateFormatter = DateFormatter()
             dateFormatter.formatterBehavior = .behavior10_4
             dateFormatter.dateStyle = .medium
-            fieldSetExpirationDate.text = dateFormatter.string(from: tableShare!.expirationDate! as Date)
+            fieldSetExpirationDate.text = dateFormatter.string(from: tableShare.expirationDate! as Date)
         } else {
             switchSetExpirationDate.setOn(false, animated: false)
             fieldSetExpirationDate.isEnabled = false
@@ -141,11 +143,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
         
         // Note to recipient
-        if tableShare != nil {
-            fieldNoteToRecipient.text = tableShare!.note
-        } else {
-            fieldNoteToRecipient.text = ""
-        }
+        fieldNoteToRecipient.text = tableShare.note
     }
     
     // MARK: - IBAction
@@ -155,11 +153,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         guard let tableShare = self.tableShare else { return }
         
-        var permission = 0
+        var permission: Int = 0
+        
         if sender.isOn {
-            permission = Int(k_read_share_permission) + Int(k_update_share_permission)
+            permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata!.directory)
         } else {
-            permission = Int(k_read_share_permission)
+            permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata!.directory)
         }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
@@ -233,6 +232,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func buttonDeleteShareLink(sender: UIButton) {
         
         guard let tableShare = self.tableShare else { return }
+        
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         
         networking.unShare(idRemoteShared: tableShare.idRemoteShared)
