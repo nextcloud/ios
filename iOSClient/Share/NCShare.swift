@@ -389,6 +389,13 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 cell.labelTitle.text = tableShare.shareWith
                 NCShareCommon.sharedInstance.downloadAvatar(user: tableShare.shareWith, cell: cell)
+                
+                if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
+                    cell.switchCanEdit.setOn(true, animated: false)
+                } else {
+                    cell.switchCanEdit.setOn(false, animated: false)
+
+                }
                 return cell
             }
         }
@@ -542,7 +549,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
         
         // Allow editing
-        if tableShare != nil && tableShare!.permissions > 1 {
+        if tableShare != nil && tableShare!.permissions > Int(k_read_share_permission) {
             switchAllowEditing.setOn(true, animated: false)
         } else {
             switchAllowEditing.setOn(false, animated: false)
@@ -596,9 +603,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         var permission = 0
         if sender.isOn {
-            permission = 3
+            permission = Int(k_read_share_permission) + Int(k_update_share_permission)
         } else {
-            permission = 1
+            permission = Int(k_read_share_permission)
         }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
