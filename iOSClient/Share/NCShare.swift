@@ -440,7 +440,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     @IBOutlet weak var imageNoteToRecipient: UIImageView!
     @IBOutlet weak var labelNoteToRecipient: UILabel!
-    @IBOutlet weak var textViewNoteToRecipient: UITextView!
+    @IBOutlet weak var fieldNoteToRecipient: UITextField!
     @IBOutlet weak var buttonSendNoteToRecipient: UIButton!
 
     @IBOutlet weak var buttonDeleteShareLink: UIButton!
@@ -477,11 +477,6 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         switchHideDownload.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchPasswordProtect.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        
-        textViewNoteToRecipient.layer.borderColor = UIColor.lightGray.cgColor
-        textViewNoteToRecipient.layer.borderWidth = 0.5
-        textViewNoteToRecipient.layer.masksToBounds = false
-        textViewNoteToRecipient.layer.cornerRadius = 5
         
         fieldSetExpirationDate.inputView = UIView()
 
@@ -545,9 +540,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         // Note to recipient
         if tableShare != nil {
-            textViewNoteToRecipient.text = tableShare!.note
+            fieldNoteToRecipient.text = tableShare!.note
         } else {
-            textViewNoteToRecipient.text = ""
+            fieldNoteToRecipient.text = ""
         }
     }
     
@@ -590,6 +585,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     @IBAction func buttonSendPasswordProtect(sender: UIButton) {
         
+        fieldPasswordProtect.endEditing(true)
+
         guard let tableShare = self.tableShare else { return }
         if fieldPasswordProtect.text == nil || fieldPasswordProtect.text == "" { return }
         
@@ -619,13 +616,13 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     @IBAction func buttonSendNoteToRecipient(sender: UIButton) {
         
-        textViewNoteToRecipient.endEditing(true)
+        fieldNoteToRecipient.endEditing(true)
 
         guard let tableShare = self.tableShare else { return }
-        if textViewNoteToRecipient.text == nil { return }
+        if fieldNoteToRecipient.text == nil { return }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
-        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: textViewNoteToRecipient.text, expirationTime: nil, hideDownload: tableShare.hideDownload)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: fieldNoteToRecipient.text, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func buttonDeleteShareLink(sender: UIButton) {
