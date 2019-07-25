@@ -432,7 +432,6 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBOutlet weak var switchPasswordProtect: UISwitch!
     @IBOutlet weak var labelPasswordProtect: UILabel!
     @IBOutlet weak var fieldPasswordProtect: UITextField!
-    @IBOutlet weak var buttonSendPasswordProtect: UIButton!
 
     @IBOutlet weak var switchSetExpirationDate: UISwitch!
     @IBOutlet weak var labelSetExpirationDate: UILabel!
@@ -441,7 +440,6 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBOutlet weak var imageNoteToRecipient: UIImageView!
     @IBOutlet weak var labelNoteToRecipient: UILabel!
     @IBOutlet weak var fieldNoteToRecipient: UITextField!
-    @IBOutlet weak var buttonSendNoteToRecipient: UIButton!
 
     @IBOutlet weak var buttonDeleteShareLink: UIButton!
     @IBOutlet weak var labelDeleteShareLink: UILabel!
@@ -515,12 +513,10 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             switchPasswordProtect.setOn(true, animated: false)
             fieldPasswordProtect.isEnabled = true
             fieldPasswordProtect.text = tableShare!.shareWith
-            buttonSendPasswordProtect.isEnabled = true
         } else {
             switchPasswordProtect.setOn(false, animated: false)
             fieldPasswordProtect.isEnabled = false
             fieldPasswordProtect.text = ""
-            buttonSendPasswordProtect.isEnabled = false
         }
         
         // Set expiration date
@@ -579,7 +575,6 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         if sender.isOn {
             fieldPasswordProtect.isEnabled = true
             fieldPasswordProtect.text = ""
-            buttonSendPasswordProtect.isEnabled = true
             fieldPasswordProtect.becomeFirstResponder()
         } else {
             let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
@@ -587,19 +582,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
     }
     
-    @IBAction func buttonSendPasswordProtect(sender: UIButton) {
+    @IBAction func fieldPasswordProtectDidEndOnExit(textField: UITextField) {
         
-        fieldPasswordProtect.endEditing(true)
-
         guard let tableShare = self.tableShare else { return }
-        if fieldPasswordProtect.text == nil || fieldPasswordProtect.text == "" { return }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: fieldPasswordProtect.text, permission: 0, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
-    }
-    
-    @IBAction func fieldPasswordProtectDidEndOnExit(textField: UITextField) {
-        buttonSendPasswordProtect(sender: UIButton())
     }
     
     // Set expiration date
@@ -624,19 +612,13 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     }
     
     // Note to recipient
-    @IBAction func buttonSendNoteToRecipient(sender: UIButton) {
-        
-        fieldNoteToRecipient.endEditing(true)
+    @IBAction func fieldNoteToRecipientDidEndOnExit(textField: UITextField) {
 
         guard let tableShare = self.tableShare else { return }
         if fieldNoteToRecipient.text == nil { return }
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: fieldNoteToRecipient.text, expirationTime: nil, hideDownload: tableShare.hideDownload)
-    }
-    
-    @IBAction func fieldNoteToRecipientDidEndOnExit(textField: UITextField) {
-        buttonSendNoteToRecipient(sender: UIButton())
     }
     
     // Delete share link
