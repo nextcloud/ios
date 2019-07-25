@@ -79,6 +79,9 @@
                     <nil key="textColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
+                    <connections>
+                        <action selector="fieldPasswordProtectDidEndOnExitWithTextField:" destination="iN0-l3-epB" eventType="editingDidEndOnExit" id="2PO-wf-bHs"/>
+                    </connections>
                 </textField>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="dB8-1M-WZr">
                     <rect key="frame" x="10" y="195" width="51" height="31"/>
@@ -139,6 +142,9 @@
                     <nil key="textColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <action selector="fieldNoteToRecipientDidEndOnExitWithTextField:" destination="iN0-l3-epB" eventType="editingDidEndOnExit" id="Z9v-qs-dp4"/>
+                    </connections>
                 </textField>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="trash" translatesAutoresizingMaskIntoConstraints="NO" id="hr8-Qe-xD0" userLabel="Image Delete Share Link">
                     <rect key="frame" x="13" y="358" width="25" height="25"/>

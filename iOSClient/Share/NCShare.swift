@@ -454,7 +454,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     public let width: CGFloat = 250
-    public let height: CGFloat = 470
+    public let height: CGFloat = 440
     private var tableShare: tableShare?
     public var metadata: tableMetadata?
     
@@ -546,6 +546,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
     }
     
+    // Allow editing
     @IBAction func switchAllowEditingChanged(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
@@ -561,6 +562,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
+    // Hide download
     @IBAction func switchHideDownloadChanged(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
@@ -569,14 +571,16 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: nil, hideDownload: sender.isOn)
     }
     
+    // Password protect
     @IBAction func switchPasswordProtectChanged(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
         
         if sender.isOn {
             fieldPasswordProtect.isEnabled = true
-            fieldPasswordProtect.text = tableShare.shareWith
+            fieldPasswordProtect.text = ""
             buttonSendPasswordProtect.isEnabled = true
+            fieldPasswordProtect.becomeFirstResponder()
         } else {
             let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
             networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: "", permission: 0, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
@@ -594,6 +598,11 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: fieldPasswordProtect.text, permission: 0, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
+    @IBAction func fieldPasswordProtectDidEndOnExit(textField: UITextField) {
+        buttonSendPasswordProtect(sender: UIButton())
+    }
+    
+    // Set expiration date
     @IBAction func switchSetExpirationDate(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
@@ -614,6 +623,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         viewWindowCalendar = calendar.viewWindow
     }
     
+    // Note to recipient
     @IBAction func buttonSendNoteToRecipient(sender: UIButton) {
         
         fieldNoteToRecipient.endEditing(true)
@@ -625,6 +635,11 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: fieldNoteToRecipient.text, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
+    @IBAction func fieldNoteToRecipientDidEndOnExit(textField: UITextField) {
+        buttonSendNoteToRecipient(sender: UIButton())
+    }
+    
+    // Delete share link
     @IBAction func buttonDeleteShareLink(sender: UIButton) {
         
         guard let tableShare = self.tableShare else { return }
@@ -633,6 +648,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking.unShare(idRemoteShared: tableShare.idRemoteShared)
     }
     
+    // Add another link
     @IBAction func buttonAddAnotherLink(sender: UIButton) {
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
