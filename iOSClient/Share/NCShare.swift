@@ -229,7 +229,7 @@ class NCShareComments: UIViewController {
 
 // MARK: - Share
 
-class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareNetworkingDelegate {
+class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
     
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
@@ -264,6 +264,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         tableView.allowsSelection = false
         
         tableView.register(UINib.init(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
+        tableView.register(UINib.init(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadData), name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil)
         
@@ -378,6 +379,13 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 return cell
             }
+        } else {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
+                cell.tableShare = tableShare
+                cell.delegate = self
+                cell.labelTitle.text = tableShare.shareWith
+                return cell
+            }
         }
         
         return UITableViewCell()
@@ -417,6 +425,30 @@ class NCShareLinkCell: UITableViewCell {
 protocol NCShareLinkCellDelegate {
     func tapCopy(with tableShare: tableShare?, sender: Any)
     func tapMenu(with tableShare: tableShare?, sender: Any)
+}
+
+class NCShareUserCell: UITableViewCell {
+    
+    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelCanEdit: UILabel!
+    @IBOutlet weak var switchCanEdit: UISwitch!
+    @IBOutlet weak var buttonMenu: UIButton!
+    
+    var tableShare: tableShare?
+    var delegate: NCShareUserCellDelegate?
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        switchCanEdit.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchCanEdit.onTintColor = NCBrandColor.sharedInstance.brand
+        labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
+        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
+    }
+}
+
+protocol NCShareUserCellDelegate {
 }
 
 // MARK: - ShareLinkMenuView
@@ -472,9 +504,13 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.shadowOpacity = 0.2
         
         switchAllowEditing.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchAllowEditing.onTintColor = NCBrandColor.sharedInstance.brand
         switchHideDownload.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchHideDownload.onTintColor = NCBrandColor.sharedInstance.brand
         switchPasswordProtect.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchPasswordProtect.onTintColor = NCBrandColor.sharedInstance.brand
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brand
         
         fieldSetExpirationDate.inputView = UIView()
 
@@ -797,6 +833,31 @@ class NCShareCommon: NSObject {
             let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             viewController.present(activityVC, animated: true, completion: nil)
         }
+    }
+    
+    func downloadAvatar(user: String) -> UIImage? {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + user + ".png"
+        
+        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+            return UIImage(contentsOfFile: fileNameLocalPath)
+        } else {
+            DispatchQueue.global().async {
+                let url = appDelegate.activeUrl + k_avatar + user + "/128"
+                let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                    if errorCode == 0 {
+                        do {
+                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                        } catch { return }
+                        //cell.avatar.image = UIImage(data: data!)
+                    }
+                })
+            }
+        }
+        
+        return nil
     }
 }
 
