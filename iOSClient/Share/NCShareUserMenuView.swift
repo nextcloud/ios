@@ -83,23 +83,25 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func reloadData(idRemoteShared: Int) {
         tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
-        
+        guard let tableShare = self.tableShare else { return }
+
         // Can reshare
-        if tableShare != nil && tableShare!.permissions > Int(k_read_share_permission) {
-            //switchAllowEditing.setOn(true, animated: false)
+        let canReshare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        if canReshare {
+            switchCanReshare.setOn(true, animated: false)
         } else {
-            //switchAllowEditing.setOn(false, animated: false)
+            switchCanReshare.setOn(false, animated: false)
         }
         
         // Set expiration date
-        if tableShare != nil && tableShare!.expirationDate != nil {
+        if tableShare.expirationDate != nil {
             switchSetExpirationDate.setOn(true, animated: false)
             fieldSetExpirationDate.isEnabled = true
             
             let dateFormatter = DateFormatter()
             dateFormatter.formatterBehavior = .behavior10_4
             dateFormatter.dateStyle = .medium
-            fieldSetExpirationDate.text = dateFormatter.string(from: tableShare!.expirationDate! as Date)
+            fieldSetExpirationDate.text = dateFormatter.string(from: tableShare.expirationDate! as Date)
         } else {
             switchSetExpirationDate.setOn(false, animated: false)
             fieldSetExpirationDate.isEnabled = false
@@ -107,15 +109,38 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         }
         
         // Note to recipient
-        if tableShare != nil {
-            fieldNoteToRecipient.text = tableShare!.note
-        } else {
-            fieldNoteToRecipient.text = ""
-        }
+        fieldNoteToRecipient.text = tableShare.note
     }
     
     // MARK: - IBAction
 
+    // Can reshare
+    @IBAction func switchCanReshareChanged(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        
+        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
+        var permission: Int = 0
+        
+        if sender.isOn {
+            if canEdit {
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: true, andIsFolder: metadata!.directory)
+            } else {
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: true, andIsFolder: metadata!.directory)
+            }
+        } else {
+            if canEdit {
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata!.directory)
+            } else {
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata!.directory)
+
+            }
+        }
+    
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
+    }
+    
     // Set expiration date
     @IBAction func switchSetExpirationDate(sender: UISwitch) {
         

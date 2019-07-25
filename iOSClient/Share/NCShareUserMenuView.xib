@@ -17,6 +17,9 @@
             <subviews>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="sjf-wF-y07">
                     <rect key="frame" x="10" y="10" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchCanReshareChangedWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="Ezn-AP-uEh"/>
+                    </connections>
                 </switch>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Can reshare" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IHP-P8-rm2">
                     <rect key="frame" x="70" y="18" width="240" height="15"/>
