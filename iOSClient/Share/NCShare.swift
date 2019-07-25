@@ -421,7 +421,7 @@ protocol NCShareLinkCellDelegate {
 
 // MARK: - ShareLinkMenuView
 
-class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, FSCalendarDelegate {
+class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, FSCalendarDelegate, FSCalendarDelegateAppearance {
     
     @IBOutlet weak var switchAllowEditing: UISwitch!
     @IBOutlet weak var labelAllowEditing: UILabel!
@@ -485,9 +485,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         fieldSetExpirationDate.inputView = UIView()
 
-        imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor.black)
-        imageDeleteShareLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor.black)
-        imageAddAnotherLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor.black)
+        imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
+        imageDeleteShareLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
+        imageAddAnotherLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
     }
     
     func unLoad() {
@@ -535,7 +535,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
 
             let dateFormatter = DateFormatter()
             dateFormatter.formatterBehavior = .behavior10_4
-            dateFormatter.dateStyle = .short
+            dateFormatter.dateStyle = .medium
             fieldSetExpirationDate.text = dateFormatter.string(from: tableShare!.expirationDate! as Date)
         } else {
             switchSetExpirationDate.setOn(false, animated: false)
@@ -619,6 +619,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     @IBAction func buttonSendNoteToRecipient(sender: UIButton) {
         
+        textViewNoteToRecipient.endEditing(true)
+
         guard let tableShare = self.tableShare else { return }
         if textViewNoteToRecipient.text == nil { return }
         
@@ -661,16 +663,39 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         reloadData(idRemoteShared: idRemoteShared)
     }
     
-    // delegate calendar
+    // delegate/appearance calendar
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.formatterBehavior = .behavior10_4
-        dateFormatter.dateStyle = .short
-        fieldSetExpirationDate.text = dateFormatter.string(from:date)
-        fieldSetExpirationDate.endEditing(true)
-        
-        viewWindowCalendar?.removeFromSuperview()
+        if monthPosition == .previous || monthPosition == .next {
+            calendar.setCurrentPage(date, animated: true)
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.formatterBehavior = .behavior10_4
+            dateFormatter.dateStyle = .medium
+            fieldSetExpirationDate.text = dateFormatter.string(from:date)
+            fieldSetExpirationDate.endEditing(true)
+            
+            viewWindowCalendar?.removeFromSuperview()
+            
+            guard let tableShare = self.tableShare else { return }
+
+            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            dateFormatter.dateFormat = "YYYY-MM-dd"
+            let expirationTime = dateFormatter.string(from: date)
+            networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: expirationTime, hideDownload: tableShare.hideDownload)
+        }
+    }
+    
+    func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
+        return date > Date()
+    }
+    
+    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleDefaultColorFor date: Date) -> UIColor? {
+        if date > Date() {
+            return UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1)
+        } else {
+            return UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
+        }
     }
 }
 
@@ -729,8 +754,11 @@ class NCShareCommon: NSObject {
         window.addSubview(viewWindow)
         
         let calendar = FSCalendar(frame: CGRect(x: globalPoint!.x + 10, y: globalPoint!.y + 100, width: width - 20, height: 300))
-       
+        
         calendar.backgroundColor = .white
+        calendar.placeholderType = .none
+        calendar.appearance.headerMinimumDissolvedAlpha = 0.0
+
         calendar.layer.borderColor = UIColor.lightGray.cgColor
         calendar.layer.borderWidth = 0.5
         calendar.layer.masksToBounds = false
@@ -738,6 +766,15 @@ class NCShareCommon: NSObject {
         calendar.layer.masksToBounds = false
         calendar.layer.shadowOffset = CGSize(width: 2, height: 2)
         calendar.layer.shadowOpacity = 0.2
+        
+        calendar.appearance.headerTitleColor = .black
+        calendar.appearance.headerTitleFont = UIFont.systemFont(ofSize: 13)
+        
+        calendar.appearance.weekdayTextColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1)
+        calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 12)
+        
+        calendar.appearance.todayColor = NCBrandColor.sharedInstance.brand
+        calendar.appearance.titleFont = UIFont.systemFont(ofSize: 12)
         
         viewWindow.addSubview(calendar)
         
