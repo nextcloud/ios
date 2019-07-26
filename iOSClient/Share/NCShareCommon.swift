@@ -22,6 +22,7 @@
 
 import Foundation
 import FSCalendar
+import DropDown
 
 class NCShareCommon: NSObject {
     @objc static let sharedInstance: NCShareCommon = {
@@ -69,6 +70,30 @@ class NCShareCommon: NSObject {
         }
     }
     
+    func downloadAvatar(user: String, cell: NCShareUserDropDownCell) {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + user + ".png"
+        
+        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                cell.imageItem.image = image
+            }
+        } else {
+            DispatchQueue.global().async {
+                let url = appDelegate.activeUrl + k_avatar + user + "/128"
+                let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                    if errorCode == 0 {
+                        do {
+                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                        } catch { return }
+                        cell.imageItem.image = UIImage(data: data!)
+                    }
+                })
+            }
+        }
+    }
     func openViewMenuShareLink(view: UIView, tableShare: tableShare?, metadata: tableMetadata) -> (shareLinkMenuView: NCShareLinkMenuView, viewWindow: UIView) {
         
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)

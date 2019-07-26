@@ -172,8 +172,16 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let items = items else { return }
         
-        let appearance = DropDown.appearance()
         let dropDown = DropDown()
+        let appearance = DropDown.appearance()
+        
+        appearance.backgroundColor = .white
+        appearance.cornerRadius = 10
+        appearance.shadowColor = UIColor(white: 0.6, alpha: 1)
+        appearance.shadowOpacity = 0.9
+        appearance.shadowRadius = 25
+        appearance.animationduration = 0.25
+        appearance.textColor = .darkGray
         
         if #available(iOS 11.0, *) {
             appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
@@ -181,12 +189,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.dataSource = items.map {$0.name}
         dropDown.anchorView = searchField
-        dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
+        dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height + 2)
         
         dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCShareUserDropDownCell else { return }
-            //cell.displayName.text = item
+            NCShareCommon.sharedInstance.downloadAvatar(user: item, cell: cell)
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
@@ -332,5 +340,5 @@ protocol NCShareUserCellDelegate {
 
 class NCShareUserDropDownCell: DropDownCell {
     
-    @IBOutlet weak var logoImageView: UIImageView!
+    @IBOutlet weak var imageItem: UIImageView!
 }
