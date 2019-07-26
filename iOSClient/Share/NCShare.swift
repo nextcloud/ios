@@ -28,7 +28,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
-    @IBOutlet weak var returnSearchButton: UIButton!
     @IBOutlet weak var shareLinkImage: UIImageView!
     @IBOutlet weak var shareLinkLabel: UILabel!
     @IBOutlet weak var buttonCopy: UIButton!
@@ -50,7 +49,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
-        returnSearchButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "arrowRight"), width: 100, height: 100, color: UIColor.gray), for: .normal)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar()
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
@@ -75,6 +73,28 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         shareLinkMenuView = nil
         shareUserMenuView?.unLoad()
         shareUserMenuView = nil
+    }
+    
+    @objc func reloadData() {
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
+        if shares.firstShareLink == nil {
+            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareAdd"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+            buttonCopy.isHidden = true
+        } else {
+            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+            buttonCopy.isHidden = false
+        }
+        tableView.reloadData()
+    }
+    
+    // MARK: - IBAction
+
+    @IBAction func searchFieldDidEndOnExit(textField: UITextField) {
+        
+        guard let searchString = textField.text else { return }
+        
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
+        networking.getUserAndGroup(searchString: searchString)
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
@@ -133,19 +153,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         }
     }
     
-    @objc func reloadData() {
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
-        if shares.firstShareLink == nil {
-            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareAdd"), width: 100, height: 100, color: UIColor.gray), for: .normal)
-            buttonCopy.isHidden = true
-        } else {
-            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width: 100, height: 100, color: UIColor.gray), for: .normal)
-            buttonCopy.isHidden = false
-        }
-        tableView.reloadData()
-    }
+    /// MARK: - NCShareNetworkingDelegate
     
-    // NCShareNetworkingDelegate
     func readShareCompleted(errorCode: Int) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
     }
@@ -157,6 +166,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     func unShareCompleted() { }
     
     func updateShareWithError(idRemoteShared: Int) { }
+    
+    func getUserAndGroup(items: [OCShareUser]?) { }
 }
 
 // MARK: - UITableViewDelegate

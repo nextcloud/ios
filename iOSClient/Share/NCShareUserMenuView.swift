@@ -202,6 +202,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         reloadData(idRemoteShared: idRemoteShared)
     }
     
+    func getUserAndGroup(items: [OCShareUser]?) { }
+    
     // MARK: - Delegate calendar
 
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {

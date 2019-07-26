@@ -71,22 +71,17 @@
                                 <rect key="frame" x="5" y="244" width="404" height="608"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="iSO-mc-0TB">
-                                        <rect key="frame" x="5" y="20" width="354" height="30"/>
+                                        <rect key="frame" x="5" y="20" width="389" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="0aG-z9-fcy"/>
                                         </constraints>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <textInputTraits key="textInputTraits"/>
+                                        <connections>
+                                            <action selector="searchFieldDidEndOnExitWithTextField:" destination="bgO-Rz-2M1" eventType="editingDidEndOnExit" id="xH6-YR-5W9"/>
+                                        </connections>
                                     </textField>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f5j-bG-pbj">
-                                        <rect key="frame" x="369" y="20" width="30" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="30" id="Ikg-Fn-Sfc"/>
-                                            <constraint firstAttribute="width" constant="30" id="rfv-yn-tpm"/>
-                                        </constraints>
-                                        <state key="normal" image="arrowRight"/>
-                                    </button>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c94-b9-Sim">
                                         <rect key="frame" x="0.0" y="118" width="404" height="490"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -129,17 +124,15 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="f5j-bG-pbj" firstAttribute="centerY" secondItem="iSO-mc-0TB" secondAttribute="centerY" id="8Aa-Tz-QVA"/>
                                     <constraint firstAttribute="trailing" secondItem="c94-b9-Sim" secondAttribute="trailing" id="BtN-cJ-TTc"/>
                                     <constraint firstItem="c94-b9-Sim" firstAttribute="top" secondItem="iSO-mc-0TB" secondAttribute="bottom" constant="68" id="Co6-l6-HiT"/>
-                                    <constraint firstItem="f5j-bG-pbj" firstAttribute="leading" secondItem="iSO-mc-0TB" secondAttribute="trailing" constant="10" id="GBQ-j9-3mM"/>
                                     <constraint firstItem="SQW-aQ-ydN" firstAttribute="centerY" secondItem="8Cj-cK-AKZ" secondAttribute="centerY" id="LtS-8d-L7a"/>
                                     <constraint firstItem="Qek-aQ-NjE" firstAttribute="centerY" secondItem="8Cj-cK-AKZ" secondAttribute="centerY" id="NYZ-hc-SBk"/>
                                     <constraint firstItem="SQW-aQ-ydN" firstAttribute="leading" secondItem="8Cj-cK-AKZ" secondAttribute="trailing" constant="8" id="Oby-Ea-MaC"/>
                                     <constraint firstItem="cLd-wD-cSC" firstAttribute="leading" secondItem="SQW-aQ-ydN" secondAttribute="trailing" constant="10" id="PFh-qU-yXY"/>
                                     <constraint firstAttribute="bottom" secondItem="c94-b9-Sim" secondAttribute="bottom" id="Svm-RV-vnl"/>
+                                    <constraint firstAttribute="trailing" secondItem="iSO-mc-0TB" secondAttribute="trailing" constant="10" id="Vhu-GP-EJN"/>
                                     <constraint firstItem="8Cj-cK-AKZ" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" constant="5" id="WlZ-CY-x4s"/>
-                                    <constraint firstAttribute="trailing" secondItem="f5j-bG-pbj" secondAttribute="trailing" constant="5" id="Yb4-KO-nwi"/>
                                     <constraint firstItem="Qek-aQ-NjE" firstAttribute="leading" secondItem="cLd-wD-cSC" secondAttribute="trailing" constant="30" id="bSw-vM-d12"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" constant="5" id="d8E-WM-YfC"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="top" secondItem="X2m-IC-J1u" secondAttribute="top" constant="20" id="jPM-Uo-0lS"/>
@@ -162,7 +155,6 @@
                     <connections>
                         <outlet property="buttonCopy" destination="cLd-wD-cSC" id="Sib-oL-uQx"/>
                         <outlet property="buttonMenu" destination="Qek-aQ-NjE" id="xfp-a1-YDn"/>
-                        <outlet property="returnSearchButton" destination="f5j-bG-pbj" id="Frk-T3-NV9"/>
                         <outlet property="searchField" destination="iSO-mc-0TB" id="1vY-Js-dGQ"/>
                         <outlet property="shareLinkImage" destination="8Cj-cK-AKZ" id="dIZ-nv-gyf"/>
                         <outlet property="shareLinkLabel" destination="SQW-aQ-ydN" id="nBK-WJ-oKy"/>
@@ -176,7 +168,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrowRight" width="329" height="329"/>
         <image name="shareCopy" width="329" height="329"/>
         <image name="shareMenu" width="329" height="329"/>
     </resources>

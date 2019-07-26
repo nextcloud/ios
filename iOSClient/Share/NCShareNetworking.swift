@@ -101,6 +101,20 @@ class NCShareNetworking: NSObject {
             }
         })
     }
+    
+    func getUserAndGroup(searchString: String) {
+        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        OCNetworking.sharedManager()?.getUserGroup(withAccount: account, search: searchString, completion: { (account, items, message, errorCode) in
+            NCUtility.sharedInstance.stopActivityIndicator()
+            if errorCode == 0 {
+                let itemsOCShareUser = items as! [OCShareUser]
+                self.delegate?.getUserAndGroup(items: itemsOCShareUser)
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                self.delegate?.getUserAndGroup(items: nil)
+            }
+        })
+    }
 }
 
 protocol NCShareNetworkingDelegate {
@@ -108,4 +122,5 @@ protocol NCShareNetworkingDelegate {
     func shareCompleted(errorCode: Int)
     func unShareCompleted()
     func updateShareWithError(idRemoteShared: Int)
+    func getUserAndGroup(items: [OCShareUser]?)
 }
