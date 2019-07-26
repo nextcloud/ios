@@ -177,7 +177,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         appearance.backgroundColor = .white
         appearance.cornerRadius = 10
-        appearance.shadowColor = UIColor(white: 0.6, alpha: 1)
+        appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
         appearance.shadowOpacity = 0.9
         appearance.shadowRadius = 25
         appearance.animationduration = 0.25
@@ -189,7 +189,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.dataSource = items.map {$0.name}
         dropDown.anchorView = searchField
-        dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height + 2)
+        dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
         
         dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
@@ -198,7 +198,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
-            
+            let item = items[index]
         }
         
         dropDown.show()
