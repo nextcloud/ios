@@ -22,8 +22,8 @@
 //
 
 import Foundation
-import UIKit
 import Parchment
+import DropDown
 
 class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
     
@@ -172,7 +172,28 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let items = items else { return }
         
-        NCShareCommon.sharedInstance.openDropDownUser(view: self.searchField, width: 0, height: 0, items: items)
+        let appearance = DropDown.appearance()
+        let dropDown = DropDown()
+        
+        if #available(iOS 11.0, *) {
+            appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
+        }
+        
+        dropDown.dataSource = items.map {$0.name}
+        dropDown.anchorView = searchField
+        dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
+        
+        dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
+        dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
+            guard let cell = cell as? NCShareUserDropDownCell else { return }
+            //cell.displayName.text = item
+        }
+        
+        dropDown.selectionAction = { [weak self] (index, item) in
+            
+        }
+        
+        dropDown.show()
     }
 }
 
@@ -307,4 +328,9 @@ class NCShareUserCell: UITableViewCell {
 protocol NCShareUserCellDelegate {
     func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: Any)
     func tapMenu(with tableShare: tableShare?, sender: Any)
+}
+
+class NCShareUserDropDownCell: DropDownCell {
+    
+    @IBOutlet weak var logoImageView: UIImageView!
 }
