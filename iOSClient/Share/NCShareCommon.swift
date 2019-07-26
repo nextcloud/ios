@@ -22,6 +22,7 @@
 
 import Foundation
 import FSCalendar
+import DropDown
 
 class NCShareCommon: NSObject {
     @objc static let sharedInstance: NCShareCommon = {
@@ -147,6 +148,27 @@ class NCShareCommon: NSObject {
         return(calendarView: calendar, viewWindow: viewWindow)
     }
     
+    func openDropDownUser(view: UITextField, width: CGFloat, height: CGFloat, items: [OCShareUser]) {
+        
+        let appearance = DropDown.appearance()
+        let dropDown = DropDown()
+        
+        if #available(iOS 11.0, *) {
+            appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
+        }
+        
+        dropDown.dataSource = items.map {$0.name}
+        dropDown.anchorView = view
+        
+        dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
+        dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
+            guard let cell = cell as? NCShareUserDropDownCell else { return }
+            //cell.displayName.text = item
+        }
+
+        dropDown.show()
+    }
+    
     func copyLink(tableShare: tableShare?, viewController: UIViewController) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -169,4 +191,9 @@ class NCShareCommon: NSObject {
             viewController.present(activityVC, animated: true, completion: nil)
         }
     }
+}
+
+class NCShareUserDropDownCell: DropDownCell {
+    
+    @IBOutlet weak var logoImageView: UIImageView!    
 }

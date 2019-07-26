@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import Parchment
 
 class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
@@ -167,7 +168,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     func updateShareWithError(idRemoteShared: Int) { }
     
-    func getUserAndGroup(items: [OCShareUser]?) { }
+    func getUserAndGroup(items: [OCShareUser]?) {
+        
+        guard let items = items else { return }
+        
+        NCShareCommon.sharedInstance.openDropDownUser(view: self.searchField, width: 0, height: 0, items: items)
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -302,4 +308,3 @@ protocol NCShareUserCellDelegate {
     func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: Any)
     func tapMenu(with tableShare: tableShare?, sender: Any)
 }
-
