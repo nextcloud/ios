@@ -42,6 +42,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     private var shareLinkMenuView: NCShareLinkMenuView?
     private var shareUserMenuView: NCShareUserMenuView?
     private var shareMenuViewWindow: UIView?
+    private var dropDown = DropDown()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,6 +75,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         shareLinkMenuView = nil
         shareUserMenuView?.unLoad()
         shareUserMenuView = nil
+        dropDown.hide()
     }
     
     @objc func reloadData() {
@@ -172,7 +174,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let items = items else { return }
         
-        let dropDown = DropDown()
+        dropDown = DropDown()
         let appearance = DropDown.appearance()
         
         appearance.backgroundColor = .white
@@ -187,7 +189,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
         }
         
-        dropDown.dataSource = items.map {$0.name}
+        for item in items {
+            if item.displayName != nil && item.displayName != "" {
+                dropDown.dataSource.append(item.displayName)
+            } else {
+                dropDown.dataSource.append(item.name)
+            }
+        }
+        
         dropDown.anchorView = searchField
         dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
         
