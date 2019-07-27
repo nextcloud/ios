@@ -130,8 +130,21 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NCShareCommon.sharedInstance.copyLink(tableShare: tableShare, viewController: self)
     }
     
-    func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: Any) {
-        print("x")
+    func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: UISwitch) {
+        
+        guard let tableShare = tableShare else { return }
+        
+        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        var permission: Int = 0
+        
+        if sender.isOn {
+            permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: canShare, andIsFolder: metadata!.directory)
+        } else {
+            permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: metadata!.directory)
+        }
+        
+        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self.view, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
@@ -345,7 +358,7 @@ class NCShareUserCell: UITableViewCell {
 }
 
 protocol NCShareUserCellDelegate {
-    func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: Any)
+    func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: UISwitch)
     func tapMenu(with tableShare: tableShare?, sender: Any)
 }
 
