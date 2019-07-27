@@ -217,6 +217,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCShareUserDropDownCell else { return }
+            cell.imageItem.image = UIImage(named: "avatar")
             let item = items[index]
             NCShareCommon.sharedInstance.downloadAvatar(user: item.name, cell: cell)
             if item.shareeType == 0 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}     // shareTypeUser

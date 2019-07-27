@@ -64,6 +64,8 @@ class NCShareCommon: NSObject {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                         } catch { return }
                         cell.imageItem.image = UIImage(data: data!)
+                    } else {
+                        cell.imageItem.image = UIImage(named: "avatar")
                     }
                 })
             }
@@ -89,6 +91,8 @@ class NCShareCommon: NSObject {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                         } catch { return }
                         cell.imageItem.image = UIImage(data: data!)
+                    } else {
+                        cell.imageItem.image = UIImage(named: "avatar")
                     }
                 })
             }
