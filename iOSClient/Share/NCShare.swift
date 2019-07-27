@@ -156,11 +156,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     /// MARK: - NCShareNetworkingDelegate
     
-    func readShareCompleted(errorCode: Int) {
+    func readShareCompleted() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
     }
     
-    func shareCompleted(errorCode: Int) {
+    func shareCompleted() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
     }
     

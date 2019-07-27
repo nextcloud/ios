@@ -184,11 +184,11 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     // MARK: - Delegate networking
     
-    func readShareCompleted(errorCode: Int) {
+    func readShareCompleted() {
         reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
     }
     
-    func shareCompleted(errorCode: Int) {
+    func shareCompleted() {
         unLoad()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
     }
