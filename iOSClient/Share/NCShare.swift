@@ -26,7 +26,7 @@ import Parchment
 import DropDown
 
 class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
-    
+   
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var shareLinkImage: UIImageView!
@@ -199,6 +199,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.selectionAction = { [weak self] (index, item) in
             let item = items[index]
+            let networking = NCShareNetworking.init(account: self!.metadata!.account, activeUrl: self!.appDelegate.activeUrl, view: self!.view, delegate: self!)
+            networking.shareUserAndGroup(name: item.name, shareeType: item.shareeType, metadata: self!.metadata!)
         }
         
         dropDown.show()

@@ -116,9 +116,11 @@ class NCShareNetworking: NSObject {
         })
     }
     
-    func shareUserAndGroup(name: String, shareeType: Int, permission: Int, metadata: tableMetadata) {
+    func shareUserAndGroup(name: String, shareeType: Int, metadata: tableMetadata) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+        var permission: Int = 0
+        if metadata.directory { permission = Int(k_max_folder_share_permission) } else { permission = Int(k_max_file_share_permission) }
         OCNetworking.sharedManager()?.shareUserGroup(withAccount: account, userOrGroup: name, fileName: fileName, permission: permission, shareeType: shareeType, completion: { (account, message, errorCode) in
             if errorCode == 0 {
                 OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
