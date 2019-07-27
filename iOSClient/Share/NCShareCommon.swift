@@ -59,7 +59,7 @@ class NCShareCommon: NSObject {
                 let url = appDelegate.activeUrl + k_avatar + user + "/128"
                 let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                 OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                    if errorCode == 0 {
+                    if errorCode == 0 && UIImage(data: data!) != nil {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                         } catch { return }
@@ -84,7 +84,7 @@ class NCShareCommon: NSObject {
                 let url = appDelegate.activeUrl + k_avatar + user + "/128"
                 let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                 OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                    if errorCode == 0 {
+                    if errorCode == 0 && UIImage(data: data!) != nil {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                         } catch { return }

@@ -114,7 +114,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                             let url = self.appDelegate.activeUrl + k_avatar + name + "/128"
                             let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                             OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                                if errorCode == 0 && data?.count ?? 0 > 0 {
+                                if errorCode == 0 && UIImage(data: data!) != nil  {
                                     do {
                                         try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                                     } catch { return }
