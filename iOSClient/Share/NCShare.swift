@@ -212,12 +212,17 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.anchorView = searchField
         dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
+        dropDown.width = searchField.bounds.width
         
         dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let item = items[index]
             NCShareCommon.sharedInstance.downloadAvatar(user: item.name, cell: cell)
+            if item.shareeType == 0 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}
+            if item.shareeType == 1 { cell.imageShareeType.image = UIImage(named: "shareTypeGroup")}
+            if item.shareeType == 3 { cell.imageShareeType.image = UIImage(named: "shareTypeLink")}
+            if item.shareeType == 4 { cell.imageShareeType.image = UIImage(named: "shareTypeEmail")}
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
@@ -366,4 +371,5 @@ protocol NCShareUserCellDelegate {
 class NCShareUserDropDownCell: DropDownCell {
     
     @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var imageShareeType: UIImageView!
 }
