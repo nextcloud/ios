@@ -64,8 +64,10 @@ class NCSharePaging: UIViewController {
             pagingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             ])
         
-        // Set our data source and delegate.
+        // Set our data source and start page
         pagingViewController.dataSource = self
+        pagingViewController.select(index: 2)
+
     }
     
     @objc func exitTapped() {
