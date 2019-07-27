@@ -219,10 +219,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let item = items[index]
             NCShareCommon.sharedInstance.downloadAvatar(user: item.name, cell: cell)
-            if item.shareeType == 0 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}
-            if item.shareeType == 1 { cell.imageShareeType.image = UIImage(named: "shareTypeGroup")}
-            if item.shareeType == 3 { cell.imageShareeType.image = UIImage(named: "shareTypeLink")}
-            if item.shareeType == 4 { cell.imageShareeType.image = UIImage(named: "shareTypeEmail")}
+            if item.shareeType == 0 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}     // shareTypeUser
+            if item.shareeType == 1 { cell.imageShareeType.image = UIImage(named: "shareTypeGroup")}    // shareTypeGroup
+            if item.shareeType == 3 { cell.imageShareeType.image = UIImage(named: "shareTypeLink")}     // shareTypeLink
+            if item.shareeType == 4 { cell.imageShareeType.image = UIImage(named: "shareTypeEmail")}    // shareTypeEmail
+            if item.shareeType == 5 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}     // shareTypeContact
+            if item.shareeType == 6 { cell.imageShareeType.image = UIImage(named: "shareTypeLink")}     // shareTypeRemote
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
