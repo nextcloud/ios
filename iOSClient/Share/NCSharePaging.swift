@@ -46,14 +46,16 @@ class NCSharePaging: UIViewController {
         view.addSubview(pagingViewController.view)
         pagingViewController.didMove(toParent: self)
         
+        // Customization
         pagingViewController.selectedTextColor = .black
         pagingViewController.indicatorColor = .black
         pagingViewController.indicatorOptions = .visible(
-            height: 1,
+            height: 0.5,
             zIndex: Int.max,
             spacing: .zero,
             insets: .zero
         )
+        pagingViewController.menuItemSize = .fixed(width: self.view.bounds.width/3, height: 40)
         
         // Contrain the paging view to all edges.
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false
