@@ -212,19 +212,3 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var favorite: UIButton!
 }
-
-// MARK: - Comments
-
-class NCShareComments: UIViewController {
-    
-    var metadata: tableMetadata?
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata?.fileID, completion: { (account, list, message, errorCode) in
-            print("ciao")
-        })
-    }
-}

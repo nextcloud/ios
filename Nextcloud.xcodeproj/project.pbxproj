@@ -556,6 +556,7 @@
 		F7DFB7F6219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7DFB7F5219C5F2300680748 /* NCCreateFormUploadRichdocuments.storyboard */; };
 		F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */; };
 		F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */; };
+		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
 		F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E9C41820F4CA870040CF18 /* CCTransfers.m */; };
 		F7ECBA6D1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */; };
 		F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CAF1E5B14C700E19C62 /* ImageError.png */; };
@@ -1404,6 +1405,7 @@
 		F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAudioRecorderViewController.swift; sourceTree = "<group>"; };
 		F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAudioRecorderViewController.storyboard; sourceTree = "<group>"; };
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F7E4D9C322ED929B003675FD /* NCShareComments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareComments.swift; sourceTree = "<group>"; };
 		F7E9C41520F4CA870040CF18 /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
 		F7E9C41820F4CA870040CF18 /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadRichdocuments.swift; sourceTree = "<group>"; };
@@ -1777,6 +1779,7 @@
 				F769453D22E9E97D000A798A /* NCShareUserMenuView.xib */,
 				F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */,
 				F769453F22E9F077000A798A /* NCSharePaging.swift */,
+				F7E4D9C322ED929B003675FD /* NCShareComments.swift */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
 				F769454122E9F0EE000A798A /* NCShareLinkMenuView.swift */,
 				F769454322E9F142000A798A /* NCShareUserMenuView.swift */,
@@ -3887,6 +3890,7 @@
 				F70022C81EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F7D423841F0596C6009C9782 /* ReaderThumbQueue.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
+				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,
 				F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F73B4EFD1F470D9100BBEE4B /* LangHebrewModel.cpp in Sources */,
