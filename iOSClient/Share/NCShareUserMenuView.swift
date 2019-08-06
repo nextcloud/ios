@@ -28,6 +28,15 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBOutlet weak var switchCanReshare: UISwitch!
     @IBOutlet weak var labelCanReshare: UILabel!
     
+    @IBOutlet weak var switchCanCreate: UISwitch!
+    @IBOutlet weak var labelCanCreate: UILabel!
+    
+    @IBOutlet weak var switchCanChange: UISwitch!
+    @IBOutlet weak var labelCanChange: UILabel!
+    
+    @IBOutlet weak var switchCanDelete: UISwitch!
+    @IBOutlet weak var labelCanDelete: UILabel!
+    
     @IBOutlet weak var switchSetExpirationDate: UISwitch!
     @IBOutlet weak var labelSetExpirationDate: UILabel!
     @IBOutlet weak var fieldSetExpirationDate: UITextField!
@@ -42,18 +51,16 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    public let width: CGFloat = 250
-    public let height: CGFloat = 260
-    private var tableShare: tableShare?
-    public var metadata: tableMetadata?
+    var width: CGFloat = 0
+    var height: CGFloat = 0
     
-    public var viewWindow: UIView?
-    public var viewWindowCalendar: UIView?
+    private var tableShare: tableShare?
+    var metadata: tableMetadata?
+    
+    var viewWindow: UIView?
+    var viewWindowCalendar: UIView?
     
     override func awakeFromNib() {
-        
-        self.frame.size.width = width
-        self.frame.size.height = height
         
         layer.borderColor = UIColor.lightGray.cgColor
         layer.borderWidth = 0.5
@@ -64,6 +71,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         switchCanReshare.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchCanReshare.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanCreate?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchCanCreate?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanChange?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchCanChange?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanDelete?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchCanDelete?.onTintColor = NCBrandColor.sharedInstance.brand
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brand
         
@@ -141,6 +154,15 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
         let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
+    }
+    
+    @IBAction func switchCanCreate(sender: UISwitch) {
+    }
+    
+    @IBAction func switchCanChange(sender: UISwitch) {
+    }
+    
+    @IBAction func switchCanDelete(sender: UISwitch) {
     }
     
     // Set expiration date

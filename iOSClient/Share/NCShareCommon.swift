@@ -121,6 +121,7 @@ class NCShareCommon: NSObject {
         } else {
             shareLinkMenuView.height = 440
         }
+        
         shareLinkMenuView.metadata = metadata
         shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
@@ -136,17 +137,32 @@ class NCShareCommon: NSObject {
     
     func openViewMenuUser(view: UIView, tableShare: tableShare?, metadata: tableMetadata) -> (shareUserMenuView: NCShareUserMenuView, viewWindow: UIView) {
         
+        var shareUserMenuView: NCShareUserMenuView
+        
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
         
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
         window.addSubview(viewWindow)
         
-        let shareUserMenuView = Bundle.main.loadNibNamed("NCShareUserMenuView", owner: self, options: nil)?.first as! NCShareUserMenuView
+        if metadata.directory {
+            shareUserMenuView = Bundle.main.loadNibNamed("NCShareUserFolderMenuView", owner: self, options: nil)?.first as! NCShareUserMenuView
+        } else {
+            shareUserMenuView = Bundle.main.loadNibNamed("NCShareUserMenuView", owner: self, options: nil)?.first as! NCShareUserMenuView
+        }
+        
+        shareUserMenuView.width = 250
+        if metadata.directory {
+            shareUserMenuView.height = 540
+        } else {
+            shareUserMenuView.height = 260
+        }
+        
         shareUserMenuView.metadata = metadata
         shareUserMenuView.viewWindow = viewWindow
         shareUserMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
-        let shareUserMenuViewX = view.bounds.width/2 - shareUserMenuView.frame.width/2 + globalPoint!.x
+        
+        let shareUserMenuViewX = view.bounds.width/2 - shareUserMenuView.width/2 + globalPoint!.x
         let shareUserMenuViewY = globalPoint!.y + 100
         
         shareUserMenuView.frame = CGRect(x: shareUserMenuViewX, y: shareUserMenuViewY, width: shareUserMenuView.width, height: shareUserMenuView.height)
