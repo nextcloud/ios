@@ -220,6 +220,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
 
         if sender.isOn && permission != tableShare.permissions {
+            switchAllowUploadAndEditing.setOn(false, animated: false)
+            switchFileDrop.setOn(false, animated: false)
             networking?.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
         } else {
             sender.setOn(true, animated: false)
@@ -234,6 +236,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
 
         if sender.isOn && permission != tableShare.permissions {
+            switchReadOnly.setOn(false, animated: false)
+            switchFileDrop.setOn(false, animated: false)
             networking?.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
         } else {
             sender.setOn(true, animated: false)
@@ -247,6 +251,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let permission = Int(k_create_share_permission)
 
         if sender.isOn && permission != tableShare.permissions {
+            switchReadOnly.setOn(false, animated: false)
+            switchAllowUploadAndEditing.setOn(false, animated: false)
             networking?.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
         } else {
             sender.setOn(true, animated: false)
