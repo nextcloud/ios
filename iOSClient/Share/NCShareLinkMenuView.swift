@@ -62,18 +62,16 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    public let width: CGFloat = 250
-    public let height: CGFloat = 440
-    private var tableShare: tableShare?
-    public var metadata: tableMetadata?
+    var width: CGFloat = 0
+    var height: CGFloat = 0
     
-    public var viewWindow: UIView?
-    public var viewWindowCalendar: UIView?
+    private var tableShare: tableShare?
+    var metadata: tableMetadata?
+    
+    var viewWindow: UIView?
+    var viewWindowCalendar: UIView?
     
     override func awakeFromNib() {
-        
-        self.frame.size.width = width
-        self.frame.size.height = height
         
         layer.borderColor = UIColor.lightGray.cgColor
         layer.borderWidth = 0.5
@@ -82,8 +80,14 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.shadowOffset = CGSize(width: 2, height: 2)
         layer.shadowOpacity = 0.2
         
-        switchAllowEditing.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchAllowEditing.onTintColor = NCBrandColor.sharedInstance.brand
+        switchAllowEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchAllowEditing?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchReadOnly?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchReadOnly?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchAllowUploadAndEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchAllowUploadAndEditing?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchFileDrop?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchFileDrop?.onTintColor = NCBrandColor.sharedInstance.brand
         switchHideDownload.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchHideDownload.onTintColor = NCBrandColor.sharedInstance.brand
         switchPasswordProtect.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
@@ -96,6 +100,10 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
         imageDeleteShareLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
         imageAddAnotherLink.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "add"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
+    }
+    
+    override func willMove(toWindow newWindow: UIWindow?) {
+        super.willMove(toWindow: newWindow)
     }
     
     func unLoad() {
@@ -113,9 +121,23 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
 
         if metadata.directory {
-            
+            // Read Only
+            if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
+                switchReadOnly.setOn(false, animated: false)
+                switchAllowUploadAndEditing.setOn(true, animated: false)
+            } else {
+                switchReadOnly.setOn(true, animated: false)
+                switchAllowUploadAndEditing.setOn(false, animated: false)
+            }
+            // File Drop
+            if UtilsFramework.isPermission(toCanCreate: tableShare.permissions) {
+                switchReadOnly.setOn(false, animated: false)
+                switchAllowUploadAndEditing.setOn(false, animated: false)
+                switchFileDrop.setOn(true, animated: false)
+            } else {
+                switchFileDrop.setOn(false, animated: false)
+            }
         } else {
-            
             // Allow editing
             if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
                 switchAllowEditing.setOn(true, animated: false)
@@ -124,7 +146,6 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             }
         }
        
-        
         // Hide download
         if tableShare.hideDownload {
             switchHideDownload.setOn(true, animated: false)

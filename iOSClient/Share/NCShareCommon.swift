@@ -98,20 +98,35 @@ class NCShareCommon: NSObject {
             }
         }
     }
+    
     func openViewMenuShareLink(view: UIView, tableShare: tableShare?, metadata: tableMetadata) -> (shareLinkMenuView: NCShareLinkMenuView, viewWindow: UIView) {
         
+        var shareLinkMenuView: NCShareLinkMenuView
+
         let globalPoint = view.superview?.convert(view.frame.origin, to: nil)
         
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
         window.addSubview(viewWindow)
         
-        let shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as! NCShareLinkMenuView
+        if metadata.directory {
+            shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkFolderMenuView", owner: self, options: nil)?.first as! NCShareLinkMenuView
+        } else {
+            shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkMenuView", owner: self, options: nil)?.first as! NCShareLinkMenuView
+        }
+        
+        shareLinkMenuView.width = 250
+        if metadata.directory {
+            shareLinkMenuView.height = 540
+        } else {
+            shareLinkMenuView.height = 440
+        }
         shareLinkMenuView.metadata = metadata
         shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
-        let shareLinkMenuViewX = view.bounds.width/2 - shareLinkMenuView.frame.width/2 + globalPoint!.x
-        let shareLinkMenuViewY = globalPoint!.y + 10
+        
+        let shareLinkMenuViewX = view.bounds.width/2 - shareLinkMenuView.width/2 + globalPoint!.x
+        let shareLinkMenuViewY = globalPoint!.y
         
         shareLinkMenuView.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView.width, height: shareLinkMenuView.height)
         viewWindow.addSubview(shareLinkMenuView)
