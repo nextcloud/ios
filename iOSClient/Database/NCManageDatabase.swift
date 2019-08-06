@@ -2257,14 +2257,14 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto]) {
+    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto], sharedPath: String) {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
 
-                let results = realm.objects(tableShare.self).filter("account = %@", account)
+                let results = realm.objects(tableShare.self).filter("account == %@ AND sharedPath == %@", account, sharedPath)
                 realm.delete(results)
                 
                 for sharedDto in items {
@@ -2297,6 +2297,7 @@ class NCManageDatabase: NSObject {
                     addObject.permissions = sharedDto.permissions
                     addObject.parent = sharedDto.parent
                     addObject.sharedDate = Date(timeIntervalSince1970: TimeInterval(sharedDto.sharedDate)) as NSDate
+                    addObject.sharedPath = sharedPath
                     addObject.shareType = sharedDto.shareType
                     addObject.shareWith = sharedDto.shareWith
                     addObject.shareWithDisplayName = sharedDto.shareWithDisplayName
@@ -2324,7 +2325,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableShare.self).filter("account = %@", account).sorted(byKeyPath: "fileName", ascending: true)
+        let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(byKeyPath: "fileName", ascending: true)
         
         return Array(results)
     }
