@@ -83,7 +83,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func reloadData(idRemoteShared: Int) {
         
-        tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata!.account, idRemoteShared: idRemoteShared)
+        guard let metadata = self.metadata else { return }
+        tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata.account, idRemoteShared: idRemoteShared)
         guard let tableShare = self.tableShare else { return }
 
         // Can reshare
@@ -119,25 +120,26 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func switchCanReshareChanged(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
-        
+        guard let metadata = self.metadata else { return }
+
         let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
         var permission: Int = 0
         
         if sender.isOn {
             if canEdit {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: true, andIsFolder: metadata!.directory)
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: true, andIsFolder: metadata.directory)
             } else {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: true, andIsFolder: metadata!.directory)
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: true, andIsFolder: metadata.directory)
             }
         } else {
             if canEdit {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata!.directory)
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
             } else {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata!.directory)
+                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
             }
         }
     
-        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
@@ -145,12 +147,13 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func switchSetExpirationDate(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
+        guard let metadata = self.metadata else { return }
         
         if sender.isOn {
             fieldSetExpirationDate.isEnabled = true
             fieldSetExpirationDate(sender: fieldSetExpirationDate)
         } else {
-            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
             networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: "", hideDownload: tableShare.hideDownload)
         }
     }
@@ -166,9 +169,10 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func fieldNoteToRecipientDidEndOnExit(textField: UITextField) {
         
         guard let tableShare = self.tableShare else { return }
+        guard let metadata = self.metadata else { return }
         if fieldNoteToRecipient.text == nil { return }
         
-        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: fieldNoteToRecipient.text, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
@@ -176,8 +180,9 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func buttonUnshare(sender: UIButton) {
         
         guard let tableShare = self.tableShare else { return }
-        
-        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        guard let metadata = self.metadata else { return }
+
+        let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         
         networking.unShare(idRemoteShared: tableShare.idRemoteShared)
     }
@@ -220,8 +225,9 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             viewWindowCalendar?.removeFromSuperview()
             
             guard let tableShare = self.tableShare else { return }
+            guard let metadata = self.metadata else { return }
             
-            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
             dateFormatter.dateFormat = "YYYY-MM-dd"
             let expirationTime = dateFormatter.string(from: date)
             networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: 0, note: nil, expirationTime: expirationTime, hideDownload: tableShare.hideDownload)
