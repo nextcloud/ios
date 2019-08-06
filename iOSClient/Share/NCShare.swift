@@ -68,6 +68,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
         networking.readShare()
+        networking.readShare(path: CCUtility.returnFileNamePath(fromFileName: metadata?.fileName, serverUrl: metadata?.serverUrl, activeUrl: appDelegate.activeUrl))
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -296,6 +297,9 @@ extension NCShare: UITableViewDataSource {
                 if tableShare.uidOwner != self.appDelegate.activeUserID && tableShare.uidFileOwner != self.appDelegate.activeUserID {
                     cell.selectionStyle = .none
                     cell.isUserInteractionEnabled = false
+                    cell.switchCanEdit.isHidden = true
+                    cell.labelCanEdit.isHidden = true
+                    cell.buttonMenu.isHidden = true
                 }
                 
                 return cell

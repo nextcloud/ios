@@ -54,6 +54,20 @@ class NCShareNetworking: NSObject {
         })
     }
     
+    func readShare(path: String) {
+        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        OCNetworking.sharedManager()?.readShare(withAccount: self.account, path: path, completion: { (account, items, message, errorCode) in
+            NCUtility.sharedInstance.stopActivityIndicator()
+            if errorCode == 0 {
+                let itemsOCSharedDto = items as! [OCSharedDto]
+                NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+            self.delegate?.readShareCompleted()
+        })
+    }
+    
     func share(metadata: tableMetadata, password: String, permission: Int, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
