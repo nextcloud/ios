@@ -151,7 +151,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         guard let tableShare = tableShare else { return }
 
         if tableShare.shareType == Int(shareTypeLink.rawValue) {
-            let views = NCShareCommon.sharedInstance.openViewMenuShareLink(view: self.view, tableShare: tableShare, metadata: metadata!)
+            let views = NCShareCommon.sharedInstance.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
             shareLinkMenuView = views.shareLinkMenuView
             shareMenuViewWindow = views.viewWindow
             
@@ -159,7 +159,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             tap.delegate = self
             shareMenuViewWindow?.addGestureRecognizer(tap)
         } else {
-            let views = NCShareCommon.sharedInstance.openViewMenuUser(view: self.view, tableShare: tableShare, metadata: metadata!)
+            let views = NCShareCommon.sharedInstance.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
             shareUserMenuView = views.shareUserMenuView
             shareMenuViewWindow = views.viewWindow
             

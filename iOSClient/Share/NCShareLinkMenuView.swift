@@ -67,7 +67,8 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     private var tableShare: tableShare?
     var metadata: tableMetadata?
-    
+    var shareViewController: NCShare?
+
     var viewWindow: UIView?
     var viewWindowCalendar: UIView?
     
@@ -104,6 +105,13 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     override func willMove(toWindow newWindow: UIWindow?) {
         super.willMove(toWindow: newWindow)
+        
+        if newWindow == nil {
+            // UIView disappear
+            shareViewController?.reloadData()
+        } else {
+            // UIView appear
+        }
     }
     
     func unLoad() {
