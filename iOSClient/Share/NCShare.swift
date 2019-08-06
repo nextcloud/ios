@@ -28,6 +28,10 @@ import DropDown
 class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
    
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
+    @IBOutlet weak var sharedWithYouByView: UIView!
+    @IBOutlet weak var sharedWithYouByImage: UIImageView!
+    @IBOutlet weak var sharedWithYouByLabel: UILabel!
+    @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var shareLinkImage: UIImageView!
     @IBOutlet weak var shareLinkLabel: UILabel!
@@ -48,6 +52,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         super.viewDidLoad()
         
         viewContainerConstraint.constant = height
+        searchFieldTopConstraint.constant = 10
         
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
@@ -293,7 +298,7 @@ extension NCShare: UITableViewDataSource {
                     cell.switchCanEdit.setOn(false, animated: false)
                 }
                 
-                //If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
+                // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
                 if tableShare.uidOwner != self.appDelegate.activeUserID && tableShare.uidFileOwner != self.appDelegate.activeUserID {
                     cell.selectionStyle = .none
                     cell.isUserInteractionEnabled = false
@@ -302,6 +307,33 @@ extension NCShare: UITableViewDataSource {
                     cell.buttonMenu.isHidden = true
                 }
                 
+                // Shared with you by ...
+                if tableShare.uidFileOwner != self.appDelegate.activeUserID {
+                    
+                    searchFieldTopConstraint.constant = 65
+                    sharedWithYouByView.isHidden = false
+                    sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + tableShare.displayNameFileOwner
+                    
+                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.displayNameFileOwner + ".png"
+                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            sharedWithYouByImage.image = image
+                        }
+                    } else {
+                        let url = appDelegate.activeUrl + k_avatar + tableShare.displayNameFileOwner + "/128"
+                        let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                        OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                            if errorCode == 0 && UIImage(data: data!) != nil {
+                                do {
+                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                } catch { return }
+                                self.sharedWithYouByImage.image = UIImage(data: data!)
+                            } else {
+                                self.sharedWithYouByImage.image = UIImage(named: "avatar")
+                            }
+                        })
+                    }
+                }
                 return cell
             }
         }
