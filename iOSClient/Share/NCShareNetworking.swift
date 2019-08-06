@@ -46,7 +46,7 @@ class NCShareNetworking: NSObject {
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
-                NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto, sharedPath: "")
+                NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
@@ -54,13 +54,13 @@ class NCShareNetworking: NSObject {
         })
     }
     
-    func readShare(path: String) {
+    func readShare(metadata: tableMetadata) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        OCNetworking.sharedManager()?.readShare(withAccount: self.account, path: path, completion: { (account, items, message, errorCode) in
+        OCNetworking.sharedManager()?.readShare(withAccount: self.account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl), completion: { (account, items, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
-                NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto, sharedPath:path)
+                NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
@@ -77,7 +77,7 @@ class NCShareNetworking: NSObject {
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-                        NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto, sharedPath: "")
+                        NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }
@@ -103,12 +103,12 @@ class NCShareNetworking: NSObject {
         })
     }
     
-    func updateShare(idRemoteShared: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
+    func updateShare(idRemoteShared: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool, metadata: tableMetadata) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
         OCNetworking.sharedManager()?.shareUpdateAccount(account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
-                self.readShare()
+                self.readShare(metadata: metadata)
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 self.delegate?.updateShareWithError(idRemoteShared: idRemoteShared)
@@ -141,7 +141,7 @@ class NCShareNetworking: NSObject {
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-                        NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto, sharedPath: "")
+                        NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }

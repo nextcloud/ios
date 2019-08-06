@@ -72,8 +72,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         reloadData()
         
         let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
-        networking.readShare()
-        networking.readShare(path: CCUtility.returnFileNamePath(fromFileName: metadata?.fileName, serverUrl: metadata?.serverUrl, activeUrl: appDelegate.activeUrl))
+        networking.readShare(metadata: metadata!)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -151,7 +150,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         }
         
         let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self.view, delegate: self)
-        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload, metadata: metadata)
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
@@ -289,9 +288,15 @@ extension NCShare: UITableViewDataSource {
         } else {
         // USER
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
+                
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.labelTitle.text = tableShare.shareWith
+                cell.isUserInteractionEnabled = true
+                cell.switchCanEdit.isHidden = false
+                cell.labelCanEdit.isHidden = false
+                cell.buttonMenu.isHidden = false
+                
                 NCShareCommon.sharedInstance.downloadAvatar(user: tableShare.shareWith, cell: cell)
                 if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
                     cell.switchCanEdit.setOn(true, animated: false)
@@ -301,7 +306,6 @@ extension NCShare: UITableViewDataSource {
                 
                 // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
                 if tableShare.uidOwner != self.appDelegate.activeUserID && tableShare.uidFileOwner != self.appDelegate.activeUserID {
-                    cell.selectionStyle = .none
                     cell.isUserInteractionEnabled = false
                     cell.switchCanEdit.isHidden = true
                     cell.labelCanEdit.isHidden = true

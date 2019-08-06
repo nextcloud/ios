@@ -2257,64 +2257,62 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto], sharedPath: String) {
+    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto]) {
         
         let realm = try! Realm()
+        realm.beginWrite()
 
-        do {
-            try realm.write {
-
-                let results = realm.objects(tableShare.self).filter("account == %@ AND sharedPath == %@", account, sharedPath)
-                realm.delete(results)
+        let results = realm.objects(tableShare.self).filter("account == %@", account)
+        realm.delete(results)
                 
-                for sharedDto in items {
-                    
-                    let addObject = tableShare()
-                    let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(sharedDto.path!)"
-                    let fileName = NSString(string: fullPath).lastPathComponent
-                    var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
-                    if serverUrl.hasSuffix("/") {
-                        serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
-                    }
-                    
-                    addObject.account = account
-                    addObject.displayNameFileOwner = sharedDto.displayNameFileOwner
-                    addObject.displayNameOwner = sharedDto.displayNameOwner
-                    if sharedDto.expirationDate > 0 {
-                        addObject.expirationDate =  Date(timeIntervalSince1970: TimeInterval(sharedDto.expirationDate)) as NSDate
-                    }
-                    addObject.fileParent = sharedDto.fileParent
-                    addObject.fileTarget = sharedDto.fileTarget
-                    addObject.hideDownload = sharedDto.hideDownload
-                    addObject.idRemoteShared = sharedDto.idRemoteShared
-                    addObject.isDirectory = sharedDto.isDirectory
-                    addObject.itemSource = sharedDto.itemSource
-                    addObject.label = sharedDto.label
-                    addObject.mailSend = sharedDto.mailSend
-                    addObject.mimeType = sharedDto.mimeType
-                    addObject.note = sharedDto.note
-                    addObject.path = sharedDto.path
-                    addObject.permissions = sharedDto.permissions
-                    addObject.parent = sharedDto.parent
-                    addObject.sharedDate = Date(timeIntervalSince1970: TimeInterval(sharedDto.sharedDate)) as NSDate
-                    addObject.sharedPath = sharedPath
-                    addObject.shareType = sharedDto.shareType
-                    addObject.shareWith = sharedDto.shareWith
-                    addObject.shareWithDisplayName = sharedDto.shareWithDisplayName
-                    addObject.storage = sharedDto.storage
-                    addObject.storageID = sharedDto.storageID
-                    addObject.token = sharedDto.token
-                    addObject.url = sharedDto.url
-                    addObject.uidOwner = sharedDto.uidOwner
-                    addObject.uidFileOwner = sharedDto.uidFileOwner
-                    
-                    addObject.fileName = fileName
-                    addObject.serverUrl = serverUrl
-                    
-                    realm.add(addObject)
-                }
-        
+        for sharedDto in items {
+            
+            let addObject = tableShare()
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(sharedDto.path!)"
+            let fileName = NSString(string: fullPath).lastPathComponent
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
+            if serverUrl.hasSuffix("/") {
+                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
             }
+            
+            addObject.account = account
+            addObject.displayNameFileOwner = sharedDto.displayNameFileOwner
+            addObject.displayNameOwner = sharedDto.displayNameOwner
+            if sharedDto.expirationDate > 0 {
+                addObject.expirationDate =  Date(timeIntervalSince1970: TimeInterval(sharedDto.expirationDate)) as NSDate
+            }
+            addObject.fileParent = sharedDto.fileParent
+            addObject.fileTarget = sharedDto.fileTarget
+            addObject.hideDownload = sharedDto.hideDownload
+            addObject.idRemoteShared = sharedDto.idRemoteShared
+            addObject.isDirectory = sharedDto.isDirectory
+            addObject.itemSource = sharedDto.itemSource
+            addObject.label = sharedDto.label
+            addObject.mailSend = sharedDto.mailSend
+            addObject.mimeType = sharedDto.mimeType
+            addObject.note = sharedDto.note
+            addObject.path = sharedDto.path
+            addObject.permissions = sharedDto.permissions
+            addObject.parent = sharedDto.parent
+            addObject.sharedDate = Date(timeIntervalSince1970: TimeInterval(sharedDto.sharedDate)) as NSDate
+            addObject.shareType = sharedDto.shareType
+            addObject.shareWith = sharedDto.shareWith
+            addObject.shareWithDisplayName = sharedDto.shareWithDisplayName
+            addObject.storage = sharedDto.storage
+            addObject.storageID = sharedDto.storageID
+            addObject.token = sharedDto.token
+            addObject.url = sharedDto.url
+            addObject.uidOwner = sharedDto.uidOwner
+            addObject.uidFileOwner = sharedDto.uidFileOwner
+            
+            addObject.fileName = fileName
+            addObject.serverUrl = serverUrl
+            
+            realm.add(addObject)
+        }
+        
+        do {
+            try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
