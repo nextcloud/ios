@@ -28,10 +28,10 @@ class NCShareNetworking: NSObject {
     
     var activeUrl: String
     var delegate: NCShareNetworkingDelegate?
-    var view: UIView?
+    var view: UIView
     var metadata: tableMetadata
     
-    init(metadata: tableMetadata, activeUrl: String, view: UIView?, delegate: NCShareNetworkingDelegate?) {
+    init(metadata: tableMetadata, activeUrl: String, view: UIView, delegate: NCShareNetworkingDelegate?) {
         self.metadata = metadata
         self.activeUrl = activeUrl
         self.view = view

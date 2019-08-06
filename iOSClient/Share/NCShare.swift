@@ -72,7 +72,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         reloadData()
         
-        networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
+        networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
         networking?.readShare()
     }
     
