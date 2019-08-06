@@ -32,7 +32,9 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let refreshControl = UIRefreshControl()
 
-    var activities = [tableActivity]()
+    var allActivities = [tableActivity]()
+    var filterActivities = [tableActivity]()
+
     var sectionDate = [Date]()
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var refreshControlEnable: Bool = true
@@ -40,6 +42,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     var filterFileID: String?
     
     var loadingActivity = false
+    var stopLoadingActivity = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -299,10 +302,9 @@ extension NCActivity: UITableViewDataSourcePrefetching {
         let lastRow = getTableActivitiesFromSection(section).count - 1
         
         if section == lastSection && row > lastRow - 1 {
-            let results = getTableActivitiesFromSection(section)
-            let activity = results[lastRow]
-            
-            loadActivity(idActivity: activity.idActivity)
+            if allActivities.last != nil {
+                loadActivity(idActivity: allActivities.last!.idActivity)
+            }
         }
     }
     
@@ -523,8 +525,10 @@ extension NCActivity {
         
         sectionDate.removeAll()
         
-        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), filterFileID: filterFileID)
-        for tableActivity in activities {
+        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), filterFileID: filterFileID)
+        allActivities = activities.all
+        filterActivities = activities.filter
+        for tableActivity in filterActivities {
             guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
                 continue
             }
@@ -542,7 +546,8 @@ extension NCActivity {
             return Calendar.current.date(byAdding: components, to: startDate)!
         }()
         
-        return NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]), filterFileID: filterFileID)
+        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]), filterFileID: filterFileID)
+        return activities.filter
     }
     
     @objc func loadActivityRefreshing() {
@@ -551,12 +556,10 @@ extension NCActivity {
     
     @objc func loadActivity(idActivity: Int) {
         
-        if loadingActivity {
-            return
-        } else {
-            loadingActivity = true
-        }
-        
+        if loadingActivity || stopLoadingActivity { return }
+       
+        loadingActivity = true
+
         if idActivity > 0 {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
@@ -573,6 +576,10 @@ extension NCActivity {
             NCUtility.sharedInstance.stopActivityIndicator()
             
             self.loadingActivity = false
+            
+            if errorCode == 304 {
+                self.stopLoadingActivity = true
+            }
         })
     }
 }
