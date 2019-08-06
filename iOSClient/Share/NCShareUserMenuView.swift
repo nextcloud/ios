@@ -116,17 +116,19 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let canReshare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
         switchCanReshare.setOn(canReshare, animated: false)
         
-        // Can create (folder)
-        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
-        switchCanCreate.setOn(canCreate, animated: false)
-
-        // Can change (folder)
-        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
-        switchCanChange.setOn(canChange, animated: false)
-        
-        // Can delete (folder)
-        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
-        switchCanDelete.setOn(canDelete, animated: false)
+        if metadata.directory {
+            // Can create (folder)
+            let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
+            switchCanCreate.setOn(canCreate, animated: false)
+            
+            // Can change (folder)
+            let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
+            switchCanChange.setOn(canChange, animated: false)
+            
+            // Can delete (folder)
+            let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
+            switchCanDelete.setOn(canDelete, animated: false)
+        }
         
         // Set expiration date
         if tableShare.expirationDate != nil {
