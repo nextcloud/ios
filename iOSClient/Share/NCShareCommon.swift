@@ -153,7 +153,7 @@ class NCShareCommon: NSObject {
         
         shareUserMenuView.width = 250
         if metadata.directory {
-            shareUserMenuView.height = 540
+            shareUserMenuView.height = 410
         } else {
             shareUserMenuView.height = 260
         }

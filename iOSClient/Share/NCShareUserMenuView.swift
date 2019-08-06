@@ -86,6 +86,10 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         imageUnshare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
     }
     
+    override func willMove(toWindow newWindow: UIWindow?) {
+        super.willMove(toWindow: newWindow)
+    }
+    
     func unLoad() {
         viewWindowCalendar?.removeFromSuperview()
         viewWindow?.removeFromSuperview()
@@ -100,13 +104,21 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata.account, idRemoteShared: idRemoteShared)
         guard let tableShare = self.tableShare else { return }
 
-        // Can reshare
+        // Can reshare (file)
         let canReshare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
-        if canReshare {
-            switchCanReshare.setOn(true, animated: false)
-        } else {
-            switchCanReshare.setOn(false, animated: false)
-        }
+        switchCanReshare.setOn(canReshare, animated: false)
+        
+        // Can create (folder)
+        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
+        switchCanCreate.setOn(canCreate, animated: false)
+
+        // Can change (folder)
+        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
+        switchCanChange.setOn(canChange, animated: false)
+        
+        // Can delete (folder)
+        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
+        switchCanDelete.setOn(canDelete, animated: false)
         
         // Set expiration date
         if tableShare.expirationDate != nil {
@@ -136,33 +148,80 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let metadata = self.metadata else { return }
 
         let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
+        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
+        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
+        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
+        
         var permission: Int = 0
         
-        if sender.isOn {
-            if canEdit {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: true, andIsFolder: metadata.directory)
-            } else {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: true, andIsFolder: metadata.directory)
-            }
+        if metadata.directory {
+            permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: canDelete, andCanShare: sender.isOn, andIsFolder: metadata.directory)
         } else {
-            if canEdit {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
+            if sender.isOn {
+                if canEdit {
+                    permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                } else {
+                    permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                }
             } else {
-                permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
+                if canEdit {
+                    permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                } else {
+                    permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                }
             }
         }
-    
+        
         let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
         networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func switchCanCreate(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        guard let metadata = self.metadata else { return }
+
+        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
+        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
+        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
+        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+
+        let permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: sender.isOn, andCanChange: canChange, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
+
+        let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func switchCanChange(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        guard let metadata = self.metadata else { return }
+        
+        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
+        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
+        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
+        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        
+        let permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: sender.isOn, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
+
+        let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func switchCanDelete(sender: UISwitch) {
+        
+        guard let tableShare = self.tableShare else { return }
+        guard let metadata = self.metadata else { return }
+        
+        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
+        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
+        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
+        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        
+        let permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: sender.isOn, andCanShare: canShare, andIsFolder: metadata.directory)
+
+        let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     // Set expiration date
