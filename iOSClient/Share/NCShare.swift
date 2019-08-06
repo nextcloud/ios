@@ -47,6 +47,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     private var shareUserMenuView: NCShareUserMenuView?
     private var shareMenuViewWindow: UIView?
     private var dropDown = DropDown()
+    private var networking: NCShareNetworking?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,8 +72,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         reloadData()
         
-        let networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
-        networking.readShare()
+        networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
+        networking?.readShare()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -100,10 +101,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBAction func searchFieldDidEndOnExit(textField: UITextField) {
         
         guard let searchString = textField.text else { return }
-        guard let metadata = self.metadata else { return }
 
-        let networking = NCShareNetworking.init(metadata: metadata, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
-        networking.getUserAndGroup(searchString: searchString)
+        networking?.getUserAndGroup(searchString: searchString)
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
@@ -122,8 +121,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         if shares.firstShareLink != nil {
             tapMenu(with: shares.firstShareLink!, sender: sender)
         } else {
-            let networking = NCShareNetworking.init(metadata: metadata, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
-            networking.share(password: "", permission: 1, hideDownload: false)
+            networking?.share(password: "", permission: 1, hideDownload: false)
         }
     }
     
@@ -156,8 +154,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: metadata.directory)
         }
         
-        let networking = NCShareNetworking.init(metadata: metadata, activeUrl: appDelegate.activeUrl,  view: self.view, delegate: self)
-        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
+        networking?.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
@@ -200,7 +197,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     func getUserAndGroup(items: [OCShareUser]?) {
         
         guard let items = items else { return }
-        guard let metadata = self.metadata else { return }
 
         dropDown = DropDown()
         let appearance = DropDown.appearance()
@@ -245,8 +241,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.selectionAction = { [weak self] (index, item) in
             let item = items[index]
-            let networking = NCShareNetworking.init(metadata: metadata, activeUrl: self!.appDelegate.activeUrl, view: self!.view, delegate: self!)
-            networking.shareUserAndGroup(name: item.name, shareeType: item.shareeType, metadata: self!.metadata!)
+            self!.networking?.shareUserAndGroup(name: item.name, shareeType: item.shareeType, metadata: self!.metadata!)
         }
         
         dropDown.show()
