@@ -272,6 +272,7 @@ extension NCShare: UITableViewDataSource {
         let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         let tableShare = shares.share![indexPath.row]
         
+        // LINK
         if tableShare.shareType == Int(shareTypeLink.rawValue) {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.tableShare = tableShare
@@ -279,6 +280,7 @@ extension NCShare: UITableViewDataSource {
                 return cell
             }
         } else {
+        // USER
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
                 cell.tableShare = tableShare
                 cell.delegate = self
@@ -288,8 +290,14 @@ extension NCShare: UITableViewDataSource {
                     cell.switchCanEdit.setOn(true, animated: false)
                 } else {
                     cell.switchCanEdit.setOn(false, animated: false)
-
                 }
+                
+                //If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
+                if tableShare.uidOwner != self.appDelegate.activeUserID && tableShare.uidFileOwner != self.appDelegate.activeUserID {
+                    cell.selectionStyle = .none
+                    cell.isUserInteractionEnabled = false
+                }
+                
                 return cell
             }
         }
