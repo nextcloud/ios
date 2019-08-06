@@ -71,8 +71,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         reloadData()
         
-        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
-        networking.readShare(metadata: metadata!)
+        let networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: nil, delegate: self)
+        networking.readShare()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -100,23 +100,30 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBAction func searchFieldDidEndOnExit(textField: UITextField) {
         
         guard let searchString = textField.text else { return }
-        
-        let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
+        guard let metadata = self.metadata else { return }
+
+        let networking = NCShareNetworking.init(metadata: metadata, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
         networking.getUserAndGroup(searchString: searchString)
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
+        
+        guard let metadata = self.metadata else { return }
+
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
         tapCopy(with: shares.firstShareLink, sender: sender)
     }
     
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
+
+        guard let metadata = self.metadata else { return }
+
+        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
         if shares.firstShareLink != nil {
             tapMenu(with: shares.firstShareLink!, sender: sender)
         } else {
-            let networking = NCShareNetworking.init(account: metadata!.account, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
-            networking.share(metadata: metadata!, password: "", permission: 1, hideDownload: false)
+            let networking = NCShareNetworking.init(metadata: metadata, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
+            networking.share(password: "", permission: 1, hideDownload: false)
         }
     }
     
@@ -149,11 +156,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: metadata.directory)
         }
         
-        let networking = NCShareNetworking.init(account: metadata.account, activeUrl: appDelegate.activeUrl,  view: self.view, delegate: self)
-        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload, metadata: metadata)
+        let networking = NCShareNetworking.init(metadata: metadata, activeUrl: appDelegate.activeUrl,  view: self.view, delegate: self)
+        networking.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
+        
         guard let tableShare = tableShare else { return }
 
         if tableShare.shareType == Int(shareTypeLink.rawValue) {
@@ -192,7 +200,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     func getUserAndGroup(items: [OCShareUser]?) {
         
         guard let items = items else { return }
-        
+        guard let metadata = self.metadata else { return }
+
         dropDown = DropDown()
         let appearance = DropDown.appearance()
         
@@ -236,7 +245,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.selectionAction = { [weak self] (index, item) in
             let item = items[index]
-            let networking = NCShareNetworking.init(account: self!.metadata!.account, activeUrl: self!.appDelegate.activeUrl, view: self!.view, delegate: self!)
+            let networking = NCShareNetworking.init(metadata: metadata, activeUrl: self!.appDelegate.activeUrl, view: self!.view, delegate: self!)
             networking.shareUserAndGroup(name: item.name, shareeType: item.shareeType, metadata: self!.metadata!)
         }
         

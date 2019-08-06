@@ -26,13 +26,13 @@ class NCShareNetworking: NSObject {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var account: String
     var activeUrl: String
     var delegate: NCShareNetworkingDelegate?
     var view: UIView?
+    var metadata: tableMetadata
     
-    init(account: String, activeUrl: String, view: UIView?, delegate: NCShareNetworkingDelegate?) {
-        self.account = account
+    init(metadata: tableMetadata, activeUrl: String, view: UIView?, delegate: NCShareNetworkingDelegate?) {
+        self.metadata = metadata
         self.activeUrl = activeUrl
         self.view = view
         self.delegate = delegate
@@ -42,11 +42,11 @@ class NCShareNetworking: NSObject {
     
     func readShare() {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
+        OCNetworking.sharedManager()?.readShare(withAccount: metadata.account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl), completion: { (account, items, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
-                NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+                NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
@@ -54,30 +54,16 @@ class NCShareNetworking: NSObject {
         })
     }
     
-    func readShare(metadata: tableMetadata) {
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        OCNetworking.sharedManager()?.readShare(withAccount: self.account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl), completion: { (account, items, message, errorCode) in
-            NCUtility.sharedInstance.stopActivityIndicator()
-            if errorCode == 0 {
-                let itemsOCSharedDto = items as! [OCSharedDto]
-                NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
-            } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            }
-            self.delegate?.readShareCompleted()
-        })
-    }
-    
-    func share(metadata: tableMetadata, password: String, permission: Int, hideDownload: Bool) {
+    func share(password: String, permission: Int, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         OCNetworking.sharedManager()?.share(withAccount: metadata.account, fileName: fileName, password: password, permission: permission, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             if errorCode == 0 {
-                OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
+                OCNetworking.sharedManager()?.readShare(withAccount: account, path: CCUtility.returnFileNamePath(fromFileName: self.metadata.fileName, serverUrl: self.metadata.serverUrl, activeUrl: self.activeUrl), completion: { (account, items, message, errorCode) in
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-                        NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+                        NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }
@@ -92,7 +78,7 @@ class NCShareNetworking: NSObject {
     
     func unShare(idRemoteShared: Int) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        OCNetworking.sharedManager()?.unshareAccount(account, shareID: idRemoteShared, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.unshareAccount(metadata.account, shareID: idRemoteShared, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 NCManageDatabase.sharedInstance.deleteTableShare(account: account!, idRemoteShared: idRemoteShared)
@@ -103,12 +89,12 @@ class NCShareNetworking: NSObject {
         })
     }
     
-    func updateShare(idRemoteShared: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool, metadata: tableMetadata) {
+    func updateShare(idRemoteShared: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        OCNetworking.sharedManager()?.shareUpdateAccount(account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.shareUpdateAccount(metadata.account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
-                self.readShare(metadata: metadata)
+                self.readShare()
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 self.delegate?.updateShareWithError(idRemoteShared: idRemoteShared)
@@ -118,7 +104,7 @@ class NCShareNetworking: NSObject {
     
     func getUserAndGroup(searchString: String) {
         NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
-        OCNetworking.sharedManager()?.getUserGroup(withAccount: account, search: searchString, completion: { (account, items, message, errorCode) in
+        OCNetworking.sharedManager()?.getUserGroup(withAccount: metadata.account, search: searchString, completion: { (account, items, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 let itemsOCShareUser = items as! [OCShareUser]
@@ -135,13 +121,13 @@ class NCShareNetworking: NSObject {
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         var permission: Int = 0
         if metadata.directory { permission = Int(k_max_folder_share_permission) } else { permission = Int(k_max_file_share_permission) }
-        OCNetworking.sharedManager()?.shareUserGroup(withAccount: account, userOrGroup: name, fileName: fileName, permission: permission, shareeType: shareeType, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.shareUserGroup(withAccount: metadata.account, userOrGroup: name, fileName: fileName, permission: permission, shareeType: shareeType, completion: { (account, message, errorCode) in
             if errorCode == 0 {
-                OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
+                OCNetworking.sharedManager()?.readShare(withAccount: account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: self.activeUrl), completion: { (account, items, message, errorCode) in
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-                        NCManageDatabase.sharedInstance.addShare(account: self.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+                        NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }

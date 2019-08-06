@@ -250,14 +250,11 @@ class NCService: NSObject {
                 if (capabilities!.isExternalSitesServerEnabled) {
                     
                     OCNetworking.sharedManager().getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
-                        
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            
                             NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
                             for externalSites in listOfExternalSites! {
                                 NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
                             }
-                            
                         } 
                     })
                    
@@ -269,8 +266,15 @@ class NCService: NSObject {
                 // Get Share Server
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
-                    let shareNetworking = NCShareNetworking.init(account: self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, view: nil, delegate: nil)
-                    shareNetworking.readShare()
+                    OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount{
+                            let itemsOCSharedDto = items as! [OCSharedDto]
+                            NCManageDatabase.sharedInstance.addShare(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
+                        } else {
+                            self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                        }
+                    })
+                    
                 }
                 
                 // Get Activity
