@@ -74,9 +74,6 @@
     // Folder
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
-    
-    // Share
-    NSArray *shares;
 }
 @end
 
@@ -193,9 +190,6 @@
     } else {
         [self searchEnabled:YES];
     }
-    
-    // Get Shares
-    shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
     
     // Query data source
     if (!_isSearchMode) {
@@ -3725,7 +3719,7 @@
         return [CCCellMain new];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shares:shares];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shares:appDelegate.shares];
     
     // NORMAL - > MAIN
     
@@ -3741,7 +3735,7 @@
         }
         
         // have you share ?
-        for (tableShare *share in shares) {
+        for (tableShare *share in appDelegate.shares) {
             if ([share.fileName isEqualToString:metadata.fileName]) {
                 haveYouShare = true;
                 break;
