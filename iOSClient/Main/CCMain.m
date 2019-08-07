@@ -3737,13 +3737,12 @@
     // NORMAL - > MAIN
     
     if ([cell isKindOfClass:[CCCellMain class]]) {
-                
+        
+        // Share add Tap
         if (_metadataFolder) {
             isShare = [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
             isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_metadataFolder.permissions containsString:k_permission_mounted];
         }
-        
-        // Share add Tap
         if (isShare || isMounted || shareCell) {
             
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];

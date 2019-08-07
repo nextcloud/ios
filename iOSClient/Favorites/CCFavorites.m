@@ -250,14 +250,16 @@
     }];
 }
 
-- (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
+- (void)tapActionShared:(UITapGestureRecognizer *)tapGesture
 {
     CGPoint location = [tapGesture locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-    if (metadata)
+    
+    if (metadata) {
         [appDelegate.activeMain openShareWithMetadata:metadata];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -573,6 +575,10 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    tableShare *shareCell;
+    BOOL isShare = false;
+    BOOL isMounted = false;
+    
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
         return [CCCellMain new];
@@ -585,11 +591,31 @@
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:self.serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory tableShare:nil];
+    for (tableShare *share in appDelegate.shares) {
+        if ([share.serverUrl isEqualToString:metadata.serverUrl] && [share.fileName isEqualToString:metadata.fileName]) {
+            shareCell = share;
+            break;
+        }
+    }
+    
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:self.serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory tableShare:shareCell];
     
     // NORMAL - > MAIN
 
     if ([cell isKindOfClass:[CCCellMain class]]) {
+        
+        // Share add Tap
+        if (metadataFolder) {
+            isShare = [metadata.permissions containsString:k_permission_shared] && ![metadataFolder.permissions containsString:k_permission_shared];
+            isMounted = [metadata.permissions containsString:k_permission_mounted] && ![metadataFolder.permissions containsString:k_permission_mounted];
+        }
+        if (isShare || isMounted || shareCell) {
+            
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
+            [tap setNumberOfTapsRequired:1];
+            ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
+            [((CCCellMain *)cell).shared addGestureRecognizer:tap];
+        }
         
         // More
         if ([self canOpenMenuAction:metadata]) {

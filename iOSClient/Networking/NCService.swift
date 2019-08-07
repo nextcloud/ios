@@ -272,6 +272,7 @@ class NCService: NSObject {
                             NCManageDatabase.sharedInstance.deleteTableShare(account: account!)
                             self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
                             self.appDelegate.activeMain.tableView.reloadData()
+                            self.appDelegate.activeFavorites.tableView.reloadData()
                         } else {
                             self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                         }
