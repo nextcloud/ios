@@ -3718,12 +3718,13 @@
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     tableShare *shareCell;
-
+    BOOL isShare = false;
+    BOOL isMounted = false;
+    
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder])) {
         return [CCCellMain new];
     }
     
-    // have you share ?
     for (tableShare *share in appDelegate.shares) {
         if ([share.serverUrl isEqualToString:metadata.serverUrl] && [share.fileName isEqualToString:metadata.fileName]) {
             shareCell = share;
@@ -3736,51 +3737,20 @@
     // NORMAL - > MAIN
     
     if ([cell isKindOfClass:[CCCellMain class]]) {
-        
-        BOOL isShare = false;
-        BOOL isMounted = false;
-        
+                
         if (_metadataFolder) {
             isShare = [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
             isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_metadataFolder.permissions containsString:k_permission_mounted];
         }
         
-        /*
-        // have you share ?
-        for (tableShare *share in appDelegate.shares) {
-            if ([share.fileName isEqualToString:metadata.fileName]) {
-                haveYouShare = true;
-                break;
-            }
-        }
-
         // Share add Tap
-        if (isShare || isMounted || haveYouShare) {
+        if (isShare || isMounted || shareCell) {
             
-            if (isShare || isMounted) {
-                
-                // Shared with you
-                
-                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
-                [tap setNumberOfTapsRequired:1];
-                ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
-                [((CCCellMain *)cell).shared addGestureRecognizer:tap];
-                
-            } else if (haveYouShare) {
-                
-                // You share
-                
-                if (metadata.directory) {
-                    ((CCCellMain *)cell).shared.userInteractionEnabled = NO;
-                } else {
-                    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
-                    [tap setNumberOfTapsRequired:1];
-                    ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
-                    [((CCCellMain *)cell).shared addGestureRecognizer:tap];
-                }
-            }
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
+            [tap setNumberOfTapsRequired:1];
+            ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
+            [((CCCellMain *)cell).shared addGestureRecognizer:tap];
         }
-        */
         
         // More
         if ([self canOpenMenuAction:metadata]) {

@@ -612,17 +612,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 if tableE2eEncryption != nil &&  NCUtility.sharedInstance.isEncryptedMetadata(metadata) {
                     cell.status.image = UIImage.init(named: "encrypted")
                 }
-                
-                // Share
-                if (isShare) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (isMounted) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                }
             }
             
             //
@@ -632,6 +621,17 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             // Favorite
             if metadata.favorite {
                 cell.favorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+            }
+            
+            // Share
+            if (isShare) {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+            } else if (isMounted) {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+            } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+            } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
             }
             
             // More Image
