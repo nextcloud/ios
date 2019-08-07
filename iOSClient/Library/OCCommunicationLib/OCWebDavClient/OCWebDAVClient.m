@@ -1490,7 +1490,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSParameterAssert(success);
     
     _requestMethod = @"PROPFIND";
-    
+
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
                           
     [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\">"
@@ -1498,7 +1498,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                          "<oc:message/>"
                          "</d:prop>"
                          "</d:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
