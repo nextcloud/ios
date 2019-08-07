@@ -394,5 +394,17 @@ class NCUtility: NSObject {
         
         CCUtility.deleteAllChainStore()
     }
+    
+    @objc func convertLocalFileID(_ fileID:String) -> String {
+        
+        var localFileID = fileID
+        
+        if let endIndex = fileID.range(of: "oc")?.lowerBound {
+            let id = Int(fileID[..<endIndex])
+            localFileID = String(id ?? 0)
+        }
+        
+        return localFileID
+    }
 }
 

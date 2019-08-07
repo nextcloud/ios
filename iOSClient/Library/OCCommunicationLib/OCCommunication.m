@@ -3197,7 +3197,7 @@
 
 - (void)getComments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@?format=json", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@", serverPath, fileID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
 
     OCWebDAVClient *request = [OCWebDAVClient new];
@@ -3205,14 +3205,16 @@
     
     [request getComments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
-        NSData *responseData = (NSData*) response;
-        
-        //Parse
-        //NSError *error;
-        //NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        //NSLog(@"[LOG] URL Asset : %@",jsongParsed);
-
-        successRequest(response, nil, request.redirectedServer);
+        if (successRequest) {
+            NSData *responseData = (NSData*) responseObject;
+            
+            OCXMLParser *parser = [[OCXMLParser alloc]init];
+            [parser initParserWithData:responseData];
+            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
+            
+            //Return success
+            successRequest(response, directoryList, request.redirectedServer);
+        }
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error) {
         
