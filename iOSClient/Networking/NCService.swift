@@ -269,12 +269,12 @@ class NCService: NSObject {
                     OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount{
                             let itemsOCSharedDto = items as! [OCSharedDto]
+                            NCManageDatabase.sharedInstance.deleteTableShare(account: account!)
                             NCManageDatabase.sharedInstance.addShare(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
                         } else {
                             self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                         }
                     })
-                    
                 }
                 
                 // Get Activity

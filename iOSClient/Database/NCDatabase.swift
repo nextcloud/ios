@@ -407,6 +407,10 @@ class tableShare: Object {
     @objc dynamic var uidOwner = ""
     @objc dynamic var uidFileOwner = ""
     @objc dynamic var url = ""
+    
+    override static func primaryKey() -> String {
+        return "idRemoteShared"
+    }
 }
 
 class tableTag: Object {

@@ -97,7 +97,7 @@ class NCManageDatabase: NSObject {
         realm.beginWrite()
         
         if let account = account {
-            results = realm.objects(table).filter("account = %@", account)
+            results = realm.objects(table).filter("account == %@", account)
         } else {
             results = realm.objects(table)
         }
@@ -230,7 +230,7 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableAccount.self).filter("account = %@", account).first else {
+        guard let result = realm.objects(tableAccount.self).filter("account == %@", account).first else {
             realm.cancelWrite()
             return
         }
@@ -249,7 +249,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableAccount.self).filter("active = true").first else {
+        guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
             return nil
         }
         
@@ -297,7 +297,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableAccount.self).filter("active = true").first else {
+        guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
             return ""
         }
         
@@ -313,7 +313,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableAccount.self).filter("active = true").first else {
+        guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
             return ""
         }
         
@@ -373,7 +373,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account = %@", account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", account).first else {
                     return
                 }
                 
@@ -390,7 +390,7 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableAccount.self).filter("active = true").first else {
+        guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
             realm.cancelWrite()
             return
         }
@@ -416,7 +416,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                if let result = realm.objects(tableAccount.self).filter("active = true").first {
+                if let result = realm.objects(tableAccount.self).filter("active == true").first {
                     
                     if let fileName = fileName {
                         
@@ -440,7 +440,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                if let result = realm.objects(tableAccount.self).filter("active = true").first {
+                if let result = realm.objects(tableAccount.self).filter("active == true").first {
                     
                     if let serverUrl = serverUrl {
                         
@@ -470,7 +470,7 @@ class NCManageDatabase: NSObject {
             
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
                 }
                 
@@ -527,7 +527,7 @@ class NCManageDatabase: NSObject {
             
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
                 }
                 
@@ -577,7 +577,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
                 }
                 
@@ -597,7 +597,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
 
-        guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+        guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
             return ""
         }
         
@@ -622,7 +622,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
                 }
                 
@@ -732,7 +732,7 @@ class NCManageDatabase: NSObject {
         if filterFileID != nil {
             var resultsFilter = [tableActivity]()
             for result in results {
-                let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account = %@ && idActivity == %d", result.account, result.idActivity)
+                let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
                 for resultActivitySubjectRich in resultsActivitySubjectRich {
                     if filterFileID!.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
                         resultsFilter.append(result)
@@ -751,7 +751,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableActivitySubjectRich.self).filter("account = %@ && idActivity == %d && key = %@", account, idActivity, key).first
+        let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && key == %@", account, idActivity, key).first
         
         return results.map { tableActivitySubjectRich.init(value:$0) }
     }
@@ -761,7 +761,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableActivitySubjectRich.self).filter("account = %@ && idActivity == %d && id == %@", account, idActivity, id).first
+        let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && id == %@", account, idActivity, id).first
         
         return results.map { tableActivitySubjectRich.init(value:$0) }
     }
@@ -774,7 +774,7 @@ class NCManageDatabase: NSObject {
         var results = [tableActivityPreview]()
         
         for id in orderKeysId {
-            if let result = realm.objects(tableActivityPreview.self).filter("account = %@ && idActivity == %d && fileId == %d", account, idActivity, Int(id) ?? 0).first {
+            if let result = realm.objects(tableActivityPreview.self).filter("account == %@ && idActivity == %d && fileId == %d", account, idActivity, Int(id) ?? 0).first {
                 results.append(result)
             }
         }
@@ -787,7 +787,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        if let entities = realm.objects(tableActivity.self).filter("account = %@", account).max(by: { $0.idActivity < $1.idActivity }) {
+        if let entities = realm.objects(tableActivity.self).filter("account == %@", account).max(by: { $0.idActivity < $1.idActivity }) {
             return entities.idActivity
         }
         
@@ -804,7 +804,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first
+                let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first
 
                 var resultCapabilities = tableCapabilities()
             
@@ -882,7 +882,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        return realm.objects(tableCapabilities.self).filter("account = %@", account).first
+        return realm.objects(tableCapabilities.self).filter("account == %@", account).first
     }
     
     @objc func getServerVersion(account: String) -> Int {
@@ -890,7 +890,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return 0
         }
 
@@ -902,7 +902,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return 0
         }
         
@@ -913,7 +913,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
 
-        guard let capabilities = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
+        guard let capabilities = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return -1
         }
         
@@ -943,7 +943,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", account).first else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return nil
         }
         
@@ -991,7 +991,7 @@ class NCManageDatabase: NSObject {
         
         var addObject = tableDirectory()
         
-        let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first
+        let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
         if result != nil {
             addObject = result!
         } else {
@@ -1026,7 +1026,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
+        let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
         
         // Delete table Metadata & LocalFile
         for result in results {
@@ -1052,7 +1052,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first else {
+                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
                     return
                 }
                 
@@ -1177,7 +1177,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first else {
+                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
                     realm.cancelWrite()
                     return
                 }
@@ -1200,7 +1200,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let results = realm.objects(tableDirectory.self).filter("account = %@", account)
+                let results = realm.objects(tableDirectory.self).filter("account == %@", account)
 
                 for result in results {
                     result.lock = false;
@@ -1218,7 +1218,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", account, serverUrl).first else {
+                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
                     realm.cancelWrite()
                     return
                 }
@@ -1319,7 +1319,7 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
             realm.cancelWrite()
             return 
         }
@@ -1355,7 +1355,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
             
-        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", tableAccount.account, serverUrl).first else {
             return nil
         }
         
@@ -1398,7 +1398,7 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", tableAccount.account, serverUrl).first else {
             return
         }
             
@@ -1445,7 +1445,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let results = realm.objects(tableExternalSites.self).filter("account = %@", account)
+                let results = realm.objects(tableExternalSites.self).filter("account == %@", account)
 
                 realm.delete(results)
             }
@@ -1459,7 +1459,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableExternalSites.self).filter("account = %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
+        let results = realm.objects(tableExternalSites.self).filter("account == %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
         
         return Array(results)
     }
@@ -1474,7 +1474,7 @@ class NCManageDatabase: NSObject {
         realm.beginWrite()
 
         // Verify if exists
-        guard realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude).first == nil else {
+        guard realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first == nil else {
             realm.cancelWrite()
             return
         }
@@ -1505,7 +1505,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude).first else {
+        guard let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first else {
             return nil
         }
         
@@ -1564,7 +1564,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first else {
+                guard let result = realm.objects(tableLocalFile.self).filter("fileID == %@", fileID).first else {
                     realm.cancelWrite()
                     return
                 }
@@ -1626,7 +1626,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first else {
+                guard let result = realm.objects(tableLocalFile.self).filter("fileID == %@", fileID).first else {
                     realm.cancelWrite()
                     return
                 }
@@ -1995,7 +1995,7 @@ class NCManageDatabase: NSObject {
         
         var counter = 10 as Int64
         
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND directory = true AND favorite = true", account).sorted(byKeyPath: "fileNameView", ascending: true)
+        let results = realm.objects(tableMetadata.self).filter("account == %@ AND directory == true AND favorite == true", account).sorted(byKeyPath: "fileNameView", ascending: true)
         
         for result in results {
             counter += 1
@@ -2126,7 +2126,7 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 
                 // DELETE
-                let results = realm.objects(tableMedia.self).filter("account = %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
+                let results = realm.objects(tableMedia.self).filter("account == %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
                 etagsDelete = Array(results.map { $0.etag })
                 numDelete = results.count
                 
@@ -2159,7 +2159,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        if let entities = realm.objects(tableMedia.self).filter("account = %@", account).max(by: { $0.date.compare($1.date as Date) == order }) {
+        if let entities = realm.objects(tableMedia.self).filter("account == %@", account).max(by: { $0.date.compare($1.date as Date) == order }) {
             return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: entities.date as Date)!
         }
         
@@ -2227,15 +2227,15 @@ class NCManageDatabase: NSObject {
         
         if (image && video) {
          
-            predicate = NSPredicate(format: "account == %@ AND (mediaType == %i OR mediaType == %i)", account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND (mediaType == %d OR mediaType == %d)", account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
             
         } else if (image) {
             
-            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", account, PHAssetMediaType.image.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND mediaType == %d", account, PHAssetMediaType.image.rawValue)
 
         } else if (video) {
             
-            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", account, PHAssetMediaType.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND mediaType == %d", account, PHAssetMediaType.video.rawValue)
         }
         
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
@@ -2262,9 +2262,6 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.beginWrite()
 
-        let results = realm.objects(tableShare.self).filter("account == %@", account)
-        realm.delete(results)
-                
         for sharedDto in items {
             
             let addObject = tableShare()
@@ -2308,7 +2305,7 @@ class NCManageDatabase: NSObject {
             addObject.fileName = fileName
             addObject.serverUrl = serverUrl
             
-            realm.add(addObject)
+            realm.add(addObject, update: .all)
         }
         
         do {
@@ -2382,6 +2379,26 @@ class NCManageDatabase: NSObject {
         realm.beginWrite()
         
         guard let result = realm.objects(tableShare.self).filter("account == %@ AND idRemoteShared == %d", account, idRemoteShared).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        realm.delete(result)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func deleteTableShare(account: String) {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableShare.self).filter("account == %@", account).first else {
             realm.cancelWrite()
             return
         }
@@ -2490,7 +2507,7 @@ class NCManageDatabase: NSObject {
         if filePath == nil {
             predicate = NSPredicate(format: "account == %@", account)
         } else {
-            predicate = NSPredicate(format: "account = %@ AND filePath = %@", account, filePath!)
+            predicate = NSPredicate(format: "account == %@ AND filePath == %@", account, filePath!)
         }
         
         let results = realm.objects(tableTrash.self).filter(predicate)
@@ -2513,7 +2530,7 @@ class NCManageDatabase: NSObject {
         if fileID == nil {
             predicate = NSPredicate(format: "account == %@", account)
         } else {
-            predicate = NSPredicate(format: "account = %@ AND fileID = %@", account, fileID!)
+            predicate = NSPredicate(format: "account == %@ AND fileID == %@", account, fileID!)
         }
         
         let result = realm.objects(tableTrash.self).filter(predicate)
@@ -2531,7 +2548,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", account, filePath).sorted(byKeyPath: sorted, ascending: ascending)
+        let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sorted, ascending: ascending)
 
         return Array(results.map { tableTrash.init(value:$0) })
     }
@@ -2541,7 +2558,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableTrash.self).filter("account = %@ AND fileID = %@", account, fileID).first else {
+        guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileID == %@", account, fileID).first else {
             return nil
         }
         
