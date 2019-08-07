@@ -47,8 +47,8 @@ class NCShareNetworking: NSObject {
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
                 self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
-                self.appDelegate.activeMain.tableView.reloadData()
-                self.appDelegate.activeFavorites.tableView.reloadData()
+                self.appDelegate.activeMain?.tableView?.reloadData()
+                self.appDelegate.activeFavorites?.tableView?.reloadData()
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
@@ -66,8 +66,8 @@ class NCShareNetworking: NSObject {
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
                         self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
-                        self.appDelegate.activeMain.tableView.reloadData()
-                        self.appDelegate.activeFavorites.tableView.reloadData()
+                        self.appDelegate.activeMain?.tableView?.reloadData()
+                        self.appDelegate.activeFavorites?.tableView?.reloadData()
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }
@@ -132,8 +132,8 @@ class NCShareNetworking: NSObject {
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
                         self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
-                        self.appDelegate.activeMain.tableView.reloadData()
-                        self.appDelegate.activeFavorites.tableView.reloadData()
+                        self.appDelegate.activeMain?.tableView?.reloadData()
+                        self.appDelegate.activeFavorites?.tableView?.reloadData()
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }

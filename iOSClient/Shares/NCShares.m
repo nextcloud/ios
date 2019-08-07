@@ -177,32 +177,12 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)removeShares:(tableMetadata *)metadata tableShare:(tableShare *)tableShare
-{
-    NSString *shareString;
-    
-      /*
-    // Unshare Link
-    if (tableShare.shareLink.length > 0) {
-        
-        shareString = tableShare.shareLink;
-    }
-    
-  
-    // Unshare User&Group
-    NSArray *shareUserAndGroup = [tableShare.shareUserAndGroup componentsSeparatedByString:@","];
-    for (NSString *share in shareUserAndGroup) {
-        shareString = [share stringByReplacingOccurrencesOfString:@" " withString:@""];
-    }
-    
-    [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:[shareString integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+{    
+    [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:tableShare.idRemoteShared completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            NSArray *result = [[NCManageDatabase sharedInstance] unShare:shareString fileName:metadata.fileName serverUrl:metadata.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:account];
-            
-            appDelegate.sharesLink = result[0];
-            appDelegate.sharesUserAndGroup = result[1];
-            
+            [[NCManageDatabase sharedInstance] deleteTableShareWithAccount:account idRemoteShared:tableShare.idRemoteShared];
             [self reloadDatasource];
             
         } else if (errorCode != 0) {
@@ -211,7 +191,6 @@
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
-    */
 }
 
 #pragma mark -
