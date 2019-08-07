@@ -1493,8 +1493,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
                           
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\">"
-                         "<d:prop xmlns:oc=\"http://owncloud.org/ns\">"
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                         "<d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
+                         "<d:prop>"
                          "<oc:message/>"
                          "</d:prop>"
                          "</d:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
