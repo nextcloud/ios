@@ -128,7 +128,7 @@
 @property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
 
 // Shares
-@property (nonatomic, strong) NSMutableArray *shares;
+@property (nonatomic, strong) NSArray *shares;
 
 // Maintenance Mode
 @property BOOL maintenanceMode;

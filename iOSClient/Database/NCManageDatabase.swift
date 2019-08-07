@@ -2257,7 +2257,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto]) {
+    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto]) -> [tableShare] {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -2313,16 +2313,18 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
+        
+        return self.getTableShares(account: account)
     }
 
-    @objc func getTableShares(account: String) -> [tableShare]? {
+    @objc func getTableShares(account: String) -> [tableShare] {
         
         let realm = try! Realm()
         realm.refresh()
         
         let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(byKeyPath: "fileName", ascending: true)
         
-        return Array(results)
+        return Array(results.map { tableShare.init(value:$0) })
     }
     
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?,  share: [tableShare]?) {

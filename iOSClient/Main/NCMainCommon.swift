@@ -498,26 +498,15 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
     }
     
-    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, shares: [tableShare]?) -> UITableViewCell {
+    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, tableShare: tableShare?) -> UITableViewCell {
         
         var image: UIImage?
-        var tableShare: tableShare?
 
         // Create File System
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID)
         } else {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)
-        }
-        
-        // Share
-        if shares != nil {
-            for share in shares! {
-                if share.fileName == metadata.fileName {
-                    tableShare = share
-                    break
-                }
-            }
         }
         
         // CCCell

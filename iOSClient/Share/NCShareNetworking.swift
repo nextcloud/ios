@@ -46,7 +46,7 @@ class NCShareNetworking: NSObject {
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
                 let itemsOCSharedDto = items as! [OCSharedDto]
-                NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
@@ -63,7 +63,7 @@ class NCShareNetworking: NSObject {
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-                        NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }
@@ -127,7 +127,7 @@ class NCShareNetworking: NSObject {
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-                        NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                     } else {
                         self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     }

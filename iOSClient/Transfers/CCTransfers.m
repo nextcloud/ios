@@ -510,7 +510,7 @@
         return [CCCellMainTransfer new];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:nil serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@"" shares:nil];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:nil serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@"" tableShare:nil];
     
     // TRANSFER
     

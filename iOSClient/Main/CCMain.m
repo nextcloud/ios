@@ -191,6 +191,9 @@
         [self searchEnabled:YES];
     }
     
+    // Get Shares
+    appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
+    
     // Query data source
     if (!_isSearchMode) {
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
@@ -3714,12 +3717,21 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableShare *shareCell;
 
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder])) {
         return [CCCellMain new];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shares:appDelegate.shares];
+    // have you share ?
+    for (tableShare *share in appDelegate.shares) {
+        if ([share.serverUrl isEqualToString:metadata.serverUrl] && [share.fileName isEqualToString:metadata.fileName]) {
+            shareCell = share;
+            break;
+        }
+    }
+
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory tableShare:shareCell];
     
     // NORMAL - > MAIN
     
@@ -3727,13 +3739,13 @@
         
         BOOL isShare = false;
         BOOL isMounted = false;
-        BOOL haveYouShare = false;
         
         if (_metadataFolder) {
             isShare = [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
             isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_metadataFolder.permissions containsString:k_permission_mounted];
         }
         
+        /*
         // have you share ?
         for (tableShare *share in appDelegate.shares) {
             if ([share.fileName isEqualToString:metadata.fileName]) {
@@ -3768,6 +3780,7 @@
                 }
             }
         }
+        */
         
         // More
         if ([self canOpenMenuAction:metadata]) {

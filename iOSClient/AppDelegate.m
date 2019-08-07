@@ -79,9 +79,6 @@ PKPushRegistry *pushRegistry;
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];
     
-    // Initialization Shares
-    self.shares = [NSMutableArray new];
-    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
