@@ -424,6 +424,8 @@ protocol NCShareUserCellDelegate {
     func tapMenu(with tableShare: tableShare?, sender: Any)
 }
 
+// MARK: - NCShareUserDropDownCell
+
 class NCShareUserDropDownCell: DropDownCell {
     
     @IBOutlet weak var imageItem: UIImageView!

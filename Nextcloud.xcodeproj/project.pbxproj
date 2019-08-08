@@ -92,6 +92,7 @@
 		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
 		F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */; };
 		F72382C32295856A005B8A07 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BF22958569005B8A07 /* GoogleToolboxForMac.framework */; };
+		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
@@ -760,6 +761,7 @@
 		F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVisionTextModel.framework; sourceTree = "<group>"; };
 		F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleMVTextDetectorResources.bundle; sourceTree = "<group>"; };
 		F72382BF22958569005B8A07 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
@@ -1797,6 +1799,7 @@
 				F769453D22E9E97D000A798A /* NCShareUserMenuView.xib */,
 				F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */,
 				F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */,
+				F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */,
 				F769453F22E9F077000A798A /* NCSharePaging.swift */,
 				F7E4D9C322ED929B003675FD /* NCShareComments.swift */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
@@ -3366,6 +3369,7 @@
 				F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */,
 				F769453E22E9E97E000A798A /* NCShareUserMenuView.xib in Resources */,
 				F7F54CF11E5B14C700E19C62 /* ImageSelectedSmallOn.png in Resources */,
+				F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */,
 				F760F77C21F21F61006B1A73 /* StickersViewController.xib in Resources */,
 				F762CB1B1EACB66200B38484 /* XLForm.bundle in Resources */,
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,

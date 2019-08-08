@@ -51,3 +51,31 @@ class NCShareComments: UIViewController {
         })
     }
 }
+
+// MARK: - NCShareCommentsCell
+
+class NCShareCommentsCell: UITableViewCell {
+    
+    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var labelUser: UILabel!
+    @IBOutlet weak var buttonMenu: UIButton!
+    @IBOutlet weak var labelDate: UILabel!
+    @IBOutlet weak var labelMessage: UILabel!
+    
+    var tableComments: tableComments?
+    var delegate: NCShareCommentsCellDelegate?
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
+    }
+    
+    @IBAction func touchUpInsideMenu(_ sender: Any) {
+        delegate?.tapMenu(with: tableComments, sender: sender)
+    }
+}
+
+protocol NCShareCommentsCellDelegate {
+    func tapMenu(with tableComments: tableComments?, sender: Any)
+}
