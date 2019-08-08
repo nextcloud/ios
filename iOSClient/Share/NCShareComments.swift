@@ -41,6 +41,11 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.separatorColor = NCBrandColor.sharedInstance.seperator
+        tableView.tableFooterView = UIView()
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = tableView.bounds.height
+        tableView.allowsSelection = false
 
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
 
@@ -76,7 +81,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
 extension NCShareComments: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return UITableView.automaticDimension
     }
 }
 
@@ -103,6 +108,7 @@ extension NCShareComments: UITableViewDataSource {
             
             cell.tableComments = tableComments
             cell.delegate = self
+            cell.sizeToFit()
             
             // Image
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableComments.actorId + ".png"
@@ -156,7 +162,7 @@ class NCShareCommentsCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
+        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.lightGray), for: .normal)
     }
     
     @IBAction func touchUpInsideMenu(_ sender: Any) {
