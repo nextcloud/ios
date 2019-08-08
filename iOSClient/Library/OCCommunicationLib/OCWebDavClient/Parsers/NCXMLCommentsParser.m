@@ -26,7 +26,6 @@
 @interface NCXMLCommentsParser()
 
 @property (nonatomic, strong) NSMutableString *xmlChars;
-@property (nonatomic, strong) NSMutableDictionary *xmlBucket;
 
 @end
 
@@ -50,10 +49,6 @@
     }
     
     [self.xmlChars setString:@""];
-    
-    if ([elementName isEqualToString:@"d:response"]) {
-        self.xmlBucket = [NSMutableDictionary dictionary];
-    }
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
@@ -63,8 +58,15 @@
         if ([self.xmlChars length]) {
             self.xmlChars = (NSMutableString *)[_xmlChars stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
             self.currentComment = [NCComments new];
-            [self.xmlBucket setObject:[_xmlChars copy] forKey:@"uri"];
         }
+        
+    } else if ([elementName isEqualToString:@"oc:message"]) {
+        
+        self.currentComment.message = self.xmlChars;
+        
+    } else if ([elementName isEqualToString:@"d:response"]) {
+    
+        [self.list addObject:self.currentComment];
     }
 }
 
