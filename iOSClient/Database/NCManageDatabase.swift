@@ -1024,12 +1024,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getComments(account: String, fileID: String) -> [tableComments]? {
+    @objc func getComments(account: String, fileID: String) -> [tableComments] {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableComments.self).filter("account == %@ AND fileID == %@", account, fileID).sorted(byKeyPath: "creationDateTime", ascending: true)
+        let results = realm.objects(tableComments.self).filter("account == %@ AND fileID == %@", account, fileID).sorted(byKeyPath: "creationDateTime", ascending: false)
         
         return Array(results.map { tableComments.init(value:$0) })
     }

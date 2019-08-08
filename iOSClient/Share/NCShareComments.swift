@@ -23,8 +23,8 @@
 
 import Foundation
 
-class NCShareComments: UIViewController {
-    
+class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
+   
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var newCommentField: UITextField!
@@ -38,19 +38,105 @@ class NCShareComments: UIViewController {
         super.viewDidLoad()
         
         viewContainerConstraint.constant = height
+        
+        tableView.dataSource = self
+        tableView.delegate = self
 
+        tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
+
+        reloadData()
+    }
+    
+    @objc func reloadData() {
+        
         guard let metadata = self.metadata else { return }
 
         OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata.fileID, completion: { (account, items, message, errorCode) in
             if errorCode == 0 {
                 let itemsNCComments = items as! [NCComments]
                 NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, fileID: metadata.fileID)
+                self.tableView.reloadData()
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
         })
+        
+        tableView.reloadData()
+    }
+    
+    func tapMenu(with tableComments: tableComments?, sender: Any) {
+        
     }
 }
+
+// MARK: - UITableViewDelegate
+
+extension NCShareComments: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension NCShareComments: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, fileID: metadata!.fileID)
+        return comments.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, fileID: metadata!.fileID)
+        let tableComments = comments[indexPath.row]
+        
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell {
+            
+            cell.tableComments = tableComments
+            cell.delegate = self
+            
+            // Image
+            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableComments.actorId + ".png"
+            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.imageItem.image = image
+                }
+            } else {
+                DispatchQueue.global().async {
+                    let url = self.appDelegate.activeUrl + k_avatar + tableComments.actorId + "/128"
+                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                        if errorCode == 0 && UIImage(data: data!) != nil {
+                            do {
+                                try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                            } catch { return }
+                            cell.imageItem.image = UIImage(data: data!)
+                        } else {
+                            cell.imageItem.image = UIImage(named: "avatar")
+                        }
+                    })
+                }
+            }
+            // Username
+            cell.labelUser.text = tableComments.actorDisplayName
+            // Message
+            cell.labelMessage.text = tableComments.message
+            
+            return cell
+        }
+        
+        return UITableViewCell()
+    }
+}
+
+
 
 // MARK: - NCShareCommentsCell
 
