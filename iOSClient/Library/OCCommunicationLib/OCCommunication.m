@@ -55,6 +55,7 @@
 #import "OCUserProfile.h"
 #import "NCRichDocumentTemplate.h"
 #import "HCFeatures.h"
+#import "NCXMLCommentsParser.h"
 
 @interface OCCommunication ()
 
@@ -3205,15 +3206,13 @@
     
     [request getComments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
-        NSData *responseData = (NSData*) responseObject;
+        NSData *responseData = (NSData *)responseObject;
         
-        OCXMLParser *parser = [[OCXMLParser alloc]init];
+        NCXMLCommentsParser *parser = [NCXMLCommentsParser new];
         [parser initParserWithData:responseData];
-        NSMutableArray *directoryList = [parser.directoryList mutableCopy];
+        NSMutableArray *list = [parser.list mutableCopy];
         
-        //Return success
-        successRequest(response, directoryList, request.redirectedServer);
-        
+        successRequest(response, list, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error) {
         

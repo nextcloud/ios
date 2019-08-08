@@ -1,5 +1,5 @@
 //
-//  NCXMLComments.m
+//  NCXMLCommentsParser.m
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 08/08/19.
@@ -21,36 +21,27 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "NCXMLComments.h"
+#import "NCXMLCommentsParser.h"
 
-@interface NCXMLComments()
+@interface NCXMLCommentsParser()
 
 @property (nonatomic, strong) NSMutableString *xmlChars;
 @property (nonatomic, strong) NSMutableDictionary *xmlBucket;
 
 @end
 
-@implementation NCXMLComments
+@implementation NCXMLCommentsParser
 
-/*
- * Method that init the parse with the xml data from the server
- * @data -> XML webDav data from the owncloud server
- */
 - (void)initParserWithData: (NSData*)data{
+    
+    self.list = [NSMutableArray new];
     
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
     [parser setDelegate:self];
     [parser parse];
-    
 }
 
-
 #pragma mark - XML Parser Delegate Methods
-
-
-/*
- * Method that init parse process.
- */
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict {
     
@@ -60,27 +51,20 @@
     
     [self.xmlChars setString:@""];
     
-    if ([elementName isEqualToString:@"ocs"]) {
+    if ([elementName isEqualToString:@"d:response"]) {
         self.xmlBucket = [NSMutableDictionary dictionary];
     }
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
     
-    if ([elementName isEqualToString:@"statuscode"]) {
-        self.statusCode = [self.xmlChars intValue];
-    }
-
-    if ([elementName isEqualToString:@"token"]) {
-        self.token = [NSString stringWithString:self.xmlChars];
-    }
-    
-    if ([elementName isEqualToString:@"message"]) {
-        self.message = [NSString stringWithString:self.xmlChars];
-    }
-    
-    if ([elementName isEqualToString:@"url"]) {
-        self.url = [NSString stringWithString:self.xmlChars];
+    if ([elementName isEqualToString:@"d:href"]) {
+        
+        if ([self.xmlChars length]) {
+            self.xmlChars = (NSMutableString *)[_xmlChars stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
+            self.currentComment = [NCComments new];
+            [self.xmlBucket setObject:[_xmlChars copy] forKey:@"uri"];
+        }
     }
 }
 
@@ -88,8 +72,7 @@
     [self.xmlChars appendString:string];
 }
 
-- (void)parserDidEndDocument:(NSXMLParser *)parser{
-    
+- (void)parserDidEndDocument:(NSXMLParser *)parser {
     NSLog(@"Finish xml directory list parse");
 }
 

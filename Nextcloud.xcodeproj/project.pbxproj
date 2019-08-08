@@ -444,9 +444,9 @@
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
 		F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */; };
 		F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4F1C81F44356F00B53B42 /* NCUchardet.m */; };
-		F7B6ACD622FC2BD4008AB646 /* NCXMLComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLComments.m */; };
-		F7B6ACD722FC2BD4008AB646 /* NCXMLComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLComments.m */; };
-		F7B6ACD822FC2BD4008AB646 /* NCXMLComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLComments.m */; };
+		F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
+		F7B6ACD722FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
+		F7B6ACD822FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
 		F7B6ACDB22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
 		F7B6ACDC22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
 		F7B6ACDD22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
@@ -1256,8 +1256,8 @@
 		F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCLoginWeb.swift; sourceTree = "<group>"; };
 		F7B4F1C71F44356F00B53B42 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
 		F7B4F1C81F44356F00B53B42 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
-		F7B6ACD422FC2BD3008AB646 /* NCXMLComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLComments.m; sourceTree = "<group>"; };
-		F7B6ACD522FC2BD4008AB646 /* NCXMLComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLComments.h; sourceTree = "<group>"; };
+		F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLCommentsParser.m; sourceTree = "<group>"; };
+		F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLCommentsParser.h; sourceTree = "<group>"; };
 		F7B6ACD922FC2D14008AB646 /* NCComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCComments.h; sourceTree = "<group>"; };
 		F7B6ACDA22FC2D15008AB646 /* NCComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCComments.m; sourceTree = "<group>"; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
@@ -1640,8 +1640,8 @@
 		F70022871EC4C9100080073F /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
-				F7B6ACD522FC2BD4008AB646 /* NCXMLComments.h */,
-				F7B6ACD422FC2BD3008AB646 /* NCXMLComments.m */,
+				F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */,
+				F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */,
 				F70022881EC4C9100080073F /* OCXMLListParser.h */,
 				F70022891EC4C9100080073F /* OCXMLListParser.m */,
 				F700228A1EC4C9100080073F /* OCXMLParser.h */,
@@ -3526,7 +3526,7 @@
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
-				F7B6ACD722FC2BD4008AB646 /* NCXMLComments.m in Sources */,
+				F7B6ACD722FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
 				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
@@ -3584,7 +3584,7 @@
 				F7434B3C20E2403D00417916 /* OCCommunication.m in Sources */,
 				F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */,
 				F7434B3720E23FF200417916 /* NCUtility.swift in Sources */,
-				F7B6ACD822FC2BD4008AB646 /* NCXMLComments.m in Sources */,
+				F7B6ACD822FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
 				F7434B5120E2409500417916 /* OCXMLServerErrorsParser.m in Sources */,
 				F7DFB7E2219C312D00680748 /* NCRichDocumentTemplate.m in Sources */,
 				F7434B3A20E2403500417916 /* OCActivity.m in Sources */,
@@ -3707,7 +3707,7 @@
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F760F77E21F21F61006B1A73 /* PhotoEditor+Keyboard.swift in Sources */,
 				F73B4F111F470D9100BBEE4B /* nsSBCSGroupProber.cpp in Sources */,
-				F7B6ACD622FC2BD4008AB646 /* NCXMLComments.m in Sources */,
+				F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F760F79D21F21F61006B1A73 /* CropRectView.swift in Sources */,
 				F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */,

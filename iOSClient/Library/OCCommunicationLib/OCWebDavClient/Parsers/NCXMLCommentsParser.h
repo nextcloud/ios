@@ -1,5 +1,5 @@
 //
-//  NCXMLComments.h
+//  NCXMLCommentsParser.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 08/08/19.
@@ -22,13 +22,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NCComments.h"
 
-@interface NCXMLComments : NSObject <NSXMLParserDelegate>
+@interface NCXMLCommentsParser : NSObject <NSXMLParserDelegate>
 
-@property (nonatomic, strong) NSString *token;
-@property (nonatomic, strong) NSString *message;
-@property (nonatomic, strong) NSString *url;
-@property (nonatomic) NSInteger statusCode;
+@property(nonatomic,strong) NSMutableArray *list;
+@property(nonatomic,strong) NCComments *currentComment;
 
 - (void)initParserWithData: (NSData*)data;
 
