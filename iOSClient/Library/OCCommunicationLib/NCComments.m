@@ -28,6 +28,12 @@
 {
     self = [super init];
     
+    self.verb = @"";
+    self.actorType = @"";
+    self.actorId = @"";
+    self.creationDateTime = [NSDate date];
+    self.objectType = @"";
+    self.actorDisplayName = @"";
     self.message = @"";
     
     return self;

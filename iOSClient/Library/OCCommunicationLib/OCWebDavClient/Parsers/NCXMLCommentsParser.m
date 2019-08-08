@@ -23,12 +23,6 @@
 
 #import "NCXMLCommentsParser.h"
 
-@interface NCXMLCommentsParser()
-
-@property (nonatomic, strong) NSMutableString *xmlChars;
-
-@end
-
 @implementation NCXMLCommentsParser
 
 - (void)initParserWithData: (NSData*)data{
@@ -60,13 +54,57 @@
             self.currentComment = [NCComments new];
         }
         
+    } else if ([elementName isEqualToString:@"oc:id"]) {
+        
+        self.currentComment.messageID = [self.xmlChars doubleValue];
+    
+    } else if ([elementName isEqualToString:@"oc:verb"]) {
+        
+        self.currentComment.verb = [NSString stringWithString:self.xmlChars];
+        
+    } else if ([elementName isEqualToString:@"oc:actorType"]) {
+        
+        self.currentComment.actorType = [NSString stringWithString:self.xmlChars];
+        
+    } else if ([elementName isEqualToString:@"oc:actorId"]) {
+        
+        self.currentComment.actorId = [NSString stringWithString:self.xmlChars];
+        
+    } else if ([elementName isEqualToString:@"oc:creationDateTime"]) {
+        
+        NSDateFormatter *dateFormatter = [NSDateFormatter new];
+        [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
+        self.currentComment.creationDateTime = [dateFormatter dateFromString:[NSString stringWithString:self.xmlChars] ];
+        
+    } else if ([elementName isEqualToString:@"oc:objectType"]) {
+        
+        self.currentComment.objectType = [NSString stringWithString:self.xmlChars];
+    
+    } else if ([elementName isEqualToString:@"oc:objectId"]) {
+        
+        self.currentComment.objectId = [self.xmlChars doubleValue];
+        
+    } else if ([elementName isEqualToString:@"oc:isUnread"]) {
+        
+        self.currentComment.isUnread = [self.xmlChars boolValue];
+        
     } else if ([elementName isEqualToString:@"oc:message"]) {
         
         self.currentComment.message = [NSString stringWithString:self.xmlChars];
+    
+    } else if ([elementName isEqualToString:@"oc:actorDisplayName"]) {
+        
+        self.currentComment.actorDisplayName = [NSString stringWithString:self.xmlChars];
+        
+    } else if ([elementName isEqualToString:@"d:status"]) {
+        
+        self.status = [NSString stringWithString:self.xmlChars];
         
     } else if ([elementName isEqualToString:@"d:response"]) {
     
-        [self.list addObject:self.currentComment];
+        if ([self.status containsString:@"200"]) {
+            [self.list addObject:self.currentComment];
+        }
     }
 }
 

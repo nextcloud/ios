@@ -26,8 +26,11 @@
 
 @interface NCXMLCommentsParser : NSObject <NSXMLParserDelegate>
 
-@property(nonatomic,strong) NSMutableArray *list;
-@property(nonatomic,strong) NCComments *currentComment;
+@property (nonatomic, strong) NSMutableArray *list;
+@property (nonatomic, strong) NCComments *currentComment;
+
+@property (nonatomic, strong) NSMutableString *xmlChars;
+@property (nonatomic, strong) NSString *status;
 
 - (void)initParserWithData: (NSData*)data;
 

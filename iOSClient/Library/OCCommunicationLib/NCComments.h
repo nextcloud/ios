@@ -24,6 +24,14 @@
 
 @interface NCComments : NSObject
 
+@property double messageID;
+@property (nonatomic, strong) NSString *verb;
+@property (nonatomic, strong) NSString *actorType;
+@property (nonatomic, strong) NSString *actorId;
+@property (nonatomic, strong) NSDate *creationDateTime;
+@property (nonatomic, strong) NSString *objectType;
+@property double objectId;
+@property (nonatomic, strong) NSString *actorDisplayName;
 @property BOOL isUnread;
 @property (nonatomic, strong) NSString *message;
 
