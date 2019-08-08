@@ -205,6 +205,26 @@ class tableCertificates: Object {
     @objc dynamic var certificateLocation = ""
 }
 
+class tableComments: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var actorDisplayName = ""
+    @objc dynamic var actorId = ""
+    @objc dynamic var actorType = ""
+    @objc dynamic var creationDateTime: NSDate? = nil
+    @objc dynamic var fileID = ""
+    @objc dynamic var isUnread: Bool = false
+    @objc dynamic var message = ""
+    @objc dynamic var messageID: Double = 0
+    @objc dynamic var objectId: Double = 0
+    @objc dynamic var objectType = ""
+    @objc dynamic var verb = ""
+    
+    override static func primaryKey() -> String {
+        return "messageID"
+    }
+}
+
 class tableDirectory: Object {
     
     @objc dynamic var account = ""

@@ -121,6 +121,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
         self.clearTable(tableCapabilities.self, account: account)
+        self.clearTable(tableComments.self, account: account)
         self.clearTable(tableDirectory.self, account: account)
         self.clearTable(tableE2eEncryption.self, account: account)
         self.clearTable(tableE2eEncryptionLock.self, account: account)
@@ -983,6 +984,51 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableCertificates.self)
     
         return Array(results.map { "\(localCertificatesFolder)/\($0.certificateLocation)" })
+    }
+   
+    //MARK: -
+    //MARK: Table Comments
+    
+    @objc func addComments(_ listOfComments: [NCComments], account: String, fileID: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                for comment in listOfComments {
+                    
+                    let addObject = tableComments()
+                    
+                    addObject.account = account
+                    addObject.actorDisplayName = comment.actorDisplayName
+                    addObject.actorId = comment.actorId
+                    addObject.actorType = comment.actorType
+                    addObject.creationDateTime = comment.creationDateTime as NSDate
+                    addObject.fileID = fileID
+                    addObject.isUnread = comment.isUnread
+                    addObject.message = comment.message
+                    addObject.messageID = comment.messageID
+                    addObject.objectId = comment.objectId
+                    addObject.objectType = comment.objectType
+                    addObject.verb = comment.verb
+                    
+                    realm.add(addObject, update: .all)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func getComments(account: String, fileID: String) -> [tableComments]? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableComments.self).filter("account == %@ AND fileID == %@", account, fileID).sorted(byKeyPath: "creationDateTime", ascending: true)
+        
+        return Array(results.map { tableComments.init(value:$0) })
     }
     
     //MARK: -
