@@ -2725,9 +2725,9 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer) {
+    [communication getComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *responseData, NSString *redirectedServer) {
         
-        completion(account, list, nil, 0);
+        completion(account, nil, nil, 0);
 
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         

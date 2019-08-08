@@ -3195,7 +3195,7 @@
 
 #pragma mark - Comments
 
-- (void)getComments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)getComments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *responseData, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [NSString stringWithFormat:@"%@/comments/files/%@", serverPath, fileID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
@@ -3205,16 +3205,7 @@
     
     [request getComments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
-        if (successRequest) {
-            NSData *responseData = (NSData*) responseObject;
-            
-            OCXMLParser *parser = [[OCXMLParser alloc]init];
-            [parser initParserWithData:responseData];
-            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
-            
-            //Return success
-            successRequest(response, directoryList, request.redirectedServer);
-        }
+        successRequest(response, (NSData*) responseObject, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error) {
         
