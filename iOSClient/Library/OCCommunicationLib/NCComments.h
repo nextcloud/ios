@@ -24,6 +24,7 @@
 
 @interface NCComments : NSObject
 
+@property BOOL isUnread;
 @property (nonatomic, strong) NSString *message;
 
 @end

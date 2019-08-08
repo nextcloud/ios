@@ -1494,11 +1494,29 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
                           
     [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                         "<d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
-                         "<d:prop>"
-                         "<oc:message/>"
-                         "</d:prop>"
-                         "</d:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+                          "<d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
+                          "<d:prop>"
+                          "<oc:id/>"
+                          "<oc:parentId/>"
+                          "<oc:topmostParentId/>"
+                          "<oc:childrenCount/>"
+                          "<oc:verb/>"
+                          "<oc:actorType/>"
+                          "<oc:actorId/>"
+                          "<oc:creationDateTime/>"
+                          "<oc:latestChildDateTime/>"
+                          "<oc:objectType/>"
+                          "<oc:objectId/>"
+                          "<oc:isUnread/>"
+                          "<oc:message/>"
+                          "<oc:actorDisplayName/>"
+                          "<oc:mentions/>"
+                          "<oc:mention/>"
+                          "<oc:mentionType/>"
+                          "<oc:mentionId/>"
+                          "<oc:mentionDisplayName/>"
+                          "</d:prop>"
+                          "</d:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];

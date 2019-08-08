@@ -62,7 +62,7 @@
         
     } else if ([elementName isEqualToString:@"oc:message"]) {
         
-        self.currentComment.message = self.xmlChars;
+        self.currentComment.message = [NSString stringWithString:self.xmlChars];
         
     } else if ([elementName isEqualToString:@"d:response"]) {
     
