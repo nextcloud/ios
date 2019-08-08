@@ -25,12 +25,20 @@ import Foundation
 
 class NCShareComments: UIViewController {
     
-    var metadata: tableMetadata?
+    @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var newCommentField: UITextField!
+
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+
+    var metadata: tableMetadata?
+    public var height: CGFloat = 0
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        viewContainerConstraint.constant = height
+
         guard let metadata = self.metadata else { return }
 
         OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata.fileID, completion: { (account, items, message, errorCode) in

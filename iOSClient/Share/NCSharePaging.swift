@@ -92,6 +92,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
         case 1:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
             viewController.metadata = metadata!
+            viewController.height = height
             return viewController
         case 2:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
