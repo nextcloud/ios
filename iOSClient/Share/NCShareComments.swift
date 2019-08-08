@@ -44,6 +44,8 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
 
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
 
+        newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
+
         reloadData()
     }
     
