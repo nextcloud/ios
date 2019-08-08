@@ -35,6 +35,8 @@
     self.objectType = @"";
     self.actorDisplayName = @"";
     self.message = @"";
+    self.messageID = @"";
+    self.objectId = @"";
     
     return self;
 }

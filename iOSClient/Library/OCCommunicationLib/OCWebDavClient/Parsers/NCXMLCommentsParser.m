@@ -56,7 +56,7 @@
         
     } else if ([elementName isEqualToString:@"oc:id"]) {
         
-        self.currentComment.messageID = [self.xmlChars doubleValue];
+        self.currentComment.messageID = [NSString stringWithString:self.xmlChars];
     
     } else if ([elementName isEqualToString:@"oc:verb"]) {
         
@@ -82,7 +82,7 @@
     
     } else if ([elementName isEqualToString:@"oc:objectId"]) {
         
-        self.currentComment.objectId = [self.xmlChars doubleValue];
+        self.currentComment.objectId = [NSString stringWithString:self.xmlChars];
         
     } else if ([elementName isEqualToString:@"oc:isUnread"]) {
         

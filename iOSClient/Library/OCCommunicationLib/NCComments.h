@@ -30,8 +30,8 @@
 @property (nonatomic, strong) NSDate *creationDateTime;
 @property BOOL isUnread;
 @property (nonatomic, strong) NSString *message;
-@property double messageID;
-@property double objectId;
+@property (nonatomic, strong) NSString *messageID;
+@property (nonatomic, strong) NSString *objectId;
 @property (nonatomic, strong) NSString *objectType;
 @property (nonatomic, strong) NSString *verb;
 

@@ -117,7 +117,7 @@
 
 #pragma mark ===== Comments =====
 
-- (void)getCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *list, NSString *message, NSInteger errorCode))completion;
+- (void)getCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== Third Parts =====
 

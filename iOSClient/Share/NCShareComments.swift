@@ -31,8 +31,15 @@ class NCShareComments: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata?.fileID, completion: { (account, list, message, errorCode) in
-            print("ciao")
+        guard let metadata = self.metadata else { return }
+
+        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata.fileID, completion: { (account, items, message, errorCode) in
+            if errorCode == 0 {
+                let itemsNCComments = items as! [NCComments]
+                NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, fileID: metadata.fileID)
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
         })
     }
 }

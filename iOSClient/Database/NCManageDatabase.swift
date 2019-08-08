@@ -996,6 +996,9 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
+                let results = realm.objects(tableComments.self).filter("account == %@ AND fileID == %@", account, fileID)
+                realm.delete(results)
+                
                 for comment in listOfComments {
                     
                     let addObject = tableComments()

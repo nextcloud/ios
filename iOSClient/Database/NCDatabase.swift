@@ -215,8 +215,8 @@ class tableComments: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var isUnread: Bool = false
     @objc dynamic var message = ""
-    @objc dynamic var messageID: Double = 0
-    @objc dynamic var objectId: Double = 0
+    @objc dynamic var messageID = ""
+    @objc dynamic var objectId = ""
     @objc dynamic var objectType = ""
     @objc dynamic var verb = ""
     
