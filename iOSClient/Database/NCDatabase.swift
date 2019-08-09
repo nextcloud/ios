@@ -211,7 +211,7 @@ class tableComments: Object {
     @objc dynamic var actorDisplayName = ""
     @objc dynamic var actorId = ""
     @objc dynamic var actorType = ""
-    @objc dynamic var creationDateTime: NSDate? = nil
+    @objc dynamic var creationDateTime = NSDate()
     @objc dynamic var fileID = ""
     @objc dynamic var isUnread: Bool = false
     @objc dynamic var message = ""

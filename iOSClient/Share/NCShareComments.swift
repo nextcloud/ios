@@ -27,6 +27,8 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
    
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var labelUser: UILabel!
     @IBOutlet weak var newCommentField: UITextField!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -41,7 +43,6 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = tableView.bounds.height
@@ -50,7 +51,26 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
 
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
-
+        
+        // Display Name user & Quota
+        guard let tabAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
+            return
+        }
+        
+        if tabAccount.displayName.isEmpty {
+            labelUser.text = tabAccount.user
+        }
+        else{
+            labelUser.text = tabAccount.displayName
+        }
+        
+        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
+        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                imageItem.image = image
+            }
+        }
+        
         reloadData()
     }
     
@@ -134,6 +154,8 @@ extension NCShareComments: UITableViewDataSource {
             }
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
+            // Date
+            cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
             // Message
             cell.labelMessage.text = tableComments.message
             
