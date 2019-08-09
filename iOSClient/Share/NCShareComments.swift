@@ -74,6 +74,12 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         reloadData()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        reloadData()
+    }
+    
     @objc func reloadData() {
         
         guard let metadata = self.metadata else { return }

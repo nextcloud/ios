@@ -3238,6 +3238,41 @@
     }];
 }
 
+- (void)updateComments:(NSString*)serverPath fileID:(NSString *)fileID commentID:(NSString *)commentID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, commentID];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request updateComments:serverPath message:message onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+        successRequest(response, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, id responseObject, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)deleteComments:(NSString*)serverPath fileID:(NSString *)fileID commentID:(NSString *)commentID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, commentID];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request deleteComments:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+        successRequest(response, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, id responseObject, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
 
 #pragma mark - Third Parts
 
