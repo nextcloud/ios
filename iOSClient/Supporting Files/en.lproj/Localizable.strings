@@ -466,6 +466,8 @@
 "_shared_with_you_by_"          = "Shared with you by";
 "_shareLinksearch_placeholder_" = "Search for user or group...";
 "_new_comment_"                 = "New comment ...";
+"_edit_comment_"                = "Edit comment";
+"_delete_comment_"              = "Delete comment";
 
 // Share Permission
 

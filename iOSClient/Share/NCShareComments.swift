@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import Sheeeeeeeeet
 
 class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
    
@@ -35,6 +36,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
 
     var metadata: tableMetadata?
     public var height: CGFloat = 0
+    private var actionSheet: ActionSheet?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,7 +117,25 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     }
     
     func tapMenu(with tableComments: tableComments?, sender: Any) {
+     
+        var items = [ActionSheetItem]()
+        let appearanceDelete = ActionSheetItemAppearance.init()
+        appearanceDelete.textColor = UIColor.red
         
+        items.append(ActionSheetItem(title: NSLocalizedString("_edit_comment_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
+        itemDelete.customAppearance = appearanceDelete
+        items.append(itemDelete)
+        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        
+        actionSheet = ActionSheet(items: items) { sheet, item in
+            
+            if item.value as? Int == 1 {  }
+            if item.value as? Int == 2 {  }
+            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        }
+        
+        actionSheet?.present(in: self, from: sender as! UIButton)
     }
 }
 

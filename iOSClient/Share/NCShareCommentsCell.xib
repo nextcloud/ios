@@ -53,13 +53,16 @@
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1z-RG-U4A" userLabel="ButtonMenu">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1z-RG-U4A" userLabel="ButtonMenu">
                         <rect key="frame" x="93.5" y="25" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="G48-LB-BsD"/>
                             <constraint firstAttribute="width" constant="20" id="vLI-cJ-Jqx"/>
                         </constraints>
                         <state key="normal" image="shareMenu"/>
+                        <connections>
+                            <action selector="touchUpInsideMenu:" destination="qJF-Yc-gKE" eventType="touchUpInside" id="dx2-2Z-VfO"/>
+                        </connections>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="message" lineBreakMode="middleTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mNK-Zq-pFW" userLabel="labelTitle">
                         <rect key="frame" x="55" y="63" width="540" height="43.5"/>
