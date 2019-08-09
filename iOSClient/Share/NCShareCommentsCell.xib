@@ -53,7 +53,7 @@
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1z-RG-U4A" userLabel="ButtonMenu">
+                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1z-RG-U4A" userLabel="ButtonMenu">
                         <rect key="frame" x="93.5" y="25" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="G48-LB-BsD"/>

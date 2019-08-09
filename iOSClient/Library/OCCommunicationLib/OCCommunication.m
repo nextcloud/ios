@@ -3220,6 +3220,25 @@
     }];
 }
 
+- (void)putComments:(NSString*)serverPath fileID:(NSString *)fileID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@", serverPath, fileID];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request putComments:serverPath message:message onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+        successRequest(response, request.redirectedServer);
+
+    } failure:^(NSHTTPURLResponse *response, id responseObject, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+
 #pragma mark - Third Parts
 
 - (void)getHCUserProfile:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest

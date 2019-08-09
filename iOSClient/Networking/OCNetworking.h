@@ -118,6 +118,7 @@
 #pragma mark ===== Comments =====
 
 - (void)getCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
+- (void)putCommentsWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== Third Parts =====
 
