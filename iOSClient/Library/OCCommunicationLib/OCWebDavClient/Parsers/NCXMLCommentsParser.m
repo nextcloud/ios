@@ -49,10 +49,7 @@
     
     if ([elementName isEqualToString:@"d:href"]) {
         
-        if ([self.xmlChars length]) {
-            self.xmlChars = (NSMutableString *)[_xmlChars stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
-            self.currentComment = [NCComments new];
-        }
+        self.currentComment = [NCComments new];
         
     } else if ([elementName isEqualToString:@"oc:id"]) {
         
@@ -72,9 +69,12 @@
         
     } else if ([elementName isEqualToString:@"oc:creationDateTime"]) {
         
-        NSDateFormatter *dateFormatter = [NSDateFormatter new];
-        [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
-        self.currentComment.creationDateTime = [dateFormatter dateFromString:[NSString stringWithString:self.xmlChars] ];
+        if ([self.xmlChars length]) {
+            NSDateFormatter *dateFormatter = [NSDateFormatter new];
+            [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
+            [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
+            self.currentComment.creationDateTime = [dateFormatter dateFromString:[NSString stringWithString:self.xmlChars]];
+        }
         
     } else if ([elementName isEqualToString:@"oc:objectType"]) {
         
