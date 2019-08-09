@@ -2754,7 +2754,7 @@
     }];
 }
 
-- (void)putCommentsWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)putCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {

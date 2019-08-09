@@ -62,6 +62,9 @@
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
+                                        <connections>
+                                            <action selector="newCommentFieldDidEndOnExitWithTextField:" destination="GMr-2Y-4vs" eventType="editingDidEndOnExit" id="Vvc-xW-hjc"/>
+                                        </connections>
                                     </textField>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="DFs-4t-iWX">
                                         <rect key="frame" x="5" y="100" width="404" height="508"/>

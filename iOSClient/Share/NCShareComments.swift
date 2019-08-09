@@ -91,6 +91,23 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         tableView.reloadData()
     }
     
+    // MARK: - IBAction
+    
+    @IBAction func newCommentFieldDidEndOnExit(textField: UITextField) {
+        
+        guard let message = textField.text else { return }
+        guard let metadata = self.metadata else { return }
+
+        OCNetworking.sharedManager()?.putComments(withAccount: appDelegate.activeAccount, fileID: metadata.fileID, message: message, completion: { (account, message, errorCode) in
+            if errorCode == 0 {
+                self.newCommentField.text = ""
+                self.reloadData()
+            } else {
+                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+        })
+    }
+    
     func tapMenu(with tableComments: tableComments?, sender: Any) {
         
     }
