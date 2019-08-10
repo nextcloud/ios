@@ -99,7 +99,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         tableView.reloadData()
     }
     
-    // MARK: - IBAction
+    // MARK: - IBAction & Tap
     
     @IBAction func newCommentFieldDidEndOnExit(textField: UITextField) {
         
@@ -127,11 +127,52 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         itemDelete.customAppearance = appearanceDelete
         items.append(itemDelete)
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
+                
         actionSheet = ActionSheet(items: items) { sheet, item in
             
-            if item.value as? Int == 1 {  }
-            if item.value as? Int == 2 {  }
+            if item.value as? Int == 0 {
+                
+                guard let metadata = self.metadata else { return }
+                guard let tableComments = tableComments else { return }
+                
+                let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+                
+                alert.addTextField(configurationHandler: { textField in
+                    textField.placeholder = NSLocalizedString("_new_comment_", comment: "")
+                })
+                
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                    if let message = alert.textFields?.first?.text {
+                        if message != "" {
+                            OCNetworking.sharedManager()?.updateComments(withAccount: metadata.account, fileID: metadata.fileID, messageID: tableComments.messageID, message: message, completion: { (account, message, errorCode) in
+                                if errorCode == 0 {
+                                    self.reloadData()
+                                } else {
+                                    self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                                }
+                            })
+                        }
+                    }
+                }))
+                
+                self.present(alert, animated: true)
+            }
+            
+            if item.value as? Int == 1 {
+                
+                guard let metadata = self.metadata else { return }
+                guard let tableComments = tableComments else { return }
+
+                OCNetworking.sharedManager()?.deleteComments(withAccount: metadata.account, fileID: metadata.fileID, messageID: tableComments.messageID, completion: { (account, message, errorCode) in
+                    if errorCode == 0 {
+                        self.reloadData()
+                    } else {
+                        self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    }
+                })
+                
+            }
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
         

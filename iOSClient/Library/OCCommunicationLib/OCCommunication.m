@@ -3238,9 +3238,9 @@
     }];
 }
 
-- (void)updateComments:(NSString*)serverPath fileID:(NSString *)fileID commentID:(NSString *)commentID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)updateComments:(NSString*)serverPath fileID:(NSString *)fileID messageID:(NSString *)messageID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, commentID];
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, messageID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -3256,9 +3256,9 @@
     }];
 }
 
-- (void)deleteComments:(NSString*)serverPath fileID:(NSString *)fileID commentID:(NSString *)commentID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)deleteComments:(NSString*)serverPath fileID:(NSString *)fileID messageID:(NSString *)messageID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, commentID];
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, messageID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];

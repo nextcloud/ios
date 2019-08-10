@@ -119,8 +119,8 @@
 
 - (void)getCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
 - (void)putCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
-- (void)updateCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID commentID:(NSString *)commentID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
-- (void)deleteCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID commentID:(NSString *)commentID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)updateCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)deleteCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== Third Parts =====
 

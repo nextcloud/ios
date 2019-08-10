@@ -1539,8 +1539,20 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"PROPPATCH";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [request setHTTPBody:[[NSString stringWithFormat: @"{\"actorType\":\"users\",\"verb\":\"comment\",\"message\":\"%@\"}",message] dataUsingEncoding:NSUTF8StringEncoding]];
+
+    NSString *body;
+    body = [NSString stringWithFormat: @""
+            "<?xml version=\"1.0\"?>"
+            "<d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
+            "<d:set>"
+            "<d:prop>"
+            "<oc:message>%@</oc:message>"
+            "</d:prop>"
+            "</d:set>"
+            "</d:propertyupdate>", message];
+    
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];

@@ -2799,7 +2799,7 @@
     }];
 }
 
-- (void)updateCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID commentID:(NSString *)commentID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)updateCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2815,7 +2815,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication updateComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] commentID:commentID message:message onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication updateComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] messageID:messageID message:message onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
         
@@ -2844,7 +2844,7 @@
     }];
 }
 
-- (void)deleteCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID commentID:(NSString *)commentID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)deleteCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2860,7 +2860,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication deleteComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] commentID:commentID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication deleteComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] messageID:messageID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
         
