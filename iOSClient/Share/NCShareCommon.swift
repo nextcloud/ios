@@ -52,7 +52,11 @@ class NCShareCommon: NSObject {
         let viewWindow = UIView(frame: window.bounds)
         let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
         let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
-
+        var constantBottomAnchor: CGFloat = 10
+        if #available(iOS 11.0, *) {
+            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+        }
+        
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
@@ -80,7 +84,7 @@ class NCShareCommon: NSObject {
             shareLinkMenuView.widthAnchor.constraint(equalToConstant: shareLinkMenuView.width),
             shareLinkMenuView.heightAnchor.constraint(equalToConstant: shareLinkMenuView.height),
             shareLinkMenuView.trailingAnchor.constraint(equalTo: viewWindow.trailingAnchor, constant: -constantTrailingAnchor),
-            shareLinkMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -10),
+            shareLinkMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -constantBottomAnchor),
         ])
         
         return(shareLinkMenuView: shareLinkMenuView, viewWindow: viewWindow)
@@ -93,7 +97,11 @@ class NCShareCommon: NSObject {
         let viewWindow = UIView(frame: window.bounds)
         let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
         let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
-       
+        var constantBottomAnchor: CGFloat = 10
+        if #available(iOS 11.0, *) {
+            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+        }
+        
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
@@ -121,7 +129,7 @@ class NCShareCommon: NSObject {
             shareUserMenuView.widthAnchor.constraint(equalToConstant: shareUserMenuView.width),
             shareUserMenuView.heightAnchor.constraint(equalToConstant: shareUserMenuView.height),
             shareUserMenuView.trailingAnchor.constraint(equalTo: viewWindow.trailingAnchor, constant: -constantTrailingAnchor),
-            shareUserMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -10),
+            shareUserMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -constantBottomAnchor),
         ])
         
         return(shareUserMenuView: shareUserMenuView, viewWindow: viewWindow)
