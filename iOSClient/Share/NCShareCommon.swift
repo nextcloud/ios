@@ -128,7 +128,7 @@ class NCShareCommon: NSObject {
         NSLayoutConstraint.activate([
             shareUserMenuView.widthAnchor.constraint(equalToConstant: shareUserMenuView.width),
             shareUserMenuView.heightAnchor.constraint(equalToConstant: shareUserMenuView.height),
-            shareLinkMenuView.centerXAnchor.constraint(equalTo: viewWindow.centerXAnchor),
+            shareUserMenuView.centerXAnchor.constraint(equalTo: viewWindow.centerXAnchor),
             shareUserMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -constantBottomAnchor),
         ])
         
