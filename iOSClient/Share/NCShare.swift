@@ -230,7 +230,29 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             cell.imageItem.image = UIImage(named: "avatar")
             let item = items[index]
-            NCShareCommon.sharedInstance.downloadAvatar(user: item.name, cell: cell)
+
+            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-" + item.name + ".png"
+            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.imageItem.image = image
+                }
+            } else {
+                DispatchQueue.global().async {
+                    let url = self.appDelegate.activeUrl + k_avatar + item.name + "/128"
+                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                        if errorCode == 0 && UIImage(data: data!) != nil {
+                            do {
+                                try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                            } catch { return }
+                            cell.imageItem.image = UIImage(data: data!)
+                        } else {
+                            cell.imageItem.image = UIImage(named: "avatar")
+                        }
+                    })
+                }
+            }
+
             if item.shareeType == 0 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}     // shareTypeUser
             if item.shareeType == 1 { cell.imageShareeType.image = UIImage(named: "shareTypeGroup")}    // shareTypeGroup
             if item.shareeType == 3 { cell.imageShareeType.image = UIImage(named: "shareTypeLink")}     // shareTypeLink
@@ -301,7 +323,28 @@ extension NCShare: UITableViewDataSource {
                 cell.labelCanEdit.isHidden = false
                 cell.buttonMenu.isHidden = false
                 
-                NCShareCommon.sharedInstance.downloadAvatar(user: tableShare.shareWith, cell: cell)
+                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.shareWith + ".png"
+                if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                        cell.imageItem.image = image
+                    }
+                } else {
+                    DispatchQueue.global().async {
+                        let url = self.appDelegate.activeUrl + k_avatar + tableShare.shareWith + "/128"
+                        let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                        OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                            if errorCode == 0 && UIImage(data: data!) != nil {
+                                do {
+                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                } catch { return }
+                                cell.imageItem.image = UIImage(data: data!)
+                            } else {
+                                cell.imageItem.image = UIImage(named: "avatar")
+                            }
+                        })
+                    }
+                }
+                
                 if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
                     cell.switchCanEdit.setOn(true, animated: false)
                 } else {
