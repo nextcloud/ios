@@ -77,11 +77,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        shareLinkMenuView?.unLoad()
-        shareLinkMenuView = nil
-        shareUserMenuView?.unLoad()
-        shareUserMenuView = nil
-        dropDown.hide()
+//        shareLinkMenuView?.unLoad()
+//        shareLinkMenuView = nil
+//        shareUserMenuView?.unLoad()
+//        shareUserMenuView = nil
+//        dropDown.hide()
     }
     
     @objc func reloadData() {

@@ -48,13 +48,14 @@ class NCShareCommon: NSObject {
     func openViewMenuShareLink(shareViewController: NCShare, tableShare: tableShare?, metadata: tableMetadata) -> (shareLinkMenuView: NCShareLinkMenuView, viewWindow: UIView) {
         
         var shareLinkMenuView: NCShareLinkMenuView
-
-        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
-        
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
+        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
+        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
+
         window.addSubview(viewWindow)
-        
+        viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
         if metadata.directory {
             shareLinkMenuView = Bundle.main.loadNibNamed("NCShareLinkFolderMenuView", owner: self, options: nil)?.first as! NCShareLinkMenuView
         } else {
@@ -72,12 +73,15 @@ class NCShareCommon: NSObject {
         shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.shareViewController = shareViewController
         shareLinkMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
-        
-        let shareLinkMenuViewX = shareViewController.view.bounds.width/2 - shareLinkMenuView.width/2 + globalPoint!.x
-        let shareLinkMenuViewY = globalPoint!.y
-        
-        shareLinkMenuView.frame = CGRect(x: shareLinkMenuViewX, y: shareLinkMenuViewY, width: shareLinkMenuView.width, height: shareLinkMenuView.height)
+        shareLinkMenuView.translatesAutoresizingMaskIntoConstraints = false
         viewWindow.addSubview(shareLinkMenuView)
+        
+        NSLayoutConstraint.activate([
+            shareLinkMenuView.widthAnchor.constraint(equalToConstant: shareLinkMenuView.width),
+            shareLinkMenuView.heightAnchor.constraint(equalToConstant: shareLinkMenuView.height),
+            shareLinkMenuView.trailingAnchor.constraint(equalTo: viewWindow.trailingAnchor, constant: -constantTrailingAnchor),
+            shareLinkMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -10),
+        ])
         
         return(shareLinkMenuView: shareLinkMenuView, viewWindow: viewWindow)
     }
@@ -85,13 +89,14 @@ class NCShareCommon: NSObject {
     func openViewMenuUser(shareViewController: NCShare, tableShare: tableShare?, metadata: tableMetadata) -> (shareUserMenuView: NCShareUserMenuView, viewWindow: UIView) {
         
         var shareUserMenuView: NCShareUserMenuView
-        
-        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
-        
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
+        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
+        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
+       
         window.addSubview(viewWindow)
-        
+        viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
         if metadata.directory {
             shareUserMenuView = Bundle.main.loadNibNamed("NCShareUserFolderMenuView", owner: self, options: nil)?.first as! NCShareUserMenuView
         } else {
@@ -109,12 +114,15 @@ class NCShareCommon: NSObject {
         shareUserMenuView.viewWindow = viewWindow
         shareUserMenuView.shareViewController = shareViewController
         shareUserMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
-        
-        let shareUserMenuViewX = shareViewController.view.bounds.width/2 - shareUserMenuView.width/2 + globalPoint!.x
-        let shareUserMenuViewY = globalPoint!.y + 100
-        
-        shareUserMenuView.frame = CGRect(x: shareUserMenuViewX, y: shareUserMenuViewY, width: shareUserMenuView.width, height: shareUserMenuView.height)
+        shareUserMenuView.translatesAutoresizingMaskIntoConstraints = false
         viewWindow.addSubview(shareUserMenuView)
+
+        NSLayoutConstraint.activate([
+            shareUserMenuView.widthAnchor.constraint(equalToConstant: shareUserMenuView.width),
+            shareUserMenuView.heightAnchor.constraint(equalToConstant: shareUserMenuView.height),
+            shareUserMenuView.trailingAnchor.constraint(equalTo: viewWindow.trailingAnchor, constant: -constantTrailingAnchor),
+            shareUserMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -10),
+        ])
         
         return(shareUserMenuView: shareUserMenuView, viewWindow: viewWindow)
     }
