@@ -50,8 +50,8 @@ class NCShareCommon: NSObject {
         var shareLinkMenuView: NCShareLinkMenuView
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
-        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
-        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
+//        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
+//        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
         var constantBottomAnchor: CGFloat = 10
         if #available(iOS 11.0, *) {
             constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
@@ -83,7 +83,7 @@ class NCShareCommon: NSObject {
         NSLayoutConstraint.activate([
             shareLinkMenuView.widthAnchor.constraint(equalToConstant: shareLinkMenuView.width),
             shareLinkMenuView.heightAnchor.constraint(equalToConstant: shareLinkMenuView.height),
-            shareLinkMenuView.trailingAnchor.constraint(equalTo: viewWindow.trailingAnchor, constant: -constantTrailingAnchor),
+            shareLinkMenuView.centerXAnchor.constraint(equalTo: viewWindow.centerXAnchor),
             shareLinkMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -constantBottomAnchor),
         ])
         
@@ -95,8 +95,8 @@ class NCShareCommon: NSObject {
         var shareUserMenuView: NCShareUserMenuView
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
-        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
-        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
+        //let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
+        //let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
         var constantBottomAnchor: CGFloat = 10
         if #available(iOS 11.0, *) {
             constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
@@ -128,7 +128,7 @@ class NCShareCommon: NSObject {
         NSLayoutConstraint.activate([
             shareUserMenuView.widthAnchor.constraint(equalToConstant: shareUserMenuView.width),
             shareUserMenuView.heightAnchor.constraint(equalToConstant: shareUserMenuView.height),
-            shareUserMenuView.trailingAnchor.constraint(equalTo: viewWindow.trailingAnchor, constant: -constantTrailingAnchor),
+            shareLinkMenuView.centerXAnchor.constraint(equalTo: viewWindow.centerXAnchor),
             shareUserMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -constantBottomAnchor),
         ])
         
