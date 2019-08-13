@@ -251,8 +251,6 @@ extension NCShareComments: UITableViewDataSource {
     }
 }
 
-
-
 // MARK: - NCShareCommentsCell
 
 class NCShareCommentsCell: UITableViewCell {

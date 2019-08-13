@@ -61,7 +61,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
 
     var viewWindow: UIView?
     var viewWindowCalendar: UIView?
-    
+    private var calendar: FSCalendar?
+
     override func awakeFromNib() {
         
         layer.borderColor = UIColor.lightGray.cgColor
@@ -157,6 +158,21 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         // Note to recipient
         fieldNoteToRecipient.text = tableShare.note
+    }
+    
+    // MARK: - Tap viewWindowCalendar
+    @objc func tapViewWindowCalendar(gesture: UITapGestureRecognizer) {
+        calendar?.removeFromSuperview()
+        viewWindowCalendar?.removeFromSuperview()
+        
+        calendar = nil
+        viewWindowCalendar = nil
+        
+        reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return gestureRecognizer.view == touch.view
     }
     
     // MARK: - IBAction
@@ -257,7 +273,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         let calendar = NCShareCommon.sharedInstance.openCalendar(view: self, width: width, height: height)
         calendar.calendarView.delegate = self
+        self.calendar = calendar.calendarView
         viewWindowCalendar = calendar.viewWindow
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapViewWindowCalendar))
+        tap.delegate = self
+        viewWindowCalendar?.addGestureRecognizer(tap)
     }
     
     // Note to recipient
