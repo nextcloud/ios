@@ -37,6 +37,9 @@
                         <constraint firstAttribute="width" constant="15" id="cU5-4t-7Qf"/>
                     </constraints>
                     <state key="normal" image="favorite"/>
+                    <connections>
+                        <action selector="touchUpInsideFavorite:" destination="iN0-l3-epB" eventType="touchUpInside" id="r4F-nS-R08"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

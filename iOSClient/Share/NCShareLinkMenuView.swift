@@ -369,7 +369,6 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             viewWindowCalendar?.removeFromSuperview()
             
             guard let tableShare = self.tableShare else { return }
-            guard let metadata = self.metadata else { return }
 
             dateFormatter.dateFormat = "YYYY-MM-dd"
             let expirationTime = dateFormatter.string(from: date)

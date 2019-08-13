@@ -157,6 +157,7 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
+        headerView.fileID = metadata!.fileID
         
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView)) {
             headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
@@ -212,4 +213,22 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var favorite: UIButton!
+    
+    var fileID = ""
+
+    @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+            OCNetworking.sharedManager()?.settingFavorite(withAccount: metadata.account, fileName: metadata.fileName, favorite: !metadata.favorite, completion: { (account, message, errorCode) in
+                if errorCode == 0 {
+                    NCManageDatabase.sharedInstance.setMetadataFavorite(fileID: metadata.fileID, favorite: !metadata.favorite)
+                    if !metadata.favorite {
+                        self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)
+                    } else {
+                        self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.textInfo), for: .normal)
+                    }
+                }
+            })
+        }
+    }
 }

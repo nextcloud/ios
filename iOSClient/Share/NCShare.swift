@@ -75,15 +75,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
         networking?.readShare()
     }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        shareLinkMenuView?.unLoad()
-//        shareLinkMenuView = nil
-//        shareUserMenuView?.unLoad()
-//        shareUserMenuView = nil
-//        dropDown.hide()
-    }
-    
+        
     @objc func reloadData() {
         let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
         if shares.firstShareLink == nil {

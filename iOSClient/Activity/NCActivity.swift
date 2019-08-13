@@ -79,6 +79,10 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     // MARK: DZNEmpty
     
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
+        return insets.top/2
+    }
+    
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
     }

@@ -105,6 +105,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         guard let message = textField.text else { return }
         guard let metadata = self.metadata else { return }
+        if message.count == 0 { return }
 
         OCNetworking.sharedManager()?.putComments(withAccount: appDelegate.activeAccount, fileID: metadata.fileID, message: message, completion: { (account, message, errorCode) in
             if errorCode == 0 {
