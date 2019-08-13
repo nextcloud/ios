@@ -2375,7 +2375,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(byKeyPath: "fileName", ascending: true)
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(by: sortProperties)
         
         return Array(results.map { tableShare.init(value:$0) })
     }
@@ -2385,12 +2386,14 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        
         let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == %d", metadata.account, metadata.serverUrl, metadata.fileName, Int(shareTypeLink.rawValue)).first
         if firstShareLink == nil {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(byKeyPath: "shareType", ascending: false)
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(by: sortProperties)
             return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
         } else {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idRemoteShared != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink!.idRemoteShared).sorted(byKeyPath: "shareType", ascending: false)
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idRemoteShared != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink!.idRemoteShared).sorted(by: sortProperties)
             return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
         }
     }
@@ -2412,7 +2415,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
 
         return Array(results.map { tableShare.init(value:$0) })
     }
@@ -2422,7 +2426,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).sorted(by: sortProperties)
         
         return Array(results.map { tableShare.init(value:$0) })
     }
