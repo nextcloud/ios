@@ -52,10 +52,10 @@ class NCShareCommon: NSObject {
         let viewWindow = UIView(frame: window.bounds)
 //        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
 //        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
-        var constantBottomAnchor: CGFloat = 10
-        if #available(iOS 11.0, *) {
-            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-        }
+//        var constantBottomAnchor: CGFloat = 10
+//        if #available(iOS 11.0, *) {
+//            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+//        }
         
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -84,7 +84,7 @@ class NCShareCommon: NSObject {
             shareLinkMenuView.widthAnchor.constraint(equalToConstant: shareLinkMenuView.width),
             shareLinkMenuView.heightAnchor.constraint(equalToConstant: shareLinkMenuView.height),
             shareLinkMenuView.centerXAnchor.constraint(equalTo: viewWindow.centerXAnchor),
-            shareLinkMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -constantBottomAnchor),
+            shareLinkMenuView.centerYAnchor.constraint(equalTo: viewWindow.centerYAnchor),
         ])
         
         return(shareLinkMenuView: shareLinkMenuView, viewWindow: viewWindow)
@@ -97,10 +97,10 @@ class NCShareCommon: NSObject {
         let viewWindow = UIView(frame: window.bounds)
 //        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
 //        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
-        var constantBottomAnchor: CGFloat = 10
-        if #available(iOS 11.0, *) {
-            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-        }
+//        var constantBottomAnchor: CGFloat = 10
+//        if #available(iOS 11.0, *) {
+//            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+//        }
         
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -129,7 +129,7 @@ class NCShareCommon: NSObject {
             shareUserMenuView.widthAnchor.constraint(equalToConstant: shareUserMenuView.width),
             shareUserMenuView.heightAnchor.constraint(equalToConstant: shareUserMenuView.height),
             shareUserMenuView.centerXAnchor.constraint(equalTo: viewWindow.centerXAnchor),
-            shareUserMenuView.bottomAnchor.constraint(equalTo: viewWindow.bottomAnchor, constant: -constantBottomAnchor),
+            shareUserMenuView.centerYAnchor.constraint(equalTo: viewWindow.centerYAnchor),
         ])
         
         return(shareUserMenuView: shareUserMenuView, viewWindow: viewWindow)
@@ -143,7 +143,7 @@ class NCShareCommon: NSObject {
         let viewWindow = UIView(frame: window.bounds)
         window.addSubview(viewWindow)
         
-        let calendar = FSCalendar(frame: CGRect(x: globalPoint!.x + 10, y: globalPoint!.y + 100, width: width - 20, height: 300))
+        let calendar = FSCalendar(frame: CGRect(x: globalPoint!.x + 10, y: globalPoint!.y + 10, width: width - 20, height: 300))
         
         calendar.backgroundColor = .white
         calendar.placeholderType = .none

@@ -1879,7 +1879,7 @@
     NCSharePaging *shareViewController = (NCSharePaging *)shareNavigationController.topViewController;
     shareViewController.metadata = metadata;
     
-    [shareNavigationController setModalPresentationStyle:UIModalPresentationPageSheet];
+    [shareNavigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:shareNavigationController animated:YES completion:nil];
 }
 
