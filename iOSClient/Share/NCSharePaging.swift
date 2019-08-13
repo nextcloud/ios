@@ -214,6 +214,7 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var favorite: UIButton!
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var fileID = ""
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
@@ -227,6 +228,8 @@ class NCShareHeaderView: UIView {
                     } else {
                         self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.textInfo), for: .normal)
                     }
+                    self.appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, fileID: nil, action: Int(k_action_NULL))
+                    self.appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
                 }
             })
         }
