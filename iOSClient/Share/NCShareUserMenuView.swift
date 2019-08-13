@@ -82,6 +82,14 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brand
         
+        labelCanReshare?.text = NSLocalizedString("_share_can_reshare_", comment: "")
+        labelCanCreate?.text = NSLocalizedString("_share_can_create_", comment: "")
+        labelCanChange?.text = NSLocalizedString("_share_can_change_", comment: "")
+        labelCanDelete?.text = NSLocalizedString("_share_can_delete_", comment: "")
+        labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
+        labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
+        labelUnshare?.text = NSLocalizedString("_share_unshare_", comment: "")
+        
         fieldSetExpirationDate.inputView = UIView()
         
         imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))

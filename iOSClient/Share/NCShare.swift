@@ -216,6 +216,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown.anchorView = searchField
         dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
         dropDown.width = searchField.bounds.width
+        dropDown.direction = .bottom
         
         dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in

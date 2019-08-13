@@ -468,6 +468,21 @@
 "_new_comment_"                 = "New comment ...";
 "_edit_comment_"                = "Edit comment";
 "_delete_comment_"              = "Delete comment";
+"_share_allow_editing_"         = "Allow editing";
+"_share_read_only_"             = "Read only";
+"_share_allow_upload_"          = "Allow upload and editing";
+"_share_file_drop_"             = "File drop (upload only)";
+"_share_hide_download_"         = "Hide download";
+"_share_password_protect_"      = "Password protect";
+"_share_expiration_date_"       = "Set expiration date";
+"_share_note_recipient_"        = "Note to recipient";
+"_share_delete_sharelink_"      = "Delete share link";
+"_share_add_sharelink_"         = "Add another link";
+"_share_can_reshare_"           = "Can reshare";
+"_share_can_create_"            = "Can create";
+"_share_can_change_"            = "Can change";
+"_share_can_delete_"            = "Can delete";
+"_share_unshare_"               = "Unshare";
 
 // Share Permission
 
