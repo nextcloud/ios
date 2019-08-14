@@ -109,6 +109,10 @@ class NCText: UIViewController, UITextViewDelegate {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        appDelegate.activeDetail?.viewFile()
+    }
+    
     @objc func keyboardWillHideHandle() {
         bottomConstraint.constant = 0
     }

@@ -40,6 +40,8 @@
 @property (nonatomic, strong) tableMetadata *metadataDetail;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
+- (void)viewFile;
+
 // Toolbar
 @property (nonatomic, strong) UIToolbar *toolbar;
 
