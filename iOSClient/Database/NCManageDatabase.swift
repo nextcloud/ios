@@ -235,11 +235,7 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableAccount.self).filter("account == %@", account).first else {
-            realm.cancelWrite()
-            return
-        }
-        
+        let result = realm.objects(tableAccount.self).filter("account == %@", account)
         realm.delete(result)
         
         do {
@@ -1318,7 +1314,6 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 
                 let results = realm.objects(tableE2eEncryption.self).filter(predicate)
-                
                 realm.delete(results)
             }
         } catch let error {
@@ -1499,7 +1494,6 @@ class NCManageDatabase: NSObject {
             try realm.write {
             
                 let results = realm.objects(tableExternalSites.self).filter("account == %@", account)
-
                 realm.delete(results)
             }
         } catch let error {
@@ -1602,7 +1596,6 @@ class NCManageDatabase: NSObject {
             try realm.write {
 
                 let results = realm.objects(tableLocalFile.self).filter(predicate)
-
                 realm.delete(results)
             }
         } catch let error {
@@ -2066,7 +2059,6 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", account, k_metadataStatusWaitUpload, k_metadataStatusUploadError)
-                
                 realm.delete(results)
             }
         } catch let error {
@@ -2438,11 +2430,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableShare.self).filter("account == %@ AND idRemoteShared == %d", account, idRemoteShared).first else {
-            realm.cancelWrite()
-            return
-        }
-        
+        let result = realm.objects(tableShare.self).filter("account == %@ AND idRemoteShared == %d", account, idRemoteShared)
         realm.delete(result)
         
         do {
@@ -2458,11 +2446,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableShare.self).filter("account == %@", account).first else {
-            realm.cancelWrite()
-            return
-        }
-        
+        let result = realm.objects(tableShare.self).filter("account == %@", account)
         realm.delete(result)
         
         do {
@@ -2502,11 +2486,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableTag.self).filter("fileID == %@", fileID).first else {
-            realm.cancelWrite()
-            return
-        }
-        
+        let result = realm.objects(tableTag.self).filter("fileID == %@", fileID)
         realm.delete(result)
         
         do {
