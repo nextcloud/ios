@@ -70,6 +70,18 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
+    // Disable Local Cache After Upload
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_disableLocalCacheAfterUpload_footer_", nil);
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"disableLocalCacheAfterUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_disableLocalCacheAfterUpload_", nil)];
+    if ([CCUtility getDisableLocalCacheAfterUpload]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
     // Section : Files App --------------------------------------------------------------
     
     if (![NCBrandOptions sharedInstance].disable_openin_file) {
@@ -173,6 +185,11 @@
     if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {
         
         [CCUtility setFormatCompatibility:[[rowDescriptor.value valueData] boolValue]];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {
+        
+        [CCUtility setDisableLocalCacheAfterUpload:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {

@@ -1150,9 +1150,6 @@
                 [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID]];
             }
         }
-                 
-        // Add Local
-        [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         
 #ifndef EXTENSION
         
@@ -1178,7 +1175,15 @@
                 }];
             }
         }
-#endif
+ #endif
+        
+        // Add Local or Remove from cache
+        if ([CCUtility getDisableLocalCacheAfterUpload]) {
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+        } else {
+            // Add Local
+            [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+        }
     }
     
     // Detect E2EE

@@ -165,6 +165,9 @@
 + (BOOL)getCertificateError:(NSString *)account;
 + (void)setCertificateError:(NSString *)account error:(BOOL)error;
 
++ (BOOL)getDisableLocalCacheAfterUpload;
++ (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

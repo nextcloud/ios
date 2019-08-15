@@ -650,6 +650,18 @@
     
     [UICKeyChainStore setString:sError forKey:key service:k_serviceShareKeyChain];
 }
+
++ (BOOL)getDisableLocalCacheAfterUpload
+{
+    return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setDisableLocalCacheAfterUpload:(BOOL)disable
+{
+    NSString *sDisable = (disable) ? @"true" : @"false";
+    [UICKeyChainStore setString:sDisable forKey:@"disableLocalCacheAfterUpload" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

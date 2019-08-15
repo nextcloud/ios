@@ -211,6 +211,8 @@
 "_disable_files_app_footer_"    = "Do not permit the access of files across the Apple Files application";
 "_trial_"                       = "Trial";
 "_trial_expired_day_"           = "Days remaining";
+"_disableLocalCacheAfterUpload_footer_" = "After uploading the file, do not keep it in the local cache";
+"_disableLocalCacheAfterUpload_"        = "Disable local cache";
 
 // Manage AutoUpload
 
