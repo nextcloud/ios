@@ -359,13 +359,13 @@ extension NCShare: UITableViewDataSource {
                     sharedWithYouByView.isHidden = false
                     sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + tableShare.displayNameFileOwner
                     
-                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.displayNameFileOwner + ".png"
+                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.uidFileOwner + ".png"
                     if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                             sharedWithYouByImage.image = image
                         }
                     } else {
-                        let url = appDelegate.activeUrl + k_avatar + tableShare.displayNameFileOwner + "/128"
+                        let url = appDelegate.activeUrl + k_avatar + tableShare.uidFileOwner + "/128"
                         let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                             if errorCode == 0 && UIImage(data: data!) != nil {
