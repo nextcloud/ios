@@ -78,7 +78,7 @@
 
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID action:(NSInteger)action;
 
-- (void)openShareWithMetadata:(tableMetadata *)metadata;
+- (void)openShareWithMetadata:(tableMetadata *)metadata indexPage:(NSInteger)indexPage;
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;

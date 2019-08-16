@@ -1873,11 +1873,12 @@
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)openShareWithMetadata:(tableMetadata *)metadata
+- (void)openShareWithMetadata:(tableMetadata *)metadata indexPage:(NSInteger)indexPage
 {
     UINavigationController *shareNavigationController = [[UIStoryboard storyboardWithName:@"NCShare" bundle:nil] instantiateInitialViewController];
     NCSharePaging *shareViewController = (NCSharePaging *)shareNavigationController.topViewController;
     shareViewController.metadata = metadata;
+    shareViewController.indexPage = indexPage;
     
     [shareNavigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:shareNavigationController animated:YES completion:nil];
@@ -1891,7 +1892,7 @@
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata) {
-        [self openShareWithMetadata:metadata];
+        [self openShareWithMetadata:metadata indexPage:2];
     }
 }
 
@@ -3023,7 +3024,7 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        [self openShareWithMetadata:self.metadata];
+                                        [self openShareWithMetadata:self.metadata indexPage:2];
                                     }];
         }
         
@@ -3212,7 +3213,7 @@
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
-                                            [self openShareWithMetadata:self.metadata];
+                                            [self openShareWithMetadata:self.metadata indexPage:2];
                                         }];
         }
         

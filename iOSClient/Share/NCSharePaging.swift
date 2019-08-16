@@ -30,6 +30,7 @@ class NCSharePaging: UIViewController {
     private let pagingViewController = NCShareHeaderViewController()
     
     @objc var metadata: tableMetadata?
+    @objc var indexPage: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
