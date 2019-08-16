@@ -1860,8 +1860,8 @@
     serverPath = [serverPath stringByAppendingString:@"/devices"];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
+    [request.defaultHeaders setObject:self.userAgent forKey:@"User-Agent"];
+
     [request subscribingPushProxy:serverPath pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         if (successRequest) {
@@ -1881,8 +1881,8 @@
     serverPath = [serverPath stringByAppendingString:@"/devices"];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
+    [request.defaultHeaders setObject:self.userAgent forKey:@"User-Agent"];
+
     [request unsubscribingPushProxy:serverPath deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         if (successRequest) {
