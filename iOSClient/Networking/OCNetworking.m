@@ -2023,8 +2023,8 @@
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
     
 #ifdef DEBUG
-    proxyServerPath = @"http://127.0.0.1:8088";
-    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+//    proxyServerPath = @"http://127.0.0.1:8088";
+//    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
 #endif
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
@@ -2104,7 +2104,7 @@
     NSString *proxyServer = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
     
 #ifdef DEBUG
-    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
+//    proxyServer = @"https://10.132.0.37:8443/pushnotifications";
 #endif
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
