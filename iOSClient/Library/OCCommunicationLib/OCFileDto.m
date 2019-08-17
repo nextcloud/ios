@@ -43,6 +43,14 @@
         self.id = 0;
         self.trashbinFileName = @"";
         self.trashbinOriginalLocation = @"";
+        self.displayName = @"";
+        self.contentType = @"";
+        self.resourceType = @"";
+        self.mountType = @"";
+        self.ownerId = @"";
+        self.ownerDisplayName = @"";
+        self.note = @"";
+        self.sharees = @"";
     }
     
     return self;

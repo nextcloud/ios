@@ -54,6 +54,32 @@ NSString const *OCWebDAVCTagKey				= @"getctag";
 NSString const *OCWebDAVCreationDateKey		= @"creationdate";
 NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
+NSString *const NCResource = @"<d:displayname/>"
+                              "<d:getcontenttype/>"
+                              "<d:resourcetype/>"
+                              "<d:getcontentlength/>"
+                              "<d:getlastmodified/>"
+                              "<d:creationdate/>"
+                              "<d:getetag/>"
+                              "<d:quota-used-bytes/>"
+                              "<d:quota-available-bytes/>"
+                              "<permissions xmlns=\"http://owncloud.org/ns\"/>"
+                              "<id xmlns=\"http://owncloud.org/ns\"/>"
+                              "<fileid xmlns=\"http://owncloud.org/ns\"/>"
+                              "<size xmlns=\"http://owncloud.org/ns\"/>"
+                              "<favorite xmlns=\"http://owncloud.org/ns\"/>"
+                              "<is-encrypted xmlns=\"http://nextcloud.org/ns\"/>"
+                              "<mount-type xmlns=\"http://nextcloud.org/ns\"/>"
+                              "<owner-id xmlns=\"http://owncloud.org/ns\"/>"
+                              "<owner-display-name xmlns=\"http://owncloud.org/ns\"/>"
+                              "<comments-unread xmlns=\"http://owncloud.org/ns\"/>"
+                              "<has-preview xmlns=\"http://nextcloud.org/ns\"/>"
+                              "<trashbin-filename xmlns=\"http://nextcloud.org/ns\"/>"
+                              "<trashbin-original-location xmlns=\"http://nextcloud.org/ns\"/>"
+                              "<trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>"
+                              "<note xmlns=\"http://nextcloud.org/ns\"/>"
+                              "<sharees xmlns=\"http://nextcloud.org/ns\"/>";
+
 @interface OCWebDAVClient()
 
 - (void)mr_listPath:(NSString *)path depth:(NSString *)depth onCommunication:
@@ -215,22 +241,10 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 	NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_webdav];
     
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
-                          "<D:prop>"
-                              "<D:resourcetype/>"
-                              "<D:getlastmodified/>"
-                              "<size xmlns=\"http://owncloud.org/ns\"/>"
-                              "<favorite xmlns=\"http://owncloud.org/ns\"/>"
-                              "<id xmlns=\"http://owncloud.org/ns\"/>"
-                              "<D:getcontentlength/>"
-                              "<D:getetag/>"
-                              "<oc:fileid/>"
-                              "<permissions xmlns=\"http://owncloud.org/ns\"/>"
-                              "<D:getcontenttype/>"
-                              "<nc:is-encrypted/>"
-                              "<nc:has-preview/>"
-                          "</D:prop>"
-                          "</D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *body = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><d:prop>";
+    body = [body stringByAppendingString:NCResource];
+    body = [body stringByAppendingString:@"</d:prop></d:propfind>"];
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
@@ -248,22 +262,10 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_webdav];
     
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
-                          "<D:prop>"
-                              "<D:resourcetype/>"
-                              "<D:getlastmodified/>"
-                              "<size xmlns=\"http://owncloud.org/ns\"/>"
-                              "<favorite xmlns=\"http://owncloud.org/ns\"/>"
-                              "<id xmlns=\"http://owncloud.org/ns\"/>"
-                              "<D:getcontentlength/>"
-                              "<D:getetag/>"
-                              "<oc:fileid/>"
-                              "<permissions xmlns=\"http://owncloud.org/ns\"/>"
-                              "<D:getcontenttype/>"
-                              "<nc:is-encrypted/>"
-                              "<nc:has-preview/>"
-                          "</D:prop>"
-                          "</D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *body = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><d:prop>";
+    body = [body stringByAppendingString:NCResource];
+    body = [body stringByAppendingString:@"</d:prop></d:propfind>"];
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];
@@ -312,18 +314,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
             "<d:basicsearch>"
                 "<d:select>"
                     "<d:prop>"
-                        "<d:getlastmodified />"
-                        "<d:getetag />"
-                        "<d:getcontenttype />"
-                        "<d:resourcetype/>"
-                        "<d:getcontentlength />"
-                        "<oc:fileid/>"
-                        "<oc:id/>"
-                        "<oc:permissions />"
-                        "<oc:size />"
-                        "<oc:favorite/>"
-                        "<nc:is-encrypted/>"
-                        "<nc:has-preview/>"
+                        "%@"
                     "</d:prop>"
                 "</d:select>"
                 "<d:from>"
@@ -342,7 +333,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                         "<d:descending/>"
                     "</d:order>"
                 "</d:orderby>"
-                "<d:where><d:and><d:or>", userID, folder];
+                "<d:where><d:and><d:or>", NCResource, userID, folder];
         
         for (NSString *type in contentType) {
             whereType = [NSString stringWithFormat: @"%@<d:like><d:prop><d:getcontenttype/></d:prop><d:literal>%@</d:literal></d:like>", whereType, type];
@@ -370,18 +361,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
             "<d:basicsearch>"
                 "<d:select>"
                     "<d:prop>"
-                        "<d:getlastmodified/>"
-                        "<d:getetag/>"
-                        "<d:getcontenttype/>"
-                        "<d:resourcetype/>"
-                        "<d:getcontentlength/>"
-                        "<oc:fileid/>"
-                        "<oc:id/>"
-                        "<oc:permissions/>"
-                        "<oc:size/>"
-                        "<oc:favorite/>"
-                        "<nc:is-encrypted/>"
-                        "<nc:has-preview/>"
+                        "%@"
                     "</d:prop>"
                 "</d:select>"
                 "<d:from>"
@@ -397,7 +377,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                     "</d:like>"
                 "</d:where>"
             "</d:basicsearch>"
-        "</d:searchrequest>", userID, folder, fileName];
+        "</d:searchrequest>", NCResource, userID, folder, fileName];
     }
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
@@ -424,18 +404,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                     "<d:basicsearch>"
                         "<d:select>"
                             "<d:prop>"
-                                "<d:getlastmodified/>"
-                                "<d:getetag/>"
-                                "<d:getcontenttype/>"
-                                "<d:resourcetype/>"
-                                "<d:getcontentlength/>"
-                                "<oc:fileid/>"
-                                "<oc:id/>"
-                                "<oc:permissions/>"
-                                "<oc:size/>"
-                                "<oc:favorite/>"
-                                "<nc:is-encrypted/>"
-                                "<nc:has-preview/>"
+                                "%@"
                             "</d:prop>"
                         "</d:select>"
             
@@ -478,8 +447,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                         "</d:limit>"
                  */
                     "</d:basicsearch>"
-                "</d:searchrequest>"
-            ,userID, folder, fileName]; //, [@(numberOfItem) stringValue]];
+                "</d:searchrequest>", NCResource, userID, folder, fileName]; //, [@(numberOfItem) stringValue]];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
@@ -517,9 +485,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 }
 
 - (void)listingFavorites:(NSString *)path folder:(NSString *)folder user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
-    
-    NSString *body;
-    
+
     NSParameterAssert(success);
     
     _requestMethod = @"REPORT";
@@ -527,27 +493,10 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     userID = [userID stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:[NSString stringWithFormat:@"%@/files/%@%@", path, userID, folder] parameters:nil timeout:k_timeout_webdav];
     
-    body = [NSString stringWithFormat: @""
-            "<?xml version=\"1.0\"?>"
-            "<oc:filter-files xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
-                "<d:prop>"
-                    "<d:resourcetype/>"
-                    "<oc:fileid/>"
-                    "<d:getetag/>"
-                    "<d:getcontentlength/>"
-                    "<oc:size/>"
-                    "<d:getlastmodified/>"
-                    "<oc:id/>"
-                    "<oc:permissions/>"
-                    "<oc:favorite/>"
-                    "<nc:is-encrypted/>"
-                    "<nc:has-preview/>"
-                "</d:prop>"
-                "<oc:filter-rules>"
-                    "<oc:favorite>1</oc:favorite>"
-                "</oc:filter-rules>"
-            "</oc:filter-files>"];
-    
+    NSString *body = @"<?xml version=\"1.0\"?><oc:filter-files xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><d:prop>";
+    body = [body stringByAppendingString:NCResource];
+    body = [body stringByAppendingString:@"</d:prop><oc:filter-rules><oc:favorite>1</oc:favorite></oc:filter-rules></oc:filter-files>"];
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
     
@@ -870,25 +819,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
-    [operation resume];
-}
-
-- (void)getSharePermissionsFile:(NSString*)fileName onCommunication:(OCCommunication *)sharedOCCommunication
-            success:(void(^)(NSHTTPURLResponse *, id))success
-            failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
-    
-    NSParameterAssert(success);
-    
-    _requestMethod = @"PROPFIND";
-    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:fileName parameters:nil timeout:k_timeout_webdav];
-    
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><a:propfind xmlns:a=\"DAV:\" xmlns:b=\"http://open-collaboration-services.org/ns\"><a:prop><b:share-permissions/></a:prop></a:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
-    
-    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
-    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
-    
     [operation resume];
 }
 

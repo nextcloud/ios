@@ -39,10 +39,6 @@
 		F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
 		F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
 		F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
-		F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022891EC4C9100080073F /* OCXMLListParser.m */; };
-		F70022E11EC4C9100080073F /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022891EC4C9100080073F /* OCXMLListParser.m */; };
-		F70022E31EC4C9100080073F /* OCXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228B1EC4C9100080073F /* OCXMLParser.m */; };
-		F70022E41EC4C9100080073F /* OCXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228B1EC4C9100080073F /* OCXMLParser.m */; };
 		F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
 		F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
 		F70022E91EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
@@ -194,8 +190,6 @@
 		F7434B4C20E2408300417916 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022821EC4C9100080073F /* NSDate+RFC1123.m */; };
 		F7434B4D20E2408600417916 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
 		F7434B4E20E2408A00417916 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
-		F7434B4F20E2408E00417916 /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022891EC4C9100080073F /* OCXMLListParser.m */; };
-		F7434B5020E2409100417916 /* OCXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228B1EC4C9100080073F /* OCXMLParser.m */; };
 		F7434B5120E2409500417916 /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
 		F7434B5220E2409900417916 /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
 		F7434B5320E2409E00417916 /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
@@ -488,6 +482,9 @@
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
+		F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
+		F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
+		F7D2D129230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D423331F0596AC009C9782 /* AppIcon-076.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D423161F0596AC009C9782 /* AppIcon-076.png */; };
 		F7D423341F0596AC009C9782 /* AppIcon-120.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D423171F0596AC009C9782 /* AppIcon-120.png */; };
 		F7D423351F0596AC009C9782 /* AppIcon-152.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D423181F0596AC009C9782 /* AppIcon-152.png */; };
@@ -700,10 +697,6 @@
 		F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCHTTPRequestOperation.m; sourceTree = "<group>"; };
 		F70022851EC4C9100080073F /* OCWebDAVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCWebDAVClient.h; sourceTree = "<group>"; };
 		F70022861EC4C9100080073F /* OCWebDAVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCWebDAVClient.m; sourceTree = "<group>"; };
-		F70022881EC4C9100080073F /* OCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLListParser.h; sourceTree = "<group>"; };
-		F70022891EC4C9100080073F /* OCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLListParser.m; sourceTree = "<group>"; };
-		F700228A1EC4C9100080073F /* OCXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLParser.h; sourceTree = "<group>"; };
-		F700228B1EC4C9100080073F /* OCXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLParser.m; sourceTree = "<group>"; };
 		F700228C1EC4C9100080073F /* OCXMLServerErrorsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLServerErrorsParser.h; sourceTree = "<group>"; };
 		F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLServerErrorsParser.m; sourceTree = "<group>"; };
 		F700228E1EC4C9100080073F /* OCXMLShareByLinkParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLShareByLinkParser.h; sourceTree = "<group>"; };
@@ -1317,6 +1310,8 @@
 		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCDetail.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCDetail.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
+		F7D2D125230804DF00FD3ED7 /* NCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLListParser.h; sourceTree = "<group>"; };
+		F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLListParser.m; sourceTree = "<group>"; };
 		F7D423161F0596AC009C9782 /* AppIcon-076.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon-076.png"; sourceTree = "<group>"; };
 		F7D423171F0596AC009C9782 /* AppIcon-120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon-120.png"; sourceTree = "<group>"; };
 		F7D423181F0596AC009C9782 /* AppIcon-152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon-152.png"; sourceTree = "<group>"; };
@@ -1644,10 +1639,8 @@
 			children = (
 				F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */,
 				F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */,
-				F70022881EC4C9100080073F /* OCXMLListParser.h */,
-				F70022891EC4C9100080073F /* OCXMLListParser.m */,
-				F700228A1EC4C9100080073F /* OCXMLParser.h */,
-				F700228B1EC4C9100080073F /* OCXMLParser.m */,
+				F7D2D125230804DF00FD3ED7 /* NCXMLListParser.h */,
+				F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */,
 				F700228C1EC4C9100080073F /* OCXMLServerErrorsParser.h */,
 				F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */,
 				F700228E1EC4C9100080073F /* OCXMLShareByLinkParser.h */,
@@ -3541,10 +3534,9 @@
 				F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
-				F70022E41EC4C9100080073F /* OCXMLParser.m in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
 				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
-				F70022E11EC4C9100080073F /* OCXMLListParser.m in Sources */,
+				F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
 				F74E432720B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */,
 				F73CC0791E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
@@ -3605,7 +3597,6 @@
 				F7434B5320E2409E00417916 /* OCXMLSharedParser.m in Sources */,
 				F7434B4320E2405900417916 /* OCShareUser.m in Sources */,
 				F771E3F920E239B500AFB62D /* FileProviderExtension+Network.swift in Sources */,
-				F7434B4F20E2408E00417916 /* OCXMLListParser.m in Sources */,
 				F7434B6120E2445C00417916 /* CCCertificate.m in Sources */,
 				F7434B5A20E241BB00417916 /* NCNetworkingEndToEnd.m in Sources */,
 				F76673EE22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
@@ -3615,13 +3606,13 @@
 				F7434B5C20E241D500417916 /* NCEndToEndEncryption.m in Sources */,
 				F7434B3E20E2404700417916 /* OCFileDto.m in Sources */,
 				F7434B3D20E2404300417916 /* OCExternalSites.m in Sources */,
+				F7D2D129230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
 				F7434B4420E2405C00417916 /* OCUserProfile.m in Sources */,
 				F7434B5E20E241EC00417916 /* CCGraphics.m in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F7434B5B20E241D100417916 /* NCEndToEndMetadata.swift in Sources */,
 				F7B6ACDD22FC2D15008AB646 /* NCComments.m in Sources */,
 				F7434B5D20E241E800417916 /* CCUtility.m in Sources */,
-				F7434B5020E2409100417916 /* OCXMLParser.m in Sources */,
 				F7434B5220E2409900417916 /* OCXMLShareByLinkParser.m in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
@@ -3752,7 +3743,6 @@
 				F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
 				F7D423891F0596C6009C9782 /* ReaderViewController.m in Sources */,
 				F70022E91EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
-				F70022E31EC4C9100080073F /* OCXMLParser.m in Sources */,
 				F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */,
 				F73B4F0E1F470D9100BBEE4B /* nsMBCSGroupProber.cpp in Sources */,
 				F7D423831F0596C6009C9782 /* ReaderThumbFetch.m in Sources */,
@@ -3847,6 +3837,7 @@
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
 				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
+				F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
 				F73B4F011F470D9100BBEE4B /* LangThaiModel.cpp in Sources */,
 				F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
@@ -3856,7 +3847,6 @@
 				F762CB031EACB66200B38484 /* XLFormStepCounterCell.m in Sources */,
 				F760F79321F21F61006B1A73 /* CropView.swift in Sources */,
 				F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */,
-				F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F760F78A21F21F61006B1A73 /* UIImage+Size.swift in Sources */,
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F734A8BF21B59137009DE2E8 /* WKCookieWebView.swift in Sources */,

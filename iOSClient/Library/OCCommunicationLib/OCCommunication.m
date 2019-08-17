@@ -36,10 +36,8 @@
 #import "OCCommunication.h"
 #import "OCHTTPRequestOperation.h"
 #import "UtilsFramework.h"
-#import "OCXMLParser.h"
 #import "OCXMLSharedParser.h"
 #import "OCXMLServerErrorsParser.h"
-#import "OCXMLListParser.h"
 #import "NSString+Encode.h"
 #import "OCFrameworkConstants.h"
 #import "OCWebDAVClient.h"
@@ -56,6 +54,7 @@
 #import "NCRichDocumentTemplate.h"
 #import "HCFeatures.h"
 #import "NCXMLCommentsParser.h"
+#import "NCXMLListParser.h"
 
 @interface OCCommunication ()
 
@@ -448,16 +447,183 @@
 //            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 //            NSLog(@"newStrReadFolder: %@", newStr);
             
-            OCXMLParser *parser = [[OCXMLParser alloc]init];
-            [parser initParserWithData:responseData];
-            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
             
+            NCXMLListParser *parser = [NCXMLListParser new];
+            [parser initParserWithData:responseData controlFirstFileOfList:true];
+            NSMutableArray *list = [parser.list mutableCopy];
+
             //Return success
-            successRequest(response, directoryList, request.redirectedServer, token);
+            successRequest(response, list, request.redirectedServer, token);
         }
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
         NSLog(@"Failure");
+        failureRequest(response, error, token, request.redirectedServer);
+    }];
+}
+
+///-----------------------------------
+/// @name Read File
+///-----------------------------------
+- (void) readFile: (NSString *) path
+  onCommunication:(OCCommunication *)sharedOCCommunication
+   successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer)) successRequest
+   failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    
+    [request propertiesOfPath:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        if (successRequest) {
+            NSData *responseData = (NSData*) responseObject;
+            
+            //            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+            //            NSLog(@"newStrReadFile: %@", newStr);
+            
+            NCXMLListParser *parser = [NCXMLListParser new];
+            [parser initParserWithData:responseData controlFirstFileOfList:true];
+            NSMutableArray *list = [parser.list mutableCopy];
+            
+            //Return success
+            successRequest(response, list, request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        failureRequest(response, error, request.redirectedServer);
+        
+    }];
+    
+}
+
+///-----------------------------------
+/// @name search
+///-----------------------------------
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth lteDateLastModified:(NSString *)lteDateLastModified gteDateLastModified:(NSString *)gteDateLastModified contentType:(NSArray *)contentType withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
+    
+    if (!token){
+        token = @"no token";
+    }
+    
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request search:path folder:folder fileName:fileName depth:depth lteDateLastModified:lteDateLastModified gteDateLastModified:gteDateLastModified contentType:contentType user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        
+        if (successRequest) {
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                
+                NSData *responseData = (NSData*) responseObject;
+                
+                NCXMLListParser *parser = [NCXMLListParser new];
+                [parser initParserWithData:responseData controlFirstFileOfList:false];
+                NSMutableArray *list = [parser.list mutableCopy];
+                
+                //Return success
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successRequest(response, list, request.redirectedServer, token);
+                });
+            });
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        
+        failureRequest(response, error, token, request.redirectedServer);
+    }];
+}
+
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName dateLastModified:(NSString *)dateLastModified numberOfItem:(NSInteger)numberOfItem withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest {
+    
+    if (!token){
+        token = @"no token";
+    }
+    
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request search:path folder:folder fileName:fileName dateLastModified:dateLastModified numberOfItem:numberOfItem userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        if (successRequest) {
+            
+            NSData *responseData = (NSData*) responseObject;
+            
+            NCXMLListParser *parser = [NCXMLListParser new];
+            [parser initParserWithData:responseData controlFirstFileOfList:false];
+            NSMutableArray *list = [parser.list mutableCopy];
+            
+            successRequest(response, list, request.redirectedServer, token);
+        }
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        failureRequest(response, error, token, request.redirectedServer);
+    }];
+}
+
+///-----------------------------------
+/// @name Setting favorite
+///-----------------------------------
+- (void)settingFavoriteServer:(NSString *)path andFileOrFolderPath:(NSString *)filePath favorite:(BOOL)favorite withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest {
+    
+    if (!token){
+        token = @"no token";
+    }
+    
+    path = [NSString stringWithFormat:@"%@/files/%@/%@", path, _userID, filePath];
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request settingFavorite:path favorite:favorite onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        
+        if (successRequest) {
+            //Return success
+            successRequest(response, request.redirectedServer, token);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        
+        NSLog(@"Failure");
+        failureRequest(response, error, token, request.redirectedServer);
+    }];
+}
+
+///-----------------------------------
+/// @name Listing favorites
+///-----------------------------------
+- (void)listingFavorites:(NSString *)path folder:(NSString *)folder withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
+    
+    if (!token){
+        token = @"no token";
+    }
+    
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request listingFavorites:path folder:folder user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        
+        if (successRequest) {
+            
+            NSData *responseData = (NSData*) responseObject;
+            
+            NCXMLListParser *parser = [NCXMLListParser new];
+            [parser initParserWithData:responseData controlFirstFileOfList:false];
+            NSMutableArray *list = [parser.list mutableCopy];
+            
+            //Return success
+            successRequest(response, list, request.redirectedServer, token);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        
         failureRequest(response, error, token, request.redirectedServer);
     }];
 }
@@ -583,173 +749,6 @@
    [self.uploadSessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
        block(session, task, bytesSent, totalBytesSent, totalBytesExpectedToSend);
    }];
-}
-
-
-///-----------------------------------
-/// @name Read File
-///-----------------------------------
-- (void) readFile: (NSString *) path
-  onCommunication:(OCCommunication *)sharedOCCommunication
-   successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer)) successRequest
-   failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
-    
-    path = [path encodeString:NSUTF8StringEncoding];
-    
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    
-    [request propertiesOfPath:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
-        
-        if (successRequest) {
-            NSData *responseData = (NSData*) responseObject;
-            
-//            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-//            NSLog(@"newStrReadFile: %@", newStr);
-
-            OCXMLParser *parser = [[OCXMLParser alloc]init];
-            [parser initParserWithData:responseData];
-            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
-            
-            //Return success
-            successRequest(response, directoryList, request.redirectedServer);
-        }
-        
-    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
-        failureRequest(response, error, request.redirectedServer);
-        
-    }];
-    
-}
-
-///-----------------------------------
-/// @name search
-///-----------------------------------
-- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth lteDateLastModified:(NSString *)lteDateLastModified gteDateLastModified:(NSString *)gteDateLastModified contentType:(NSArray *)contentType withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
-    
-    if (!token){
-        token = @"no token";
-    }
-    
-    path = [path encodeString:NSUTF8StringEncoding];
-    
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    [request search:path folder:folder fileName:fileName depth:depth lteDateLastModified:lteDateLastModified gteDateLastModified:gteDateLastModified contentType:contentType user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
-        
-        if (successRequest) {
-            
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-
-                NSData *responseData = (NSData*) responseObject;
-            
-                OCXMLListParser *parser = [OCXMLListParser new];
-                [parser initParserWithData:responseData];
-                NSMutableArray *searchList = [parser.searchList mutableCopy];
-            
-                //Return success
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    successRequest(response, searchList, request.redirectedServer, token);
-                });
-            });
-        }
-        
-    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
-        
-        failureRequest(response, error, token, request.redirectedServer);
-    }];
-}
-
-- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName dateLastModified:(NSString *)dateLastModified numberOfItem:(NSInteger)numberOfItem withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest {
-    
-    if (!token){
-        token = @"no token";
-    }
-    
-    path = [path encodeString:NSUTF8StringEncoding];
-    
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    [request search:path folder:folder fileName:fileName dateLastModified:dateLastModified numberOfItem:numberOfItem userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
-        if (successRequest) {
-            
-            NSData *responseData = (NSData*) responseObject;
-            
-            OCXMLListParser *parser = [OCXMLListParser new];
-            [parser initParserWithData:responseData];
-            NSMutableArray *searchList = [parser.searchList mutableCopy];
-            
-            successRequest(response, searchList, request.redirectedServer, token);
-        }
-    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
-        failureRequest(response, error, token, request.redirectedServer);
-    }];
-}
-
-///-----------------------------------
-/// @name Setting favorite
-///-----------------------------------
-- (void)settingFavoriteServer:(NSString *)path andFileOrFolderPath:(NSString *)filePath favorite:(BOOL)favorite withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest {
-    
-    if (!token){
-        token = @"no token";
-    }
-    
-    path = [NSString stringWithFormat:@"%@/files/%@/%@", path, _userID, filePath];
-    path = [path encodeString:NSUTF8StringEncoding];
-    
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    [request settingFavorite:path favorite:favorite onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
-        
-        if (successRequest) {
-            //Return success
-            successRequest(response, request.redirectedServer, token);
-        }
-        
-    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
-        
-        NSLog(@"Failure");
-        failureRequest(response, error, token, request.redirectedServer);
-    }];
-}
-
-///-----------------------------------
-/// @name Listing favorites
-///-----------------------------------
-- (void)listingFavorites:(NSString *)path folder:(NSString *)folder withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
-    
-    if (!token){
-        token = @"no token";
-    }
-    
-    path = [path encodeString:NSUTF8StringEncoding];
-    
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    [request listingFavorites:path folder:folder user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
-        
-        if (successRequest) {
-            
-            NSData *responseData = (NSData*) responseObject;
-            
-            OCXMLListParser *parser = [OCXMLListParser new];
-            [parser initParserWithData:responseData];
-            NSMutableArray *searchList = [parser.searchList mutableCopy];
-            
-            //Return success
-            successRequest(response, searchList, request.redirectedServer, token);
-        }
-        
-    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
-        
-        failureRequest(response, error, token, request.redirectedServer);
-    }];
 }
 
 #pragma mark - OC/NC API Calls
@@ -1234,42 +1233,6 @@
         
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
-        failureRequest(response, error, request.redirectedServer);
-    }];
-}
-
-- (void)getSharePermissionsFile:(NSString *)fileName onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
-    
-    fileName = [fileName encodeString:NSUTF8StringEncoding];
-    
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    [request getSharePermissionsFile:fileName onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
-        
-        if (successRequest) {
-            
-            NSString *permissions;
-            NSData *responseData = (NSData *)responseObject;
-            
-            NSString *newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            NSLog(@"newStrReadFolder: %@", newStr);
-            
-            OCXMLParser *parser = [[OCXMLParser alloc]init];
-            [parser initParserWithData:responseData];
-            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
-            
-            if ([directoryList count] == 1) {
-                OCFileDto *file = [directoryList objectAtIndex:0];
-                permissions = file.permissions;
-            }
-            
-            //Return success
-            successRequest(response, permissions, request.redirectedServer);
-        }
-        
-    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
-        
         failureRequest(response, error, request.redirectedServer);
     }];
 }
@@ -3083,9 +3046,9 @@
 
     [request listTrash:path depth:depth onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
-        OCXMLParser *parser = [OCXMLParser new];
-        [parser initParserWithData:responseObject];
-        NSMutableArray *list = [parser.directoryList mutableCopy];
+        NCXMLListParser *parser = [NCXMLListParser new];
+        [parser initParserWithData:responseObject controlFirstFileOfList:true];
+        NSMutableArray *list = [parser.list mutableCopy];
         
         successRequest(response, list, request.redirectedServer);
         

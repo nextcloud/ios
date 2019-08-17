@@ -1678,51 +1678,6 @@
     }];
 }
 
-- (void)getSharePermissionsFileWithAccount:(NSString *)account fileNamePath:(NSString *)fileNamePath completion:(void (^)(NSString *account, NSString *permissions, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, 0, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    } else if ([CCUtility getPassword:account].length == 0) {
-        completion(account, 0, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
-    } else if ([CCUtility getCertificateError:account]) {
-        completion(account, 0, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
-    }
-    
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication getSharePermissionsFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
-        
-        completion(account, permissions, nil ,0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message;
-        NSInteger errorCode = response.statusCode;
-        
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
-        // Error
-        if (errorCode == 503) {
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        } else {
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== VAR =====
 #pragma --------------------------------------------------------------------------------------------
