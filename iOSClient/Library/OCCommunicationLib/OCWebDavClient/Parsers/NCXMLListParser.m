@@ -138,14 +138,8 @@
         
     } else if ([elementName isEqualToString:@"d:creationdate"] && [self.xmlChars length]) {
         
-        NSDateFormatter *dateFormatter = [NSDateFormatter new];
-        [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
-        [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
-        NSDate *date = [dateFormatter dateFromString:[NSString stringWithString:self.xmlChars]];
-        if (date) {
-            self.currentFile.creationDate =  [date timeIntervalSince1970];
-        }
-
+        NSLog(@"Not yet implemented");
+        
     } else if ([elementName isEqualToString:@"d:getetag"] && [self.xmlChars length]) {
         
         self.currentFile.etag = [[self.xmlChars stringByReplacingOccurrencesOfString:@"\"" withString:@""] lowercaseString];
@@ -214,14 +208,6 @@
         
         self.currentFile.trashbinDeletionTime = [self.xmlChars longLongValue];
 
-    } else if ([elementName isEqualToString:@"nc:note"] && [self.xmlChars length]) {
-        
-        self.currentFile.note = [NSString stringWithString:self.xmlChars];
-
-    } else if ([elementName isEqualToString:@"nc:sharees"] && [self.xmlChars length]) {
-
-       self.currentFile.sharees = [NSString stringWithString:self.xmlChars];
-        
     } else if ([elementName isEqualToString:@"d:collection"]) {
         
         self.currentFile.isDirectory = true;

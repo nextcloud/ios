@@ -49,8 +49,6 @@
         self.mountType = @"";
         self.ownerId = @"";
         self.ownerDisplayName = @"";
-        self.note = @"";
-        self.sharees = @"";
     }
     
     return self;

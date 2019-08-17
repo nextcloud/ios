@@ -63,7 +63,5 @@
 @property (nonatomic, copy) NSString *ownerId;
 @property (nonatomic, copy) NSString *ownerDisplayName;
 @property BOOL commentsUnread;
-@property (nonatomic, copy) NSString *note;
-@property (nonatomic, copy) NSString *sharees;
 
 @end

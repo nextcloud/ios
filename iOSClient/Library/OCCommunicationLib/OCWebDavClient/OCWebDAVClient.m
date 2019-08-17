@@ -76,9 +76,7 @@ NSString *const NCResource = @"<d:displayname/>"
                               "<has-preview xmlns=\"http://nextcloud.org/ns\"/>"
                               "<trashbin-filename xmlns=\"http://nextcloud.org/ns\"/>"
                               "<trashbin-original-location xmlns=\"http://nextcloud.org/ns\"/>"
-                              "<trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>"
-                              "<note xmlns=\"http://nextcloud.org/ns\"/>"
-                              "<sharees xmlns=\"http://nextcloud.org/ns\"/>";
+                              "<trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>";
 
 @interface OCWebDAVClient()
 
