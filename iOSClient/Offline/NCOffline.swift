@@ -338,7 +338,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     }
                     self.loadDatasource()
                 }
-                if item.value as? Int == 1 { self.appDelegate.activeMain.openShare(with: metadata, indexPage: 2) }
+                if item.value as? Int == 1 { NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 2) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }

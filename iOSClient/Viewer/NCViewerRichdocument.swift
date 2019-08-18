@@ -111,7 +111,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             }
             
             if message.body as? String == "share" {
-                appDelegate.activeMain.openShare(with: metadata, indexPage: 2)
+                NCMainCommon.sharedInstance.openShare(ViewController: detail, metadata: metadata, indexPage: 2)
             }
             
             if let param = message.body as? Dictionary<AnyHashable,Any> {

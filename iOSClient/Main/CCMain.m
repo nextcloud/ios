@@ -1870,19 +1870,8 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Shared =====
+#pragma mark ===== Tap =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)openShareWithMetadata:(tableMetadata *)metadata indexPage:(NSInteger)indexPage
-{
-    UINavigationController *shareNavigationController = [[UIStoryboard storyboardWithName:@"NCShare" bundle:nil] instantiateInitialViewController];
-    NCSharePaging *shareViewController = (NCSharePaging *)shareNavigationController.topViewController;
-    shareViewController.metadata = metadata;
-    shareViewController.indexPage = indexPage;
-    
-    [shareNavigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-    [self presentViewController:shareNavigationController animated:YES completion:nil];
-}
 
 - (void)tapActionShared:(UITapGestureRecognizer *)tapGesture
 {
@@ -1892,7 +1881,7 @@
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata) {
-        [self openShareWithMetadata:metadata indexPage:2];
+        [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
     }
 }
 
@@ -3018,13 +3007,13 @@
         
         if (!lockDirectory && !isFolderEncrypted) {
             
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_details_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"details"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        [self openShareWithMetadata:self.metadata indexPage:2];
+                                        [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:self.metadata indexPage:0];
                                     }];
         }
         
@@ -3207,13 +3196,13 @@
         
         if (!_metadataFolder.e2eEncrypted) {
 
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_details_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"details"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
                                 backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
-                                            [self openShareWithMetadata:self.metadata indexPage:2];
+                                            [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:self.metadata indexPage:0];
                                         }];
         }
         

@@ -1062,6 +1062,19 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         docController?.presentOptionsMenu(from: frame, in: view, animated: true)
     }
     
+    //MARK: - OpenShare
+    @objc func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: Int) {
+        
+        let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let shareViewController = shareNavigationController.topViewController as! NCSharePaging
+        
+        shareViewController.metadata = metadata
+        shareViewController.indexPage = indexPage
+        
+        shareNavigationController.modalPresentationStyle = .formSheet
+        ViewController.present(shareNavigationController, animated: true, completion: nil)
+    }
+    
     //MARK: - NCAudioRecorder
     
     func startAudioRecorder() {

@@ -70,15 +70,15 @@
     NSMutableArray *items = [NSMutableArray new];
  
     if (self.showOpenIn && !self.metadata.directory) {
-        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
             [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
         }];
         [items addObject:openIn];
     }
     
     if (self.showShare) {
-        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-            [appDelegate.activeMain openShareWithMetadata:self.metadata indexPage:2];
+        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
+            [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:self.metadata indexPage:2];
         }];
         [items addObject:share];
     }

@@ -68,7 +68,7 @@ class NCSharePaging: UIViewController {
             ])
         
         pagingViewController.dataSource = self        
-        pagingViewController.select(index: 2)
+        pagingViewController.select(index: indexPage)
     }
     
     @objc func exitTapped() {

@@ -96,7 +96,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                     }
                 })
             }
-        }
+        } 
         
         reloadData()
         

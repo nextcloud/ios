@@ -78,8 +78,6 @@
 
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId action:(NSInteger)action;
 
-- (void)openShareWithMetadata:(tableMetadata *)metadata indexPage:(NSInteger)indexPage;
-
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
 
