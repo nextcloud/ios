@@ -472,7 +472,7 @@ class tableTrash: Object {
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var ocId = ""
+    @objc dynamic var fileId = ""
     @objc dynamic var fileName = ""
     @objc dynamic var filePath = ""
     @objc dynamic var hasPreview: Bool = false
@@ -484,6 +484,6 @@ class tableTrash: Object {
     @objc dynamic var trashbinDeletionTime = NSDate()
 
     override static func primaryKey() -> String {
-        return "ocId"
+        return "fileId"
     }
 }

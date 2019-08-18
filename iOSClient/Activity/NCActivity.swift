@@ -342,7 +342,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             if (responder as? UIViewController)!.navigationController != nil {
                 if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
                     if let result = NCManageDatabase.sharedInstance.getTrashItem(ocId: String(activityPreview.fileId), account: activityPreview.account) {
-                        viewController.blinkocId = result.ocId
+                        viewController.blinkocId = result.fileId
                         viewController.path = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {

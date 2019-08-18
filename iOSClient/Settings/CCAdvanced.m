@@ -289,33 +289,23 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
-        [self.hud visibleIndeterminateHud];
+        [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-            
-            [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                
-                [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-                [[NSURLCache sharedURLCache] setDiskCapacity:0];
-                [KTVHTTPCache cacheDeleteAllCaches];
+        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+        [KTVHTTPCache cacheDeleteAllCaches];
 
-                [[NCManageDatabase sharedInstance] removeDB];
-                
-                [CCUtility emptyGroupDirectoryProviderStorage];
-                [CCUtility emptyGroupApplicationSupport];
-                
-                [CCUtility emptyDocumentsDirectory];
-                [CCUtility emptyTemporaryDirectory];
-                
-                [CCUtility deleteAllChainStore];
-            });
-            
-            [self.hud hideHud];
-            
-            exit(0);
-        });
+        [CCUtility emptyGroupDirectoryProviderStorage];
+        [CCUtility emptyGroupApplicationSupport];
+        
+        [CCUtility emptyDocumentsDirectory];
+        [CCUtility emptyTemporaryDirectory];
+        
+        [CCUtility deleteAllChainStore];
+        
+        [[NCManageDatabase sharedInstance] removeDB];
+        
+        exit(0);
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {

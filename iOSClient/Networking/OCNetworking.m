@@ -2570,7 +2570,7 @@
                     trash.account = account;
                     trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
                     trash.directory = itemDto.isDirectory;
-                    trash.ocId = itemDto.ocId;
+                    trash.fileId = itemDto.fileId;
                     trash.fileName = itemDto.fileName;
                     NSArray *array = [itemDto.filePath componentsSeparatedByString:path];
                     long len = [[array objectAtIndex:0] length];

@@ -1373,21 +1373,10 @@ NSString *const NCResource = @"<d:displayname/>"
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_webdav];
     
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    NSString *body = [NSString stringWithFormat: @""
-                      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                      "<D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
-                      "<D:prop>"
-                      "<D:resourcetype/>"
-                      "<D:getlastmodified/>"
-                      "<id xmlns=\"http://owncloud.org/ns\"/>"
-                      "<D:getcontentlength/>"
-                      "<nc:trashbin-filename/>"
-                      "<nc:trashbin-original-location/>"
-                      "<nc:trashbin-deletion-time/>"
-                      "<nc:has-preview/>"
-                      "</D:prop>"
-                      "</D:propfind>"];
-
+    
+    NSString *body = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><d:prop>";
+    body = [body stringByAppendingString:NCResource];
+    body = [body stringByAppendingString:@"</d:prop></d:propfind>"];
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     

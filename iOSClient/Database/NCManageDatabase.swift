@@ -63,14 +63,14 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableShare.className())
                 }
                 
-                if oldSchemaVersion < 73 {
+                if oldSchemaVersion < 74 {
                     
                     migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
                         newObject!["ocId"] = oldObject!["fileID"]
                     }
                     
                     migration.enumerateObjects(ofType: tableTrash.className()) { oldObject, newObject in
-                        newObject!["ocId"] = oldObject!["fileID"]
+                        newObject!["fileId"] = oldObject!["fileID"]
                     }
                     
                     migration.enumerateObjects(ofType: tableTag.className()) { oldObject, newObject in
@@ -85,6 +85,7 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableActivityPreview.className())
                     migration.deleteData(forType: tableActivitySubjectRich.className())
                     migration.deleteData(forType: tableComments.className())
+                    migration.deleteData(forType: tableDirectory.className())
                     migration.deleteData(forType: tableMetadata.className())
                     migration.deleteData(forType: tableE2eEncryptionLock.className())
                     migration.deleteData(forType: tableTag.className())

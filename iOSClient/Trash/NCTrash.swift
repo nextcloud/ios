@@ -285,7 +285,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 return
             }
             
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.ocId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)            
+            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.fileId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
@@ -320,7 +320,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 return
             }
             
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.ocId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
+            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.fileId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
@@ -472,10 +472,10 @@ extension NCTrash: UICollectionViewDelegate {
         let tableTrash = datasource[indexPath.item]
         
         if isEditMode {
-            if let index = selectocId.firstIndex(of: tableTrash.ocId) {
+            if let index = selectocId.firstIndex(of: tableTrash.fileId) {
                 selectocId.remove(at: index)
             } else {
-                selectocId.append(tableTrash.ocId)
+                selectocId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
             return
@@ -543,10 +543,10 @@ extension NCTrash: UICollectionViewDataSource {
             image = UIImage.init(named: "file")
         }
         
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.ocId, fileNameView: tableTrash.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.ocId, fileNameView: tableTrash.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName))
         } else {
-            if tableTrash.hasPreview && !CCUtility.fileProviderStorageIconExists(tableTrash.ocId, fileNameView: tableTrash.fileName) {
+            if tableTrash.hasPreview && !CCUtility.fileProviderStorageIconExists(tableTrash.fileId, fileNameView: tableTrash.fileName) {
                 downloadThumbnail(with: tableTrash, indexPath: indexPath)
             }
         }
@@ -557,7 +557,7 @@ extension NCTrash: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCTrashListCell
             cell.delegate = self
             
-            cell.ocId = tableTrash.ocId
+            cell.ocId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             
@@ -573,7 +573,7 @@ extension NCTrash: UICollectionViewDataSource {
                 cell.imageItemLeftConstraint.constant = 45
                 cell.imageSelect.isHidden = false
                 
-                if selectocId.contains(tableTrash.ocId) {
+                if selectocId.contains(tableTrash.fileId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
@@ -594,7 +594,7 @@ extension NCTrash: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
             
-            cell.ocId = tableTrash.ocId
+            cell.ocId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             
@@ -606,7 +606,7 @@ extension NCTrash: UICollectionViewDataSource {
             
             if isEditMode {
                 cell.imageSelect.isHidden = false
-                if selectocId.contains(tableTrash.ocId) {
+                if selectocId.contains(tableTrash.fileId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
@@ -651,7 +651,7 @@ extension NCTrash {
             // GoTo ocId
             if self.blinkocId != nil {
                 for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].ocId.contains(self.blinkocId!) {
+                    if self.datasource[item].fileId.contains(self.blinkocId!) {
                         let indexPath = IndexPath(item: item, section: 0)
                         self.collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -747,7 +747,7 @@ extension NCTrash {
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
         
-        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, ocId: tableTrash.ocId, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
+        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, ocId: tableTrash.fileId, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 if let cell = self.collectionView.cellForItem(at: indexPath) {
