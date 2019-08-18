@@ -63,7 +63,7 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableShare.className())
                 }
                 
-                if oldSchemaVersion < 71 {
+                if oldSchemaVersion < 73 {
                     
                     migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
                         newObject!["ocId"] = oldObject!["fileID"]
@@ -81,6 +81,9 @@ class NCManageDatabase: NSObject {
                         newObject!["ocId"] = oldObject!["fileID"]
                     }
                     
+                    migration.deleteData(forType: tableActivity.className())
+                    migration.deleteData(forType: tableActivityPreview.className())
+                    migration.deleteData(forType: tableActivitySubjectRich.className())
                     migration.deleteData(forType: tableComments.className())
                     migration.deleteData(forType: tableMetadata.className())
                     migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -723,8 +726,8 @@ class NCManageDatabase: NSObject {
                             let addObjectActivityPreview = tableActivityPreview()
                             addObjectActivityPreview.account = account
                             addObjectActivityPreview.idActivity = activity.idActivity
-                            addObjectActivityPreview.ocId = activityPreview["ocId"] as? Int ?? 0
-                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.ocId)
+                            addObjectActivityPreview.fileId = activityPreview["fileId"] as? Int ?? 0
+                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
                             addObjectActivityPreview.source = activityPreview["source"] as? String ?? ""
                             addObjectActivityPreview.link = activityPreview["link"] as? String ?? ""
                             addObjectActivityPreview.mimeType = activityPreview["mimeType"] as? String ?? ""
@@ -750,19 +753,19 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getActivity(predicate: NSPredicate, filterocId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
+    func getActivity(predicate: NSPredicate, filterFileId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
         
         let realm = try! Realm()
         realm.refresh()
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
         let allActivity = Array(results.map { tableActivity.init(value:$0) })
-        if filterocId != nil {
+        if filterFileId != nil {
             var resultsFilter = [tableActivity]()
             for result in results {
                 let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
                 for resultActivitySubjectRich in resultsActivitySubjectRich {
-                    if filterocId!.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
+                    if filterFileId!.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
                         resultsFilter.append(result)
                         break
                     }
@@ -802,7 +805,7 @@ class NCManageDatabase: NSObject {
         var results = [tableActivityPreview]()
         
         for id in orderKeysId {
-            if let result = realm.objects(tableActivityPreview.self).filter("account == %@ && idActivity == %d && ocId == %d", account, idActivity, Int(id) ?? 0).first {
+            if let result = realm.objects(tableActivityPreview.self).filter("account == %@ && idActivity == %d && fileId == %d", account, idActivity, Int(id) ?? 0).first {
                 results.append(result)
             }
         }

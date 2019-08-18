@@ -118,7 +118,7 @@ class tableActivityPreview: Object {
     @objc dynamic var source = ""
     @objc dynamic var link = ""
     @objc dynamic var mimeType = ""
-    @objc dynamic var ocId: Int = 0
+    @objc dynamic var fileId: Int = 0
     @objc dynamic var view = ""
     @objc dynamic var isMimeTypeIcon: Bool = false
     
