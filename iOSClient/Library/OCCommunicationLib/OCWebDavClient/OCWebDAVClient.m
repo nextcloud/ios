@@ -868,11 +868,11 @@ NSString *const NCResource = @"<d:displayname/>"
     return operation;
 }
 
-- (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString *)serverPath ofocId:(NSString*)ocId onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
+- (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString *)serverPath ofFileId:(NSString*)fileId onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
     
     _requestMethod = @"GET";
     
-    NSString *query = [NSString stringWithFormat:@"/index.php/apps/files_trashbin/preview?ocId=%@&x=128&y=128", ocId];
+    NSString *query = [NSString stringWithFormat:@"/index.php/apps/files_trashbin/preview?fileId=%@&x=128&y=128", fileId];
     serverPath = [serverPath stringByAppendingString:query];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];

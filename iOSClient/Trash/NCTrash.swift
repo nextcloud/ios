@@ -281,7 +281,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: ocId, account: appDelegate.activeAccount) else {
                 return
             }
             
@@ -316,7 +316,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: ocId, account: appDelegate.activeAccount) else {
                 return
             }
             
@@ -690,9 +690,9 @@ extension NCTrash {
         CATransaction.commit()
     }
     
-    func restoreItem(with ocId: String) {
+    func restoreItem(with fileId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.activeAccount) else {
             return
         }
         
@@ -701,7 +701,7 @@ extension NCTrash {
         
         OCNetworking.sharedManager().moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(ocId: ocId, account: account!)
+                NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account!)
                 self.loadDatasource()
             }  else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -715,7 +715,7 @@ extension NCTrash {
         
         OCNetworking.sharedManager().emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(ocId: nil, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.deleteTrash(fileId: nil, account: self.appDelegate.activeAccount)
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {
@@ -725,9 +725,9 @@ extension NCTrash {
         })
     }
     
-    func deleteItem(with ocId: String) {
+    func deleteItem(with fileId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.activeAccount) else {
             return
         }
         
@@ -735,7 +735,7 @@ extension NCTrash {
         
         OCNetworking.sharedManager().deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(ocId: ocId, account: account!)
+                NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account!)
                 self.loadDatasource()
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -747,7 +747,7 @@ extension NCTrash {
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
         
-        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, ocId: tableTrash.fileId, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
+        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileId: tableTrash.fileId, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 if let cell = self.collectionView.cellForItem(at: indexPath) {
