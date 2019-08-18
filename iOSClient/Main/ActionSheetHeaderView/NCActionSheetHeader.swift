@@ -44,8 +44,8 @@ class NCActionSheetHeader: NSObject {
         } else {
             image = UIImage.init(named: "file")
         }
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconocId(ocId, fileNameView: fileNameView)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconocId(ocId, fileNameView: fileNameView))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(ocId, fileNameView: fileNameView)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(ocId, fileNameView: fileNameView))
         }
         
         let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView

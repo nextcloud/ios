@@ -234,7 +234,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             metadataForUpload.sessionSelector = selectorUploadFile
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
             
-            CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageocId(metadataForUpload.ocId, fileNameView: fileNameSave))
+            CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: fileNameSave))
             
             _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
             NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))

@@ -535,7 +535,7 @@ cleanup:
 {
     NSMutableData *plainData;
 
-    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileName]];
+    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName]];
     if (cipherData == nil)
         return false;
     
@@ -545,7 +545,7 @@ cleanup:
 
     BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
     if (plainData != nil && result) {
-        [plainData writeToFile:[CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileNameView] atomically:YES];
+        [plainData writeToFile:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView] atomically:YES];
         return true;
     }
     

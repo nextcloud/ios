@@ -50,7 +50,7 @@
         
         if ([CCUtility fileProviderStorageIconExists:self.metadata.ocId fileNameView:self.metadata.fileNameView]) {
             
-            UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageocId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
+            UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
             if (fullImage != nil) {
                 image = fullImage;
             }

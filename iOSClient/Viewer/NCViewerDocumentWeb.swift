@@ -52,7 +52,7 @@ class NCViewerDocumentWeb: NSObject {
         } catch { }
         
         do {
-            try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+            try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
         } catch {
             print("error")
             return

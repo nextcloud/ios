@@ -40,7 +40,7 @@ class NCViewerMedia: NSObject {
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
         
-            self.videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView))
+            self.videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             videoURLProxy = videoURL
         
         } else {
@@ -102,7 +102,7 @@ class NCViewerMedia: NSObject {
                     return
                 }
                 
-                CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageocId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+                CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
                 KTVHTTPCache.cacheDelete(with: self.videoURL)
                 

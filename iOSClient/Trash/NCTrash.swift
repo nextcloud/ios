@@ -543,8 +543,8 @@ extension NCTrash: UICollectionViewDataSource {
             image = UIImage.init(named: "file")
         }
         
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconocId(tableTrash.ocId, fileNameView: tableTrash.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconocId(tableTrash.ocId, fileNameView: tableTrash.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.ocId, fileNameView: tableTrash.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.ocId, fileNameView: tableTrash.fileName))
         } else {
             if tableTrash.hasPreview && !CCUtility.fileProviderStorageIconExists(tableTrash.ocId, fileNameView: tableTrash.fileName) {
                 downloadThumbnail(with: tableTrash, indexPath: indexPath)

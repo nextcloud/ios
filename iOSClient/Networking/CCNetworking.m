@@ -523,7 +523,7 @@
     
     if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
         
-        NSString *destinationFilePath = [CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileName];
+        NSString *destinationFilePath = [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
         NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
         
         [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
@@ -601,7 +601,7 @@
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Icon
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]] == NO) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO) {
             [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
@@ -692,7 +692,7 @@
                 }
                 
                 tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
-                [imageData writeToFile:[CCUtility getDirectoryProviderStorageocId:metadataForUpload.ocId fileNameView:metadataForUpload.fileNameView] options:NSDataWritingAtomic error:&error];
+                [imageData writeToFile:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:metadataForUpload.fileNameView] options:NSDataWritingAtomic error:&error];
 
                 if (error) {
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataForUpload.ocId]];
@@ -736,7 +736,7 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView]];
+                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
                     NSError *error = nil;
                     
                     [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
@@ -796,7 +796,7 @@
         NSString *e2eeMetadata;
 
         // Verify File Size
-        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView] error:&error];
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView] error:&error];
         NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
         long long fileSize = [fileSizeNumber longLongValue];
 
@@ -815,7 +815,7 @@
             fileNameIdentifier = metadata.fileName;
         }
         
-        if ([[NCEndToEndEncryption sharedManager] encryptFileName:metadata.fileNameView fileNameIdentifier:fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageocId:metadata.ocId] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
+        if ([[NCEndToEndEncryption sharedManager] encryptFileName:metadata.fileNameView fileNameIdentifier:fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
             
             tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", tableAccount.account, metadata.serverUrl]];
             if (object) {
@@ -902,7 +902,7 @@
     NSError *error;
     
     // calculate and store file size
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileName] error:&error];
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName] error:&error];
     long long fileSize = [[fileAttributes objectForKey:NSFileSize] longLongValue];
     metadata.size = fileSize;
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
@@ -939,7 +939,7 @@
     else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
     else if ([metadata.session isEqualToString:k_upload_session_extension]) sessionUpload = [self sessionUploadExtension];
 
-    NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileName]]];
+    NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
     
     // Error
     if (uploadTask == nil) {
@@ -1098,7 +1098,7 @@
                 
             } else {
                 
-                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageocId:tempocId] error:nil];
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:tempocId] error:nil];
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
                 
                 errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
@@ -1179,7 +1179,7 @@
         
         // Add Local or Remove from cache
         if ([CCUtility getDisableLocalCacheAfterUpload]) {
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
         } else {
             // Add Local
             [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];

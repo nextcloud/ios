@@ -1074,7 +1074,7 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageocId:metadata.ocId], metadata.fileNameView];
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageOcId:metadata.ocId], metadata.fileNameView];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
@@ -1168,7 +1168,7 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageocId:ocId], fileName];
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageOcId:ocId], fileName];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
         

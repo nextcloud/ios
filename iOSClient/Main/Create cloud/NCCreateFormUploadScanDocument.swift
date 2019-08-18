@@ -415,7 +415,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
     func dismissAndUpload(_ fileNameSave: String, ocId: String, serverUrl: String) {
         
-        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageocId(ocId, fileNameView: fileNameSave) else {
+        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameSave) else {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             return
         }

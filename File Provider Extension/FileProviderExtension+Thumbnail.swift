@@ -51,7 +51,7 @@ extension FileProviderExtension {
                    
                     if errorCode == 0 && account == metadata.account {
                         do {
-                            let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconocId(metadata.ocId, fileNameView: metadata.fileNameView))
+                            let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                             let data = try Data.init(contentsOf: url)
                             perThumbnailCompletionHandler(itemIdentifier, data, nil)
                         } catch let error {

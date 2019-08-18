@@ -218,15 +218,15 @@ class IMImagemeter: NSObject {
         var bundleDirectory = ""
         var immPath = ""
         
-        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         
         if let archive = Archive(url: source, accessMode: .read) {
             archive.forEach({ (entry) in
                 let pathComponents = (entry.path as NSString).pathComponents
                 if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
                     error = false
-                    bundleDirectory = CCUtility.getDirectoryProviderStorageocId(metadata.ocId) + "/" + pathComponents.first!
-                    immPath = CCUtility.getDirectoryProviderStorageocId(metadata.ocId) + "/" + entry.path
+                    bundleDirectory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + pathComponents.first!
+                    immPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + entry.path
                 }
             })
         }

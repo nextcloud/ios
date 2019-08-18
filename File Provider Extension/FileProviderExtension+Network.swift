@@ -42,7 +42,7 @@ extension FileProviderExtension {
     
     func deleteFileSystem(for metadata: tableMetadata, serverUrl: String, itemIdentifier: NSFileProviderItemIdentifier) {
         
-        let fileNamePath = CCUtility.getDirectoryProviderStorageocId(itemIdentifier.rawValue)!
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)!
         do {
             try fileProviderUtility.sharedInstance.fileManager.removeItem(atPath: fileNamePath)
         } catch let error {

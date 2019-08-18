@@ -119,7 +119,7 @@
 {
     UIImage *originalImage;
     UIImage *scaleImage;
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName];
     
     if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return nil;
     
@@ -153,11 +153,11 @@
             
             // if it is preview for Upload then trasform it in gray scale
             scaleImage = [self grayscale:scaleImage];
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconocId:ocId fileNameView:fileName] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
             
         } else {
             
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconocId:ocId fileNameView:fileName] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
         }
     }
     

@@ -704,7 +704,7 @@
             
             if (data && error == nil) {
                 
-                if ([data writeToFile:[CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
+                if ([data writeToFile:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
                     
                     tableMetadata *metadataForUpload = [tableMetadata new];
                     
@@ -818,7 +818,7 @@
 
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
     PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
     
     if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
@@ -1472,10 +1472,10 @@
                 [[NCManageDatabase sharedInstance] setMetadataFileNameViewWithServerUrl:metadata.serverUrl fileName:metadata.fileName newFileNameView:fileName account:appDelegate.activeAccount];
                 
                 // Move file system
-                NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageocId:metadata.ocId], metadata.fileNameView];
-                NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageocId:metadata.ocId], fileName];
+                NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageOcId:metadata.ocId], metadata.fileNameView];
+                NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageOcId:metadata.ocId], fileName];
                 [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
-                [[NSFileManager defaultManager] moveItemAtPath:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:fileName] error:nil];
+                [[NSFileManager defaultManager] moveItemAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:fileName] error:nil];
             }
                 
             // Unlock
@@ -1546,13 +1546,13 @@
                                 
                                 // Move file system
                                 
-                                NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageocId:metadata.ocId], metadata.fileName];
-                                NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageocId:metadata.ocId], fileNameNew];
+                                NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageOcId:metadata.ocId], metadata.fileName];
+                                NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageOcId:metadata.ocId], fileNameNew];
                                 
                                 [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
                                 
-                                NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileName];
-                                NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:fileNameNew];
+                                NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileName];
+                                NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:fileNameNew];
                                 
                                 [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
                             }
@@ -2687,7 +2687,7 @@
                 NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.activeAccount];
                 NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:self.serverUrl fileNameView:fileName directory:false];
                 
-                [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileName]];
+                [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName]];
                     
                 tableMetadata *metadataForUpload = [tableMetadata new];
                         
@@ -2919,7 +2919,7 @@
     if (localFile) {
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
         }]];
     }
@@ -3181,8 +3181,8 @@
         UIImage *iconHeader;
 
         // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconocId:self.metadata.ocId fileNameView:self.metadata.fileNameView]])
-            iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconocId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView]])
+            iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
         else
             iconHeader = [UIImage imageNamed:self.metadata.iconName];
         

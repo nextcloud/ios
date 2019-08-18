@@ -199,9 +199,9 @@
 + (NSString *)getDirectoryCerificates;
 + (NSString *)getDirectoryUserData;
 + (NSString *)getDirectoryProviderStorage;
-+ (NSString *)getDirectoryProviderStorageocId:(NSString *)ocId;
-+ (NSString *)getDirectoryProviderStorageocId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (NSString *)getDirectoryProviderStorageIconocId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId;
++ (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 

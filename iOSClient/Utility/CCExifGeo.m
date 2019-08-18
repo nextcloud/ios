@@ -57,7 +57,7 @@
     if (![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView])
         return;
 
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView]];
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
 
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource)

@@ -1716,7 +1716,7 @@ PKPushRegistry *pushRegistry;
                 }
                 fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.ocId];
                 if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
-                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageocId:record.ocId fileNameView:record.fileName]];
+                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageOcId:record.ocId fileNameView:record.fileName]];
                 }
             }
         });

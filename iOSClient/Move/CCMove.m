@@ -399,7 +399,7 @@
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row];
     
     // Create Directory Provider Storage ocId
-    [CCUtility getDirectoryProviderStorageocId:metadata.ocId];
+    [CCUtility getDirectoryProviderStorageOcId:metadata.ocId];
     
     // colors
     cell.textLabel.textColor = [UIColor blackColor];
@@ -417,7 +417,7 @@
         
     } else {
         
-        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]];
+        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
         
         if (thumb) {
             cell.imageView.image = thumb;

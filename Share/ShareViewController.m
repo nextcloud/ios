@@ -223,7 +223,7 @@
 
             if (errorCode == 0) {
                 
-                [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileNameForUpload]];
+                [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                 
                 tableMetadata *metadata = [tableMetadata new];
                 

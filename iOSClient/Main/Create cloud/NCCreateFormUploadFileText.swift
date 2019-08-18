@@ -208,7 +208,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageocId(ocId, fileNameView: fileNameSave), contents: data, attributes: nil)
+            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameSave), contents: data, attributes: nil)
             
             if success {
                 

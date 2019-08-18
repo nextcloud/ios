@@ -361,7 +361,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             }
             
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId CONTAINS %@", activitySubjectRich.id)) {
-                if let filePath = CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView) {
+                if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
                     do {
                         let attr = try FileManager.default.attributesOfItem(atPath: filePath)
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
@@ -380,7 +380,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             var url = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
             url = appDelegate.activeUrl + k_webDAV + url + "/" + activitySubjectRich.name
             
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageocId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
             NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             

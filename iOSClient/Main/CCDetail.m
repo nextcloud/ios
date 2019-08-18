@@ -184,7 +184,7 @@
     self.navigationController.navigationBar.topItem.title = _metadataDetail.fileNameView;
 
     // verifico se esiste l'icona e se la posso creare
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconocId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView]] == NO) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView]] == NO) {
         [CCGraphics createNewImageFrom:self.metadataDetail.fileNameView ocId:self.metadataDetail.ocId extension:[self.metadataDetail.fileNameView pathExtension] filterGrayScale:NO typeFile:self.metadataDetail.typeFile writeImage:YES];
     }
     
@@ -419,7 +419,7 @@
         
         if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO && status == k_metadataStatusNormal) {
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]] == NO && metadata.hasPreview) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO && metadata.hasPreview) {
                 
                 [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
                 
@@ -456,12 +456,12 @@
         
         if (metadata.ocId) {
             
-            UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]];
+            UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
 //            if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
-                NSString *fileImage = [CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView];
+                NSString *fileImage = [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
                 NSString *ext = [CCUtility getExtension:metadata.fileNameView];
                 
                 if ([ext isEqualToString:@"GIF"]) image = [UIImage animatedImageWithAnimatedGIFURL:[NSURL fileURLWithPath:fileImage]];
@@ -494,7 +494,7 @@
                 
                 if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                     
-                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView]];
+                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
                     
                     MWPhoto *video = [MWPhoto photoWithImage:[CCGraphics thumbnailImageForVideo:url atTime:1.0]];
                     video.videoURL = url;
@@ -522,10 +522,10 @@
                     MWPhoto *audio;
                     UIImage *audioImage;
                     
-                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView]];
+                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
                     
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]]) {
-                        audioImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]];
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]]) {
+                        audioImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
                     } else {
                         audioImage = [UIImage imageNamed:@"notaMusic"]; //[CCGraphics scaleImage:[UIImage imageNamed:@"notaMusic"] toSize:CGSizeMake(200, 200) isAspectRation:YES];
                     }
@@ -576,7 +576,7 @@
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
     if (metadata == nil) return;
 
-    docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView]]];
+    docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]]];
     
     docController.delegate = self;
     
@@ -641,7 +641,7 @@
     if (errorCode == 0) {
         
         // verifico se esiste l'icona e se la posso creare
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]] == NO) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO) {
             [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
@@ -749,7 +749,7 @@
     NSString *filePlistReader = [NSString stringWithFormat:@"%@/%@.plist", [CCUtility getDirectoryReaderMetadata], self.metadataDetail.fileNameView.stringByDeletingPathExtension];
     [CCUtility removeFileAtPath:filePlistReader];
     
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageocId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView];
     
     if ([CCUtility fileProviderStorageExists:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView] == NO) {
         
@@ -943,7 +943,7 @@
         NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
         
         [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[CCUtility getDirectoryProviderStorageocId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView] toPath:fileNamePath error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:[CCUtility getDirectoryProviderStorageOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView] toPath:fileNamePath error:nil];
         
         [self.webView reload];
     }
@@ -972,7 +972,7 @@
 {
     if ([self.metadataDetail.fileNameView length] == 0) return;
     
-    NSString *filePath = [CCUtility getDirectoryProviderStorageocId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView];
+    NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView];
 
     docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
 

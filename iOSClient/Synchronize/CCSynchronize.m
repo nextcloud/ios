@@ -131,7 +131,7 @@
         // delete metadata not present
         for (tableMetadata *metadata in metadatasNotPresents) {
             
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
             
             if (metadata.directory && serverUrl) {
                 
@@ -276,8 +276,8 @@
         if (changeRev) {
             
             // remove & re-create
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId] error:nil];
-            [CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileNameView];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
+            [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
             
             [metadatas addObject:metadata];
         }

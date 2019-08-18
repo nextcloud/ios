@@ -116,7 +116,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if (metadata.session == k_upload_session_extension) {
                 
                 do {
-                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId))
+                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 } catch { }
                 
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -167,7 +167,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 }
                 if cancel == false {
                     do {
-                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId))
+                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                     }
                     catch { }
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -222,8 +222,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         var tableShare: tableShare?
         
         // Image Preview
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconocId(metadata.ocId, fileNameView: metadata.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconocId(metadata.ocId, fileNameView: metadata.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName))
             isImagePreviewLoaded = true
         } else {
             if metadata.iconName.count > 0 {
@@ -504,9 +504,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
 
         // Create File System
         if metadata.directory {
-            CCUtility.getDirectoryProviderStorageocId(metadata.ocId)
+            CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)
         } else {
-            CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView)
+            CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         }
         
         // CCCell
@@ -584,14 +584,14 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 
             } else {
                 
-                let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconocId(metadata.ocId, fileNameView: metadata.fileNameView))
+                let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 
                 // Lable Info
                 cell.labelInfoFile.text = CCUtility.dateDiff(metadata.date as Date) + ", " + CCUtility.transformedSize(metadata.size)
                 
                 // File Image
                 if iconFileExists {
-                    cell.file.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconocId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    cell.file.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 } else {
                     if metadata.iconName.count > 0 {
                         cell.file.image = UIImage.init(named: metadata.iconName)
@@ -696,10 +696,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 progress = 0.0
             }
             
-            let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconocId(metadata.ocId, fileNameView: metadata.fileNameView))
+            let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
             if iconFileExists {
-                cell.file.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconocId(metadata.ocId, fileNameView: metadata.fileNameView))
+                cell.file.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             } else {
                 if metadata.iconName.count > 0 {
                     cell.file.image = UIImage.init(named: metadata.iconName)
@@ -915,7 +915,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                         
                         do {
-                            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId))
+                            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         } catch { }
                         
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -962,7 +962,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     }
     
     @objc func editPhoto(_ metadata: tableMetadata, viewController: UIViewController) {
-        guard let path = CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView) else {
+        guard let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
             return
         }
         guard let image = UIImage(contentsOfFile: path) else {
@@ -991,7 +991,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         guard let metadata = self.metadataEditPhoto else {
             return
         }
-        guard let path = CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView) else {
+        guard let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
             return
         }
         guard let filetype = NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) else {
@@ -1044,7 +1044,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
 
     func openIn(metadata: tableMetadata) {
         
-        docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView)) as URL)
+        docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) as URL)
         docController?.delegate = self
         
         guard let splitViewController = self.appDelegate.window?.rootViewController as? UISplitViewController else {
@@ -1232,8 +1232,8 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
-                    let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView))
-                    let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId))
+                    let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
 
                     try? FileManager().unzipItem(at: source, to: destination)
                     
@@ -1313,7 +1313,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             if (errorCode == kOCErrorServerPathNotFound || errorCode == -1011) { // - 1011 = kCFURLErrorBadServerResponse
                 
                 do {
-                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId))
+                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 } catch { }
                 
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
