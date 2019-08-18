@@ -1417,6 +1417,7 @@
     metadata.directory = itemDto.isDirectory;
     metadata.e2eEncrypted = itemDto.isEncrypted;
     metadata.etag = itemDto.etag;
+    metadata.fileId = itemDto.fileId;
     metadata.favorite = itemDto.isFavorite;
     metadata.fileName = fileName;
     metadata.fileNameView = fileNameView;

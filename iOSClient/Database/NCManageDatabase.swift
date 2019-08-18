@@ -63,7 +63,7 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableShare.className())
                 }
                 
-                if oldSchemaVersion < 70 {
+                if oldSchemaVersion < 71 {
                     
                     migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
                         newObject!["ocId"] = oldObject!["fileID"]
@@ -81,6 +81,7 @@ class NCManageDatabase: NSObject {
                         newObject!["ocId"] = oldObject!["fileID"]
                     }
                     
+                    migration.deleteData(forType: tableComments.className())
                     migration.deleteData(forType: tableMetadata.className())
                     migration.deleteData(forType: tableE2eEncryptionLock.className())
                     migration.deleteData(forType: tableTag.className())
@@ -1011,14 +1012,14 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Comments
     
-    @objc func addComments(_ listOfComments: [NCComments], account: String, fileId: String) {
+    @objc func addComments(_ listOfComments: [NCComments], account: String, objectId: String) {
         
         let realm = try! Realm()
         
         do {
             try realm.write {
                 
-                let results = realm.objects(tableComments.self).filter("account == %@ AND fileId == %@", account, fileId)
+                let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
                 realm.delete(results)
                 
                 for comment in listOfComments {
@@ -1030,7 +1031,6 @@ class NCManageDatabase: NSObject {
                     addObject.actorId = comment.actorId
                     addObject.actorType = comment.actorType
                     addObject.creationDateTime = comment.creationDateTime as NSDate
-                    addObject.fileId = fileId
                     addObject.isUnread = comment.isUnread
                     addObject.message = comment.message
                     addObject.messageID = comment.messageID
@@ -1046,12 +1046,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getComments(account: String, fileId: String) -> [tableComments] {
+    @objc func getComments(account: String, objectId: String) -> [tableComments] {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableComments.self).filter("account == %@ AND fileId == %@", account, fileId).sorted(byKeyPath: "creationDateTime", ascending: false)
+        let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
         return Array(results.map { tableComments.init(value:$0) })
     }

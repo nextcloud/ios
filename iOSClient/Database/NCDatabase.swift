@@ -212,7 +212,6 @@ class tableComments: Object {
     @objc dynamic var actorId = ""
     @objc dynamic var actorType = ""
     @objc dynamic var creationDateTime = NSDate()
-    @objc dynamic var fileId = ""
     @objc dynamic var isUnread: Bool = false
     @objc dynamic var message = ""
     @objc dynamic var messageID = ""
@@ -330,6 +329,7 @@ class tableMedia: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileId = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Bool = false
@@ -372,6 +372,7 @@ class tableMetadata: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileId = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Bool = false
