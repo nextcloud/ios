@@ -70,6 +70,34 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadData), name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil)
         
+        // Shared with you by ...
+        if metadata!.ownerId != self.appDelegate.activeUserID {
+            
+            searchFieldTopConstraint.constant = 65
+            sharedWithYouByView.isHidden = false
+            sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
+            
+            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata!.ownerId + ".png"
+            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    sharedWithYouByImage.image = image
+                }
+            } else {
+                let url = appDelegate.activeUrl + k_avatar + metadata!.ownerId + "/128"
+                let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                    if errorCode == 0 && UIImage(data: data!) != nil {
+                        do {
+                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                        } catch { return }
+                        self.sharedWithYouByImage.image = UIImage(data: data!)
+                    } else {
+                        self.sharedWithYouByImage.image = UIImage(named: "avatar")
+                    }
+                })
+            }
+        }
+        
         reloadData()
         
         networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
@@ -352,33 +380,6 @@ extension NCShare: UITableViewDataSource {
                     cell.buttonMenu.isHidden = true
                 }
                 
-                // Shared with you by ...
-                if tableShare.uidFileOwner != self.appDelegate.activeUserID {
-                    
-                    searchFieldTopConstraint.constant = 65
-                    sharedWithYouByView.isHidden = false
-                    sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + tableShare.displayNameFileOwner
-                    
-                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.uidFileOwner + ".png"
-                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            sharedWithYouByImage.image = image
-                        }
-                    } else {
-                        let url = appDelegate.activeUrl + k_avatar + tableShare.uidFileOwner + "/128"
-                        let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                        OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                            if errorCode == 0 && UIImage(data: data!) != nil {
-                                do {
-                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                                } catch { return }
-                                self.sharedWithYouByImage.image = UIImage(data: data!)
-                            } else {
-                                self.sharedWithYouByImage.image = UIImage(named: "avatar")
-                            }
-                        })
-                    }
-                }
                 return cell
             }
         }
