@@ -389,10 +389,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
     }
     
-    func tapMoreListItem(with ocId: String, sender: Any) {
+    func tapMoreListItem(with objectId: String, sender: Any) {
     }
     
-    func tapMoreGridItem(with ocId: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, sender: Any) {
     }
     
     // MARK: DROP-DOWN-MENU

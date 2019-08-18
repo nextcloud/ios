@@ -262,7 +262,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
            
             cell.delegate = source as? NCListCellDelegate
             
-            cell.ocId = metadata.ocId
+            cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.imageStatus.image = nil
@@ -368,7 +368,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
 
             cell.delegate = source as? NCGridCellDelegate
             
-            cell.ocId = metadata.ocId
+            cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.imageStatus.image = nil

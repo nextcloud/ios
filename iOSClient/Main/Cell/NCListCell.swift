@@ -49,7 +49,7 @@ class NCListCell: UICollectionViewCell {
 
     var delegate: NCListCellDelegate?
     
-    var ocId = ""
+    var objectId = ""
     var indexPath = IndexPath()
 
     let labelTitleTrailingConstant: CGFloat = 75
@@ -66,7 +66,7 @@ class NCListCell: UICollectionViewCell {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: ocId, sender: sender)
+        delegate?.tapMoreListItem(with: objectId, sender: sender)
     }
     
     func hide(buttonMore: Bool, hideImageShare: Bool) {
@@ -109,5 +109,5 @@ class NCListCell: UICollectionViewCell {
 }
 
 protocol NCListCellDelegate {
-    func tapMoreListItem(with ocId: String, sender: Any)
+    func tapMoreListItem(with objectId: String, sender: Any)
 }

@@ -43,7 +43,7 @@ class NCGridCell: UICollectionViewCell {
 
     var delegate: NCGridCellDelegate?
     
-    var ocId = ""
+    var objectId = ""
     var indexPath = IndexPath()
     
     let labelTitleTrailingConstant: CGFloat = 50
@@ -58,7 +58,7 @@ class NCGridCell: UICollectionViewCell {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: ocId, sender: sender)
+        delegate?.tapMoreGridItem(with: objectId, sender: sender)
     }
     
     func hide(buttonMore: Bool, hideImageShare: Bool) {
@@ -97,5 +97,5 @@ class NCGridCell: UICollectionViewCell {
 }
 
 protocol NCGridCellDelegate {
-    func tapMoreGridItem(with ocId: String, sender: Any)
+    func tapMoreGridItem(with objectId: String, sender: Any)
 }

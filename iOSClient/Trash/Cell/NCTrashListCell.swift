@@ -43,7 +43,7 @@ class NCTrashListCell: UICollectionViewCell {
 
     var delegate: NCTrashListCellDelegate?
     
-    var ocId = ""
+    var objectId = ""
     var indexPath = IndexPath()
 
     override func awakeFromNib() {
@@ -56,15 +56,15 @@ class NCTrashListCell: UICollectionViewCell {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: ocId, sender: sender)
+        delegate?.tapMoreListItem(with: objectId, sender: sender)
     }
     
     @IBAction func touchUpInsideRestore(_ sender: Any) {
-        delegate?.tapRestoreListItem(with: ocId, sender: sender)
+        delegate?.tapRestoreListItem(with: objectId, sender: sender)
     }
 }
 
 protocol NCTrashListCellDelegate {
-    func tapRestoreListItem(with ocId: String, sender: Any)
-    func tapMoreListItem(with ocId: String, sender: Any)
+    func tapRestoreListItem(with objectId: String, sender: Any)
+    func tapMoreListItem(with objectId: String, sender: Any)
 }

@@ -268,7 +268,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
     }
     
-    func tapMoreListItem(with ocId: String, sender: Any) {
+    func tapMoreListItem(with objectId: String, sender: Any) {
 
         if !isEditMode {
             var items = [ActionSheetItem]()
@@ -277,11 +277,11 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in
-                if item is ActionSheetDangerButton { self.deleteItem(with: ocId) }
+                if item is ActionSheetDangerButton { self.deleteItem(with: objectId) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: ocId, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
                 return
             }
             
@@ -297,7 +297,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
     }
     
-    func tapMoreGridItem(with ocId: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, sender: Any) {
         
         if !isEditMode {
             var items = [ActionSheetItem]()
@@ -311,12 +311,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in
-                if item.value as? Int == 0 { self.restoreItem(with: ocId) }
-                if item.value as? Int == 1 { self.deleteItem(with: ocId) }
+                if item.value as? Int == 0 { self.restoreItem(with: objectId) }
+                if item.value as? Int == 1 { self.deleteItem(with: objectId) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: ocId, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
                 return
             }
             
@@ -557,7 +557,7 @@ extension NCTrash: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCTrashListCell
             cell.delegate = self
             
-            cell.ocId = tableTrash.fileId
+            cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             
@@ -594,7 +594,7 @@ extension NCTrash: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
             
-            cell.ocId = tableTrash.fileId
+            cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             

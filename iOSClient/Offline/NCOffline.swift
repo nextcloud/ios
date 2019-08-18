@@ -302,13 +302,13 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
     }
     
-    func tapMoreListItem(with ocId: String, sender: Any) {
-        tapMoreGridItem(with: ocId, sender: sender)
+    func tapMoreListItem(with objectId: String, sender: Any) {
+        tapMoreGridItem(with: objectId, sender: sender)
     }
     
-    func tapMoreGridItem(with ocId: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, sender: Any) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else {
             return
         }
         
