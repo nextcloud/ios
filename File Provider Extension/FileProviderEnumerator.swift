@@ -66,11 +66,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.sharedInstance.account))
             for tag in tags {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", tag.fileID))  else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tag.ocId))  else {
                     continue
                 }
                 
-                fileProviderUtility.sharedInstance.createFileIdentifierOnFileSystem(metadata: metadata)
+                fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
                 
                 itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
             }
@@ -79,7 +79,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             fileProviderData.sharedInstance.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.sharedInstance.account)
             for (identifier, _) in fileProviderData.sharedInstance.listFavoriteIdentifierRank {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else {
                     continue
                 }
                 
@@ -161,7 +161,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                                 
                                 if metadataFolder != nil {
                                     // Update directory etag
-                                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder!.etag, fileID: metadataFolder!.fileID, encrypted: metadataFolder!.e2eEncrypted, account: fileProviderData.sharedInstance.account)
+                                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder!.etag, ocId: metadataFolder!.ocId, encrypted: metadataFolder!.e2eEncrypted, account: fileProviderData.sharedInstance.account)
                                     // Save etag for this serverUrl
                                     fileProviderData.sharedInstance.listServerUrlEtag[serverUrl] = metadataFolder!.etag
                                 }
@@ -294,7 +294,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 counter += 1
                 if (counter >= start && counter <= stop) {
                     
-                    fileProviderUtility.sharedInstance.createFileIdentifierOnFileSystem(metadata: metadata)
+                    fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
                     
                     let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl)
                     if parentItemIdentifier != nil {

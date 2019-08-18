@@ -1612,14 +1612,14 @@
     return operation;
 }
 
-- (NSURLSessionTask *) getRemotePreviewTrashByServer:(NSString*)serverPath ofFileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (NSURLSessionTask *) getRemotePreviewTrashByServer:(NSString*)serverPath ofocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    OCHTTPRequestOperation *operation = [request getRemotePreviewTrashByServer:serverPath ofFileID:fileID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    OCHTTPRequestOperation *operation = [request getRemotePreviewTrashByServer:serverPath ofocId:ocId onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         
@@ -2505,10 +2505,10 @@
     }];
 }
 
-- (void)markEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)markEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, ocId];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
 
     OCWebDAVClient *request = [OCWebDAVClient new];
@@ -2526,10 +2526,10 @@
     }];
 }
 
-- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, ocId];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
 
     OCWebDAVClient *request = [OCWebDAVClient new];
@@ -2547,10 +2547,10 @@
     }];
 }
 
-- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, ocId];
     if (token) {
         serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
         serverPath = [serverPath stringByAppendingString:@"&format=json"];
@@ -2608,10 +2608,10 @@
     }];
 }
 
-- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, ocId];
     serverPath = [serverPath stringByAppendingString:@"&format=json"];
 
     OCWebDAVClient *request = [OCWebDAVClient new];
@@ -2629,10 +2629,10 @@
     }];
 }
 
-- (void)getEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)getEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, ocId];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
 
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -2684,12 +2684,12 @@
     }];
 }
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)storeEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, ocId];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -2742,12 +2742,12 @@
     }];
 }
 
-- (void)updateEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)updateEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
 
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, ocId];
     serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
     serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
@@ -2801,10 +2801,10 @@
     }];
 }
 
-- (void)deleteEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)deleteEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, ocId];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
 
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -2824,7 +2824,7 @@
 
 #pragma mark - Manage Mobile Editor OCS API
 
-- (void)createLinkRichdocuments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)createLinkRichdocuments:(NSString *)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_richdocuments];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
@@ -2832,7 +2832,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request createLinkRichdocuments:serverPath fileID:fileID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+    [request createLinkRichdocuments:serverPath ocId:ocId onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
         
         NSData *responseData = (NSData*) response;
         
@@ -3159,9 +3159,9 @@
 
 #pragma mark - Comments
 
-- (void)getComments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)getComments:(NSString *)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@", serverPath, fileId];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
 
     OCWebDAVClient *request = [OCWebDAVClient new];
@@ -3183,9 +3183,9 @@
     }];
 }
 
-- (void)putComments:(NSString*)serverPath fileID:(NSString *)fileID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)putComments:(NSString*)serverPath fileId:(NSString *)fileId message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@", serverPath, fileId];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -3201,9 +3201,9 @@
     }];
 }
 
-- (void)updateComments:(NSString*)serverPath fileID:(NSString *)fileID messageID:(NSString *)messageID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)updateComments:(NSString*)serverPath fileId:(NSString *)fileId messageID:(NSString *)messageID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, messageID];
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileId, messageID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -3219,9 +3219,9 @@
     }];
 }
 
-- (void)deleteComments:(NSString*)serverPath fileID:(NSString *)fileID messageID:(NSString *)messageID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)deleteComments:(NSString*)serverPath fileId:(NSString *)fileId messageID:(NSString *)messageID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileID, messageID];
+    serverPath = [NSString stringWithFormat:@"%@/comments/files/%@/%@", serverPath, fileId, messageID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];

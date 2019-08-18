@@ -155,7 +155,7 @@ class fileProviderData: NSObject {
             
             if !oldListFavoriteIdentifierRank.keys.contains(identifier) {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else {
                     continue
                 }
                 guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else {
@@ -173,7 +173,7 @@ class fileProviderData: NSObject {
             
             if !listFavoriteIdentifierRank.keys.contains(identifier) {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else {
                     continue
                 }
                 

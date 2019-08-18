@@ -34,7 +34,7 @@ extension FileProviderExtension {
         
         let serverUrl = tableDirectory.serverUrl
         
-        OCNetworking.sharedManager().createFolder(withAccount: fileProviderData.sharedInstance.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, fileID, date, message, errorCode) in
+        OCNetworking.sharedManager().createFolder(withAccount: fileProviderData.sharedInstance.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, ocId, date, message, errorCode) in
             
             if errorCode == 0 && account == fileProviderData.sharedInstance.account {
                 
@@ -42,7 +42,7 @@ extension FileProviderExtension {
                 
                 metadata.account = account!
                 metadata.directory = true
-                metadata.fileID = fileID!
+                metadata.ocId = ocId!
                 metadata.fileName = directoryName
                 metadata.fileNameView = directoryName
                 metadata.serverUrl = serverUrl
@@ -55,7 +55,7 @@ extension FileProviderExtension {
                 }
                 
                 // DIRECTORY
-                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
+                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -113,7 +113,7 @@ extension FileProviderExtension {
             return
         }
         
-        let fileIDFrom = metadataFrom.fileID
+        let ocIdFrom = metadataFrom.ocId
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
         
@@ -130,12 +130,12 @@ extension FileProviderExtension {
                 
                 if metadataFrom.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account!)
-                    _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrlTo, account: account!)
+                    _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: nil, permissions: nil, serverUrl: serverUrlTo, account: account!)
                 }
                 
-                NCManageDatabase.sharedInstance.moveMetadata(fileID: fileIDFrom, serverUrlTo: serverUrlTo)
+                NCManageDatabase.sharedInstance.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileIDFrom)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdFrom)) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -174,24 +174,24 @@ extension FileProviderExtension {
             if errorCode == 0 && account == metadata.account {
                 
                 // Rename metadata
-                guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, fileID: metadata.fileID) else {
+                guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, ocId: metadata.ocId) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
                 
                 if metadata.directory {
                     
-                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted, account: account!)
+                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, encrypted: directoryTable.e2eEncrypted, account: account!)
                     
                 } else {
                     
                     let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
                     
                     // rename file
-                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: itemName))
-                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageIconFileID(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageIconFileID(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageocId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageocId(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageIconocId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageIconocId(itemIdentifier.rawValue, fileNameView: itemName))
                     
-                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
+                    NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
                 }
                 
                 guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
@@ -254,7 +254,7 @@ extension FileProviderExtension {
         }
         
         // Add, Remove (nil)
-        NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData, account: metadata.account)
+        NCManageDatabase.sharedInstance.addTag(metadata.ocId, tagIOS: tagData, account: metadata.account)
         
         guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -324,10 +324,10 @@ extension FileProviderExtension {
                 }
             
                 let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
-                let fileID = CCUtility.createMetadataID(fromAccount: fileProviderData.sharedInstance.account, serverUrl: tableDirectory.serverUrl, fileNameView: fileName, directory: false)!
+                let ocId = CCUtility.createMetadataID(fromAccount: fileProviderData.sharedInstance.account, serverUrl: tableDirectory.serverUrl, fileNameView: fileName, directory: false)!
             
                 self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
-                    _ = fileProviderUtility.sharedInstance.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileName))
+                    _ = fileProviderUtility.sharedInstance.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageocId(ocId, fileNameView: fileName))
                 }
             
                 fileURL.stopAccessingSecurityScopedResource()
@@ -339,7 +339,7 @@ extension FileProviderExtension {
                 metadata.date = NSDate()
                 metadata.directory = false
                 metadata.etag = ""
-                metadata.fileID = fileID
+                metadata.ocId = ocId
                 metadata.fileName = fileName
                 metadata.fileNameView = fileName
                 metadata.serverUrl = tableDirectory.serverUrl

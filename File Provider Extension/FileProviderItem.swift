@@ -92,7 +92,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
             self.documentSize = NSNumber(value: metadata.size)
            
-            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             if tableLocalFile == nil {
                 // self.isDownloaded = false
             } else {
@@ -121,16 +121,16 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         } else {
             
             // Favorite directory
-            let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.fileID]
+            let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.ocId]
             if (rank == nil) {
                 favoriteRank = nil
             } else {
-                favoriteRank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.fileID]
+                favoriteRank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.ocId]
             }
         }
         
         // Tag
-        if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "fileID == %@", metadata.fileID)) {
+        if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             tagData = tableTag.tagIOS
         }
     }

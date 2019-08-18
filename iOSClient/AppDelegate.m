@@ -70,8 +70,8 @@ PKPushRegistry *pushRegistry;
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
-    // Filter fileID
-    self.filterFileID = [NSMutableArray new];
+    // Filter ocId
+    self.filterocId = [NSMutableArray new];
 
     // Upload Pending In Upload (crash)
     self.sessionPendingStatusInUpload = [NSMutableArray new];
@@ -1461,11 +1461,11 @@ PKPushRegistry *pushRegistry;
     //
     NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasInUpload) {
-        if ([self.sessionPendingStatusInUpload containsObject:metadata.fileID]) {
+        if ([self.sessionPendingStatusInUpload containsObject:metadata.ocId]) {
             metadata.status = k_metadataStatusWaitUpload;
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         } else {
-            [self.sessionPendingStatusInUpload addObject:metadata.fileID];
+            [self.sessionPendingStatusInUpload addObject:metadata.ocId];
         }
     }
     if (metadatasInUpload.count == 0) {
@@ -1584,7 +1584,7 @@ PKPushRegistry *pushRegistry;
                                             // Push
                                             NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                             NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
                                             
                                             [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
                                             
@@ -1714,9 +1714,9 @@ PKPushRegistry *pushRegistry;
                         account = record.account;
                     }
                 }
-                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileID];
+                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.ocId];
                 if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
-                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageFileID:record.fileID fileNameView:record.fileName]];
+                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageocId:record.ocId fileNameView:record.fileName]];
                 }
             }
         });

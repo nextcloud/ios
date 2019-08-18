@@ -177,8 +177,8 @@
     
     [[OCNetworking sharedManager] settingFavoriteWithAccount:appDelegate.activeAccount fileName:fileNameServerUrl favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
+            [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:favorite];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
         } else if (errorCode != 0) {
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
@@ -207,7 +207,7 @@
             for (tableMetadata *metadata in metadatas) {
                 
                 // insert for test NOT favorite
-                [filesEtag addObject:metadata.fileID];
+                [filesEtag addObject:metadata.ocId];
                 
                 NSString *serverUrl = metadata.serverUrl;
                 NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
@@ -224,9 +224,9 @@
                     } else {
                         
                         if ([CCUtility getFavoriteOffline])
-                            [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload account:account];
+                            [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload account:account];
                         else
-                            [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile account:account];
+                            [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile account:account];
                     }
                     
                     father = serverUrlSon;
@@ -237,8 +237,8 @@
             NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
             
             for (tableMetadata *metadata in allRecordFavorite)
-                if (![filesEtag containsObject:metadata.fileID])
-                    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
+                if (![filesEtag containsObject:metadata.ocId])
+                    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
             
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
             
@@ -268,8 +268,8 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    if (sectionDataSource.fileIDIndexPath != nil) {
-        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
+    if (sectionDataSource.ocIdIndexPath != nil) {
+        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
     }
 }
 
@@ -285,7 +285,7 @@
         
         if (metadataSection) {
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataSection.fileID]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataSection.ocId]];
             if (metadata)
                 [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true uploadStatusForcedStart:false];
         }
@@ -303,7 +303,7 @@
         [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
         [NCUtility.sharedInstance stopActivityIndicator];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_NULL];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -392,23 +392,23 @@
 - (void)actionDelete:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-    tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+    tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
         tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
         
-        [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:metadata.serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_DEL];
+        [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:metadata.serverUrl folderocId:tableDirectory.ocId completion:^(NSInteger errorCode, NSString *message) {
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_DEL];
         }];
     }]];
     
     if (localFile) {
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadata.fileID action:k_action_MOD];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageocId:metadata.ocId] error:nil];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
         }]];
     }
     
@@ -451,9 +451,9 @@
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]]) {
         
-        iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]];
         
     } else {
         
@@ -518,7 +518,7 @@
     return metadata;
 }
 
-- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action
+- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action
 {
     // test
     if (appDelegate.activeAccount.length == 0 || self.view.window == nil) {
@@ -552,7 +552,7 @@
         recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, _serverUrl] sorted:nil ascending:NO];
     }
     
-    sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO sorted:sorted ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
+    sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterocId:appDelegate.filterocId filterTypeFileImage:NO filterTypeFileVideo:NO sorted:sorted ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
     
     [self.tableView reloadData];
 }
@@ -589,7 +589,7 @@
         return [CCCellMain new];
     }
     
-    tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
+    tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", directory.ocId]];
     
     for (tableShare *share in appDelegate.shares) {
         if ([share.serverUrl isEqualToString:metadata.serverUrl] && [share.fileName isEqualToString:metadata.fileName]) {
@@ -683,9 +683,9 @@
     if (self.metadata.directory == NO) {
         
         // File do not exists
-        if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
+        if ([CCUtility fileProviderStorageExists:self.metadata.ocId fileNameView:self.metadata.fileNameView]) {
             
-            [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:self.metadata.serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
+            [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName ocId:self.metadata.ocId serverUrl:self.metadata.serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
                             
         } else {
             
@@ -712,7 +712,7 @@
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
                     [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
                         
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
                 }
             }
         }
@@ -770,8 +770,8 @@
     
     NSMutableArray *photoDataSource = [NSMutableArray new];
     
-    for (NSString *fileID in sectionDataSource.allFileID) {
-        tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    for (NSString *ocId in sectionDataSource.allOcId) {
+        tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:ocId];
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [photoDataSource addObject:metadata];
     }

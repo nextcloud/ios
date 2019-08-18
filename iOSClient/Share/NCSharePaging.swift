@@ -88,7 +88,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.insets = UIEdgeInsets(top: height, left: 0, bottom: 0, right: 0)
             viewController.refreshControlEnable = false
             viewController.didSelectItemEnable = false
-            viewController.filterFileID = metadata!.fileID
+            viewController.filterocId = metadata!.ocId
             return viewController
         case 1:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
@@ -158,10 +158,10 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
-        headerView.fileID = metadata!.fileID
+        headerView.ocId = metadata!.ocId
         
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView)) {
-            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
+        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconocId(metadata!.ocId, fileNameView: metadata!.fileNameView)) {
+            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconocId(metadata!.ocId, fileNameView: metadata!.fileNameView))
         } else {
             if metadata!.iconName.count > 0 {
                 headerView.imageView.image = UIImage.init(named: metadata!.iconName)
@@ -216,20 +216,20 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var favorite: UIButton!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var fileID = ""
+    var ocId = ""
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
             OCNetworking.sharedManager()?.settingFavorite(withAccount: metadata.account, fileName: metadata.fileName, favorite: !metadata.favorite, completion: { (account, message, errorCode) in
                 if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.setMetadataFavorite(fileID: metadata.fileID, favorite: !metadata.favorite)
+                    NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite)
                     if !metadata.favorite {
                         self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)
                     } else {
                         self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.textInfo), for: .normal)
                     }
-                    self.appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, fileID: nil, action: Int(k_action_NULL))
+                    self.appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, ocId: nil, action: Int(k_action_NULL))
                     self.appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
                 }
             })

@@ -118,7 +118,7 @@ class tableActivityPreview: Object {
     @objc dynamic var source = ""
     @objc dynamic var link = ""
     @objc dynamic var mimeType = ""
-    @objc dynamic var fileId: Int = 0
+    @objc dynamic var ocId: Int = 0
     @objc dynamic var view = ""
     @objc dynamic var isMimeTypeIcon: Bool = false
     
@@ -212,7 +212,7 @@ class tableComments: Object {
     @objc dynamic var actorId = ""
     @objc dynamic var actorType = ""
     @objc dynamic var creationDateTime = NSDate()
-    @objc dynamic var fileID = ""
+    @objc dynamic var fileId = ""
     @objc dynamic var isUnread: Bool = false
     @objc dynamic var message = ""
     @objc dynamic var messageID = ""
@@ -233,8 +233,8 @@ class tableDirectory: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
+    @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
@@ -268,12 +268,12 @@ class tableE2eEncryptionLock: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
-    @objc dynamic var fileID = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var token = ""
     
     override static func primaryKey() -> String {
-        return "fileID"
+        return "ocId"
     }
 }
 
@@ -309,13 +309,13 @@ class tableLocalFile: Object {
     @objc dynamic var exifLatitude = ""
     @objc dynamic var exifLongitude = ""
     @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var size: Double = 0
     
     override static func primaryKey() -> String {
-        return "fileID"
+        return "ocId"
     }
 }
 
@@ -330,13 +330,12 @@ class tableMedia: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var mountType = ""
-    @objc dynamic var ocID = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
@@ -373,13 +372,12 @@ class tableMetadata: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var mountType = ""
-    @objc dynamic var ocID = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
@@ -460,11 +458,11 @@ class tableShare: Object {
 class tableTag: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var fileID = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var tagIOS: Data? = nil
     
     override static func primaryKey() -> String {
-        return "fileID"
+        return "ocId"
     }
 }
 
@@ -473,7 +471,7 @@ class tableTrash: Object {
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var fileID = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var fileName = ""
     @objc dynamic var filePath = ""
     @objc dynamic var hasPreview: Bool = false
@@ -485,6 +483,6 @@ class tableTrash: Object {
     @objc dynamic var trashbinDeletionTime = NSDate()
 
     override static func primaryKey() -> String {
-        return "fileID"
+        return "ocId"
     }
 }

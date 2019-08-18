@@ -199,11 +199,11 @@
 + (NSString *)getDirectoryCerificates;
 + (NSString *)getDirectoryUserData;
 + (NSString *)getDirectoryProviderStorage;
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID;
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
-+ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageocId:(NSString *)ocId;
++ (NSString *)getDirectoryProviderStorageocId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageIconocId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 
 + (void)emptyGroupApplicationSupport;
 + (void)emptyGroupLibraryDirectory;
@@ -242,7 +242,7 @@
 
 // ===== CCMetadata =====
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
 
 + (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory account:(NSString *)account isFolderEncrypted:(BOOL)isFolderEncrypted;
 

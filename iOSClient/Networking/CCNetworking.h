@@ -60,12 +60,12 @@
 
 #pragma mark ===== Download delegate =====
 
-@optional - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl;
-@optional  - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
+@optional - (void)downloadStart:(NSString *)ocId account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl;
+@optional  - (void)downloadFileSuccessFailure:(NSString *)fileName ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
 #pragma mark ===== Upload delegate =====
 
-@optional - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
-@optional - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
+@optional - (void)uploadStart:(NSString *)ocId account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
+@optional - (void)uploadFileSuccessFailure:(NSString *)fileName ocId:(NSString *)ocId assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
 @end

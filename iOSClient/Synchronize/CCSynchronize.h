@@ -38,7 +38,7 @@
 @property (nonatomic, strong) NSOperationQueue *operationSynchronizeQueue;
 
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
-- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
+- (void)readFile:(NSString *)ocId fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
 

@@ -242,7 +242,7 @@
             [CCUtility createDirectoryStandard];
 
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-            [appDelegate.filterFileID removeAllObjects];
+            [appDelegate.filterocId removeAllObjects];
 
             [appDelegate maintenanceMode:NO];
         

@@ -33,6 +33,6 @@
 + (CCExifGeo *)sharedInstance;
 
 - (void)setExifLocalTableEtag:(tableMetadata *)metadata;
-- (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
+- (void)setGeocoderEtag:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
 
 @end

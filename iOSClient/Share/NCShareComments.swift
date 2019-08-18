@@ -86,10 +86,10 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         guard let metadata = self.metadata else { return }
 
-        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileID: metadata.fileID, completion: { (account, items, message, errorCode) in
+        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileId: metadata.ocId, completion: { (account, items, message, errorCode) in
             if errorCode == 0 {
                 let itemsNCComments = items as! [NCComments]
-                NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, fileID: metadata.fileID)
+                NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, fileId: metadata.ocId)
                 self.tableView.reloadData()
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -107,7 +107,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         guard let metadata = self.metadata else { return }
         if message.count == 0 { return }
 
-        OCNetworking.sharedManager()?.putComments(withAccount: appDelegate.activeAccount, fileID: metadata.fileID, message: message, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager()?.putComments(withAccount: appDelegate.activeAccount, fileId: metadata.ocId, message: message, completion: { (account, message, errorCode) in
             if errorCode == 0 {
                 self.newCommentField.text = ""
                 self.reloadData()
@@ -146,7 +146,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                     if let message = alert.textFields?.first?.text {
                         if message != "" {
-                            OCNetworking.sharedManager()?.updateComments(withAccount: metadata.account, fileID: metadata.fileID, messageID: tableComments.messageID, message: message, completion: { (account, message, errorCode) in
+                            OCNetworking.sharedManager()?.updateComments(withAccount: metadata.account, fileId: metadata.ocId, messageID: tableComments.messageID, message: message, completion: { (account, message, errorCode) in
                                 if errorCode == 0 {
                                     self.reloadData()
                                 } else {
@@ -165,7 +165,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 guard let metadata = self.metadata else { return }
                 guard let tableComments = tableComments else { return }
 
-                OCNetworking.sharedManager()?.deleteComments(withAccount: metadata.account, fileID: metadata.fileID, messageID: tableComments.messageID, completion: { (account, message, errorCode) in
+                OCNetworking.sharedManager()?.deleteComments(withAccount: metadata.account, fileId: metadata.ocId, messageID: tableComments.messageID, completion: { (account, message, errorCode) in
                     if errorCode == 0 {
                         self.reloadData()
                     } else {
@@ -200,13 +200,13 @@ extension NCShareComments: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, fileID: metadata!.fileID)
+        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, fileId: metadata!.ocId)
         return comments.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, fileID: metadata!.fileID)
+        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, fileId: metadata!.ocId)
         let tableComments = comments[indexPath.row]
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell {

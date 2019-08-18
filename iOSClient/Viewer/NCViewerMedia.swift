@@ -38,9 +38,9 @@ class NCViewerMedia: NSObject {
             safeAreaBottom = Int(rootView.safeAreaInsets.bottom)
         }
         
-        if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
         
-            self.videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+            self.videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView))
             videoURLProxy = videoURL
         
         } else {
@@ -96,18 +96,18 @@ class NCViewerMedia: NSObject {
             }
             
             // Save cache
-            if !CCUtility.fileProviderStorageExists(self.metadata.fileID, fileNameView:self.metadata.fileNameView) {
+            if !CCUtility.fileProviderStorageExists(self.metadata.ocId, fileNameView:self.metadata.fileNameView) {
                 
                 guard let url = KTVHTTPCache.cacheCompleteFileURL(with: self.videoURL) else {
                     return
                 }
                 
-                CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(self.metadata.fileID, fileNameView: self.metadata.fileNameView))
+                CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageocId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
                 KTVHTTPCache.cacheDelete(with: self.videoURL)
                 
                 // reload Data Source
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl:self.metadata.serverUrl, fileID: self.metadata.fileID, action: k_action_MOD)
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl:self.metadata.serverUrl, ocId: self.metadata.ocId, action: k_action_MOD)
                 
                 // Enabled Button Action (the file is in local)
                 self.detail.buttonAction.isEnabled = true

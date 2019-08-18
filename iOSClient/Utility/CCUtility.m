@@ -1072,9 +1072,9 @@
     return path;
 }
 
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID
++ (NSString *)getDirectoryProviderStorageocId:(NSString *)ocId
 {
-    NSString *path = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], ocId];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
@@ -1082,9 +1082,9 @@
     return path;
 }
 
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
++ (NSString *)getDirectoryProviderStorageocId:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorageocId:ocId], fileNameView];
     
     // if do not exists create file 0 length
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath] == NO) {
@@ -1094,14 +1094,14 @@
     return fileNamePath;
 }
 
-+ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
++ (NSString *)getDirectoryProviderStorageIconocId:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
-    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
+    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageocId:ocId], fileNameView];
 }
 
-+ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView
++ (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
-    NSString *fileNamePath = [self getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView];
+    NSString *fileNamePath = [self getDirectoryProviderStorageocId:ocId fileNameView:fileNameView];
     
     unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
     
@@ -1109,9 +1109,9 @@
     else return false;
 }
 
-+ (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView
++ (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
-    NSString *fileNamePath = [self getDirectoryProviderStorageIconFileID:fileID fileNameView:fileNameView];
+    NSString *fileNamePath = [self getDirectoryProviderStorageIconocId:ocId fileNameView:fileNameView];
     
     unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
     
@@ -1373,7 +1373,7 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
 {
     tableMetadata *metadata = [tableMetadata new];
     
@@ -1381,11 +1381,10 @@
     metadata.date = date;
     metadata.directory = directory;
     metadata.etag = etag;
-    metadata.fileID = fileID;
+    metadata.ocId = ocId;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
-    metadata.ocID = fileID;
-    metadata.primaryKey = [account stringByAppendingString:fileID];
+    metadata.primaryKey = [account stringByAppendingString:ocId];
     metadata.serverUrl = serverUrl;
     metadata.size = size;
     metadata.status = status;
@@ -1419,13 +1418,12 @@
     metadata.e2eEncrypted = itemDto.isEncrypted;
     metadata.etag = itemDto.etag;
     metadata.favorite = itemDto.isFavorite;
-    metadata.fileID = itemDto.fileId;
     metadata.fileName = fileName;
     metadata.fileNameView = fileNameView;
     metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
     metadata.mountType = itemDto.mountType;
-    metadata.ocID = itemDto.ocId;
+    metadata.ocId = itemDto.ocId;
     metadata.ownerId = itemDto.ownerId;
     metadata.ownerDisplayName = itemDto.ownerDisplayName;
     metadata.permissions = itemDto.permissions;
@@ -1548,7 +1546,7 @@
 
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageocId:metadata.ocId fileNameView:metadata.fileName];
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
     

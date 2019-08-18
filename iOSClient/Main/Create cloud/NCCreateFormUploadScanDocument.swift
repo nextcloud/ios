@@ -400,7 +400,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", self.appDelegate.activeAccount, self.serverUrl, fileNameSave))
-                self.dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: self.serverUrl)
+                self.dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -409,13 +409,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            dismissAndUpload(fileNameSave, fileID: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: serverUrl)
+            dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
+    func dismissAndUpload(_ fileNameSave: String, ocId: String, serverUrl: String) {
         
-        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
+        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageocId(ocId, fileNameView: fileNameSave) else {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             return
         }
@@ -538,7 +538,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         metadataForUpload.account = self.appDelegate.activeAccount
         metadataForUpload.date = NSDate()
-        metadataForUpload.fileID = fileID
+        metadataForUpload.ocId = ocId
         metadataForUpload.fileName = fileNameSave
         metadataForUpload.fileNameView = fileNameSave
         metadataForUpload.serverUrl = serverUrl
@@ -547,7 +547,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
         
         _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
+        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
         self.appDelegate.startLoadAutoDownloadUpload()
                         

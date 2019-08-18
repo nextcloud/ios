@@ -409,7 +409,7 @@
             metadataForUpload.account = appDelegate.activeAccount;
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
             metadataForUpload.date = [NSDate new];
-            metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
+            metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
             metadataForUpload.fileName = fileName;
             metadataForUpload.fileNameView = fileName;
             metadataForUpload.serverUrl = serverUrl;
@@ -440,7 +440,7 @@
     // end loadingcand reload
     dispatch_async(dispatch_get_main_queue(), ^{
         [_hud hideHud];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_NULL];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     });    
 }
 
@@ -468,18 +468,18 @@
 
 - (BOOL)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
-    NSString *fileID;
+    NSString *ocId;
     NSError *error;
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
     BOOL encrypted = [CCUtility isFolderEncrypted:autoUploadPath account:appDelegate.activeAccount];
   
-    [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:autoUploadPath account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID error:&error];
+    [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:autoUploadPath account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted ocId:&ocId error:&error];
     
     if (error == nil) {
         
         tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, autoUploadPath]];
         if (!tableDirectory)
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:autoUploadPath account:appDelegate.activeAccount];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId permissions:nil serverUrl:autoUploadPath account:appDelegate.activeAccount];
         
     } else {
        
@@ -496,11 +496,11 @@
             
             NSString *folderPathName = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder];
             
-            [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:folderPathName account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID error:&error];
+            [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:folderPathName account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted ocId:&ocId error:&error];
             
             if ( error == nil) {
                 
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:folderPathName account:appDelegate.activeAccount];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId permissions:nil serverUrl:folderPathName account:appDelegate.activeAccount];
                 
             } else {
                 

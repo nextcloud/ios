@@ -215,7 +215,7 @@
                 [self.hud progress:progress.fractionCompleted];
             });
             
-        } completion:^(NSString *account, NSString *fileID, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode) {
+        } completion:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode) {
             
             [self.hud hideHud];
             
@@ -223,14 +223,14 @@
 
             if (errorCode == 0) {
                 
-                [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameForUpload]];
+                [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileNameForUpload]];
                 
                 tableMetadata *metadata = [tableMetadata new];
                 
                 metadata.account = self.activeAccount;
                 metadata.date = date;
                 metadata.etag = etag;
-                metadata.fileID = fileID;
+                metadata.ocId = ocId;
                 metadata.fileName = fileNameForUpload;
                 metadata.fileNameView = fileNameForUpload;
                 metadata.serverUrl = self.serverUrl;

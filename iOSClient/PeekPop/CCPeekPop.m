@@ -48,9 +48,9 @@
     
     if (self.metadata.hasPreview) {
         
-        if ([CCUtility fileProviderStorageIconExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
+        if ([CCUtility fileProviderStorageIconExists:self.metadata.ocId fileNameView:self.metadata.fileNameView]) {
             
-            UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageocId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
             if (fullImage != nil) {
                 image = fullImage;
             }

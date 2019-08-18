@@ -44,13 +44,13 @@
 
 - (NSURLSessionTask *)downloadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath encode:(BOOL)encode communication:(OCCommunication *)communication completion:(void (^)(NSString *account, int64_t length, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion;
 - (NSURLSessionTask *)downloadWithAccount:(NSString *)account url:(NSString *)url fileNameLocalPath:(NSString *)fileNameLocalPath encode:(BOOL)encode completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
-- (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath progress:(void(^)(NSProgress *progress))uploadProgress completion:(void(^)(NSString *account, NSString *fileID, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion;
+- (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath progress:(void(^)(NSProgress *progress))uploadProgress completion:(void(^)(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== WebDav =====
 
 - (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion;
 - (void)readFileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode))completion;
-- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion;
+- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *ocId, NSDate *date, NSString *message, NSInteger errorCode))completion;
 - (void)deleteFileOrFolderWithAccount:(NSString *)account path:(NSString *)path completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 - (void)moveFileOrFolderWithAccount:(NSString *)account fileName:(NSString *)fileName fileNameTo:(NSString *)fileNameTo completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 - (void)searchWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl contentType:(NSArray *)contentType lteDateLastModified:(NSDate *)lteDateLastModified gteDateLastModified:(NSDate *)gteDateLastModified depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion;
@@ -60,7 +60,7 @@
 
 - (void)downloadPreviewWithAccount:(NSString *)account metadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *account, UIImage *image, NSString *message, NSInteger errorCode))completion;
 - (void)downloadPreviewWithAccount:(NSString *)account serverPath:(NSString *)serverPath fileNamePath:(NSString *)fileNamePath completion:(void (^)(NSString *account, UIImage *image, NSString *message, NSInteger errorCode))completion;
-- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account, UIImage *image, NSString *message, NSInteger errorCode))completion;
+- (void)downloadPreviewTrashWithAccount:(NSString *)account ocId:(NSString *)ocId fileName:(NSString *)fileName completion:(void (^)(NSString *account, UIImage *image, NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== Favorite =====
 
@@ -94,7 +94,7 @@
 
 #pragma mark ===== Manage Mobile Editor OCS API =====
 
-- (void)createLinkRichdocumentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion;
+- (void)createLinkRichdocumentsWithAccount:(NSString *)account ocId:(NSString *)ocId completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion;
 - (void)getTemplatesRichdocumentsWithAccount:(NSString *)account typeTemplate:(NSString *)typeTemplate completion:(void(^)(NSString *account, NSArray *listOfTemplate, NSString *message, NSInteger errorCode))completion;
 - (void)createNewRichdocumentsWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl templateID:(NSString *)templateID completion:(void(^)(NSString *account, NSString *url, NSString *message, NSInteger errorCode))completion;
 - (void)createAssetRichdocumentsWithAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion;
@@ -116,10 +116,10 @@
 
 #pragma mark ===== Comments =====
 
-- (void)getCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
-- (void)putCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
-- (void)updateCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
-- (void)deleteCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)getCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
+- (void)putCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)updateCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId messageID:(NSString *)messageID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)deleteCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId messageID:(NSString *)messageID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 
 #pragma mark ===== Third Parts =====
 

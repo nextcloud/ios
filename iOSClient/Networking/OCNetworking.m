@@ -432,7 +432,7 @@
     return sessionTask;
 }
 
-- (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath progress:(void(^)(NSProgress *progress))uploadProgress completion:(void(^)(NSString *account, NSString *fileID, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
+- (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath progress:(void(^)(NSProgress *progress))uploadProgress completion:(void(^)(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
 {    
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -455,11 +455,11 @@
     
         NSDictionary *fields = [(NSHTTPURLResponse*)response allHeaderFields];
 
-        NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+        NSString *ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ocId"]];
         NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
         NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
         
-        completion(account, fileID, etag, date, nil, 0);
+        completion(account, ocId, etag, date, nil, 0);
         
     } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
         
@@ -554,7 +554,7 @@
             }
             
             // Add metadata folder
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite ocId:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account];
 
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
                 
@@ -577,7 +577,7 @@
                 }
                 
                 if (itemDto.isDirectory) {
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
                 }
                 
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
@@ -687,7 +687,7 @@
     }];
 }
 
-- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode))completion
+- (void)createFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, NSString *ocId, NSDate *date, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -710,10 +710,10 @@
         
         NSDictionary *fields = [response allHeaderFields];
         
-        NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+        NSString *ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ocId"]];
         NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
         
-        completion(account, fileID, date, nil, 0);
+        completion(account, ocId, date, nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -925,7 +925,7 @@
             serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
             
             if (itemDto.isDirectory) {
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
             }
             
             isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
@@ -1024,7 +1024,7 @@
 /*
  - (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
  {
- NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
+ NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageocId:metadata.ocId], metadata.fileNameView];
  
  if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
  
@@ -1074,7 +1074,7 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageocId:metadata.ocId], metadata.fileNameView];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
@@ -1157,7 +1157,7 @@
     }];
 }
 
-- (void)downloadPreviewTrashWithAccount:(NSString *)account FileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *account,  UIImage *image, NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewTrashWithAccount:(NSString *)account ocId:(NSString *)ocId fileName:(NSString *)fileName completion:(void (^)(NSString *account,  UIImage *image, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1168,7 +1168,7 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageocId:ocId], fileName];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
         
@@ -1180,7 +1180,7 @@
         
         [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
         [communication setUserAgent:[CCUtility getUserAgent]];
-        [communication getRemotePreviewTrashByServer:tableAccount.url ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        [communication getRemotePreviewTrashByServer:tableAccount.url ofocId:ocId onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
             
             [preview writeToFile:file atomically:YES];
             
@@ -1275,7 +1275,7 @@
             serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
             
             if (itemDto.isDirectory) {
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
             }
             
             isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
@@ -2166,7 +2166,7 @@
 #pragma mark ===== Manage Mobile Editor OCS API =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createLinkRichdocumentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion
+- (void)createLinkRichdocumentsWithAccount:(NSString *)account ocId:(NSString *)ocId completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2177,13 +2177,13 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    NSString *fileIDServer = [[NCUtility sharedInstance] convertFileIDClientToFileIDServer:fileID];
+    NSString *ocIdServer = [[NCUtility sharedInstance] convertocIdClientToocIdServer:ocId];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication createLinkRichdocuments:[tableAccount.url stringByAppendingString:@"/"] fileID:fileIDServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
+    [communication createLinkRichdocuments:[tableAccount.url stringByAppendingString:@"/"] ocId:ocIdServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
         
         completion(account, link, nil, 0);
         
@@ -2570,7 +2570,7 @@
                     trash.account = account;
                     trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
                     trash.directory = itemDto.isDirectory;
-                    trash.fileID = itemDto.ocId;
+                    trash.ocId = itemDto.ocId;
                     trash.fileName = itemDto.fileName;
                     NSArray *array = [itemDto.filePath componentsSeparatedByString:path];
                     long len = [[array objectAtIndex:0] length];
@@ -2664,7 +2664,7 @@
 #pragma mark ===== Comments =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
+- (void)getCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2680,7 +2680,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer) {
+    [communication getComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileId:fileId onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer) {
         
         completion(account, list, nil, 0);
 
@@ -2709,7 +2709,7 @@
     }];
 }
 
-- (void)putCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)putCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2725,7 +2725,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication putComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] message:message onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication putComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileId:fileId message:message onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
         
@@ -2754,7 +2754,7 @@
     }];
 }
 
-- (void)updateCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)updateCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId messageID:(NSString *)messageID message:(NSString *)message  completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2770,7 +2770,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication updateComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] messageID:messageID message:message onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication updateComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileId:fileId messageID:messageID message:message onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
         
@@ -2799,7 +2799,7 @@
     }];
 }
 
-- (void)deleteCommentsWithAccount:(NSString *)account fileID:(NSString *)fileID messageID:(NSString *)messageID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
+- (void)deleteCommentsWithAccount:(NSString *)account fileId:(NSString *)fileId messageID:(NSString *)messageID completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2815,7 +2815,7 @@
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication deleteComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileID:[[NCUtility sharedInstance] convertLocalFileID:fileID] messageID:messageID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication deleteComments:[NSString stringWithFormat:@"%@%@", tableAccount.url, k_dav] fileId:fileId messageID:messageID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(account, nil, 0);
         

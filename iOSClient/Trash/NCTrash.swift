@@ -30,12 +30,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
-    var blinkFileID: String?
+    var blinkocId: String?
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var isEditMode = false
-    private var selectFileID = [String]()
+    private var selectocId = [String]()
     
     private var datasource = [tableTrash]()
     
@@ -257,10 +257,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         menuView?.showMenu()
     }
     
-    func tapRestoreListItem(with fileID: String, sender: Any) {
+    func tapRestoreListItem(with ocId: String, sender: Any) {
         
         if !isEditMode {
-            restoreItem(with: fileID)
+            restoreItem(with: ocId)
         } else {
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -268,7 +268,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
     }
     
-    func tapMoreListItem(with fileID: String, sender: Any) {
+    func tapMoreListItem(with ocId: String, sender: Any) {
 
         if !isEditMode {
             var items = [ActionSheetItem]()
@@ -277,15 +277,15 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in
-                if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
+                if item is ActionSheetDangerButton { self.deleteItem(with: ocId) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
                 return
             }
             
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, fileID: tableTrash.fileID, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)            
+            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.ocId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)            
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
@@ -297,7 +297,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
     }
     
-    func tapMoreGridItem(with fileID: String, sender: Any) {
+    func tapMoreGridItem(with ocId: String, sender: Any) {
         
         if !isEditMode {
             var items = [ActionSheetItem]()
@@ -311,16 +311,16 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in
-                if item.value as? Int == 0 { self.restoreItem(with: fileID) }
-                if item.value as? Int == 1 { self.deleteItem(with: fileID) }
+                if item.value as? Int == 0 { self.restoreItem(with: ocId) }
+                if item.value as? Int == 1 { self.deleteItem(with: ocId) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
                 return
             }
             
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, fileID: tableTrash.fileID, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
+            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.ocId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
@@ -369,7 +369,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             // Restore ALL
             if indexPath.row == 1 {
                 for record: tableTrash in self.datasource {
-                    restoreItem(with: record.fileID)
+                    restoreItem(with: record.ocId)
                 }
             }
             */
@@ -387,7 +387,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     if item is ActionSheetDangerButton {
                         self.emptyTrash()
                         //for record: tableTrash in self.datasource {
-                        //    self.deleteItem(with: record.fileID)
+                        //    self.deleteItem(with: record.ocId)
                         //}
                     }
                     if item is ActionSheetCancelButton { return }
@@ -402,17 +402,17 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             // Cancel
             if indexPath.row == 0 {
                 isEditMode = false
-                selectFileID.removeAll()
+                selectocId.removeAll()
                 collectionView.reloadData()
             }
             
             // Restore selected files
             if indexPath.row == 1 {
-                for fileID in selectFileID {
-                    restoreItem(with: fileID)
+                for ocId in selectocId {
+                    restoreItem(with: ocId)
                 }
                 isEditMode = false
-                selectFileID.removeAll()
+                selectocId.removeAll()
                 collectionView.reloadData()
             }
             
@@ -427,11 +427,11 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 
                 actionSheet = ActionSheet(items: items) { sheet, item in
                     if item is ActionSheetDangerButton {
-                        for fileID in self.selectFileID {
-                            self.deleteItem(with: fileID)
+                        for ocId in self.selectocId {
+                            self.deleteItem(with: ocId)
                         }
                         self.isEditMode = false
-                        self.selectFileID.removeAll()
+                        self.selectocId.removeAll()
                         self.collectionView.reloadData()
                     }
                     if item is ActionSheetCancelButton { return }
@@ -472,10 +472,10 @@ extension NCTrash: UICollectionViewDelegate {
         let tableTrash = datasource[indexPath.item]
         
         if isEditMode {
-            if let index = selectFileID.firstIndex(of: tableTrash.fileID) {
-                selectFileID.remove(at: index)
+            if let index = selectocId.firstIndex(of: tableTrash.ocId) {
+                selectocId.remove(at: index)
             } else {
-                selectFileID.append(tableTrash.fileID)
+                selectocId.append(tableTrash.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
             return
@@ -543,10 +543,10 @@ extension NCTrash: UICollectionViewDataSource {
             image = UIImage.init(named: "file")
         }
         
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconocId(tableTrash.ocId, fileNameView: tableTrash.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconocId(tableTrash.ocId, fileNameView: tableTrash.fileName))
         } else {
-            if tableTrash.hasPreview && !CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
+            if tableTrash.hasPreview && !CCUtility.fileProviderStorageIconExists(tableTrash.ocId, fileNameView: tableTrash.fileName) {
                 downloadThumbnail(with: tableTrash, indexPath: indexPath)
             }
         }
@@ -557,7 +557,7 @@ extension NCTrash: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCTrashListCell
             cell.delegate = self
             
-            cell.fileID = tableTrash.fileID
+            cell.ocId = tableTrash.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             
@@ -573,7 +573,7 @@ extension NCTrash: UICollectionViewDataSource {
                 cell.imageItemLeftConstraint.constant = 45
                 cell.imageSelect.isHidden = false
                 
-                if selectFileID.contains(tableTrash.fileID) {
+                if selectocId.contains(tableTrash.ocId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
@@ -594,7 +594,7 @@ extension NCTrash: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
             
-            cell.fileID = tableTrash.fileID
+            cell.ocId = tableTrash.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             
@@ -606,7 +606,7 @@ extension NCTrash: UICollectionViewDataSource {
             
             if isEditMode {
                 cell.imageSelect.isHidden = false
-                if selectFileID.contains(tableTrash.fileID) {
+                if selectocId.contains(tableTrash.ocId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
                 } else {
@@ -648,14 +648,14 @@ extension NCTrash {
         datasource = tashItems
         
         reloadDataThenPerform {
-            // GoTo FileID
-            if self.blinkFileID != nil {
+            // GoTo ocId
+            if self.blinkocId != nil {
                 for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].fileID.contains(self.blinkFileID!) {
+                    if self.datasource[item].ocId.contains(self.blinkocId!) {
                         let indexPath = IndexPath(item: item, section: 0)
                         self.collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self.blinkFileID = nil
+                            self.blinkocId = nil
                             NCUtility.sharedInstance.blink(cell: self.collectionView.cellForItem(at: indexPath))
                         }
                     }
@@ -690,9 +690,9 @@ extension NCTrash {
         CATransaction.commit()
     }
     
-    func restoreItem(with fileID: String) {
+    func restoreItem(with ocId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
             return
         }
         
@@ -701,7 +701,7 @@ extension NCTrash {
         
         OCNetworking.sharedManager().moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
+                NCManageDatabase.sharedInstance.deleteTrash(ocId: ocId, account: account!)
                 self.loadDatasource()
             }  else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -715,7 +715,7 @@ extension NCTrash {
         
         OCNetworking.sharedManager().emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: nil, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.deleteTrash(ocId: nil, account: self.appDelegate.activeAccount)
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             } else {
@@ -725,9 +725,9 @@ extension NCTrash {
         })
     }
     
-    func deleteItem(with fileID: String) {
+    func deleteItem(with ocId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID, account: appDelegate.activeAccount) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(ocId: ocId, account: appDelegate.activeAccount) else {
             return
         }
         
@@ -735,7 +735,7 @@ extension NCTrash {
         
         OCNetworking.sharedManager().deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID, account: account!)
+                NCManageDatabase.sharedInstance.deleteTrash(ocId: ocId, account: account!)
                 self.loadDatasource()
             } else if errorCode != 0 {
                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -747,7 +747,7 @@ extension NCTrash {
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
         
-        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
+        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, ocId: tableTrash.ocId, fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 if let cell = self.collectionView.cellForItem(at: indexPath) {

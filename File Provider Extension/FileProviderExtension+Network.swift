@@ -42,7 +42,7 @@ extension FileProviderExtension {
     
     func deleteFileSystem(for metadata: tableMetadata, serverUrl: String, itemIdentifier: NSFileProviderItemIdentifier) {
         
-        let fileNamePath = CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue)!
+        let fileNamePath = CCUtility.getDirectoryProviderStorageocId(itemIdentifier.rawValue)!
         do {
             try fileProviderUtility.sharedInstance.fileManager.removeItem(atPath: fileNamePath)
         } catch let error {
@@ -54,8 +54,8 @@ extension FileProviderExtension {
             NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: fileProviderData.sharedInstance.account)
         }
         
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
     }
     
     // --------------------------------------------------------------------------------------------
@@ -87,9 +87,9 @@ extension FileProviderExtension {
     //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     
-    func uploadStart(_ fileID: String!, account: String!, task: URLSessionUploadTask!, serverUrl: String!) {
+    func uploadStart(_ ocId: String!, account: String!, task: URLSessionUploadTask!, serverUrl: String!) {
         
-        guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+        guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
             return
         }
         
@@ -112,9 +112,9 @@ extension FileProviderExtension {
         fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
     }
     
-    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
+    func uploadFileSuccessFailure(_ fileName: String!, ocId: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
                 
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
             return
         }
         
@@ -125,13 +125,13 @@ extension FileProviderExtension {
         // OK
         if errorCode == 0 {
             
-            // Remove temp fileID
+            // Remove temp ocId
             let itemIdentifier = NSFileProviderItemIdentifier(CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false))
             fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
             fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
             
             // Recreate ico
-            CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+            CCGraphics.createNewImage(from: fileName, ocId: ocId, extension: NSString(string: fileName).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
             
             // remove session data
             metadata.session = ""
@@ -180,7 +180,7 @@ extension FileProviderExtension {
         
         // Is itemIdentifier = fileName [Apple Works and ... ?]
         if itemIdentifier.rawValue.contains(fileName) && fileProviderUtility.sharedInstance.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@ AND fileName == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue, fileName)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue, fileName)) else {
                 return
             }
             itemIdentifierForUpload = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)

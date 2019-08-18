@@ -226,7 +226,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             metadataForUpload.account = self.appDelegate.activeAccount
             metadataForUpload.date = NSDate()
-            metadataForUpload.fileID = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)
+            metadataForUpload.ocId = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)
             metadataForUpload.fileName = fileNameSave
             metadataForUpload.fileNameView = fileNameSave
             metadataForUpload.serverUrl = self.serverUrl
@@ -234,10 +234,10 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             metadataForUpload.sessionSelector = selectorUploadFile
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
             
-            CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageFileID(metadataForUpload.fileID, fileNameView: fileNameSave))
+            CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageocId(metadataForUpload.ocId, fileNameView: fileNameSave))
             
             _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
+            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
             self.appDelegate.startLoadAutoDownloadUpload()
         })

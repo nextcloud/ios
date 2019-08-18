@@ -294,7 +294,7 @@
         
         } else {
             
-            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]];
 
             if (cell.fileImageView.image == nil) {
                 

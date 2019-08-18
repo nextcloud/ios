@@ -109,15 +109,15 @@ class NCUtility: NSObject {
         return screenWidth
     }
     
-    @objc func convertFileIDClientToFileIDServer(_ fileID: NSString) -> String {
+    @objc func convertocIdClientToocIdServer(_ ocId: NSString) -> String {
         
-        let split = fileID.components(separatedBy: "oc")
+        let split = ocId.components(separatedBy: "oc")
         if split.count == 2 {
-            let fileIDServerInt = CLongLong(split[0])
-            return String(describing: fileIDServerInt ?? 0)
+            let ocIdServerInt = CLongLong(split[0])
+            return String(describing: ocIdServerInt ?? 0)
         }
         
-        return fileID as String
+        return ocId as String
     }
     
     @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
@@ -393,18 +393,6 @@ class NCUtility: NSObject {
         CCUtility.createDirectoryStandard()
         
         CCUtility.deleteAllChainStore()
-    }
-    
-    @objc func convertLocalFileID(_ fileID:String) -> String {
-        
-        var localFileID = fileID
-        
-        if let endIndex = fileID.range(of: "oc")?.lowerBound {
-            let id = Int(fileID[..<endIndex])
-            localFileID = String(id ?? 0)
-        }
-        
-        return localFileID
     }
 }
 

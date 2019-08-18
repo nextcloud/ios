@@ -298,7 +298,7 @@
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             
             // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted account:activeAccount];
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
             [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
             
@@ -339,7 +339,7 @@
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
-    [[OCNetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *ocId, NSDate *date, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             [self readFolder];
@@ -398,8 +398,8 @@
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row];
     
-    // Create Directory Provider Storage FileID
-    [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
+    // Create Directory Provider Storage ocId
+    [CCUtility getDirectoryProviderStorageocId:metadata.ocId];
     
     // colors
     cell.textLabel.textColor = [UIColor blackColor];
@@ -417,7 +417,7 @@
         
     } else {
         
-        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconocId:metadata.ocId fileNameView:metadata.fileNameView]];
         
         if (thumb) {
             cell.imageView.image = thumb;

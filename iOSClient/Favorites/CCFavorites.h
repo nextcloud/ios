@@ -47,7 +47,7 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 
 - (void)shouldPerformSegue:(tableMetadata *)metadata;
-- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
+- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action;
 - (void)listingFavorites;
 
 @end

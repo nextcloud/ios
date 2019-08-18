@@ -49,20 +49,42 @@ class NCManageDatabase: NSObject {
                 }
                 
                 if oldSchemaVersion < 54 {
+                    /*
                     migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
                         newObject!["primaryKey"] = (oldObject!["account"] as! String) + (oldObject!["fileID"] as! String)
                     }
                     migration.enumerateObjects(ofType: tableMedia.className()) { oldObject, newObject in
                         newObject!["primaryKey"] = (oldObject!["account"] as! String) + (oldObject!["fileID"] as! String)
                     }
+                    */
                 }
                 
                 if oldSchemaVersion < 61 {
                     migration.deleteData(forType: tableShare.className())
                 }
                 
-                if oldSchemaVersion < 68 {
+                if oldSchemaVersion < 70 {
+                    
+                    migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
+                        newObject!["ocId"] = oldObject!["fileID"]
+                    }
+                    
+                    migration.enumerateObjects(ofType: tableTrash.className()) { oldObject, newObject in
+                        newObject!["ocId"] = oldObject!["fileID"]
+                    }
+                    
+                    migration.enumerateObjects(ofType: tableTag.className()) { oldObject, newObject in
+                        newObject!["ocId"] = oldObject!["fileID"]
+                    }
+                    
+                    migration.enumerateObjects(ofType: tableE2eEncryptionLock.className()) { oldObject, newObject in
+                        newObject!["ocId"] = oldObject!["fileID"]
+                    }
+                    
                     migration.deleteData(forType: tableMetadata.className())
+                    migration.deleteData(forType: tableE2eEncryptionLock.className())
+                    migration.deleteData(forType: tableTag.className())
+                    migration.deleteData(forType: tableTrash.className())
                 }
                 
             }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -700,8 +722,8 @@ class NCManageDatabase: NSObject {
                             let addObjectActivityPreview = tableActivityPreview()
                             addObjectActivityPreview.account = account
                             addObjectActivityPreview.idActivity = activity.idActivity
-                            addObjectActivityPreview.fileId = activityPreview["fileId"] as? Int ?? 0
-                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
+                            addObjectActivityPreview.ocId = activityPreview["ocId"] as? Int ?? 0
+                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.ocId)
                             addObjectActivityPreview.source = activityPreview["source"] as? String ?? ""
                             addObjectActivityPreview.link = activityPreview["link"] as? String ?? ""
                             addObjectActivityPreview.mimeType = activityPreview["mimeType"] as? String ?? ""
@@ -727,19 +749,19 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getActivity(predicate: NSPredicate, filterFileID: String?) -> (all: [tableActivity], filter: [tableActivity]) {
+    func getActivity(predicate: NSPredicate, filterocId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
         
         let realm = try! Realm()
         realm.refresh()
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
         let allActivity = Array(results.map { tableActivity.init(value:$0) })
-        if filterFileID != nil {
+        if filterocId != nil {
             var resultsFilter = [tableActivity]()
             for result in results {
                 let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
                 for resultActivitySubjectRich in resultsActivitySubjectRich {
-                    if filterFileID!.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
+                    if filterocId!.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
                         resultsFilter.append(result)
                         break
                     }
@@ -779,7 +801,7 @@ class NCManageDatabase: NSObject {
         var results = [tableActivityPreview]()
         
         for id in orderKeysId {
-            if let result = realm.objects(tableActivityPreview.self).filter("account == %@ && idActivity == %d && fileId == %d", account, idActivity, Int(id) ?? 0).first {
+            if let result = realm.objects(tableActivityPreview.self).filter("account == %@ && idActivity == %d && ocId == %d", account, idActivity, Int(id) ?? 0).first {
                 results.append(result)
             }
         }
@@ -989,14 +1011,14 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Comments
     
-    @objc func addComments(_ listOfComments: [NCComments], account: String, fileID: String) {
+    @objc func addComments(_ listOfComments: [NCComments], account: String, fileId: String) {
         
         let realm = try! Realm()
         
         do {
             try realm.write {
                 
-                let results = realm.objects(tableComments.self).filter("account == %@ AND fileID == %@", account, fileID)
+                let results = realm.objects(tableComments.self).filter("account == %@ AND fileId == %@", account, fileId)
                 realm.delete(results)
                 
                 for comment in listOfComments {
@@ -1008,7 +1030,7 @@ class NCManageDatabase: NSObject {
                     addObject.actorId = comment.actorId
                     addObject.actorType = comment.actorType
                     addObject.creationDateTime = comment.creationDateTime as NSDate
-                    addObject.fileID = fileID
+                    addObject.fileId = fileId
                     addObject.isUnread = comment.isUnread
                     addObject.message = comment.message
                     addObject.messageID = comment.messageID
@@ -1024,12 +1046,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getComments(account: String, fileID: String) -> [tableComments] {
+    @objc func getComments(account: String, fileId: String) -> [tableComments] {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableComments.self).filter("account == %@ AND fileID == %@", account, fileID).sorted(byKeyPath: "creationDateTime", ascending: false)
+        let results = realm.objects(tableComments.self).filter("account == %@ AND fileId == %@", account, fileId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
         return Array(results.map { tableComments.init(value:$0) })
     }
@@ -1037,7 +1059,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, fileID: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -1054,8 +1076,8 @@ class NCManageDatabase: NSObject {
         addObject.account = account
         addObject.e2eEncrypted = encrypted
         addObject.favorite = favorite
-        if let fileID = fileID {
-            addObject.fileID = fileID
+        if let ocId = ocId {
+            addObject.ocId = ocId
         }
         if let permissions = permissions {
             addObject.permissions = permissions
@@ -1085,7 +1107,7 @@ class NCManageDatabase: NSObject {
         for result in results {
             
             self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
-            self.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", result.fileID))
+            self.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", result.ocId))
         }
         
         // Delete table Dirrectory
@@ -1098,7 +1120,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, fileID: String?, encrypted: Bool, account: String) {
+    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, ocId: String?, encrypted: Bool, account: String) {
         
         let realm = try! Realm()
 
@@ -1117,8 +1139,8 @@ class NCManageDatabase: NSObject {
                 if let etag = etag {
                     directory.etag = etag
                 }
-                if let fileID = fileID {
-                    directory.fileID = fileID
+                if let ocId = ocId {
+                    directory.ocId = ocId
                 }
                 if let serverUrlTo = serverUrlTo {
                     directory.serverUrl = serverUrlTo
@@ -1414,7 +1436,7 @@ class NCManageDatabase: NSObject {
         return tableE2eEncryptionLock.init(value: result)
     }
     
-    @objc func setE2ETokenLock(serverUrl: String, fileID: String, token: String) {
+    @objc func setE2ETokenLock(serverUrl: String, ocId: String, token: String) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1427,7 +1449,7 @@ class NCManageDatabase: NSObject {
         let addObject = tableE2eEncryptionLock()
                 
         addObject.account = tableAccount.account
-        addObject.fileID = fileID
+        addObject.ocId = ocId
         addObject.serverUrl = serverUrl
         addObject.token = token
                 
@@ -1581,7 +1603,7 @@ class NCManageDatabase: NSObject {
                 addObject.exifDate = NSDate()
                 addObject.exifLatitude = "-1"
                 addObject.exifLongitude = "-1"
-                addObject.fileID = metadata.fileID
+                addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
                 addObject.size = metadata.size
             
@@ -1607,14 +1629,14 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
+    @objc func setLocalFile(ocId: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableLocalFile.self).filter("fileID == %@", fileID).first else {
+                guard let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first else {
                     realm.cancelWrite()
                     return
                 }
@@ -1669,14 +1691,14 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(fileID: String, offline: Bool) {
+    @objc func setLocalFile(ocId: String, offline: Bool) {
         
         let realm = try! Realm()
         
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableLocalFile.self).filter("fileID == %@", fileID).first else {
+                guard let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first else {
                     realm.cancelWrite()
                     return
                 }
@@ -1698,7 +1720,7 @@ class NCManageDatabase: NSObject {
         }
         
         // create primaryKey
-        metadata.primaryKey = metadata.account + metadata.fileID
+        metadata.primaryKey = metadata.account + metadata.ocId
         
         let serverUrl = metadata.serverUrl
         let account = metadata.account
@@ -1733,7 +1755,7 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 for metadata in metadatas {
                     // create primaryKey
-                    metadata.primaryKey = metadata.account + metadata.fileID
+                    metadata.primaryKey = metadata.account + metadata.ocId
                      
                     directoryToClearDate[metadata.serverUrl] = metadata.account
                     realm.add(metadata, update: .all)
@@ -1779,13 +1801,13 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func moveMetadata(fileID: String, serverUrlTo: String) {
+    @objc func moveMetadata(ocId: String, serverUrlTo: String) {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter("fileID == %@", fileID)
+                let results = realm.objects(tableMetadata.self).filter("ocId == %@", ocId)
                 for result in results {
                     result.serverUrl = serverUrlTo
                 }
@@ -1796,13 +1818,13 @@ class NCManageDatabase: NSObject {
         }        
     }
     
-    @objc func addMetadataServerUrl(fileID: String, serverUrl: String) {
+    @objc func addMetadataServerUrl(ocId: String, serverUrl: String) {
         
         let realm = try! Realm()
         
         do {
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter("fileID == %@", fileID)
+                let results = realm.objects(tableMetadata.self).filter("ocId == %@", ocId)
                 for result in results {
                     result.serverUrl = serverUrl
                 }
@@ -1813,14 +1835,14 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func renameMetadata(fileNameTo: String, fileID: String) -> tableMetadata? {
+    @objc func renameMetadata(fileNameTo: String, ocId: String) -> tableMetadata? {
         
         var result :tableMetadata?
         let realm = try! Realm()
         
         do {
             try realm.write {
-                result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first
+                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 if result != nil {
                     result!.fileName = fileNameTo
                     result!.fileNameView = fileNameTo
@@ -1903,13 +1925,13 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(serverUrl: serverUrl, account: account)
     }
     
-    @objc func setMetadataFavorite(fileID: String, favorite: Bool) {
+    @objc func setMetadataFavorite(ocId: String, favorite: Bool) {
         
         let realm = try! Realm()
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first else {
+        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
             realm.cancelWrite()
             return
         }
@@ -2049,7 +2071,7 @@ class NCManageDatabase: NSObject {
         
         for result in results {
             counter += 1
-            listIdentifierRank[result.fileID] = NSNumber(value: Int64(counter))
+            listIdentifierRank[result.ocId] = NSNumber(value: Int64(counter))
         }
         
         return listIdentifierRank
@@ -2463,7 +2485,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Tag
     
-    @objc func addTag(_ fileID: String ,tagIOS: Data?, account: String) {
+    @objc func addTag(_ ocId: String ,tagIOS: Data?, account: String) {
         
         let realm = try! Realm()
         
@@ -2474,7 +2496,7 @@ class NCManageDatabase: NSObject {
                 let addObject = tableTag()
                     
                 addObject.account = account
-                addObject.fileID = fileID
+                addObject.ocId = ocId
                 addObject.tagIOS = tagIOS
     
                 realm.add(addObject, update: .all)
@@ -2484,13 +2506,13 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func deleteTag(_ fileID: String) {
+    @objc func deleteTag(_ ocId: String) {
         
         let realm = try! Realm()
         
         realm.beginWrite()
         
-        let result = realm.objects(tableTag.self).filter("fileID == %@", fileID)
+        let result = realm.objects(tableTag.self).filter("ocId == %@", ocId)
         realm.delete(result)
         
         do {
@@ -2564,17 +2586,17 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func deleteTrash(fileID: String?, account: String) {
+    @objc func deleteTrash(ocId: String?, account: String) {
         
         let realm = try! Realm()
         var predicate = NSPredicate()
         
         realm.beginWrite()
         
-        if fileID == nil {
+        if ocId == nil {
             predicate = NSPredicate(format: "account == %@", account)
         } else {
-            predicate = NSPredicate(format: "account == %@ AND fileID == %@", account, fileID!)
+            predicate = NSPredicate(format: "account == %@ AND ocId == %@", account, ocId!)
         }
         
         let result = realm.objects(tableTrash.self).filter(predicate)
@@ -2597,12 +2619,12 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableTrash.init(value:$0) })
     }
     
-    @objc func getTrashItem(fileID: String, account: String) -> tableTrash? {
+    @objc func getTrashItem(ocId: String, account: String) -> tableTrash? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileID == %@", account, fileID).first else {
+        guard let result = realm.objects(tableTrash.self).filter("account == %@ AND ocId == %@", account, ocId).first else {
             return nil
         }
         

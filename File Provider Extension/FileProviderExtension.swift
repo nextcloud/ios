@@ -33,17 +33,17 @@ import FileProvider
  
                                     ↓
  
-    itemIdentifier = metadata.fileID (ex. 00ABC1)                                   --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    itemIdentifier = metadata.ocId (ex. 00ABC1)                                   --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
     parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
                                     ↓
 
-    itemIdentifier = metadata.fileID (ex. 00CCC)                                    --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    itemIdentifier = metadata.ocId (ex. 00CCC)                                    --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
     parentItemIdentifier = parent itemIdentifier (00ABC1)                           --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
                                     ↓
  
-    itemIdentifier = metadata.fileID (ex. 000DD)                                    --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    itemIdentifier = metadata.ocId (ex. 000DD)                                    --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
     parentItemIdentifier = parent itemIdentifier (00CCC)                            --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
    -------------------------------------------------------------------------------------------------------------------------------------------- */
@@ -124,7 +124,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             metadata.account = fileProviderData.sharedInstance.account
             metadata.directory = true
-            metadata.fileID = NSFileProviderItemIdentifier.rootContainer.rawValue
+            metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
             metadata.fileName = ""
             metadata.fileNameView = ""
             metadata.serverUrl = fileProviderData.sharedInstance.homeServerUrl
@@ -227,13 +227,13 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
             
         // is Upload [Office 365 !!!]
-        if metadata.fileID == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false)! {
+        if metadata.ocId == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false)! {
             completionHandler(nil)
             return
         }
             
-        let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag  {
+        let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag  {
             completionHandler(nil)
             return
         }
@@ -249,7 +249,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
+                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
                 
                 // Update DB Metadata
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)

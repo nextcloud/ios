@@ -37,7 +37,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
    
     private var metadataPush: tableMetadata?
     private var isEditMode = false
-    private var selectFileID = [String]()
+    private var selectocId = [String]()
     
     private var filterTypeFileImage = false;
     private var filterTypeFileVideo = false;
@@ -282,7 +282,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             switch indexPath.row {
             case 0:
                 isEditMode = false
-                selectFileID.removeAll()
+                selectocId.removeAll()
                 collectionView?.reloadDataThenPerform {
                     self.downloadThumbnail()
                 }
@@ -336,8 +336,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         let photoDataSource: NSMutableArray = []
         
-        for fileID: String in sectionDatasource.allFileID as! [String] {
-            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
+        for ocId: String in sectionDatasource.allOcId as! [String] {
+            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: ocId) as! tableMetadata
             if metadata.typeFile == k_metadataTypeFile_image {
                 photoDataSource.add(metadata)
             }
@@ -396,10 +396,10 @@ extension NCMedia: UICollectionViewDelegate {
         metadataPush = metadata
         
         if isEditMode {
-            if let index = selectFileID.firstIndex(of: metadata.fileID) {
-                selectFileID.remove(at: index)
+            if let index = selectocId.firstIndex(of: metadata.ocId) {
+                selectocId.remove(at: index)
             } else {
-                selectFileID.append(metadata.fileID)
+                selectocId.append(metadata.ocId)
             }
             if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                 collectionView.reloadItems(at: [indexPath])
@@ -468,7 +468,7 @@ extension NCMedia: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, shares: nil, source: self)
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, shares: nil, source: self)
         
         return cell
     }
@@ -503,7 +503,7 @@ extension NCMedia {
         DispatchQueue.global().async {
             
             let metadatas = NCManageDatabase.sharedInstance.getTablesMedia(account: self.appDelegate.activeAccount)
-            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterocId: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
                 
@@ -528,17 +528,17 @@ extension NCMedia {
         
         var metadatas = [tableMetadata]()
         
-        for fileID in selectFileID {
-            if let metadata = NCManageDatabase.sharedInstance.getTableMedia(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+        for ocId in selectocId {
+            if let metadata = NCManageDatabase.sharedInstance.getTableMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
                 metadatas.append(metadata)
             }
         }
         
         if metadatas.count > 0 {
-            NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderFileID: "") { (errorCode, message) in
+            NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderocId: "") { (errorCode, message) in
                 
                 self.isEditMode = false
-                self.selectFileID.removeAll()
+                self.selectocId.removeAll()
                 
                 self.selectSearchSections()
             }

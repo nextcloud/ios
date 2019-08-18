@@ -115,13 +115,13 @@
     return newImage;
 }
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
++ (UIImage *)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
 {
     UIImage *originalImage;
     UIImage *scaleImage;
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageocId:ocId fileNameView:fileName];
     
-    if (![CCUtility fileProviderStorageExists:fileID fileNameView:fileName]) return nil;
+    if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return nil;
     
     // only viedo / image
     if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
@@ -153,11 +153,11 @@
             
             // if it is preview for Upload then trasform it in gray scale
             scaleImage = [self grayscale:scaleImage];
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconocId:ocId fileNameView:fileName] atomically: YES];
             
         } else {
             
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconocId:ocId fileNameView:fileName] atomically: YES];
         }
     }
     

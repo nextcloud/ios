@@ -39,7 +39,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var refreshControlEnable: Bool = true
     var didSelectItemEnable: Bool = true
-    var filterFileID: String?
+    var filterocId: String?
     
     var loadingActivity = false
     var stopLoadingActivity = false
@@ -341,8 +341,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
             }
             if (responder as? UIViewController)!.navigationController != nil {
                 if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
-                    if let result = NCManageDatabase.sharedInstance.getTrashItem(fileID: String(activityPreview.fileId), account: activityPreview.account) {
-                        viewController.blinkFileID = result.fileID
+                    if let result = NCManageDatabase.sharedInstance.getTrashItem(ocId: String(activityPreview.ocId), account: activityPreview.account) {
+                        viewController.blinkocId = result.ocId
                         viewController.path = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
@@ -356,12 +356,12 @@ extension activityTableViewCell: UICollectionViewDelegate {
         
         if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
             
-            guard let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
+            guard let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.ocId)) else {
                 return
             }
             
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID CONTAINS %@", activitySubjectRich.id)) {
-                if let filePath = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId CONTAINS %@", activitySubjectRich.id)) {
+                if let filePath = CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView) {
                     do {
                         let attr = try FileManager.default.attributesOfItem(atPath: filePath)
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
@@ -380,7 +380,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             var url = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
             url = appDelegate.activeUrl + k_webDAV + url + "/" + activitySubjectRich.name
             
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageocId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
             NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             
@@ -397,10 +397,10 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         
                         if account == self.appDelegate.activeAccount && errorCode == 0 {
                             
-                            // move from id to oc:id + instanceid (fileID)
+                            // move from id to oc:id + instanceid (ocId)
                             
                             let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.fileID
+                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
                             
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                             
@@ -436,7 +436,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
             cell.imageView.image = nil
             
             let activityPreview = activityPreviews[indexPath.row]
-            let fileID = String(activityPreview.fileId)
+            let ocId = String(activityPreview.ocId)
             
             // Trashbin
             if activityPreview.view == "trashbin" {
@@ -467,7 +467,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                     
                 } else {
                     
-                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileID) {
+                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: ocId) {
                         
                         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
                         
@@ -529,7 +529,7 @@ extension NCActivity {
         
         sectionDate.removeAll()
         
-        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), filterFileID: filterFileID)
+        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), filterocId: filterocId)
         allActivities = activities.all
         filterActivities = activities.filter
         for tableActivity in filterActivities {
@@ -550,7 +550,7 @@ extension NCActivity {
             return Calendar.current.date(byAdding: components, to: startDate)!
         }()
         
-        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]), filterFileID: filterFileID)
+        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]), filterocId: filterocId)
         return activities.filter
     }
     

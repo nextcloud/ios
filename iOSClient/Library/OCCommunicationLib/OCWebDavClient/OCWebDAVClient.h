@@ -513,7 +513,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString * _Nonnull)serverPath ofFilePath:(NSString *_Nonnull)filePath  withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode path:(NSString * _Nonnull)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
-- (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString * _Nonnull)serverPath ofFileID:(NSString *_Nonnull)fileID onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+- (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString * _Nonnull)serverPath ofocId:(NSString *_Nonnull)ocId onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 NS_ASSUME_NONNULL_END
 
@@ -665,7 +665,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-- (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileID:(NSString * _Nonnull)fileID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+- (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath ocId:(NSString * _Nonnull)ocId onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)getTemplatesRichdocuments:(NSString *_Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 

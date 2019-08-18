@@ -189,7 +189,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, serverUrl: self.serverUrl)
+                self.dismissAndUpload(fileNameSave, ocId: metadata!.ocId, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -198,17 +198,17 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            let fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!
-            dismissAndUpload(fileNameSave, fileID: fileID, serverUrl: serverUrl)
+            let ocId = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!
+            dismissAndUpload(fileNameSave, ocId: ocId, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
+    func dismissAndUpload(_ fileNameSave: String, ocId: String, serverUrl: String) {
         
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave), contents: data, attributes: nil)
+            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageocId(ocId, fileNameView: fileNameSave), contents: data, attributes: nil)
             
             if success {
                 
@@ -216,7 +216,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 
                 metadataForUpload.account = self.appDelegate.activeAccount
                 metadataForUpload.date = NSDate()
-                metadataForUpload.fileID = fileID
+                metadataForUpload.ocId = ocId
                 metadataForUpload.fileName = fileNameSave
                 metadataForUpload.fileNameView = fileNameSave
                 metadataForUpload.serverUrl = serverUrl
@@ -225,7 +225,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
                 self.appDelegate.startLoadAutoDownloadUpload()
             

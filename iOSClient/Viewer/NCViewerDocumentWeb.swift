@@ -35,7 +35,7 @@ class NCViewerDocumentWeb: NSObject {
     
     @objc func viewDocumentWebAt(_ metadata: tableMetadata, detail: CCDetail) {
         
-        if !CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+        if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             detail.navigationController?.popViewController(animated: true)
             return
         }
@@ -52,7 +52,7 @@ class NCViewerDocumentWeb: NSObject {
         } catch { }
         
         do {
-            try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+            try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageocId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
         } catch {
             print("error")
             return

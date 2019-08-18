@@ -178,7 +178,7 @@
     
     metadataForUpload.account = appDelegate.activeAccount;
     metadataForUpload.date = [NSDate new];
-    metadataForUpload.fileID = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrlLocal fileNameView:fileName directory:false];
+    metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrlLocal fileNameView:fileName directory:false];
     metadataForUpload.fileName = fileName;
     metadataForUpload.fileNameView = fileName;
     metadataForUpload.serverUrl = serverUrlLocal;
@@ -187,11 +187,11 @@
     metadataForUpload.status = k_metadataStatusWaitUpload;
     
     // Prepare file and directory
-    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:fileName]];
+    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageocId:metadataForUpload.ocId fileNameView:fileName]];
     
     // Add Medtadata for upload
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal fileID:metadataForUpload.fileID action:k_action_NULL];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal ocId:metadataForUpload.ocId action:k_action_NULL];
 
     [appDelegate startLoadAutoDownloadUpload];
     

@@ -32,7 +32,7 @@
 
 + (UIImage *)thumbnailImageForVideo:(NSURL *)videoURL atTime:(NSTimeInterval)time;
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage;
++ (UIImage *)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage;
 
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 
