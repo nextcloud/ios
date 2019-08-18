@@ -1370,7 +1370,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     
     func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
         
-        if !metadata.isInvalidated && metadata.hasPreview == 1 && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
+        if !metadata.isInvalidated && metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             
             let width = NCUtility.sharedInstance.getScreenWidthForPreview()
             let height = NCUtility.sharedInstance.getScreenHeightForPreview()

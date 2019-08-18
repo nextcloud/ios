@@ -1384,6 +1384,7 @@
     metadata.fileID = fileID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
+    metadata.ocID = fileID;
     metadata.primaryKey = [account stringByAppendingString:fileID];
     metadata.serverUrl = serverUrl;
     metadata.size = size;
@@ -1411,23 +1412,35 @@
     }
     
     metadata.account = account;
+    metadata.commentsUnread = itemDto.commentsUnread;
+    metadata.contentType = itemDto.contentType;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
     metadata.directory = itemDto.isDirectory;
     metadata.e2eEncrypted = itemDto.isEncrypted;
     metadata.etag = itemDto.etag;
     metadata.favorite = itemDto.isFavorite;
-    metadata.fileID = itemDto.ocId;
+    metadata.fileID = itemDto.fileId;
     metadata.fileName = fileName;
     metadata.fileNameView = fileNameView;
     metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
+    metadata.mountType = itemDto.mountType;
+    metadata.ocID = itemDto.ocId;
+    metadata.ownerId = itemDto.ownerId;
+    metadata.ownerDisplayName = itemDto.ownerDisplayName;
     metadata.permissions = itemDto.permissions;
     metadata.primaryKey = [account stringByAppendingString:itemDto.ocId];
+    metadata.quotaUsedBytes = itemDto.quotaUsedBytes;
+    metadata.quotaAvailableBytes = itemDto.quotaAvailableBytes;
+    metadata.resourceType = itemDto.resourceType;
     metadata.serverUrl = serverUrl;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.size = itemDto.size;
     metadata.status = k_metadataStatusNormal;
     metadata.typeFile = @"";
+    metadata.trashbinFileName = itemDto.trashbinFileName;
+    metadata.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
+    metadata.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
     
     [self insertTypeFileIconName:fileNameView metadata:metadata];
  
@@ -1456,14 +1469,6 @@
         ext = ext.uppercaseString;
         fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
 
-        // hasPreview
-        if (metadata.hasPreview == -1) {
-            if ([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
-                metadata.hasPreview = 1;
-            else
-                metadata.hasPreview = 0;
-        }
-        
         // Type image
         if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
             metadata.typeFile = k_metadataTypeFile_image;
@@ -1481,6 +1486,7 @@
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") + isDocumentModifiableExtension
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [CCUtility isDocumentModifiableExtension:ext]) {
+            
             metadata.typeFile = k_metadataTypeFile_document;
             metadata.iconName = @"document";
             

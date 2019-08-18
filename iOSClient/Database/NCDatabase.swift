@@ -323,6 +323,8 @@ class tableMedia: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var commentsUnread: Bool = false
+    @objc dynamic var contentType = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
@@ -331,10 +333,17 @@ class tableMedia: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
-    @objc dynamic var hasPreview: Int = -1
+    @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
+    @objc dynamic var mountType = ""
+    @objc dynamic var ocID = ""
+    @objc dynamic var ownerId = ""
+    @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
     @objc dynamic var primaryKey = ""
+    @objc dynamic var quotaUsedBytes: Double = 0
+    @objc dynamic var quotaAvailableBytes: Double = 0
+    @objc dynamic var resourceType = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -342,6 +351,9 @@ class tableMedia: Object {
     @objc dynamic var sessionTaskIdentifier: Int = 0
     @objc dynamic var size: Double = 0
     @objc dynamic var status: Int = 0
+    @objc dynamic var trashbinFileName = ""
+    @objc dynamic var trashbinOriginalLocation = ""
+    @objc dynamic var trashbinDeletionTime = NSDate()
     @objc dynamic var typeFile = ""
     @objc dynamic var url = ""
     
@@ -354,6 +366,8 @@ class tableMetadata: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var commentsUnread: Bool = false
+    @objc dynamic var contentType = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
@@ -362,10 +376,17 @@ class tableMetadata: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
-    @objc dynamic var hasPreview: Int = -1
+    @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
+    @objc dynamic var mountType = ""
+    @objc dynamic var ocID = ""
+    @objc dynamic var ownerId = ""
+    @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
     @objc dynamic var primaryKey = ""
+    @objc dynamic var quotaUsedBytes: Double = 0
+    @objc dynamic var quotaAvailableBytes: Double = 0
+    @objc dynamic var resourceType = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -373,6 +394,9 @@ class tableMetadata: Object {
     @objc dynamic var sessionTaskIdentifier: Int = 0
     @objc dynamic var size: Double = 0
     @objc dynamic var status: Int = 0
+    @objc dynamic var trashbinFileName = ""
+    @objc dynamic var trashbinOriginalLocation = ""
+    @objc dynamic var trashbinDeletionTime = NSDate()
     @objc dynamic var typeFile = ""
     @objc dynamic var url = ""
 
@@ -452,7 +476,7 @@ class tableTrash: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
     @objc dynamic var filePath = ""
-    @objc dynamic var hasPreview: Int = -1
+    @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var size: Double = 0
     @objc dynamic var typeFile = ""

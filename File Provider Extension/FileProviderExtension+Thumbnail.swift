@@ -42,7 +42,7 @@ extension FileProviderExtension {
                 continue
             }
             
-            if (metadata.hasPreview == 1) {
+            if (metadata.hasPreview) {
                 
                 let width = NCUtility.sharedInstance.getScreenWidthForPreview()
                 let height = NCUtility.sharedInstance.getScreenHeightForPreview()

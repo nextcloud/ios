@@ -162,7 +162,7 @@
         
     } else if ([elementName isEqualToString:@"oc:fileid"]  && [self.xmlChars length]) {
         
-        self.currentFile.id = (double)[_xmlChars doubleValue];
+        self.currentFile.fileId = [NSString stringWithString:self.xmlChars];
         
     } else if ([elementName isEqualToString:@"oc:size"] && [self.xmlChars length]) {
         
