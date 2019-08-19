@@ -41,11 +41,6 @@ class NCGridCell: UICollectionViewCell {
     var objectId = ""
     var indexPath = IndexPath()
     
-    let labelTitleTrailingConstant: CGFloat = 50
-    let imageShareTrailingConstant: CGFloat = 25
-    let imageShareWidth: CGFloat = 25
-    let buttonMoreWidth: CGFloat = 25
-
     override func awakeFromNib() {
         super.awakeFromNib()
        

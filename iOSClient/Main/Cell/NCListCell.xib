@@ -154,6 +154,7 @@
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
                 <outlet property="separator" destination="Egg-cb-EhZ" id="uhq-Nc-z8K"/>
                 <outlet property="shared" destination="jc6-Vg-TaS" id="w28-mv-Bvr"/>
+                <outlet property="sharedLeftConstraint" destination="4YU-yn-33L" id="3sA-l2-yrB"/>
             </connections>
             <point key="canvasLocation" x="97.599999999999994" y="129.53523238380811"/>
         </collectionViewCell>

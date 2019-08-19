@@ -63,6 +63,12 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     private var failedAttempts: Double = 0
     private var lockUntilDate: NSDate?
     
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        appDelegate.activeOffline = self
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -331,7 +337,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             if (self == self.navigationController?.viewControllers[1]) {
                 items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
             }
-            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(ActionSheetItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
             let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
             itemDelete.customAppearance = appearanceDelete
@@ -347,7 +353,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     }
                     self.loadDatasource()
                 }
-                if item.value as? Int == 1 { NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 2) }
+                if item.value as? Int == 1 { NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }

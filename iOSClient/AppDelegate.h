@@ -40,6 +40,7 @@
 @class CCLoginWeb;
 @class CCMore;
 @class NCMedia;
+@class NCOffline;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
 
@@ -119,6 +120,7 @@
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
 @property (nonatomic, retain) CCMore *activeMore;
+@property (nonatomic, retain) NCOffline *activeOffline;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;

@@ -23,7 +23,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eU3-lY-fKr" userLabel="labelTitle">
-                        <rect key="frame" x="0.0" y="230" width="185" height="15"/>
+                        <rect key="frame" x="5" y="230" width="180" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -81,7 +81,7 @@
                 <constraint firstItem="81G-wH-fjN" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-20" id="aEb-vq-8sk"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="45" id="eEC-eB-alE"/>
-                <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="gZe-FC-8XQ"/>
+                <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="gZe-FC-8XQ"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="leading" secondItem="eU3-lY-fKr" secondAttribute="trailing" constant="10" id="mhP-9c-PC9"/>
                 <constraint firstItem="81G-wH-fjN" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-20" id="nFH-Pc-end"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>

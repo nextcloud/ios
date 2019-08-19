@@ -28,7 +28,8 @@ import Parchment
 class NCSharePaging: UIViewController {
     
     private let pagingViewController = NCShareHeaderViewController()
-    
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     @objc var metadata: tableMetadata?
     @objc var indexPage: Int = 0
     
@@ -78,6 +79,14 @@ class NCSharePaging: UIViewController {
         super.viewWillAppear(animated)
         
         pagingViewController.menuItemSize = .fixed(width: self.view.bounds.width/3, height: 40)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, ocId: nil, action: Int(k_action_NULL))
+        appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
+        appDelegate.activeOffline?.loadDatasource()
     }
 }
 

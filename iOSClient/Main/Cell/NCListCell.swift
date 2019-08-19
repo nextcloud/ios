@@ -39,6 +39,7 @@ class NCListCell: UICollectionViewCell {
     @IBOutlet weak var labelInfo: UILabel!
 
     @IBOutlet weak var shared: UIImageView!
+    @IBOutlet weak var sharedLeftConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
@@ -50,11 +51,6 @@ class NCListCell: UICollectionViewCell {
     var objectId = ""
     var indexPath = IndexPath()
 
-    let labelTitleTrailingConstant: CGFloat = 75
-    let imageShareTrailingConstant: CGFloat = 45
-    let imageShareWidth: CGFloat = 25
-    let buttonMoreWidth: CGFloat = 40
-    
     override func awakeFromNib() {
         super.awakeFromNib()
        

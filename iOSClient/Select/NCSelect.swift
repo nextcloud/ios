@@ -649,7 +649,18 @@ extension NCSelect: UICollectionViewDataSource {
         
         NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, downloadThumbnail: true, shares: shares, source: self)
         
-        return cell
+        if typeLayout == k_layout_grid {
+            let cell = cell as! NCGridCell
+            cell.buttonMore.isHidden = true
+            
+            return cell
+        } else {
+            let cell = cell as! NCListCell
+            cell.imageMore.isHidden = true
+            cell.sharedLeftConstraint.constant = 15
+            
+            return cell
+        }
     }
 }
 
