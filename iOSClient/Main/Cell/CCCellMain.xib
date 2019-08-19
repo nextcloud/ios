@@ -19,13 +19,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="65" y="13" width="430" height="18"/>
+                        <rect key="frame" x="65" y="13" width="416" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="65" y="30.5" width="430" height="15"/>
+                        <rect key="frame" x="65" y="30.5" width="416" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -58,11 +58,11 @@
                             <constraint firstAttribute="height" constant="15" id="Oxa-YI-vu7"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qhJ-el-R92" userLabel="Shared Image View">
-                        <rect key="frame" x="505" y="-0.5" width="40" height="60.5"/>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="qhJ-el-R92" userLabel="Shared Image View">
+                        <rect key="frame" x="491" y="-0.5" width="54" height="60.5"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="3Kr-Hv-AdZ"/>
-                            <constraint firstAttribute="width" constant="40" id="Ijp-se-6KO"/>
+                            <constraint firstAttribute="width" constant="54" id="Ijp-se-6KO"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aRp-Ql-cyA" userLabel="More">
@@ -109,4 +109,7 @@
             <point key="canvasLocation" x="664" y="152.02398800599701"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="avatar" width="25" height="25"/>
+    </resources>
 </document>

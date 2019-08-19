@@ -576,9 +576,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     tableShare *shareCell;
-    BOOL isShare = false;
-    BOOL isMounted = false;
-    
+   
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
         return [CCCellMain new];
@@ -605,17 +603,10 @@
     if ([cell isKindOfClass:[CCCellMain class]]) {
         
         // Share add Tap
-        if (metadataFolder) {
-            isShare = [metadata.permissions containsString:k_permission_shared] && ![metadataFolder.permissions containsString:k_permission_shared];
-            isMounted = [metadata.permissions containsString:k_permission_mounted] && ![metadataFolder.permissions containsString:k_permission_mounted];
-        }
-        if (isShare || isMounted || shareCell) {
-            
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
-            [tap setNumberOfTapsRequired:1];
-            ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
-            [((CCCellMain *)cell).shared addGestureRecognizer:tap];
-        }
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
+        [tap setNumberOfTapsRequired:1];
+        ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
+        [((CCCellMain *)cell).shared addGestureRecognizer:tap];
         
         // More
         if ([self canOpenMenuAction:metadata]) {

@@ -394,5 +394,24 @@ class NCUtility: NSObject {
         
         CCUtility.deleteAllChainStore()
     }
+    
+    @objc func createAvatar(image: UIImage?, size: Int) -> UIImage? {
+        
+        if image == nil { return image }
+        
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
+        image?.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
+        var image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
+        let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: 0.5)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        avatarImageView?.layer.render(in: context)
+        image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
 }
 

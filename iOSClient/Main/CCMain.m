@@ -1981,17 +1981,8 @@
         UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
         if (avatar) {
             
-            avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:YES];
-            
-            CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-            
-            CGSize imageSize = avatarImageView.bounds.size;
-            UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            [avatarImageView.layer renderInContext:context];
-            avatar = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            
+            avatar = [[NCUtility sharedInstance] createAvatarWithImage:avatar size:25];
+                    
         } else {
             
             avatar = [UIImage imageNamed:@"menuLogoUser"];
@@ -3708,9 +3699,7 @@
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     tableShare *shareCell;
-    BOOL isShare = false;
-    BOOL isMounted = false;
-    
+   
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder])) {
         return [CCCellMain new];
     }
@@ -3729,17 +3718,10 @@
     if ([cell isKindOfClass:[CCCellMain class]]) {
         
         // Share add Tap
-        if (_metadataFolder) {
-            isShare = [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
-            isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_metadataFolder.permissions containsString:k_permission_mounted];
-        }
-        if (isShare || isMounted || shareCell) {
-            
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
-            [tap setNumberOfTapsRequired:1];
-            ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
-            [((CCCellMain *)cell).shared addGestureRecognizer:tap];
-        }
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
+        [tap setNumberOfTapsRequired:1];
+        ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
+        [((CCCellMain *)cell).shared addGestureRecognizer:tap];
         
         // More
         if ([self canOpenMenuAction:metadata]) {
