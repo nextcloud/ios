@@ -197,22 +197,16 @@ extension NCActivity: UITableViewDataSource {
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
                 
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                    
-                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        cell.icon.image = image
-                    }
-                    
+                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                 } else {
-                    
                     DispatchQueue.global().async {
-                        
                         let encodedString = activity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                             if errorCode == 0 {
                                 do {
                                     try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                                 } catch { return }
-                                cell.icon.image = UIImage(data: data!)
                             }
                         })
                     }

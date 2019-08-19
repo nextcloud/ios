@@ -218,9 +218,7 @@ extension NCShareComments: UITableViewDataSource {
             // Image
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableComments.actorId + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    cell.imageItem.image = image
-                }
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
                     let url = self.appDelegate.activeUrl + k_avatar + tableComments.actorId + "/128"
@@ -229,8 +227,8 @@ extension NCShareComments: UITableViewDataSource {
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             do {
                                 try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
                             } catch { return }
-                            cell.imageItem.image = UIImage(data: data!)
                         } else {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }

@@ -79,9 +79,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata!.ownerId + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    sharedWithYouByImage.image = image
-                }
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) { sharedWithYouByImage.image = image }
             } else {
                 let url = appDelegate.activeUrl + k_avatar + metadata!.ownerId + "/128"
                 let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
@@ -89,8 +87,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                     if errorCode == 0 && UIImage(data: data!) != nil {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                            if let image = UIImage(contentsOfFile: fileNameLocalPath) { self.sharedWithYouByImage.image = image }
                         } catch { return }
-                        self.sharedWithYouByImage.image = UIImage(data: data!)
                     } else {
                         self.sharedWithYouByImage.image = UIImage(named: "avatar")
                     }
@@ -254,9 +252,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
 
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-" + item.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    cell.imageItem.image = image
-                }
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
                     let url = self.appDelegate.activeUrl + k_avatar + item.name + "/128"
@@ -265,8 +261,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             do {
                                 try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
                             } catch { return }
-                            cell.imageItem.image = UIImage(data: data!)
                         } else {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }
@@ -346,9 +342,7 @@ extension NCShare: UITableViewDataSource {
                 
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.shareWith + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        cell.imageItem.image = image
-                    }
+                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
                 } else {
                     DispatchQueue.global().async {
                         let url = self.appDelegate.activeUrl + k_avatar + tableShare.shareWith + "/128"
@@ -357,8 +351,8 @@ extension NCShare: UITableViewDataSource {
                             if errorCode == 0 && UIImage(data: data!) != nil {
                                 do {
                                     try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
                                 } catch { return }
-                                cell.imageItem.image = UIImage(data: data!)
                             } else {
                                 cell.imageItem.image = UIImage(named: "avatar")
                             }

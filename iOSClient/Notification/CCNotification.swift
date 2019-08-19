@@ -117,10 +117,12 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                                 if errorCode == 0 && UIImage(data: data!) != nil  {
                                     do {
                                         try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                            cell.avatar.isHidden = false
+                                            cell.avatarLeadingMargin.constant = 50
+                                            cell.avatar.image = image
+                                        }
                                     } catch { return }
-                                    cell.avatar.isHidden = false
-                                    cell.avatarLeadingMargin.constant = 50
-                                    cell.avatar.image = UIImage(data: data!)
                                 }
                             })
                         }

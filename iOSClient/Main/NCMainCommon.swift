@@ -647,7 +647,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             do {
                                 try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                            } catch {  }
+                                cell.shared.image = NCUtility.sharedInstance.createAvatar(image: UIImage(contentsOfFile: fileNameLocalPath), size: 30)
+                            } catch { return }
                         }
                     })
                 }
