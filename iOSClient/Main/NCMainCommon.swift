@@ -269,7 +269,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
             cell.imageShare.image = nil
-            cell.hide(buttonMore: hideButtonMore, hideImageShare: true)
             
             if metadata.directory {
                 
@@ -320,16 +319,12 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 // Share
                 if (isShare) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (isMounted) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
             
@@ -374,8 +369,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
-            cell.imageShare.image = nil
-            cell.hide(buttonMore: hideButtonMore, hideImageShare: true)
             
             if metadata.directory {
                 
@@ -423,21 +416,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
                     else { cell.imageLocal.image = UIImage.init(named: "local") }
-                }
-                
-                // Share
-                if (isShare) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
-                } else if (isMounted) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
-                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
-                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                    cell.hide(buttonMore: hideButtonMore, hideImageShare: false)
                 }
             }
             

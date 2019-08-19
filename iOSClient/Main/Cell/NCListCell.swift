@@ -35,12 +35,10 @@ class NCListCell: UICollectionViewCell {
     @IBOutlet weak var imageLocal: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
 
     @IBOutlet weak var labelInfo: UILabel!
 
     @IBOutlet weak var imageShare: UIImageView!
-    @IBOutlet weak var imageShareTrailing: NSLayoutConstraint!
 
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
@@ -65,49 +63,16 @@ class NCListCell: UICollectionViewCell {
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
     }
     
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, sender: sender)
+    @IBAction func touchUpInsideShare(_ sender: Any) {
+        delegate?.tapShareListItem(with: objectId, sender: sender)
     }
     
-    func hide(buttonMore: Bool, hideImageShare: Bool) {
-        
-        if buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageMore.isHidden = true
-            self.imageShare.isHidden = true
-            
-            labelTitleTrailing.constant = 0
-            
-        } else if buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageMore.isHidden = true
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = 5
-            labelTitleTrailing.constant = imageShareWidth + imageShareTrailing.constant
-            
-        } else if !buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageMore.isHidden = false
-            self.imageShare.isHidden = true
-
-            labelTitleTrailing.constant = buttonMoreWidth
-            
-        } else if !buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageMore.isHidden = false
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = imageShareTrailingConstant
-            labelTitleTrailing.constant = labelTitleTrailingConstant
-        }
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+        delegate?.tapMoreListItem(with: objectId, sender: sender)
     }
 }
 
 protocol NCListCellDelegate {
+    func tapShareListItem(with objectId: String, sender: Any)
     func tapMoreListItem(with objectId: String, sender: Any)
 }

@@ -386,13 +386,15 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     func tapMoreHeader(sender: Any) {
-        
     }
     
     func tapMoreListItem(with objectId: String, sender: Any) {
     }
     
     func tapMoreGridItem(with objectId: String, sender: Any) {
+    }
+    
+    func tapShareListItem(with objectId: String, sender: Any) {
     }
     
     // MARK: DROP-DOWN-MENU

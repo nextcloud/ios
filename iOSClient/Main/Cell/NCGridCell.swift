@@ -34,11 +34,6 @@ class NCGridCell: UICollectionViewCell {
     @IBOutlet weak var imageLocal: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
-
-    @IBOutlet weak var imageShare: UIImageView!
-    @IBOutlet weak var imageShareTrailing: NSLayoutConstraint!
-
     @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCGridCellDelegate?
@@ -59,40 +54,6 @@ class NCGridCell: UICollectionViewCell {
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreGridItem(with: objectId, sender: sender)
-    }
-    
-    func hide(buttonMore: Bool, hideImageShare: Bool) {
-        
-        if buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageShare.isHidden = true
-            
-            labelTitleTrailing.constant = 0
-            
-        } else if buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = imageShareWidth
-            
-        } else if !buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageShare.isHidden = true
-            
-            labelTitleTrailing.constant = buttonMoreWidth
-            
-        } else if !buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = imageShareTrailingConstant
-            labelTitleTrailing.constant = labelTitleTrailingConstant
-        }
     }
 }
 
