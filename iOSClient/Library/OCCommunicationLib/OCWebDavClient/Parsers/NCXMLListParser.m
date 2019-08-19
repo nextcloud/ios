@@ -146,11 +146,11 @@
 
     } else if ([elementName isEqualToString:@"d:quota-used-bytes"] && [self.xmlChars length]) {
         
-        self.currentFile.quotaUsedBytes = [self.xmlChars longLongValue];
+        self.currentFile.quotaUsedBytes = (long)[self.xmlChars longLongValue];
 
     } else if ([elementName isEqualToString:@"d:quota-available-bytes"] && [self.xmlChars length]) {
         
-        self.currentFile.quotaAvailableBytes = [self.xmlChars longLongValue];
+        self.currentFile.quotaAvailableBytes = (long)[self.xmlChars longLongValue];
 
     } else if ([elementName isEqualToString:@"oc:permissions"] && [self.xmlChars length]) {
     
@@ -166,7 +166,7 @@
         
     } else if ([elementName isEqualToString:@"oc:size"] && [self.xmlChars length]) {
         
-        self.currentFile.size = [self.xmlChars longLongValue];
+        self.currentFile.size = (long)[self.xmlChars longLongValue];
 
     } else if ([elementName isEqualToString:@"oc:favorite"] && [self.xmlChars length]) {
         
