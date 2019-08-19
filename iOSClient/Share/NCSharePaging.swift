@@ -56,7 +56,6 @@ class NCSharePaging: UIViewController {
             spacing: .zero,
             insets: .zero
         )
-        pagingViewController.menuItemSize = .fixed(width: self.view.bounds.width/3, height: 40)
         
         // Contrain the paging view to all edges.
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -73,6 +72,12 @@ class NCSharePaging: UIViewController {
     
     @objc func exitTapped() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        pagingViewController.menuItemSize = .fixed(width: self.view.bounds.width/3, height: 40)
     }
 }
 
