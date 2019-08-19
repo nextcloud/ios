@@ -206,7 +206,7 @@
 
     } else if ([elementName isEqualToString:@"nc:trashbin-deletion-time"] && [self.xmlChars length]) {
         
-        self.currentFile.trashbinDeletionTime = [self.xmlChars longLongValue];
+        self.currentFile.trashbinDeletionTime = (long)[self.xmlChars longLongValue];
 
     } else if ([elementName isEqualToString:@"d:collection"]) {
         
