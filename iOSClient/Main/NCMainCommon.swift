@@ -557,6 +557,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     image = UIImage.init(named: "folderEncrypted")
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
                     image = UIImage.init(named: "folderAutomaticUpload")
+                } else if metadata.mountType == "group" {
+                    image = UIImage.init(named: "folder_group")
                 } else if isShare {
                     image = UIImage.init(named: "folder_shared_with_me")
                 } else if isMounted {
