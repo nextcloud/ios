@@ -639,7 +639,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 // Load avatar
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                    cell.shared.image = NCUtility.sharedInstance.createAvatar(image: UIImage(contentsOfFile: fileNameLocalPath), size: 30)
+                    cell.shared.image = NCUtility.sharedInstance.createAvatar(image: UIImage(contentsOfFile: fileNameLocalPath), size: 30, alpha: 0.75)
                 } else {
                     let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/128"
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
@@ -647,7 +647,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             do {
                                 try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                                cell.shared.image = NCUtility.sharedInstance.createAvatar(image: UIImage(contentsOfFile: fileNameLocalPath), size: 30)
+                                cell.shared.image = NCUtility.sharedInstance.createAvatar(image: UIImage(contentsOfFile: fileNameLocalPath), size: 30, alpha: 0.75)
                             } catch { return }
                         }
                     })

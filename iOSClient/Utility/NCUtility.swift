@@ -395,7 +395,7 @@ class NCUtility: NSObject {
         CCUtility.deleteAllChainStore()
     }
     
-    @objc func createAvatar(image: UIImage?, size: Int) -> UIImage? {
+    @objc func createAvatar(image: UIImage?, size: Int, alpha: CGFloat) -> UIImage? {
         
         if image == nil { return image }
         
@@ -406,6 +406,7 @@ class NCUtility: NSObject {
 
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
         let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: 0.5)
+        avatarImageView?.alpha = alpha
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         avatarImageView?.layer.render(in: context)
         image = UIGraphicsGetImageFromCurrentImageContext()

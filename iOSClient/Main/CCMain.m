@@ -1981,7 +1981,7 @@
         UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
         if (avatar) {
             
-            avatar = [[NCUtility sharedInstance] createAvatarWithImage:avatar size:25];
+            avatar = [[NCUtility sharedInstance] createAvatarWithImage:avatar size:25 alpha:1.0];
                     
         } else {
             
