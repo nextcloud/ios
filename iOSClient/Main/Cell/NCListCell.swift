@@ -38,7 +38,7 @@ class NCListCell: UICollectionViewCell {
 
     @IBOutlet weak var labelInfo: UILabel!
 
-    @IBOutlet weak var imageShare: UIImageView!
+    @IBOutlet weak var shared: UIImageView!
 
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!

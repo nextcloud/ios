@@ -268,22 +268,24 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
-            cell.imageShare.image = nil
+            cell.shared.image = nil
             
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
                     image = UIImage.init(named: "folderEncrypted")
-                } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    image = UIImage.init(named: "folderAutomaticUpload")
                 } else if isShare {
                     image = UIImage.init(named: "folder_shared_with_me")
-                } else if isMounted {
-                    image = UIImage.init(named: "folder_external")
                 } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_shared_with_me")
                 } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
                     image = UIImage.init(named: "folder_public")
+                } else if metadata.mountType == "group" {
+                    image = UIImage.init(named: "folder_group")
+                } else if isMounted {
+                    image = UIImage.init(named: "folder_external")
+                } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
+                    image = UIImage.init(named: "folderAutomaticUpload")
                 } else {
                     image = UIImage.init(named: "folder")
                 }
@@ -315,22 +317,40 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
                     else { cell.imageLocal.image = UIImage.init(named: "local") }
                 }
-                
-                // Share
-                if (isShare) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (isMounted) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                    cell.imageShare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-                }
             }
             
             // image Favorite
             if metadata.favorite {
                 cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+            }
+            
+            // Share image
+            if (isShare) {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: .black)
+            } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 30, height: 30, color: .black)
+            } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: .black)
+            } else {
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+            }
+            if metadata.ownerId != appDelegate.activeUserID {
+                // Load avatar
+                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
+                if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                    cell.shared.image = NCUtility.sharedInstance.createAvatar(image: UIImage(contentsOfFile: fileNameLocalPath), size: 30, alpha: 0.75)
+                } else {
+                    let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/128"
+                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                        if errorCode == 0 && UIImage(data: data!) != nil {
+                            do {
+                                try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                cell.shared.image = NCUtility.sharedInstance.createAvatar(image: UIImage(contentsOfFile: fileNameLocalPath), size: 30, alpha: 0.75)
+                            } catch { return }
+                        }
+                    })
+                }
             }
             
             if isEditMode {

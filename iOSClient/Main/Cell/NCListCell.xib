@@ -149,11 +149,11 @@
                 <outlet property="imageLocal" destination="H4E-G2-C1H" id="waX-r5-viX"/>
                 <outlet property="imageMore" destination="dgL-g5-Nkc" id="r7x-Ib-4nz"/>
                 <outlet property="imageSelect" destination="AyA-hP-r6w" id="c1t-yz-HBg"/>
-                <outlet property="imageShare" destination="jc6-Vg-TaS" id="uca-x2-wak"/>
                 <outlet property="imageStatus" destination="7Q9-Tv-9yo" id="Qug-Q7-rRZ"/>
                 <outlet property="labelInfo" destination="AXX-71-9Q6" id="krb-tZ-UQ7"/>
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
                 <outlet property="separator" destination="Egg-cb-EhZ" id="uhq-Nc-z8K"/>
+                <outlet property="shared" destination="jc6-Vg-TaS" id="w28-mv-Bvr"/>
             </connections>
             <point key="canvasLocation" x="97.599999999999994" y="129.53523238380811"/>
         </collectionViewCell>
