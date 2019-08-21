@@ -118,7 +118,7 @@
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
-@property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
+@property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
 @property (nonatomic, retain) CCMore *activeMore;
 @property (nonatomic, retain) NCOffline *activeOffline;
 

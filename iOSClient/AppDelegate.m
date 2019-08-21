@@ -288,14 +288,14 @@ PKPushRegistry *pushRegistry;
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
-                _activeLoginWeb = [CCLoginWeb new];
-                _activeLoginWeb.delegate = delegate;
-                _activeLoginWeb.loginType = loginType;
-                _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-                
-                dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:viewController];
-                });
+//                _activeLoginWeb = [CCLoginWeb new];
+//                _activeLoginWeb.delegate = delegate;
+//                _activeLoginWeb.loginType = loginType;
+//                _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+//
+//                dispatch_async(dispatch_get_main_queue(), ^ {
+//                    [_activeLoginWeb open:viewController];
+//                });
             }
             return;
         }
@@ -314,31 +314,31 @@ PKPushRegistry *pushRegistry;
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
-                _activeLoginWeb = [CCLoginWeb new];
-                _activeLoginWeb.delegate = delegate;
-                _activeLoginWeb.loginType = loginType;
-                
-                if (selector == k_intro_signup) {
-                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
-                } else {
-                    _activeLoginWeb.urlBase = self.activeUrl;
-                }
-
-                dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:viewController];
-                });
+//                _activeLoginWeb = [CCLoginWeb new];
+//                _activeLoginWeb.delegate = delegate;
+//                _activeLoginWeb.loginType = loginType;
+//
+//                if (selector == k_intro_signup) {
+//                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
+//                } else {
+//                    _activeLoginWeb.urlBase = self.activeUrl;
+//                }
+//
+//                dispatch_async(dispatch_get_main_queue(), ^ {
+//                    [_activeLoginWeb open:viewController];
+//                });
             }
             
         } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
             
-            _activeLoginWeb = [CCLoginWeb new];
-            _activeLoginWeb.delegate = delegate;
-            _activeLoginWeb.loginType = loginType;
-            _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-            
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [_activeLoginWeb open:viewController];
-            });
+//            _activeLoginWeb = [CCLoginWeb new];
+//            _activeLoginWeb.delegate = delegate;
+//            _activeLoginWeb.loginType = loginType;
+//            _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+//            
+//            dispatch_async(dispatch_get_main_queue(), ^ {
+//                [_activeLoginWeb open:viewController];
+//            });
             
         } else {
             

@@ -191,12 +191,12 @@
             if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
                 
 #ifdef DEBUG
-                NCLoginWeb *loginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                loginWeb.urlBase = self.baseUrl.text;
-                loginWeb.loginType = _loginType;
-                loginWeb.delegate = self;
+                appDelegate.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+                appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
+                appDelegate.activeLoginWeb.loginType = _loginType;
+                appDelegate.activeLoginWeb.delegate = self;
                 
-                [self presentViewController:loginWeb animated:YES completion:nil];
+                [self presentViewController:appDelegate.activeLoginWeb animated:YES completion:nil];
 #else
                 appDelegate.activeLoginWeb = [CCLoginWeb new];
                 appDelegate.activeLoginWeb.loginType = _loginType;

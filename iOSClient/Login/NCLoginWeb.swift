@@ -58,7 +58,7 @@ class NCLoginWeb: UIViewController {
         }
         
         // button exit
-        buttonExit.layer.zPosition = .greatestFiniteMagnitude
+        self.view.bringSubviewToFront(buttonExit)
         if loginType == k_login_Add_Forced {
             buttonExit.isHidden = true
         }
@@ -79,7 +79,6 @@ class NCLoginWeb: UIViewController {
     }
     
     @IBAction func touchUpInsideButtonExit(_ sender: UIButton) {
-        
         self.dismiss(animated: true) {
             self.delegate?.webDismiss?()
         }
