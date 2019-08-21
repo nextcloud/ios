@@ -28,6 +28,7 @@
 #import "OCNetworking.h"
 
 @class CCLoginWeb;
+@class NCLoginWeb;
 @class NCLoginQRCode;
 
 @protocol CCLoginDelegate <NSObject>
