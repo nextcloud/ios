@@ -198,9 +198,29 @@
                     <view key="view" contentMode="scaleToFill" id="UX5-cJ-bY6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cu2-5h-AYD">
+                                <rect key="frame" x="374" y="54" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="YkC-Vc-Xvs"/>
+                                    <constraint firstAttribute="width" constant="30" id="cFS-ia-6uF"/>
+                                </constraints>
+                                <state key="normal" image="exit"/>
+                                <connections>
+                                    <action selector="touchUpInsideButtonExit:" destination="yEb-Ky-35s" eventType="touchUpInside" id="Wx6-Nr-smX"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="vqz-4v-cZu" firstAttribute="trailing" secondItem="cu2-5h-AYD" secondAttribute="trailing" constant="10" id="tMX-8y-Q7J"/>
+                            <constraint firstItem="cu2-5h-AYD" firstAttribute="top" secondItem="vqz-4v-cZu" secondAttribute="top" constant="10" id="w2J-N0-HHq"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="vqz-4v-cZu"/>
                     </view>
+                    <connections>
+                        <outlet property="buttonExit" destination="cu2-5h-AYD" id="1Qq-gB-3g1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pz9-Hz-nT9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -208,6 +228,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="exit" width="300" height="300"/>
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>

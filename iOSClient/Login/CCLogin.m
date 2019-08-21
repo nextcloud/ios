@@ -194,8 +194,9 @@
                 NCLoginWeb *loginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 loginWeb.urlBase = self.baseUrl.text;
                 loginWeb.loginType = _loginType;
+                loginWeb.delegate = self;
+                
                 [self presentViewController:loginWeb animated:YES completion:nil];
-               
 #else
                 appDelegate.activeLoginWeb = [CCLoginWeb new];
                 appDelegate.activeLoginWeb.loginType = _loginType;
