@@ -337,7 +337,29 @@ extension SwiftWebVC: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(.allow)
+        guard let url = navigationAction.request.url else {
+            decisionHandler(.allow)
+            return
+        }
+        
+        if String(describing: url).hasPrefix(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) {
+            decisionHandler(.allow)
+            return
+        } else if navigationAction.request.httpMethod != "GET" || navigationAction.request.value(forHTTPHeaderField: "OCS-APIRequest") != nil {
+            decisionHandler(.allow)
+            return
+        }
+        
+        decisionHandler(.cancel)
+        
+        let language = NSLocale.preferredLanguages[0] as String
+        var request = URLRequest(url: url)
+
+        request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
+        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
+        
+        webView.load(request)
     }
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
