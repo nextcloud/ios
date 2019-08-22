@@ -182,6 +182,10 @@ extension NCLoginWeb: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        
+        decisionHandler(.allow)
+
+        /*
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
@@ -205,6 +209,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
         webView.load(request)
+        */
     }
     
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
