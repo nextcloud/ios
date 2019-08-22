@@ -36,7 +36,7 @@ class NCLoginWeb: UIViewController {
 
     @objc var urlBase = ""
     @objc var loginType: Int = 0
-    @objc weak var delegate: CCLoginDelegateWeb?
+    @objc weak var delegate: NCLoginDelegateWeb?
 
     @IBOutlet weak var buttonExit: UIButton!
 
@@ -58,9 +58,10 @@ class NCLoginWeb: UIViewController {
         }
         
         // button exit
-        self.view.bringSubviewToFront(buttonExit)
         if loginType == k_login_Add_Forced {
             buttonExit.isHidden = true
+        } else {
+            self.view.bringSubviewToFront(buttonExit)
         }
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)

@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginDelegateWeb>
 {
 PKPushRegistry *pushRegistry;
 }
