@@ -27,7 +27,6 @@
 #import "CCCertificate.h"
 #import "OCNetworking.h"
 
-@class CCLoginWeb;
 @class NCLoginWeb;
 @class NCLoginQRCode;
 

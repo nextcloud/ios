@@ -37,7 +37,6 @@
 #import "CCFavorites.h"
 #import "CCTransfers.h"
 
-@class CCLoginWeb;
 @class CCMore;
 @class NCMedia;
 @class NCOffline;
