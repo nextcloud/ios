@@ -42,7 +42,10 @@ class NCLoginWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        webView = WKWebView(frame: CGRect.zero)
+        let config = WKWebViewConfiguration()
+        config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+
+        webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView!.navigationDelegate = self
         view.addSubview(webView!)
         webView!.translatesAutoresizingMaskIntoConstraints = false
