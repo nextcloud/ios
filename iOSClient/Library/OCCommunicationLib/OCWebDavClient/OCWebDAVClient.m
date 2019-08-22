@@ -495,7 +495,6 @@ NSString *const NCResource = @"<d:displayname/>"
     body = [body stringByAppendingString:NCResource];
     body = [body stringByAppendingString:@"</d:prop><oc:filter-rules><oc:favorite>1</oc:favorite></oc:filter-rules></oc:filter-files>"];
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
-    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];
