@@ -24,7 +24,7 @@
 
 import UIKit
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, NCLoginDelegateWeb {
+class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, NCLoginWebDelegate {
 
     @IBOutlet weak var themingBackground: UIImageView!
     @IBOutlet weak var disclosureIndicator: UIImageView!
@@ -410,16 +410,20 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
+                /*
                 let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
                 webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
+                */
                 
             } else {
                 
+                /*
                 let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
+                */
             }
             
         } else if item.url == "logout" {
@@ -452,16 +456,21 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
+                /*
                 let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
                 webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
+                */
                 
             } else {
                 
+                /*
                 let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: false)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
+                */
+                
             }
         }
     }
@@ -478,40 +487,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))        
-    }
-}
-
-extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
-    
-    public func didStartLoading() {
-        //print("Started loading.")
-    }
-    
-    public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
-        
-        let urlString: String = url.absoluteString.lowercased()
-        
-        // Protocol close webVC
-        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocolPersonalized) == true) {
-            
-            if (self.presentingViewController != nil) {
-                self.dismiss(animated: true, completion: nil)
-            } else {
-                self.navigationController?.popToRootViewController(animated: true)
-            }
-        }
-    }
-    
-    public func didFinishLoading(success: Bool) {
-        //print("Finished loading. Success: \(success).")
-    }
-    
-    public func didFinishLoading(success: Bool, url: URL) {
-        //print("Finished loading. Success: \(success).")
-    }
-    
-    public func webDismiss() {
-        //print("Web dismiss.")
     }
 }
 

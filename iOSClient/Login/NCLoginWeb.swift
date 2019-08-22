@@ -21,10 +21,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import Foundation
 
-@objc protocol NCLoginDelegateWeb: class {
+@objc protocol NCLoginWebDelegate: class {
     func loginSuccess(_: NSInteger)
     @objc optional func webDismiss()
 }
@@ -36,7 +35,7 @@ class NCLoginWeb: UIViewController {
 
     @objc var urlBase = ""
     @objc var loginType: Int = 0
-    @objc weak var delegate: NCLoginDelegateWeb?
+    @objc weak var delegate: NCLoginWebDelegate?
 
     @IBOutlet weak var buttonExit: UIButton!
 

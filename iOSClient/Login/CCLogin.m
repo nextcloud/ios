@@ -27,7 +27,7 @@
 #import "NCBridgeSwift.h"
 #import "NCNetworkingEndToEnd.h"
 
-@interface CCLogin () <NCLoginDelegateWeb, NCLoginQRCodeDelegate>
+@interface CCLogin () <NCLoginWebDelegate, NCLoginQRCodeDelegate>
 {
     AppDelegate *appDelegate;
     UIView *rootView;
@@ -301,7 +301,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark === NCLoginDelegateWeb ===
+#pragma mark === NCLoginWebDelegate ===
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)loginSuccess:(NSInteger)loginType

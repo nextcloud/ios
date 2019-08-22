@@ -25,7 +25,9 @@
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
-@interface CCIntro () <SwiftModalWebVCDelegate>
+@class NCBrowserWeb;
+
+@interface CCIntro ()
 {
     int titlePositionY;
     int titleIconPositionY;
@@ -252,23 +254,12 @@
 - (void)host:(id)sender
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    NCBrowserWeb *browserWebVC = [[UIStoryboard storyboardWithName:@"NCBrowserWeb" bundle:nil] instantiateInitialViewController];
     
-    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost colorText:[UIColor whiteColor] colorDoneButton:[UIColor blackColor] doneButtonVisible:YES hideToolbar:NO];
-    webVC.delegateWeb = self;
+    browserWebVC.urlBase = [NCBrandOptions sharedInstance].linkLoginHost;
     
-    [appDelegate.window.rootViewController presentViewController:webVC animated:YES completion:nil];
-}
-- (void)didStartLoading
-{
-}
-- (void)didReceiveServerRedirectForProvisionalNavigationWithUrl:(NSURL *)url
-{
-}
-- (void)didFinishLoadingWithSuccess:(BOOL)success url:(NSURL *)url
-{
-}
-- (void)webDismiss
-{
+    [appDelegate.window.rootViewController presentViewController:browserWebVC animated:YES completion:nil];
 }
 
 @end
