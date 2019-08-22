@@ -1060,24 +1060,6 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableComments.init(value:$0) })
     }
     
-    @objc func readMarkerComments(account: String, objectId: String) {
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
-        for result in results {
-            result.isUnread = false
-        }
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
     //MARK: -
     //MARK: Table Directory
     
