@@ -30,6 +30,7 @@
 @property(nonatomic, weak) IBOutlet UIImageView *status;
 @property(nonatomic, weak) IBOutlet UIImageView *favorite;
 @property(nonatomic, weak) IBOutlet UIImageView *local;
+@property(nonatomic, weak) IBOutlet UIImageView *comment;
 @property(nonatomic, weak) IBOutlet UIImageView *shared;
 @property(nonatomic, weak) IBOutlet UIImageView *more;
 
