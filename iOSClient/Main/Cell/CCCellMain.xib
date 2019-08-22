@@ -111,6 +111,7 @@
                 <outlet property="file" destination="5" id="Lfe-3W-yYr"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
+                <outlet property="labelTitleTrailingConstraint" destination="ljw-Qp-g60" id="Iu0-wc-FFr"/>
                 <outlet property="local" destination="DQR-yN-JaH" id="LBA-Bm-Mz9"/>
                 <outlet property="more" destination="aRp-Ql-cyA" id="vbC-Za-UhD"/>
                 <outlet property="shared" destination="qhJ-el-R92" id="qXO-Vc-N0d"/>

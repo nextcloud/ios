@@ -241,6 +241,12 @@ extension NCShareComments: UITableViewDataSource {
             cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
             // Message
             cell.labelMessage.text = tableComments.message
+            // Button Menu
+            if tableComments.actorId == appDelegate.activeUserID {
+                cell.buttonMenu.isHidden = false
+            } else {
+                cell.buttonMenu.isHidden = true
+            }
             
             return cell
         }

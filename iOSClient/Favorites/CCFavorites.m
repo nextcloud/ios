@@ -250,6 +250,18 @@
     }];
 }
 
+- (void)tapActionComment:(UITapGestureRecognizer *)tapGesture
+{
+    CGPoint location = [tapGesture locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    
+    if (metadata) {
+        [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:1];
+    }
+}
+
 - (void)tapActionShared:(UITapGestureRecognizer *)tapGesture
 {
     CGPoint location = [tapGesture locationInView:self.tableView];
@@ -602,11 +614,19 @@
 
     if ([cell isKindOfClass:[CCCellMain class]]) {
         
+        // Comment tap
+        if (metadata.commentsUnread) {
+            UITapGestureRecognizer *tapComment = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionComment:)];
+            [tapComment setNumberOfTapsRequired:1];
+            ((CCCellMain *)cell).comment.userInteractionEnabled = YES;
+            [((CCCellMain *)cell).comment addGestureRecognizer:tapComment];
+        }
+        
         // Share add Tap
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
-        [tap setNumberOfTapsRequired:1];
+        UITapGestureRecognizer *tapShare = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
+        [tapShare setNumberOfTapsRequired:1];
         ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
-        [((CCCellMain *)cell).shared addGestureRecognizer:tap];
+        [((CCCellMain *)cell).shared addGestureRecognizer:tapShare];
         
         // More
         if ([self canOpenMenuAction:metadata]) {

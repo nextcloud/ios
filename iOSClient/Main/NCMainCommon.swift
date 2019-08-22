@@ -520,6 +520,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.favorite.image = nil
             cell.shared.image = nil
             cell.local.image = nil
+            cell.comment.image = nil
             cell.shared.isUserInteractionEnabled = false
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
@@ -650,6 +651,14 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         }
                     })
                 }
+            }
+            
+            // Comment
+            if metadata.commentsUnread {
+                cell.comment.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+                cell.labelTitleTrailingConstraint.constant = 160
+            } else {
+                cell.labelTitleTrailingConstraint.constant = 110
             }
             
             // More Image
