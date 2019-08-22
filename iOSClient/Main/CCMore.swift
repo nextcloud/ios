@@ -410,20 +410,19 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                /*
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
-                webVC.delegate = self
-                self.navigationController?.pushViewController(webVC, animated: true)
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
+                browserWebVC.isHiddenButtonExit = true
+                
+                self.navigationController?.pushViewController(browserWebVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
-                */
                 
             } else {
                 
-                /*
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true)
-                webVC.delegateWeb = self
-                self.present(webVC, animated: true, completion: nil)
-                */
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
+
+                self.present(browserWebVC, animated: true, completion: nil)
             }
             
         } else if item.url == "logout" {
@@ -456,21 +455,19 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                /*
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
-                webVC.delegate = self
-                self.navigationController?.pushViewController(webVC, animated: true)
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
+                browserWebVC.isHiddenButtonExit = true
+                
+                self.navigationController?.pushViewController(browserWebVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
-                */
                 
             } else {
                 
-                /*
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: false)
-                webVC.delegateWeb = self
-                self.present(webVC, animated: true, completion: nil)
-                */
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
                 
+                self.present(browserWebVC, animated: true, completion: nil)
             }
         }
     }

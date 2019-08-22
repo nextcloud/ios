@@ -18,6 +18,7 @@ class NCBrowserWeb: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @objc var urlBase = ""
+    @objc var isHiddenButtonExit = false
     @objc weak var delegate: NCBrowserWebDelegate?
     
     @IBOutlet weak var buttonExit: UIButton!
@@ -35,7 +36,11 @@ class NCBrowserWeb: UIViewController {
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
         // button exit
-        self.view.bringSubviewToFront(buttonExit)
+        if isHiddenButtonExit {
+            buttonExit.isHidden = true
+        } else {
+            self.view.bringSubviewToFront(buttonExit)
+        }
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
     }
