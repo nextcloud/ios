@@ -84,12 +84,30 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     
     @objc func reloadData() {
         
+        var itemsNCComments = [NCComments]()
         guard let metadata = self.metadata else { return }
 
         OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileId: metadata.fileId, completion: { (account, items, message, errorCode) in
             if errorCode == 0 {
-                let itemsNCComments = items as! [NCComments]
+                var markCommentAsRead = false
+                itemsNCComments = items as! [NCComments]
                 NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, objectId: metadata.fileId)
+                
+                // Mark comment ad read
+                for comment in itemsNCComments {
+                    if comment.isUnread {
+                        markCommentAsRead = true
+                    }
+                }
+                if markCommentAsRead {
+                    OCNetworking.sharedManager()?.readMarkComments(withAccount: self.appDelegate.activeAccount, fileId: metadata.fileId, completion: { (account, message, errorCode) in
+                        if errorCode == 0 {
+                            NCManageDatabase.sharedInstance.readMarkerComments(account: account!, objectId: metadata.fileId)
+                            NCManageDatabase.sharedInstance.readMarkerMetadata(account: account!, fileId: metadata.fileId)
+                        }
+                    })
+                }
+                
                 self.tableView.reloadData()
             } else {
                 self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)

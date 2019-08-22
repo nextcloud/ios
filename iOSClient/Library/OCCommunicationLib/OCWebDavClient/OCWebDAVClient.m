@@ -1491,7 +1491,7 @@ NSString *const NCResource = @"<d:displayname/>"
             "<d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
             "<d:set>"
             "<d:prop>"
-            "<oc:readMarker>"
+            "<readMarker xmlns=\"http://owncloud.org/ns\"/>"
             "</d:prop>"
             "</d:set>"
             "</d:propertyupdate>"];

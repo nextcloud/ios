@@ -1060,6 +1060,24 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableComments.init(value:$0) })
     }
     
+    @objc func readMarkerComments(account: String, objectId: String) {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
+        for result in results {
+            result.isUnread = false
+        }
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     //MARK: -
     //MARK: Table Directory
     
@@ -1717,6 +1735,10 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Metadata
     
+    @objc func initNewMetadata(_ metadata: tableMetadata) -> tableMetadata {
+        return tableMetadata.init(value: metadata)
+    }
+    
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
             
         if metadata.isInvalidated {
@@ -2096,8 +2118,22 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func initNewMetadata(_ metadata: tableMetadata) -> tableMetadata {
-        return tableMetadata.init(value: metadata)
+    @objc func readMarkerMetadata(account: String, fileId: String) {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        let results = realm.objects(tableMetadata.self).filter("account == %@ AND fileId == %@", account, fileId)
+        for result in results {
+            result.commentsUnread = false
+        }
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     //MARK: -
