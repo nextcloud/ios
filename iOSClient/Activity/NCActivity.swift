@@ -288,6 +288,7 @@ extension NCActivity: UITableViewDataSource {
     }
 }
 
+/*
 extension NCActivity: UITableViewDataSourcePrefetching {
     
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
@@ -299,7 +300,7 @@ extension NCActivity: UITableViewDataSourcePrefetching {
         let lastRow = getTableActivitiesFromSection(section).count - 1
         
         if section == lastSection && row > lastRow - 1 {
-            loadActivity(idActivity: allActivities.last!.idActivity)
+            //loadActivity(idActivity: allActivities.last!.idActivity)
         }
     }
     
@@ -307,6 +308,7 @@ extension NCActivity: UITableViewDataSourcePrefetching {
         //print("cancelPrefetchingForRowsAt \(indexPaths)")
     }
 }
+*/
 
 // MARK: - ScrollView
 
@@ -314,12 +316,7 @@ extension NCActivity: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if (Int(scrollView.contentOffset.y + scrollView.frame.size.height) == Int(scrollView.contentSize.height + scrollView.contentInset.bottom)) {
-            /*
-            if !isFetching {
-                isFetching = true
-                fetchAndReloadData(true)
-            }
-            */
+            loadActivity(idActivity: allActivities.last!.idActivity)
         }
     }
 
@@ -548,6 +545,10 @@ extension NCActivity {
                 sectionDate.append(date)
             }
         }
+        if filterFileId != nil && filterActivities.count == 0 && allActivities.count > 0 {
+            loadActivity(idActivity: allActivities[allActivities.count-1].idActivity)
+        }
+        
         tableView.reloadData()
     }
     
