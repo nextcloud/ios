@@ -542,10 +542,19 @@ extension NCActivity {
             }
         }
         
-        // Test activity no record
+        // Automatic load activity
         if filterFileId != nil && filterActivities.count == 0 {
             if allActivities.count > 0 {
-                loadActivity(idActivity: allActivities[allActivities.count-1].idActivity)
+                let activity = allActivities[allActivities.count-1]
+                
+                let date1 = Calendar.current.startOfDay(for: Date())
+                let date2 = Calendar.current.startOfDay(for: activity.date as Date)
+                let days = Calendar.current.dateComponents([.day], from: date2, to: date1).day!
+                print("Activity days old: \(days)")
+                
+                if days < 90 {
+                    loadActivity(idActivity: activity.idActivity)
+                }
             } else {
                 loadActivity(idActivity: 0)
             }
