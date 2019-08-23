@@ -279,18 +279,6 @@ class NCService: NSObject {
                     })
                 }
                 
-                // Get Activity
-                if (capabilities!.isActivityV2Enabled) {
-                    
-                    OCNetworking.sharedManager().getActivityWithAccount(account!, since: 0, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
-                        DispatchQueue.global().async {
-                            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                                NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                            }
-                        }
-                    })
-                }
-                
                 // Get Handwerkcloud
                 if (capabilities!.isHandwerkcloudEnabled) {
                     self.requestHC()

@@ -544,8 +544,13 @@ extension NCActivity {
                 sectionDate.append(date)
             }
         }
+        
+        // test activity no record
         if filterFileId != nil && filterActivities.count == 0 && allActivities.count > 0 {
             loadActivity(idActivity: allActivities[allActivities.count-1].idActivity)
+        }
+        if filterFileId == nil && filterActivities.count == 0 {
+            loadActivity(idActivity: 0)
         }
         
         tableView.reloadData()
@@ -576,7 +581,7 @@ extension NCActivity {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 200, link: "", completion: { (account, listOfActivity, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
