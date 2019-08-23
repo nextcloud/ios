@@ -39,6 +39,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     var didSelectItemEnable: Bool = true
     var filterFileId: String?
     
+    var isViewDisplayed = false
     var canFetchActivity = true
 
     override func viewDidLoad() {
@@ -56,6 +57,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        isViewDisplayed = true
         
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
@@ -64,6 +66,11 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         self.title = NSLocalizedString("_activity_", comment: "")
 
         loadDataSource()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        isViewDisplayed = false
     }
     
     // MARK: DZNEmpty
@@ -536,10 +543,14 @@ extension NCActivity {
         }
         
         // Test activity no record
-        if filterFileId != nil && filterActivities.count == 0 && allActivities.count > 0 {
-            loadActivity(idActivity: allActivities[allActivities.count-1].idActivity)
+        if filterFileId != nil && filterActivities.count == 0 {
+            if allActivities.count > 0 {
+                loadActivity(idActivity: allActivities[allActivities.count-1].idActivity)
+            } else {
+                loadActivity(idActivity: 0)
+            }
         }
-        if filterFileId == nil && filterActivities.count == 0 {
+        if filterFileId == nil && allActivities.count == 0 {
             loadActivity(idActivity: 0)
         }
         
@@ -559,7 +570,7 @@ extension NCActivity {
     
     @objc func loadActivity(idActivity: Int) {
         
-        if !canFetchActivity { return }
+        if !canFetchActivity || !isViewDisplayed { return }
         
         canFetchActivity = false
        
@@ -571,8 +582,6 @@ extension NCActivity {
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                
-                self.loadDataSource()
             }
             
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -582,6 +591,8 @@ extension NCActivity {
             } else {
                 self.canFetchActivity = true
             }
+            
+            self.loadDataSource()
         })
     }
 }
