@@ -41,8 +41,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     var didSelectItemEnable: Bool = true
     var filterFileId: String?
     
-    var loadingActivity = false
-    var stopLoadingActivity = false
+    var canFetchActivity = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -300,15 +299,30 @@ extension NCActivity: UITableViewDataSourcePrefetching {
         let lastRow = getTableActivitiesFromSection(section).count - 1
         
         if section == lastSection && row > lastRow - 1 {
-            if allActivities.last != nil {
-                loadActivity(idActivity: allActivities.last!.idActivity)
-            }
+            loadActivity(idActivity: allActivities.last!.idActivity)
         }
     }
     
     func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         //print("cancelPrefetchingForRowsAt \(indexPaths)")
     }
+}
+
+// MARK: - ScrollView
+
+extension NCActivity: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (Int(scrollView.contentOffset.y + scrollView.frame.size.height) == Int(scrollView.contentSize.height + scrollView.contentInset.bottom)) {
+            /*
+            if !isFetching {
+                isFetching = true
+                fetchAndReloadData(true)
+            }
+            */
+        }
+    }
+
 }
 
 // MARK: - Collection View
@@ -554,10 +568,10 @@ extension NCActivity {
     
     @objc func loadActivity(idActivity: Int) {
         
-        if loadingActivity || stopLoadingActivity { return }
+        if !canFetchActivity { return }
+        
+        canFetchActivity = false
        
-        loadingActivity = true
-
         if idActivity > 0 {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
@@ -573,10 +587,10 @@ extension NCActivity {
             self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()
             
-            self.loadingActivity = false
-            
             if errorCode == 304 {
-                self.stopLoadingActivity = true
+                self.canFetchActivity = false
+            } else {
+                self.canFetchActivity = true
             }
         })
     }
