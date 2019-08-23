@@ -30,14 +30,12 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private let refreshControl = UIRefreshControl()
 
     var allActivities = [tableActivity]()
     var filterActivities = [tableActivity]()
 
     var sectionDate = [Date]()
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    var refreshControlEnable: Bool = true
     var didSelectItemEnable: Bool = true
     var filterFileId: String?
     
@@ -54,14 +52,6 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
         tableView.contentInset = insets
-        
-        // Configure Refresh Control
-        if refreshControlEnable {
-            tableView.refreshControl = refreshControl
-            refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-            refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-            refreshControl.addTarget(self, action: #selector(loadActivityRefreshing), for: .valueChanged)
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -545,7 +535,7 @@ extension NCActivity {
             }
         }
         
-        // test activity no record
+        // Test activity no record
         if filterFileId != nil && filterActivities.count == 0 && allActivities.count > 0 {
             loadActivity(idActivity: allActivities[allActivities.count-1].idActivity)
         }
@@ -567,10 +557,6 @@ extension NCActivity {
         return activities.filter
     }
     
-    @objc func loadActivityRefreshing() {
-        loadActivity(idActivity: 0)
-    }
-    
     @objc func loadActivity(idActivity: Int) {
         
         if !canFetchActivity { return }
@@ -589,7 +575,6 @@ extension NCActivity {
                 self.loadDataSource()
             }
             
-            self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()
             
             if errorCode == 304 {
