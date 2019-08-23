@@ -319,7 +319,6 @@ extension NCActivity: UIScrollViewDelegate {
             loadActivity(idActivity: allActivities.last!.idActivity)
         }
     }
-
 }
 
 // MARK: - Collection View
