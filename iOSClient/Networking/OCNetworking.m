@@ -1094,13 +1094,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1139,13 +1132,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
@@ -1193,13 +1179,6 @@
             
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
-            
-            // Server Unauthorized
-            if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-                [[OCNetworking sharedManager] checkRemoteWipe:account];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [CCUtility setCertificateError:account error:YES];
-            }
             
             // Error
             if (errorCode == 503)
@@ -1293,13 +1272,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1387,13 +1359,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1432,13 +1397,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503) {
@@ -1660,13 +1618,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2003,14 +1954,7 @@
             
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
-            
-            // Server Unauthorized
-            if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-                [[OCNetworking sharedManager] checkRemoteWipe:account];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [CCUtility setCertificateError:account error:YES];
-            }
-            
+        
             // Error
             if (errorCode == 503)
                 message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2028,13 +1972,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
     
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2080,13 +2017,6 @@
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
             
-            // Server Unauthorized
-            if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-                [[OCNetworking sharedManager] checkRemoteWipe:account];
-            } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-                [CCUtility setCertificateError:account error:YES];
-            }
-            
             // Error
             if (errorCode == 503)
                 message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2103,13 +2033,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
@@ -2195,13 +2118,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2239,13 +2155,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2282,13 +2191,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
@@ -2328,13 +2230,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
@@ -2392,13 +2287,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
@@ -2598,13 +2486,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2643,13 +2524,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
@@ -2693,13 +2567,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2737,13 +2604,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
@@ -2783,13 +2643,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2828,13 +2681,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503)
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2872,13 +2718,6 @@
         
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteWipe:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
         
         // Error
         if (errorCode == 503)
