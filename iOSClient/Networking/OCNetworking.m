@@ -2089,7 +2089,7 @@
 #pragma mark ===== Manage Mobile Editor OCS API =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createLinkRichdocumentsWithAccount:(NSString *)account ocId:(NSString *)ocId completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion
+- (void)createLinkRichdocumentsWithAccount:(NSString *)account fileId:(NSString *)fileId completion:(void(^)(NSString *account, NSString *link, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -2100,13 +2100,11 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    NSString *ocIdServer = [[NCUtility sharedInstance] convertocIdClientToocIdServer:ocId];
-    
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication createLinkRichdocuments:[tableAccount.url stringByAppendingString:@"/"] ocId:ocIdServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
+    [communication createLinkRichdocuments:[tableAccount.url stringByAppendingString:@"/"] fileId:fileId onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
         
         completion(account, link, nil, 0);
         

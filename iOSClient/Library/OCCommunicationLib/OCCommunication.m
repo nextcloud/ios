@@ -2824,7 +2824,7 @@
 
 #pragma mark - Manage Mobile Editor OCS API
 
-- (void)createLinkRichdocuments:(NSString *)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)createLinkRichdocuments:(NSString *)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_richdocuments];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
@@ -2832,7 +2832,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request createLinkRichdocuments:serverPath ocId:ocId onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+    [request createLinkRichdocuments:serverPath fileId:fileId onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
         
         NSData *responseData = (NSData*) response;
         

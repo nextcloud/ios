@@ -1261,7 +1261,7 @@ NSString *const NCResource = @"<d:displayname/>"
 
 #pragma mark - Manage Mobile Editor OCS API
 
-- (void)createLinkRichdocuments:(NSString *)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
+- (void)createLinkRichdocuments:(NSString *)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
     
     NSParameterAssert(success);
     
@@ -1269,7 +1269,7 @@ NSString *const NCResource = @"<d:displayname/>"
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
-    [request setHTTPBody:[[NSString stringWithFormat: @"ocId=%@",ocId] dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:[[NSString stringWithFormat: @"fileId=%@",fileId] dataUsingEncoding:NSUTF8StringEncoding]];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];

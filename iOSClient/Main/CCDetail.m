@@ -229,7 +229,7 @@
             [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
             
             if ([self.metadataDetail.url isEqualToString:@""]) {
-                [[OCNetworking sharedManager] createLinkRichdocumentsWithAccount:appDelegate.activeAccount ocId:self.metadataDetail.ocId completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
+                [[OCNetworking sharedManager] createLinkRichdocumentsWithAccount:appDelegate.activeAccount fileId:self.metadataDetail.fileId completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
                     
                     if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                         

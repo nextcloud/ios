@@ -665,7 +665,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-- (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath ocId:(NSString * _Nonnull)ocId onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+- (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileId:(NSString * _Nonnull)fileId onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)getTemplatesRichdocuments:(NSString *_Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 

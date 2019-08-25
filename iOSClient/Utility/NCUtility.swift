@@ -109,17 +109,6 @@ class NCUtility: NSObject {
         return screenWidth
     }
     
-    @objc func convertocIdClientToocIdServer(_ ocId: NSString) -> String {
-        
-        let split = ocId.components(separatedBy: "oc")
-        if split.count == 2 {
-            let ocIdServerInt = CLongLong(split[0])
-            return String(describing: ocIdServerInt ?? 0)
-        }
-        
-        return ocId as String
-    }
-    
     @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
         
         let scale = newWidth / image.size.width
