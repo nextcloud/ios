@@ -117,6 +117,9 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if let param = message.body as? Dictionary<AnyHashable,Any> {
                 if param["MessageName"] as? String == "downloadAs" {
                     if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                        guard let type = values["Type"] as? String else {
+                            return
+                        }
                         guard let urlString = values["URL"] as? String else {
                             return
                         }
@@ -126,14 +129,34 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
                             return
                         }
+                        
                         let filename = (components.path as NSString).lastPathComponent
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + filename
                     
+                        if type == "print" {
+                            NCUtility.sharedInstance.startActivityIndicator(view: self, bottom: 0)
+                        }
+                        
                         _ = OCNetworking.sharedManager()?.download(withAccount: metadata.account, url: urlString, fileNameLocalPath: fileNameLocalPath, encode:false, completion: { (account, message, errorCode) in
+
                             if errorCode == 0 && account == self.metadata.account {
-                                self.documentInteractionController = UIDocumentInteractionController()
-                                self.documentInteractionController.url = URL(fileURLWithPath: fileNameLocalPath)
-                                self.documentInteractionController.presentOptionsMenu(from: self.appDelegate.window.rootViewController!.view.bounds, in: self.appDelegate.window.rootViewController!.view, animated: true)
+                                if type == "print" {
+                                    NCUtility.sharedInstance.stopActivityIndicator()
+                                    let pic = UIPrintInteractionController.shared
+                                    let printInfo = UIPrintInfo.printInfo()
+                                    printInfo.outputType = UIPrintInfo.OutputType.general
+                                    printInfo.orientation = UIPrintInfo.Orientation.portrait
+                                    printInfo.jobName = "Document"
+                                    pic.printInfo = printInfo
+                                    pic.printingItem = URL(fileURLWithPath: fileNameLocalPath)
+                                    pic.present(from: CGRect.zero, in: self, animated: true, completionHandler: { (pci, completed, error) in
+                                        // end.
+                                    })
+                                } else {
+                                    self.documentInteractionController = UIDocumentInteractionController()
+                                    self.documentInteractionController.url = URL(fileURLWithPath: fileNameLocalPath)
+                                    self.documentInteractionController.presentOptionsMenu(from: self.appDelegate.window.rootViewController!.view.bounds, in: self.appDelegate.window.rootViewController!.view, animated: true)
+                                }
                             } else {
                                 self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                             }
