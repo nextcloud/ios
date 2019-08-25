@@ -41,6 +41,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     var isViewDisplayed = false
     var canFetchActivity = true
+    var dateAutomaticFetch : Date?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -547,12 +548,13 @@ extension NCActivity {
             if allActivities.count > 0 {
                 let activity = allActivities[allActivities.count-1]
                 
-                let date1 = Calendar.current.startOfDay(for: Date())
-                let date2 = Calendar.current.startOfDay(for: activity.date as Date)
-                let days = Calendar.current.dateComponents([.day], from: date2, to: date1).day!
+                if dateAutomaticFetch == nil {
+                    dateAutomaticFetch = Calendar.current.startOfDay(for: activity.date as Date)
+                }
+                let days = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: activity.date as Date), to: dateAutomaticFetch!).day!
                 print("Activity days old: \(days)")
                 
-                if days < 90 {
+                if days < 30 {
                     loadActivity(idActivity: activity.idActivity)
                 }
             } else {
