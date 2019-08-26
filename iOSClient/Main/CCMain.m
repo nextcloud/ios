@@ -1986,19 +1986,25 @@
         
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", account]];
         
-        NSString *fileNameSource = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
-        NSString *fileNameSourceAvatar = [NSString stringWithFormat:@"%@/%@-a10-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
-        UIImage *avatar;
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameSourceAvatar]) {
-            avatar = [UIImage imageWithContentsOfFile:fileNameSourceAvatar];
-        } else if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameSource]) {
-            avatar = [[NCUtility sharedInstance] createAvatarWithFileNameSource:fileNameSource fileNameSourceAvatar:fileNameSourceAvatar alpha:1.0];
+        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
+        UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
+        if (avatar) {
+            
+            avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:YES];
+            CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
+            CGSize imageSize = avatarImageView.bounds.size;
+            UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            [avatarImageView.layer renderInContext:context];
+            avatar = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
         } else {
+            
             avatar = [UIImage imageNamed:@"menuLogoUser"];
         }
         
-        item.image = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:true];
+        item.image = avatar;
         item.target = self;
         
         if ([account isEqualToString:appDelegate.activeAccount]) {
