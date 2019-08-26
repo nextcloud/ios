@@ -586,7 +586,7 @@ NS_ASSUME_NONNULL_END
  *
  */
 
-- (void) getActivityServer:(NSString * _Nonnull)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews link:(NSString * _Nonnull)link onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
+- (void) getActivityServer:(NSString * _Nonnull)serverPath since:(NSInteger)since limit:(NSInteger)limit objectId:(NSString * _Nonnull)objectId previews:(BOOL)previews link:(NSString * _Nonnull)link onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 ///-----------------------------------
 /// @name Get the list of External sites
