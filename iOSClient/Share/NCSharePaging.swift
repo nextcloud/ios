@@ -102,6 +102,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.insets = UIEdgeInsets(top: height, left: 0, bottom: 0, right: 0)
             viewController.didSelectItemEnable = false
             viewController.filterFileId = metadata!.fileId
+            viewController.objectType = "shared"
             return viewController
         case 1:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments

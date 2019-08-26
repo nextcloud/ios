@@ -989,14 +989,14 @@ NSString *const NCResource = @"<d:displayname/>"
 
 #pragma mark - Get Activity
 
-- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit objectId:(NSString *)objectId previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit objectId:(NSString *)objectId objectType:(NSString *)objectType previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
     
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json&since=%ld&limit=%ld", (long)since, (long)limit]];
 
     if (objectId.length > 0) {
-        serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&=object_id=%@", objectId]];
+        serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&=object_id=%@&object_type=%@", objectId, objectType]];
     }
     if (previews) {
         serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&previews=true"]];

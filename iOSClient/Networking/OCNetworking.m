@@ -1633,7 +1633,7 @@
 #pragma mark ===== VAR =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getActivityWithAccount:(NSString *)account since:(NSInteger)since limit:(NSInteger)limit objectId:(NSString *)objectId link:(NSString *)link completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
+- (void)getActivityWithAccount:(NSString *)account since:(NSInteger)since limit:(NSInteger)limit objectId:(NSString *)objectId objectType:(NSString *)objectType link:(NSString *)link completion:(void(^)(NSString *account, NSArray *listOfActivity, NSString *message, NSInteger errorCode))completion
 {
     BOOL previews = false;
 
@@ -1655,7 +1655,7 @@
     
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication getActivityServer:[tableAccount.url stringByAppendingString:@"/"] since:since limit:limit objectId:objectId previews:previews link:link onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
+    [communication getActivityServer:[tableAccount.url stringByAppendingString:@"/"] since:since limit:limit objectId:objectId objectType:objectType previews:previews link:link onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
         completion(account, listOfActivity, nil, 0);
         

@@ -38,8 +38,8 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var filterFileId: String?
+    var objectType: String?
     
-    var isViewDisplayed = false
     var canFetchActivity = true
     var dateAutomaticFetch : Date?
 
@@ -58,7 +58,6 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        isViewDisplayed = true
         
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
@@ -67,11 +66,11 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         self.title = NSLocalizedString("_activity_", comment: "")
 
         loadDataSource()
+        loadActivity(idActivity: 0)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        isViewDisplayed = false
     }
     
     // MARK: DZNEmpty
@@ -543,28 +542,6 @@ extension NCActivity {
             }
         }
         
-        // Automatic load activity
-        if filterFileId != nil && filterActivities.count == 0 {
-            if allActivities.count > 0 {
-                let activity = allActivities[allActivities.count-1]
-                
-                if dateAutomaticFetch == nil {
-                    dateAutomaticFetch = Calendar.current.startOfDay(for: activity.date as Date)
-                }
-                let days = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: activity.date as Date), to: dateAutomaticFetch!).day!
-                print("Activity days old: \(days)")
-                
-                if days < 30 {
-                    loadActivity(idActivity: activity.idActivity)
-                }
-            } else {
-                loadActivity(idActivity: 0)
-            }
-        }
-        if filterFileId == nil && allActivities.count == 0 {
-            loadActivity(idActivity: 0)
-        }
-        
         tableView.reloadData()
     }
     
@@ -581,15 +558,14 @@ extension NCActivity {
     
     @objc func loadActivity(idActivity: Int) {
         
-        if !canFetchActivity || !isViewDisplayed { return }
-        
+        if !canFetchActivity { return }
         canFetchActivity = false
-       
+        
         if idActivity > 0 {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 200, objectId:"", link: "", completion: { (account, listOfActivity, message, errorCode) in
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 200, objectId:filterFileId, objectType: objectType, link: "", completion: { (account, listOfActivity, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
