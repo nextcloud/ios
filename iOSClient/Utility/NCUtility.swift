@@ -384,13 +384,14 @@ class NCUtility: NSObject {
         CCUtility.deleteAllChainStore()
     }
     
-    @objc func createAvatar(image: UIImage?, size: Int, alpha: CGFloat) -> UIImage? {
+    @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String, alpha: CGFloat) -> UIImage? {
         
-        if image == nil { return image }
+        guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
+        let size = Int(k_avatar_size) ?? 128
         
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
-        image?.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
-        var image = UIGraphicsGetImageFromCurrentImageContext()
+        imageSource.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
@@ -398,10 +399,17 @@ class NCUtility: NSObject {
         avatarImageView?.alpha = alpha
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         avatarImageView?.layer.render(in: context)
-        image = UIGraphicsGetImageFromCurrentImageContext()
+        guard let imageAvatar = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
         UIGraphicsEndImageContext()
         
-        return image
+        guard let data = imageAvatar.pngData() else {
+            return nil
+        }
+        do {
+            try data.write(to: NSURL(fileURLWithPath: fileNameSourceAvatar) as URL, options: .atomic)
+        } catch { }
+        
+        return imageAvatar
     }
 }
 

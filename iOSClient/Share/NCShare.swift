@@ -81,7 +81,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { sharedWithYouByImage.image = image }
             } else {
-                let url = appDelegate.activeUrl + k_avatar + metadata!.ownerId + "/128"
+                let url = appDelegate.activeUrl + k_avatar + metadata!.ownerId + "/" + k_avatar_size
                 let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                 OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                     if errorCode == 0 && UIImage(data: data!) != nil {
@@ -255,7 +255,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
-                    let url = self.appDelegate.activeUrl + k_avatar + item.name + "/128"
+                    let url = self.appDelegate.activeUrl + k_avatar + item.name + "/" + k_avatar_size
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                     OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                         if errorCode == 0 && UIImage(data: data!) != nil {
@@ -345,7 +345,7 @@ extension NCShare: UITableViewDataSource {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
                 } else {
                     DispatchQueue.global().async {
-                        let url = self.appDelegate.activeUrl + k_avatar + tableShare.shareWith + "/128"
+                        let url = self.appDelegate.activeUrl + k_avatar + tableShare.shareWith + "/" + k_avatar_size
                         let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                             if errorCode == 0 && UIImage(data: data!) != nil {

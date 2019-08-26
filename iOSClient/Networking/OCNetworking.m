@@ -1143,7 +1143,7 @@
     }];
 }
 
-- (void)downloadPreviewTrashWithAccount:(NSString *)account fileId:(NSString *)fileId fileName:(NSString *)fileName completion:(void (^)(NSString *account,  UIImage *image, NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewTrashWithAccount:(NSString *)account fileId:(NSString *)fileId size:(NSString *)size fileName:(NSString *)fileName completion:(void (^)(NSString *account,  UIImage *image, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -1166,7 +1166,7 @@
         
         [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
         [communication setUserAgent:[CCUtility getUserAgent]];
-        [communication getRemotePreviewTrashByServer:tableAccount.url ofFileId:fileId onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        [communication getRemotePreviewTrashByServer:tableAccount.url ofFileId:fileId size:size onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
             
             [preview writeToFile:file atomically:YES];
             

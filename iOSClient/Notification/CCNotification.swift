@@ -111,7 +111,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                         }
                     } else {
                         DispatchQueue.global().async {
-                            let url = self.appDelegate.activeUrl + k_avatar + name + "/128"
+                            let url = self.appDelegate.activeUrl + k_avatar + name + "/" + k_avatar_size
                             let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                             OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                                 if errorCode == 0 && UIImage(data: data!) != nil  {

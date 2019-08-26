@@ -69,6 +69,7 @@
 
 // Avatar
 #define k_avatar                                        @"/index.php/avatar/"
+#define k_avatar_size                                   "128"
 
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"

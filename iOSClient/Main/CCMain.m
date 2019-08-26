@@ -1985,19 +1985,20 @@
         item.argument = account;
         
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", account]];
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
         
-        UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
-        if (avatar) {
-            
-            avatar = [[NCUtility sharedInstance] createAvatarWithImage:avatar size:25 alpha:1.0];
-                    
+        NSString *fileNameSource = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
+        NSString *fileNameSourceAvatar = [NSString stringWithFormat:@"%@/%@-a10-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
+        UIImage *avatar;
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameSourceAvatar]) {
+            avatar = [UIImage imageWithContentsOfFile:fileNameSourceAvatar];
+        } else if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameSource]) {
+            avatar = [[NCUtility sharedInstance] createAvatarWithFileNameSource:fileNameSource fileNameSourceAvatar:fileNameSourceAvatar alpha:1.0];
         } else {
-            
             avatar = [UIImage imageNamed:@"menuLogoUser"];
         }
         
-        item.image = avatar;
+        item.image = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:true];
         item.target = self;
         
         if ([account isEqualToString:appDelegate.activeAccount]) {

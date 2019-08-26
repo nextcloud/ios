@@ -37,6 +37,8 @@
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
+@property(nonatomic, weak) IBOutlet UIButton *sharedButton;
+
 @property(nonatomic, weak) IBOutlet NSLayoutConstraint *labelTitleTrailingConstraint;
 
 @end
