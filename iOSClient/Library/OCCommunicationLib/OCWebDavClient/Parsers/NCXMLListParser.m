@@ -223,7 +223,7 @@
 }
 
 - (void)parserDidEndDocument:(NSXMLParser *)parser {
-    NSLog(@"Finish xml directory list parse");
+    NSLog(@"Finish xml list parse");
 }
 
 @end
