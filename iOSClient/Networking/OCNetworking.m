@@ -106,30 +106,48 @@
     return sharedOCCommunication;
 }
 
-- (OCCommunication *)sharedOCCommunicationExtensionDownload
+- (OCCommunication *)sharedOCCommunicationExtension
 {
-    static OCCommunication *sharedOCCommunicationExtensionDownload = nil;
+    static OCCommunication *sharedOCCommunicationExtension = nil;
     
-    if (sharedOCCommunicationExtensionDownload == nil)
+    if (sharedOCCommunicationExtension == nil)
     {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session_extension];
-        config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
-        config.HTTPMaximumConnectionsPerHost = 1;
-        config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        config.timeoutIntervalForRequest = k_timeout_upload;
-        config.sessionSendsLaunchEvents = YES;
-        [config setAllowsCellularAccess:YES];
+        // Download
+        NSURLSessionConfiguration *configurationDownload = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session_extension];
+        configurationDownload.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
+        configurationDownload.HTTPMaximumConnectionsPerHost = 1;
+        configurationDownload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        configurationDownload.timeoutIntervalForRequest = k_timeout_upload;
+        configurationDownload.sessionSendsLaunchEvents = YES;
+        configurationDownload.allowsCellularAccess = YES;
+        configurationDownload.discretionary = NO;
         
-        OCURLSessionManager *sessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:config];
-        [sessionManager.operationQueue setMaxConcurrentOperationCount:1];
-        [sessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
+        OCURLSessionManager *downloadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationDownload];
+        [downloadSessionManager.operationQueue setMaxConcurrentOperationCount:1];
+        [downloadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
             return NSURLSessionAuthChallengePerformDefaultHandling;
         }];
         
-        sharedOCCommunicationExtensionDownload = [[OCCommunication alloc] initWithUploadSessionManager:nil andDownloadSessionManager:sessionManager andNetworkSessionManager:nil];
+        // Upload
+        NSURLSessionConfiguration *configurationUpload = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session_extension];
+        configurationUpload.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
+        configurationUpload.HTTPMaximumConnectionsPerHost = 1;
+        configurationUpload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        configurationUpload.timeoutIntervalForRequest = k_timeout_upload;
+        configurationUpload.sessionSendsLaunchEvents = YES;
+        configurationUpload.allowsCellularAccess = YES;
+        configurationUpload.discretionary = NO;
+        
+        OCURLSessionManager *uploadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationUpload];
+        [uploadSessionManager.operationQueue setMaxConcurrentOperationCount:k_maxHTTPConnectionsPerHost];
+        [uploadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
+            return NSURLSessionAuthChallengePerformDefaultHandling;
+        }];
+        
+        sharedOCCommunicationExtension = [[OCCommunication alloc] initWithUploadSessionManager:uploadSessionManager andDownloadSessionManager:downloadSessionManager andNetworkSessionManager:nil];
     }
     
-    return sharedOCCommunicationExtensionDownload;
+    return sharedOCCommunicationExtension;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -428,7 +446,7 @@
     return sessionTask;
 }
 
-- (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath progress:(void(^)(NSProgress *progress))uploadProgress completion:(void(^)(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
+- (NSURLSessionTask *)uploadWithAccount:(NSString *)account fileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath encode:(BOOL)encode communication:(OCCommunication *)communication progress:(void(^)(NSProgress *progress))uploadProgress completion:(void(^)(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode))completion
 {    
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     if (tableAccount == nil) {
@@ -439,19 +457,17 @@
         completion(account, nil, nil, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-
     [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSURLSessionTask *sessionTask = [communication uploadFileSession:fileNameLocalPath toDestiny:fileNameServerUrl onCommunication:communication progress:^(NSProgress *progress) {
+    NSURLSessionTask *sessionTask = [communication uploadFileSession:fileNameLocalPath toDestiny:fileNameServerUrl encode:encode onCommunication:communication progress:^(NSProgress *progress) {
         uploadProgress(progress);
         //float percent = roundf (progress.fractionCompleted * 100);
     } successRequest:^(NSURLResponse *response, NSString *redirectedServer) {
     
         NSDictionary *fields = [(NSHTTPURLResponse*)response allHeaderFields];
 
-        NSString *ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ocId"]];
+        NSString *ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
         NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
         NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
         
@@ -711,7 +727,7 @@
         
         NSDictionary *fields = [response allHeaderFields];
         
-        NSString *ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ocId"]];
+        NSString *ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
         NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
         
         completion(account, ocId, date, nil, 0);

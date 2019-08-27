@@ -351,7 +351,7 @@
             
             if (errorCode == 0) {
             
-                ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ocId"]];
+                ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
                 etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             
                 NSString *dateString = [fields objectForKey:@"Date"];

@@ -209,7 +209,7 @@
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
         
-        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:fileNameServer fileNameLocalPath:fileNameLocal progress:^(NSProgress *progress) {
+        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:fileNameServer fileNameLocalPath:fileNameLocal encode:true communication:[[OCNetworking sharedManager] sharedOCCommunication] progress:^(NSProgress *progress) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud progress:progress.fractionCompleted];

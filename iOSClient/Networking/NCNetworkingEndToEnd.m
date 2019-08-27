@@ -313,7 +313,7 @@
         [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             NSDictionary *fields = [response allHeaderFields];
-            returnocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ocId"]];
+            returnocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
             
             if (encrypted) {
                 
