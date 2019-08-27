@@ -993,10 +993,10 @@ NSString *const NCResource = @"<d:displayname/>"
     
     _requestMethod = @"GET";
     
-    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json&since=%ld&limit=%ld", (long)since, (long)limit]];
-
-    if (objectId.length > 0) {
-        serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&=object_id=%@&object_type=%@", objectId, objectType]];
+    if (objectId.length == 0) {
+        serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"/all?format=json&since=%ld&limit=%ld", (long)since, (long)limit]];
+    } else {
+        serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"/filter?format=json&since=%ld&limit=%ld&object_id=%@&object_type=%@",(long)since, (long)limit, objectId, objectType]];
     }
     if (previews) {
         serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&previews=true"]];

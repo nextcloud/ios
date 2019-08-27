@@ -185,46 +185,47 @@
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        if (error) {
+                
+            NSString *message;
+            NSInteger errorCode;
+                
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+            errorCode = httpResponse.statusCode;
+                
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+                
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedString(@"_server_error_retry_", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
-            if (error) {
-                
-                NSString *message;
-                NSInteger errorCode;
-                
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-                errorCode = httpResponse.statusCode;
-                
-                if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-                    errorCode = error.code;
-                
-                // Error
-                if (errorCode == 503)
-                    message = NSLocalizedString(@"_server_error_retry_", nil);
-                else
-                    message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-                
+            dispatch_sync(dispatch_get_main_queue(), ^{
                 completion(nil, 0, 0, 0, false, message, errorCode);
+            });
+            
+        } else {
                 
-            } else {
+            NSString *serverProductName = @"";
+            NSString *serverVersion = @"0.0.0";
+            NSString *serverVersionString = @"0.0.0";
                 
-                NSString *serverProductName = @"";
-                NSString *serverVersion = @"0.0.0";
-                NSString *serverVersionString = @"0.0.0";
+            NSInteger versionMajor = 0;
+            NSInteger versionMicro = 0;
+            NSInteger versionMinor = 0;
                 
-                NSInteger versionMajor = 0;
-                NSInteger versionMicro = 0;
-                NSInteger versionMinor = 0;
+            BOOL extendedSupport = FALSE;
                 
-                BOOL extendedSupport = FALSE;
+            NSError *error;
+            NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
                 
-                NSError *error;
-                NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-                
-                if (error) {
+            if (error) {
+                dispatch_sync(dispatch_get_main_queue(), ^{
                     completion(nil, 0, 0, 0, extendedSupport, NSLocalizedString(@"_no_nextcloud_found_", nil), k_CCErrorInternalError);
-                    return;
-                }
+                });
+            } else {
                 
                 serverProductName = [[jsongParsed valueForKey:@"productname"] lowercaseString];
                 serverVersion = [jsongParsed valueForKey:@"version"];
@@ -244,11 +245,11 @@
                 }
                 
                 extendedSupport = [[jsongParsed valueForKey:@"extendedSupport"] boolValue];
-
-                completion(serverProductName, versionMajor, versionMicro, versionMinor, extendedSupport, nil, 0);
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    completion(serverProductName, versionMajor, versionMicro, versionMinor, extendedSupport, nil, 0);
+                });
             }
-        });
-        
+        }
     }];
     
     [task resume];
@@ -271,9 +272,7 @@
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
-        
         dispatch_sync(dispatch_get_main_queue(), ^{
-            
             if (error) {
                 
                 NSString *message;
@@ -292,13 +291,10 @@
                     message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
                 
                 completion(nil, message, errorCode);
-                
             } else {
-            
                 completion(data, nil, 0);
             }
         });
-        
     }];
     
     [task resume];
@@ -527,63 +523,66 @@
             completion(account, nil, nil, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
 
         } else {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
+                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
                 
-            BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
-            
-            // directory [0]
-            OCFileDto *itemDtoFolder = [items objectAtIndex:0];
-            //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
-            
-            NSMutableArray *metadatas = [NSMutableArray new];
-            tableMetadata *metadataFolder = [tableMetadata new];
-            
-            NSString *serverUrlFolder;
+                // directory [0]
+                OCFileDto *itemDtoFolder = [items objectAtIndex:0];
+                //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
+                
+                NSMutableArray *metadatas = [NSMutableArray new];
+                tableMetadata *metadataFolder = [tableMetadata new];
+                
+                NSString *serverUrlFolder;
 
-            // Metadata . (self Folder)
-            if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:url]]) {
-                
-                // root folder
-                serverUrlFolder = k_serverUrl_root;
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
-                
-            } else {
-                
-                serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[serverUrl lastPathComponent] serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
-            }
-            
-            // Add metadata folder
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite ocId:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account];
-
-            NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-                
-                NSString *first = [(OCFileDto*)a fileName];
-                NSString *second = [(OCFileDto*)b fileName];
-                return [[first lowercaseString] compare:[second lowercaseString]];
-            }];
-            
-            for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
-                
-                OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
-                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
-                
-                // Skip hidden files
-                if (fileName.length > 0) {
-                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
-                        continue;
+                // Metadata . (self Folder)
+                if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:url]]) {
+                    
+                    // root folder
+                    serverUrlFolder = k_serverUrl_root;
+                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
+                    
                 } else {
-                    continue;
+                    
+                    serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[serverUrl lastPathComponent] serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
                 }
                 
-                if (itemDto.isDirectory) {
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
+                // Add metadata folder
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite ocId:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account];
+
+                NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                    
+                    NSString *first = [(OCFileDto*)a fileName];
+                    NSString *second = [(OCFileDto*)b fileName];
+                    return [[first lowercaseString] compare:[second lowercaseString]];
+                }];
+                
+                for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
+                    
+                    OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
+                    NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                    
+                    // Skip hidden files
+                    if (fileName.length > 0) {
+                        if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                            continue;
+                    } else {
+                        continue;
+                    }
+                    
+                    if (itemDto.isDirectory) {
+                        (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
+                    }
+                    
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
                 }
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
-            }
-            
-            completion(account, metadatas, metadataFolder, nil, 0);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(account, metadatas, metadataFolder, nil, 0);
+                });
+            });
         }
     
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
@@ -642,15 +641,17 @@
         BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
             
         if ([items count] > 0) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                tableMetadata *metadata = [tableMetadata new];
                 
-            tableMetadata *metadata = [tableMetadata new];
+                OCFileDto *itemDto = [items objectAtIndex:0];
                 
-            OCFileDto *itemDto = [items objectAtIndex:0];
-            
-            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
-                    
-            completion(account, metadata, nil, 0);
-            
+                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(account, metadata, nil, 0);
+                });
+            });
         // BUG 1038 item == 0
         } else {
                 
@@ -902,39 +903,42 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", fileName] depth:depth lteDateLastModified:lteDateLastModifiedString gteDateLastModified:gteDateLastModifiedString contentType:contentType withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
-        NSMutableArray *metadatas = [NSMutableArray new];
-        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
-        for (OCFileDto *itemDto in items) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSMutableArray *metadatas = [NSMutableArray new];
+            BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
             
-            NSString *serverUrl;
-            BOOL isFolderEncrypted;
-            
-            NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
-            
-            // Skip hidden files
-            if (fileName.length > 0) {
-                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+            for (OCFileDto *itemDto in items) {
+                
+                NSString *serverUrl;
+                BOOL isFolderEncrypted;
+                
+                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                
+                // Skip hidden files
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
                     continue;
-            } else
-                continue;
-            
-            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, userID]];
-            NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
-            if ([serverPath hasSuffix:@"/"]) serverPath = [serverPath substringToIndex:[serverPath length] - 1];
-            serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
-            
-            if (itemDto.isDirectory) {
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, userID]];
+                NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
+                if ([serverPath hasSuffix:@"/"]) serverPath = [serverPath substringToIndex:[serverPath length] - 1];
+                serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
+                
+                if (itemDto.isDirectory) {
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                }
+                
+                isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
+                
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
             }
             
-            isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
-            
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
-        }
-        
-        completion(account, metadatas, nil, 0);
-        
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(account, metadatas, nil, 0);
+            });
+        });
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
@@ -1218,52 +1222,55 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     [communication listingFavorites:path folder:@"" withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
-        NSMutableArray *metadatas = [NSMutableArray new];
-        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
-        // Order by fileNamePath
-        items = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSMutableArray *metadatas = [NSMutableArray new];
+            BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
             
-            OCFileDto *record1 = obj1, *record2 = obj2;
+            // Order by fileNamePath
+            NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                
+                OCFileDto *record1 = obj1, *record2 = obj2;
+                
+                NSString *path1 = [[record1.filePath stringByAppendingString:record1.fileName] lowercaseString];
+                NSString *path2 = [[record2.filePath stringByAppendingString:record2.fileName] lowercaseString];
+                
+                return [path1 compare:path2];
+                
+            }];
             
-            NSString *path1 = [[record1.filePath stringByAppendingString:record1.fileName] lowercaseString];
-            NSString *path2 = [[record2.filePath stringByAppendingString:record2.fileName] lowercaseString];
-            
-            return [path1 compare:path2];
-            
-        }];
-        
-        for(OCFileDto *itemDto in items) {
-            
-            NSString *serverUrl;
-            BOOL isFolderEncrypted;
-            
-            NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
-            
-            // Skip hidden files
-            if (fileName.length > 0) {
-                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+            for(OCFileDto *itemDto in itemsSortedArray) {
+                
+                NSString *serverUrl;
+                BOOL isFolderEncrypted;
+                
+                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                
+                // Skip hidden files
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
                     continue;
-            } else
-                continue;
-            
-            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, userID]];
-            NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
-            if ([serverPath hasSuffix:@"/"])
-                serverPath = [serverPath substringToIndex:[serverPath length] - 1];
-            serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
-            
-            if (itemDto.isDirectory) {
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, userID]];
+                NSString *serverPath = [itemDto.filePath substringFromIndex:firstInstance.length+firstInstance.location+1];
+                if ([serverPath hasSuffix:@"/"])
+                    serverPath = [serverPath substringToIndex:[serverPath length] - 1];
+                serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
+                
+                if (itemDto.isDirectory) {
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                }
+                
+                isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
+                
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
             }
             
-            isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
-            
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
-        }
-        
-        completion(account, metadatas, nil, 0);
-        
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(account, metadatas, nil, 0);
+            });
+        });
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSString *message;
@@ -2442,40 +2449,42 @@
             completion(account, nil, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
                 
         } else {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSMutableArray *listTrash = [NSMutableArray new];
                 
-            NSMutableArray *listTrash = [NSMutableArray new];
-                
-            //OCFileDto *itemDtoFolder = [items objectAtIndex:0];
+                //OCFileDto *itemDtoFolder = [items objectAtIndex:0];
 
-            if ([items count] > 1) {
-                for (NSUInteger i=1; i < [items count]; i++) {
+                if ([items count] > 1) {
+                    for (NSUInteger i=1; i < [items count]; i++) {
                         
-                    OCFileDto *itemDto = [items objectAtIndex:i];
-                    tableTrash *trash = [tableTrash new];
+                        OCFileDto *itemDto = [items objectAtIndex:i];
+                        tableTrash *trash = [tableTrash new];
                         
-                    trash.account = account;
-                    trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
-                    trash.directory = itemDto.isDirectory;
-                    trash.fileId = itemDto.fileId;
-                    trash.fileName = itemDto.fileName;
-                    NSArray *array = [itemDto.filePath componentsSeparatedByString:path];
-                    long len = [[array objectAtIndex:0] length];
-                    trash.filePath = [itemDto.filePath substringFromIndex:len];
-                    trash.hasPreview = itemDto.hasPreview;
-                    trash.size = itemDto.size;
-                    trash.trashbinFileName = itemDto.trashbinFileName;
-                    trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
-                    trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
+                        trash.account = account;
+                        trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
+                        trash.directory = itemDto.isDirectory;
+                        trash.fileId = itemDto.fileId;
+                        trash.fileName = itemDto.fileName;
+                        NSArray *array = [itemDto.filePath componentsSeparatedByString:path];
+                        long len = [[array objectAtIndex:0] length];
+                        trash.filePath = [itemDto.filePath substringFromIndex:len];
+                        trash.hasPreview = itemDto.hasPreview;
+                        trash.size = itemDto.size;
+                        trash.trashbinFileName = itemDto.trashbinFileName;
+                        trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
+                        trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
 
-                    [CCUtility insertTypeFileIconName:trash.trashbinFileName metadata:(tableMetadata *)trash];
+                        [CCUtility insertTypeFileIconName:trash.trashbinFileName metadata:(tableMetadata *)trash];
 
-                    [listTrash addObject:trash];
+                        [listTrash addObject:trash];
+                    }
                 }
-            }
                 
-            completion(account, listTrash, nil, 0);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(account, listTrash, nil, 0);
+                });
+            });
         }
-        
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSString *message;

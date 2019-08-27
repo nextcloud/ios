@@ -439,23 +439,23 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request listPath:path depth:depth onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         if (successRequest) {
-            NSData *responseData = (NSData*) responseObject;
-            
-//            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-//            NSLog(@"newStrReadFolder: %@", newStr);
-            
-            
-            NCXMLListParser *parser = [NCXMLListParser new];
-            [parser initParserWithData:responseData controlFirstFileOfList:true];
-            NSMutableArray *list = [parser.list mutableCopy];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSData *responseData = (NSData*) responseObject;
+                
+                //            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+                //            NSLog(@"newStrReadFolder: %@", newStr);
+                
+                NCXMLListParser *parser = [NCXMLListParser new];
+                [parser initParserWithData:responseData controlFirstFileOfList:true];
+                NSMutableArray *list = [parser.list mutableCopy];
 
-            //Return success
-            successRequest(response, list, request.redirectedServer, token);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successRequest(response, list, request.redirectedServer, token);
+                });
+            });
         }
-        
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
         NSLog(@"Failure");
         failureRequest(response, error, token, request.redirectedServer);
@@ -475,23 +475,25 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request propertiesOfPath:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
-        
         if (successRequest) {
-            NSData *responseData = (NSData*) responseObject;
-            
-            //            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            //            NSLog(@"newStrReadFile: %@", newStr);
-            
-            NCXMLListParser *parser = [NCXMLListParser new];
-            [parser initParserWithData:responseData controlFirstFileOfList:true];
-            NSMutableArray *list = [parser.list mutableCopy];
-            
-            //Return success
-            successRequest(response, list, request.redirectedServer);
+            if (successRequest) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    NSData *responseData = (NSData*) responseObject;
+                    
+                    //            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+                    //            NSLog(@"newStrReadFolder: %@", newStr);
+                    
+                    NCXMLListParser *parser = [NCXMLListParser new];
+                    [parser initParserWithData:responseData controlFirstFileOfList:true];
+                    NSMutableArray *list = [parser.list mutableCopy];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        successRequest(response, list, request.redirectedServer);
+                    });
+                });
+            }
         }
-        
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
         
@@ -514,24 +516,19 @@
     request = [self getRequestWithCredentials:request];
     
     [request search:path folder:folder fileName:fileName depth:depth lteDateLastModified:lteDateLastModified gteDateLastModified:gteDateLastModified contentType:contentType user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
-        
         if (successRequest) {
-            
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                
                 NSData *responseData = (NSData*) responseObject;
                 
                 NCXMLListParser *parser = [NCXMLListParser new];
                 [parser initParserWithData:responseData controlFirstFileOfList:false];
                 NSMutableArray *list = [parser.list mutableCopy];
                 
-                //Return success
                 dispatch_async(dispatch_get_main_queue(), ^{
                     successRequest(response, list, request.redirectedServer, token);
                 });
             });
         }
-        
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
         
         failureRequest(response, error, token, request.redirectedServer);
@@ -551,14 +548,17 @@
     
     [request search:path folder:folder fileName:fileName dateLastModified:dateLastModified numberOfItem:numberOfItem userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         if (successRequest) {
-            
-            NSData *responseData = (NSData*) responseObject;
-            
-            NCXMLListParser *parser = [NCXMLListParser new];
-            [parser initParserWithData:responseData controlFirstFileOfList:false];
-            NSMutableArray *list = [parser.list mutableCopy];
-            
-            successRequest(response, list, request.redirectedServer, token);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                NSData *responseData = (NSData*) responseObject;
+                
+                NCXMLListParser *parser = [NCXMLListParser new];
+                [parser initParserWithData:responseData controlFirstFileOfList:false];
+                NSMutableArray *list = [parser.list mutableCopy];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successRequest(response, list, request.redirectedServer, token);
+                });
+            });
         }
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
         failureRequest(response, error, token, request.redirectedServer);
@@ -609,21 +609,20 @@
     request = [self getRequestWithCredentials:request];
     
     [request listingFavorites:path folder:folder user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
-        
         if (successRequest) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                NSData *responseData = (NSData*) responseObject;
+                
+                NCXMLListParser *parser = [NCXMLListParser new];
+                [parser initParserWithData:responseData controlFirstFileOfList:false];
+                NSMutableArray *list = [parser.list mutableCopy];
             
-            NSData *responseData = (NSData*) responseObject;
-            
-            NCXMLListParser *parser = [NCXMLListParser new];
-            [parser initParserWithData:responseData controlFirstFileOfList:false];
-            NSMutableArray *list = [parser.list mutableCopy];
-            
-            //Return success
-            successRequest(response, list, request.redirectedServer, token);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successRequest(response, list, request.redirectedServer, token);
+                });
+            });
         }
-        
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
-        
         failureRequest(response, error, token, request.redirectedServer);
     }];
 }
@@ -1646,122 +1645,126 @@
     request = [self getRequestWithCredentials:request];
     
     [request getNotificationServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
-        
-        NSData *responseData = (NSData*) responseObject;
-        NSMutableArray *listOfNotifications = [NSMutableArray new];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSData *responseData = (NSData*) responseObject;
+            NSMutableArray *listOfNotifications = [NSMutableArray new];
 
-        //Parse
-        NSError *error;
-        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Notifications : %@",jsongParsed);
-        
-        if (jsongParsed && jsongParsed.allKeys > 0) {
-        
-            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
-            NSDictionary *meta = [ocs valueForKey:@"meta"];
-            NSDictionary *datas = [ocs valueForKey:@"data"];
-        
-            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
-                        
-            if (statusCode == kOCNotificationAPINoContent || statusCode == kOCNotificationAPISuccessful) {
+            //Parse
+            NSError *error;
+            NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+            NSLog(@"[LOG] Notifications : %@",jsongParsed);
+            
+            if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+                NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+                NSDictionary *meta = [ocs valueForKey:@"meta"];
+                NSDictionary *datas = [ocs valueForKey:@"data"];
+            
+                NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
                 
-                for (NSDictionary *data in datas) {
-                
-                    OCNotifications *notification = [OCNotifications new];
+                if (statusCode == kOCNotificationAPINoContent || statusCode == kOCNotificationAPISuccessful) {
                     
-                    if ([data valueForKey:@"notification_id"] && ![[data valueForKey:@"notification_id"] isEqual:[NSNull null]])
-                        notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
+                    for (NSDictionary *data in datas) {
                     
-                    if ([data valueForKey:@"app"] && ![[data valueForKey:@"app"] isEqual:[NSNull null]])
-                        notification.application = [data valueForKey:@"app"];
-                    
-                    if ([data valueForKey:@"user"] && ![[data valueForKey:@"user"] isEqual:[NSNull null]])
-                        notification.user = [data valueForKey:@"user"];
-                    
-                    if ([data valueForKey:@"datetime"] && ![[data valueForKey:@"datetime"] isEqual:[NSNull null]]) {
+                        OCNotifications *notification = [OCNotifications new];
                         
-                        NSString *dateString = [data valueForKey:@"datetime"];
+                        if ([data valueForKey:@"notification_id"] && ![[data valueForKey:@"notification_id"] isEqual:[NSNull null]])
+                            notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
                         
-                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                        NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-                        [dateFormatter setLocale:enUSPOSIXLocale];
-                        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+                        if ([data valueForKey:@"app"] && ![[data valueForKey:@"app"] isEqual:[NSNull null]])
+                            notification.application = [data valueForKey:@"app"];
                         
-                        notification.date = [dateFormatter dateFromString:dateString];
-                    }
-                    
-                    if ([data valueForKey:@"object_type"] && ![[data valueForKey:@"object_type"] isEqual:[NSNull null]])
-                        notification.typeObject = [data valueForKey:@"object_type"];
-                    
-                    if ([data valueForKey:@"object_id"] && ![[data valueForKey:@"object_id"] isEqual:[NSNull null]])
-                        notification.idObject = [data valueForKey:@"object_id"];
-                    
-                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]])
-                        notification.subject = [data valueForKey:@"subject"];
-                    
-                    if ([data valueForKey:@"subjectRich"] && ![[data valueForKey:@"subjectRich"] isEqual:[NSNull null]])
-                        notification.subjectRich = [data valueForKey:@"subjectRich"];
-                    
-                    if ([data valueForKey:@"subjectRichParameters"] && ![[data valueForKey:@"subjectRichParameters"] isEqual:[NSNull null]] && [[data valueForKey:@"subjectRichParameters"] count] > 0)
-                        notification.subjectRichParameters = [data valueForKey:@"subjectRichParameters"];
-                    
-                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
-                        notification.message = [data valueForKey:@"message"];
-                    
-                    if ([data valueForKey:@"messageRich"] && ![[data valueForKey:@"messageRich"] isEqual:[NSNull null]])
-                        notification.messageRich = [data valueForKey:@"messageRich"];
-                    
-                    if ([data valueForKey:@"messageRichParameters"] && ![[data valueForKey:@"messageRichParameters"] isEqual:[NSNull null]] && [[data valueForKey:@"messageRichParameters"] count] > 0)
-                        notification.messageRichParameters = [data valueForKey:@"messageRichParameters"];
-                    
-                    if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
-                        notification.link = [data valueForKey:@"link"];
-                    
-                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]])
-                        notification.icon = [data valueForKey:@"icon"];
-                    
-                    /* ACTION */
-                    
-                    NSMutableArray *actionsArr = [NSMutableArray new];
-                    NSDictionary *actions = [data valueForKey:@"actions"];
-                    
-                    for (NSDictionary *action in actions) {
+                        if ([data valueForKey:@"user"] && ![[data valueForKey:@"user"] isEqual:[NSNull null]])
+                            notification.user = [data valueForKey:@"user"];
                         
-                        OCNotificationsAction *notificationAction = [OCNotificationsAction new];
+                        if ([data valueForKey:@"datetime"] && ![[data valueForKey:@"datetime"] isEqual:[NSNull null]]) {
+                            
+                            NSString *dateString = [data valueForKey:@"datetime"];
+                            
+                            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                            NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+                            [dateFormatter setLocale:enUSPOSIXLocale];
+                            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+                            
+                            notification.date = [dateFormatter dateFromString:dateString];
+                        }
                         
-                        if ([action valueForKey:@"label"] && ![[action valueForKey:@"label"] isEqual:[NSNull null]])
-                            notificationAction.label = [action valueForKey:@"label"];
+                        if ([data valueForKey:@"object_type"] && ![[data valueForKey:@"object_type"] isEqual:[NSNull null]])
+                            notification.typeObject = [data valueForKey:@"object_type"];
                         
-                        if ([action valueForKey:@"link"] && ![[action valueForKey:@"link"] isEqual:[NSNull null]])
-                            notificationAction.link = [action valueForKey:@"link"];
+                        if ([data valueForKey:@"object_id"] && ![[data valueForKey:@"object_id"] isEqual:[NSNull null]])
+                            notification.idObject = [data valueForKey:@"object_id"];
                         
-                        if ([action valueForKey:@"primary"] && ![[action valueForKey:@"primary"] isEqual:[NSNull null]])
-                            notificationAction.primary = [[action valueForKey:@"primary"] boolValue];
+                        if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]])
+                            notification.subject = [data valueForKey:@"subject"];
                         
-                        if ([action valueForKey:@"type"] && ![[action valueForKey:@"type"] isEqual:[NSNull null]])
-                            notificationAction.type = [action valueForKey:@"type"];
+                        if ([data valueForKey:@"subjectRich"] && ![[data valueForKey:@"subjectRich"] isEqual:[NSNull null]])
+                            notification.subjectRich = [data valueForKey:@"subjectRich"];
+                        
+                        if ([data valueForKey:@"subjectRichParameters"] && ![[data valueForKey:@"subjectRichParameters"] isEqual:[NSNull null]] && [[data valueForKey:@"subjectRichParameters"] count] > 0)
+                            notification.subjectRichParameters = [data valueForKey:@"subjectRichParameters"];
+                        
+                        if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
+                            notification.message = [data valueForKey:@"message"];
+                        
+                        if ([data valueForKey:@"messageRich"] && ![[data valueForKey:@"messageRich"] isEqual:[NSNull null]])
+                            notification.messageRich = [data valueForKey:@"messageRich"];
+                        
+                        if ([data valueForKey:@"messageRichParameters"] && ![[data valueForKey:@"messageRichParameters"] isEqual:[NSNull null]] && [[data valueForKey:@"messageRichParameters"] count] > 0)
+                            notification.messageRichParameters = [data valueForKey:@"messageRichParameters"];
+                        
+                        if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
+                            notification.link = [data valueForKey:@"link"];
+                        
+                        if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]])
+                            notification.icon = [data valueForKey:@"icon"];
+                        
+                        /* ACTION */
+                        
+                        NSMutableArray *actionsArr = [NSMutableArray new];
+                        NSDictionary *actions = [data valueForKey:@"actions"];
+                        
+                        for (NSDictionary *action in actions) {
+                            
+                            OCNotificationsAction *notificationAction = [OCNotificationsAction new];
+                            
+                            if ([action valueForKey:@"label"] && ![[action valueForKey:@"label"] isEqual:[NSNull null]])
+                                notificationAction.label = [action valueForKey:@"label"];
+                            
+                            if ([action valueForKey:@"link"] && ![[action valueForKey:@"link"] isEqual:[NSNull null]])
+                                notificationAction.link = [action valueForKey:@"link"];
+                            
+                            if ([action valueForKey:@"primary"] && ![[action valueForKey:@"primary"] isEqual:[NSNull null]])
+                                notificationAction.primary = [[action valueForKey:@"primary"] boolValue];
+                            
+                            if ([action valueForKey:@"type"] && ![[action valueForKey:@"type"] isEqual:[NSNull null]])
+                                notificationAction.type = [action valueForKey:@"type"];
 
-                        [actionsArr addObject:notificationAction];
+                            [actionsArr addObject:notificationAction];
+                        }
+                        
+                        notification.actions = [[NSArray alloc] initWithArray:actionsArr];
+                        [listOfNotifications addObject:notification];
                     }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        successRequest(response, listOfNotifications, request.redirectedServer);
+                    });
+                } else {
                     
-                    notification.actions = [[NSArray alloc] initWithArray:actionsArr];
-                    [listOfNotifications addObject:notification];
+                    NSString *message = (NSString *)[meta objectForKey:@"message"];
+                    if ([message isKindOfClass:[NSNull class]]) {
+                        message = NSLocalizedString(@"_server_response_error_", nil);
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+                    });
                 }
-                
-                successRequest(response, listOfNotifications, request.redirectedServer);
-                
             } else {
-                
-                NSString *message = (NSString *)[meta objectForKey:@"message"];
-                if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedString(@"_server_response_error_", nil);
-                }
-                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
+                });
             }
-        } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
-        }
-    
+        });
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
     }];
@@ -3045,15 +3048,16 @@
     path = [path encodeString:NSUTF8StringEncoding];
 
     [request listTrash:path depth:depth onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            NCXMLListParser *parser = [NCXMLListParser new];
+            [parser initParserWithData:responseObject controlFirstFileOfList:true];
+            NSMutableArray *list = [parser.list mutableCopy];
         
-        NCXMLListParser *parser = [NCXMLListParser new];
-        [parser initParserWithData:responseObject controlFirstFileOfList:true];
-        NSMutableArray *list = [parser.list mutableCopy];
-        
-        successRequest(response, list, request.redirectedServer);
-        
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successRequest(response, list, request.redirectedServer);
+            });
+        });
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error) {
-        
         failureRequest(response, error, request.redirectedServer);
     }];
 }
