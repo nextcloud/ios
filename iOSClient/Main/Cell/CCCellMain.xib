@@ -30,14 +30,6 @@
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRe-1g-6Q1">
-                        <rect key="frame" x="500" y="-0.5" width="50" height="60.5"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="60" id="0wA-tf-66c"/>
-                            <constraint firstAttribute="width" constant="50" id="qwf-D7-GQV"/>
-                        </constraints>
-                    </view>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
                         <rect key="frame" x="15" y="10" width="40" height="40"/>
                         <constraints>
@@ -67,12 +59,20 @@
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="qhJ-el-R92" userLabel="Shared">
-                        <rect key="frame" x="512.5" y="17.5" width="25" height="25"/>
+                        <rect key="frame" x="513" y="18" width="24" height="24"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="25" id="3Kr-Hv-AdZ"/>
-                            <constraint firstAttribute="width" constant="25" id="Ijp-se-6KO"/>
+                            <constraint firstAttribute="height" constant="24" id="3Kr-Hv-AdZ"/>
+                            <constraint firstAttribute="width" constant="24" id="Ijp-se-6KO"/>
                         </constraints>
                     </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRe-1g-6Q1" userLabel="ViewShared">
+                        <rect key="frame" x="500" y="-0.5" width="50" height="60.5"/>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="60" id="0wA-tf-66c"/>
+                            <constraint firstAttribute="width" constant="50" id="qwf-D7-GQV"/>
+                        </constraints>
+                    </view>
                     <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aRp-Ql-cyA" userLabel="More">
                         <rect key="frame" x="550" y="-0.5" width="50" height="60.5"/>
                         <constraints>
@@ -126,6 +126,7 @@
                 <outlet property="more" destination="aRp-Ql-cyA" id="vbC-Za-UhD"/>
                 <outlet property="shared" destination="qhJ-el-R92" id="P3Z-pt-baO"/>
                 <outlet property="status" destination="Fw2-NW-hsK" id="PjC-tV-ROx"/>
+                <outlet property="viewShared" destination="HRe-1g-6Q1" id="32S-Ee-2cG"/>
             </connections>
             <point key="canvasLocation" x="664" y="152.02398800599701"/>
         </tableViewCell>

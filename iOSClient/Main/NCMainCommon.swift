@@ -326,13 +326,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // Share image
             if (isShare) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: .black)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
             } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 30, height: 30, color: .black)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: .black)
             } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: .black)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
             } else {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
             }
             if metadata.ownerId != appDelegate.activeUserID {
                 // Load avatar
@@ -629,13 +629,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // Share image
             if (isShare) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: .black)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
             } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 30, height: 30, color: .black)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: .black)
             } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: .black)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
             } else {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
             }
             if metadata.ownerId != appDelegate.activeUserID {
                 // Load avatar

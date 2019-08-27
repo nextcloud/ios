@@ -32,12 +32,11 @@
 @property(nonatomic, weak) IBOutlet UIImageView *local;
 @property(nonatomic, weak) IBOutlet UIImageView *comment;
 @property(nonatomic, weak) IBOutlet UIImageView *shared;
+@property(nonatomic, weak) IBOutlet UIView *viewShared;
 @property(nonatomic, weak) IBOutlet UIImageView *more;
-
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
-@property(nonatomic, weak) IBOutlet UIButton *sharedButton;
 
 @property(nonatomic, weak) IBOutlet NSLayoutConstraint *labelTitleTrailingConstraint;
 

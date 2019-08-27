@@ -3744,8 +3744,8 @@
         // Share add Tap
         UITapGestureRecognizer *tapShare = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
         [tapShare setNumberOfTapsRequired:1];
-        ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
-        [((CCCellMain *)cell).shared addGestureRecognizer:tapShare];
+        ((CCCellMain *)cell).viewShared.userInteractionEnabled = YES;
+        [((CCCellMain *)cell).viewShared addGestureRecognizer:tapShare];
         
         // More
         if ([self canOpenMenuAction:metadata]) {
