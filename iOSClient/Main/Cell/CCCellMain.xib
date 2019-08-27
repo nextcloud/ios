@@ -65,11 +65,12 @@
                             <constraint firstAttribute="width" constant="24" id="Ijp-se-6KO"/>
                         </constraints>
                     </imageView>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRe-1g-6Q1" userLabel="ViewShared">
-                        <rect key="frame" x="500" y="-0.5" width="50" height="60.5"/>
+                    <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRe-1g-6Q1" userLabel="ViewShared">
+                        <rect key="frame" x="500" y="1" width="50" height="58"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="60" id="0wA-tf-66c"/>
+                            <constraint firstAttribute="height" constant="58" id="0wA-tf-66c"/>
                             <constraint firstAttribute="width" constant="50" id="qwf-D7-GQV"/>
                         </constraints>
                     </view>

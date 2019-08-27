@@ -337,11 +337,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if metadata.ownerId != appDelegate.activeUserID {
                 // Load avatar
                 let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
-                let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-alpha075-" + metadata.ownerId + ".png"
+                let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
                     cell.shared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, alpha: 0.75)
+                    cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
                     let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
@@ -349,7 +349,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         if errorCode == 0 {
                             do {
                                 try data!.write(to: NSURL(fileURLWithPath: fileNameSource) as URL, options: .atomic)
-                                cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, alpha: 0.75)
+                                cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                             } catch {  }
                         }
                     })
@@ -640,11 +640,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if metadata.ownerId != appDelegate.activeUserID {
                 // Load avatar
                 let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
-                let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-alpha075-" + metadata.ownerId + ".png"
+                let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
                     cell.shared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, alpha: 0.75)
+                    cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
                     let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
@@ -652,7 +652,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         if errorCode == 0 {
                             do {
                                 try data!.write(to: NSURL(fileURLWithPath: fileNameSource) as URL, options: .atomic)
-                                 cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, alpha: 0.75)
+                                 cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                             } catch {  }
                         }
                     })

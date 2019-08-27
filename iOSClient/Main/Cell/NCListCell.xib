@@ -62,16 +62,6 @@
                             <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="Mtu-LP-kuR"/>
                         </connections>
                     </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
-                        <rect key="frame" x="520" y="0.0" width="40" height="60"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="60" id="WOg-y5-5UA"/>
-                            <constraint firstAttribute="width" constant="40" id="YSF-9Z-XlJ"/>
-                        </constraints>
-                        <connections>
-                            <action selector="touchUpInsideShare:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="UVA-XS-fRf"/>
-                        </connections>
-                    </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AyA-hP-r6w" userLabel="imageSelect">
                         <rect key="frame" x="10" y="17.5" width="25" height="25"/>
                         <constraints>
@@ -100,6 +90,17 @@
                             <constraint firstAttribute="width" constant="20" id="jfe-Fg-vA8"/>
                         </constraints>
                     </imageView>
+                    <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
+                        <rect key="frame" x="520" y="1" width="40" height="58"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="58" id="WOg-y5-5UA"/>
+                            <constraint firstAttribute="width" constant="40" id="YSF-9Z-XlJ"/>
+                        </constraints>
+                        <connections>
+                            <action selector="touchUpInsideShare:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="UVA-XS-fRf"/>
+                        </connections>
+                    </button>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-cb-EhZ" userLabel="separator">
                         <rect key="frame" x="85" y="59" width="515" height="1"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

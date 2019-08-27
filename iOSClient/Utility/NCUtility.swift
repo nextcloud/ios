@@ -384,7 +384,7 @@ class NCUtility: NSObject {
         CCUtility.deleteAllChainStore()
     }
     
-    @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String, alpha: CGFloat) -> UIImage? {
+    @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String) -> UIImage? {
         
         guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
         let size = Int(k_avatar_size) ?? 128
@@ -396,7 +396,7 @@ class NCUtility: NSObject {
 
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
         let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: 0.5)
-        avatarImageView?.alpha = alpha
+        //avatarImageView?.alpha = alpha
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         avatarImageView?.layer.render(in: context)
         guard let imageAvatar = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
