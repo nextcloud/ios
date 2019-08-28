@@ -288,21 +288,18 @@ extension FileProviderExtension {
             autoreleasepool {
             
                 var size = 0 as Double
-                let metadata = tableMetadata()
                 var error: NSError?
             
                 guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
-            
-                // --------------------------------------------- Copy file here with security access
-            
+                
                 if fileURL.startAccessingSecurityScopedResource() == false {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
-            
+                
                 // typefile directory ? (NOT PERMITTED)
                 do {
                     let attributes = try fileProviderUtility.sharedInstance.fileManager.attributesOfItem(atPath: fileURL.path)
@@ -316,50 +313,45 @@ extension FileProviderExtension {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
-            
+        
                 let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
-                let ocId = CCUtility.createMetadataID(fromAccount: fileProviderData.sharedInstance.account, serverUrl: tableDirectory.serverUrl, fileNameView: fileName, directory: false)!
-            
-                self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
-                    _ = fileProviderUtility.sharedInstance.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))
-                }
-            
-                fileURL.stopAccessingSecurityScopedResource()
-            
-                // ---------------------------------------------------------------------------------
-            
-                // Metadata TEMP
-                metadata.account = fileProviderData.sharedInstance.account
-                metadata.date = NSDate()
-                metadata.directory = false
-                metadata.etag = ""
-                metadata.ocId = ocId
-                metadata.fileId = ocId
-                metadata.fileName = fileName
-                metadata.fileNameView = fileName
-                metadata.serverUrl = tableDirectory.serverUrl
-                metadata.size = size
-                metadata.status = Int(k_metadataStatusHide)
-               
-                CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
-
-                if (size > 0) {
-                    
-                    metadata.session = k_upload_session_extension
-                    metadata.sessionSelector = selectorUploadFile
-                    metadata.status = Int(k_metadataStatusWaitUpload)
-                }
+                let fileNameServerUrl = tableDirectory.serverUrl + "/" + fileName
+                let fileNameLocalPath = fileURL.path
                 
-                guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
-                            
-                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
-            
-                completionHandler(item, nil)
+                OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
+                    
+                }, completion: { (account, ocId, etag, date, message, errorCode) in
+                    
+                    if account == fileProviderData.sharedInstance.account && errorCode == 0 {
+                        
+                        self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
+                            _ = fileProviderUtility.sharedInstance.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))
+                        }
+                        
+                        let metadata = tableMetadata()
+                        metadata.account = fileProviderData.sharedInstance.account
+                        metadata.date = date! as NSDate
+                        metadata.directory = false
+                        metadata.etag = etag!
+                        metadata.ocId = ocId!
+                        metadata.fileName = fileName
+                        metadata.fileNameView = fileName
+                        metadata.serverUrl = tableDirectory.serverUrl
+                        metadata.size = size
+                        
+                        guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                            completionHandler(nil, NSFileProviderError(.noSuchItem))
+                            return
+                        }
+                        let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
+                        completionHandler(item, nil)
 
-                self.uploadFileImportDocument()            
+                    } else {
+                        completionHandler(nil, NSFileProviderError(.serverUnreachable))
+                    }
+                    
+                    fileURL.stopAccessingSecurityScopedResource()
+                })
             }
         }
     }
