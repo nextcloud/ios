@@ -390,9 +390,7 @@ extension FileProviderExtension {
                     } else {
                         
                         completionHandler(nil, NSFileProviderError(.serverUnreachable))
-                    }
-                    
-                   
+                    }                   
                 })
             }
         }

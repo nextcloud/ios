@@ -292,7 +292,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let fileNameServerUrl = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
         
-        OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
+        let task = OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
             
         }, completion: { (account, ocId, etag, date, message, errorCode) in
             
@@ -313,6 +313,12 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             }
         })
+        
+        // Add and register task
+        if task != nil {
+            self.outstandingDownloadTasks[url] = task
+            NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { (error) in }
+        }
     }
     
     override func stopProvidingItem(at url: URL) {
