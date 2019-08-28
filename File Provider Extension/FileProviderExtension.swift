@@ -142,7 +142,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
             
             // Update
-            fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            //fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             
             return item
         }
@@ -211,13 +211,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+            completionHandler(NSFileProviderError(.noSuchItem))
+            return
+        }
         
-        // is Upload [Office 365 !!!]
-        // if metadata.ocId == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false)! {
-        //     completionHandler(nil)
-        //     return
-        // }
-            
         let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag  {
             completionHandler(nil)
@@ -231,14 +229,18 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)
                 
-                // update DB Local
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag)
+                metadata.size = Double(lenght)
                 
-                // Update DB Metadata
-                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                    return
+                }
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                
+                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
+                fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
                 
                 completionHandler(nil)
                 
