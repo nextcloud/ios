@@ -266,14 +266,66 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
     override func itemChanged(at url: URL) {
         
+        var size = 0 as Double
+        var error: NSError?
         let pathComponents = url.pathComponents
-
         assert(pathComponents.count > 2)
-
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        let fileName = pathComponents[pathComponents.count - 1]
         
-        //uploadFileItemChanged(for: itemIdentifier, fileName: fileName, url: url)
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue)) else {
+            return
+        }
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+            return
+        }
+        
+        if url.startAccessingSecurityScopedResource() == false {
+            return
+        }
+        
+        // typefile directory ? (NOT PERMITTED)
+        do {
+            let attributes = try fileProviderUtility.sharedInstance.fileManager.attributesOfItem(atPath: url.path)
+            size = attributes[FileAttributeKey.size] as! Double
+            let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
+            if typeFile == FileAttributeType.typeDirectory {
+                return
+            }
+        } catch {
+            return
+        }
+
+        let fileName = NCUtility.sharedInstance.createFileName(url.lastPathComponent, serverUrl: metadata.serverUrl, account: fileProviderData.sharedInstance.account)
+        let fileNameServerUrl = metadata.serverUrl + "/" + fileName
+        let fileNameLocalPath = url.path
+        
+        OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
+            
+        }, completion: { (account, ocId, etag, date, message, errorCode) in
+            
+            if account == fileProviderData.sharedInstance.account && errorCode == 0 {
+                
+                self.fileCoordinator.coordinate(readingItemAt: url, options: .withoutChanges, error: &error) { (url) in
+                    _ = fileProviderUtility.sharedInstance.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))
+                }
+                
+                metadata.date = date! as NSDate
+                metadata.etag = etag!
+                metadata.size = size
+                
+                guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                    return
+                }
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDB)
+                
+                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
+                fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                
+                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            }
+            
+            url.stopAccessingSecurityScopedResource()
+        })
     }
     
     override func stopProvidingItem(at url: URL) {
