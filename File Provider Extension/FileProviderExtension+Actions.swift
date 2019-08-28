@@ -378,6 +378,8 @@ extension FileProviderExtension {
                             completionHandler(nil, NSFileProviderError(.noSuchItem))
                             return
                         }
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDB)
+                        
                         let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
                         completionHandler(item, nil)
 
