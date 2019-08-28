@@ -374,7 +374,10 @@ extension FileProviderExtension {
                         metadata.serverUrl = tableDirectory.serverUrl
                         metadata.size = size
                         
-                        metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                            completionHandler(nil, NSFileProviderError(.noSuchItem))
+                            return
+                        }
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDB)
                         
                         let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
