@@ -75,6 +75,10 @@
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
 }
+
+@property (nonatomic, readonly, strong) UIImage *cellFavouriteImage;
+@property (nonatomic, readonly, strong) UIImage *cellTrashImage;
+
 @end
 
 @implementation CCMain
@@ -120,6 +124,9 @@
     _searchFileName = @"";
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = @"";
+    
+    _cellFavouriteImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:[UIColor whiteColor]];
+    _cellTrashImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]];
     
     // delegate
     self.tableView.delegate = self;
@@ -3818,7 +3825,7 @@
         ((CCCellMain *)cell).delegate = self;
 
         // LEFT
-        ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
+        ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:self.cellFavouriteImage backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
         
         ((CCCellMain *)cell).leftExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).leftExpansion.fillOnTrigger = NO;
@@ -3828,7 +3835,7 @@
         [favoriteButton centerIconOverText];
         
         // RIGHT
-        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:self.cellTrashImage backgroundColor:[UIColor redColor] padding:25]];
         
         ((CCCellMain *)cell).rightExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).rightExpansion.fillOnTrigger = NO;
