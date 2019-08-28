@@ -90,13 +90,31 @@ extension FileProviderExtension {
             return
         }
         
-        deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
-       
-        // return immediately
-        fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier[itemIdentifier] = itemIdentifier
-        fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-
-        completionHandler(nil)
+        OCNetworking.sharedManager().deleteFileOrFolder(withAccount: fileProviderData.sharedInstance.account, path: metadata.serverUrl + "/" + metadata.fileName, completion: { (account, message, errorCode) in
+            if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
+                let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)!
+                do {
+                    try fileProviderUtility.sharedInstance.fileManager.removeItem(atPath: fileNamePath)
+                } catch let error {
+                    print("error: \(error)")
+                }
+                
+                if metadata.directory {
+                    let dirForDelete = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: fileProviderData.sharedInstance.account)
+                }
+                
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                
+                fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier[itemIdentifier] = itemIdentifier
+                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+                completionHandler(nil)
+                
+            } else {
+                completionHandler( NSFileProviderError(.serverUnreachable))
+            }
+        })
     }
     
     override func reparentItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemWithIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, newName: String?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
@@ -230,14 +248,31 @@ extension FileProviderExtension {
             favorite = true
         }
         
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-        fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
-        fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-
-        completionHandler(item, nil)
-        
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            settingFavorite(favorite, withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)
+            
+            OCNetworking.sharedManager().settingFavorite(withAccount: metadata.account, fileName: fileNamePath, favorite: favorite, completion: { (account, message, errorCode) in
+                if errorCode == 0 && account == metadata.account {
+                    // Change DB
+                    metadata.favorite = favorite
+                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                    fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                    fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                    
+                    completionHandler(item, nil)
+                } else {
+                    // Errore, remove from listFavoriteIdentifierRank
+                    fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+                    
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                    fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                    fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                    
+                    completionHandler(nil, NSFileProviderError(.serverUnreachable))
+                }
+            })
         }
     }
     

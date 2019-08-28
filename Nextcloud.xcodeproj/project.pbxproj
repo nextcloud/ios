@@ -339,7 +339,6 @@
 		F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F220E239A600AFB62D /* FileProviderData.swift */; };
 		F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F420E239B400AFB62D /* FileProviderExtension+Actions.swift */; };
 		F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */; };
-		F771E3F920E239B500AFB62D /* FileProviderExtension+Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F620E239B400AFB62D /* FileProviderExtension+Network.swift */; };
 		F771E3FF20E23C3A00AFB62D /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F771E40020E23C3D00AFB62D /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F774264022EB3F7300B23912 /* DropDown.framework */; };
@@ -1136,7 +1135,6 @@
 		F771E3F220E239A600AFB62D /* FileProviderData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderData.swift; sourceTree = "<group>"; };
 		F771E3F420E239B400AFB62D /* FileProviderExtension+Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileProviderExtension+Actions.swift"; sourceTree = "<group>"; };
 		F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileProviderExtension+Thumbnail.swift"; sourceTree = "<group>"; };
-		F771E3F620E239B400AFB62D /* FileProviderExtension+Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileProviderExtension+Network.swift"; sourceTree = "<group>"; };
 		F771E3FB20E23A8700AFB62D /* File_Provider_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = File_Provider_Extension.entitlements; sourceTree = "<group>"; };
 		F771E3FC20E23A8800AFB62D /* File_Provider_Extension.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = File_Provider_Extension.plist; sourceTree = "<group>"; };
 		F774264022EB3F7300B23912 /* DropDown.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DropDown.framework; path = Carthage/Build/iOS/DropDown.framework; sourceTree = "<group>"; };
@@ -2312,7 +2310,6 @@
 				F771E3F220E239A600AFB62D /* FileProviderData.swift */,
 				F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */,
 				F771E3F420E239B400AFB62D /* FileProviderExtension+Actions.swift */,
-				F771E3F620E239B400AFB62D /* FileProviderExtension+Network.swift */,
 				F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */,
 				F771E3D420E2392D00AFB62D /* FileProviderItem.swift */,
 				F76673EF22C90433007ED366 /* FileProviderUtility.swift */,
@@ -3573,7 +3570,6 @@
 				F7434B4020E2404E00417916 /* OCNotificationsAction.m in Sources */,
 				F7434B5320E2409E00417916 /* OCXMLSharedParser.m in Sources */,
 				F7434B4320E2405900417916 /* OCShareUser.m in Sources */,
-				F771E3F920E239B500AFB62D /* FileProviderExtension+Network.swift in Sources */,
 				F7434B6120E2445C00417916 /* CCCertificate.m in Sources */,
 				F7434B5A20E241BB00417916 /* NCNetworkingEndToEnd.m in Sources */,
 				F76673EE22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
