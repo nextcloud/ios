@@ -29,6 +29,14 @@ import ZIPFoundation
 
 class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
     
+    struct NCMainCommonImages {
+        static let cellShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        static let cellShareMountedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        static let cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        static let cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+        static let cellMoreImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 1, color: NCBrandColor.sharedInstance.optionItem)
+    }
+    
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
         return instance
@@ -612,13 +620,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 
                 // Share
                 if (isShare) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = NCMainCommonImages.cellShareImage
                 } else if (isMounted) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = NCMainCommonImages.cellShareMountedImage
                 } else if (sharesLink != nil) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = NCMainCommonImages.cellShareByLinkImage
                 } else if (sharesUserAndGroup != nil) {
-                    cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+                    cell.shared.image = NCMainCommonImages.cellShareImage
                 }
             }
             
@@ -628,11 +636,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // Favorite
             if metadata.favorite {
-                cell.favorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+                cell.favorite.image = NCMainCommonImages.cellFavouriteImage
             }
             
             // More Image
-            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 1, color: NCBrandColor.sharedInstance.optionItem)
+            cell.more.image = NCMainCommonImages.cellMoreImage
             
             return cell
             
