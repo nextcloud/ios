@@ -101,20 +101,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isMostRecentVersionDownloaded = true
             }
             
-            // Download
-            if (metadata.session == k_download_session_extension && metadata.status != k_metadataStatusDownloadError) {
-                self.isDownloading = true
-            } else {
-                self.isDownloading = false
-            }
-            
-            // Upload
-            if (metadata.session == k_upload_session_extension && metadata.status != k_metadataStatusUploadError) {
-                isUpload = true
-                self.isUploading = true
-                self.isUploaded = false
-            } 
-            
             // Error ?
             if metadata.sessionError != "" {
                 uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
