@@ -209,39 +209,23 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         // Report the deleted items
         //
-        if enumeratedItemIdentifier == .workingSet {
-            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier {
-                itemsDelete.append(itemIdentifier)
-            }
-            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
-        } else {
-            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier {
-                itemsDelete.append(itemIdentifier)
-            }
-            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
+        for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier {
+            itemsDelete.append(itemIdentifier)
         }
-            
+       
         // Report the updated items
         //
-        if enumeratedItemIdentifier == .workingSet {
-            for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem {
-                let account = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier)
-                if account != nil && account == fileProviderData.sharedInstance.account {
-                    itemsUpdate.append(item)
-                } else {
-                    itemsDelete.append(itemIdentifier)
-                }
-            }
-        } else {
-            for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem {
-                let account = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier)
-                if account != nil && account == fileProviderData.sharedInstance.account {
-                    itemsUpdate.append(item)
-                } else {
-                    itemsDelete.append(itemIdentifier)
-                }
+        for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateItem {
+            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier)
+            if metadata == nil {
+                itemsDelete.append(itemIdentifier)
+            } else {
+                itemsUpdate.append(item)
             }
         }
+        
+        fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier.removeAll()
+        fileProviderData.sharedInstance.fileProviderSignalUpdateItem.removeAll()
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)

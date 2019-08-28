@@ -285,9 +285,19 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         assert(pathComponents.count > 2)
 
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        let fileName = pathComponents[pathComponents.count - 1]
         
-        uploadFileItemChanged(for: itemIdentifier, fileName: fileName, url: url)
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND (ocId == %@ || fileId == %@)", fileProviderData.sharedInstance.account, itemIdentifier.rawValue, itemIdentifier.rawValue)) else { return }
+        
+        metadata.session = k_upload_session_extension
+        metadata.sessionSelector = selectorUploadFile
+        metadata.status = Int(k_metadataStatusWaitUpload)
+        
+        guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+            return
+        }
+        
+        CCNetworking.shared().delegate = self
+        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume))
     }
     
     override func stopProvidingItem(at url: URL) {

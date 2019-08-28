@@ -64,8 +64,7 @@ extension FileProviderExtension {
                 if parentItemIdentifier != nil {
                     
                     let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!)
-                    fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                    fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                    fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
                     fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                     
                     completionHandler(item, nil)
@@ -94,8 +93,7 @@ extension FileProviderExtension {
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
        
         // return immediately
-        fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-        fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+        fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier[itemIdentifier] = itemIdentifier
         fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
 
         completionHandler(nil)
@@ -141,8 +139,7 @@ extension FileProviderExtension {
                 }
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[itemIdentifier] = item
-                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
+                fileProviderData.sharedInstance.fileProviderSignalUpdateItem[itemIdentifier] = item
                 fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
                 
                 completionHandler(item, nil)
@@ -200,8 +197,7 @@ extension FileProviderExtension {
                 }
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
                 fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 
                 completionHandler(item, nil)
@@ -235,8 +231,7 @@ extension FileProviderExtension {
         }
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-        fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
         fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
         completionHandler(item, nil)
@@ -262,8 +257,7 @@ extension FileProviderExtension {
         }
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-        fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
         fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         
         completionHandler(item, nil)
@@ -340,6 +334,7 @@ extension FileProviderExtension {
                 metadata.directory = false
                 metadata.etag = ""
                 metadata.ocId = ocId
+                metadata.fileId = ocId
                 metadata.fileName = fileName
                 metadata.fileNameView = fileName
                 metadata.serverUrl = tableDirectory.serverUrl

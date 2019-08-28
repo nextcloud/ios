@@ -47,11 +47,9 @@ class fileProviderData: NSObject {
     var listFavoriteIdentifierRank = [String:NSNumber]()
     
     // Item for signalEnumerator
-    var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-    var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
-    var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-    var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
-    
+    var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdateItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+   
     // UserDefaults
     var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.sharedInstance.capabilitiesGroups)
     
@@ -163,7 +161,7 @@ class fileProviderData: NSObject {
                 }
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                fileProviderSignalUpdateItem[item.itemIdentifier] = item
                 updateWorkingSet = true
             }
         }
@@ -178,7 +176,7 @@ class fileProviderData: NSObject {
                 }
                 
                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+                fileProviderSignalDeleteItemIdentifier[itemIdentifier] = itemIdentifier
                 updateWorkingSet = true
             }
         }

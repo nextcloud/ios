@@ -76,8 +76,7 @@ extension FileProviderExtension {
                 fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
                 fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
         })
@@ -107,8 +106,7 @@ extension FileProviderExtension {
         // Register for bytesSent
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
-        fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
         fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
     }
     
@@ -127,8 +125,7 @@ extension FileProviderExtension {
             
             // Remove temp ocId
             let itemIdentifier = NSFileProviderItemIdentifier(CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false))
-            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+            fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier[itemIdentifier] = itemIdentifier
             
             // Recreate ico
             CCGraphics.createNewImage(from: fileName, ocId: ocId, extension: NSString(string: fileName).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
@@ -139,8 +136,7 @@ extension FileProviderExtension {
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier)
-            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
             
             uploadFileImportDocument()
             
@@ -152,8 +148,7 @@ extension FileProviderExtension {
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier)
-            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
         }
         
         fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
@@ -172,35 +167,6 @@ extension FileProviderExtension {
             CCNetworking.shared().delegate = self
             CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume))
         }
-    }
-    
-    func uploadFileItemChanged(for itemIdentifier: NSFileProviderItemIdentifier, fileName: String, url: URL) {
-        
-        var itemIdentifierForUpload = itemIdentifier
-        
-        // Is itemIdentifier = fileName [Apple Works and ... ?]
-        if itemIdentifier.rawValue.contains(fileName) && fileProviderUtility.sharedInstance.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue, fileName)) else {
-                return
-            }
-            itemIdentifierForUpload = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-            _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue, toPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifierForUpload.rawValue)
-        }
-        
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifierForUpload) else {
-            return
-        }
-        
-        metadata.session = k_upload_session_extension
-        metadata.sessionSelector = selectorUploadFile
-        metadata.status = Int(k_metadataStatusWaitUpload)
-
-        guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-            return
-        }
-        
-        CCNetworking.shared().delegate = self
-        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume))
     }
     
     func reUpload(_ metadata: tableMetadata) {
