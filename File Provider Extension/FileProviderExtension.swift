@@ -134,15 +134,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            
             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-            
-            // Update
-            //fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             
             return item
         }
@@ -236,9 +231,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
                     return
                 }
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDB)
                 
                 let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
+                fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier[item.itemIdentifier] = item.itemIdentifier
                 fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
                 fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
                 
