@@ -212,22 +212,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        // Error ? reUpload when touch
-        if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
-            
-            if metadata.session == k_upload_session_extension {
-                //self.reUpload(metadata)
-            }
-            
-            completionHandler(nil)
-            return
-        }
-            
         // is Upload [Office 365 !!!]
-        if metadata.ocId == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false)! {
-            completionHandler(nil)
-            return
-        }
+        // if metadata.ocId == CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false)! {
+        //     completionHandler(nil)
+        //     return
+        // }
             
         let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag  {

@@ -2305,8 +2305,8 @@
 		F771E3D120E2392D00AFB62D /* File Provider Extension */ = {
 			isa = PBXGroup;
 			children = (
-				F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */,
 				F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */,
+				F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */,
 				F771E3F420E239B400AFB62D /* FileProviderExtension+Actions.swift */,
 				F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */,
 				F771E3D420E2392D00AFB62D /* FileProviderItem.swift */,
