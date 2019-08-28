@@ -237,9 +237,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier[item.itemIdentifier] = item.itemIdentifier
                 fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
                 fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-                
+            
                 completionHandler(nil)
-                
+
             } else {
                 
                 // remove task
