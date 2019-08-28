@@ -324,7 +324,7 @@ extension FileProviderExtension {
             
                 var size = 0 as Double
                 var error: NSError?
-            
+                
                 guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
@@ -351,17 +351,21 @@ extension FileProviderExtension {
         
                 let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
                 let fileNameServerUrl = tableDirectory.serverUrl + "/" + fileName
-                let fileNameLocalPath = fileURL.path
+                let fileTemporaryDirectory = NSTemporaryDirectory() + fileName
                 
-                OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
+                self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
+                    _ = fileProviderUtility.sharedInstance.copyFile(url.path, toPath: fileTemporaryDirectory)
+                }
+                
+                fileURL.stopAccessingSecurityScopedResource()
+                
+                OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileTemporaryDirectory, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
                     
                 }, completion: { (account, ocId, etag, date, message, errorCode) in
                     
                     if account == fileProviderData.sharedInstance.account && errorCode == 0 {
                         
-                        self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
-                            _ = fileProviderUtility.sharedInstance.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))
-                        }
+                        _ = fileProviderUtility.sharedInstance.moveFile(fileTemporaryDirectory, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))
                         
                         let metadata = tableMetadata()
                         metadata.account = fileProviderData.sharedInstance.account
@@ -388,7 +392,7 @@ extension FileProviderExtension {
                         completionHandler(nil, NSFileProviderError(.serverUnreachable))
                     }
                     
-                    fileURL.stopAccessingSecurityScopedResource()
+                   
                 })
             }
         }
