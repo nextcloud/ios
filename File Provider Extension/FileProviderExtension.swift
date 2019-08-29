@@ -292,11 +292,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let fileNameLocalPath = url.path
         
         OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
-            
         }, completion: { (account, ocId, etag, date, message, errorCode) in
             
             if account == fileProviderData.sharedInstance.account && errorCode == 0 {
                 NCManageDatabase.sharedInstance.setLocalFile(ocId: itemIdentifier.rawValue, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag!)
+                //TODO: remove preview ico
             }
         })
     }
