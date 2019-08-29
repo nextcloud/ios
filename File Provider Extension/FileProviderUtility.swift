@@ -84,15 +84,11 @@ class fileProviderUtility: NSObject {
             
         } else {
             
-            guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else {
-                return nil
-            }
+            guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else { return nil }
             predicate = NSPredicate(format: "ocId == %@", metadata.ocId)
         }
         
-        guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: predicate) else {
-            return nil
-        }
+        guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: predicate) else { return nil }
         
         return directory
     }
@@ -103,9 +99,7 @@ class fileProviderUtility: NSObject {
         
         var errorResult: Error?
         
-        if !fileManager.fileExists(atPath: atPath) {
-            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
-        }
+        if !fileManager.fileExists(atPath: atPath) { return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         do {
             try fileManager.removeItem(atPath: toPath)
@@ -125,13 +119,8 @@ class fileProviderUtility: NSObject {
         
         var errorResult: Error?
         
-        if atPath == toPath {
-            return nil
-        }
-                
-        if !fileManager.fileExists(atPath: atPath) {
-            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
-        }
+        if atPath == toPath { return nil }
+        if !fileManager.fileExists(atPath: atPath) { return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         do {
             try fileManager.removeItem(atPath: toPath)

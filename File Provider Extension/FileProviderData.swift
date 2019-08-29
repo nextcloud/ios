@@ -66,9 +66,7 @@ class fileProviderData: NSObject {
         // NO DOMAIN -> Set default account
         if domain == nil {
             
-            guard let tableAccounts = NCManageDatabase.sharedInstance.getAccountActive() else {
-                return false
-            }
+            guard let tableAccounts = NCManageDatabase.sharedInstance.getAccountActive() else { return false }
             
             account = tableAccounts.account
             accountUser = tableAccounts.user
@@ -81,25 +79,17 @@ class fileProviderData: NSObject {
         }
         
         let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
-        if tableAccounts.count == 0 {
-            return false
-        }
+        if tableAccounts.count == 0 { return false }
         
         for tableAccount in tableAccounts {
-            guard let url = NSURL(string: tableAccount.url) else {
-                continue
-            }
-            guard let host = url.host else {
-                continue
-            }
+            guard let url = NSURL(string: tableAccount.url) else { continue }
+            guard let host = url.host else { continue }
             let accountDomain = tableAccount.userID + " (" + host + ")"
             if accountDomain == domain {
                 account = tableAccount.account
                 accountUser = tableAccount.user
                 accountUserID = tableAccount.userID
-                guard let password = CCUtility.getPassword(tableAccount.account) else {
-                    return false
-                }
+                guard let password = CCUtility.getPassword(tableAccount.account) else { return false }
                 accountPassword = password
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
@@ -115,14 +105,10 @@ class fileProviderData: NSObject {
         
         var foundAccount: Bool = false
 
-        guard let accountFromItemIdentifier = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier) else {
-            return false
-        }
+        guard let accountFromItemIdentifier = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier) else { return false }
         
         let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
-        if tableAccounts.count == 0 {
-            return false
-        }
+        if tableAccounts.count == 0 { return false }
         
         for tableAccount in tableAccounts {
             if accountFromItemIdentifier == tableAccount.account {
@@ -152,15 +138,11 @@ class fileProviderData: NSObject {
         for (identifier, _) in listFavoriteIdentifierRank {
             
             if !oldListFavoriteIdentifierRank.keys.contains(identifier) {
-                
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else {
-                    continue
-                }
-                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else {
-                    continue
-                }
-                
+            
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
+                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                
                 fileProviderSignalUpdate[item.itemIdentifier] = item
                 updateWorkingSet = true
             }
@@ -171,11 +153,9 @@ class fileProviderData: NSObject {
             
             if !listFavoriteIdentifierRank.keys.contains(identifier) {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else {
-                    continue
-                }
-                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+                
                 fileProviderSignalDelete[itemIdentifier] = itemIdentifier
                 updateWorkingSet = true
             }

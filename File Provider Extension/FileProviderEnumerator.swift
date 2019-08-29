@@ -66,12 +66,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.sharedInstance.account))
             for tag in tags {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tag.ocId))  else {
-                    continue
-                }
-                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tag.ocId))  else { continue }
                 fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
-                
                 itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
             }
             
@@ -79,10 +75,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             fileProviderData.sharedInstance.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.sharedInstance.account)
             for (identifier, _) in fileProviderData.sharedInstance.listFavoriteIdentifierRank {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else {
-                    continue
-                }
-                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
                 itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
             }
             
@@ -271,9 +264,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             for metadata in metadatas {
                 
                 // E2EE Remove
-                if metadata.e2eEncrypted || metadata.status == Int(k_metadataStatusHide) || (metadata.session != "" && metadata.session != k_download_session_extension && metadata.session != k_upload_session_extension) {
-                    continue
-                }
+                if metadata.e2eEncrypted || metadata.status == Int(k_metadataStatusHide) || (metadata.session != "" && metadata.session != k_download_session_extension && metadata.session != k_upload_session_extension) { continue }
                 
                 counter += 1
                 if (counter >= start && counter <= stop) {
@@ -290,5 +281,4 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
         return items
     }
-
 }

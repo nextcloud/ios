@@ -33,24 +33,24 @@ import FileProvider
  
                                     ↓
  
-    itemIdentifier = metadata.ocId (ex. 00ABC1)                                   --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    itemIdentifier = metadata.ocId (ex. 00ABC1)                                     --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
     parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
                                     ↓
 
-    itemIdentifier = metadata.ocId (ex. 00CCC)                                    --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    itemIdentifier = metadata.ocId (ex. 00CCC)                                      --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
     parentItemIdentifier = parent itemIdentifier (00ABC1)                           --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
                                     ↓
  
-    itemIdentifier = metadata.ocId (ex. 000DD)                                    --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    itemIdentifier = metadata.ocId (ex. 000DD)                                      --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
     parentItemIdentifier = parent itemIdentifier (00CCC)                            --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
 class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
-    var outstandingDownloadTasks = [URL: URLSessionTask]()
+    var outstandingSessionTasks = [URL: URLSessionTask]()
     
     lazy var fileCoordinator: NSFileCoordinator = {
         
@@ -222,7 +222,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             if errorCode == 0 && account == metadata.account {
 
                 // remove Task
-                self.outstandingDownloadTasks.removeValue(forKey: url)
+                self.outstandingSessionTasks.removeValue(forKey: url)
                 
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
@@ -241,7 +241,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             } else {
                 
                 // remove task
-                self.outstandingDownloadTasks.removeValue(forKey: url)
+                self.outstandingSessionTasks.removeValue(forKey: url)
                 
                 if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
                     completionHandler(NSFileProviderError(.noSuchItem))
@@ -255,7 +255,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
        
         // Add and register task
         if task != nil {
-            outstandingDownloadTasks[url] = task
+            outstandingSessionTasks[url] = task
             NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
         }
     }
@@ -267,12 +267,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue)) else {
-            return
-        }
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
-            return
-        }
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue)) else { return }
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else { return }
         
         // typefile directory ? (NOT PERMITTED)
         do {
@@ -282,9 +278,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             if typeFile == FileAttributeType.typeDirectory {
                 return
             }
-        } catch {
-            return
-        }
+        } catch { return }
 
         let fileName = pathComponents[pathComponents.count - 1]
         let fileNameServerUrl = metadata.serverUrl + "/" + fileName
@@ -293,6 +287,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let task = OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
             
         }, completion: { (account, ocId, etag, date, message, errorCode) in
+            
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue)) else { return }
             
             if account == fileProviderData.sharedInstance.account && errorCode == 0 {
                 
@@ -304,13 +300,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.size = size
                 
                 guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
-                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: metadata.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag)
+                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadataUpdate.ocId, date: metadataUpdate.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadataUpdate.etag)
                 
                 // Signal update/delete
                 _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
-                
+
             } else {
-                // ????
+                
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                metadata.status = Int(k_metadataStatusNormal)
+                metadata.session = ""
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
             }
         })
         
@@ -326,7 +326,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             // Signal update/delete
             _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
             
-            self.outstandingDownloadTasks[url] = task
+            self.outstandingSessionTasks[url] = task
             NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { (error) in }
         }
     }
@@ -355,10 +355,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
         
         // Download task
-        if let downloadTask = outstandingDownloadTasks[url] {
+        if let downloadTask = outstandingSessionTasks[url] {
             downloadTask.cancel()
-            outstandingDownloadTasks.removeValue(forKey: url)
+            outstandingSessionTasks.removeValue(forKey: url)
         }
     }
-
 }
