@@ -47,16 +47,7 @@ class NCViewerDocumentWeb: NSObject {
         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
 
-        do {
-            try FileManager.default.removeItem(atPath:fileNamePath)
-        } catch { }
-        
-        do {
-            try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-        } catch {
-            print("error")
-            return
-        }
+        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
         
         let url = URL.init(fileURLWithPath: fileNamePath)
 
