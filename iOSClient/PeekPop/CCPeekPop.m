@@ -78,7 +78,7 @@
     
     if (self.showShare) {
         UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:self.metadata indexPage:2];
+            [[NCMainCommon sharedInstance] openShareWithViewController:appDelegate.activeMain metadata:self.metadata indexPage:2];
         }];
         [items addObject:share];
     }

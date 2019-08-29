@@ -54,17 +54,17 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
         tableView.contentInset = insets
+        
+        // Color
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        
+        self.title = NSLocalizedString("_activity_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-    
-        self.title = NSLocalizedString("_activity_", comment: "")
-
         loadDataSource()
         loadActivity(idActivity: 0)
     }
