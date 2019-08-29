@@ -1310,10 +1310,6 @@ PKPushRegistry *pushRegistry;
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
         if (metadataForUpload) {
             
-            if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
-                metadataForUpload.session = k_upload_session;
-            }
-            
             metadataForUpload.status = k_metadataStatusInUpload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             

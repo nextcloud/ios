@@ -102,38 +102,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         var actionReloadDatasource = k_action_NULL
         var metadata = metadata
         
-        if metadata.session.count == 0 {
-            return
-        }
-        
-        guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else {
-            return
-        }
-        
-        // SESSION EXTENSION
-        if metadata.session == k_download_session_extension || metadata.session == k_upload_session_extension {
-            
-            if (metadata.session == k_upload_session_extension) {
-                
-                do {
-                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                } catch { }
-                
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                
-                actionReloadDatasource = k_action_DEL
-                
-            } else {
-                
-                NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                
-                actionReloadDatasource = k_action_MOD
-            }
-            
-            self.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: actionReloadDatasource)
-            
-            return
-        }
+        if metadata.session.count == 0 { return }
+        guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else { return }
         
         session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
             
@@ -742,7 +712,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             }
             
             // Session Upload Extension
-            if metadata.session == k_upload_session_extension && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading) {
+            if metadata.session == k_upload_session_extension {
                 
                 cell.labelTitle.isEnabled = false
                 cell.labelInfoFile.isEnabled = false
