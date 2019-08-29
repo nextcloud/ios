@@ -219,18 +219,24 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         let task = OCNetworking.sharedManager().download(withAccount: metadata.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), completion: { (account, lenght, etag, date, message, errorCode) in
             
+            // remove Task
+            self.outstandingSessionTasks.removeValue(forKey: url)
+            
+            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+                completionHandler(NSFileProviderError(.noSuchItem))
+                return
+            }
+            
             if errorCode == 0 && account == metadata.account {
 
-                // remove Task
-                self.outstandingSessionTasks.removeValue(forKey: url)
-                
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                metadata.status = Int(k_metadataStatusNormal)
+                metadata.session = ""
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
                 metadata.size = Double(lenght)
                 
-                guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                    return
-                }
+                guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdate)
                 
                 // Signal update/delete
@@ -240,14 +246,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
 
             } else {
                 
-                // remove task
-                self.outstandingSessionTasks.removeValue(forKey: url)
-                
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                metadata.status = Int(k_metadataStatusNormal)
+                metadata.session = ""
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+               
                 if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
                     completionHandler(NSFileProviderError(.noSuchItem))
                 } else {
                     completionHandler(NSFileProviderError(.serverUnreachable))
                 }
+                
                 return
             }
             
@@ -255,6 +264,16 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
        
         // Add and register task
         if task != nil {
+            
+            metadata.sessionTaskIdentifier = Int(task!.taskIdentifier)
+            metadata.status = Int(k_metadataStatusDownloading)
+            metadata.session = k_download_session_extension
+
+            guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
+
+            // Signal update/delete
+            _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
+
             outstandingSessionTasks[url] = task
             NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
         }
@@ -287,6 +306,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let task = OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
             
         }, completion: { (account, ocId, etag, date, message, errorCode) in
+            
+            // remove Task
+            self.outstandingSessionTasks.removeValue(forKey: url)
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue)) else { return }
             

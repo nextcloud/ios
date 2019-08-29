@@ -30,7 +30,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var filename: String = ""                                       // The item's filename
     var typeIdentifier: String = ""                                 // The item's uniform type identifiers
     var capabilities: NSFileProviderItemCapabilities {              // The item's capabilities
-        
         if (self.isDirectory) {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
         } else {
@@ -66,9 +65,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     var tagData: Data?                                              // Tag
     var favoriteRank: NSNumber?                                     // Favorite
-    
     var isDirectory = false
-    var isDownload = false
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         
@@ -101,11 +98,17 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
             }
             
-            // Upload
-            if (metadata.session == k_upload_session_extension) {
+            // Download
+            if (metadata.session == k_download_session_extension) {
                 self.isUploading = true
                 self.isUploaded = false
             } 
+            
+            // Upload
+            if (metadata.session == k_upload_session_extension) {
+                self.isDownloading = true
+                self.isDownloaded = false
+            }
             
         } else {
             
