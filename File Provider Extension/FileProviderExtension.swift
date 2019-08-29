@@ -281,6 +281,29 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
     override func itemChanged(at url: URL) {
         
+        let pathComponents = url.pathComponents
+        assert(pathComponents.count > 2)
+        let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", itemIdentifier.rawValue)) else { return }
+        
+        let fileName = pathComponents[pathComponents.count - 1]
+        let fileNameServerUrl = metadata.serverUrl + "/" + fileName
+        let fileNameLocalPath = url.path
+        
+        OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
+            
+        }, completion: { (account, ocId, etag, date, message, errorCode) in
+            
+            if account == fileProviderData.sharedInstance.account && errorCode == 0 {
+                NCManageDatabase.sharedInstance.setLocalFile(ocId: itemIdentifier.rawValue, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag!)
+            }
+        })
+    }
+    
+    /*
+    override func itemChanged(at url: URL) {
+        
         var size = 0 as Double
         let pathComponents = url.pathComponents
         assert(pathComponents.count > 2)
@@ -298,7 +321,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
         } catch { return }
-
+        
         let fileName = pathComponents[pathComponents.count - 1]
         let fileNameServerUrl = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
@@ -326,7 +349,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 // Signal update/delete
                 _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
-
+                
             } else {
                 
                 metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
@@ -352,6 +375,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { (error) in }
         }
     }
+    */
     
     override func stopProvidingItem(at url: URL) {
         // Called after the last claim to the file has been released. At this point, it is safe for the file provider to remove the content file.
