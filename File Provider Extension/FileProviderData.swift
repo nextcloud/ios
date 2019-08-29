@@ -47,8 +47,8 @@ class fileProviderData: NSObject {
     var listFavoriteIdentifierRank = [String:NSNumber]()
     
     // Item for signalEnumerator
-    var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-    var fileProviderSignalUpdateItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+    var fileProviderSignalDelete = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdate = [NSFileProviderItemIdentifier:FileProviderItem]()
    
     // UserDefaults
     var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.sharedInstance.capabilitiesGroups)
@@ -161,7 +161,7 @@ class fileProviderData: NSObject {
                 }
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                fileProviderSignalUpdate[item.itemIdentifier] = item
                 updateWorkingSet = true
             }
         }
@@ -176,7 +176,7 @@ class fileProviderData: NSObject {
                 }
                 
                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                fileProviderSignalDeleteItemIdentifier[itemIdentifier] = itemIdentifier
+                fileProviderSignalDelete[itemIdentifier] = itemIdentifier
                 updateWorkingSet = true
             }
         }
@@ -188,9 +188,20 @@ class fileProviderData: NSObject {
     
     // MARK: -
 
+    // Signal update/delete
+    //
+    func fileProviderSignal(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, delete: Bool, update: Bool) -> FileProviderItem {
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+        if update { fileProviderSignalUpdate[item.itemIdentifier] = item }
+        if delete { fileProviderSignalDelete[item.itemIdentifier] = item.itemIdentifier }
+        signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        
+        return item
+    }
+    
     // Convinent method to signal the enumeration for containers.
     //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+    private func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
                 
         currentAnchor += 1
         

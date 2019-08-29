@@ -228,16 +228,14 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.etag = etag!
                 metadata.size = Double(lenght)
                 
-                guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
                     return
                 }
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDB)
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdate)
                 
-                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
-                fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
-                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-            
+                // Signal update/delete
+                _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: true, update: true)
+                
                 completionHandler(nil)
 
             } else {
@@ -268,7 +266,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let pathComponents = url.pathComponents
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        var metadataUpdate: tableMetadata?
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue)) else {
             return
@@ -299,24 +296,36 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             if account == fileProviderData.sharedInstance.account && errorCode == 0 {
                 
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                metadata.status = Int(k_metadataStatusNormal)
+                metadata.session = ""
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
                 metadata.size = size
                 
-                guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                    return
-                }
+                guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: metadata.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag)
                 
-                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
-                fileProviderData.sharedInstance.fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                // Signal update/delete
+                _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
                 
-                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            } else {
+                // ????
             }
         })
         
         // Add and register task
         if task != nil {
+            
+            metadata.sessionTaskIdentifier = Int(task!.taskIdentifier)
+            metadata.status = Int(k_metadataStatusUploading)
+            metadata.session = k_upload_session_extension
+            
+            guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
+            
+            // Signal update/delete
+            _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
+            
             self.outstandingDownloadTasks[url] = task
             NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { (error) in }
         }

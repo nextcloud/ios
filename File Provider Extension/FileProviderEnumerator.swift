@@ -209,13 +209,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         // Report the deleted items
         //
-        for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier {
+        for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDelete {
             itemsDelete.append(itemIdentifier)
         }
        
         // Report the updated items
         //
-        for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateItem {
+        for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdate {
             let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier)
             if metadata == nil {
                 itemsDelete.append(itemIdentifier)
@@ -224,8 +224,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
         }
         
-        fileProviderData.sharedInstance.fileProviderSignalDeleteItemIdentifier.removeAll()
-        fileProviderData.sharedInstance.fileProviderSignalUpdateItem.removeAll()
+        fileProviderData.sharedInstance.fileProviderSignalDelete.removeAll()
+        fileProviderData.sharedInstance.fileProviderSignalUpdate.removeAll()
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)

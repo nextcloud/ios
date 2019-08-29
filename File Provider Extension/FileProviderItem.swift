@@ -34,11 +34,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if (self.isDirectory) {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
         } else {
-            if isUpload {
-                return [ ]
-            } else {
-                return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
-            }
+            return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
         }
     }
     
@@ -73,7 +69,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     
     var isDirectory = false
     var isDownload = false
-    var isUpload = false
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         
@@ -105,6 +100,12 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             if metadata.sessionError != "" {
                 uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
             }
+            
+            // Upload
+            if (metadata.session == k_upload_session_extension) {
+                self.isUploading = true
+                self.isUploaded = false
+            } 
             
         } else {
             
