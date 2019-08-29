@@ -43,7 +43,6 @@
 #pragma mark ===== Session =====
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
-- (NSArray *)getUploadTasksExtensionSession;
 - (void)invalidateAndCancelAllSession;
 
 #pragma mark ===== Download =====

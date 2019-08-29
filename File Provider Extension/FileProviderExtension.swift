@@ -268,6 +268,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let pathComponents = url.pathComponents
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+        var metadataUpdate: tableMetadata?
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", fileProviderData.sharedInstance.account, itemIdentifier.rawValue)) else {
             return
