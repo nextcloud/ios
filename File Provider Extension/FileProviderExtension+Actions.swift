@@ -102,7 +102,6 @@ extension FileProviderExtension {
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 
-                
                 // Signal update/delete
                 _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadata, parentItemIdentifier: parentItemIdentifier, delete: true, update: false)
                 completionHandler(nil)
