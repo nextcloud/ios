@@ -172,8 +172,19 @@ class fileProviderData: NSObject {
     //
     func fileProviderSignal(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, delete: Bool, update: Bool) -> FileProviderItem {
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-        if update { fileProviderSignalUpdate[item.itemIdentifier] = item }
-        if delete { fileProviderSignalDelete[item.itemIdentifier] = item.itemIdentifier }
+        if update {
+            if fileProviderSignalUpdate.index(forKey: item.itemIdentifier) != nil {
+                fileProviderSignalUpdate.removeValue(forKey: item.itemIdentifier)
+            }
+            fileProviderSignalUpdate[item.itemIdentifier] = item
+        }
+        if delete {
+            if fileProviderSignalDelete.index(forKey: item.itemIdentifier) != nil {
+                fileProviderSignalDelete.removeValue(forKey: item.itemIdentifier)
+            }
+            fileProviderSignalDelete[item.itemIdentifier] = item.itemIdentifier
+        }
+        
         signalEnumerator(for: [parentItemIdentifier, .workingSet])
         
         return item

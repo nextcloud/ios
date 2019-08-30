@@ -205,7 +205,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDelete {
             itemsDelete.append(itemIdentifier)
         }
-       
+        fileProviderData.sharedInstance.fileProviderSignalDelete.removeAll()
+        
         // Report the updated items
         //
         for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdate {
@@ -216,8 +217,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 itemsUpdate.append(item)
             }
         }
-        
-        fileProviderData.sharedInstance.fileProviderSignalDelete.removeAll()
         fileProviderData.sharedInstance.fileProviderSignalUpdate.removeAll()
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)
