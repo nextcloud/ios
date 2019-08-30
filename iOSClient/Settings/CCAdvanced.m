@@ -219,39 +219,29 @@
 {
     [appDelegate maintenanceMode:YES];
     
-    [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
+    [[NCMainCommon sharedInstance] cancelAllTransfer];
+
+    [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+    [[NSURLCache sharedURLCache] setDiskCapacity:0];
+    [KTVHTTPCache cacheDeleteAllCaches];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        [[NCMainCommon sharedInstance] cancelAllTransfer];
+    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeUser:false];
+    
+    [CCUtility emptyGroupDirectoryProviderStorage];
+    [CCUtility emptyGroupLibraryDirectory];
+    
+    [CCUtility emptyDocumentsDirectory];
+    [CCUtility emptyTemporaryDirectory];
+    
+    [CCUtility createDirectoryStandard];
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+    [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+    [appDelegate.filterocId removeAllObjects];
 
-            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-            [[NSURLCache sharedURLCache] setDiskCapacity:0];
-            [KTVHTTPCache cacheDeleteAllCaches];
-            
-            [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeUser:false];
-            
-            [CCUtility emptyGroupDirectoryProviderStorage];
-            [CCUtility emptyGroupLibraryDirectory];
-            
-            [CCUtility emptyDocumentsDirectory];
-            [CCUtility emptyTemporaryDirectory];
-            
-            [CCUtility createDirectoryStandard];
+    [appDelegate maintenanceMode:NO];
 
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-            [appDelegate.filterocId removeAllObjects];
-
-            [appDelegate maintenanceMode:NO];
-        
-            // Close HUD
-            [self.hud hideHud];
-            // Inizialized home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-        });
-    });
+    // Inizialized home
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 - (void)clearCacheRequest:(XLFormRowDescriptor *)sender
