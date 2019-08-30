@@ -86,28 +86,14 @@ class FileProviderItem: NSObject, NSFileProviderItem {
            
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             if tableLocalFile == nil {
-                self.isDownloaded = false
-                self.isMostRecentVersionDownloaded = false
+                isMostRecentVersionDownloaded = false
             } else {
-                self.isDownloaded = true
-                self.isMostRecentVersionDownloaded = true
+                isMostRecentVersionDownloaded = true
             }
             
             // Error ?
             if metadata.sessionError != "" {
                 uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
-            }
-            
-            // Upload
-            if (metadata.session == k_upload_session_extension) {
-                self.isUploading = true
-                self.isUploaded = false
-            } 
-            
-            // Download
-            if (metadata.session == k_download_session_extension) {
-                self.isDownloading = true
-                self.isDownloaded = false
             }
             
         } else {

@@ -222,16 +222,13 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             // remove Task
             self.outstandingSessionTasks.removeValue(forKey: url)
             
-            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
-                completionHandler(NSFileProviderError(.noSuchItem))
-                return
-            }
-            
             if errorCode == 0 && account == metadata.account {
 
-                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                metadata.status = Int(k_metadataStatusNormal)
-                metadata.session = ""
+                guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+                    completionHandler(NSFileProviderError(.noSuchItem))
+                    return
+                }
+                
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
                 metadata.size = Double(lenght)
@@ -240,17 +237,12 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdate)
                 
                 // Signal update/delete
-                _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: true, update: true)
+                _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
                 
                 completionHandler(nil)
 
             } else {
                 
-                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                metadata.status = Int(k_metadataStatusNormal)
-                metadata.session = ""
-                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-               
                 if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
                     completionHandler(NSFileProviderError(.noSuchItem))
                 } else {
@@ -263,16 +255,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
        
         // Add and register task
         if task != nil {
-            
-            metadata.sessionTaskIdentifier = Int(task!.taskIdentifier)
-            metadata.status = Int(k_metadataStatusDownloading)
-            metadata.session = k_download_session_extension
-
-            guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
-
-            // Signal update/delete
-            _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
-
             outstandingSessionTasks[url] = task
             NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
         }
