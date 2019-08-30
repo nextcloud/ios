@@ -48,7 +48,7 @@ import FileProvider
  
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
-class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
+class FileProviderExtension: NSFileProviderExtension {
     
     var outstandingSessionTasks = [URL: URLSessionTask]()
     
@@ -138,7 +138,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-            
             return item
         }
     }
