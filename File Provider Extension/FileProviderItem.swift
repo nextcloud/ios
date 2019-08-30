@@ -98,14 +98,14 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
             }
             
-            // Download
-            if (metadata.session == k_download_session_extension) {
+            // Upload
+            if (metadata.session == k_upload_session_extension) {
                 self.isUploading = true
                 self.isUploaded = false
             } 
             
-            // Upload
-            if (metadata.session == k_upload_session_extension) {
+            // Download
+            if (metadata.session == k_download_session_extension) {
                 self.isDownloading = true
                 self.isDownloaded = false
             }
