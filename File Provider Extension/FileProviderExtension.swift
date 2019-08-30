@@ -267,7 +267,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", itemIdentifier.rawValue)) else { return }
-        
+
         let fileName = pathComponents[pathComponents.count - 1]
         let fileNameServerUrl = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
@@ -277,7 +277,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             if account == fileProviderData.sharedInstance.account && errorCode == 0 {
                 NCManageDatabase.sharedInstance.setLocalFile(ocId: itemIdentifier.rawValue, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag!)
-                //TODO: remove preview ico
+                // remove preview ico
+                CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, fileNameView: fileName))
             }
         })
     }
