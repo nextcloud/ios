@@ -201,7 +201,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            
+        
+        if let _ = outstandingSessionTasks[url] {
+            return
+        }
+        
         guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
