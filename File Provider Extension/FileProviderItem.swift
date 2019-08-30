@@ -91,11 +91,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 isMostRecentVersionDownloaded = true
             }
             
-            // Error ?
-            if metadata.sessionError != "" {
-                uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
-            }
-            
         } else {
             
             // Favorite directory
