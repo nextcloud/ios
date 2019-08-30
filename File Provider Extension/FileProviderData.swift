@@ -181,7 +181,7 @@ class fileProviderData: NSObject {
     
     // Convinent method to signal the enumeration for containers.
     //
-    private func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
                 
         currentAnchor += 1
         

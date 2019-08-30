@@ -259,7 +259,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 return
             }
-            
         })
        
         // Add and register task
