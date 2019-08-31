@@ -196,43 +196,45 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
     
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
+        
+        DispatchQueue.main.async {
+            var itemsDelete = [NSFileProviderItemIdentifier]()
+            var itemsUpdate = [FileProviderItem]()
             
-        var itemsDelete = [NSFileProviderItemIdentifier]()
-        var itemsUpdate = [FileProviderItem]()
-        
-        // Report the deleted items
-        //
-        if enumeratedItemIdentifier == .workingSet {
-            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier {
-                itemsDelete.append(itemIdentifier)
+            // Report the deleted items
+            //
+            if self.enumeratedItemIdentifier == .workingSet {
+                for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier {
+                    itemsDelete.append(itemIdentifier)
+                }
+                fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
+            } else {
+                for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier {
+                    itemsDelete.append(itemIdentifier)
+                }
+                fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
             }
-            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
-        } else {
-            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier {
-                itemsDelete.append(itemIdentifier)
+            
+            // Report the updated items
+            //
+            if self.enumeratedItemIdentifier == .workingSet {
+                for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem {
+                    itemsUpdate.append(item)
+                }
+                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem.removeAll()
+            } else {
+                for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem {
+                    itemsUpdate.append(item)
+                }
+                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem.removeAll()
             }
-            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
+            
+            observer.didDeleteItems(withIdentifiers: itemsDelete)
+            observer.didUpdate(itemsUpdate)
+            
+            let data = "\(fileProviderData.sharedInstance.currentAnchor)".data(using: .utf8)
+            observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
         }
-        
-        // Report the updated items
-        //
-        if enumeratedItemIdentifier == .workingSet {
-            for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem {
-                itemsUpdate.append(item)
-            }
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem.removeAll()
-        } else {
-            for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem {
-                itemsUpdate.append(item)
-            }
-            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem.removeAll()
-        }
-        
-        observer.didDeleteItems(withIdentifiers: itemsDelete)
-        observer.didUpdate(itemsUpdate)
-        
-        let data = "\(fileProviderData.sharedInstance.currentAnchor)".data(using: .utf8)
-        observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
