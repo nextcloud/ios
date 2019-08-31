@@ -209,11 +209,6 @@ class FileProviderExtension: NSFileProviderExtension {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
-        }
-        
         let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag  {
             completionHandler(nil)
@@ -240,7 +235,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdate)
                 
                 completionHandler(nil)
-
+                
             } else {
                 
                 if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
