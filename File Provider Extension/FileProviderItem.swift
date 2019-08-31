@@ -86,9 +86,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
            
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             if tableLocalFile == nil {
-                isMostRecentVersionDownloaded = false
+//                isMostRecentVersionDownloaded = false
             } else {
-                isMostRecentVersionDownloaded = true
+//                isMostRecentVersionDownloaded = true
             }
             
         } else {
