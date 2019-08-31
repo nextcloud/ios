@@ -239,9 +239,6 @@ class FileProviderExtension: NSFileProviderExtension {
                 guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdate)
                 
-                // Signal update/delete
-                _ = fileProviderData.sharedInstance.fileProviderSignal(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier, delete: false, update: true)
-                
                 completionHandler(nil)
 
             } else {

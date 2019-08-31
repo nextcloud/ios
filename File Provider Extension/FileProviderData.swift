@@ -47,8 +47,10 @@ class fileProviderData: NSObject {
     var listFavoriteIdentifierRank = [String:NSNumber]()
     
     // Item for signalEnumerator
-    var fileProviderSignalDelete = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-    var fileProviderSignalUpdate = [NSFileProviderItemIdentifier:FileProviderItem]()
+    var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+    var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
    
     // UserDefaults
     var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.sharedInstance.capabilitiesGroups)
@@ -143,7 +145,7 @@ class fileProviderData: NSObject {
                 guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 
-                fileProviderSignalUpdate[item.itemIdentifier] = item
+                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                 updateWorkingSet = true
             }
         }
@@ -156,7 +158,7 @@ class fileProviderData: NSObject {
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
                 
-                fileProviderSignalDelete[itemIdentifier] = itemIdentifier
+                fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
                 updateWorkingSet = true
             }
         }
@@ -168,28 +170,6 @@ class fileProviderData: NSObject {
     
     // MARK: -
 
-    // Signal update/delete
-    //
-    func fileProviderSignal(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, delete: Bool, update: Bool) -> FileProviderItem {
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-        if update {
-            if fileProviderSignalUpdate.index(forKey: item.itemIdentifier) != nil {
-                fileProviderSignalUpdate.removeValue(forKey: item.itemIdentifier)
-            }
-            fileProviderSignalUpdate[item.itemIdentifier] = item
-        }
-        if delete {
-            if fileProviderSignalDelete.index(forKey: item.itemIdentifier) != nil {
-                fileProviderSignalDelete.removeValue(forKey: item.itemIdentifier)
-            }
-            fileProviderSignalDelete[item.itemIdentifier] = item.itemIdentifier
-        }
-        
-        signalEnumerator(for: [parentItemIdentifier, .workingSet])
-        
-        return item
-    }
-    
     // Convinent method to signal the enumeration for containers.
     //
     func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {

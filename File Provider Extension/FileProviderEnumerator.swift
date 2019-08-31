@@ -202,22 +202,31 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         // Report the deleted items
         //
-        for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDelete {
-            itemsDelete.append(itemIdentifier)
+        if enumeratedItemIdentifier == .workingSet {
+            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier {
+                itemsDelete.append(itemIdentifier)
+            }
+            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
+        } else {
+            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier {
+                itemsDelete.append(itemIdentifier)
+            }
+            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
         }
-        fileProviderData.sharedInstance.fileProviderSignalDelete.removeAll()
         
         // Report the updated items
         //
-        for (itemIdentifier, item) in fileProviderData.sharedInstance.fileProviderSignalUpdate {
-            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier)
-            if metadata == nil {
-                itemsDelete.append(itemIdentifier)
-            } else {
+        if enumeratedItemIdentifier == .workingSet {
+            for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem {
                 itemsUpdate.append(item)
             }
+            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem.removeAll()
+        } else {
+            for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem {
+                itemsUpdate.append(item)
+            }
+            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem.removeAll()
         }
-        fileProviderData.sharedInstance.fileProviderSignalUpdate.removeAll()
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)
