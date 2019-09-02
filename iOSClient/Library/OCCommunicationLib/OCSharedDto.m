@@ -34,6 +34,7 @@
     if (self) {
         
         self.url = @"";
+        self.label = @"";
     }
     
     return self;
