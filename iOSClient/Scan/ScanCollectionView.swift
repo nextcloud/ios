@@ -192,6 +192,8 @@ class DragDropViewController: UIViewController {
             print(error.localizedDescription)
         }
         
+        items = items.sorted()
+        
         collectionViewSource.reloadData()
     }
     
