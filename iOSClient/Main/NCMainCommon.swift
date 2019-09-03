@@ -45,6 +45,15 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         return queue
     }()
     
+    struct NCMainCommonImages {
+        static let cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
+        static let cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
+        static let cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: .black)
+        static let cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
+        static let cellMoreImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        static let cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+    }
+    
     //MARK: -
     
     @objc func triggerProgressTask(_ notification: Notification, sectionDataSourceocIdIndexPath: NSDictionary, tableView: UITableView, viewController: UIViewController, serverUrlViewController: String?) {
@@ -291,18 +300,18 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+                cell.imageFavorite.image = NCMainCommonImages.cellFavouriteImage
             }
             
             // Share image
             if (isShare) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
+                cell.shared.image = NCMainCommonImages.cellSharedImage
             } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: .black)
+                cell.shared.image = NCMainCommonImages.cellShareByLinkImage
             } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
+                cell.shared.image = NCMainCommonImages.cellSharedImage
             } else {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
+                cell.shared.image = NCMainCommonImages.cellCanShareImage
             }
             if metadata.ownerId != appDelegate.activeUserID {
                 // Load avatar
@@ -414,7 +423,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+                cell.imageFavorite.image = NCMainCommonImages.cellFavouriteImage
             }
             
             if isEditMode {
@@ -449,7 +458,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+                cell.imageFavorite.image = NCMainCommonImages.cellFavouriteImage
             }
             
             if isEditMode {
@@ -594,18 +603,18 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // Favorite
             if metadata.favorite {
-                cell.favorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
+                cell.favorite.image = NCMainCommonImages.cellFavouriteImage
             }
             
             // Share image
             if (isShare) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
+                cell.shared.image = NCMainCommonImages.cellSharedImage
             } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: .black)
+                cell.shared.image = NCMainCommonImages.cellShareByLinkImage
             } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
+                cell.shared.image = NCMainCommonImages.cellSharedImage
             } else {
-                cell.shared.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
+                cell.shared.image = NCMainCommonImages.cellCanShareImage
             }
             if metadata.ownerId != appDelegate.activeUserID {
                 // Load avatar
@@ -631,14 +640,14 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // Comment
             if metadata.commentsUnread {
-                cell.comment.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+                cell.comment.image = NCMainCommonImages.cellCommentImage
                 cell.labelTitleTrailingConstraint.constant = 160
             } else {
                 cell.labelTitleTrailingConstraint.constant = 110
             }
             
             // More Image
-            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 1, color: NCBrandColor.sharedInstance.optionItem)
+            cell.more.image = NCMainCommonImages.cellMoreImage
             
             return cell
             

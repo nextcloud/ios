@@ -57,6 +57,8 @@
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) NSString *blinkFileNamePath;
+@property (nonatomic, readonly, strong) UIImage *cellFavouriteImage;
+@property (nonatomic, readonly, strong) UIImage *cellTrashImage;
 
 @property BOOL isSelectedMode;
 
