@@ -996,6 +996,8 @@ PKPushRegistry *pushRegistry;
         [NCBrandColor sharedInstance].brandText = [NCBrandColor sharedInstance].customerText;
     }
     
+    [[NCMainCommon sharedInstance] createImagesThemingColor];
+    
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 

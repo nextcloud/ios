@@ -31,6 +31,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
+        instance.createImagesThemingColor()
         return instance
     }()
     
@@ -45,13 +46,40 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         return queue
     }()
     
+    //MARK: -
+    
     struct NCMainCommonImages {
-        static let cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
-        static let cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
-        static let cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: .black)
-        static let cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
-        static let cellMoreImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-        static let cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+        static var cellSharedImage = UIImage()
+        static var cellCanShareImage = UIImage()
+        static var cellShareByLinkImage = UIImage()
+        static var cellFavouriteImage = UIImage()
+        static var cellMoreImage = UIImage()
+        static var cellCommentImage = UIImage()
+        
+        static var cellFolderEncryptedImage = UIImage()
+        static var cellFolderSharedWithMeImage = UIImage()
+        static var cellFolderPublicImage = UIImage()
+        static var cellFolderGroupImage = UIImage()
+        static var cellFolderExternalImage = UIImage()
+        static var cellFolderAutomaticUploadImage = UIImage()
+        static var cellFolderImage = UIImage()
+    }
+    
+    @objc func createImagesThemingColor() {
+        NCMainCommonImages.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .black)
+        NCMainCommonImages.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
+        NCMainCommonImages.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: .black)
+        NCMainCommonImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
+        NCMainCommonImages.cellMoreImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        NCMainCommonImages.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
+        
+        NCMainCommonImages.cellFolderEncryptedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        NCMainCommonImages.cellFolderSharedWithMeImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        NCMainCommonImages.cellFolderPublicImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        NCMainCommonImages.cellFolderGroupImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_group"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        NCMainCommonImages.cellFolderExternalImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        NCMainCommonImages.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        NCMainCommonImages.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     //MARK: -
@@ -252,24 +280,23 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    image = UIImage.init(named: "folderEncrypted")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderEncryptedImage
                 } else if isShare {
-                    image = UIImage.init(named: "folder_shared_with_me")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                    image = UIImage.init(named: "folder_shared_with_me")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                    image = UIImage.init(named: "folder_public")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
-                    image = UIImage.init(named: "folder_group")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderGroupImage
                 } else if isMounted {
-                    image = UIImage.init(named: "folder_external")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderExternalImage
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    image = UIImage.init(named: "folderAutomaticUpload")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderAutomaticUploadImage
                 } else {
-                    image = UIImage.init(named: "folder")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderImage
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -375,23 +402,24 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    image = UIImage.init(named: "folderEncrypted")
-                } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    image = UIImage.init(named: "folderAutomaticUpload")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderEncryptedImage
                 } else if isShare {
-                    image = UIImage.init(named: "folder_shared_with_me")
-                } else if isMounted {
-                    image = UIImage.init(named: "folder_external")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                    image = UIImage.init(named: "folder_shared_with_me")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                    image = UIImage.init(named: "folder_public")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderPublicImage
+                } else if metadata.mountType == "group" {
+                    cell.imageItem.image = NCMainCommonImages.cellFolderGroupImage
+                } else if isMounted {
+                    cell.imageItem.image = NCMainCommonImages.cellFolderExternalImage
+                } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
+                    cell.imageItem.image = NCMainCommonImages.cellFolderAutomaticUploadImage
                 } else {
-                    image = UIImage.init(named: "folder")
+                    cell.imageItem.image = NCMainCommonImages.cellFolderImage
                 }
                 
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
-                
+    
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
                 
@@ -480,8 +508,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     
     @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, tableShare: tableShare?) -> UITableViewCell {
         
-        var image: UIImage?
-
         // Create File System
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)
@@ -535,24 +561,22 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 
                 // File Image & Image Title Segue
                 if metadata.e2eEncrypted {
-                    image = UIImage.init(named: "folderEncrypted")
+                    cell.file.image = NCMainCommonImages.cellFolderEncryptedImage
                 } else if isShare {
-                    image = UIImage.init(named: "folder_shared_with_me")
+                    cell.file.image = NCMainCommonImages.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                    image = UIImage.init(named: "folder_shared_with_me")
+                    cell.file.image = NCMainCommonImages.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                    image = UIImage.init(named: "folder_public")
+                    cell.file.image = NCMainCommonImages.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
-                    image = UIImage.init(named: "folder_group")
+                    cell.file.image = NCMainCommonImages.cellFolderGroupImage
                 } else if isMounted {
-                    image = UIImage.init(named: "folder_external")
+                    cell.file.image = NCMainCommonImages.cellFolderExternalImage
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    image = UIImage.init(named: "folderAutomaticUpload")
+                    cell.file.image = NCMainCommonImages.cellFolderAutomaticUploadImage
                 } else {
-                    image = UIImage.init(named: "folder")
+                    cell.file.image = NCMainCommonImages.cellFolderImage
                 }
-                
-                cell.file.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*2, height: image!.size.height*2, color: NCBrandColor.sharedInstance.brandElement)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
