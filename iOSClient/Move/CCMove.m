@@ -155,7 +155,7 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIColor whiteColor];
+    return [NCBrandColor sharedInstance].backgroundView;
 }
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView

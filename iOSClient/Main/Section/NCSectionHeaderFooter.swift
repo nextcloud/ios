@@ -49,6 +49,7 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         viewLabelSection.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.1)
         
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
+        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
     func setTitleOrder(datasourceSorted: String, datasourceAscending: Bool) {
