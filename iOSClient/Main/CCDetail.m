@@ -110,6 +110,7 @@
     
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -157,6 +158,8 @@
         self.toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
         self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
     }
+    
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (void)changeToDisplayMode

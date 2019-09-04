@@ -27,6 +27,7 @@ class NCBrandColor: NSObject {
 
     @objc static let sharedInstance: NCBrandColor = {
         let instance = NCBrandColor()
+        instance.setDarkMode()
         return instance
     }()
 
@@ -52,11 +53,13 @@ class NCBrandColor: NSObject {
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
     @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
 
-    @objc override init() {
+    override init() {
         self.brand = self.customer
         self.brandElement = self.customer
-        self.brandText = self.customerText
-        
+        self.brandText = self.customerText        
+    }
+    
+    @objc public func setDarkMode() {
         let darkMode = CCUtility.getDarkMode()
         if darkMode {
             tabBar = .black

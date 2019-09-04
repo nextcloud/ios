@@ -198,6 +198,7 @@
     */
     
     self.form = form;
+    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 }
 
 // Apparirà
@@ -207,10 +208,11 @@
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     self.tableView.showsVerticalScrollIndicator = NO;
-    
+    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
+
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
+
     [self reloadForm];
 }
 
@@ -315,10 +317,11 @@
             [CCUtility setDarkMode:false];
         }
         
-        (void)[[NCBrandColor sharedInstance] init];
+        [[NCBrandColor sharedInstance] setDarkMode];
         [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
         [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
         self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
         [self initializeForm];
         [self reloadForm];
     }
