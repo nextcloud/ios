@@ -89,6 +89,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.navigationItem.title = titleCurrentFolder
 
@@ -560,6 +561,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
+            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             
             if tableTrash.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
@@ -597,6 +599,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
+            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             
             if tableTrash.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)

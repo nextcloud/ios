@@ -84,7 +84,8 @@
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+
     // Plus Button
     [appDelegate plusButtonVisibile:true];
     
@@ -106,7 +107,7 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIColor whiteColor];
+    return [NCBrandColor sharedInstance].backgroundView;
 }
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
@@ -281,6 +282,8 @@
     UIView *selectionColor = [[UIView alloc] init];
     selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     cell.selectedBackgroundView = selectionColor;
+    cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    cell.labelTitle.textColor = [NCBrandColor sharedInstance].textView;
     
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     

@@ -58,6 +58,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.title = NSLocalizedString("_activity_", comment: "")
     }
@@ -120,6 +121,7 @@ class activityTableViewCell: UITableViewCell {
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
 }
 
@@ -142,11 +144,11 @@ extension NCActivity: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
-        view.backgroundColor = .clear
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.textColor = .white
+        label.textColor = NCBrandColor.sharedInstance.textView
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -185,6 +187,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = true
             cell.subjectTrailingConstraint.constant = 10
             cell.didSelectItemEnable = self.didSelectItemEnable
+            cell.subject.textColor = NCBrandColor.sharedInstance.textView
             
             // icon
             if activity.icon.count > 0 {

@@ -530,7 +530,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.local.image = nil
             cell.comment.image = nil
             cell.shared.isUserInteractionEnabled = false
-            
+            cell.viewShared.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             
             // change color selection
@@ -539,7 +539,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.selectedBackgroundView = selectionColor
             cell.tintColor = NCBrandColor.sharedInstance.brandElement
             
-            cell.labelTitle.textColor = UIColor.black
+            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             cell.labelTitle.text = metadata.fileNameView
             
             // Download preview
