@@ -272,6 +272,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
+            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
@@ -395,6 +396,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
+            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
