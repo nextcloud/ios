@@ -103,7 +103,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.disabled = true
         row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
 
-        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
         row.cellConfig["textView.textColor"] = NCBrandColor.sharedInstance.textView
 
@@ -166,7 +166,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
                 
         self.reloadForm()
     }
