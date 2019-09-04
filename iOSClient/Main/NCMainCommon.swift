@@ -1178,7 +1178,7 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
             
         // Add the toView to the tab bar view
         fromView.superview?.addSubview(toView)
-        fromView.superview?.backgroundColor = UIColor.white
+        fromView.superview?.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             
         // Position toView off screen (to the left/right of fromView)
         let screenWidth = UIScreen.main.bounds.size.width;

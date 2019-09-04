@@ -119,7 +119,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         // User folder Autoupload
         row = XLFormRowDescriptor(tag: "useFolderAutoUpload", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_auto_upload_", comment: ""))
         row.value = 0
-        
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
         
@@ -197,7 +198,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         row.disabled = true
         row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
 
-        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
         row.cellConfig["textView.textColor"] = NCBrandColor.sharedInstance.textView
 
