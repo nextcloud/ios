@@ -39,7 +39,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
 
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
         
-        self.tableView.separatorColor = NCBrandColor.sharedInstance.seperator
+        self.tableView.separatorColor = NCBrandColor.sharedInstance.separator
         self.tableView.tableFooterView = UIView()
         self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 50.0

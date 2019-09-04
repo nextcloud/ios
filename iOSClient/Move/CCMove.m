@@ -102,7 +102,7 @@
     
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorColor =  NCBrandColor.sharedInstance.seperator;
+    self.tableView.separatorColor =  NCBrandColor.sharedInstance.separator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
 

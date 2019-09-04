@@ -56,7 +56,7 @@ class NCListCell: UICollectionViewCell {
        
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
 
-        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
     }
     
     @IBAction func touchUpInsideShare(_ sender: Any) {

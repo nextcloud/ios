@@ -126,7 +126,6 @@
     // delegate
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.searchController.delegate = self;
@@ -174,7 +173,8 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-    
+    self.tableView.separatorColor = [NCBrandColor sharedInstance].separator;
+
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
@@ -2253,7 +2253,7 @@
     appDelegate.reMainMenu.waitUntilAnimationIsComplete = NO;
     
     appDelegate.reMainMenu.separatorHeight = 0.5;
-    appDelegate.reMainMenu.separatorColor = [NCBrandColor sharedInstance].seperator;
+    appDelegate.reMainMenu.separatorColor = [NCBrandColor sharedInstance].separator;
     
     appDelegate.reMainMenu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     appDelegate.reMainMenu.textColor = [UIColor blackColor];
@@ -2370,7 +2370,7 @@
     appDelegate.reSelectMenu.waitUntilAnimationIsComplete = NO;
     
     appDelegate.reSelectMenu.separatorHeight = 0.5;
-    appDelegate.reSelectMenu.separatorColor = [NCBrandColor sharedInstance].seperator;
+    appDelegate.reSelectMenu.separatorColor = [NCBrandColor sharedInstance].separator;
     
     appDelegate.reSelectMenu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     appDelegate.reSelectMenu.textColor = [UIColor blackColor];
@@ -2980,7 +2980,7 @@
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont boldSystemFontOfSize:17], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].textView };
     actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].textView };
     
-    actionSheet.separatorColor = [NCBrandColor sharedInstance].seperator;
+    actionSheet.separatorColor = [NCBrandColor sharedInstance].separator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // ******************************************* DIRECTORY *******************************************

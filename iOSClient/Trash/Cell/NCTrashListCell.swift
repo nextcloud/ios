@@ -52,7 +52,7 @@ class NCTrashListCell: UICollectionViewCell {
         imageRestore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         
-        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {

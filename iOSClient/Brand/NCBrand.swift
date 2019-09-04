@@ -42,7 +42,7 @@ class NCBrandColor: NSObject {
     @objc public var encrypted:             UIColor = .red
     @objc public var backgroundView:        UIColor = .white
     @objc public var textView:              UIColor = .black
-    @objc public var seperator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
+    @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
@@ -62,10 +62,12 @@ class NCBrandColor: NSObject {
             tabBar = .black
             backgroundView = .black
             textView = .white
+            separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
         } else {
             tabBar = .white
             backgroundView = .white
             textView = .black
+            separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         }
     }
     

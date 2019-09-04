@@ -58,8 +58,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.separatorColor = NCBrandColor.sharedInstance.seperator
-        
         if #available(iOS 11, *) {
             //tableView.contentInsetAdjustmentBehavior = .never
         }
@@ -190,6 +188,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         changeTheming()
         tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        tableView.separatorColor = NCBrandColor.sharedInstance.separator
 
         // Title
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")

@@ -62,7 +62,6 @@
     _dataSource = [NSMutableArray new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
@@ -85,6 +84,7 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    self.tableView.separatorColor = [NCBrandColor sharedInstance].separator;
 
     // Plus Button
     [appDelegate plusButtonVisibile:true];

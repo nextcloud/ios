@@ -73,7 +73,6 @@
     self.metadata = [tableMetadata new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
@@ -106,6 +105,7 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    self.tableView.separatorColor = [NCBrandColor sharedInstance].separator;
     
     // Plus Button
     [appDelegate plusButtonVisibile:true];
@@ -460,7 +460,7 @@
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont boldSystemFontOfSize:17], NSForegroundColorAttributeName:[UIColor blackColor] };
     actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor darkGrayColor] };
     
-    actionSheet.separatorColor = [NCBrandColor sharedInstance].seperator;
+    actionSheet.separatorColor = [NCBrandColor sharedInstance].separator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars

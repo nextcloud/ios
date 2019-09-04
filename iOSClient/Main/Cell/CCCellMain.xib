@@ -14,7 +14,7 @@
         <tableViewCell contentMode="scaleToFill" selectionStyle="blue" indentationWidth="0.0" reuseIdentifier="CellMain" id="2" customClass="CCCellMain">
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
+            <tableViewCellContentView key="contentView" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
                 <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
@@ -89,7 +89,6 @@
                         </constraints>
                     </imageView>
                 </subviews>
-                <color key="tintColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
                     <constraint firstItem="aRp-Ql-cyA" firstAttribute="leading" secondItem="HRe-1g-6Q1" secondAttribute="trailing" id="17F-cr-JRN"/>
                     <constraint firstItem="Gci-mp-QNh" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="1DB-lM-7dD"/>
@@ -115,6 +114,7 @@
                     <constraint firstAttribute="trailing" secondItem="aRp-Ql-cyA" secondAttribute="trailing" id="o1F-h3-kBd"/>
                 </constraints>
             </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <gestureRecognizers/>
             <connections>
                 <outlet property="comment" destination="Gci-mp-QNh" id="l6k-8K-UB7"/>

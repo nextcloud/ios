@@ -48,7 +48,7 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         
         viewLabelSection.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.1)
         
-        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
         self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
