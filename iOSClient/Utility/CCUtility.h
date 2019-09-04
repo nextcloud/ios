@@ -168,6 +168,9 @@
 + (BOOL)getDisableLocalCacheAfterUpload;
 + (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
 
++ (BOOL)getDarkMode;
++ (void)setDarkMode:(BOOL)disable;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
