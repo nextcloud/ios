@@ -34,6 +34,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var labelQuotaExternalSite: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
+    @IBOutlet weak var viewQuota: UIView!
 
     var functionMenu = [OCExternalSites]()
     var externalSiteMenu = [OCExternalSites]()
@@ -187,7 +188,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // User data & Theming
         changeUserProfile()
         changeTheming()
-        
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+
         // Title
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
@@ -344,7 +347,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         let selectionColor : UIView = UIView.init()
         selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
         cell.selectedBackgroundView = selectionColor
-        
+        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
         
         // Menu Normal

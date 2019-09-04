@@ -109,6 +109,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // Aspect Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText

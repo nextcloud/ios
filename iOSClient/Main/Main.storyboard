@@ -550,7 +550,7 @@
                                     </progressView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DAP-np-Q1J">
                                         <rect key="frame" x="35" y="2" width="344" height="20"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="o78-Yq-dPq"/>
                                         </constraints>
@@ -560,7 +560,7 @@
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vfl-ZC-XFd">
                                         <rect key="frame" x="35" y="29" width="344" height="20"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="B11-kS-b2d"/>
                                         </constraints>
@@ -569,7 +569,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="52" id="Cch-sg-vfH"/>
                                     <constraint firstItem="uGf-Fa-QQ3" firstAttribute="top" secondItem="DAP-np-Q1J" secondAttribute="bottom" constant="3" id="DmS-I9-ex2"/>
@@ -616,6 +616,7 @@
                         <outlet property="tableView" destination="aKC-5k-tLM" id="XrN-XG-w8l"/>
                         <outlet property="themingAvatar" destination="oJg-wO-2iv" id="Z0Z-Jb-3eG"/>
                         <outlet property="themingBackground" destination="qW6-AL-KO3" id="JAV-fL-ZXh"/>
+                        <outlet property="viewQuota" destination="J2k-UZ-XQQ" id="I2M-eR-p56"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aLH-sy-tiz" userLabel="First Responder" sceneMemberID="firstResponder"/>

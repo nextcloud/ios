@@ -105,6 +105,7 @@
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     // Plus Button
     [appDelegate plusButtonVisibile:true];
