@@ -921,11 +921,8 @@ PKPushRegistry *pushRegistry;
     // Test Maintenance
     if (self.maintenanceMode)
         return;
-    
-    UIView *view = [(UIButton *)sender superview];
-    
-    NCCreateMenuAdd *menuAdd = [[NCCreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
-    [menuAdd createMenuWithViewController:self.window.rootViewController view:view];
+        
+    (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
 }
 
 - (void)selectedTabBarController:(NSInteger)index

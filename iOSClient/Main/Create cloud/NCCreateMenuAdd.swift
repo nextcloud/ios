@@ -28,21 +28,9 @@ class NCCreateMenuAdd: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    let fontButton = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedString.Key.foregroundColor: UIColor.black]
-    let fontEncrypted = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.encrypted as UIColor]
-    let fontCancel = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue-Bold", size: 17)!, NSAttributedString.Key.foregroundColor: UIColor.black]
-    let fontDisable = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedString.Key.foregroundColor: UIColor.darkGray]
-    
-    var colorIcon = NCBrandColor.sharedInstance.brandElement
-    
-    @objc init (themingColor : UIColor) {
-        
+    @objc init(viewController: UIViewController, view : UIView) {
         super.init()
-        colorIcon = themingColor
-    }
-    
-    @objc func createMenu(viewController: UIViewController, view : UIView) {
-        
+   
         var items = [ActionSheetItem]()
         
         items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
@@ -59,19 +47,7 @@ class NCCreateMenuAdd: NSObject {
         
         items.append(ActionSheetItem(title: NSLocalizedString("_create_voice_memo_", comment: ""), value: 5, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 6, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: colorIcon)))
-        
-        // items.append(ActionSheetSectionTitle(title: "Cheap"))
-        // items.append(ActionSheetSectionMargin())
-        
-        /*
-         let appearanceSectionMargin = ActionSheetAppearance.standard
-         //appearanceSectionMargin. = 10
-         appearanceSectionMargin.backgroundColor = UIColor.red
-         let itemSectionMargin = ActionSheetSectionTitle(title: "Cheap")
-         itemSectionMargin.customAppearance = appearanceSectionMargin
-         items.append(itemSectionMargin)
-         */
+        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 6, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)))
         
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
@@ -84,6 +60,7 @@ class NCCreateMenuAdd: NSObject {
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
         
         let actionSheet = ActionSheet(items: items) { sheet, item in
+            
             if item.value as? Int == 1 { self.appDelegate.activeMain.openAssetsPickerController() }
             if item.value as? Int == 2 { self.appDelegate.activeMain.openImportDocumentPicker() }
             if item.value as? Int == 3 {
@@ -144,6 +121,11 @@ class NCCreateMenuAdd: NSObject {
             
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
+        
+        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         actionSheet.present(in: viewController, from: view)
     }
