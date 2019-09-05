@@ -105,6 +105,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()

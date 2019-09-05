@@ -66,12 +66,13 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.color"] = UIColor.black
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
 
         section.addFormRow(row)
         
@@ -80,14 +81,16 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-        
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
 
         section.addFormRow(row)
         
@@ -139,6 +142,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
