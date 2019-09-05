@@ -56,7 +56,8 @@ typedef struct {
     Boolean shadowOfMenu;
     Boolean hasSeperatorLine;
     Boolean seperatorLineHasInsets;
-    Color textColor;
+    UIColor *textColor;
+    UIColor *separatorColor;
     Color menuBackgroundColor;
     
 } OptionalConfiguration;

@@ -2027,22 +2027,19 @@
     
     item.title = NSLocalizedString(@"_add_account_", nil);
     item.argument = @"";
-    item.image = [UIImage imageNamed:@"add"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"add"] width:50 height:50 color:[NCBrandColor sharedInstance].textView];
     item.target = self;
     item.action = @selector(addNewAccount:);
     
     [menuArray addObject:item];
     
     OptionalConfiguration options;
-    Color textColor, backgroundColor;
+    Color backgroundColor;
     
-    textColor.R = 0;
-    textColor.G = 0;
-    textColor.B = 0;
-    
-    backgroundColor.R = 1;
-    backgroundColor.G = 1;
-    backgroundColor.B = 1;
+    const CGFloat *componentsBackgroundColor = CGColorGetComponents(NCBrandColor.sharedInstance.backgroundForm.CGColor);
+    backgroundColor.R = componentsBackgroundColor[0];
+    backgroundColor.G = componentsBackgroundColor[1];
+    backgroundColor.B = componentsBackgroundColor[2];
     
     options.arrowSize = 9;
     options.marginXSpacing = 7;
@@ -2053,8 +2050,9 @@
     options.shadowOfMenu = YES;
     options.hasSeperatorLine = YES;
     options.seperatorLineHasInsets = YES;
-    options.textColor = textColor;
+    options.textColor = NCBrandColor.sharedInstance.textView;
     options.menuBackgroundColor = backgroundColor;
+    options.separatorColor = NCBrandColor.sharedInstance.separator;
     
     CGRect rect = self.view.frame;
     CGFloat locationY = [theGestureRecognizer locationInView: self.navigationController.navigationBar].y;
