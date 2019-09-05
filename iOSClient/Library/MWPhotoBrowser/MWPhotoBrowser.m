@@ -134,7 +134,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 - (void)viewDidLoad {
     
 	// View
-	self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.view.clipsToBounds = YES;
 
 	// Setup paging scrolling view
@@ -145,7 +145,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	_pagingScrollView.delegate = self;
 	_pagingScrollView.showsHorizontalScrollIndicator = NO;
 	_pagingScrollView.showsVerticalScrollIndicator = NO;
-	_pagingScrollView.backgroundColor = [UIColor whiteColor];
+    _pagingScrollView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     _pagingScrollView.contentSize = [self contentSizeForPagingScrollView];
 	[self.view addSubview:_pagingScrollView];
 	
