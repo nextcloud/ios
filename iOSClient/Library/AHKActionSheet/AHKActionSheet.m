@@ -355,7 +355,11 @@ static const CGFloat maxWidth = 414.0f;
         self.cancelButton.clipsToBounds = YES;
         
         // Add White color background
-        self.cancelButton.backgroundColor = [UIColor whiteColor];
+        if (self.cancelButtonBackgroudColor == nil) {
+            self.cancelButton.backgroundColor = [UIColor whiteColor];
+        } else {
+            self.cancelButton.backgroundColor = self.cancelButtonBackgroudColor;
+        }
         
         self.tableView.transform = CGAffineTransformMakeTranslation(0, 0);
 

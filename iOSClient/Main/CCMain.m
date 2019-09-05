@@ -2978,8 +2978,9 @@
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont boldSystemFontOfSize:17], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].textView };
     actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].textView };
     
-    actionSheet.separatorColor = [NCBrandColor sharedInstance].separator;
+    actionSheet.separatorColor = NCBrandColor.sharedInstance.separator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
+    actionSheet.cancelButtonBackgroudColor = NCBrandColor.sharedInstance.backgroundForm;
     
     // ******************************************* DIRECTORY *******************************************
     
@@ -2997,7 +2998,7 @@
             
         [actionSheet addButtonWithTitle:self.metadata.fileNameView
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDisabled
                                 handler:nil
@@ -3005,7 +3006,7 @@
         
         [actionSheet addButtonWithTitle: titleFavorite
                                   image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite]
-                        backgroundColor: [NCBrandColor sharedInstance].backgroundView
+                        backgroundColor: [NCBrandColor sharedInstance].backgroundForm
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
                                 handler: ^(AHKActionSheet *as) {
@@ -3017,7 +3018,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_details_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"details"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3029,7 +3030,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3066,7 +3067,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3086,7 +3087,7 @@
             
             [actionSheet addButtonWithTitle:title
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"offline"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3104,7 +3105,7 @@
     
         [actionSheet addButtonWithTitle:titoloLock
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
@@ -3115,7 +3116,7 @@
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3138,7 +3139,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3160,7 +3161,7 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDestructive
                                 handler:^(AHKActionSheet *as) {
@@ -3185,7 +3186,7 @@
         
         [actionSheet addButtonWithTitle: self.metadata.fileNameView
                                   image: iconHeader
-                        backgroundColor: [NCBrandColor sharedInstance].backgroundView
+                        backgroundColor: [NCBrandColor sharedInstance].backgroundForm
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -3194,7 +3195,7 @@
         
         [actionSheet addButtonWithTitle: titleFavorite
                                   image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite]
-                        backgroundColor: [NCBrandColor sharedInstance].backgroundView
+                        backgroundColor: [NCBrandColor sharedInstance].backgroundForm
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
                                 handler: ^(AHKActionSheet *as) {
@@ -3206,7 +3207,7 @@
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_details_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"details"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
-                                backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
@@ -3218,7 +3219,7 @@
         
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3230,7 +3231,7 @@
             
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
@@ -3265,7 +3266,7 @@
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3277,7 +3278,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_modify_photo_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] width:50 height:50 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3302,7 +3303,7 @@
             
             [actionSheet addButtonWithTitle:title
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"offline"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3330,7 +3331,7 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundForm
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDestructive
                                 handler:^(AHKActionSheet *as) {

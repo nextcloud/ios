@@ -69,6 +69,7 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
 /// A handler called on every type of dismissal (tapping on "Cancel" or swipe down or flick down).
 @property (strong, nonatomic) AHKActionSheetHandler cancelHandler;
 @property (copy, nonatomic) NSString *cancelButtonTitle;
+@property (copy, nonatomic) UIColor *cancelButtonBackgroudColor;
 
 /// String to display above the buttons.
 @property (copy, nonatomic) NSString *title;
