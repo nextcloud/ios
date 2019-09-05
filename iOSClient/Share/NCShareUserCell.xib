@@ -88,6 +88,7 @@
                     <constraint firstAttribute="trailing" secondItem="J1z-RG-U4A" secondAttribute="trailing" constant="10" id="pQA-B9-MM5"/>
                 </constraints>
             </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
                 <outlet property="buttonMenu" destination="J1z-RG-U4A" id="g71-Us-VMl"/>
                 <outlet property="imageItem" destination="qDs-UG-Mn7" id="cRP-ne-dd0"/>

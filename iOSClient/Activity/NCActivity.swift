@@ -58,7 +58,11 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        if filterFileId == nil {
+            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        } else {
+            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        }
         
         self.title = NSLocalizedString("_activity_", comment: "")
     }
@@ -81,7 +85,11 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     }
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
+        if filterFileId == nil {
+            return NCBrandColor.sharedInstance.backgroundView
+        } else {
+            return NCBrandColor.sharedInstance.backgroundForm
+        }
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
@@ -121,7 +129,6 @@ class activityTableViewCell: UITableViewCell {
         
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
 }
 
@@ -144,7 +151,11 @@ extension NCActivity: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        if filterFileId == nil {
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        } else {
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        }
         
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)
@@ -189,6 +200,13 @@ extension NCActivity: UITableViewDataSource {
             cell.didSelectItemEnable = self.didSelectItemEnable
             cell.subject.textColor = NCBrandColor.sharedInstance.textView
             
+            /*
+            if filterFileId == nil {
+                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            } else {
+                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            }
+            */
             // icon
             if activity.icon.count > 0 {
                 

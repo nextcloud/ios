@@ -36,12 +36,14 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.metadata = metadata
         
         // Navigation Controller
         var image = CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray)
         image = image?.withRenderingMode(.alwaysOriginal)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundForm
         
         // Pagination
         addChild(pagingViewController)
@@ -49,7 +51,10 @@ class NCSharePaging: UIViewController {
         pagingViewController.didMove(toParent: self)
         
         // Customization
-        pagingViewController.selectedTextColor = .black
+        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.textColor = NCBrandColor.sharedInstance.textView
+        pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
         pagingViewController.indicatorColor = .black
         pagingViewController.indicatorOptions = .visible(
             height: 0.5,
@@ -65,7 +70,7 @@ class NCSharePaging: UIViewController {
             pagingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             pagingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             pagingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            ])
+        ])
         
         pagingViewController.dataSource = self        
         pagingViewController.select(index: indexPage)
@@ -172,6 +177,7 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
+        headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         headerView.ocId = metadata!.ocId
         
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, fileNameView: metadata!.fileNameView)) {
@@ -187,6 +193,7 @@ class NCSharePagingView: PagingView {
             }
         }
         headerView.fileName.text = metadata?.fileNameView
+        headerView.fileName.textColor = NCBrandColor.sharedInstance.textView
         if metadata!.favorite {
             headerView.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)
         } else {
@@ -218,7 +225,7 @@ class NCSharePagingView: PagingView {
             pageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             pageView.topAnchor.constraint(equalTo: topAnchor)
-            ])
+        ])
     }
 }
 

@@ -49,7 +49,9 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = tableView.bounds.height
         tableView.allowsSelection = false
-
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        tableView.separatorColor = NCBrandColor.sharedInstance.separator
+        
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
 
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
@@ -65,6 +67,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         else{
             labelUser.text = tabAccount.displayName
         }
+        labelUser.textColor = NCBrandColor.sharedInstance.textView
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
@@ -244,10 +247,13 @@ extension NCShareComments: UITableViewDataSource {
             }
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
+            cell.labelUser.textColor = NCBrandColor.sharedInstance.textView
             // Date
             cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
+            cell.labelDate.textColor = NCBrandColor.sharedInstance.graySoft
             // Message
             cell.labelMessage.text = tableComments.message
+            cell.labelMessage.textColor = NCBrandColor.sharedInstance.textView
             // Button Menu
             if tableComments.actorId == appDelegate.activeUserID {
                 cell.buttonMenu.isHidden = false

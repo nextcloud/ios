@@ -88,6 +88,7 @@
                     <constraint firstItem="J1z-RG-U4A" firstAttribute="centerY" secondItem="qDs-UG-Mn7" secondAttribute="centerY" id="tIg-bm-Clb"/>
                 </constraints>
             </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
                 <outlet property="buttonMenu" destination="J1z-RG-U4A" id="eJS-IZ-VYk"/>
                 <outlet property="imageItem" destination="qDs-UG-Mn7" id="wqC-I1-MWx"/>

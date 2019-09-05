@@ -73,6 +73,7 @@ class NCShareCommon: NSObject {
             shareLinkMenuView.height = 440
         }
         
+        shareLinkMenuView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         shareLinkMenuView.metadata = metadata
         shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.shareViewController = shareViewController
@@ -118,6 +119,7 @@ class NCShareCommon: NSObject {
             shareUserMenuView.height = 260
         }
         
+        shareUserMenuView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         shareUserMenuView.metadata = metadata
         shareUserMenuView.viewWindow = viewWindow
         shareUserMenuView.shareViewController = shareViewController

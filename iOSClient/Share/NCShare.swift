@@ -58,13 +58,15 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
+        shareLinkLabel.textColor = NCBrandColor.sharedInstance.textView
         shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar()
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
 
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
-        
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+
         tableView.register(UINib.init(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
         tableView.register(UINib.init(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
         
@@ -326,6 +328,8 @@ extension NCShare: UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.tableShare = tableShare
                 cell.delegate = self
+                cell.labelTitle.text = NSLocalizedString("_share_link_", comment: "")
+                cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
                 return cell
             }
         } else {
@@ -335,6 +339,9 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.labelTitle.text = tableShare.shareWith
+                cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+                cell.labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
+                cell.labelCanEdit.textColor = NCBrandColor.sharedInstance.textView
                 cell.isUserInteractionEnabled = true
                 cell.switchCanEdit.isHidden = false
                 cell.labelCanEdit.isHidden = false
@@ -400,7 +407,6 @@ class NCShareLinkCell: UITableViewCell {
         super.awakeFromNib()
         
         imageItem.image = NCShareCommon.sharedInstance.createLinkAvatar()
-        labelTitle.text = NSLocalizedString("_share_link_", comment: "")
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width:100, height: 100, color: UIColor.gray), for: .normal)
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
@@ -437,7 +443,6 @@ class NCShareUserCell: UITableViewCell {
         
         switchCanEdit.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchCanEdit.onTintColor = NCBrandColor.sharedInstance.brand
-        labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
     

@@ -322,6 +322,7 @@
         [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
         self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
+        [[NCMainCommon sharedInstance] createImagesThemingColor];
         [self initializeForm];
         [self reloadForm];
     }
