@@ -2251,16 +2251,16 @@
     appDelegate.reMainMenu.waitUntilAnimationIsComplete = NO;
     
     appDelegate.reMainMenu.separatorHeight = 0.5;
-    appDelegate.reMainMenu.separatorColor = [NCBrandColor sharedInstance].separator;
+    appDelegate.reMainMenu.separatorColor = NCBrandColor.sharedInstance.separator;
     
-    appDelegate.reMainMenu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-    appDelegate.reMainMenu.textColor = [UIColor blackColor];
+    appDelegate.reMainMenu.backgroundColor =  NCBrandColor.sharedInstance.backgroundForm;
+    appDelegate.reMainMenu.textColor =  NCBrandColor.sharedInstance.textView;
     appDelegate.reMainMenu.textAlignment = NSTextAlignmentLeft;
     appDelegate.reMainMenu.textShadowColor = nil;
     appDelegate.reMainMenu.textOffset = CGSizeMake(50, 0.0);
     appDelegate.reMainMenu.font = [UIFont systemFontOfSize:14.0];
     
-    appDelegate.reMainMenu.highlightedBackgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
+    appDelegate.reMainMenu.highlightedBackgroundColor =  NCBrandColor.sharedInstance.getColorSelectBackgrond;
     appDelegate.reMainMenu.highlightedSeparatorColor = nil;
     appDelegate.reMainMenu.highlightedTextColor = [UIColor blackColor];
     appDelegate.reMainMenu.highlightedTextShadowColor = nil;
