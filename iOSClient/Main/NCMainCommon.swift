@@ -588,7 +588,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 
                 // File Image
                 if iconFileExists {
-                    cell.file.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+                    
+                    LocalImageCache.shared.loadImage(fileID: metadata.fileID, fileNameView: metadata.fileNameView) { image in
+                        cell.file.image = image
+                    }
+                    
                 } else {
                     if metadata.iconName.count > 0 {
                         cell.file.image = UIImage.init(named: metadata.iconName)
@@ -696,7 +700,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
 
             if iconFileExists {
-                cell.file.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+                LocalImageCache.shared.loadImage(fileID: metadata.fileID, fileNameView: metadata.fileNameView) { image in
+                    cell.file.image = image
+                }
             } else {
                 if metadata.iconName.count > 0 {
                     cell.file.image = UIImage.init(named: metadata.iconName)
