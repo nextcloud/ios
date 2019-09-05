@@ -44,6 +44,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 50.0
         self.tableView.allowsSelection = false
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         // Register to receive notification reload data
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadDatasource), name: Notification.Name("notificationReloadData"), object: nil)
@@ -79,6 +80,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         cell.delegate = self
+        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
         let urlIcon = URL(string: notification.icon)
@@ -138,7 +140,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         cell.date.text = CCUtility.dateDiff(notification.date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
-        cell.subject.textColor = .black
+        cell.subject.textColor = NCBrandColor.sharedInstance.textView
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         

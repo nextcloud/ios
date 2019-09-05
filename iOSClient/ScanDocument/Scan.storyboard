@@ -163,7 +163,7 @@
                                     <constraint firstAttribute="height" constant="30" id="A6e-zC-q5t"/>
                                     <constraint firstAttribute="width" constant="30" id="U2p-ow-Iad"/>
                                 </constraints>
-                                <state key="normal" title="+" image="add"/>
+                                <state key="normal" image="add"/>
                                 <connections>
                                     <action selector="addWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bkr-97-4RR"/>
                                 </connections>
@@ -184,7 +184,7 @@
                                 </connections>
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fqr-e6-s3n" userLabel="transferDown">
-                                <rect key="frame" x="18" y="172" width="30" height="30"/>
+                                <rect key="frame" x="20" y="172" width="30" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="YPl-DJ-aNS"/>
                                     <constraint firstAttribute="width" constant="30" id="yGb-Y2-8Oj"/>
@@ -206,7 +206,7 @@
                             <constraint firstItem="jwq-kF-6Nq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="57" id="ELU-RG-o16"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Ew2-9q-DKl"/>
                             <constraint firstItem="YHy-9G-ngy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="FvJ-EK-Evb"/>
-                            <constraint firstItem="Fqr-e6-s3n" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="18" id="UJ4-nd-oV8"/>
+                            <constraint firstItem="Fqr-e6-s3n" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="UJ4-nd-oV8"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="aU0-Bn-B6T"/>
                             <constraint firstItem="jwq-kF-6Nq" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="dyH-ym-lrb"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="b3i-bF-ITj" secondAttribute="bottom" constant="11" id="iCt-vj-sDA"/>
