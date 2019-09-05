@@ -46,8 +46,7 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
-        viewLabelSection.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.1)
-        
+        viewLabelSection.backgroundColor = NCBrandColor.sharedInstance.select
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
@@ -138,7 +137,7 @@ class NCSectionHeader: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        self.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.1)
+        self.backgroundColor = NCBrandColor.sharedInstance.select
     }
     
     func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata, section: Int) {

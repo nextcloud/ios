@@ -127,6 +127,10 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+        
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
         
         section.addFormRow(row)

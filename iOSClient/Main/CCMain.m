@@ -3636,19 +3636,10 @@
     else titleSection = NSLocalizedString(titleSection,nil);
     
     // Format title
-    NSString *currentDevice = [CCUtility currentDevice];
-    if ([currentDevice rangeOfString:@"iPad3"].location != NSNotFound) {
-        
-        visualEffectView = [[UIVisualEffectView alloc] init];
-        visualEffectView.backgroundColor = [NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.3];
-        
-    } else {
-        
-        UIVisualEffect *blurEffect;
-        blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView.backgroundColor = [NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.2];
-    }
+    UIVisualEffect *blurEffect;
+    blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    visualEffectView.backgroundColor = [NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.2];
     
     if ([[CCUtility getGroupBySettings] isEqualToString:@"alphabetic"]) {
         
@@ -3662,7 +3653,7 @@
     // Title
     UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(10, -12, 0, 44)];
     titleLabel.backgroundColor = [UIColor clearColor];
-    titleLabel.textColor = [UIColor blackColor];
+    titleLabel.textColor = NCBrandColor.sharedInstance.textView;
     titleLabel.font = [UIFont systemFontOfSize:12];
     titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.text = titleSection;
@@ -3673,7 +3664,7 @@
     // Elements
     UILabel *elementLabel= [[UILabel alloc]initWithFrame:CGRectMake(shift, -12, 0, 44)];
     elementLabel.backgroundColor = [UIColor clearColor];
-    elementLabel.textColor = [UIColor blackColor];;
+    elementLabel.textColor = NCBrandColor.sharedInstance.textView;
     elementLabel.font = [UIFont systemFontOfSize:12];
     elementLabel.textAlignment = NSTextAlignmentRight;
     elementLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;

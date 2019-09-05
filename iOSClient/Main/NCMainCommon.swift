@@ -690,8 +690,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
 
-            cell.labelTitle.textColor = UIColor.black
             cell.labelTitle.text = metadata.fileNameView
+            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             
             cell.transferButton.tintColor = NCBrandColor.sharedInstance.optionItem
             

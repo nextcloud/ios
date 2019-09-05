@@ -79,14 +79,26 @@ class NCPhotosPickerViewController: NSObject {
 
 class customPhotoPickerViewController: TLPhotosPickerViewController {
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.icon
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.icon
+        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.textView
+        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.textView
         
         self.titleLabel.textColor = NCBrandColor.sharedInstance.icon
         self.subTitleLabel.textColor = NCBrandColor.sharedInstance.graySoft
         self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.graySoft)
+        
+        self.collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        if CCUtility.getDarkMode() {
+            self.navigationBar.barStyle = .black
+        }
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.textView
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.textView
     }
 }
