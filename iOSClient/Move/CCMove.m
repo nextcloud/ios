@@ -155,7 +155,7 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [NCBrandColor sharedInstance].backgroundView;
+    return NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
@@ -164,7 +164,7 @@
         
         UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
-        activityView.color = [NCBrandColor sharedInstance].brandElement;
+        activityView.color = NCBrandColor.sharedInstance.brandElement;
         [activityView startAnimating];
         
         return activityView;
@@ -409,11 +409,11 @@
     if (metadata.directory) {
     
         if (metadata.e2eEncrypted)
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         else
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
     } else {
         

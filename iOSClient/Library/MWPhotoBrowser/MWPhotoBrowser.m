@@ -151,8 +151,8 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	
     // Toolbar
     _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
-    _toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
-    _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    _toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
+    _toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsCompact];
     _toolbar.barStyle = UIBarStyleDefault; //TWS
@@ -220,9 +220,9 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     // color
-    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].brandText;
-    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].brandText}];
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
     self.navigationController.navigationBar.translucent = false;
     [self setExtendedLayoutIncludesOpaqueBars:YES];
     

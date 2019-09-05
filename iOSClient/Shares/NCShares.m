@@ -83,8 +83,8 @@
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-    self.tableView.separatorColor = [NCBrandColor sharedInstance].separator;
+    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
     // Plus Button
     [appDelegate plusButtonVisibile:true];
@@ -107,12 +107,12 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [NCBrandColor sharedInstance].backgroundView;
+    return NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:300 height:300 color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:300 height:300 color:NCBrandColor.sharedInstance.graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -280,10 +280,10 @@
         
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
+    selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond;
     cell.selectedBackgroundView = selectionColor;
-    cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-    cell.labelTitle.textColor = [NCBrandColor sharedInstance].textView;
+    cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView;
     
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
@@ -293,7 +293,7 @@
         
         if (metadata.directory) {
             
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
         } else {
             
@@ -309,7 +309,7 @@
         
     } else {
         
-        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
         [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {

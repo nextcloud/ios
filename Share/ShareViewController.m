@@ -137,11 +137,11 @@
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
         [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
     }
-    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].brandText;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
-    self.toolBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    self.toolBar.tintColor = [NCBrandColor sharedInstance].brandElement;
+    self.toolBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.toolBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     
     // Upload
     rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
@@ -202,7 +202,7 @@
 {
     if ([self.filesName count] > 0) {
     
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:NCBrandColor.sharedInstance.brandElement];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
         NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.activeAccount];

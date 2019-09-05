@@ -371,14 +371,14 @@ Color difference is determined by the following formula:
     if (themingColor.length == 7) {
         newColor = [CCGraphics colorFromHexString:themingColor];
     } else {
-        newColor = [NCBrandColor sharedInstance].customer;
+        newColor = NCBrandColor.sharedInstance.customer;
     }
             
     // COLOR TEXT
     if (themingColorText.length == 7) {
         newColorText = [CCGraphics colorFromHexString:themingColorText];
     } else {
-        newColorText = [NCBrandColor sharedInstance].customerText;
+        newColorText = NCBrandColor.sharedInstance.customerText;
     }
             
     // COLOR ELEMENT
@@ -391,9 +391,9 @@ Color difference is determined by the following formula:
             newColorElement = newColor;
     }
             
-    [NCBrandColor sharedInstance].brand = newColor;
-    [NCBrandColor sharedInstance].brandElement = newColorElement;
-    [NCBrandColor sharedInstance].brandText = newColorText;
+    NCBrandColor.sharedInstance.brand = newColor;
+    NCBrandColor.sharedInstance.brandElement = newColorElement;
+    NCBrandColor.sharedInstance.brandText = newColorText;
 }
 
 @end

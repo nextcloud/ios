@@ -44,19 +44,19 @@
     Ivar ivar =  class_getInstanceVariable([UITextField class], "_placeholderLabel");
 
     // Background color
-    self.view.backgroundColor = [NCBrandColor sharedInstance].customer;
+    self.view.backgroundColor = NCBrandColor.sharedInstance.customer;
     
     // Image Brand
     self.imageBrand.image = [UIImage imageNamed:@"logo"];
     
     // Annulla
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
-    self.annulla.tintColor = [NCBrandColor sharedInstance].customerText;
+    self.annulla.tintColor = NCBrandColor.sharedInstance.customerText;
     
     // Base URL
-    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
-    _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
-    _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
+    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] multiplier:2 color:NCBrandColor.sharedInstance.customerText];
+    _baseUrl.textColor = NCBrandColor.sharedInstance.customerText;
+    _baseUrl.tintColor = NCBrandColor.sharedInstance.customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
     UILabel *baseUrlPlaceholder = object_getIvar(_baseUrl, ivar);
     baseUrlPlaceholder.textColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7];
@@ -64,9 +64,9 @@
     [self.baseUrl setDelegate:self];
     
     // User
-    _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
-    _user.textColor = [NCBrandColor sharedInstance].customerText;
-    _user.tintColor = [NCBrandColor sharedInstance].customerText;
+    _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] multiplier:2 color:NCBrandColor.sharedInstance.customerText];
+    _user.textColor = NCBrandColor.sharedInstance.customerText;
+    _user.tintColor = NCBrandColor.sharedInstance.customerText;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
     UILabel *userPlaceholder = object_getIvar(_user, ivar);
     userPlaceholder.textColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7];
@@ -75,9 +75,9 @@
     [self.user setDelegate:self];
 
     // Password
-    _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
-    _password.textColor = [NCBrandColor sharedInstance].customerText;
-    _password.tintColor = [NCBrandColor sharedInstance].customerText;
+    _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] multiplier:2 color:NCBrandColor.sharedInstance.customerText];
+    _password.textColor = NCBrandColor.sharedInstance.customerText;
+    _password.tintColor = NCBrandColor.sharedInstance.customerText;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
     UILabel *passwordPlaceholder = object_getIvar(_password, ivar);
     passwordPlaceholder.textColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7];
@@ -88,7 +88,7 @@
     
     // Login
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal] ;
-    self.login.backgroundColor = [NCBrandColor sharedInstance].customerText;
+    self.login.backgroundColor = NCBrandColor.sharedInstance.customerText;
     self.login.tintColor = [UIColor blackColor];
     self.login.layer.cornerRadius = 20;
     self.login.clipsToBounds = YES;
@@ -251,7 +251,7 @@
 {
     if (textField == self.password) {
         self.toggleVisiblePassword.hidden = NO;
-        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].customerText};
+        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.customerText};
     }
 }
 
@@ -259,7 +259,7 @@
 {
     if (textField == self.password) {
         self.toggleVisiblePassword.hidden = YES;
-        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].customerText};
+        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.customerText};
     }
 }
 
@@ -425,7 +425,7 @@
     
     self.password.text = @"";
     self.password.text = currentPassword;
-    self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [NCBrandColor sharedInstance].customerText};
+    self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: NCBrandColor.sharedInstance.customerText};
 }
 
 - (IBAction)handleLoginTypeView:(id)sender

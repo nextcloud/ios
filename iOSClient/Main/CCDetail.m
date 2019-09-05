@@ -85,10 +85,10 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
-    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[[[NCBrandColor sharedInstance] brand] colorWithAlphaComponent:0.4]];
+    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
     
     // Change bar bottom line shadow and remove title back button <"title"
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     self.navigationController.navigationBar.topItem.title = @"";
     
     // Color Navigation Controller
@@ -155,8 +155,8 @@
     [appDelegate changeTheming:self];
     
     if (self.toolbar) {
-        self.toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-        self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
+        self.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+        self.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
     }
     
     self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
@@ -300,8 +300,8 @@
     if (![NCBrandOptions sharedInstance].disable_openin_file) {
         self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     }
-    buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
-    buttonDelete = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
+    buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+    buttonDelete = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
@@ -317,8 +317,8 @@
     
     [self.toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
-    self.toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
+    self.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
 
     [self.view addSubview:self.toolbar];
 }
@@ -424,7 +424,7 @@
             
             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO && metadata.hasPreview) {
                 
-                [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
+                [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:NCBrandColor.sharedInstance.brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:NCBrandColor.sharedInstance.brandText] imageRight:NO navigationItem:self.navigationItem];
                 
                 CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
                 CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
@@ -460,7 +460,7 @@
         if (metadata.ocId) {
             
             UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
-//            if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
+//            if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[NCBrandColor.sharedInstance icon]];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
@@ -672,7 +672,7 @@
     
     [appDelegate startLoadAutoDownloadUpload];
 
-    [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
+    [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:NCBrandColor.sharedInstance.brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:NCBrandColor.sharedInstance.brandText] imageRight:NO navigationItem:self.navigationItem];
 }
 
 - (void)insertGeocoderLocation:(NSNotification *)notification

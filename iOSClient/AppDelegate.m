@@ -697,7 +697,7 @@ PKPushRegistry *pushRegistry;
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = [NCBrandColor sharedInstance].brand;
+            backgroundColor = NCBrandColor.sharedInstance.brand;
             break;
         default:
             break;
@@ -805,14 +805,14 @@ PKPushRegistry *pushRegistry;
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
@@ -823,17 +823,17 @@ PKPushRegistry *pushRegistry;
     // Media
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
     [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -867,14 +867,14 @@ PKPushRegistry *pushRegistry;
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden
 {
     nav.translucent = NO;
-    nav.barTintColor = [NCBrandColor sharedInstance].brand;
-    nav.tintColor = [NCBrandColor sharedInstance].brandText;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].brandText}];
+    nav.barTintColor = NCBrandColor.sharedInstance.brand;
+    nav.tintColor = NCBrandColor.sharedInstance.brandText;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
     // Change bar bottom line shadow
-    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     
     if (!online)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].connectionNo}];
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
     
     nav.hidden = hidden;
     
@@ -884,8 +884,8 @@ PKPushRegistry *pushRegistry;
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
 {
     tab.translucent = NO;
-    tab.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    tab.tintColor = [NCBrandColor sharedInstance].brandElement;
+    tab.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    tab.tintColor = NCBrandColor.sharedInstance.brandElement;
     
     tab.hidden = hidden;
     
@@ -899,7 +899,7 @@ PKPushRegistry *pushRegistry;
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
     
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
@@ -988,9 +988,9 @@ PKPushRegistry *pushRegistry;
             
     } else {
     
-        [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
-        [NCBrandColor sharedInstance].brandElement = [NCBrandColor sharedInstance].customer;
-        [NCBrandColor sharedInstance].brandText = [NCBrandColor sharedInstance].customerText;
+        NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
+        NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
+        NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
     }
     
     [[NCMainCommon sharedInstance] createImagesThemingColor];
@@ -1001,23 +1001,23 @@ PKPushRegistry *pushRegistry;
 - (void)changeTheming:(UIViewController *)vc
 {
     // Change Navigation & TabBar color
-    vc.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    vc.tabBarController.tabBar.tintColor = [NCBrandColor sharedInstance].brandElement;
+    vc.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    vc.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     // Change bar bottom line shadow
-    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     
     // Change button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *button = [tabBarController.view viewWithTag:99];
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
     
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
     // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:[NCBrandColor sharedInstance].textView];
+    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
 }
 
 #pragma --------------------------------------------------------------------------------------------
