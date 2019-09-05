@@ -537,7 +537,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             // change color selection
             let selectionColor = UIView()
-            selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
+            selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
             cell.selectedBackgroundView = selectionColor
             cell.tintColor = NCBrandColor.sharedInstance.brandElement
             

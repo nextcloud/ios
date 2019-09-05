@@ -54,6 +54,7 @@ class NCBrandColor: NSObject {
     @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
     @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
+    @objc public var select:                UIColor = .white
 
     override init() {
         self.brand = self.customer
@@ -70,6 +71,7 @@ class NCBrandColor: NSObject {
             backgroundForm = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
             textView = .white
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
+            select = UIColor.white.withAlphaComponent(0.2)
         } else {
             tabBar = .white
             backgroundView = .white
@@ -77,12 +79,8 @@ class NCBrandColor: NSObject {
             backgroundForm = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
             textView = .black
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
+            select = self.brand.withAlphaComponent(0.1)
         }
-    }
-    
-    // Color modify
-    @objc public func getColorSelectBackgrond() -> UIColor {
-        return self.brand.withAlphaComponent(0.1)
     }
 }
 

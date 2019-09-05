@@ -344,7 +344,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
 
         // change color selection and disclosure indicator
         let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
+        selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
         cell.selectedBackgroundView = selectionColor
         cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator

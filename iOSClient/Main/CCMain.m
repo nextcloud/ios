@@ -2260,7 +2260,7 @@
     appDelegate.reMainMenu.textOffset = CGSizeMake(50, 0.0);
     appDelegate.reMainMenu.font = [UIFont systemFontOfSize:14.0];
     
-    appDelegate.reMainMenu.highlightedBackgroundColor =  NCBrandColor.sharedInstance.getColorSelectBackgrond;
+    appDelegate.reMainMenu.highlightedBackgroundColor =  NCBrandColor.sharedInstance.select;
     appDelegate.reMainMenu.highlightedSeparatorColor = nil;
     appDelegate.reMainMenu.highlightedTextColor = [UIColor blackColor];
     appDelegate.reMainMenu.highlightedTextShadowColor = nil;
@@ -2370,14 +2370,14 @@
     appDelegate.reSelectMenu.separatorHeight = 0.5;
     appDelegate.reSelectMenu.separatorColor = NCBrandColor.sharedInstance.separator;
     
-    appDelegate.reSelectMenu.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    appDelegate.reSelectMenu.textColor = [UIColor blackColor];
+    appDelegate.reSelectMenu.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+    appDelegate.reSelectMenu.textColor = NCBrandColor.sharedInstance.textView;
     appDelegate.reSelectMenu.textAlignment = NSTextAlignmentLeft;
     appDelegate.reSelectMenu.textShadowColor = nil;
     appDelegate.reSelectMenu.textOffset = CGSizeMake(50, 0.0);
     appDelegate.reSelectMenu.font = [UIFont systemFontOfSize:14.0];
     
-    appDelegate.reSelectMenu.highlightedBackgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond;
+    appDelegate.reSelectMenu.highlightedBackgroundColor = NCBrandColor.sharedInstance.select;
     appDelegate.reSelectMenu.highlightedSeparatorColor = nil;
     appDelegate.reSelectMenu.highlightedTextColor = [UIColor blackColor];
     appDelegate.reSelectMenu.highlightedTextShadowColor = nil;

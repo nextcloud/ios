@@ -280,7 +280,7 @@
         
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond;
+    selectionColor.backgroundColor = NCBrandColor.sharedInstance.select;
     cell.selectedBackgroundView = selectionColor;
     cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView;
