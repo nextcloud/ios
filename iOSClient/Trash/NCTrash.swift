@@ -211,7 +211,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         menuView?.rowHeight = 45
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
-        menuView?.tableViewBackgroundColor = UIColor.white
+        menuView?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
+        menuView?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.textColor = NCBrandColor.sharedInstance.textView
 
         let header = (sender as? UIButton)?.superview as! NCTrashSectionHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
@@ -248,7 +251,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         menuView?.rowHeight = 45
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
-        menuView?.tableViewBackgroundColor = UIColor.white
+        menuView?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.textColor = NCBrandColor.sharedInstance.textView
         
         let header = (sender as? UIButton)?.superview as! NCTrashSectionHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
@@ -290,6 +295,11 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
+            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
+            
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
@@ -324,6 +334,11 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.fileId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
+            
+            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -394,6 +409,11 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     if item is ActionSheetCancelButton { return }
                 }
                 
+                ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+                ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
+                
                 actionSheet?.present(in: self, from: self.view)
             }
         }
@@ -437,6 +457,11 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     }
                     if item is ActionSheetCancelButton { return }
                 }
+                
+                ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+                ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
                 actionSheet?.present(in: self, from: self.view)
             }

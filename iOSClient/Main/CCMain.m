@@ -3168,7 +3168,6 @@
                                         [self actionDelete:indexPath];
         }];
         
-
         [actionSheet show];
     }
     

@@ -253,9 +253,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         menu?.rowHeight = 45
         menu?.highlightColor = NCBrandColor.sharedInstance.brand
         menu?.tableView.alwaysBounceVertical = false
-        menu?.tableViewBackgroundColor = UIColor.white
+        menu?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
         menu?.topOffsetY = menuView.bounds.height
-    
+        menu?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menu?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menu?.textColor = NCBrandColor.sharedInstance.textView
+        
         menu?.showMenu()
     }
     
