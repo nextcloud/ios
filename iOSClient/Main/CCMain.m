@@ -2253,7 +2253,7 @@
     appDelegate.reMainMenu.separatorHeight = 0.5;
     appDelegate.reMainMenu.separatorColor = NCBrandColor.sharedInstance.separator;
     
-    appDelegate.reMainMenu.backgroundColor =  NCBrandColor.sharedInstance.backgroundForm;
+    appDelegate.reMainMenu.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     appDelegate.reMainMenu.textColor =  NCBrandColor.sharedInstance.textView;
     appDelegate.reMainMenu.textAlignment = NSTextAlignmentLeft;
     appDelegate.reMainMenu.textShadowColor = nil;
@@ -2277,8 +2277,8 @@
     appDelegate.reMainMenu.subtitleHighlightedTextShadowColor = nil;
     appDelegate.reMainMenu.subtitleHighlightedTextShadowOffset = CGSizeMake(0, 0);
     
-    appDelegate.reMainMenu.borderWidth = 0.3;
-    appDelegate.reMainMenu.borderColor =  [UIColor lightGrayColor];
+    appDelegate.reMainMenu.borderWidth = 0;
+    appDelegate.reMainMenu.borderColor = NCBrandColor.sharedInstance.backgroundForm;
     
     appDelegate.reMainMenu.animationDuration = 0.2;
     appDelegate.reMainMenu.closeAnimationDuration = 0.2;
@@ -2394,8 +2394,8 @@
     appDelegate.reSelectMenu.subtitleHighlightedTextShadowColor = nil;
     appDelegate.reSelectMenu.subtitleHighlightedTextShadowOffset = CGSizeMake(0, 0);
     
-    appDelegate.reSelectMenu.borderWidth = 0.3;
-    appDelegate.reSelectMenu.borderColor =  [UIColor lightGrayColor];
+    appDelegate.reMainMenu.borderWidth = 0;
+    appDelegate.reMainMenu.borderColor = NCBrandColor.sharedInstance.backgroundForm;
     
     appDelegate.reSelectMenu.closeAnimationDuration = 0.2;
     appDelegate.reSelectMenu.animationDuration = 0.2;

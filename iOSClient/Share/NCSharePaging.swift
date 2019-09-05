@@ -55,12 +55,12 @@ class NCSharePaging: UIViewController {
         pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.textColor = NCBrandColor.sharedInstance.textView
         pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.indicatorColor = .black
+        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
         pagingViewController.indicatorOptions = .visible(
-            height: 0.5,
+            height: 1,
             zIndex: Int.max,
             spacing: .zero,
-            insets: .zero
+            insets: UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
         )
         
         // Contrain the paging view to all edges.
