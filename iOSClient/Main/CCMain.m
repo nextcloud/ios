@@ -1713,7 +1713,7 @@
     viewController.titleButtonDone = NSLocalizedString(@"_move_", nil);
     viewController.layoutViewSelect = k_layout_view_move;
     
-    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 

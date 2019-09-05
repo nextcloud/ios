@@ -313,7 +313,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
         viewController.type = "mediaFolder"
         
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
         
     }

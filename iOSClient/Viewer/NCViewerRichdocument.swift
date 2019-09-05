@@ -106,7 +106,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 viewController.type = ""
                 viewController.layoutViewSelect = k_layout_view_richdocument
                 
-                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                 self.detail.present(navigationController, animated: true, completion: nil)
             }
             
