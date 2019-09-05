@@ -106,7 +106,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.value = fileNameFolder
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
 
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         
@@ -123,7 +123,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
