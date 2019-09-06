@@ -27,6 +27,7 @@ class NCViewerDocumentWeb: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var safeAreaBottom: Int = 0
+    var mimeType: String?
     
     @objc static let sharedInstance: NCViewerDocumentWeb = {
         let instance = NCViewerDocumentWeb()
@@ -58,6 +59,7 @@ class NCViewerDocumentWeb: NSObject {
         configuration.preferences = preferences
         
         let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: Int(detail.view.bounds.size.width), height: Int(detail.view.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1), configuration: configuration)
+        webView.navigationDelegate = self
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         webView.isOpaque = false
@@ -97,6 +99,7 @@ class NCViewerDocumentWeb: NSObject {
                     guard let encodingName = NCUchardet.sharedNUCharDet()?.encodingStringDetect(with: data) else {
                         return
                     }
+                    self.mimeType = response.mimeType
                     webView.load(data, mimeType: response.mimeType!, characterEncodingName: encodingName, baseURL: url)
                 }
             }
@@ -109,5 +112,35 @@ class NCViewerDocumentWeb: NSObject {
         }
         
         detail.view.addSubview(webView)
+    }
+}
+
+extension NCViewerDocumentWeb: WKNavigationDelegate {
+    
+    public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        if let serverTrust = challenge.protectionSpace.serverTrust {
+            completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
+        } else {
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, nil);
+        }
+    }
+    
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(.allow)
+    }
+    
+    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        print("didStartProvisionalNavigation");
+    }
+    
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if self.mimeType != nil && self.mimeType == "text/plain" && CCUtility.getDarkMode() {
+            let js = "document.getElementsByTagName('body')[0].style.webkitTextFillColor= 'white';DOMReady();"
+            webView.evaluateJavaScript(js) { (_, _) in }
+        }
+    }
+    
+    public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+        print("didReceiveServerRedirectForProvisionalNavigation");
     }
 }
