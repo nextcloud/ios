@@ -1395,7 +1395,6 @@
     metadata.ocId = ocId;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
-    metadata.primaryKey = [account stringByAppendingString:ocId];
     metadata.serverUrl = serverUrl;
     metadata.size = size;
     metadata.status = status;
@@ -1439,7 +1438,6 @@
     metadata.ownerId = itemDto.ownerId;
     metadata.ownerDisplayName = itemDto.ownerDisplayName;
     metadata.permissions = itemDto.permissions;
-    metadata.primaryKey = [account stringByAppendingString:itemDto.ocId];
     metadata.quotaUsedBytes = itemDto.quotaUsedBytes;
     metadata.quotaAvailableBytes = itemDto.quotaAvailableBytes;
     metadata.resourceType = itemDto.resourceType;
@@ -1574,7 +1572,7 @@
     return metadata;
 }
 
-+ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl
++ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
 {
     NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
     
@@ -1586,12 +1584,8 @@
         serverUrl = [serverUrl stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
     }
     
-    return [[account stringByAppendingString:serverUrl] lowercaseString];
-}
-
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
-{
-    NSString *metadataID =  [[[self createDirectoyIDFromAccount:account serverUrl:serverUrl] stringByAppendingString:fileNameView] lowercaseString];
+    NSString *uniqueID = [[account stringByAppendingString:serverUrl] lowercaseString];
+    NSString *metadataID =  [[uniqueID stringByAppendingString:fileNameView] lowercaseString];
     
     if (directory) {
         return [metadataID stringByAppendingString:@"-dir"];

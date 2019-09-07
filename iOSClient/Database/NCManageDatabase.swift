@@ -48,17 +48,6 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableDirectory.className())
                 }
                 
-                if oldSchemaVersion < 54 {
-                    /*
-                    migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
-                        newObject!["primaryKey"] = (oldObject!["account"] as! String) + (oldObject!["fileID"] as! String)
-                    }
-                    migration.enumerateObjects(ofType: tableMedia.className()) { oldObject, newObject in
-                        newObject!["primaryKey"] = (oldObject!["account"] as! String) + (oldObject!["fileID"] as! String)
-                    }
-                    */
-                }
-                
                 if oldSchemaVersion < 61 {
                     migration.deleteData(forType: tableShare.className())
                 }
@@ -87,9 +76,16 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableComments.className())
                     migration.deleteData(forType: tableDirectory.className())
                     migration.deleteData(forType: tableMetadata.className())
+                    migration.deleteData(forType: tableMedia.className())
                     migration.deleteData(forType: tableE2eEncryptionLock.className())
                     migration.deleteData(forType: tableTag.className())
                     migration.deleteData(forType: tableTrash.className())
+                }
+                
+                if oldSchemaVersion < 77 {
+                    migration.deleteData(forType: tableDirectory.className())
+                    migration.deleteData(forType: tableMetadata.className())
+                    migration.deleteData(forType: tableMedia.className())
                 }
                 
             }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -1063,26 +1059,17 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String?, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
         
-        var addObject = tableDirectory()
+        let addObject = tableDirectory()
         
-        let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-        if result != nil {
-            addObject = result!
-        } else {
-            addObject.directoryID = CCUtility.createDirectoyID(fromAccount: account, serverUrl: serverUrl)
-        }
-        
+        addObject.ocId = ocId
         addObject.account = account
         addObject.e2eEncrypted = encrypted
         addObject.favorite = favorite
-        if let ocId = ocId {
-            addObject.ocId = ocId
-        }
         if let permissions = permissions {
             addObject.permissions = permissions
         }
@@ -1149,7 +1136,6 @@ class NCManageDatabase: NSObject {
                 if let serverUrlTo = serverUrlTo {
                     directory.serverUrl = serverUrlTo
                 }
-                directory.directoryID = CCUtility.createDirectoyID(fromAccount: account, serverUrl: directory.serverUrl)
                 
                 realm.add(directory, update: .all)
             }
@@ -1220,6 +1206,26 @@ class NCManageDatabase: NSObject {
         }
             
         result.dateReadDirectory = NSDate()
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func renameDirectory(ocId: String, serverUrl: String) {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        result.serverUrl = serverUrl
         
         do {
             try realm.commitWrite()
@@ -1727,9 +1733,6 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        // create primaryKey
-        metadata.primaryKey = metadata.account + metadata.ocId
-        
         let serverUrl = metadata.serverUrl
         let account = metadata.account
         
@@ -1762,9 +1765,6 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 for metadata in metadatas {
-                    // create primaryKey
-                    metadata.primaryKey = metadata.account + metadata.ocId
-                     
                     directoryToClearDate[metadata.serverUrl] = metadata.account
                     realm.add(metadata, update: .all)
                 }

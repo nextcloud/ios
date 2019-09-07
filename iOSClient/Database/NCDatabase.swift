@@ -228,7 +228,6 @@ class tableDirectory: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var dateReadDirectory: NSDate? = nil
-    @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
@@ -239,7 +238,7 @@ class tableDirectory: Object {
     @objc dynamic var serverUrl = ""
     
     override static func primaryKey() -> String {
-        return "directoryID"
+        return "ocId"
     }
 }
 
@@ -339,7 +338,6 @@ class tableMedia: Object {
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
-    @objc dynamic var primaryKey = ""
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
@@ -357,7 +355,7 @@ class tableMedia: Object {
     @objc dynamic var url = ""
     
     override static func primaryKey() -> String {
-        return "primaryKey"
+        return "ocId"
     }
 }
 
@@ -382,7 +380,6 @@ class tableMetadata: Object {
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
-    @objc dynamic var primaryKey = ""
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
@@ -400,7 +397,7 @@ class tableMetadata: Object {
     @objc dynamic var url = ""
 
     override static func primaryKey() -> String {
-        return "primaryKey"
+        return "ocId"
     }
 }
 
