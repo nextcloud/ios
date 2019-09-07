@@ -1064,9 +1064,14 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.beginWrite()
         
-        let addObject = tableDirectory()
+        var addObject = tableDirectory()
         
-        addObject.ocId = ocId
+        let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
+        if result != nil {
+            addObject = result!
+        } else {
+            addObject.ocId = ocId
+        }
         addObject.account = account
         addObject.e2eEncrypted = encrypted
         addObject.favorite = favorite
