@@ -292,7 +292,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         menuView?.token = "tapOrderHeaderMenu"
         menuView?.delegate = self
         menuView?.rowHeight = 45
-        menuView?.sectionHeaderHeight = 8
+        menuView?.sectionHeaderHeight = 0.3
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
@@ -302,7 +302,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         let header = (sender as? UIButton)?.superview
         let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
-        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
+        let menuOffsetY = headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
         
         menuView?.showMenu()
