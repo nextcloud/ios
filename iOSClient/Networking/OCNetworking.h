@@ -29,6 +29,8 @@
 
 + (OCNetworking *)sharedManager;
 
+@property BOOL checkRemoteWipeInProgress;
+
 #pragma mark ===== OCCommunication =====
 
 - (OCCommunication *)sharedOCCommunication;

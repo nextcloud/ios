@@ -437,7 +437,7 @@
         NSString *account = tableAccount.account;
         
         if (account) {
-            [appDelegate deleteAccount:account withChangeUser:false];
+            [appDelegate deleteAccount:account wipe:false];
         }
         
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];

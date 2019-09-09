@@ -3128,7 +3128,8 @@
         
         if (jsongParsed && jsongParsed.allKeys > 0) {
             
-            successRequest(response, false, request.redirectedServer);
+            BOOL wipe = [jsongParsed valueForKey:@"wipe"];
+            successRequest(response, wipe, request.redirectedServer);
             
         } else {
             

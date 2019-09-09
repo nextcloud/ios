@@ -37,6 +37,7 @@
     {
         if (!sharedManager) {
             sharedManager = [OCNetworking new];
+            sharedManager.checkRemoteWipeInProgress = false;
         }
         return sharedManager;
     }
@@ -2325,23 +2326,33 @@
 
 - (void)checkRemoteWipe:(NSString *)account
 {
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
-    if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_17_0) {
-        [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
-            
-            if (wipe) {
-                
-#ifndef EXTENSION
-                [(AppDelegate *)[[UIApplication sharedApplication] delegate] deleteAccount:account withChangeUser:true];
-#endif
-            } else {
-                
-                [CCUtility setPassword:account password:nil];
-            }
-        }];
-    } else {
+    @synchronized(self) {
+        if (self.checkRemoteWipeInProgress) {
+            return;
+        } else {
+            self.checkRemoteWipeInProgress = true;
+        }
         
-        [CCUtility setPassword:account password:nil];
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
+        if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_17_0 && [CCUtility getPassword:account] != nil) {
+            [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
+                
+                if (wipe) {
+                    
+    #ifndef EXTENSION
+                    [(AppDelegate *)[[UIApplication sharedApplication] delegate] deleteAccount:account withChangeUser:true];
+    #endif
+                } else {
+                    
+                    [CCUtility setPassword:account password:nil];
+                }
+                
+                self.checkRemoteWipeInProgress = false;
+            }];
+        } else if ([CCUtility getPassword:account] != nil) {
+            
+            [CCUtility setPassword:account password:nil];
+        }
     }
 }
 

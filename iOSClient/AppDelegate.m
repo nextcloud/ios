@@ -383,7 +383,7 @@ PKPushRegistry *pushRegistry;
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
 }
 
-- (void)deleteAccount:(NSString *)account withChangeUser:(BOOL)withChangeUser
+- (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
 {
     [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
     [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
@@ -395,15 +395,17 @@ PKPushRegistry *pushRegistry;
     [CCUtility setCertificateError:account error:false];
     [CCUtility setPassword:account password:nil];
        
-    if (withChangeUser) {
+    if (wipe) {
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
         if ([listAccount count] > 0) {
-            tableAccount *newAccount = listAccount[0];
-            [self settingActiveAccount:newAccount.account activeUrl:newAccount.url activeUser:newAccount.user activeUserID:newAccount.userID activePassword:[CCUtility getPassword:newAccount.account]];
+            NSString *newAccount = listAccount[0];
+            tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:newAccount];
+            [self settingActiveAccount:newAccount activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
         } else {
             [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
+        [self messageNotification:account description:@"_wipe_account_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorInternalError];
     }
 }
 
