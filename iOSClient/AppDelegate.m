@@ -388,6 +388,12 @@ PKPushRegistry *pushRegistry;
     [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
     [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
     
+    /* DELETE ALL FILES LOCAL FS */
+    NSArray *results = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account] sorted:@"ocId" ascending:NO];
+    for (tableLocalFile *result in results) {
+        [CCUtility removeFileAtPath:[CCUtility getDirectoryProviderStorageOcId:result.ocId]];
+    }
+    // Clear database
     [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:account removeAccount:true];
 
     [CCUtility clearAllKeysEndToEnd:account];
