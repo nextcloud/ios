@@ -513,7 +513,7 @@
         } else {
             
             if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
-                [[OCNetworking sharedManager] checkRemoteWipe:metadata.account];
+                [[OCNetworking sharedManager] checkRemoteUser:metadata.account];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
                 [CCUtility setCertificateError:metadata.account error:YES];
 
@@ -1070,7 +1070,7 @@
         } else {
 
             if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
-                [[OCNetworking sharedManager] checkRemoteWipe:metadata.account];
+                [[OCNetworking sharedManager] checkRemoteUser:metadata.account];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
                 [CCUtility setCertificateError:metadata.account error:YES];
             

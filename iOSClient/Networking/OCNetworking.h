@@ -29,7 +29,7 @@
 
 + (OCNetworking *)sharedManager;
 
-@property BOOL checkRemoteWipeInProgress;
+@property BOOL checkRemoteUserInProgress;
 
 #pragma mark ===== OCCommunication =====
 
@@ -105,11 +105,9 @@
 
 - (void)fullTextSearchWithAccount:(NSString *)account text:(NSString *)text page:(NSInteger)page completion:(void(^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;
 
-#pragma mark ===== Remore wipe =====
+#pragma mark ===== Check remote user =====
 
-- (void)checkRemoteWipe:(NSString *)account;
-- (void)getRemoteWipeStatusWithAccount:(NSString *)account completion:(void(^)(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode))completion;
-- (void)setRemoteWipeCompletitionWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSString *message, NSInteger errorCode))completion;
+- (void)checkRemoteUser:(NSString *)account;
 
 #pragma mark ===== Trash =====
 

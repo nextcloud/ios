@@ -388,7 +388,7 @@ PKPushRegistry *pushRegistry;
     [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
     [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
     
-    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:account removeUser:true];
+    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:account removeAccount:true];
 
     [CCUtility clearAllKeysEndToEnd:account];
     [CCUtility clearAllKeysPushNotification:account];
@@ -405,7 +405,6 @@ PKPushRegistry *pushRegistry;
         } else {
             [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
-        [self messageNotification:account description:@"_wipe_account_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorInternalError];
     }
 }
 

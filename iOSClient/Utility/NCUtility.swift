@@ -372,7 +372,7 @@ class NCUtility: NSObject {
         URLCache.shared.diskCapacity = 0
         KTVHTTPCache.cacheDeleteAllCaches()
         
-        NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeUser: true)
+        NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeAccount: true)
         
         CCUtility.emptyGroupDirectoryProviderStorage()
         CCUtility.emptyGroupLibraryDirectory()

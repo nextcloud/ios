@@ -136,7 +136,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func clearDatabase(account: String?, removeUser: Bool) {
+    @objc func clearDatabase(account: String?, removeAccount: Bool) {
         
         self.clearTable(tableActivity.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
@@ -156,7 +156,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
         
-        if removeUser {
+        if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }
     }
