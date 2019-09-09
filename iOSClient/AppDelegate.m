@@ -667,12 +667,18 @@ PKPushRegistry *pushRegistry;
             switch (errorcode) {
                     
                 // JDStatusBarNotification
-                case kCFURLErrorNotConnectedToInternet :
+                case kCFURLErrorNotConnectedToInternet:
                     
                     if (errorCodePrev != errorcode)
                         [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
                     
                     errorCodePrev = errorcode;
+                    break;
+                    
+                case kOCErrorServerUnauthorized:
+                case kOCErrorServerForbidden:
+                    
+                    NSLog(@"Error kOCErrorServerUnauthorized - kOCErrorServerForbidden");
                     break;
                     
                 // TWMessageBarManager
