@@ -82,12 +82,6 @@ class NCManageDatabase: NSObject {
                     migration.deleteData(forType: tableTrash.className())
                 }
                 
-                if oldSchemaVersion < 77 {
-                    migration.deleteData(forType: tableDirectory.className())
-                    migration.deleteData(forType: tableMetadata.className())
-                    migration.deleteData(forType: tableMedia.className())
-                }
-                
             }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                 
                 // totalBytes refers to the size of the file on disk in bytes (data + free space)
