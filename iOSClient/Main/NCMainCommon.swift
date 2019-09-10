@@ -1307,7 +1307,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
 
                     try? FileManager().unzipItem(at: source, to: destination)
                     
-                    let bundleDirectory = IMImagemeter.sharedInstance.getBundleDirectory(metadata: metadata)
+                    let bundleDirectory = NCUtility.sharedInstance.IMGetBundleDirectory(metadata: metadata)
                     
                     if bundleDirectory.error {
                         appDelegate.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)

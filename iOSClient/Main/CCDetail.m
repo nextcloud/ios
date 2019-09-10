@@ -138,18 +138,6 @@
     }
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    
-    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        
-        if (self.imagemeter) {
-            [self.imagemeter viewImagemeter];
-        }
-    }];
-}
-
 - (void)changeTheming
 {
     [appDelegate changeTheming:self];
@@ -166,9 +154,6 @@
 {
     if (_readerPDFViewController) {
         [self.readerPDFViewController updateContentViews];
-    }
-    if (self.imagemeter) {
-        [self.imagemeter viewImagemeter];
     }
 }
 
@@ -270,12 +255,14 @@
     }
     
     // IMI File
+    /*
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_imagemeter]) {
         
         self.imagemeter = [[NCViewerImagemeter alloc] initWithMetadata:self.metadataDetail detail:self];
         [self.imagemeter viewImagemeter];
         [self createToolbar];
     }
+    */
 }
 
 #pragma --------------------------------------------------------------------------------------------
