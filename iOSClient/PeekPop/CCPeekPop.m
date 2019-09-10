@@ -62,7 +62,7 @@
         }
     }
     
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundMenu;
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
     self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width,  self.imagePreview.image.size.height + highLabelFileName);
 }
