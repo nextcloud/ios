@@ -24,6 +24,7 @@
 import Foundation
 import SVGKit
 import KTVHTTPCache
+import ZIPFoundation
 
 class NCUtility: NSObject {
     @objc static let sharedInstance: NCUtility = {
@@ -432,5 +433,27 @@ class NCUtility: NSObject {
                 completion(loadedImage)
             }
         }
+    }
+    
+    func IMGetBundleDirectory(metadata: tableMetadata) -> (error: Bool, bundleDirectory: String, immPath: String) {
+        
+        var error = true
+        var bundleDirectory = ""
+        var immPath = ""
+        
+        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        
+        if let archive = Archive(url: source, accessMode: .read) {
+            archive.forEach({ (entry) in
+                let pathComponents = (entry.path as NSString).pathComponents
+                if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
+                    error = false
+                    bundleDirectory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + pathComponents.first!
+                    immPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + entry.path
+                }
+            })
+        }
+        
+        return(error, bundleDirectory, immPath)
     }
 }
