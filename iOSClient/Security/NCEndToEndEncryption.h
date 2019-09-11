@@ -22,8 +22,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-#import <openssl/ssl.h>
+#import <OpenSSL/OpenSSL.h>
 
 @class tableMetadata;
 

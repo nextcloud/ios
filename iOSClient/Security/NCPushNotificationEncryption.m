@@ -25,13 +25,7 @@
 
 #import "NCPushNotificationEncryption.h"
 
-#import <openssl/rsa.h>
-#import <openssl/pem.h>
-#import <openssl/bio.h>
-#import <openssl/bn.h>
-#import <openssl/sha.h>
-#import <openssl/err.h>
-#import <openssl/ssl.h>
+#import <OpenSSL/OpenSSL.h>
 #import <CommonCrypto/CommonDigest.h>
 
 #import "NCEndToEndEncryption.h"

@@ -24,12 +24,7 @@
 #import "CCUtility.h"
 #import "CCGraphics.h"
 #import "NCBridgeSwift.h"
-
-#import <netinet/in.h>
-#import <openssl/x509.h>
-#import <openssl/bio.h>
-#import <openssl/err.h>
-#import <openssl/pem.h>
+#import <OpenSSL/OpenSSL.h>
 
 #define INTRO_MessageType       @"MessageType_"
 

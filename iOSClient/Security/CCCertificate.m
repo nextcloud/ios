@@ -25,11 +25,7 @@
 #import "CCCertificate.h"
 #import "NCBridgeSwift.h"
 #import "AppDelegate.h"
-
-#import <openssl/x509.h>
-#import <openssl/bio.h>
-#import <openssl/err.h>
-#import <openssl/pem.h>
+#import <OpenSSL/OpenSSL.h>
 
 @implementation CCCertificate
 
