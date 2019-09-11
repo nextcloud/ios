@@ -95,8 +95,10 @@
     
     ASN1_INTEGER_set(X509_get_serialNumber(x509), 1);
     
-    X509_gmtime_adj(X509_get_notBefore(x509), 0);
-    X509_gmtime_adj(X509_get_notAfter(x509), 31536000000L);
+    long notBefore = [[NSDate date] timeIntervalSinceDate:[NSDate date]];
+    long notAfter = [[[NSDate date] dateByAddingTimeInterval:60*60*24*365*10] timeIntervalSinceDate:[NSDate date]]; // 10 year
+    X509_gmtime_adj(X509_get_notBefore(x509), notBefore);
+    X509_gmtime_adj(X509_get_notAfter(x509), notAfter);
     
     X509_set_pubkey(x509, pkey);
     
