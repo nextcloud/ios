@@ -69,7 +69,9 @@ class NCManageDatabase: NSObject {
                     migration.enumerateObjects(ofType: tableE2eEncryptionLock.className()) { oldObject, newObject in
                         newObject!["ocId"] = oldObject!["fileID"]
                     }
-                    
+                }
+                
+                if oldSchemaVersion < 78 {
                     migration.deleteData(forType: tableActivity.className())
                     migration.deleteData(forType: tableActivityPreview.className())
                     migration.deleteData(forType: tableActivitySubjectRich.className())
