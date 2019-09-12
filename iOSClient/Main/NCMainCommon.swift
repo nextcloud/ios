@@ -1302,7 +1302,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
-                    if NCBrandOptions.sharedInstance.use_imi_viewer == false { return }
+                    if NCBrandOptions.sharedInstance.use_imi_viewer == false {
+                        NCMainCommon.sharedInstance.openIn(metadata: metadata)
+                        return
+                    }
                     
                     let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                     let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))

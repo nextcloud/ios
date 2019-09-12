@@ -119,7 +119,7 @@ class NCBrandColor: NSObject {
     @objc public let use_themingLogo:                   Bool = false     
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
-    @objc public let use_imi_viewer:                    Bool = true                                                 // Don't touch me !!
+    @objc public let use_imi_viewer:                    Bool = false                                                 // Don't touch me !!
 
     @objc public let disable_intro:                     Bool = false
     @objc public let disable_request_login_url:         Bool = false
