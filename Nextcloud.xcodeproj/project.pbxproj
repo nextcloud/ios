@@ -53,6 +53,7 @@
 		F700510322DF6897003A3356 /* Parchment.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F700510222DF6897003A3356 /* Parchment.framework */; };
 		F700510522DF6A89003A3356 /* NCShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700510422DF6A89003A3356 /* NCShare.swift */; };
 		F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */; };
+		F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */; };
 		F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEC2199E55F003F38DA /* SVGKit.framework */; };
 		F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */; };
 		F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */; };
@@ -705,6 +706,7 @@
 		F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMainTransfer.xib; sourceTree = "<group>"; };
 		F70211FA1BAC56E9003FC03E /* CCMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMain.h; sourceTree = "<group>"; };
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMain.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMImagemeterViewer.swift; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
 		F7063DEC2199E55F003F38DA /* SVGKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVGKit.framework; path = Carthage/Build/iOS/SVGKit.framework; sourceTree = "<group>"; };
@@ -1590,6 +1592,14 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
+		F704FA5A232A341800BBA952 /* Imagemeter */ = {
+			isa = PBXGroup;
+			children = (
+				F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */,
+			);
+			path = Imagemeter;
+			sourceTree = "<group>";
+		};
 		F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */ = {
 			isa = PBXGroup;
 			children = (
@@ -1606,6 +1616,7 @@
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F7A377131EB2364A002856D3 /* Fabric */,
 				F7D4B67A22956610000C2C86 /* Firebase */,
+				F704FA5A232A341800BBA952 /* Imagemeter */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
@@ -3663,6 +3674,7 @@
 				F73B4EFF1F470D9100BBEE4B /* LangRussianModel.cpp in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */,
+				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
 				F73B4F031F470D9100BBEE4B /* LangVietnameseModel.cpp in Sources */,
 				F73B4F021F470D9100BBEE4B /* LangTurkishModel.cpp in Sources */,
 				F7F54D0B1E5B14C800E19C62 /* MWTapDetectingImageView.m in Sources */,
