@@ -545,7 +545,17 @@ PKPushRegistry *pushRegistry;
                     BOOL delete = [[json objectForKey:@"delete"] boolValue];
                     BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
 
-                    if (!delete && subject) {
+                    if (delete || deleteAll) {
+                        
+                        if (deleteAll) {
+                            notificationId = 0;
+                        }
+                        
+                        [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
+                            NSLog(@"Deleting Server Notification error: %ld", errorCode);
+                        }];
+                        
+                    } else if (subject) {
                         
                         NSURL *url = [NSURL URLWithString:result.url];
                         NSString *domain = [url host];
@@ -574,15 +584,6 @@ PKPushRegistry *pushRegistry;
                     
                         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
                         
-                    } else if (delete || deleteAll) {
-                        
-                        if (deleteAll) {
-                            notificationId = 0;
-                        }
-                        
-                        [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
-                            NSLog(@"Deleting Server Notification error: %ld", errorCode);
-                        }];
                     }
                 }
             }
