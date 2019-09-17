@@ -552,7 +552,7 @@ PKPushRegistry *pushRegistry;
                         }
                         
                         [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
-                            NSLog(@"Deleting Server Notification error: %ld", errorCode);
+                            NSLog(@"Deleting Server Notification error: %ld", (long)errorCode);
                         }];
                         
                     } else if (subject) {
