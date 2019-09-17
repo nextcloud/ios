@@ -287,10 +287,11 @@ PKPushRegistry *pushRegistry;
         // use appConfig [MDM]
         if ([NCBrandOptions sharedInstance].use_configuration) {
             
-            NSDictionary *serverConfig = [[NSUserDefaults standardUserDefaults] dictionaryForKey:NCBrandConfiguration.sharedInstance.key];
-            NSString *serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.serverUrl];
-            NSString *username = serverConfig[NCBrandConfiguration.sharedInstance.username];
-            NSString *password = serverConfig[NCBrandConfiguration.sharedInstance.password];
+            NSDictionary *serverConfig = [[NSUserDefaults standardUserDefaults] dictionaryForKey:NCBrandConfiguration.sharedInstance.configuration_key];
+            
+            NSString *serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.configuration_serverUrl];
+            NSString *username = serverConfig[NCBrandConfiguration.sharedInstance.configuration_username];
+            NSString *password = serverConfig[NCBrandConfiguration.sharedInstance.configuration_password];
             
             if (serverUrl && [serverUrl isKindOfClass:[NSString class]] && username && [username isKindOfClass:[NSString class]] && password && [password isKindOfClass:[NSString class]]) {
             
