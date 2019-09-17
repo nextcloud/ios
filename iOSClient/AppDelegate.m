@@ -541,36 +541,44 @@ PKPushRegistry *pushRegistry;
                     
                     NSString *app = [json objectForKey:@"app"];
                     NSString *subject = [json objectForKey:@"subject"];
-                    //NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
-                    
-                    NSURL *url = [NSURL URLWithString:result.url];
-                    NSString *domain = [url host];
-                    
-                    if ([app isEqualToString:@"spreed"]) {
-                        content.title = @"Nextcloud Talk";
-                        if (results.count > 1) { content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
-                        if (subject) { content.body = subject; }
-                    } else {
-                        if (results.count > 1) { content.title = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
-                        if (subject) { content.body = subject; }
-                    }
-                    
-                    content.sound = [UNNotificationSound defaultSound];
+                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
+                    BOOL delete = [[json objectForKey:@"delete"] boolValue];
 
-                    /*
-                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
-                        //
-                    }];
-                    */
+                    if (!delete && subject) {
+                        
+                        NSURL *url = [NSURL URLWithString:result.url];
+                        NSString *domain = [url host];
                     
-                    NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
+                        if ([app isEqualToString:@"spreed"]) {
+                            content.title = @"Nextcloud Talk";
+                            if (results.count > 1) { content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
+                            if (subject) { content.body = subject; }
+                        } else {
+                            if (results.count > 1) { content.title = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
+                            if (subject) { content.body = subject; }
+                        }
                     
-                    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
-                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+                        content.sound = [UNNotificationSound defaultSound];
+
+                        /*
+                        [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
+                            //
+                        }];
+                        */
                     
-                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                        NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
                     
-                    break;
+                        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
+                        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+                    
+                        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                        
+                    } else if (delete) {
+                        
+                        [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
+                            NSLog(@"Deleting Server Notification error: %ld", errorCode);
+                        }];
+                    }
                 }
             }
         }
