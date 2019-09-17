@@ -2111,7 +2111,13 @@
 
 - (void)deletingServerNotification:(NSString *)serverUrl notificationId:(NSInteger)notificationId completion:(void(^)(NSString *message, NSInteger errorCode))completion
 {
+    // Delete
     NSString *URLString = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/notifications/api/v2/notifications/%ld", serverUrl, (long)notificationId];
+    
+    // Delete-all
+    if (notificationId == 0) {
+        URLString = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/notifications/api/v2/notifications", serverUrl];
+    }
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:URLString] cachePolicy:0 timeoutInterval:20.0];
     [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];

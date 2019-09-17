@@ -543,6 +543,7 @@ PKPushRegistry *pushRegistry;
                     NSString *subject = [json objectForKey:@"subject"];
                     NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
                     BOOL delete = [[json objectForKey:@"delete"] boolValue];
+                    BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
 
                     if (!delete && subject) {
                         
@@ -573,7 +574,11 @@ PKPushRegistry *pushRegistry;
                     
                         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
                         
-                    } else if (delete) {
+                    } else if (delete || deleteAll) {
+                        
+                        if (deleteAll) {
+                            notificationId = 0;
+                        }
                         
                         [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
                             NSLog(@"Deleting Server Notification error: %ld", errorCode);
