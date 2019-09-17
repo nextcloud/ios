@@ -555,7 +555,7 @@ PKPushRegistry *pushRegistry;
                             NSLog(@"Deleting Server Notification error: %ld", (long)errorCode);
                         }];
                         
-                    } else if (subject) {
+                    } else {
                         
                         NSURL *url = [NSURL URLWithString:result.url];
                         NSString *domain = [url host];
@@ -583,7 +583,6 @@ PKPushRegistry *pushRegistry;
                         UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
                     
                         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-                        
                     }
                 }
             }
