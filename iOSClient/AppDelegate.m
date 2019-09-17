@@ -284,6 +284,24 @@ PKPushRegistry *pushRegistry;
     
     @synchronized (self) {
 
+        // use appConfig [MDM]
+        if ([NCBrandOptions sharedInstance].use_configuration) {
+            
+            NSDictionary *serverConfig = [[NSUserDefaults standardUserDefaults] dictionaryForKey:NCBrandConfiguration.sharedInstance.key];
+            NSString *serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.serverUrl];
+            NSString *username = serverConfig[NCBrandConfiguration.sharedInstance.username];
+            NSString *password = serverConfig[NCBrandConfiguration.sharedInstance.password];
+            
+            if (serverUrl && [serverUrl isKindOfClass:[NSString class]] && username && [username isKindOfClass:[NSString class]] && password && [password isKindOfClass:[NSString class]]) {
+            
+            } else {
+                [self messageNotification:@"MDM" description:@"Parameter XML error" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+            }
+            
+            return;
+        }
+        
+        
         // only for personalized LoginWeb [customer]
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
             

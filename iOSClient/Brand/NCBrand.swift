@@ -119,7 +119,8 @@ class NCBrandColor: NSObject {
     @objc public let use_themingLogo:                   Bool = false     
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
-    @objc public let use_imi_viewer:                    Bool = false                                                 // Don't touch me !!
+    @objc public let use_imi_viewer:                    Bool = false                                                // Don't touch me !!
+    @objc public let use_configuration:                 Bool = false                                                // Don't touch me !!
 
     @objc public let disable_intro:                     Bool = false
     @objc public let disable_request_login_url:         Bool = false
@@ -134,5 +135,18 @@ class NCBrandColor: NSObject {
             folderDefaultAutoUpload = folderBrandAutoUpload
         }        
     }
+}
+
+@objc class NCBrandConfiguration: NSObject {
+    
+    @objc static let sharedInstance: NCBrandConfiguration = {
+        let instance = NCBrandConfiguration()
+        return instance
+    }()
+    
+    @objc public let key:                               String = "com.apple.configuration.managed"
+    @objc public let serverUrl:                         String = "serverUrl"
+    @objc public let username:                          String = "username"
+    @objc public let password:                          String = "password"
 }
 
