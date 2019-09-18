@@ -25,7 +25,7 @@ import Foundation
 
 @objc protocol NCLoginWebDelegate: class {
     func loginSuccess(_: NSInteger)
-    @objc optional func webDismiss()
+    @objc optional func loginWebDismiss()
 }
 
 class NCLoginWeb: UIViewController {
@@ -83,7 +83,7 @@ class NCLoginWeb: UIViewController {
     
     @IBAction func touchUpInsideButtonExit(_ sender: UIButton) {
         self.dismiss(animated: true) {
-            self.delegate?.webDismiss?()
+            self.delegate?.loginWebDismiss?()
         }
     }
 }
@@ -138,7 +138,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                         
                         self.dismiss(animated: true) {
                             self.delegate?.loginSuccess(NSInteger(self.loginType))
-                            self.delegate?.webDismiss?()
+                            self.delegate?.loginWebDismiss?()
                         }
                     }
                     
@@ -165,7 +165,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                         
                         self.dismiss(animated: true) {
                             self.delegate?.loginSuccess(NSInteger(self.loginType))
-                            self.delegate?.webDismiss?()
+                            self.delegate?.loginWebDismiss?()
                         }
                     }
                 }

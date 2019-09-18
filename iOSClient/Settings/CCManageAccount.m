@@ -29,7 +29,7 @@
 
 #define actionSheetCancellaAccount 1
 
-@interface CCManageAccount () <CCLoginDelegate, NCLoginWebDelegate>
+@interface CCManageAccount () <CCLoginDelegate, NCLoginWebDelegate, NCAppConfigViewDelegate>
 {
     AppDelegate *appDelegate;
 }

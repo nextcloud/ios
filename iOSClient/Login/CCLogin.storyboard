@@ -226,12 +226,40 @@
             </objects>
             <point key="canvasLocation" x="4511.594202898551" y="-1210.0446428571429"/>
         </scene>
+        <!--App Config View-->
+        <scene sceneID="BeF-ke-GzC">
+            <objects>
+                <viewController storyboardIdentifier="NCAppConfigView" id="Ak5-da-5qm" customClass="NCAppConfigView" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="lrn-aT-NFz">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="uEr-qx-rv2">
+                                <rect key="frame" x="95.666666666666686" y="374.33333333333331" width="223" height="157.33333333333331"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.0" green="0.50935935970000001" blue="0.78929150100000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="uEr-qx-rv2" firstAttribute="centerX" secondItem="x9O-1Y-Id9" secondAttribute="centerX" id="aL5-QX-ULn"/>
+                            <constraint firstItem="uEr-qx-rv2" firstAttribute="centerY" secondItem="x9O-1Y-Id9" secondAttribute="centerY" id="rrc-Gc-BmU"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="x9O-1Y-Id9"/>
+                    </view>
+                    <connections>
+                        <outlet property="logoImage" destination="uEr-qx-rv2" id="g4x-Pf-mpw"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JhO-p5-bOq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5477" y="-1214"/>
+        </scene>
     </scenes>
     <resources>
         <image name="exit" width="300" height="300"/>
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>
+        <image name="logo" width="223" height="157.5"/>
         <image name="qrcode" width="300" height="300"/>
         <image name="visiblePassword" width="25" height="25"/>
     </resources>

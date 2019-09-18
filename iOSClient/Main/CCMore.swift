@@ -24,7 +24,7 @@
 
 import UIKit
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, NCLoginWebDelegate {
+class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, NCLoginWebDelegate, NCAppConfigViewDelegate {
 
     @IBOutlet weak var themingBackground: UIImageView!
     @IBOutlet weak var disclosureIndicator: UIImageView!

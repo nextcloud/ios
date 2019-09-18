@@ -309,7 +309,7 @@
     [self.delegate loginSuccess:_loginType];
 }
 
-- (void)webDismiss
+- (void)loginWebDismiss
 {   
     [self dismissViewControllerAnimated:YES completion:nil];
 }

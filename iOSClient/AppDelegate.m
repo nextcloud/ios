@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginWebDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginWebDelegate, NCAppConfigViewDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -287,21 +287,19 @@ PKPushRegistry *pushRegistry;
         // use appConfig [MDM]
         if ([NCBrandOptions sharedInstance].use_configuration) {
             
-            NSDictionary *serverConfig = [[NSUserDefaults standardUserDefaults] dictionaryForKey:NCBrandConfiguration.sharedInstance.configuration_key];
+            if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
             
-            NSString *serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.configuration_serverUrl];
-            NSString *username = serverConfig[NCBrandConfiguration.sharedInstance.configuration_username];
-            NSString *password = serverConfig[NCBrandConfiguration.sharedInstance.configuration_password];
+                self.appConfigView = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCAppConfigView"];
             
-            if (serverUrl && [serverUrl isKindOfClass:[NSString class]] && username && [username isKindOfClass:[NSString class]] && password && [password isKindOfClass:[NSString class]]) {
-            
-            } else {
-                [self messageNotification:@"MDM" description:@"Parameter XML error" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                self.appConfigView.delegate = delegate;
+                
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    [viewController presentViewController:self.appConfigView animated:YES completion:nil];
+                });
             }
-            
+        
             return;
         }
-        
         
         // only for personalized LoginWeb [customer]
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
@@ -314,8 +312,11 @@ PKPushRegistry *pushRegistry;
                 self.activeLoginWeb.loginType = loginType;
                 self.activeLoginWeb.delegate = delegate;
 
-                [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
+                });
             }
+            
             return;
         }
         
@@ -343,7 +344,9 @@ PKPushRegistry *pushRegistry;
                 self.activeLoginWeb.loginType = loginType;
                 self.activeLoginWeb.delegate = delegate;
                 
-                [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
+                });
             }
             
         } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
@@ -354,7 +357,9 @@ PKPushRegistry *pushRegistry;
             self.activeLoginWeb.loginType = loginType;
             self.activeLoginWeb.delegate = delegate;
             
-            [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
+            });
             
         } else {
             
@@ -364,7 +369,7 @@ PKPushRegistry *pushRegistry;
                 _activeLogin.delegate = delegate;
                 _activeLogin.loginType = loginType;
                 
-                dispatch_async(dispatch_get_main_queue(), ^ {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:_activeLogin animated:YES completion:nil];
                 });
             }
@@ -376,7 +381,7 @@ PKPushRegistry *pushRegistry;
 {
     //
 }
-- (void)webDismiss
+- (void)loginWebDismiss
 {
     [self startTimerErrorNetworking];
 }
