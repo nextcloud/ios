@@ -74,31 +74,31 @@ class NCAppConfigView: UIViewController {
         }
         
         OCNetworking.sharedManager()?.getAppPassword(serverUrl, username: username, password: password, completion: { (token, message, errorCode) in
-            if errorCode == 0 {
-                
-                let account: String = "\(username) \(serverUrl)"
-                
-                // NO account found, clear
-                if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
-                
-                // Add new account
-                NCManageDatabase.sharedInstance.deleteAccount(account)
-                NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
-                
-                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
-                    self.appDelegate.messageNotification("_error_", description: "setAccountActive error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                    self.dismiss(animated: true, completion: nil)
-                    return
+            DispatchQueue.main.async {
+                if errorCode == 0 {
+                    let account: String = "\(username) \(serverUrl)"
+                    
+                    // NO account found, clear
+                    if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
+                    
+                    // Add new account
+                    NCManageDatabase.sharedInstance.deleteAccount(account)
+                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
+                    
+                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                        self.appDelegate.messageNotification("_error_", description: "setAccountActive error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        self.dismiss(animated: true, completion: nil)
+                        return
+                    }
+                    
+                    self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                    self.delegate?.loginSuccess(NSInteger(k_login_Add_Forced))
+                    
+                    self.dismiss(animated: true) {}
+                    
+                } else {
+                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 }
-                
-                self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
-                
-                self.dismiss(animated: true) {
-                    self.delegate?.loginSuccess(NSInteger(k_login_Add))
-                }
-                
-            } else {
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
         })
     }
