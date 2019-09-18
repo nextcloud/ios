@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginWebDelegate, NCAppConfigViewDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginWebDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -288,10 +288,7 @@ PKPushRegistry *pushRegistry;
             if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
             
                 self.appConfigView = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCAppConfigView"];
-            
-                self.activeLoginWeb.loginType = loginType;
-                self.appConfigView.delegate = delegate;
-                
+                            
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:self.appConfigView animated:YES completion:nil];
                 });

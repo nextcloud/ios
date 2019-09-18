@@ -23,11 +23,6 @@
 
 import Foundation
 
-@objc protocol NCAppConfigViewDelegate: class {
-    func loginSuccess()
-    @objc optional func appConfigViewDismiss()
-}
-
 class NCAppConfigView: UIViewController {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -36,9 +31,6 @@ class NCAppConfigView: UIViewController {
     private var username: String?
     private var password: String?
     
-    @objc weak var delegate: NCAppConfigViewDelegate?
-    @objc var loginType: Int = 0
-
     @IBOutlet weak var logoImage: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     
@@ -94,7 +86,7 @@ class NCAppConfigView: UIViewController {
                     }
                     
                     self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token!)
-                    self.delegate?.loginSuccess()
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
                     
                     self.dismiss(animated: true) {}
                 } else {

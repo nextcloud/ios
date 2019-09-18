@@ -27,7 +27,7 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCSplit () <CCLoginDelegate, NCLoginWebDelegate, NCAppConfigViewDelegate>
+@interface CCSplit () <CCLoginDelegate, NCLoginWebDelegate>
 {
     AppDelegate *appDelegate;
     BOOL prevRunningInFullScreen;
