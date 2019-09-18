@@ -32,10 +32,12 @@ class NCAppConfigView: UIViewController {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    @objc var serverUrl: String?
-    @objc var username: String?
-    @objc var password: String?
+    private var serverUrl: String?
+    private var username: String?
+    private var password: String?
+    
     @objc weak var delegate: NCAppConfigViewDelegate?
+    @objc var loginType: Int = 0
 
     @IBOutlet weak var logoImage: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
@@ -92,7 +94,7 @@ class NCAppConfigView: UIViewController {
                     }
                     
                     self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token!)
-                    self.delegate?.loginSuccess(NSInteger(k_login_Add_Forced))
+                    self.delegate?.loginSuccess(NSInteger(self.loginType))
                     
                     self.dismiss(animated: true) {}
                 } else {
