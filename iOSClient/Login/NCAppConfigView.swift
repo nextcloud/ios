@@ -48,7 +48,7 @@ class NCAppConfigView: UIViewController {
         
         titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")
         
-        let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.sharedInstance.configuration_key)
+        let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.sharedInstance.configuration_bundleId)
         serverUrl = serverConfig?[NCBrandConfiguration.sharedInstance.configuration_serverUrl] as? String
         username = serverConfig?[NCBrandConfiguration.sharedInstance.configuration_username] as? String
         password = serverConfig?[NCBrandConfiguration.sharedInstance.configuration_password] as? String
@@ -95,7 +95,6 @@ class NCAppConfigView: UIViewController {
                     self.delegate?.loginSuccess(NSInteger(k_login_Add_Forced))
                     
                     self.dismiss(animated: true) {}
-                    
                 } else {
                     self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 }

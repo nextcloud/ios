@@ -148,7 +148,7 @@ class NCBrandColor: NSObject {
         return instance
     }()
     
-    @objc public let configuration_key:                 String = "it.twsweb.Nextcloud"
+    @objc public let configuration_bundleId:            String = "it.twsweb.Nextcloud"
     @objc public let configuration_serverUrl:           String = "serverUrl"
     @objc public let configuration_username:            String = "username"
     @objc public let configuration_password:            String = "password"
