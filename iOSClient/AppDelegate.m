@@ -367,7 +367,7 @@ PKPushRegistry *pushRegistry;
     }
 }
 
-- (void)loginSuccess:(NSInteger)loginType
+- (void)loginSuccess
 {
     //
 }

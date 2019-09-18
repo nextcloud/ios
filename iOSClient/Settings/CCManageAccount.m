@@ -392,7 +392,7 @@
 #pragma mark === Delegate Login ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)loginSuccess:(NSInteger)loginType
+- (void)loginSuccess
 {
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }

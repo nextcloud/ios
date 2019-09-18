@@ -24,7 +24,7 @@
 import Foundation
 
 @objc protocol NCLoginWebDelegate: class {
-    func loginSuccess(_: NSInteger)
+    func loginSuccess()
     @objc optional func loginWebDismiss()
 }
 
@@ -137,7 +137,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: appDelegate.activeUserID, activePassword: token)
                         
                         self.dismiss(animated: true) {
-                            self.delegate?.loginSuccess(NSInteger(self.loginType))
+                            self.delegate?.loginSuccess()
                             self.delegate?.loginWebDismiss?()
                         }
                     }
@@ -164,7 +164,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
                         
                         self.dismiss(animated: true) {
-                            self.delegate?.loginSuccess(NSInteger(self.loginType))
+                            self.delegate?.loginSuccess()
                             self.delegate?.loginWebDismiss?()
                         }
                     }

@@ -304,9 +304,9 @@
 #pragma mark === NCLoginWebDelegate ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)loginSuccess:(NSInteger)loginType
+- (void)loginSuccess
 {
-    [self.delegate loginSuccess:_loginType];
+    [self.delegate loginSuccess];
 }
 
 - (void)loginWebDismiss
@@ -351,7 +351,6 @@
 
             if (errorCode == 0) {
                 
-                // account
                 NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
                 
                 if (_loginType == k_login_Modify_Password) {
@@ -364,7 +363,7 @@
                     // Setting appDelegate active account
                     [appDelegate settingActiveAccount:account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:token];
                     
-                    [self.delegate loginSuccess:_loginType];
+                    [self.delegate loginSuccess];
                     
                     [self dismissViewControllerAnimated:YES completion:nil];
                     
@@ -384,7 +383,7 @@
                     // Setting appDelegate active account
                     [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
                     
-                    [self.delegate loginSuccess:_loginType];
+                    [self.delegate loginSuccess];
                     
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                         [self dismissViewControllerAnimated:YES completion:nil];

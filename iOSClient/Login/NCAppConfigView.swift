@@ -24,7 +24,7 @@
 import Foundation
 
 @objc protocol NCAppConfigViewDelegate: class {
-    func loginSuccess(_: NSInteger)
+    func loginSuccess()
     @objc optional func appConfigViewDismiss()
 }
 
@@ -94,7 +94,7 @@ class NCAppConfigView: UIViewController {
                     }
                     
                     self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token!)
-                    self.delegate?.loginSuccess(NSInteger(self.loginType))
+                    self.delegate?.loginSuccess()
                     
                     self.dismiss(animated: true) {}
                 } else {
