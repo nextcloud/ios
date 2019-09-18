@@ -38,11 +38,15 @@ class NCAppConfigView: UIViewController {
     @objc weak var delegate: NCAppConfigViewDelegate?
 
     @IBOutlet weak var logoImage: UIImageView!
+    @IBOutlet weak var titleLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+        titleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        
+        titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")
         
         let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.sharedInstance.configuration_key)
         serverUrl = serverConfig?[NCBrandConfiguration.sharedInstance.configuration_serverUrl] as? String
