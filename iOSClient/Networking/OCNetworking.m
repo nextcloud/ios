@@ -336,11 +336,14 @@
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
+        NSString *message;
+        NSInteger errorCode = 0;
+        NSString *token = nil;
+        
         if (error) {
             
-            NSString *message;
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-            NSInteger errorCode = httpResponse.statusCode;
+            errorCode = httpResponse.statusCode;
             
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
@@ -351,16 +354,16 @@
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
-            completion(nil, message, errorCode);
-            
         } else {
             
             NCXMLGetAppPasswordParser *parser = [NCXMLGetAppPasswordParser new];
             [parser initParserWithData:data];
-            NSString *token = parser.token;
-            
-            completion(token, nil, 0);
+            token = parser.token;
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(token, message, errorCode);
+        });
     }];
     
     [task resume];

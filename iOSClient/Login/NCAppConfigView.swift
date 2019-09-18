@@ -83,7 +83,7 @@ class NCAppConfigView: UIViewController {
                     
                     // Add new account
                     NCManageDatabase.sharedInstance.deleteAccount(account)
-                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
+                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token!)
                     
                     guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
                         self.appDelegate.messageNotification("_error_", description: "setAccountActive error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
@@ -91,7 +91,7 @@ class NCAppConfigView: UIViewController {
                         return
                     }
                     
-                    self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                    self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token!)
                     self.delegate?.loginSuccess(NSInteger(k_login_Add_Forced))
                     
                     self.dismiss(animated: true) {}

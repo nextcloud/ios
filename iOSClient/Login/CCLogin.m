@@ -344,6 +344,72 @@
         self.login.enabled = NO;
         [self.activity startAnimating];
 
+        [[OCNetworking sharedManager] getAppPassword:url username:user password:password completion:^(NSString *token, NSString *message, NSInteger errorCode) {
+            
+            [self.activity stopAnimating];
+            self.login.enabled = YES;
+
+            if (errorCode == 0) {
+                
+                // account
+                NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
+                
+                if (_loginType == k_login_Modify_Password) {
+                    
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+                    
+                    // Change Password
+                    [CCUtility setPassword:account password:token];
+                    
+                    // Setting appDelegate active account
+                    [appDelegate settingActiveAccount:account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:token];
+                    
+                    [self.delegate loginSuccess:_loginType];
+                    
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                    
+                } else {
+                    
+                    // NO account found, clear
+                    if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
+                    
+                    // STOP Intro
+                    [CCUtility setIntro:YES];
+                    
+                    [[NCManageDatabase sharedInstance] deleteAccount:account];
+                    [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
+                    
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+                    
+                    // Setting appDelegate active account
+                    [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
+                    
+                    [self.delegate loginSuccess:_loginType];
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                        [self dismissViewControllerAnimated:YES completion:nil];
+                    });
+                }
+                
+            } else {
+                
+                self.login.enabled = YES;
+                [self.activity stopAnimating];
+                
+                if (errorCode != NSURLErrorServerCertificateUntrusted) {
+                    
+                    NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
+                    
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    
+                    [alertController addAction:okAction];
+                    [self presentViewController:alertController animated:YES completion:nil];
+                }
+            }
+        }];
+        
+        /*
         [[OCNetworking sharedManager] checkServerUrl:[NSString stringWithFormat:@"%@%@", url, k_webDAV] user:user userID:user password:password completion:^(NSString *message, NSInteger errorCode) {
             
             if (errorCode == 0) {
@@ -409,6 +475,7 @@
                 }
             }
         }];
+        */
     }
 }
 

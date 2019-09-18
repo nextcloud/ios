@@ -115,7 +115,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                     }
                     
                     let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
-                    let password : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
+                    let token : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
                     
                     let account : String = "\(username) \(serverUrl)"
                     
@@ -133,8 +133,8 @@ extension NCLoginWeb: WKNavigationDelegate {
                         }
                         
                         // Change Password & setting active account
-                        CCUtility.setPassword(account, password: password)
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: appDelegate.activeUserID, activePassword: password)
+                        CCUtility.setPassword(account, password: token)
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: appDelegate.activeUserID, activePassword: token)
                         
                         self.dismiss(animated: true) {
                             self.delegate?.loginSuccess(NSInteger(self.loginType))
@@ -154,14 +154,14 @@ extension NCLoginWeb: WKNavigationDelegate {
                         
                         // Add new account
                         NCManageDatabase.sharedInstance.deleteAccount(account)
-                        NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
+                        NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
                         
                         guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
                             self.dismiss(animated: true, completion: nil)
                             return
                         }
                         
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
                         
                         self.dismiss(animated: true) {
                             self.delegate?.loginSuccess(NSInteger(self.loginType))

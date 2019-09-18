@@ -280,8 +280,6 @@ PKPushRegistry *pushRegistry;
 
 - (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
 {
-    BOOL loginWebFlow = NO;
-    
     @synchronized (self) {
 
         // use appConfig [MDM]
@@ -324,13 +322,7 @@ PKPushRegistry *pushRegistry;
         //
         
         // Login flow : LoginWeb
-        if (loginType == k_login_Modify_Password) {
-            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-            if (account.loginFlow)
-                loginWebFlow = YES;
-        }
-            
-        if (loginWebFlow || selector == k_intro_signup) {
+        if (selector == k_intro_signup) {
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
