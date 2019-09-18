@@ -112,28 +112,32 @@ class NCBrandColor: NSObject {
     @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
         
     // Options
-    @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
-    @objc public let use_default_auto_upload:           Bool = false
-    @objc public let use_themingColor:                  Bool = true
-    @objc public let use_themingBackground:             Bool = true
-    @objc public let use_themingLogo:                   Bool = false     
-    @objc public let use_middlewarePing:                Bool = false
-    @objc public let use_storeLocalAutoUploadAll:       Bool = false
-    @objc public let use_imi_viewer:                    Bool = false                                                // Don't touch me !!
-    @objc public let use_configuration:                 Bool = true                                                // Don't touch me !!
+    @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
+    @objc public var use_default_auto_upload:           Bool = false
+    @objc public var use_themingColor:                  Bool = true
+    @objc public var use_themingBackground:             Bool = true
+    @objc public var use_themingLogo:                   Bool = false
+    @objc public var use_middlewarePing:                Bool = false
+    @objc public var use_storeLocalAutoUploadAll:       Bool = false
+    @objc public var use_imi_viewer:                    Bool = false                                                // Don't touch me !!
+    @objc public var use_configuration:                 Bool = true                                                 // Don't touch me !!
 
-    @objc public let disable_intro:                     Bool = true
-    @objc public let disable_request_login_url:         Bool = false
-    @objc public let disable_multiaccount:              Bool = false
-    @objc public let disable_manage_account:            Bool = false
-    @objc public let disable_more_external_site:        Bool = false
-    @objc public let disable_openin_file:               Bool = false                                                // Don't touch me !!
+    @objc public var disable_intro:                     Bool = false
+    @objc public var disable_request_login_url:         Bool = false
+    @objc public var disable_multiaccount:              Bool = false
+    @objc public var disable_manage_account:            Bool = false
+    @objc public var disable_more_external_site:        Bool = false
+    @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
 
     override init() {
         
         if folderBrandAutoUpload != "" {
             folderDefaultAutoUpload = folderBrandAutoUpload
-        }        
+        }
+        
+        if use_configuration {
+            disable_intro = true
+        }
     }
 }
 
