@@ -318,10 +318,7 @@ PKPushRegistry *pushRegistry;
             return;
         }
         
-        // ------------------- Nextcloud -------------------------
-        //
-        
-        // Login flow : LoginWeb
+        // normal login
         if (selector == k_intro_signup) {
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
