@@ -342,10 +342,15 @@
     }
 }
 
-// Apparirà
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidLoad
 {
-    [super viewWillAppear:animated];
+    [super viewDidLoad];
+    [self initializeForm];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
  
     self.navigationItem.title = NSLocalizedString(@"_credentials_", nil);
     
