@@ -1,6 +1,6 @@
 //
 //  NSString+TruncateToWidth.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 06/04/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

@@ -238,14 +238,10 @@
 }
 
 - (void)parserDidEndDocument:(NSXMLParser *)parser{
-    
-    //NSLog(@"Finish xml directory list parse");
-    
+    NSLog(@"Finish xml shared parse");
     if (_currentShared) {
-        
         [_shareList addObject:_currentShared];
     }
 }
-
 
 @end

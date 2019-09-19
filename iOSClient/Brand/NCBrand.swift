@@ -1,6 +1,6 @@
 //
 //  NCBrandColor.swift
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 24/04/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -27,6 +27,7 @@ class NCBrandColor: NSObject {
 
     @objc static let sharedInstance: NCBrandColor = {
         let instance = NCBrandColor()
+        instance.setDarkMode()
         return instance
     }()
 
@@ -41,8 +42,9 @@ class NCBrandColor: NSObject {
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
     @objc public var backgroundView:        UIColor = .white
+    @objc public var backgroundForm:        UIColor = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
     @objc public var textView:              UIColor = .black
-    @objc public var seperator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
+    @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
@@ -50,16 +52,32 @@ class NCBrandColor: NSObject {
     @objc public let optionItem:            UIColor = UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
     @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
+    @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
+    @objc public var select:                UIColor = .white
 
     override init() {
         self.brand = self.customer
         self.brandElement = self.customer
-        self.brandText = self.customerText
+        self.brandText = self.customerText        
     }
     
-    // Color modify
-    @objc public func getColorSelectBackgrond() -> UIColor {
-        return self.brand.withAlphaComponent(0.1)
+    @objc public func setDarkMode() {
+        let darkMode = CCUtility.getDarkMode()
+        if darkMode {
+            tabBar = .black
+            backgroundView = .black
+            backgroundForm = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
+            textView = .white
+            separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
+            select = UIColor.white.withAlphaComponent(0.2)
+        } else {
+            tabBar = .white
+            backgroundView = .white
+            backgroundForm = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
+            textView = .black
+            separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
+            select = self.brand.withAlphaComponent(0.1)
+        }
     }
 }
 
@@ -92,10 +110,7 @@ class NCBrandColor: NSObject {
     
     // User Agent
     @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
-    
-    // Module
-    @objc public let useMLVision:                       Bool = false
-    
+        
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public let use_default_auto_upload:           Bool = false
@@ -104,6 +119,8 @@ class NCBrandColor: NSObject {
     @objc public let use_themingLogo:                   Bool = false     
     @objc public let use_middlewarePing:                Bool = false
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
+    @objc public let use_imi_viewer:                    Bool = false                                                // Don't touch me !!
+    @objc public let use_configuration:                 Bool = false                                                // Don't touch me !!
 
     @objc public let disable_intro:                     Bool = false
     @objc public let disable_request_login_url:         Bool = false
@@ -118,5 +135,18 @@ class NCBrandColor: NSObject {
             folderDefaultAutoUpload = folderBrandAutoUpload
         }        
     }
+}
+
+@objc class NCBrandConfiguration: NSObject {
+    
+    @objc static let sharedInstance: NCBrandConfiguration = {
+        let instance = NCBrandConfiguration()
+        return instance
+    }()
+    
+    @objc public let configuration_key:                 String = "it.twsweb.Nextcloud"
+    @objc public let configuration_serverUrl:           String = "serverUrl"
+    @objc public let configuration_username:            String = "username"
+    @objc public let configuration_password:            String = "password"
 }
 

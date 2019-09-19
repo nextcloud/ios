@@ -1,6 +1,6 @@
 //
 //  CCCertificate.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 10/08/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -25,11 +25,7 @@
 #import "CCCertificate.h"
 #import "NCBridgeSwift.h"
 #import "AppDelegate.h"
-
-#import <openssl/x509.h>
-#import <openssl/bio.h>
-#import <openssl/err.h>
-#import <openssl/pem.h>
+#import <OpenSSL/OpenSSL.h>
 
 @implementation CCCertificate
 

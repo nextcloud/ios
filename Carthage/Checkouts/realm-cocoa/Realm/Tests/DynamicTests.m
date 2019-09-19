@@ -35,8 +35,8 @@
         // open realm in autoreleasepool to create tables and then dispose
         RLMRealm *realm = [RLMRealm realmWithURL:RLMTestRealmURL()];
         [realm beginWriteTransaction];
-        [DynamicObject createInRealm:realm withValue:@[@"column1", @1]];
-        [DynamicObject createInRealm:realm withValue:@[@"column2", @2]];
+        [DynamicTestObject createInRealm:realm withValue:@[@"column1", @1]];
+        [DynamicTestObject createInRealm:realm withValue:@[@"column2", @2]];
         [realm commitWriteTransaction];
     }
 
@@ -44,16 +44,16 @@
     XCTAssertNotNil(dyrealm, @"realm should not be nil");
 
     // verify schema
-    RLMObjectSchema *dynSchema = dyrealm.schema[@"DynamicObject"];
+    RLMObjectSchema *dynSchema = dyrealm.schema[@"DynamicTestObject"];
     XCTAssertNotNil(dynSchema, @"Should be able to get object schema dynamically");
-    XCTAssertEqual(dynSchema.properties.count, (NSUInteger)2, @"DynamicObject should have 2 properties");
+    XCTAssertEqual(dynSchema.properties.count, (NSUInteger)2, @"DynamicTestObject should have 2 properties");
     XCTAssertEqualObjects([dynSchema.properties[0] name], @"stringCol", @"Invalid property name");
     XCTAssertEqual([(RLMProperty *)dynSchema.properties[1] type], RLMPropertyTypeInt, @"Invalid type");
 
     // verify object type
-    RLMResults *results = [dyrealm allObjects:@"DynamicObject"];
+    RLMResults *results = [dyrealm allObjects:@"DynamicTestObject"];
     XCTAssertEqual(results.count, (NSUInteger)2, @"Array should have 2 elements");
-    XCTAssertNotEqual(results.objectClassName, DynamicObject.className,
+    XCTAssertNotEqual(results.objectClassName, DynamicTestObject.className,
                       @"Array class should by a dynamic object class");
 }
 
@@ -78,10 +78,8 @@
 
 - (void)testDynamicSchemaMatchesRegularSchema {
     RLMSchema *expectedSchema = nil;
-    // Force create and close realm
     @autoreleasepool {
-        RLMRealm *realm = self.realmWithTestPath;
-        expectedSchema = realm.schema;
+        expectedSchema = self.realmWithTestPath.schema;
     }
     XCTAssertNotNil(expectedSchema);
 
@@ -98,6 +96,12 @@
             // Class overrides names, so the dynamic schema for it shoudn't match
             continue;
         }
+        if (expectedObjectSchema.primaryKeyProperty.index != 0) {
+            // The dynamic schema will always put the primary key first, so it
+            // won't match if the static schema doesn't have it there
+            continue;
+        }
+
         RLMObjectSchema *dynamicObjectSchema = dynamicSchema[expectedObjectSchema.className];
         XCTAssertEqual(dynamicObjectSchema.properties.count, expectedObjectSchema.properties.count);
         for (NSUInteger propertyIndex = 0; propertyIndex < expectedObjectSchema.properties.count; propertyIndex++) {
@@ -129,14 +133,14 @@
         // open realm in autoreleasepool to create tables and then dispose
         RLMRealm *realm = [RLMRealm realmWithURL:RLMTestRealmURL()];
         [realm beginWriteTransaction];
-        [DynamicObject createInRealm:realm withValue:@[@"column1", @1]];
-        [DynamicObject createInRealm:realm withValue:@[@"column2", @2]];
+        [DynamicTestObject createInRealm:realm withValue:@[@"column1", @1]];
+        [DynamicTestObject createInRealm:realm withValue:@[@"column2", @2]];
         [realm commitWriteTransaction];
     }
 
     // verify properties
     RLMRealm *dyrealm = [self realmWithTestPathAndSchema:nil];
-    RLMResults *results = [dyrealm allObjects:@"DynamicObject"];
+    RLMResults *results = [dyrealm allObjects:@"DynamicTestObject"];
 
     RLMObject *o1 = results[0], *o2 = results[1];
     XCTAssertEqualObjects(o1[@"intCol"], @1);

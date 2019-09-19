@@ -19,7 +19,7 @@ core
 core-*
 
 # sync
-sync*
+/sync-*
 
 # sh build.sh config
 /Realm/config.mk
@@ -52,6 +52,7 @@ xcuserdata/
 project.xcworkspace
 *.xccheckout
 DerivedData
+/.build
 
 # AppCode
 .idea/
@@ -111,3 +112,8 @@ examples/ios/objc/Draw/Constants.h
 ## Sync testing
 test-ros-instance
 Realm/ObjectServerTests/node_modules
+
+## Swiftpm
+.swiftpm
+.build
+Package.resolved

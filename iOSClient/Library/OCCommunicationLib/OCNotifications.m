@@ -26,4 +26,30 @@
 
 @implementation OCNotifications
 
+- (id)init {
+    
+    self = [super init];
+    
+    if (self) {
+        
+        self.idNotification = 0;
+        self.application = @"";
+        self.user = @"";
+        self.date = [NSDate date];
+        self.typeObject = @"";
+        self.idObject = @"";
+        self.subject = @"";
+        self.subjectRich = @"";
+        self.subjectRichParameters = [NSDictionary new];
+        self.message = @"";
+        self.messageRich = @"";
+        self.messageRichParameters = [NSDictionary new];
+        self.link = @"";
+        self.icon = @"";
+        self.actions = [NSArray new];
+    }
+    
+    return self;
+}
+
 @end

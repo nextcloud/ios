@@ -1,6 +1,6 @@
 //
 //  CCMenuAccount.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 07/04/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -56,7 +56,8 @@ typedef struct {
     Boolean shadowOfMenu;
     Boolean hasSeperatorLine;
     Boolean seperatorLineHasInsets;
-    Color textColor;
+    UIColor *textColor;
+    UIColor *separatorColor;
     Color menuBackgroundColor;
     
 } OptionalConfiguration;

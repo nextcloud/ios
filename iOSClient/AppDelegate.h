@@ -1,6 +1,6 @@
 //
 //  AppDelegate.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -37,9 +37,9 @@
 #import "CCFavorites.h"
 #import "CCTransfers.h"
 
-@class CCLoginWeb;
 @class CCMore;
 @class NCMedia;
+@class NCOffline;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
 
@@ -68,11 +68,6 @@
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
-
-// Network Share
-@property (nonatomic, strong) NSMutableDictionary *sharesID;
-@property (nonatomic, strong) NSMutableDictionary *sharesLink;
-@property (nonatomic, strong) NSMutableDictionary *sharesUserAndGroup;
 
 // UploadFromOtherUpp
 @property (nonatomic, strong) NSString *fileNameUpload;
@@ -122,15 +117,19 @@
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
-@property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
+@property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
 @property (nonatomic, retain) CCMore *activeMore;
+@property (nonatomic, retain) NCOffline *activeOffline;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
-@property (nonatomic, strong) NSMutableArray *filterFileID;
+@property (nonatomic, strong) NSMutableArray *filterocId;
 
 @property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
+
+// Shares
+@property (nonatomic, strong) NSArray *shares;
 
 // Maintenance Mode
 @property BOOL maintenanceMode;
@@ -144,8 +143,9 @@
 // Login View
 - (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
 
-// Setting Active Account
+// Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
+- (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
 
 // Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;

@@ -1,6 +1,6 @@
 //
 //  CCManageHelp.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 06/11/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -53,9 +53,11 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"showHiddenFiles" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_show_hidden_files_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     if ([CCUtility getShowHiddenFiles]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Format Compatibility
@@ -65,9 +67,25 @@
     section.footerTitle = NSLocalizedString(@"_format_compatibility_footer_", nil);
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"formatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_format_compatibility_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     if ([CCUtility getFormatCompatibility]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+    [section addFormRow:row];
+    
+    // Disable Local Cache After Upload
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_disableLocalCacheAfterUpload_footer_", nil);
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"disableLocalCacheAfterUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_disableLocalCacheAfterUpload_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+    if ([CCUtility getDisableLocalCacheAfterUpload]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Section : Files App --------------------------------------------------------------
@@ -80,9 +98,11 @@
 
         // Disable Files App
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"disablefilesapp" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_disable_files_app_", nil)];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
         if ([CCUtility getDisableFilesApp]) row.value = @"1";
         else row.value = @"0";
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [section addFormRow:row];
     }
     
@@ -93,8 +113,10 @@
     section.footerTitle = NSLocalizedString(@"_privacy_footer_", nil);
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"crashservice" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_crashservice_title_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"crashservice"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
+    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"crashservice"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
     if ([CCUtility getDisableCrashservice]) row.value = @"1";
     else row.value = @"0";
     [section addFormRow:row];
@@ -107,11 +129,12 @@
 
     // Clear cache
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(clearCache:);
+    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(clearCacheRequest:);
     [section addFormRow:row];
 
     // Section EXIT --------------------------------------------------------
@@ -122,6 +145,7 @@
     
     // Exit
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"esci" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_exit_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -144,8 +168,9 @@
 {
     [super viewWillAppear:animated];
     
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.tableView.showsVerticalScrollIndicator = NO;
+    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
@@ -175,6 +200,11 @@
         [CCUtility setFormatCompatibility:[[rowDescriptor.value valueData] boolValue]];
     }
     
+    if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {
+        
+        [CCUtility setDisableLocalCacheAfterUpload:[[rowDescriptor.value valueData] boolValue]];
+    }
+    
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {
         
         [CCUtility setDisableFilesApp:[[rowDescriptor.value valueData] boolValue]];
@@ -198,64 +228,36 @@
 #pragma mark === Clear Cache ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)removeAllFilesWithDB:(BOOL)withDB
+- (void)clearCache
 {
     [appDelegate maintenanceMode:YES];
     
-    [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
-        
-        [self emptyDocumentsDirectory];
-        NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-        for (NSString *file in tmpDirectory)
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
-        
-        [KTVHTTPCache cacheDeleteAllCaches];
-        
-        //[self recalculateSize];
-        
-        // Clear Database
-        
-        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:appDelegate.activeAccount];
+    [[NCMainCommon sharedInstance] cancelAllTransfer];
 
-        if (withDB) {
-            
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMedia class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableTrash class] account:appDelegate.activeAccount];
-            
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-            
-            [appDelegate.filterFileID removeAllObjects];
-        }
-        
-        [appDelegate maintenanceMode:NO];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Close HUD
-            [self.hud hideHud];
-            // Inizialized home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-        });
-    });
+    [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+    [[NSURLCache sharedURLCache] setDiskCapacity:0];
+    [KTVHTTPCache cacheDeleteAllCaches];
+    
+    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeAccount:false];
+    
+    [CCUtility emptyGroupDirectoryProviderStorage];
+    [CCUtility emptyGroupLibraryDirectory];
+    
+    [CCUtility emptyDocumentsDirectory];
+    [CCUtility emptyTemporaryDirectory];
+    
+    [CCUtility createDirectoryStandard];
+
+    [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+    [appDelegate.filterocId removeAllObjects];
+
+    [appDelegate maintenanceMode:NO];
+
+    // Inizialized home
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
-- (void)clearCache:(XLFormRowDescriptor *)sender
+- (void)clearCacheRequest:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
@@ -264,13 +266,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action) {
-                                                           [self removeAllFilesWithDB:NO];
-                                                       }]];
-
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_cache_and_db_", nil)
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
-                                                           [self removeAllFilesWithDB:YES];
+                                                           [self clearCache];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -296,35 +292,23 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
-        [self.hud visibleIndeterminateHud];
+        [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                        
-            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-            [[NSURLCache sharedURLCache] setDiskCapacity:0];
-            
-            [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
-                        
-            [[NCManageDatabase sharedInstance] removeDB];
-            
-            [CCUtility deleteAllChainStore];
-            
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
-            
-            [self emptyDocumentsDirectory];
-            
-            [self emptyLibraryDirectory];
-            
-            [self emptyGroupApplicationSupport];
-            
-            NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-            for (NSString *file in tmpDirectory)
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
-            
-            [self.hud hideHud];
-            
-            exit(0);
-        });
+        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+        [KTVHTTPCache cacheDeleteAllCaches];
+
+        [CCUtility emptyGroupDirectoryProviderStorage];
+        [CCUtility emptyGroupApplicationSupport];
+        
+        [CCUtility emptyDocumentsDirectory];
+        [CCUtility emptyTemporaryDirectory];
+        
+        [CCUtility deleteAllChainStore];
+        
+        [[NCManageDatabase sharedInstance] removeDB];
+        
+        exit(0);
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -336,49 +320,6 @@
     alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
     [self presentViewController:alertController animated:YES completion:nil];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == Utility ==
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)emptyGroupApplicationSupport
-{
-    NSString *file;
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
-}
-
-- (void)emptyLibraryDirectory
-{
-    NSString *file;
-    NSString *dirIniziale;
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-    dirIniziale = [paths objectAtIndex:0];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
-}
-
-- (void)emptyDocumentsDirectory
-{
-    NSString *file;
-    NSString *dirIniziale;
-    
-    dirIniziale = [CCUtility getDirectoryDocuments];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
 }
 
 @end

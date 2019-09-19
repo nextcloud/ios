@@ -1,6 +1,6 @@
 //
 //  CCManageLocation.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 23/07/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

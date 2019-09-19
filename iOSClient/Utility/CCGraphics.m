@@ -1,6 +1,6 @@
 //
 //  CCGraphics.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 04/02/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -115,13 +115,13 @@
     return newImage;
 }
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
++ (UIImage *)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
 {
     UIImage *originalImage;
     UIImage *scaleImage;
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName];
     
-    if (![CCUtility fileProviderStorageExists:fileID fileNameView:fileName]) return nil;
+    if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return nil;
     
     // only viedo / image
     if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
@@ -153,11 +153,11 @@
             
             // if it is preview for Upload then trasform it in gray scale
             scaleImage = [self grayscale:scaleImage];
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
             
         } else {
             
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
         }
     }
     
@@ -371,14 +371,14 @@ Color difference is determined by the following formula:
     if (themingColor.length == 7) {
         newColor = [CCGraphics colorFromHexString:themingColor];
     } else {
-        newColor = [NCBrandColor sharedInstance].customer;
+        newColor = NCBrandColor.sharedInstance.customer;
     }
             
     // COLOR TEXT
     if (themingColorText.length == 7) {
         newColorText = [CCGraphics colorFromHexString:themingColorText];
     } else {
-        newColorText = [NCBrandColor sharedInstance].customerText;
+        newColorText = NCBrandColor.sharedInstance.customerText;
     }
             
     // COLOR ELEMENT
@@ -391,10 +391,9 @@ Color difference is determined by the following formula:
             newColorElement = newColor;
     }
             
-    
-    [NCBrandColor sharedInstance].brand = newColor;
-    [NCBrandColor sharedInstance].brandElement = newColorElement;
-    [NCBrandColor sharedInstance].brandText = newColorText;
+    NCBrandColor.sharedInstance.brand = newColor;
+    NCBrandColor.sharedInstance.brandElement = newColorElement;
+    NCBrandColor.sharedInstance.brandText = newColorText;
 }
 
 @end

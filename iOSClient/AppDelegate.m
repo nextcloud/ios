@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginWebDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -51,89 +51,27 @@ PKPushRegistry *pushRegistry;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSString *path;
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    
-    NSLog(@"[LOG] Start program group -----------------");
-    NSLog(@"%@", [dirGroup path]);    
-    NSLog(@"[LOG] Start program application -----------");
-    NSLog(@"%@", [[CCUtility getDirectoryDocuments] stringByDeletingLastPathComponent]);
-    NSLog(@"[LOG] -------------------------------------");
-
-    // create Directory Documents
-    path = [CCUtility getDirectoryDocuments];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory audio => Library, Application Support, audio
-    path = [CCUtility getDirectoryAudio];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-
-    // create Directory database Nextcloud
-    path = [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
-
-    // create Directory User Data
-    path = [[dirGroup URLByAppendingPathComponent:k_appUserData] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory Provider Storage
-    path = [CCUtility getDirectoryProviderStorage];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory Scan
-    path = [[dirGroup URLByAppendingPathComponent:k_appScan] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // Directory Excluded From Backup
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage]];
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData]];
+    [CCUtility createDirectoryStandard];
     
     // Verify upgrade
     if ([self upgrade]) {
-    
         // Set account, if no exists clear all
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
         if (tableAccount == nil) {
-        
             // remove all the keys Chain
             [CCUtility deleteAllChainStore];
-    
             // remove all the App group key
             [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
-
         } else {
-        
             [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
         }
     }
     
-#ifdef DEBUG
-    NSLog(@"[LOG] Copy DB on Documents directory");
-    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path]];
-    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
-    [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
-    [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
-#endif
-    
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
-    // Initialization Share
-    self.sharesID = [NSMutableDictionary new];
-    self.sharesLink = [NSMutableDictionary new];
-    self.sharesUserAndGroup = [NSMutableDictionary new];
-    
-    // Filter fileID
-    self.filterFileID = [NSMutableArray new];
+    // Filter ocId
+    self.filterocId = [NSMutableArray new];
 
     // Upload Pending In Upload (crash)
     self.sessionPendingStatusInUpload = [NSMutableArray new];
@@ -180,7 +118,8 @@ PKPushRegistry *pushRegistry;
     [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     [UINavigationBar appearance].translucent = NO;
-
+    [[UIView appearanceWhenContainedInInstancesOfClasses:@[[UIAlertController class]]] setTintColor:[UIColor blackColor]];
+    
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
     
@@ -345,19 +284,37 @@ PKPushRegistry *pushRegistry;
     
     @synchronized (self) {
 
+        // use appConfig [MDM]
+        if ([NCBrandOptions sharedInstance].use_configuration) {
+            
+            NSDictionary *serverConfig = [[NSUserDefaults standardUserDefaults] dictionaryForKey:NCBrandConfiguration.sharedInstance.configuration_key];
+            
+            NSString *serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.configuration_serverUrl];
+            NSString *username = serverConfig[NCBrandConfiguration.sharedInstance.configuration_username];
+            NSString *password = serverConfig[NCBrandConfiguration.sharedInstance.configuration_password];
+            
+            if (serverUrl && [serverUrl isKindOfClass:[NSString class]] && username && [username isKindOfClass:[NSString class]] && password && [password isKindOfClass:[NSString class]]) {
+            
+            } else {
+                [self messageNotification:@"MDM" description:@"Parameter XML error" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+            }
+            
+            return;
+        }
+        
+        
         // only for personalized LoginWeb [customer]
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
-                _activeLoginWeb = [CCLoginWeb new];
-                _activeLoginWeb.delegate = delegate;
-                _activeLoginWeb.loginType = loginType;
-                _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+                self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 
-                dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:viewController];
-                });
+                self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+                self.activeLoginWeb.loginType = loginType;
+                self.activeLoginWeb.delegate = delegate;
+
+                [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
             }
             return;
         }
@@ -376,31 +333,28 @@ PKPushRegistry *pushRegistry;
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
-                _activeLoginWeb = [CCLoginWeb new];
-                _activeLoginWeb.delegate = delegate;
-                _activeLoginWeb.loginType = loginType;
+                self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 
                 if (selector == k_intro_signup) {
-                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
+                    self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
                 } else {
-                    _activeLoginWeb.urlBase = self.activeUrl;
+                    self.activeLoginWeb.urlBase = self.activeUrl;
                 }
-
-                dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb open:viewController];
-                });
+                self.activeLoginWeb.loginType = loginType;
+                self.activeLoginWeb.delegate = delegate;
+                
+                [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
             }
             
         } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
             
-            _activeLoginWeb = [CCLoginWeb new];
-            _activeLoginWeb.delegate = delegate;
-            _activeLoginWeb.loginType = loginType;
-            _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+            self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [_activeLoginWeb open:viewController];
-            });
+            self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+            self.activeLoginWeb.loginType = loginType;
+            self.activeLoginWeb.delegate = delegate;
+            
+            [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
             
         } else {
             
@@ -433,7 +387,7 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Setting Active Account for all APP =====
+#pragma mark ===== Account =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword
@@ -446,6 +400,37 @@ PKPushRegistry *pushRegistry;
     
     // Setting Account to CCNetworking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
+}
+
+- (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
+{
+    [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
+    [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+    
+    /* DELETE ALL FILES LOCAL FS */
+    NSArray *results = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account] sorted:@"ocId" ascending:NO];
+    for (tableLocalFile *result in results) {
+        [CCUtility removeFileAtPath:[CCUtility getDirectoryProviderStorageOcId:result.ocId]];
+    }
+    // Clear database
+    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:account removeAccount:true];
+
+    [CCUtility clearAllKeysEndToEnd:account];
+    [CCUtility clearAllKeysPushNotification:account];
+    [CCUtility setCertificateError:account error:false];
+    [CCUtility setPassword:account password:nil];
+       
+    if (wipe) {
+        NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+        if ([listAccount count] > 0) {
+            NSString *newAccount = listAccount[0];
+            tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:newAccount];
+            [self settingActiveAccount:newAccount activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+        } else {
+            [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+        }
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -575,36 +560,49 @@ PKPushRegistry *pushRegistry;
                     
                     NSString *app = [json objectForKey:@"app"];
                     NSString *subject = [json objectForKey:@"subject"];
-                    //NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
-                    
-                    NSURL *url = [NSURL URLWithString:result.url];
-                    NSString *domain = [url host];
-                    
-                    if ([app isEqualToString:@"spreed"]) {
-                        content.title = @"Nextcloud Talk";
-                        if (results.count > 1) { content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
-                        if (subject) { content.body = subject; }
-                    } else {
-                        if (results.count > 1) { content.title = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
-                        if (subject) { content.body = subject; }
-                    }
-                    
-                    content.sound = [UNNotificationSound defaultSound];
+                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
+                    BOOL delete = [[json objectForKey:@"delete"] boolValue];
+                    BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
 
-                    /*
-                    [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
-                        //
-                    }];
-                    */
+                    if (delete || deleteAll) {
+                        
+                        if (deleteAll) {
+                            notificationId = 0;
+                        }
+                        
+                        [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
+                            NSLog(@"Deleting Server Notification error: %ld", (long)errorCode);
+                        }];
+                        
+                    } else {
+                        
+                        NSURL *url = [NSURL URLWithString:result.url];
+                        NSString *domain = [url host];
                     
-                    NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
+                        if ([app isEqualToString:@"spreed"]) {
+                            content.title = @"Nextcloud Talk";
+                            if (results.count > 1) { content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
+                            if (subject) { content.body = subject; }
+                        } else {
+                            if (results.count > 1) { content.title = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
+                            if (subject) { content.body = subject; }
+                        }
                     
-                    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
-                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+                        content.sound = [UNNotificationSound defaultSound];
+
+                        /*
+                        [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
+                            //
+                        }];
+                        */
                     
-                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                        NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
                     
-                    break;
+                        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
+                        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+                    
+                        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                    }
                 }
             }
         }
@@ -701,12 +699,18 @@ PKPushRegistry *pushRegistry;
             switch (errorcode) {
                     
                 // JDStatusBarNotification
-                case kCFURLErrorNotConnectedToInternet :
+                case kCFURLErrorNotConnectedToInternet:
                     
                     if (errorCodePrev != errorcode)
                         [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
                     
                     errorCodePrev = errorcode;
+                    break;
+                    
+                case kOCErrorServerUnauthorized:
+                case kOCErrorServerForbidden:
+                    
+                    NSLog(@"Error kOCErrorServerUnauthorized - kOCErrorServerForbidden");
                     break;
                     
                 // TWMessageBarManager
@@ -739,7 +743,7 @@ PKPushRegistry *pushRegistry;
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = [NCBrandColor sharedInstance].brand;
+            backgroundColor = NCBrandColor.sharedInstance.brand;
             break;
         default:
             break;
@@ -847,14 +851,14 @@ PKPushRegistry *pushRegistry;
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
@@ -865,17 +869,17 @@ PKPushRegistry *pushRegistry;
     // Media
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
     [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -909,14 +913,14 @@ PKPushRegistry *pushRegistry;
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden
 {
     nav.translucent = NO;
-    nav.barTintColor = [NCBrandColor sharedInstance].brand;
-    nav.tintColor = [NCBrandColor sharedInstance].brandText;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].brandText}];
+    nav.barTintColor = NCBrandColor.sharedInstance.brand;
+    nav.tintColor = NCBrandColor.sharedInstance.brandText;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
     // Change bar bottom line shadow
-    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     
     if (!online)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].connectionNo}];
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
     
     nav.hidden = hidden;
     
@@ -926,8 +930,8 @@ PKPushRegistry *pushRegistry;
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
 {
     tab.translucent = NO;
-    tab.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    tab.tintColor = [NCBrandColor sharedInstance].brandElement;
+    tab.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    tab.tintColor = NCBrandColor.sharedInstance.brandElement;
     
     tab.hidden = hidden;
     
@@ -941,7 +945,7 @@ PKPushRegistry *pushRegistry;
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
     
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
@@ -963,11 +967,8 @@ PKPushRegistry *pushRegistry;
     // Test Maintenance
     if (self.maintenanceMode)
         return;
-    
-    UIView *view = [(UIButton *)sender superview];
-    
-    NCCreateMenuAdd *menuAdd = [[NCCreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
-    [menuAdd createMenuWithViewController:self.window.rootViewController view:view];
+        
+    (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
 }
 
 - (void)selectedTabBarController:(NSInteger)index
@@ -1033,10 +1034,12 @@ PKPushRegistry *pushRegistry;
             
     } else {
     
-        [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
-        [NCBrandColor sharedInstance].brandElement = [NCBrandColor sharedInstance].customer;
-        [NCBrandColor sharedInstance].brandText = [NCBrandColor sharedInstance].customerText;
+        NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
+        NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
+        NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
     }
+    
+    [[NCMainCommon sharedInstance] createImagesThemingColor];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
@@ -1044,23 +1047,23 @@ PKPushRegistry *pushRegistry;
 - (void)changeTheming:(UIViewController *)vc
 {
     // Change Navigation & TabBar color
-    vc.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    vc.tabBarController.tabBar.tintColor = [NCBrandColor sharedInstance].brandElement;
+    vc.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    vc.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     // Change bar bottom line shadow
-    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     
     // Change button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *button = [tabBarController.view viewWithTag:99];
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
     
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
     // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:[NCBrandColor sharedInstance].textView];
+    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1352,10 +1355,6 @@ PKPushRegistry *pushRegistry;
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
         if (metadataForUpload) {
             
-            if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
-                metadataForUpload.session = k_upload_session;
-            }
-            
             metadataForUpload.status = k_metadataStatusInUpload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
@@ -1499,11 +1498,11 @@ PKPushRegistry *pushRegistry;
     //
     NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasInUpload) {
-        if ([self.sessionPendingStatusInUpload containsObject:metadata.fileID]) {
+        if ([self.sessionPendingStatusInUpload containsObject:metadata.ocId]) {
             metadata.status = k_metadataStatusWaitUpload;
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         } else {
-            [self.sessionPendingStatusInUpload addObject:metadata.fileID];
+            [self.sessionPendingStatusInUpload addObject:metadata.ocId];
         }
     }
     if (metadatasInUpload.count == 0) {
@@ -1622,7 +1621,7 @@ PKPushRegistry *pushRegistry;
                                             // Push
                                             NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                             NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO fileID:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
                                             
                                             [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
                                             
@@ -1752,9 +1751,9 @@ PKPushRegistry *pushRegistry;
                         account = record.account;
                     }
                 }
-                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileID];
+                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.ocId];
                 if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
-                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageFileID:record.fileID fileNameView:record.fileName]];
+                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageOcId:record.ocId fileNameView:record.fileName]];
                 }
             }
         });

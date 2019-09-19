@@ -379,7 +379,7 @@ typedef enum {
  *
  */
 
-- (NSURLSessionDownloadTask *) downloadFileSession:(NSString *)remotePath toDestiny:(NSString *)localPath defaultPriority:(BOOL)defaultPriority onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))downloadProgress successRequest:(void(^)(NSURLResponse *response, NSURL *filePath)) successRequest failureRequest:(void(^)(NSURLResponse *response, NSError *error)) failureRequest;
+- (NSURLSessionDownloadTask *) downloadFileSession:(NSString *)remotePath toDestiny:(NSString *)localPath defaultPriority:(BOOL)defaultPriority encode:(BOOL)encode onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))downloadProgress successRequest:(void(^)(NSURLResponse *response, NSURL *filePath)) successRequest failureRequest:(void(^)(NSURLResponse *response, NSError *error)) failureRequest;
 
 ///-----------------------------------
 /// @name Set Download Task Complete Block
@@ -435,7 +435,7 @@ typedef enum {
  *
  */
 
-- (NSURLSessionUploadTask *) uploadFileSession:(NSString *) localPath toDestiny:(NSString *) remotePath onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))uploadProgress successRequest:(void(^)(NSURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSURLResponse *response, NSString *redirectedServer, NSError *error)) failureRequest failureBeforeRequest:(void(^)(NSError *error)) failureBeforeRequest;
+- (NSURLSessionUploadTask *) uploadFileSession:(NSString *) localPath toDestiny:(NSString *) remotePath encode:(BOOL)encode onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))uploadProgress successRequest:(void(^)(NSURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSURLResponse *response, NSString *redirectedServer, NSError *error)) failureRequest failureBeforeRequest:(void(^)(NSError *error)) failureBeforeRequest;
 
 
 ///-----------------------------------
@@ -471,6 +471,8 @@ typedef enum {
 ///-----------------------------------
 
 - (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth lteDateLastModified:(NSString *)lteDateLastModified gteDateLastModified:(NSString *)gteDateLastModified contentType:(NSArray *)contentType withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest;
+
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName dateLastModified:(NSString *)dateLastModified numberOfItem:(NSInteger)numberOfItem withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest;
 
 ///-----------------------------------
 /// @name Setting favorite
@@ -723,7 +725,7 @@ typedef enum {
  * @warning it only can be updated one parameter for each request so if you want to update the password the date must be nil and the permission 0
  * @warning to create the full URL to share the file on a link we have to atatch the token to: http://www.myowncloudserver.com/public.php?service=files&t=572d48de3814c90117fbca6442f2f3b2
  */
-- (void) updateShare:(NSInteger)shareId ofServerPath:(NSString *)serverPath withPasswordProtect:(NSString*)password andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
+- (void) updateShare:(NSInteger)shareId ofServerPath:(NSString *)serverPath withPasswordProtect:(NSString*)password andNote:(NSString *)note andExpirationTime:(NSString*)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
      onCommunication:(OCCommunication *)sharedOCCommunication
       successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest
       failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
@@ -748,7 +750,6 @@ typedef enum {
  */
 - (void) searchUsersAndGroupsWith:(NSString *)searchString forPage:(NSInteger)page with:(NSInteger)resultsPerPage ofServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
-- (void) getSharePermissionsFile:(NSString*)fileName onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 ///-----------------------------------
 /// @name Get the server capabilities
 ///-----------------------------------
@@ -796,7 +797,7 @@ typedef enum {
                                    successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest
                                    failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
-- (NSURLSessionTask *) getRemotePreviewTrashByServer:(NSString*)serverPath ofFileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication
+- (NSURLSessionTask *) getRemotePreviewTrashByServer:(NSString*)serverPath ofFileId:(NSString *)fileId size:(NSString *)size onCommunication:(OCCommunication *)sharedOCComunication
                                  successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest
                                  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
@@ -876,7 +877,7 @@ typedef enum {
  *
  */
 
-- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void) getActivityServer:(NSString*)serverPath since:(NSInteger)since limit:(NSInteger)limit objectId:(NSString *)objectId objectType:(NSString *)objectType previews:(BOOL)previews link:(NSString *)link onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 #pragma mark -  External Sites
 
@@ -932,27 +933,27 @@ typedef enum {
 - (void)deleteEndToEndPrivateKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 
-- (void)markEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void)markEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
-- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
-
-
-- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
-
-- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 
-- (void)getEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath ocId:(NSString *)ocId token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
-- (void)updateEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
-- (void)deleteEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void)getEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)storeEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)updateEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)deleteEndToEndMetadata:(NSString*)serverPath ocId:(NSString *)ocId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 #pragma mark - Manage Mobile Editor OCS API
 
-- (void)createLinkRichdocuments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void)createLinkRichdocuments:(NSString *)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 - (void)getTemplatesRichdocuments:(NSString *)serverPath typeTemplate:(NSString *)typeTemplate onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfTemplate, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
@@ -964,11 +965,29 @@ typedef enum {
 
 - (void)fullTextSearch:(NSString *)serverPath data:(NSString *)data onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
+#pragma mark - Remore wipe
+
+- (void)getRemoteWipeStatus:(NSString *)serverPath token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, BOOL wipe, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)setRemoteWipeCompletition:(NSString *)serverPath token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
 #pragma mark - Trash
 
 - (void)listingTrash:(NSString *)path depth:(NSString *)depth onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 - (void)emptyTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+#pragma mark - Comments
+
+- (void)getComments:(NSString *)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *list, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)putComments:(NSString*)serverPath fileId:(NSString *)fileId message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)updateComments:(NSString*)serverPath fileId:(NSString *)fileId messageID:(NSString *)messageID message:(NSString *)message onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)readMarkComments:(NSString*)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)deleteComments:(NSString*)serverPath fileId:(NSString *)fileId messageID:(NSString *)messageID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest ;
 
 #pragma mark - Third Parts
 

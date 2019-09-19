@@ -66,12 +66,14 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+
         section.addFormRow(row)
         
         // Section: File Name
@@ -79,15 +81,17 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-        
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        
+        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+
         section.addFormRow(row)
         
         self.form = form
@@ -138,6 +142,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
@@ -188,7 +193,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, serverUrl: self.serverUrl)
+                self.dismissAndUpload(fileNameSave, ocId: metadata!.ocId, serverUrl: self.serverUrl)
             }
             
             alertController.addAction(cancelAction)
@@ -197,17 +202,17 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            let fileID = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!
-            dismissAndUpload(fileNameSave, fileID: fileID, serverUrl: serverUrl)
+            let ocId = CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!
+            dismissAndUpload(fileNameSave, ocId: ocId, serverUrl: serverUrl)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, fileID: String, serverUrl: String) {
+    func dismissAndUpload(_ fileNameSave: String, ocId: String, serverUrl: String) {
         
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave), contents: data, attributes: nil)
+            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameSave), contents: data, attributes: nil)
             
             if success {
                 
@@ -215,7 +220,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 
                 metadataForUpload.account = self.appDelegate.activeAccount
                 metadataForUpload.date = NSDate()
-                metadataForUpload.fileID = fileID
+                metadataForUpload.ocId = ocId
                 metadataForUpload.fileName = fileNameSave
                 metadataForUpload.fileNameView = fileNameSave
                 metadataForUpload.serverUrl = serverUrl
@@ -224,7 +229,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
                 self.appDelegate.startLoadAutoDownloadUpload()
             
@@ -257,7 +262,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
         viewController.type = ""
         
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
     }
 }

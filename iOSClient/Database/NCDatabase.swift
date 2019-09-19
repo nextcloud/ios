@@ -1,6 +1,6 @@
 //
 //  NCDatabase.swift
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 06/05/17.
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
@@ -110,6 +110,23 @@ class tableActivity: Object {
     }
 }
 
+class tableActivityPreview: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var source = ""
+    @objc dynamic var link = ""
+    @objc dynamic var mimeType = ""
+    @objc dynamic var fileId: Int = 0
+    @objc dynamic var view = ""
+    @objc dynamic var isMimeTypeIcon: Bool = false
+    
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+}
+
 class tableActivitySubjectRich: Object {
     
     @objc dynamic var account = ""
@@ -122,23 +139,6 @@ class tableActivitySubjectRich: Object {
     @objc dynamic var path = ""
     @objc dynamic var type = ""
     
-    override static func primaryKey() -> String {
-        return "idPrimaryKey"
-    }
-}
-
-class tableActivityPreview: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var idPrimaryKey = ""
-    @objc dynamic var idActivity: Int = 0
-    @objc dynamic var source = ""
-    @objc dynamic var link = ""
-    @objc dynamic var mimeType = ""
-    @objc dynamic var fileId: Int = 0
-    @objc dynamic var view = ""
-    @objc dynamic var isMimeTypeIcon: Bool = false
-
     override static func primaryKey() -> String {
         return "idPrimaryKey"
     }
@@ -196,6 +196,8 @@ class tableCapabilities: Object {
     @objc dynamic var isImagemeterEnabled: Bool = false
     // Fulltextsearch
     @objc dynamic var isFulltextsearchEnabled: Bool = false
+    // Extended Support
+    @objc dynamic var isExtendedSupportEnabled: Bool = false
 }
 
 class tableCertificates: Object {
@@ -203,22 +205,40 @@ class tableCertificates: Object {
     @objc dynamic var certificateLocation = ""
 }
 
+class tableComments: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var actorDisplayName = ""
+    @objc dynamic var actorId = ""
+    @objc dynamic var actorType = ""
+    @objc dynamic var creationDateTime = NSDate()
+    @objc dynamic var isUnread: Bool = false
+    @objc dynamic var message = ""
+    @objc dynamic var messageID = ""
+    @objc dynamic var objectId = ""
+    @objc dynamic var objectType = ""
+    @objc dynamic var verb = ""
+    
+    override static func primaryKey() -> String {
+        return "messageID"
+    }
+}
+
 class tableDirectory: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var dateReadDirectory: NSDate? = nil
-    @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
+    @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
     override static func primaryKey() -> String {
-        return "directoryID"
+        return "ocId"
     }
 }
 
@@ -246,12 +266,12 @@ class tableE2eEncryptionLock: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
-    @objc dynamic var fileID = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var token = ""
     
     override static func primaryKey() -> String {
-        return "fileID"
+        return "ocId"
     }
 }
 
@@ -287,44 +307,13 @@ class tableLocalFile: Object {
     @objc dynamic var exifLatitude = ""
     @objc dynamic var exifLongitude = ""
     @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var size: Double = 0
     
     override static func primaryKey() -> String {
-        return "fileID"
-    }
-}
-
-class tableMetadata: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var assetLocalIdentifier = ""
-    @objc dynamic var date = NSDate()
-    @objc dynamic var directory: Bool = false
-    @objc dynamic var e2eEncrypted: Bool = false
-    @objc dynamic var etag = ""
-    @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
-    @objc dynamic var fileName = ""
-    @objc dynamic var fileNameView = ""
-    @objc dynamic var hasPreview: Int = -1
-    @objc dynamic var iconName = ""
-    @objc dynamic var permissions = ""
-    @objc dynamic var primaryKey = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var session = ""
-    @objc dynamic var sessionError = ""
-    @objc dynamic var sessionSelector = ""
-    @objc dynamic var sessionTaskIdentifier: Int = 0
-    @objc dynamic var size: Double = 0
-    @objc dynamic var status: Int = 0
-    @objc dynamic var typeFile = ""
-    @objc dynamic var url = ""
-
-    override static func primaryKey() -> String {
-        return "primaryKey"
+        return "ocId"
     }
 }
 
@@ -332,18 +321,26 @@ class tableMedia: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var commentsUnread: Bool = false
+    @objc dynamic var contentType = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileID = ""
+    @objc dynamic var fileId = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
-    @objc dynamic var hasPreview: Int = -1
+    @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
+    @objc dynamic var mountType = ""
+    @objc dynamic var ocId = ""
+    @objc dynamic var ownerId = ""
+    @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
-    @objc dynamic var primaryKey = ""
+    @objc dynamic var quotaUsedBytes: Double = 0
+    @objc dynamic var quotaAvailableBytes: Double = 0
+    @objc dynamic var resourceType = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -351,11 +348,56 @@ class tableMedia: Object {
     @objc dynamic var sessionTaskIdentifier: Int = 0
     @objc dynamic var size: Double = 0
     @objc dynamic var status: Int = 0
+    @objc dynamic var trashbinFileName = ""
+    @objc dynamic var trashbinOriginalLocation = ""
+    @objc dynamic var trashbinDeletionTime = NSDate()
+    @objc dynamic var typeFile = ""
+    @objc dynamic var url = ""
+    
+    override static func primaryKey() -> String {
+        return "ocId"
+    }
+}
+
+class tableMetadata: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var commentsUnread: Bool = false
+    @objc dynamic var contentType = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var directory: Bool = false
+    @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var etag = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileId = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var fileNameView = ""
+    @objc dynamic var hasPreview: Bool = false
+    @objc dynamic var iconName = ""
+    @objc dynamic var mountType = ""
+    @objc dynamic var ocId = ""
+    @objc dynamic var ownerId = ""
+    @objc dynamic var ownerDisplayName = ""
+    @objc dynamic var permissions = ""
+    @objc dynamic var quotaUsedBytes: Double = 0
+    @objc dynamic var quotaAvailableBytes: Double = 0
+    @objc dynamic var resourceType = ""
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var session = ""
+    @objc dynamic var sessionError = ""
+    @objc dynamic var sessionSelector = ""
+    @objc dynamic var sessionTaskIdentifier: Int = 0
+    @objc dynamic var size: Double = 0
+    @objc dynamic var status: Int = 0
+    @objc dynamic var trashbinFileName = ""
+    @objc dynamic var trashbinOriginalLocation = ""
+    @objc dynamic var trashbinDeletionTime = NSDate()
     @objc dynamic var typeFile = ""
     @objc dynamic var url = ""
 
     override static func primaryKey() -> String {
-        return "primaryKey"
+        return "ocId"
     }
 }
 
@@ -376,20 +418,49 @@ class tablePhotoLibrary: Object {
 class tableShare: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var displayNameFileOwner = ""
+    @objc dynamic var displayNameOwner = ""
+    @objc dynamic var isDirectory: Bool = false
+    @objc dynamic var expirationDate: NSDate? = nil
     @objc dynamic var fileName = ""
+    @objc dynamic var fileParent = ""
+    @objc dynamic var fileSource: Int = 0
+    @objc dynamic var fileTarget = ""
+    @objc dynamic var hideDownload: Bool = false
+    @objc dynamic var idRemoteShared: Int = 0
+    @objc dynamic var itemSource: Int = 0
+    @objc dynamic var label = ""
+    @objc dynamic var mailSend: Int = 0
+    @objc dynamic var mimeType = ""
+    @objc dynamic var note = ""
+    @objc dynamic var path = ""
+    @objc dynamic var parent: Int = 0
+    @objc dynamic var permissions: Int = 0
     @objc dynamic var serverUrl = ""
-    @objc dynamic var shareLink = ""
-    @objc dynamic var shareUserAndGroup = ""
+    @objc dynamic var sharedDate: NSDate? = nil
+    @objc dynamic var shareType: Int = 0
+    @objc dynamic var shareWith = ""
+    @objc dynamic var shareWithDisplayName = ""
+    @objc dynamic var storage: Int = 0
+    @objc dynamic var storageID = ""
+    @objc dynamic var token = ""
+    @objc dynamic var uidOwner = ""
+    @objc dynamic var uidFileOwner = ""
+    @objc dynamic var url = ""
+    
+    override static func primaryKey() -> String {
+        return "idRemoteShared"
+    }
 }
 
 class tableTag: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var fileID = ""
+    @objc dynamic var ocId = ""
     @objc dynamic var tagIOS: Data? = nil
     
     override static func primaryKey() -> String {
-        return "fileID"
+        return "ocId"
     }
 }
 
@@ -398,10 +469,10 @@ class tableTrash: Object {
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var fileID = ""
+    @objc dynamic var fileId = ""
     @objc dynamic var fileName = ""
     @objc dynamic var filePath = ""
-    @objc dynamic var hasPreview: Int = -1
+    @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var size: Double = 0
     @objc dynamic var typeFile = ""
@@ -410,6 +481,6 @@ class tableTrash: Object {
     @objc dynamic var trashbinDeletionTime = NSDate()
 
     override static func primaryKey() -> String {
-        return "fileID"
+        return "fileId"
     }
 }

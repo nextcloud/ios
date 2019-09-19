@@ -1,6 +1,6 @@
 //
 //  CCExifGeo.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 03/02/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -54,10 +54,10 @@
     
     NSDate *date = [NSDate new];
     
-    if (![CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView])
+    if (![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView])
         return;
 
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
 
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource)
@@ -113,13 +113,13 @@
 
     // Wite data EXIF in TableLocalFile
     if (tiff || gps)
-        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil etag:nil];
+        [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil etag:nil];
     
     CFRelease(originalSource);
     CFRelease(imageProperties);
 }
 
-- (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
+- (void)setGeocoderEtag:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
 {
     // If exists already geocoder data in TableGPS exit
     if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:latitude longitude:longitude])
@@ -156,13 +156,13 @@
                 
                 [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:latitude longitude:longitude];
                 
-                NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:exifDate, fileID, nil];
+                NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:exifDate, ocId, nil];
                 
                 // Notify for CCDetail
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"insertGeocoderLocation" object:nil userInfo:dictionary];
             }
         } else {
-            //NSLog(@"[LOG] setGeocoderFileID : %@", error.debugDescription);
+            //NSLog(@"[LOG] setGeocoderocId : %@", error.debugDescription);
         }
     }];
 }

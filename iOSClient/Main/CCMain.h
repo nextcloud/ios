@@ -1,6 +1,6 @@
 //
 //  CCMain.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -35,8 +35,6 @@
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
 #import "CCDetail.h"
-#import "CCShareOC.h"
-#import "CCShareInfoCMOC.h"
 #import "CCGraphics.h"
 #import "CCSection.h"
 #import "CCUtility.h"
@@ -47,7 +45,7 @@
 
 @class tableMetadata;
 
-@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCShareOCDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) tableMetadata *metadata;
@@ -59,6 +57,8 @@
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) NSString *blinkFileNamePath;
+@property (nonatomic, readonly, strong) UIImage *cellFavouriteImage;
+@property (nonatomic, readonly, strong) UIImage *cellTrashImage;
 
 @property BOOL isSelectedMode;
 
@@ -78,10 +78,7 @@
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
-- (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID action:(NSInteger)action;
-
-- (void)openShareWithMetadata:(tableMetadata *)metadata;
-- (void)readShareServer;
+- (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId action:(NSInteger)action;
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;

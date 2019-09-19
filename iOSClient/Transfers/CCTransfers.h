@@ -1,6 +1,6 @@
 //
 //  CCTransfers.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 12/04/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -28,5 +28,5 @@
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
-- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
+- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action;
 @end

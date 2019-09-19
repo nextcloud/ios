@@ -1,6 +1,6 @@
 //
 //  CCUtility.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 02/02/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -165,6 +165,12 @@
 + (BOOL)getCertificateError:(NSString *)account;
 + (void)setCertificateError:(NSString *)account error:(BOOL)error;
 
++ (BOOL)getDisableLocalCacheAfterUpload;
++ (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
+
++ (BOOL)getDarkMode;
++ (void)setDarkMode:(BOOL)disable;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
@@ -184,6 +190,8 @@
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension;
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal;
 
++ (void)createDirectoryStandard;
+
 + (NSURL *)getDirectoryGroup;
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
 + (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
@@ -194,11 +202,17 @@
 + (NSString *)getDirectoryCerificates;
 + (NSString *)getDirectoryUserData;
 + (NSString *)getDirectoryProviderStorage;
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID;
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
-+ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId;
++ (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
+
++ (void)emptyGroupApplicationSupport;
++ (void)emptyGroupLibraryDirectory;
++ (void)emptyGroupDirectoryProviderStorage;
++ (void)emptyDocumentsDirectory;
++ (void)emptyTemporaryDirectory;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
@@ -231,14 +245,13 @@
 
 // ===== CCMetadata =====
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url;
 
 + (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory account:(NSString *)account isFolderEncrypted:(BOOL)isFolderEncrypted;
 
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata;
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
 
-+ (NSString *)createDirectoyIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl;
 + (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
 
 // ===== Third parts =====

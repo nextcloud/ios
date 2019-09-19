@@ -118,4 +118,7 @@
 // Fulltextsearch
 @property (nonatomic) BOOL isFulltextsearchEnabled;
 
+// Extended Support
+@property (nonatomic) BOOL isExtendedSupportEnabled;
+
 @end

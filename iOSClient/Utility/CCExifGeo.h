@@ -1,6 +1,6 @@
 //
 //  CCExifGeo.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 03/02/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -33,6 +33,6 @@
 + (CCExifGeo *)sharedInstance;
 
 - (void)setExifLocalTableEtag:(tableMetadata *)metadata;
-- (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
+- (void)setGeocoderEtag:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
 
 @end

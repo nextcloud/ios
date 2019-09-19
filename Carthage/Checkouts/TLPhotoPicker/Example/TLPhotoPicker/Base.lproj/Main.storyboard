@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="3bJ-bG-tue">
-                                <rect key="frame" x="73" y="143.5" width="229" height="380"/>
+                                <rect key="frame" x="73" y="144" width="229" height="380"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zpy-9h-CPz">
                                         <rect key="frame" x="0.0" y="0.0" width="229" height="36"/>
@@ -37,8 +37,16 @@
                                             <action selector="pickerWithCustomCameraCell" destination="vXZ-lx-hvc" eventType="touchUpInside" id="fXi-av-gMq"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="icR-mj-SY4">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9kt-E5-QsD">
                                         <rect key="frame" x="0.0" y="172" width="229" height="36"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <state key="normal" title="Custom BlackStyle"/>
+                                        <connections>
+                                            <action selector="pickerWithCustomBlackStyle" destination="vXZ-lx-hvc" eventType="touchUpInside" id="gzY-jn-80S"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="icR-mj-SY4">
+                                        <rect key="frame" x="0.0" y="258" width="229" height="36"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <state key="normal" title="with NavigationController">
                                             <color key="titleColor" red="0.1019607843" green="0.73725490199999999" blue="0.61176470589999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -48,7 +56,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VP9-SK-f4B">
-                                        <rect key="frame" x="0.0" y="258" width="229" height="36"/>
+                                        <rect key="frame" x="0.0" y="344" width="229" height="36"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <state key="normal" title="with custom rules">
                                             <color key="titleColor" red="0.27450980390000002" green="0.31372549020000001" blue="0.37647058820000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -68,7 +76,7 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="u8O-io-kHd">
-                                <rect key="frame" x="137.5" y="533.5" width="100" height="112"/>
+                                <rect key="frame" x="137.5" y="534" width="100" height="112"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="get image message" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9CM-MS-96X">
                                         <rect key="frame" x="3" y="0.0" width="94" height="12"/>

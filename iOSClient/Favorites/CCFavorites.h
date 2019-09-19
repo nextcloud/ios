@@ -1,6 +1,6 @@
 //
 //  CCFavorites.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -47,7 +47,7 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 
 - (void)shouldPerformSegue:(tableMetadata *)metadata;
-- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
+- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action;
 - (void)listingFavorites;
 
 @end

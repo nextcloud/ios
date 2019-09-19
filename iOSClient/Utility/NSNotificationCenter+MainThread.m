@@ -1,6 +1,6 @@
 //
 //  NSNotificationCenter+MainThread.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 28/05/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.

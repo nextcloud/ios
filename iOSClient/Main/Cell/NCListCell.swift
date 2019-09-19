@@ -35,12 +35,11 @@ class NCListCell: UICollectionViewCell {
     @IBOutlet weak var imageLocal: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
 
     @IBOutlet weak var labelInfo: UILabel!
 
-    @IBOutlet weak var imageShare: UIImageView!
-    @IBOutlet weak var imageShareTrailing: NSLayoutConstraint!
+    @IBOutlet weak var shared: UIImageView!
+    @IBOutlet weak var sharedLeftConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
@@ -49,65 +48,27 @@ class NCListCell: UICollectionViewCell {
 
     var delegate: NCListCellDelegate?
     
-    var fileID = ""
+    var objectId = ""
     var indexPath = IndexPath()
 
-    let labelTitleTrailingConstant: CGFloat = 75
-    let imageShareTrailingConstant: CGFloat = 45
-    let imageShareWidth: CGFloat = 25
-    let buttonMoreWidth: CGFloat = 40
-    
     override func awakeFromNib() {
         super.awakeFromNib()
        
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
 
-        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
+    }
+    
+    @IBAction func touchUpInsideShare(_ sender: Any) {
+        delegate?.tapShareListItem(with: objectId, sender: sender)
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: fileID, sender: sender)
-    }
-    
-    func hide(buttonMore: Bool, hideImageShare: Bool) {
-        
-        if buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageMore.isHidden = true
-            self.imageShare.isHidden = true
-            
-            labelTitleTrailing.constant = 0
-            
-        } else if buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageMore.isHidden = true
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = 5
-            labelTitleTrailing.constant = imageShareWidth + imageShareTrailing.constant
-            
-        } else if !buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageMore.isHidden = false
-            self.imageShare.isHidden = true
-
-            labelTitleTrailing.constant = buttonMoreWidth
-            
-        } else if !buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageMore.isHidden = false
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = imageShareTrailingConstant
-            labelTitleTrailing.constant = labelTitleTrailingConstant
-        }
+        delegate?.tapMoreListItem(with: objectId, sender: sender)
     }
 }
 
 protocol NCListCellDelegate {
-    func tapMoreListItem(with fileID: String, sender: Any)
+    func tapShareListItem(with objectId: String, sender: Any)
+    func tapMoreListItem(with objectId: String, sender: Any)
 }

@@ -92,6 +92,7 @@ set(INCLUDE_DIRS
 
 if(REALM_ENABLE_SYNC)
     list(APPEND HEADERS
+        sync/async_open_task.hpp
         sync/partial_sync.hpp
         sync/subscription_state.hpp
         sync/sync_config.hpp
@@ -104,6 +105,7 @@ if(REALM_ENABLE_SYNC)
         sync/impl/sync_metadata.hpp
         sync/impl/work_queue.hpp)
     list(APPEND SOURCES
+        sync/async_open_task.cpp
         sync/partial_sync.cpp
         sync/sync_config.cpp
         sync/sync_manager.cpp

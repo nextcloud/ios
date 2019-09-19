@@ -1,6 +1,6 @@
 //
 //  CCCellMain.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 05/05/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -30,10 +30,14 @@
 @property(nonatomic, weak) IBOutlet UIImageView *status;
 @property(nonatomic, weak) IBOutlet UIImageView *favorite;
 @property(nonatomic, weak) IBOutlet UIImageView *local;
+@property(nonatomic, weak) IBOutlet UIImageView *comment;
 @property(nonatomic, weak) IBOutlet UIImageView *shared;
+@property(nonatomic, weak) IBOutlet UIView *viewShared;
 @property(nonatomic, weak) IBOutlet UIImageView *more;
-
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
+
+
+@property(nonatomic, weak) IBOutlet NSLayoutConstraint *labelTitleTrailingConstraint;
 
 @end

@@ -1,6 +1,6 @@
 //
 //  NCText.swift
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 24/07/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -65,7 +65,7 @@ class NCText: UIViewController, UITextViewDelegate {
         if let metadata = metadata {
             
             loadText = ""
-            let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)!
+            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let data = NSData(contentsOfFile: path)
             
             if let data = data {
@@ -89,6 +89,8 @@ class NCText: UIViewController, UITextViewDelegate {
         textView.becomeFirstResponder()
         textView.delegate = self
         textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+        textView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        textView.textColor = NCBrandColor.sharedInstance.textView
         //textView.font = UIFont(name: "NameOfTheFont", size: 20)
 
         textViewDidChange(textView)
@@ -107,6 +109,10 @@ class NCText: UIViewController, UITextViewDelegate {
                 bottomConstraint.constant = 0
             }
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        appDelegate.activeDetail?.viewFile()
     }
     
     @objc func keyboardWillHideHandle() {
@@ -160,7 +166,7 @@ class NCText: UIViewController, UITextViewDelegate {
             if textView.text != loadText {
             
                 let data = textView.text.data(using: .utf8)
-                let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView), contents: data, attributes: nil)
+                let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), contents: data, attributes: nil)
                 if success {
                 
                     appDelegate.activeMain.clearDateReadDataSource(nil)
@@ -172,7 +178,7 @@ class NCText: UIViewController, UITextViewDelegate {
                         metadata.status = Int(k_metadataStatusWaitUpload)
 
                         _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: metadata.fileID, action: Int32(k_action_MOD))
+                        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: metadata.ocId, action: Int32(k_action_MOD))
                         
                         self.appDelegate.startLoadAutoDownloadUpload()
 

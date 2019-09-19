@@ -1,6 +1,6 @@
 //
 //  CCGlobal.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 13/10/14.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -55,7 +55,6 @@
 #define k_appUserData                                   @"Library/Application Support/UserData"
 #define k_appCertificates                               @"Library/Application Support/Certificates"
 #define k_appScan                                       @"Library/Application Support/Scan"
-
 #define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 // Server Status
@@ -70,6 +69,7 @@
 
 // Avatar
 #define k_avatar                                        @"/index.php/avatar/"
+#define k_avatar_size                                   "128"
 
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
@@ -82,7 +82,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         54
+#define k_databaseSchemaVersion                         78
 
 // Intro selector
 #define k_intro_login                                   0
@@ -301,6 +301,8 @@
 #define k_nextcloud_version_13_0                        13
 #define k_nextcloud_version_14_0                        14
 #define k_nextcloud_version_15_0                        15
+#define k_nextcloud_version_16_0                        16
+#define k_nextcloud_version_17_0                        17
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

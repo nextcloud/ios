@@ -1,6 +1,6 @@
 //
 //  CCSynchronize.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -78,7 +78,7 @@
         if (errorCode == kOCErrorServerPathNotFound) {
             
             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:serverUrl account:account];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
         }
         
         return;
@@ -87,17 +87,17 @@
     // Add/update self Folder
     if (!metadataFolder || !metadatas || [metadatas count] == 0) {
         if (metadataFolder.serverUrl != nil) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl ocId:nil action:k_action_NULL];
         }
         return;
     }
     
     // Add metadata and update etag Directory
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
     
     // reload folder ../ *
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl fileID:nil action:k_action_NULL];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl ocId:nil action:k_action_NULL];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -114,24 +114,24 @@
         
         for (tableMetadata *record in tableMetadatas) {
             
-            BOOL fileIDFound = NO;
+            BOOL ocIdFound = NO;
             
             for (tableMetadata *metadata in metadatas) {
                 
-                if ([record.fileID isEqualToString:metadata.fileID]) {
-                    fileIDFound = YES;
+                if ([record.ocId isEqualToString:metadata.ocId]) {
+                    ocIdFound = YES;
                     break;
                 }
             }
             
-            if (!fileIDFound)
+            if (!ocIdFound)
                 [metadatasNotPresents addObject:record];
         }
         
         // delete metadata not present
         for (tableMetadata *metadata in metadatasNotPresents) {
             
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
             
             if (metadata.directory && serverUrl) {
                 
@@ -140,13 +140,13 @@
                 [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete account:account];
             }
             
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([metadatasNotPresents count] > 0)
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
         });
         
         // ----- Test : (MODIFY) -----
@@ -157,7 +157,7 @@
             if (metadata.directory) {
                 
                 // Verify if do not exists this Metadata
-                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                 
                 if (!result)
                     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
@@ -171,7 +171,7 @@
                     // It's in session
                     BOOL recordInSession = NO;
                     for (tableMetadata *record in recordsInSessions) {
-                        if ([record.fileID isEqualToString:metadata.fileID]) {
+                        if ([record.ocId isEqualToString:metadata.ocId]) {
                             recordInSession = YES;
                             break;
                         }
@@ -187,7 +187,7 @@
                 if ([selector isEqualToString:selectorReadFolder]) {
                     
                     // Verify if do not exists this Metadata
-                    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                     
                     if (!result)
                         [addMetadatas addObject:metadata];
@@ -207,7 +207,7 @@
 #pragma mark ===== Read File for Folder & Read File=====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
+- (void)readFile:(NSString *)ocId fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
 {
     //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
@@ -231,10 +231,10 @@
             
         } else if (errorCode == kOCErrorServerPathNotFound) {
             
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
             
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
         }
     }];
 }
@@ -260,11 +260,11 @@
         if (metadata.directory)
             continue;
         
-        tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+        tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         
         if (withDownload) {
             
-            if (![localFile.etag isEqualToString:metadata.etag] || ![CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView])
+            if (![localFile.etag isEqualToString:metadata.etag] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView])
                 changeRev = YES;
             
         } else {
@@ -276,8 +276,8 @@
         if (changeRev) {
             
             // remove & re-create
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
+            [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
             
             [metadatas addObject:metadata];
         }
@@ -315,7 +315,7 @@
     (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd];
     
     for (NSString *serverUrl in serverUrlToReload) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
     }
 }
 

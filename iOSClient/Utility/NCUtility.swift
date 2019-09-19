@@ -23,15 +23,17 @@
 
 import Foundation
 import SVGKit
+import KTVHTTPCache
+import ZIPFoundation
 
 class NCUtility: NSObject {
-
     @objc static let sharedInstance: NCUtility = {
         let instance = NCUtility()
         return instance
     }()
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    let cache = NSCache<NSString, UIImage>()
     
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
@@ -107,17 +109,6 @@ class NCUtility: NSObject {
         let screenWidth = screenSize.height * 0.75
         
         return screenWidth
-    }
-    
-    @objc func convertFileIDClientToFileIDServer(_ fileID: NSString) -> String {
-        
-        let split = fileID.components(separatedBy: "oc")
-        if split.count == 2 {
-            let fileIDServerInt = CLongLong(split[0])
-            return String(describing: fileIDServerInt ?? 0)
-        }
-        
-        return fileID as String
     }
     
     @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
@@ -252,8 +243,10 @@ class NCUtility: NSObject {
         }
     }
     
-    @objc func startActivityIndicator(view: UIView, bottom: CGFloat) {
+    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat) {
     
+        guard let view = view else { return }
+        
         activityIndicator.color = NCBrandColor.sharedInstance.brand
         activityIndicator.hidesWhenStopped = true
             
@@ -373,5 +366,94 @@ class NCUtility: NSObject {
         
         return false
     }
-}
+    
+    @objc func removeAllSettings() {
+        
+        URLCache.shared.memoryCapacity = 0
+        URLCache.shared.diskCapacity = 0
+        KTVHTTPCache.cacheDeleteAllCaches()
+        
+        NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeAccount: true)
+        
+        CCUtility.emptyGroupDirectoryProviderStorage()
+        CCUtility.emptyGroupLibraryDirectory()
+        
+        CCUtility.emptyDocumentsDirectory()
+        CCUtility.emptyTemporaryDirectory()
+        
+        CCUtility.createDirectoryStandard()
+        
+        CCUtility.deleteAllChainStore()
+    }
+    
+    @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String) -> UIImage? {
+        
+        guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
+        let size = Int(k_avatar_size) ?? 128
+        
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
+        imageSource.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
 
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
+        let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: 0.5)
+        //avatarImageView?.alpha = alpha
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        avatarImageView?.layer.render(in: context)
+        guard let imageAvatar = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        UIGraphicsEndImageContext()
+        
+        guard let data = imageAvatar.pngData() else {
+            return nil
+        }
+        do {
+            try data.write(to: NSURL(fileURLWithPath: fileNameSourceAvatar) as URL, options: .atomic)
+        } catch { }
+        
+        return imageAvatar
+    }
+    
+    func loadImage(ocId: String, fileNameView: String, completion: @escaping (UIImage?) -> Void) {
+        
+        if let image = cache.object(forKey: ocId as NSString) {
+            completion(image)
+            return
+        }
+        
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            
+            let loadedImage = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(ocId, fileNameView: fileNameView))
+            
+            DispatchQueue.main.async {
+                
+                if let loadedImage = loadedImage {
+                    self?.cache.setObject(loadedImage, forKey: ocId as NSString)
+                }
+                completion(loadedImage)
+            }
+        }
+    }
+    
+    func IMGetBundleDirectory(metadata: tableMetadata) -> (error: Bool, bundleDirectory: String, immPath: String) {
+        
+        var error = true
+        var bundleDirectory = ""
+        var immPath = ""
+        
+        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        
+        if let archive = Archive(url: source, accessMode: .read) {
+            archive.forEach({ (entry) in
+                let pathComponents = (entry.path as NSString).pathComponents
+                if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
+                    error = false
+                    bundleDirectory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + pathComponents.first!
+                    immPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + entry.path
+                }
+            })
+        }
+        
+        return(error, bundleDirectory, immPath)
+    }
+}

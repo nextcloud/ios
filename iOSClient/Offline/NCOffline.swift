@@ -35,7 +35,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
    
     private var metadataPush: tableMetadata?
     private var isEditMode = false
-    private var selectFileID = [String]()
+    private var selectocId = [String]()
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
@@ -62,6 +62,12 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     //BKPasscodeViewController
     private var failedAttempts: Double = 0
     private var lockUntilDate: NSDate?
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        appDelegate.activeOffline = self
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -110,6 +116,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.navigationItem.title = titleCurrentFolder
         
@@ -285,14 +292,17 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         menuView?.token = "tapOrderHeaderMenu"
         menuView?.delegate = self
         menuView?.rowHeight = 45
-        menuView?.sectionHeaderHeight = 8
+        menuView?.sectionHeaderHeight = 0.3
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
-        menuView?.tableViewBackgroundColor = UIColor.white
+        menuView?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
+        menuView?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.textColor = NCBrandColor.sharedInstance.textView
         
         let header = (sender as? UIButton)?.superview
         let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
-        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
+        let menuOffsetY = headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
         
         menuView?.showMenu()
@@ -302,13 +312,22 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
     }
     
-    func tapMoreListItem(with fileID: String, sender: Any) {
-        tapMoreGridItem(with: fileID, sender: sender)
+    func tapMoreListItem(with objectId: String, sender: Any) {
+        tapMoreGridItem(with: objectId, sender: sender)
     }
     
-    func tapMoreGridItem(with fileID: String, sender: Any) {
+    func tapShareListItem(with objectId: String, sender: Any) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else {
+            return
+        }
+        
+        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 2)
+    }
+    
+    func tapMoreGridItem(with objectId: String, sender: Any) {
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else {
             return
         }
         
@@ -322,7 +341,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             if (self == self.navigationController?.viewControllers[1]) {
                 items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
             }
-            items.append(ActionSheetItem(title: NSLocalizedString("_share_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(ActionSheetItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
             let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
             itemDelete.customAppearance = appearanceDelete
@@ -334,18 +353,23 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     if metadata.directory {
                         NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
                     } else {
-                        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
+                        NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
                     }
                     self.loadDatasource()
                 }
-                if item.value as? Int == 1 { self.appDelegate.activeMain.openShare(with: metadata) }
+                if item.value as? Int == 1 { NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, fileID: metadata.fileID, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
+            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
+            
+            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -430,8 +454,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         let photoDataSource: NSMutableArray = []
         
-        for fileID: String in sectionDatasource.allFileID as! [String] {
-            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
+        for ocId: String in sectionDatasource.allOcId as! [String] {
+            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: ocId) as! tableMetadata
             if metadata.typeFile == k_metadataTypeFile_image {
                 photoDataSource.add(metadata)
             }
@@ -546,10 +570,10 @@ extension NCOffline: UICollectionViewDelegate {
         metadataPush = metadata
         
         if isEditMode {
-            if let index = selectFileID.firstIndex(of: metadata.fileID) {
-                selectFileID.remove(at: index)
+            if let index = selectocId.firstIndex(of: metadata.ocId) {
+                selectocId.remove(at: index)
             } else {
-                selectFileID.append(metadata.fileID)
+                selectocId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
             return
@@ -585,7 +609,7 @@ extension NCOffline: UICollectionViewDataSource {
                 
                 header.delegate = self
                 
-                header.setStatusButton(count: sectionDatasource.allFileID.count)
+                header.setStatusButton(count: sectionDatasource.allOcId.count)
                 header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
                 if datasourceGroupBy == "none" {
@@ -654,7 +678,9 @@ extension NCOffline: UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, source: self)
+        let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+        
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self)
         
         return cell
     }
@@ -690,33 +716,33 @@ extension NCOffline {
 
     @objc func loadDatasource() {
         
-        var fileIDs = [String]()
+        var ocIds = [String]()
         sectionDatasource = CCSectionDataSourceMetadata()
         
         if serverUrl == "" {
             
             if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
-                    fileIDs.append(directory.fileID)
+                    ocIds.append(directory.ocId)
                 }
             }
             
             if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true) {
                 for file: tableLocalFile in files {
-                    fileIDs.append(file.fileID)
+                    ocIds.append(file.ocId)
                 }
             }
             
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND fileID IN %@", appDelegate.activeAccount, fileIDs), sorted: nil, ascending: false)  {
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds), sorted: nil, ascending: false)  {
                 
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterocId: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
             }
             
         } else {
             
             if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl), sorted: nil, ascending: false)  {
                 
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterocId: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
             }
         }
         
@@ -738,16 +764,21 @@ extension NCOffline {
         
         actionSheet = ActionSheet(items: items) { sheet, item in
             if item is ActionSheetDangerButton {
-                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
+                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderocId: tableDirectory.ocId) { (errorCode, message) in
                     self.loadDatasource()
                 }
             }
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
         
-        let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, fileID: metadata.fileID, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
+        let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
         actionSheet?.headerView = headerView
         actionSheet?.headerView?.frame.size.height = 50
+        
+        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         actionSheet?.present(in: self, from: sender as! UIButton)
     }

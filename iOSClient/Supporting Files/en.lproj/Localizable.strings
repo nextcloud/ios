@@ -1,6 +1,6 @@
 //
 //  Localizable.strings
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
@@ -103,6 +103,12 @@
 "_purchase_"                = "Purchase";
 "_account_not_available_"   = "The account %@ of %@ do not exists, please add it to be able to read the file %@";
 "_error_parameter_schema_"  = "Wrong parameters, impossible to continue";
+"_comments_"                = "Comments";
+"_sharing_"                 = "Sharing";
+"_details_"                 = "Details";
+"_dark_mode_"               = "Dark mode";
+"_screen_"                  = "Screen";
+"_wipe_account_"            = "Account wiped from server";
 
 // App
 
@@ -156,8 +162,7 @@
 "_want_exit_"                   = "Attention! Will be reset to initial state. Continue?";
 "_proceed_"                     = "Proceed";
 "_delete_cache_"                = "Delete cache";
-"_want_delete_cache_"           = "Do you want to delete the cache?";
-"_delete_cache_and_db_"         = "Yes and remove the transfers in progress";
+"_want_delete_cache_"           = "Do you want to delete the cache (this also removes the transfers in progress) ?";
 "_want_delete_thumbnails_"      = "Do you want to delete all thumbnails too?";
 "_mail_deleted_"                = "Email deleted";
 "_mail_saved_"                  = "Email saved";
@@ -169,7 +174,7 @@
 "_manage_account_"              = "Manage account";
 "_change_password_"             = "Change password";
 "_add_account_"                 = "Add account";
-"_delete_account_"              = "Delete account";
+"_delete_account_"              = "Remove account";
 "_want_delete_"                 = "Do you really want to delete?";
 "_no_delete_"                   = "No, do not delete";
 "_yes_delete_"                  = "Yes, delete";
@@ -210,6 +215,8 @@
 "_disable_files_app_footer_"    = "Do not permit the access of files across the Apple Files application";
 "_trial_"                       = "Trial";
 "_trial_expired_day_"           = "Days remaining";
+"_disableLocalCacheAfterUpload_footer_" = "After uploading the file, do not keep it in the local cache";
+"_disableLocalCacheAfterUpload_"        = "Disable local cache";
 
 // Manage AutoUpload
 
@@ -463,6 +470,25 @@
 "_enforce_password_protection_" = "Enforce password protection";
 "_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 "_shared_with_you_by_"          = "Shared with you by";
+"_shareLinksearch_placeholder_" = "Search for user or group…";
+"_new_comment_"                 = "New comment…";
+"_edit_comment_"                = "Edit comment";
+"_delete_comment_"              = "Delete comment";
+"_share_allow_editing_"         = "Allow editing";
+"_share_read_only_"             = "Read only";
+"_share_allow_upload_"          = "Allow upload and editing";
+"_share_file_drop_"             = "File drop (upload only)";
+"_share_hide_download_"         = "Hide download";
+"_share_password_protect_"      = "Password protect";
+"_share_expiration_date_"       = "Set expiration date";
+"_share_note_recipient_"        = "Note to recipient";
+"_share_delete_sharelink_"      = "Delete share link";
+"_share_add_sharelink_"         = "Add another link";
+"_share_can_reshare_"           = "Can reshare";
+"_share_can_create_"            = "Can create";
+"_share_can_change_"            = "Can change";
+"_share_can_delete_"            = "Can delete";
+"_share_unshare_"               = "Unshare";
 
 // Share Permission
 

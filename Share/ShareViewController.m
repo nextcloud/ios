@@ -137,11 +137,11 @@
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
         [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
     }
-    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].brandText;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
-    self.toolBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    self.toolBar.tintColor = [NCBrandColor sharedInstance].brandElement;
+    self.toolBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.toolBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     
     // Upload
     rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
@@ -202,20 +202,20 @@
 {
     if ([self.filesName count] > 0) {
     
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:NCBrandColor.sharedInstance.brandElement];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
         NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.activeAccount];
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
         
-        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:fileNameServer fileNameLocalPath:fileNameLocal progress:^(NSProgress *progress) {
+        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:fileNameServer fileNameLocalPath:fileNameLocal encode:true communication:[[OCNetworking sharedManager] sharedOCCommunication] progress:^(NSProgress *progress) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud progress:progress.fractionCompleted];
             });
             
-        } completion:^(NSString *account, NSString *fileID, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode) {
+        } completion:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode) {
             
             [self.hud hideHud];
             
@@ -223,14 +223,14 @@
 
             if (errorCode == 0) {
                 
-                [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameForUpload]];
+                [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                 
                 tableMetadata *metadata = [tableMetadata new];
                 
                 metadata.account = self.activeAccount;
                 metadata.date = date;
                 metadata.etag = etag;
-                metadata.fileID = fileID;
+                metadata.ocId = ocId;
                 metadata.fileName = fileNameForUpload;
                 metadata.fileNameView = fileNameForUpload;
                 metadata.serverUrl = self.serverUrl;

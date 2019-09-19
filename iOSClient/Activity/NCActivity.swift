@@ -30,13 +30,18 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    private let refreshControl = UIRefreshControl()
 
-    var activities = [tableActivity]()
+    var allActivities = [tableActivity]()
+    var filterActivities = [tableActivity]()
+
     var sectionDate = [Date]()
+    var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    var didSelectItemEnable: Bool = true
+    var filterFileId: String?
+    var objectType: String?
     
-    var loadingActivity = false
+    var canFetchActivity = true
+    var dateAutomaticFetch : Date?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,30 +53,43 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
-        tableView.refreshControl = refreshControl
+        tableView.contentInset = insets
         
-        // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadActivityRefreshing), for: .valueChanged)
+        // Color
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        if filterFileId == nil {
+            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        } else {
+            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        }
+        
+        self.title = NSLocalizedString("_activity_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-    
-        self.title = NSLocalizedString("_activity_", comment: "")
-
         loadDataSource()
+        loadActivity(idActivity: 0)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
     
     // MARK: DZNEmpty
     
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
+        return insets.top/2
+    }
+    
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
+        if filterFileId == nil {
+            return NCBrandColor.sharedInstance.backgroundView
+        } else {
+            return NCBrandColor.sharedInstance.backgroundForm
+        }
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
@@ -104,7 +122,8 @@ class activityTableViewCell: UITableViewCell {
     var idActivity: Int = 0
     var account: String = ""
     var activityPreviews = [tableActivityPreview]()
-    
+    var didSelectItemEnable: Bool = true
+
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -132,11 +151,15 @@ extension NCActivity: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
-        view.backgroundColor = .clear
+        if filterFileId == nil {
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        } else {
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        }
         
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.textColor = .white
+        label.textColor = NCBrandColor.sharedInstance.textView
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -174,7 +197,16 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.image = nil
             cell.avatar.isHidden = true
             cell.subjectTrailingConstraint.constant = 10
+            cell.didSelectItemEnable = self.didSelectItemEnable
+            cell.subject.textColor = NCBrandColor.sharedInstance.textView
             
+            /*
+            if filterFileId == nil {
+                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            } else {
+                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            }
+            */
             // icon
             if activity.icon.count > 0 {
                 
@@ -182,22 +214,16 @@ extension NCActivity: UITableViewDataSource {
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
                 
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                    
-                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        cell.icon.image = image
-                    }
-                    
+                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                 } else {
-                    
                     DispatchQueue.global().async {
-                        
                         let encodedString = activity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                             if errorCode == 0 {
                                 do {
                                     try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                                 } catch { return }
-                                cell.icon.image = UIImage(data: data!)
                             }
                         })
                     }
@@ -217,10 +243,10 @@ extension NCActivity: UITableViewDataSource {
                     }
                 } else {
                     DispatchQueue.global().async {
-                        let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/128"
+                        let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/" + k_avatar_size
                         let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                         OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                            if errorCode == 0 {
+                            if errorCode == 0 && UIImage(data: data!) != nil {
                                 do {
                                     try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                                 } catch { return }
@@ -280,6 +306,7 @@ extension NCActivity: UITableViewDataSource {
     }
 }
 
+/*
 extension NCActivity: UITableViewDataSourcePrefetching {
     
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
@@ -291,15 +318,24 @@ extension NCActivity: UITableViewDataSourcePrefetching {
         let lastRow = getTableActivitiesFromSection(section).count - 1
         
         if section == lastSection && row > lastRow - 1 {
-            let results = getTableActivitiesFromSection(section)
-            let activity = results[lastRow]
-            
-            loadActivity(idActivity: activity.idActivity)
+            //loadActivity(idActivity: allActivities.last!.idActivity)
         }
     }
     
     func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         //print("cancelPrefetchingForRowsAt \(indexPaths)")
+    }
+}
+*/
+
+// MARK: - ScrollView
+
+extension NCActivity: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (Int(scrollView.contentOffset.y + scrollView.frame.size.height) == Int(scrollView.contentSize.height + scrollView.contentInset.bottom)) {
+            loadActivity(idActivity: allActivities.last!.idActivity)
+        }
     }
 }
 
@@ -308,6 +344,11 @@ extension NCActivity: UITableViewDataSourcePrefetching {
 extension activityTableViewCell: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        // Select not permitted
+        if !didSelectItemEnable {
+            return
+        }
         
         let activityPreview = activityPreviews[indexPath.row]
         
@@ -322,8 +363,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
             }
             if (responder as? UIViewController)!.navigationController != nil {
                 if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
-                    if let result = NCManageDatabase.sharedInstance.getTrashItem(fileID: String(activityPreview.fileId), account: activityPreview.account) {
-                        viewController.blinkFileID = result.fileID
+                    if let result = NCManageDatabase.sharedInstance.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
+                        viewController.blinkocId = result.fileId
                         viewController.path = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
@@ -341,8 +382,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
                 return
             }
             
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID CONTAINS %@", activitySubjectRich.id)) {
-                if let filePath = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileId == %@", activitySubjectRich.id)) {
+                if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
                     do {
                         let attr = try FileManager.default.attributesOfItem(atPath: filePath)
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
@@ -361,11 +402,11 @@ extension activityTableViewCell: UICollectionViewDelegate {
             var url = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
             url = appDelegate.activeUrl + k_webDAV + url + "/" + activitySubjectRich.name
             
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageFileID(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
             
             NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             
-            let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+            let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, encode:true, completion: { (account, message, errorCode) in
                 
                 if account == self.appDelegate.activeAccount && errorCode == 0 {
                     
@@ -378,10 +419,10 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         
                         if account == self.appDelegate.activeAccount && errorCode == 0 {
                             
-                            // move from id to oc:id + instanceid (fileID)
+                            // move from id to oc:id + instanceid (ocId)
                             
                             let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.fileID
+                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
                             
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                             
@@ -417,7 +458,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
             cell.imageView.image = nil
             
             let activityPreview = activityPreviews[indexPath.row]
-            let fileID = String(activityPreview.fileId)
+            let fileId = String(activityPreview.fileId)
             
             // Trashbin
             if activityPreview.view == "trashbin" {
@@ -448,7 +489,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                     
                 } else {
                     
-                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileID) {
+                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
                         
                         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
                         
@@ -510,8 +551,10 @@ extension NCActivity {
         
         sectionDate.removeAll()
         
-        activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount))
-        for tableActivity in activities {
+        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), filterFileId: filterFileId)
+        allActivities = activities.all
+        filterActivities = activities.filter
+        for tableActivity in filterActivities {
             guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
                 continue
             }
@@ -519,6 +562,7 @@ extension NCActivity {
                 sectionDate.append(date)
             }
         }
+        
         tableView.reloadData()
     }
     
@@ -529,37 +573,34 @@ extension NCActivity {
             return Calendar.current.date(byAdding: components, to: startDate)!
         }()
         
-        return NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]))
-    }
-    
-    @objc func loadActivityRefreshing() {
-        loadActivity(idActivity: 0)
+        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.activeAccount, [startDate, endDate]), filterFileId: filterFileId)
+        return activities.filter
     }
     
     @objc func loadActivity(idActivity: Int) {
         
-        if loadingActivity {
-            return
-        } else {
-            loadingActivity = true
-        }
+        if !canFetchActivity { return }
+        canFetchActivity = false
         
         if idActivity > 0 {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
+        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 200, objectId:filterFileId, objectType: objectType, link: "", completion: { (account, listOfActivity, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                
-                self.loadDataSource()
             }
             
-            self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()
             
-            self.loadingActivity = false
+            if errorCode == 304 {
+                self.canFetchActivity = false
+            } else {
+                self.canFetchActivity = true
+            }
+            
+            self.loadDataSource()
         })
     }
 }

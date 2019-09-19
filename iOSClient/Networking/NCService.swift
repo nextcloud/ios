@@ -77,7 +77,7 @@ class NCService: NSObject {
                 
                 DispatchQueue.global().async {
                     
-                    let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
                     OCNetworking.sharedManager()?.downloadContents(ofUrl: avatarUrl, completion: { (data, message, errorCode) in
@@ -99,14 +99,10 @@ class NCService: NSObject {
                 // Get Capabilities
                 self.requestServerCapabilities()
                 
-            } else if errorCode != 0 {
-                
-                print("Get user profile failure error")
-                
             } else {
                 
-                if errorCode == kOCErrorServerUnauthorized {
-                    CCUtility.setPassword(account, password: nil)
+                if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
+                    OCNetworking.sharedManager()?.checkRemoteUser(account)
                 }
                 
                 print("[LOG] It has been changed user during networking process, error.")
@@ -116,12 +112,14 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
         
-        OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, message, errorCode) in
+        OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, extendedSupport, message, errorCode) in
             if errorCode == 0 {
-                if serverProductName == "owncloud" {
-                    self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
-                } else if versionMajor <= k_nextcloud_unsupported {
-                    self.appDelegate.messageNotification("_warning_", description: "_warning_unsupported_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                if extendedSupport == false {
+                    if serverProductName == "owncloud" {
+                        self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                    } else if versionMajor <= k_nextcloud_unsupported {
+                        self.appDelegate.messageNotification("_warning_", description: "_warning_unsupported_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                    }
                 }
             }
             
@@ -201,6 +199,7 @@ class NCService: NSObject {
                                 var new = ""
                                 
                                 for notification in listOfNotifications! {
+                                    // download icon
                                     let id = (notification as! OCNotifications).idNotification
                                     if let icon = (notification as! OCNotifications).icon {
                                         
@@ -251,14 +250,11 @@ class NCService: NSObject {
                 if (capabilities!.isExternalSitesServerEnabled) {
                     
                     OCNetworking.sharedManager().getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
-                        
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            
                             NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
                             for externalSites in listOfExternalSites! {
                                 NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
                             }
-                            
                         } 
                     })
                    
@@ -270,17 +266,15 @@ class NCService: NSObject {
                 // Get Share Server
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
-                    self.appDelegate.activeMain.readShareServer()
-                }
-                
-                // Get Activity
-                if (capabilities!.isActivityV2Enabled) {
-                    
-                    OCNetworking.sharedManager().getActivityWithAccount(account!, since: 0, limit: 100, link: "", completion: { (account, listOfActivity, message, errorCode) in
-                        DispatchQueue.global().async {
-                            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                                NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
-                            }
+                    OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount{
+                            let itemsOCSharedDto = items as! [OCSharedDto]
+                            NCManageDatabase.sharedInstance.deleteTableShare(account: account!)
+                            self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
+                            self.appDelegate.activeMain?.tableView?.reloadData()
+                            self.appDelegate.activeFavorites?.tableView?.reloadData()
+                        } else {
+                            self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                         }
                     })
                 }
@@ -294,8 +288,8 @@ class NCService: NSObject {
                 
                 self.appDelegate.settingThemingColorBrand()
                 
-                if errorCode == kOCErrorServerUnauthorized {
-                    CCUtility.setPassword(account, password: nil)
+                if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
+                    OCNetworking.sharedManager()?.checkRemoteUser(account)
                 }
                 
             } else {

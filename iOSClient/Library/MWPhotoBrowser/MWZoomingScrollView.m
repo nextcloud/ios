@@ -12,6 +12,7 @@
 #import "MWPhoto.h"
 #import "MWPhotoBrowserPrivate.h"
 #import "UIImage+MWPhotoBrowser.h"
+#import "NCBridgeSwift.h"
 
 // Private methods and properties
 @interface MWZoomingScrollView () {
@@ -38,18 +39,18 @@
 		_tapView = [[MWTapDetectingView alloc] initWithFrame:self.bounds];
 		_tapView.tapDelegate = self;
 		_tapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-		_tapView.backgroundColor = [UIColor whiteColor]; //TWS
+		_tapView.backgroundColor = NCBrandColor.sharedInstance.backgroundView; //TWS
 		[self addSubview:_tapView];
 		
 		// Image view
 		_photoImageView = [[MWTapDetectingImageView alloc] initWithFrame:CGRectZero];
 		_photoImageView.tapDelegate = self;
 		_photoImageView.contentMode = UIViewContentModeCenter;
-		_photoImageView.backgroundColor = [UIColor whiteColor]; //TWS
+		_photoImageView.backgroundColor = NCBrandColor.sharedInstance.backgroundView; //TWS
 		[self addSubview:_photoImageView];
 				
 		// Setup
-		self.backgroundColor = [UIColor whiteColor]; //TWS
+		self.backgroundColor = NCBrandColor.sharedInstance.backgroundView; //TWS
 		self.delegate = self;
 		self.showsHorizontalScrollIndicator = NO;
 		self.showsVerticalScrollIndicator = NO;

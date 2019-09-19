@@ -36,6 +36,10 @@
 {
     if (self = [super init]) {
         KTVHCLogAlloc(self);
+        self.server = [[HTTPServer alloc] init];
+        [self.server setConnectionClass:[KTVHCHTTPConnection class]];
+        [self.server setType:@"_http._tcp."];
+        [self.server setPort:80];
         self.backgroundTask = UIBackgroundTaskInvalid;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidEnterBackground)
@@ -97,10 +101,6 @@
 
 - (BOOL)startInternal:(NSError **)error
 {
-    self.server = [[HTTPServer alloc] init];
-    [self.server setConnectionClass:[KTVHCHTTPConnection class]];
-    [self.server setType:@"_http._tcp."];
-    [self.server setPort:80];
     BOOL ret = [self.server start:error];
     if (ret) {
         KTVHCLogHTTPServer(@"%p, Start server success", self);
@@ -113,7 +113,6 @@
 - (void)stopInternal
 {
     [self.server stop];
-    self.server = nil;
 }
 
 #pragma mark - Background Task

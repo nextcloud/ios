@@ -1,6 +1,6 @@
 //
 //  CCPeekPop.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 26/08/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -44,13 +44,14 @@
     UIImage *image = self.imageFile;
 
     self.fileName.text = self.metadata.fileNameView;
+    self.fileName.textColor = NCBrandColor.sharedInstance.textView;
     highLabelFileName = self.fileName.bounds.size.height + 5;
     
     if (self.metadata.hasPreview) {
         
-        if ([CCUtility fileProviderStorageIconExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
+        if ([CCUtility fileProviderStorageIconExists:self.metadata.ocId fileNameView:self.metadata.fileNameView]) {
             
-            UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
+            UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
             if (fullImage != nil) {
                 image = fullImage;
             }
@@ -61,6 +62,7 @@
         }
     }
     
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
     self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width,  self.imagePreview.image.size.height + highLabelFileName);
 }
@@ -70,15 +72,15 @@
     NSMutableArray *items = [NSMutableArray new];
  
     if (self.showOpenIn && !self.metadata.directory) {
-        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
+        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
             [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
         }];
         [items addObject:openIn];
     }
     
     if (self.showShare) {
-        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
-            [appDelegate.activeMain openShareWithMetadata:self.metadata];
+        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
+            [[NCMainCommon sharedInstance] openShareWithViewController:appDelegate.activeMain metadata:self.metadata indexPage:2];
         }];
         [items addObject:share];
     }

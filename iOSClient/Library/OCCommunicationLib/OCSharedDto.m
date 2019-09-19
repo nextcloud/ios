@@ -27,4 +27,16 @@
 
 @implementation OCSharedDto
 
+- (id)init {
+    
+    self = [super init];
+    
+    if (self) {
+        
+        self.url = @"";
+        self.label = @"";
+    }
+    
+    return self;
+}
 @end

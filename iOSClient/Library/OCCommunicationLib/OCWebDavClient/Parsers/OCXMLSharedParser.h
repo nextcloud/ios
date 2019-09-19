@@ -27,7 +27,7 @@
 #import <Foundation/Foundation.h>
 #import "OCSharedDto.h"
 
-@interface OCXMLSharedParser :  NSObject <NSXMLParserDelegate>{
+@interface OCXMLSharedParser :  NSObject <NSXMLParserDelegate> {
     
     NSMutableString *_xmlChars;
     NSMutableDictionary *_xmlBucket;

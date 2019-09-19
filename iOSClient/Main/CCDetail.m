@@ -1,6 +1,6 @@
 //
 //  CCDetail.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -44,7 +44,7 @@
     UIBarButtonItem *buttonDelete;
     
     NSInteger indexNowVisible;
-    NSString *fileIDNowVisible;
+    NSString *ocIdNowVisible;
     
     NSString *fileNameExtension;
 }
@@ -68,7 +68,7 @@
         self.photos = [[NSMutableArray alloc] init];
         self.photoDataSource = [NSMutableArray new];
         indexNowVisible = -1;
-        fileIDNowVisible = nil;
+        ocIdNowVisible = nil;
 
         appDelegate.activeDetail = self;
     }
@@ -85,10 +85,10 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
-    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[[[NCBrandColor sharedInstance] brand] colorWithAlphaComponent:0.4]];
+    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
     
     // Change bar bottom line shadow and remove title back button <"title"
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     self.navigationController.navigationBar.topItem.title = @"";
     
     // Color Navigation Controller
@@ -97,6 +97,11 @@
     // TabBar
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
+    
+    // Open View
+    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.ocId length] > 0) {        
+        [self viewFile];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -105,13 +110,7 @@
     
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
-    
-    // Open View
-    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.fileID length] > 0) {
-        
-        // open view
-        [self viewFile];
-    }
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -139,35 +138,22 @@
     }
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    
-    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        
-        if (self.imagemeter) {
-            [self.imagemeter viewImagemeter];
-        }
-    }];
-}
-
 - (void)changeTheming
 {
     [appDelegate changeTheming:self];
     
     if (self.toolbar) {
-        self.toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-        self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
+        self.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+        self.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
     }
+    
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (void)changeToDisplayMode
 {
     if (_readerPDFViewController) {
         [self.readerPDFViewController updateContentViews];
-    }
-    if (self.imagemeter) {
-        [self.imagemeter viewImagemeter];
     }
 }
 
@@ -183,11 +169,11 @@
     //}
     
     // Title
-    self.navigationController.navigationBar.topItem.title =  _metadataDetail.fileNameView;
+    self.navigationController.navigationBar.topItem.title = _metadataDetail.fileNameView;
 
     // verifico se esiste l'icona e se la posso creare
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]] == NO) {
-        [CCGraphics createNewImageFrom:self.metadataDetail.fileNameView fileID:self.metadataDetail.fileID extension:[self.metadataDetail.fileNameView pathExtension] filterGrayScale:NO typeFile:self.metadataDetail.typeFile writeImage:YES];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView]] == NO) {
+        [CCGraphics createNewImageFrom:self.metadataDetail.fileNameView ocId:self.metadataDetail.ocId extension:[self.metadataDetail.fileNameView pathExtension] filterGrayScale:NO typeFile:self.metadataDetail.typeFile writeImage:YES];
     }
     
     // remove Observer AVPlayer
@@ -231,13 +217,13 @@
             [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
             
             if ([self.metadataDetail.url isEqualToString:@""]) {
-                [[OCNetworking sharedManager] createLinkRichdocumentsWithAccount:appDelegate.activeAccount fileID:self.metadataDetail.fileID completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
+                [[OCNetworking sharedManager] createLinkRichdocumentsWithAccount:appDelegate.activeAccount fileId:self.metadataDetail.fileId completion:^(NSString *account, NSString *link, NSString *message, NSInteger errorCode) {
                     
                     if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                         
                         self.richDocument = [[NCViewerRichdocument alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                         [self.view addSubview:self.richDocument];
-                        [self.richDocument viewRichDocumentAt:link detail:self];
+                        [self.richDocument viewRichDocumentAt:link detail:self metadata:self.metadataDetail];
 
                     } else {
                         
@@ -257,7 +243,7 @@
                 
                 self.richDocument = [[NCViewerRichdocument alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                 [self.view addSubview:self.richDocument];
-                [self.richDocument viewRichDocumentAt:self.metadataDetail.url detail:self];
+                [self.richDocument viewRichDocumentAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
             }
             
             return;
@@ -266,14 +252,6 @@
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self createToolbar];
         [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
-    }
-    
-    // IMI File
-    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_imagemeter]) {
-        
-        self.imagemeter = [[NCViewerImagemeter alloc] initWithMetadata:self.metadataDetail detail:self];
-        [self.imagemeter viewImagemeter];
-        [self createToolbar];
     }
 }
 
@@ -299,8 +277,8 @@
     if (![NCBrandOptions sharedInstance].disable_openin_file) {
         self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     }
-    buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
-    buttonDelete = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[NCBrandColor sharedInstance].icon] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
+    buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+    buttonDelete = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
@@ -316,8 +294,8 @@
     
     [self.toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
-    self.toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
+    self.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
 
     [self.view addSubview:self.toolbar];
 }
@@ -330,7 +308,7 @@
 {
     self.photoBrowser = [[MWPhotoBrowser alloc] initWithDelegate:self];
     indexNowVisible = -1;
-    fileIDNowVisible = nil;
+    ocIdNowVisible = nil;
     
     [self.photos removeAllObjects];
     
@@ -342,7 +320,7 @@
     for (tableMetadata *metadata in self.photoDataSource) {
         
         // start from here ?
-        if (self.metadataDetail.fileID && [metadata.fileID isEqualToString:self.metadataDetail.fileID])
+        if (self.metadataDetail.ocId && [metadata.ocId isEqualToString:self.metadataDetail.ocId])
             [self.photoBrowser setCurrentPhotoIndex:index];
         
         [self.photos addObject:[MWPhoto photoWithImage:nil]];
@@ -404,7 +382,7 @@
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
     
     indexNowVisible = index;
-    fileIDNowVisible = metadata.fileID;
+    ocIdNowVisible = metadata.ocId;
     
     photoBrowser.toolbar.hidden = NO;
     
@@ -412,18 +390,18 @@
     if (metadata) {
         
         NSInteger status;
-        tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+        tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         if (metadataDB) {
             status = metadataDB.status;
         } else {
             status = k_metadataStatusNormal;
         }
         
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && status == k_metadataStatusNormal) {
+        if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO && status == k_metadataStatusNormal) {
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO && metadata.hasPreview) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO && metadata.hasPreview) {
                 
-                [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
+                [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:NCBrandColor.sharedInstance.brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:NCBrandColor.sharedInstance.brandText] imageRight:NO navigationItem:self.navigationItem];
                 
                 CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
                 CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
@@ -456,14 +434,14 @@
     
     if (index < self.photos.count) {
         
-        if (metadata.fileID) {
+        if (metadata.ocId) {
             
-            UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-//            if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
+            UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
+//            if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[NCBrandColor.sharedInstance icon]];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
-                NSString *fileImage = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+                NSString *fileImage = [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
                 NSString *ext = [CCUtility getExtension:metadata.fileNameView];
                 
                 if ([ext isEqualToString:@"GIF"]) image = [UIImage animatedImageWithAnimatedGIFURL:[NSURL fileURLWithPath:fileImage]];
@@ -474,7 +452,7 @@
                     MWPhoto *photo = [MWPhoto photoWithImage:image];
                     
                     // Location ??
-                    [self setLocationCaptionPhoto:photo fileID:metadata.fileID];
+                    [self setLocationCaptionPhoto:photo ocId:metadata.ocId];
                     
                     [self.photos replaceObjectAtIndex:index withObject:photo];
                     
@@ -494,9 +472,9 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
-                if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+                if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                     
-                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
                     
                     MWPhoto *video = [MWPhoto photoWithImage:[CCGraphics thumbnailImageForVideo:url atTime:1.0]];
                     video.videoURL = url;
@@ -519,15 +497,15 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
                 
-                if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+                if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                     
                     MWPhoto *audio;
                     UIImage *audioImage;
                     
-                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
                     
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
-                        audioImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]]) {
+                        audioImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
                     } else {
                         audioImage = [UIImage imageNamed:@"notaMusic"]; //[CCGraphics scaleImage:[UIImage imageNamed:@"notaMusic"] toSize:CGSizeMake(200, 200) isAspectRation:YES];
                     }
@@ -578,7 +556,7 @@
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
     if (metadata == nil) return;
 
-    docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]];
+    docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]]];
     
     docController.delegate = self;
     
@@ -591,13 +569,13 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser shareButtonPressedForPhotoAtIndex:(NSUInteger)index
 {
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
-    [appDelegate.activeMain openShareWithMetadata:metadata];
+    [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
 }
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
-    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO) {
+    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
         
         [appDelegate messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         
@@ -633,7 +611,7 @@
 - (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode
 {
     // if a message for a directory of these
-    if (![metadata.fileID isEqualToString:fileIDNowVisible])
+    if (![metadata.ocId isEqualToString:ocIdNowVisible])
         return;
  
     // Title
@@ -643,8 +621,8 @@
     if (errorCode == 0) {
         
         // verifico se esiste l'icona e se la posso creare
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
-            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO) {
+            [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
         [self.photoBrowser reloadData];
@@ -667,11 +645,11 @@
         
     // Add Metadata for Download
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadataForDownload.ocId action:k_action_MOD];
     
     [appDelegate startLoadAutoDownloadUpload];
 
-    [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
+    [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:NCBrandColor.sharedInstance.brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:NCBrandColor.sharedInstance.brandText] imageRight:NO navigationItem:self.navigationItem];
 }
 
 - (void)insertGeocoderLocation:(NSNotification *)notification
@@ -679,44 +657,44 @@
     if (notification.userInfo.count == 0)
         return;
     
-    NSString *fileID = [[notification.userInfo allKeys] objectAtIndex:0];
+    NSString *ocId = [[notification.userInfo allKeys] objectAtIndex:0];
     //NSDate *date = [[notification.userInfo allValues] objectAtIndex:0];
  
     // test [Chrash V 1.14,15]
     if (indexNowVisible >= [self.photos count])
         return;
     
-    if ([fileID isEqualToString:fileIDNowVisible]) {
+    if ([ocId isEqualToString:ocIdNowVisible]) {
             
         MWPhoto *photo = [self.photos objectAtIndex:indexNowVisible];
             
-        [self setLocationCaptionPhoto:photo fileID:fileID];
+        [self setLocationCaptionPhoto:photo ocId:ocId];
         
         [self.photoBrowser reloadData];
     }
 }
 
-- (void)setLocationCaptionPhoto:(MWPhoto *)photo fileID:(NSString *)fileID
+- (void)setLocationCaptionPhoto:(MWPhoto *)photo ocId:(NSString *)ocId
 {
     tableLocalFile *localFile;
 
     // read Geocoder
-    localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+    localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
     
     if ([localFile.exifLatitude doubleValue] != 0 || [localFile.exifLongitude doubleValue] != 0) {
         
         // Fix BUG Geo latitude & longitude
         if ([localFile.exifLatitude doubleValue] == 9999 || [localFile.exifLongitude doubleValue] == 9999) {
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
             if (metadata) {
                 [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
             }
         }
         
-        [[CCExifGeo sharedInstance] setGeocoderEtag:fileID exifDate:localFile.exifDate latitude:localFile.exifLatitude longitude:localFile.exifLongitude];
+        [[CCExifGeo sharedInstance] setGeocoderEtag:ocId exifDate:localFile.exifDate latitude:localFile.exifLatitude longitude:localFile.exifLongitude];
         
-        localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
         
         if ([localFile.exifLatitude floatValue] != 0 || [localFile.exifLongitude floatValue] != 0) {
                         
@@ -751,9 +729,9 @@
     NSString *filePlistReader = [NSString stringWithFormat:@"%@/%@.plist", [CCUtility getDirectoryReaderMetadata], self.metadataDetail.fileNameView.stringByDeletingPathExtension];
     [CCUtility removeFileAtPath:filePlistReader];
     
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView];
     
-    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] == NO) {
+    if ([CCUtility fileProviderStorageExists:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView] == NO) {
         
         // read file error
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -896,12 +874,12 @@
 {
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
     
-    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:tableDirectory.serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
+    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:tableDirectory.serverUrl folderocId:tableDirectory.ocId completion:^(NSInteger errorCode, NSString *message) {
         
         if (errorCode == 0) {
             
             // reload data source
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:tableDirectory.serverUrl fileID:metadata.fileID action:k_action_DEL];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:tableDirectory.serverUrl ocId:metadata.ocId action:k_action_DEL];
             
             // Not image
             if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] == NO) {
@@ -915,7 +893,7 @@
                     
                     tableMetadata *metadataTemp = [self.photoDataSource objectAtIndex:index];
                     
-                    if ([metadata isInvalidated] || [metadataTemp.fileID isEqualToString:metadata.fileID]) {
+                    if ([metadata isInvalidated] || [metadataTemp.ocId isEqualToString:metadata.ocId]) {
                         
                         [self.photoDataSource removeObjectAtIndex:index];
                         [self.photos removeObjectAtIndex:index];
@@ -945,7 +923,7 @@
         NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
         
         [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] toPath:fileNamePath error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:[CCUtility getDirectoryProviderStorageOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView] toPath:fileNamePath error:nil];
         
         [self.webView reload];
     }
@@ -953,7 +931,7 @@
 
 - (void)modifyTxtButtonPressed:(UIBarButtonItem *)sender
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", self.metadataDetail.fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", self.metadataDetail.ocId]];
     if (metadata) {
         
         UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
@@ -974,7 +952,7 @@
 {
     if ([self.metadataDetail.fileNameView length] == 0) return;
     
-    NSString *filePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView];
+    NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView];
 
     docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
 
@@ -982,13 +960,13 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
         [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    
-    [docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
+    else
+        [docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
 }
 
 - (void)shareButtonPressed:(UIBarButtonItem *)sender
 {
-    [appDelegate.activeMain openShareWithMetadata:self.metadataDetail];
+    [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:self.metadataDetail indexPage:2];
 }
 
 - (void)deleteButtonPressed:(UIBarButtonItem *)sender

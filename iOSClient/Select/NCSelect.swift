@@ -60,7 +60,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     private var isEditMode = false
     private var networkInProgress = false
-    private var selectFileID = [String]()
+    private var selectocId = [String]()
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
@@ -81,6 +81,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
+    
+    private var shares: [tableShare]?
     
     private let refreshControl = UIRefreshControl()
     
@@ -103,6 +105,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
@@ -134,7 +137,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
-        toolbar.tintColor = NCBrandColor.sharedInstance.brandElement
+        toolbar.tintColor = NCBrandColor.sharedInstance.textView
         
         self.navigationItem.title = titleCurrentFolder
         
@@ -163,6 +166,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         }
         
         loadDatasource(withLoadFolder: true)
+
+        shares = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.activeAccount, serverUrl: serverUrl)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -371,7 +376,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         menuView?.sectionHeaderHeight = 8
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
-        menuView?.tableViewBackgroundColor = UIColor.white
+        menuView?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
+        menuView?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menuView?.textColor = NCBrandColor.sharedInstance.textView
         
         let header = (sender as? UIButton)?.superview
         let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
@@ -382,13 +390,15 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     func tapMoreHeader(sender: Any) {
-        
     }
     
-    func tapMoreListItem(with fileID: String, sender: Any) {
+    func tapMoreListItem(with objectId: String, sender: Any) {
     }
     
-    func tapMoreGridItem(with fileID: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, sender: Any) {
+    }
+    
+    func tapShareListItem(with objectId: String, sender: Any) {
     }
     
     // MARK: DROP-DOWN-MENU
@@ -526,10 +536,10 @@ extension NCSelect: UICollectionViewDelegate {
         }
         
         if isEditMode {
-            if let index = selectFileID.firstIndex(of: metadata.fileID) {
-                selectFileID.remove(at: index)
+            if let index = selectocId.firstIndex(of: metadata.ocId) {
+                selectocId.remove(at: index)
             } else {
-                selectFileID.append(metadata.fileID)
+                selectocId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
             return
@@ -572,7 +582,7 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 header.delegate = self
                 
-                header.setStatusButton(count: sectionDatasource.allFileID.count)
+                header.setStatusButton(count: sectionDatasource.allOcId.count)
                 header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
                 if datasourceGroupBy == "none" {
@@ -641,9 +651,20 @@ extension NCSelect: UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, downloadThumbnail: true, source: self)
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, downloadThumbnail: true, shares: shares, source: self)
         
-        return cell
+        if typeLayout == k_layout_grid {
+            let cell = cell as! NCGridCell
+            cell.buttonMore.isHidden = true
+            
+            return cell
+        } else {
+            let cell = cell as! NCListCell
+            cell.imageMore.isHidden = true
+            cell.sharedLeftConstraint.constant = 15
+            
+            return cell
+        }
     }
 }
 
@@ -704,7 +725,7 @@ extension NCSelect {
         
         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!, sorted: nil, ascending: false) {
             
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterocId: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
         }
         
         if withLoadFolder {
@@ -718,7 +739,7 @@ extension NCSelect {
     
     func createFolder(with fileName: String) {
         
-        OCNetworking.sharedManager().createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, fileID, date, message, errorCode) in
+        OCNetworking.sharedManager().createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, ocId, date, message, errorCode) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.loadDatasource(withLoadFolder: true)
             } else if errorCode != 0 {
@@ -741,7 +762,7 @@ extension NCSelect {
                 self.metadataFolder = metadataFolder
                 
                 // Update directory etag
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, ocId: metadataFolder?.ocId, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
                 NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
                 

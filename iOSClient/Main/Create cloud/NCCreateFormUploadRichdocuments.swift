@@ -60,6 +60,10 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         }
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        
+        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        self.collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
         let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
@@ -102,12 +106,14 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.value = fileNameFolder
-        
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+
         row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+
         section.addFormRow(row)
         
         // Section: File Name
@@ -117,9 +123,15 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = fileName
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+        
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
         
         section.addFormRow(row)
         
@@ -129,7 +141,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
-        header.textLabel?.textColor = NCBrandColor.sharedInstance.icon //UIColor.lightGray
+        header.textLabel?.textColor = NCBrandColor.sharedInstance.textView
+        header.tintColor = NCBrandColor.sharedInstance.backgroundForm
     }
 
     // MARK: - CollectionView
@@ -171,6 +184,8 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
+        name.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        name.textColor = NCBrandColor.sharedInstance.textView
         
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
@@ -234,7 +249,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
         viewController.type = ""
 
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
     }
     
@@ -262,7 +277,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
                 if url != nil && url!.count > 0 {
                     
                     self.dismiss(animated: true, completion: {
-                        let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, fileID: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
+                        let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
                         
                         self.appDelegate.activeMain.shouldPerformSegue(metadata)
                     })
@@ -318,7 +333,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
 
-        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: template.preview, fileNameLocalPath: fileNameLocalPath, encode:true, completion: { (account, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])

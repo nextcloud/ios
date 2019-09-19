@@ -1,6 +1,6 @@
 //
 //  CCSection.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 04/02/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -32,10 +32,10 @@
     self = [super init];
     
     _allRecordsDataSource = [[NSMutableDictionary alloc] init];
-    _allFileID  = [[NSMutableArray alloc] init];
+    _allOcId  = [[NSMutableArray alloc] init];
     _sections = [[NSMutableArray alloc] init];
     _sectionArrayRow = [[NSMutableDictionary alloc] init];
-    _fileIDIndexPath = [[NSMutableDictionary alloc] init];
+    _ocIdIndexPath = [[NSMutableDictionary alloc] init];
     
     _image = 0;
     _video = 0;
@@ -51,10 +51,10 @@
     CCSectionDataSourceMetadata *sectionDataSourceMetadata = [[CCSectionDataSourceMetadata allocWithZone: zone] init];
     
     [sectionDataSourceMetadata setAllRecordsDataSource: self.allRecordsDataSource];
-    [sectionDataSourceMetadata setAllFileID: self.allFileID];
+    [sectionDataSourceMetadata setAllOcId: self.allOcId];
     [sectionDataSourceMetadata setSections: self.sections];
     [sectionDataSourceMetadata setSectionArrayRow: self.sectionArrayRow];
-    [sectionDataSourceMetadata setFileIDIndexPath: self.fileIDIndexPath];
+    [sectionDataSourceMetadata setOcIdIndexPath: self.ocIdIndexPath];
     
     [sectionDataSourceMetadata setVideo: self.video];
     [sectionDataSourceMetadata setImage: self.image];
@@ -74,7 +74,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterFileID:(NSArray *)filterFileID filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo sorted:(NSString *)sorted ascending:(BOOL)ascending activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterocId:(NSArray *)filterocId filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo sorted:(NSString *)sorted ascending:(BOOL)ascending activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     
@@ -112,11 +112,11 @@
     for (tableMetadata *metadata in arraySoprtedMetadatas) {
         
         // *** LIST : DO NOT INSERT ***
-        if (metadata.status == k_metadataStatusHide || [filterFileID containsObject: metadata.fileID] || (filterTypeFileImage == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_image]) || (filterTypeFileVideo == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
+        if (metadata.status == k_metadataStatusHide || [filterocId containsObject: metadata.ocId] || (filterTypeFileImage == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_image]) || (filterTypeFileVideo == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
             continue;
         }
         
-        if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
+        if ([listProgressMetadata objectForKey:metadata.ocId] && [groupByField isEqualToString:@"session"]) {
             
             [metadatas insertObject:metadata atIndex:0];
             
@@ -163,18 +163,18 @@
         if (metadatasSection) {
             
             // ROW ++
-            [metadatasSection addObject:metadata.fileID];
+            [metadatasSection addObject:metadata.ocId];
             [sectionDataSource.sectionArrayRow setObject:metadatasSection forKey:dataSection];
             
         } else {
             
             // SECTION ++
-            metadatasSection = [[NSMutableArray alloc] initWithObjects:metadata.fileID, nil];
+            metadatasSection = [[NSMutableArray alloc] initWithObjects:metadata.ocId, nil];
             [sectionDataSource.sectionArrayRow setObject:metadatasSection forKey:dataSection];
         }
 
-        if (metadata && [metadata.fileID length] > 0)
-            [dictionaryEtagMetadataForIndexPath setObject:metadata forKey:metadata.fileID];
+        if (metadata && [metadata.ocId length] > 0)
+            [dictionaryEtagMetadataForIndexPath setObject:metadata forKey:metadata.ocId];
     }
     
     /*
@@ -214,7 +214,7 @@
     }];
     
     /*
-    create allEtag, allRecordsDataSource, fileIDIndexPath, section
+    create allEtag, allRecordsDataSource, ocIdIndexPath, section
     */
     
     NSInteger indexSection = 0;
@@ -226,15 +226,15 @@
         
         NSArray *rows = [sectionDataSource.sectionArrayRow objectForKey:section];
         
-        for (NSString *fileID in rows) {
+        for (NSString *ocId in rows) {
             
-            tableMetadata *metadata = [dictionaryEtagMetadataForIndexPath objectForKey:fileID];
+            tableMetadata *metadata = [dictionaryEtagMetadataForIndexPath objectForKey:ocId];
             
-            if (metadata.fileID) {
+            if (metadata.ocId) {
                 
-                [sectionDataSource.allFileID addObject:metadata.fileID];
-                [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.fileID];
-                [sectionDataSource.fileIDIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.fileID];
+                [sectionDataSource.allOcId addObject:metadata.ocId];
+                [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.ocId];
+                [sectionDataSource.ocIdIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.ocId];
                 
                 if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
                     sectionDataSource.image++;
@@ -264,10 +264,10 @@
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource
 {
     [sectionDataSource.allRecordsDataSource removeAllObjects];
-    [sectionDataSource.allFileID removeAllObjects];
+    [sectionDataSource.allOcId removeAllObjects];
     [sectionDataSource.sections removeAllObjects];
     [sectionDataSource.sectionArrayRow removeAllObjects];
-    [sectionDataSource.fileIDIndexPath removeAllObjects];
+    [sectionDataSource.ocIdIndexPath removeAllObjects];
     
     sectionDataSource.image = 0;
     sectionDataSource.video = 0;

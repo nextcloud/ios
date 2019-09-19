@@ -1,6 +1,6 @@
 //
 //  CCDetail.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -39,6 +39,8 @@
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
+
+- (void)viewFile;
 
 // Toolbar
 @property (nonatomic, strong) UIToolbar *toolbar;

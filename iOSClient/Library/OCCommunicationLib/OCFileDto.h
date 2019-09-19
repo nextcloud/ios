@@ -43,15 +43,25 @@
 @property BOOL isDirectory;
 @property long size;
 @property long date;
+@property long creationDate;
 @property (nonatomic, copy) NSString *etag;
 @property (nonatomic, copy) NSString *permissions;
 @property (nonatomic, copy) NSString *ocId;
-@property double id;
+@property (nonatomic, copy) NSString *fileId;
 @property BOOL isFavorite;
 @property BOOL isEncrypted;
 @property (nonatomic, copy) NSString *trashbinFileName;
 @property (nonatomic, copy) NSString *trashbinOriginalLocation;
 @property long trashbinDeletionTime;
-@property int hasPreview;
+@property BOOL hasPreview;
+@property (nonatomic, copy) NSString *displayName;
+@property (nonatomic, copy) NSString *contentType;
+@property (nonatomic, copy) NSString *resourceType;
+@property long quotaUsedBytes;
+@property long quotaAvailableBytes;
+@property (nonatomic, copy) NSString *mountType;
+@property (nonatomic, copy) NSString *ownerId;
+@property (nonatomic, copy) NSString *ownerDisplayName;
+@property BOOL commentsUnread;
 
 @end

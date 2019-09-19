@@ -1,6 +1,6 @@
 //
 //  CCMenuAccount.h
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 07/04/16.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -335,7 +335,7 @@ typedef enum {
         insets = 4;
     }
     
-    UIImage *gradientLine = [CCMenuView gradientLine: (CGSize){maxItemWidth- kMarginX * insets, 0.4}];
+    UIImage *gradientLine = [CCMenuView gradientLine: (CGSize){maxItemWidth- kMarginX * insets, 0.4} color:self.CCMenuViewOptions.separatorColor];
     
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectZero];
     contentView.autoresizingMask = UIViewAutoresizingNone;
@@ -408,8 +408,7 @@ typedef enum {
             titleLabel.font = titleFont;
             titleLabel.textAlignment = menuItem.alignment;
             
-            //titleLabel.textColor = menuItem.foreColor ? menuItem.foreColor : [UIColor blackColor];
-            titleLabel.textColor = [UIColor colorWithRed:self.CCMenuViewOptions.textColor.R green:self.CCMenuViewOptions.textColor.G blue:self.CCMenuViewOptions.textColor.B alpha:1];
+            titleLabel.textColor = self.CCMenuViewOptions.textColor;
             
             titleLabel.backgroundColor = [UIColor clearColor];
             
@@ -500,11 +499,12 @@ typedef enum {
     return [self gradientImageWithSize:size locations:locations components:components count:2];
 }
 
-+ (UIImage *)gradientLine:(CGSize)size
++ (UIImage *)gradientLine:(CGSize)size color:(UIColor *)color
 {
+    if (color == nil) color = UIColor.lightGrayColor;
     const CGFloat locations[5] = {0,0.2,0.5,0.8,1};
-    
-    const CGFloat R = 0.890f, G = 0.890f, B = 0.890f;
+    const CGFloat *componentsColor = CGColorGetComponents(color.CGColor);
+    const CGFloat R = componentsColor[0], G = componentsColor[1], B = componentsColor[2];
     
     const CGFloat components[20] = {
         R,G,B,1,

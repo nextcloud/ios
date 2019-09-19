@@ -27,19 +27,7 @@
 
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonKeyDerivation.h>
-
-#import <openssl/x509.h>
-#import <openssl/bio.h>
-#import <openssl/err.h>
-#import <openssl/pem.h>
-#import <openssl/rsa.h>
-#import <openssl/pkcs12.h>
-#import <openssl/err.h>
-#import <openssl/bn.h>
-#import <openssl/md5.h>
-#import <openssl/rand.h>
-#import <openssl/engine.h>
-
+#import <OpenSSL/OpenSSL.h>
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
@@ -87,32 +75,35 @@
 
 - (BOOL)generateCertificateX509WithUserID:(NSString *)userID directory:(NSString *)directory
 {
-    OPENSSL_init_ssl(0, NULL);
-    OPENSSL_init_crypto(0, NULL);
+    OPENSSL_init();
     
-    X509 *x509;
+    EVP_PKEY * pkey;
+    pkey = EVP_PKEY_new();
+    
+    RSA * rsa;
+    rsa = RSA_generate_key(
+                           2048, /* number of bits for the key - 2048 is a sensible value */
+                           RSA_F4, /* exponent - RSA_F4 is defined as 0x10001L */
+                           NULL, /* callback - can be NULL if we aren't displaying progress */
+                           NULL /* callback argument - not needed in this case */
+                           );
+    
+    EVP_PKEY_assign_RSA(pkey, rsa);
+    
+    X509 * x509;
     x509 = X509_new();
     
-    EVP_PKEY *pkey;
-    NSError *keyError;
-    pkey = [self generateRSAKey:&keyError];
-    if (keyError) {
-        return NO;
-    }
-
-    X509_set_pubkey(x509, pkey);
-    EVP_PKEY_free(pkey);
+    ASN1_INTEGER_set(X509_get_serialNumber(x509), 1);
     
-    // Set Serial Number
-    ASN1_INTEGER_set(X509_get_serialNumber(x509), 123);
-    
-    // Set Valididity Date Range
     long notBefore = [[NSDate date] timeIntervalSinceDate:[NSDate date]];
     long notAfter = [[[NSDate date] dateByAddingTimeInterval:60*60*24*365*10] timeIntervalSinceDate:[NSDate date]]; // 10 year
-    X509_gmtime_adj((ASN1_TIME *)X509_get0_notBefore(x509), notBefore);
-    X509_gmtime_adj((ASN1_TIME *)X509_get0_notAfter(x509), notAfter);
+    X509_gmtime_adj(X509_get_notBefore(x509), notBefore);
+    X509_gmtime_adj(X509_get_notAfter(x509), notAfter);
     
-    X509_NAME *name = X509_get_subject_name(x509);
+    X509_set_pubkey(x509, pkey);
+    
+    X509_NAME * name;
+    name = X509_get_subject_name(x509);
     
     // Now to add the subject name fields to the certificate
     // I use a macro here to make it cleaner.
@@ -212,36 +203,6 @@
 #endif
     
     return YES;
-}
-
-- (EVP_PKEY *)generateRSAKey:(NSError **)error
-{
-    EVP_PKEY *pkey = EVP_PKEY_new();
-    if (!pkey) {
-        return NULL;
-    }
-    
-    BIGNUM *bigNumber = BN_new();
-    int exponent = RSA_F4;
-    RSA *rsa = RSA_new();
-    
-    if (BN_set_word(bigNumber, exponent) < 0) {
-        goto cleanup;
-    }
-    
-    if (RSA_generate_key_ex(rsa, 2048, bigNumber, NULL) < 0) {
-        goto cleanup;
-    }
-    
-    if (!EVP_PKEY_set1_RSA(pkey, rsa)) {
-        goto cleanup;
-    }
-    
-cleanup:
-    RSA_free(rsa);
-    BN_free(bigNumber);
-    
-    return pkey;
 }
 
 - (BOOL)saveToDiskPEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directory:(NSString *)directory
@@ -531,11 +492,11 @@ cleanup:
     return false;
 }
 
-- (BOOL)decryptFileName:(NSString *)fileName fileNameView:(NSString *)fileNameView fileID:(NSString *)fileID key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
+- (BOOL)decryptFileName:(NSString *)fileName fileNameView:(NSString *)fileNameView ocId:(NSString *)ocId key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
 {
     NSMutableData *plainData;
 
-    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
+    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName]];
     if (cipherData == nil)
         return false;
     
@@ -545,7 +506,7 @@ cleanup:
 
     BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
     if (plainData != nil && result) {
-        [plainData writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView] atomically:YES];
+        [plainData writeToFile:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView] atomically:YES];
         return true;
     }
     

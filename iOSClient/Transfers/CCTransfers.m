@@ -1,6 +1,6 @@
 //
 //  CCTransfers.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 12/04/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -78,7 +78,7 @@
     self.tableView.emptyDataSetSource = self;
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     
     // long press recognizer TableView
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
@@ -119,12 +119,12 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIColor whiteColor];
+    return NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] width:300 height:300 color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] width:300 height:300 color:NCBrandColor.sharedInstance.graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -210,8 +210,8 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    if (sectionDataSource.fileIDIndexPath != nil) {
-        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView viewController:self serverUrlViewController:nil];
+    if (sectionDataSource.ocIdIndexPath != nil) {
+        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:nil];
     }
 }
 
@@ -223,8 +223,8 @@
     
     if (indexPath) {
         
-        NSString *fileID = [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        NSString *ocId = [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId = %@", ocId]];
         
         if (metadata)
             [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true uploadStatusForcedStart:false];
@@ -239,7 +239,10 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [[NCMainCommon sharedInstance] cancelAllTransferWithView:self.view];
+        [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
+        [[NCMainCommon sharedInstance] cancelAllTransfer];
+        [NCUtility.sharedInstance stopActivityIndicator];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -268,7 +271,7 @@
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action
+- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action
 {
     // test
     if (appDelegate.activeAccount.length == 0 || self.view.window == nil)
@@ -279,7 +282,7 @@
         
         CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
         
-        sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupByField:@"session" filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO sorted:@"sessionTaskIdentifier" ascending:NO activeAccount:appDelegate.activeAccount];
+        sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupByField:@"session" filterocId:appDelegate.filterocId filterTypeFileImage:NO filterTypeFileVideo:NO sorted:@"sessionTaskIdentifier" ascending:NO activeAccount:appDelegate.activeAccount];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             sectionDataSource = sectionDataSourceTemp;
@@ -501,13 +504,13 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *fileID = [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-    tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    NSString *ocId = [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+    tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:ocId];
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
         return [CCCellMainTransfer new];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:nil serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:nil serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@"" tableShare:nil];
     
     // TRANSFER
     

@@ -1,6 +1,6 @@
 //
 //  CCMove.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -102,7 +102,7 @@
     
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorColor =  NCBrandColor.sharedInstance.seperator;
+    self.tableView.separatorColor =  NCBrandColor.sharedInstance.separator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
 
@@ -155,7 +155,7 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIColor whiteColor];
+    return NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
@@ -164,7 +164,7 @@
         
         UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
-        activityView.color = [NCBrandColor sharedInstance].brandElement;
+        activityView.color = NCBrandColor.sharedInstance.brandElement;
         [activityView startAnimating];
         
         return activityView;
@@ -298,7 +298,7 @@
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             
             // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted account:activeAccount];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted account:activeAccount];
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
             [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
             
@@ -339,7 +339,7 @@
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
-    [[OCNetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *fileID, NSDate *date, NSString *message, NSInteger errorCode) {
+    [[OCNetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *ocId, NSDate *date, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
             [self readFolder];
@@ -398,8 +398,8 @@
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row];
     
-    // Create Directory Provider Storage FileID
-    [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
+    // Create Directory Provider Storage ocId
+    [CCUtility getDirectoryProviderStorageOcId:metadata.ocId];
     
     // colors
     cell.textLabel.textColor = [UIColor blackColor];
@@ -409,15 +409,15 @@
     if (metadata.directory) {
     
         if (metadata.e2eEncrypted)
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         else
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
     } else {
         
-        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
         
         if (thumb) {
             cell.imageView.image = thumb;

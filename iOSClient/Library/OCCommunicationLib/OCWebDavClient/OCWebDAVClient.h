@@ -200,6 +200,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)search:(NSString * _Nonnull)path folder:(NSString * _Nonnull)folder fileName:(NSString * _Nonnull)fileName depth:(NSString * _Nonnull)depth lteDateLastModified:(NSString *)lteDateLastModified gteDateLastModified:(NSString *)gteDateLastModified contentType:(NSArray * _Nonnull)contentType user:(NSString * _Nonnull)user userID:(NSString * _Nonnull)userID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;
 
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName dateLastModified:(NSString *)dateLastModified numberOfItem:(NSInteger)numberOfItem userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure;
+
 NS_ASSUME_NONNULL_END
 
 /**
@@ -444,7 +446,7 @@ NS_ASSUME_NONNULL_END
  * @param success A block callback, to be fired upon successful completion, with two arguments: the request operation and a data with the json file.
  * @param failure A block callback, to be fired upon the failure of the request, with two arguments: the request operation and error.
  */
-- (void) updateShareItem:(NSInteger)shareId ofServerPath:(NSString * _Nonnull)serverPath withPasswordProtect:(NSString * _Nonnull)password andExpirationTime:(NSString * _Nonnull)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
+- (void) updateShareItem:(NSInteger)shareId ofServerPath:(NSString * _Nonnull)serverPath withPasswordProtect:(NSString * _Nonnull)password andNote:(NSString * _Nonnull)note andExpirationTime:(NSString * _Nonnull)expirationTime andPermissions:(NSInteger)permissions andHideDownload:(BOOL)hideDownload
          onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication
                  success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
                  failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
@@ -467,9 +469,6 @@ NS_ASSUME_NONNULL_END
 - (void) searchUsersAndGroupsWith:(NSString * _Nonnull)searchString forPage:(NSInteger)page with:(NSInteger)resultsPerPage ofServer:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication
                           success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
                           failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
-
-- (void) getSharePermissionsFile:(NSString * _Nonnull)fileName onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
-                         failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 ///-----------------------------------
 /// @name Get the server capabilities
@@ -514,7 +513,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString * _Nonnull)serverPath ofFilePath:(NSString *_Nonnull)filePath  withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode path:(NSString * _Nonnull)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
-- (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString * _Nonnull)serverPath ofFileID:(NSString *_Nonnull)fileID onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+- (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString * _Nonnull)serverPath ofFileId:(NSString *_Nonnull)fileId size:(NSString *)size onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 NS_ASSUME_NONNULL_END
 
@@ -587,7 +586,7 @@ NS_ASSUME_NONNULL_END
  *
  */
 
-- (void) getActivityServer:(NSString * _Nonnull)serverPath since:(NSInteger)since limit:(NSInteger)limit previews:(BOOL)previews link:(NSString * _Nonnull)link onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
+- (void) getActivityServer:(NSString * _Nonnull)serverPath since:(NSInteger)since limit:(NSInteger)limit objectId:(NSString * _Nonnull)objectId objectType:(NSString * _Nonnull)objectType previews:(BOOL)previews link:(NSString * _Nonnull)link onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 ///-----------------------------------
 /// @name Get the list of External sites
@@ -666,7 +665,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-- (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileID:(NSString * _Nonnull)fileID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+- (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileId:(NSString * _Nonnull)fileId onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)getTemplatesRichdocuments:(NSString *_Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
@@ -678,12 +677,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)fullTextSearch:(NSString *)serverPath data:(NSString *)data onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
+#pragma mark - Remore wipe
+
+- (void)getSetRemoteWipe:(NSString *)serverPath token:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
 #pragma mark - Trash
 
 - (void)listTrash:(NSString *)path depth:(NSString *)depth onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)emptyTrash:(NSString*)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
+
+#pragma mark - Messages
+
+- (void)getComments:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
+- (void)putComments:(NSString*)serverPath message:(NSString *)message onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id responseObject, NSError *error))failure;
+
+- (void)updateComments:(NSString*)serverPath message:(NSString *)message onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id responseObject, NSError *error))failure;
+
+- (void)readMarkComments:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id responseObject, NSError *error))failure;
+
+- (void)deleteComments:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id responseObject, NSError *error))failure;
 
 #pragma mark - Third Parts
 

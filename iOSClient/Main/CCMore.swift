@@ -24,15 +24,17 @@
 
 import UIKit
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, CCLoginDelegateWeb {
+class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, NCLoginWebDelegate {
 
     @IBOutlet weak var themingBackground: UIImageView!
+    @IBOutlet weak var disclosureIndicator: UIImageView!
     @IBOutlet weak var themingAvatar: UIImageView!
     @IBOutlet weak var labelUsername: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var labelQuotaExternalSite: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
+    @IBOutlet weak var viewQuota: UIView!
 
     var functionMenu = [OCExternalSites]()
     var externalSiteMenu = [OCExternalSites]()
@@ -55,8 +57,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         tableView.delegate = self
         tableView.dataSource = self
-        
-        tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
         if #available(iOS 11, *) {
             //tableView.contentInsetAdjustmentBehavior = .never
@@ -186,7 +186,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // User data & Theming
         changeUserProfile()
         changeTheming()
-        
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        tableView.separatorColor = NCBrandColor.sharedInstance.separator
+
         // Title
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
@@ -219,6 +222,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         } else {
             themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         }
+        
+        labelUsername.textColor = NCBrandColor.sharedInstance.brandText
+        
+        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)
         
         if (self.isViewLoaded && (self.view.window != nil)) {
             appDelegate.changeTheming(self)
@@ -337,9 +344,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
 
         // change color selection and disclosure indicator
         let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
+        selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
         cell.selectedBackgroundView = selectionColor
-        
+        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
         
         // Menu Normal
@@ -405,16 +412,19 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
-                webVC.delegate = self
-                self.navigationController?.pushViewController(webVC, animated: true)
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
+                browserWebVC.isHiddenButtonExit = true
+                
+                self.navigationController?.pushViewController(browserWebVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true)
-                webVC.delegateWeb = self
-                self.present(webVC, animated: true, completion: nil)
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
+
+                self.present(browserWebVC, animated: true, completion: nil)
             }
             
         } else if item.url == "logout" {
@@ -447,16 +457,19 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
-                webVC.delegate = self
-                self.navigationController?.pushViewController(webVC, animated: true)
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
+                browserWebVC.isHiddenButtonExit = true
+                
+                self.navigationController?.pushViewController(browserWebVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: false)
-                webVC.delegateWeb = self
-                self.present(webVC, animated: true, completion: nil)
+                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                browserWebVC.urlBase = item.url
+                
+                self.present(browserWebVC, animated: true, completion: nil)
             }
         }
     }
@@ -473,40 +486,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))        
-    }
-}
-
-extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
-    
-    public func didStartLoading() {
-        //print("Started loading.")
-    }
-    
-    public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
-        
-        let urlString: String = url.absoluteString.lowercased()
-        
-        // Protocol close webVC
-        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocolPersonalized) == true) {
-            
-            if (self.presentingViewController != nil) {
-                self.dismiss(animated: true, completion: nil)
-            } else {
-                self.navigationController?.popToRootViewController(animated: true)
-            }
-        }
-    }
-    
-    public func didFinishLoading(success: Bool) {
-        //print("Finished loading. Success: \(success).")
-    }
-    
-    public func didFinishLoading(success: Bool, url: URL) {
-        //print("Finished loading. Success: \(success).")
-    }
-    
-    public func webDismiss() {
-        //print("Web dismiss.")
     }
 }
 

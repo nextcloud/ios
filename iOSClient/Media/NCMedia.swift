@@ -37,7 +37,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
    
     private var metadataPush: tableMetadata?
     private var isEditMode = false
-    private var selectFileID = [String]()
+    private var selectocId = [String]()
     
     private var filterTypeFileImage = false;
     private var filterTypeFileVideo = false;
@@ -109,6 +109,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // Aspect Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
@@ -252,9 +253,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         menu?.rowHeight = 45
         menu?.highlightColor = NCBrandColor.sharedInstance.brand
         menu?.tableView.alwaysBounceVertical = false
-        menu?.tableViewBackgroundColor = UIColor.white
+        menu?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
         menu?.topOffsetY = menuView.bounds.height
-    
+        menu?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menu?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        menu?.textColor = NCBrandColor.sharedInstance.textView
+        
         menu?.showMenu()
     }
     
@@ -282,7 +286,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             switch indexPath.row {
             case 0:
                 isEditMode = false
-                selectFileID.removeAll()
+                selectocId.removeAll()
                 collectionView?.reloadDataThenPerform {
                     self.downloadThumbnail()
                 }
@@ -309,7 +313,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
         viewController.type = "mediaFolder"
         
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
         
     }
@@ -336,8 +340,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         let photoDataSource: NSMutableArray = []
         
-        for fileID: String in sectionDatasource.allFileID as! [String] {
-            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
+        for ocId: String in sectionDatasource.allOcId as! [String] {
+            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: ocId) as! tableMetadata
             if metadata.typeFile == k_metadataTypeFile_image {
                 photoDataSource.add(metadata)
             }
@@ -396,10 +400,10 @@ extension NCMedia: UICollectionViewDelegate {
         metadataPush = metadata
         
         if isEditMode {
-            if let index = selectFileID.firstIndex(of: metadata.fileID) {
-                selectFileID.remove(at: index)
+            if let index = selectocId.firstIndex(of: metadata.ocId) {
+                selectocId.remove(at: index)
             } else {
-                selectFileID.append(metadata.fileID)
+                selectocId.append(metadata.ocId)
             }
             if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                 collectionView.reloadItems(at: [indexPath])
@@ -468,7 +472,7 @@ extension NCMedia: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectFileID: selectFileID, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, source: self)
+        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, shares: nil, source: self)
         
         return cell
     }
@@ -496,14 +500,14 @@ extension NCMedia {
 
     public func reloadDataSource(loadNetworkDatasource: Bool) {
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
         DispatchQueue.global().async {
             
             let metadatas = NCManageDatabase.sharedInstance.getTablesMedia(account: self.appDelegate.activeAccount)
-            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterFileID: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterocId: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
                 
@@ -522,23 +526,23 @@ extension NCMedia {
     
     func deleteItems() {
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
         var metadatas = [tableMetadata]()
         
-        for fileID in selectFileID {
-            if let metadata = NCManageDatabase.sharedInstance.getTableMedia(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+        for ocId in selectocId {
+            if let metadata = NCManageDatabase.sharedInstance.getTableMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
                 metadatas.append(metadata)
             }
         }
         
         if metadatas.count > 0 {
-            NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderFileID: "") { (errorCode, message) in
+            NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderocId: "") { (errorCode, message) in
                 
                 self.isEditMode = false
-                self.selectFileID.removeAll()
+                self.selectocId.removeAll()
                 
                 self.selectSearchSections()
             }
@@ -555,7 +559,7 @@ extension NCMedia {
 #endif
         // -----------------
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
@@ -641,7 +645,7 @@ extension NCMedia {
         
         isDistantPast = false
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         
@@ -663,7 +667,7 @@ extension NCMedia {
     
     private func selectSearchSections() {
         
-        if appDelegate.activeAccount.count == 0 {
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
         

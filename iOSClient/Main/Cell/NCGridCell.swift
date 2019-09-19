@@ -34,23 +34,13 @@ class NCGridCell: UICollectionViewCell {
     @IBOutlet weak var imageLocal: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
-
-    @IBOutlet weak var imageShare: UIImageView!
-    @IBOutlet weak var imageShareTrailing: NSLayoutConstraint!
-
     @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCGridCellDelegate?
     
-    var fileID = ""
+    var objectId = ""
     var indexPath = IndexPath()
     
-    let labelTitleTrailingConstant: CGFloat = 50
-    let imageShareTrailingConstant: CGFloat = 25
-    let imageShareWidth: CGFloat = 25
-    let buttonMoreWidth: CGFloat = 25
-
     override func awakeFromNib() {
         super.awakeFromNib()
        
@@ -58,44 +48,10 @@ class NCGridCell: UICollectionViewCell {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: fileID, sender: sender)
-    }
-    
-    func hide(buttonMore: Bool, hideImageShare: Bool) {
-        
-        if buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageShare.isHidden = true
-            
-            labelTitleTrailing.constant = 0
-            
-        } else if buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = true
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = 0
-            labelTitleTrailing.constant = imageShareWidth
-            
-        } else if !buttonMore && hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageShare.isHidden = true
-            
-            labelTitleTrailing.constant = buttonMoreWidth
-            
-        } else if !buttonMore && !hideImageShare {
-            
-            self.buttonMore.isHidden = false
-            self.imageShare.isHidden = false
-            
-            imageShareTrailing.constant = imageShareTrailingConstant
-            labelTitleTrailing.constant = labelTitleTrailingConstant
-        }
+        delegate?.tapMoreGridItem(with: objectId, sender: sender)
     }
 }
 
 protocol NCGridCellDelegate {
-    func tapMoreGridItem(with fileID: String, sender: Any)
+    func tapMoreGridItem(with objectId: String, sender: Any)
 }

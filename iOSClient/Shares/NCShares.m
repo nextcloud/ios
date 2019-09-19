@@ -1,6 +1,6 @@
 //
 //  NCShares.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 05/06/17.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -62,7 +62,6 @@
     _dataSource = [NSMutableArray new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
@@ -84,7 +83,9 @@
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
+    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
+
     // Plus Button
     [appDelegate plusButtonVisibile:true];
     
@@ -106,12 +107,12 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIColor whiteColor];
+    return NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:300 height:300 color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:300 height:300 color:NCBrandColor.sharedInstance.graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -177,30 +178,12 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)removeShares:(tableMetadata *)metadata tableShare:(tableShare *)tableShare
-{
-    NSString *shareString;
-    
-    // Unshare Link
-    if (tableShare.shareLink.length > 0) {
-        
-        shareString = tableShare.shareLink;
-    }
-    
-    // Unshare User&Group
-    NSArray *shareUserAndGroup = [tableShare.shareUserAndGroup componentsSeparatedByString:@","];
-    for (NSString *share in shareUserAndGroup) {
-        shareString = [share stringByReplacingOccurrencesOfString:@" " withString:@""];
-    }
-    
-    [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:[shareString integerValue] completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+{    
+    [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:tableShare.idRemoteShared completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            NSArray *result = [[NCManageDatabase sharedInstance] unShare:shareString fileName:metadata.fileName serverUrl:metadata.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:account];
-            
-            appDelegate.sharesLink = result[0];
-            appDelegate.sharesUserAndGroup = result[1];
-            
+            [[NCManageDatabase sharedInstance] deleteTableShareWithAccount:account idRemoteShared:tableShare.idRemoteShared];
             [self reloadDatasource];
             
         } else if (errorCode != 0) {
@@ -297,8 +280,10 @@
         
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
+    selectionColor.backgroundColor = NCBrandColor.sharedInstance.select;
     cell.selectedBackgroundView = selectionColor;
+    cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView;
     
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
@@ -308,11 +293,11 @@
         
         if (metadata.directory) {
             
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
         } else {
             
-            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
 
             if (cell.fileImageView.image == nil) {
                 
@@ -324,7 +309,7 @@
         
     } else {
         
-        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
         [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
@@ -356,7 +341,7 @@
         
         metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.activeAccount, table.serverUrl, table.fileName]];
         if (metadata) {
-            [appDelegate.activeMain openShareWithMetadata:metadata];
+            [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
         }
     }
 }

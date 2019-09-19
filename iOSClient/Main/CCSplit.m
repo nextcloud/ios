@@ -1,6 +1,6 @@
  //
 //  CCSplit.m
-//  Nextcloud iOS
+//  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/15.
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
@@ -27,7 +27,7 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCSplit () <CCLoginDelegate, NCLoginWebDelegate>
 {
     AppDelegate *appDelegate;
     BOOL prevRunningInFullScreen;
