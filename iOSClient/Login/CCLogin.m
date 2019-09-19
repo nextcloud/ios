@@ -118,15 +118,6 @@
         _password.hidden = YES;
         _annulla.hidden = YES;
     }
-    
-    if (_loginType == k_login_Modify_Password) {
-        _baseUrl.text = appDelegate.activeUrl;
-        _baseUrl.userInteractionEnabled = NO;
-        _baseUrl.textColor = [UIColor lightGrayColor];
-        _user.text = appDelegate.activeUser;
-        _user.userInteractionEnabled = NO;
-        _user.textColor = [UIColor lightGrayColor];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -134,7 +125,7 @@
     [super viewWillAppear:animated];
 
     // verify URL
-    if (_loginType == k_login_Modify_Password && [self.baseUrl.text length] > 0)
+    if ([self.baseUrl.text length] > 0)
         [self testUrl];
 }
 
@@ -239,8 +230,8 @@
 
 - (void)trustedCerticateDenied
 {
-    if (_loginType == k_login_Modify_Password)
-        [self handleAnnulla:self];
+   // if (_loginType == k_login_Modify_Password)
+        //[self handleAnnulla:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -348,42 +339,23 @@
                 
                 NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
                 
-                if (_loginType == k_login_Modify_Password) {
-                    
-                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-                    
-                    // Change Password
-                    [CCUtility setPassword:account password:token];
-                    
-                    // Setting appDelegate active account
-                    [appDelegate settingActiveAccount:account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:token];
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-                    
-                    [self dismissViewControllerAnimated:YES completion:nil];
-                    
-                } else {
-                    
-                    // NO account found, clear
-                    if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
-                    
-                    // STOP Intro
-                    [CCUtility setIntro:YES];
-                    
-                    [[NCManageDatabase sharedInstance] deleteAccount:account];
-                    [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
-                    
-                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-                    
-                    // Setting appDelegate active account
-                    [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-                    
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                        [self dismissViewControllerAnimated:YES completion:nil];
-                    });
-                }
+                // NO account found, clear
+                if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
+                
+                // STOP Intro
+                [CCUtility setIntro:YES];
+                
+                [[NCManageDatabase sharedInstance] deleteAccount:account];
+                [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
+                
+                tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+                
+                // Setting appDelegate active account
+                [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+                
+                [self dismissViewControllerAnimated:YES completion:nil];
                 
             } else {
                 

@@ -407,7 +407,7 @@
 {    
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
+    [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------

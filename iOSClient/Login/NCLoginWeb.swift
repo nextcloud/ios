@@ -132,56 +132,27 @@ extension NCLoginWeb: WKNavigationDelegate {
                     
                     let account : String = "\(username) \(serverUrl)"
                     
-                    // Login Flow
-                    if (loginType == k_login_Modify_Password && NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
+                    // NO account found, clear
+                    if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
                         
-                        // Verify if change the active account
-                        guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
-                            self.dismiss(animated: true, completion: nil)
-                            return
-                        }
-                        if (activeAccount.account != account) {
-                            self.dismiss(animated: true, completion: nil)
-                            return
-                        }
+                    // STOP Intro
+                    CCUtility.setIntro(true)
                         
-                        // Change Password & setting active account
-                        CCUtility.setPassword(account, password: token)
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: appDelegate.activeUserID, activePassword: token)
+                    // Add new account
+                    NCManageDatabase.sharedInstance.deleteAccount(account)
+                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
                         
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-                        
-                        self.dismiss(animated: true) {
-                            self.delegate?.loginWebDismiss?()
-                        }
+                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                        self.dismiss(animated: true, completion: nil)
+                        return
                     }
-                    
-                    if (loginType == k_login_Add || loginType == k_login_Add_Forced) {
                         
-                        // NO account found, clear
-                        if NCManageDatabase.sharedInstance.getAccounts() == nil {
-                            NCUtility.sharedInstance.removeAllSettings()
-                        }
+                    appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
                         
-                        // STOP Intro
-                        CCUtility.setIntro(true)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
                         
-                        // Add new account
-                        NCManageDatabase.sharedInstance.deleteAccount(account)
-                        NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
-                        
-                        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
-                            self.dismiss(animated: true, completion: nil)
-                            return
-                        }
-                        
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
-                        
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-                        
-                        self.dismiss(animated: true) {
-                            self.delegate?.loginWebDismiss?()
-                        }
+                    self.dismiss(animated: true) {
+                        self.delegate?.loginWebDismiss?()
                     }
                 }
             }

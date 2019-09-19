@@ -269,7 +269,7 @@ PKPushRegistry *pushRegistry;
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
-        [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
+        [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add selector:k_intro_login];
     }
     
     // check certificate untrusted (-1202)
