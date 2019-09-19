@@ -23,17 +23,13 @@
 
 import Foundation
 
-@objc protocol NCLoginWebDelegate: class {
-    @objc optional func loginWebDismiss()
-}
-
 class NCLoginWeb: UIViewController {
     
     var webView: WKWebView?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
-    @objc weak var delegate: NCLoginWebDelegate?
+    @objc var buttonExitVisible = true
 
     @IBOutlet weak var buttonExit: UIButton!
 
@@ -57,12 +53,10 @@ class NCLoginWeb: UIViewController {
             urlBase =  urlBase + k_flowEndpoint
         }
         
-        // button exit
-        let listAccount = NCManageDatabase.sharedInstance.getAccounts()
-        if listAccount?.count == 0 {
-            buttonExit.isHidden = true
-        } else {
+        if buttonExitVisible {
             self.view.bringSubviewToFront(buttonExit)
+        } else {
+            buttonExit.isHidden = true
         }
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
@@ -95,8 +89,9 @@ class NCLoginWeb: UIViewController {
     }
     
     @IBAction func touchUpInsideButtonExit(_ sender: UIButton) {
+        
         self.dismiss(animated: true) {
-            self.delegate?.loginWebDismiss?()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
         }
     }
 }
@@ -150,10 +145,10 @@ extension NCLoginWeb: WKNavigationDelegate {
                     appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
                         
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-                        
+                    
                     self.dismiss(animated: true) {
-                        self.delegate?.loginWebDismiss?()
-                    }
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
+                    } 
                 }
             }
         }

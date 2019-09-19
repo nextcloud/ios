@@ -27,7 +27,7 @@
 #import "NCBridgeSwift.h"
 #import "NCNetworkingEndToEnd.h"
 
-@interface CCLogin () <NCLoginWebDelegate, NCLoginQRCodeDelegate>
+@interface CCLogin () <NCLoginQRCodeDelegate>
 {
     AppDelegate *appDelegate;
     UIView *rootView;
@@ -35,6 +35,20 @@
 @end
 
 @implementation CCLogin
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Init =====
+#pragma --------------------------------------------------------------------------------------------
+
+-  (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissCCLogin) name:@"dismissCCLogin" object:nil];
+    }
+    
+    return self;
+}
 
 - (void)viewDidLoad
 {
@@ -119,15 +133,6 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-
-    // verify URL
-    if ([self.baseUrl.text length] > 0)
-        [self testUrl];
-}
-
 // E' apparsa
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -181,7 +186,6 @@
             if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
                 
                 appDelegate.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                appDelegate.activeLoginWeb.delegate = self;
                 appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
                 
                 [self presentViewController:appDelegate.activeLoginWeb animated:YES completion:nil];
@@ -289,13 +293,9 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === NCLoginWebDelegate ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loginWebDismiss
+- (void)dismissCCLogin
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
