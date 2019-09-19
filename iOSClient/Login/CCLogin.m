@@ -133,7 +133,6 @@
     }
 }
 
-// E' apparsa
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -142,7 +141,6 @@
     [appDelegate.timerErrorNetworking invalidate];
 }
 
-//
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];

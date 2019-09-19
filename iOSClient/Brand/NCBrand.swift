@@ -23,6 +23,81 @@
 
 import UIKit
 
+//MARK: - Configuration
+
+@objc class NCBrandConfiguration: NSObject {
+    
+    @objc static let sharedInstance: NCBrandConfiguration = {
+        let instance = NCBrandConfiguration()
+        return instance
+    }()
+    
+    @objc public let configuration_bundleId:            String = "it.twsweb.Nextcloud"
+    @objc public let configuration_serverUrl:           String = "serverUrl"
+    @objc public let configuration_username:            String = "username"
+    @objc public let configuration_password:            String = "password"
+}
+
+//MARK: - Options
+
+@objc class NCBrandOptions: NSObject {
+    
+    @objc static let sharedInstance: NCBrandOptions = {
+        let instance = NCBrandOptions()
+        return instance
+    }()
+    
+    @objc public var brand:                             String = "Nextcloud"
+    @objc public var mailMe:                            String = "ios@nextcloud.com"
+    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2019"
+    @objc public var textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
+    @objc public var loginBaseUrl:                      String = "https://cloud.nextcloud.com"
+    @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
+    @objc public var linkLoginHost:                     String = "https://nextcloud.com/install"
+    @objc public var linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
+    @objc public var middlewarePingUrl:                 String = ""
+    @objc public var webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
+    // Personalized
+    @objc public var webCloseViewProtocolPersonalized:  String = ""                                                 // example "abc://change/plan"      Don't touch me !!
+    @objc public var folderBrandAutoUpload:             String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
+    
+    // Auto Upload default folder
+    @objc public var folderDefaultAutoUpload:           String = "Photos"
+    
+    // Capabilities Group
+    @objc public var capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
+    
+    // User Agent
+    @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
+    
+    // Options
+    @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
+    @objc public var use_default_auto_upload:           Bool = false
+    @objc public var use_themingColor:                  Bool = true
+    @objc public var use_themingBackground:             Bool = true
+    @objc public var use_themingLogo:                   Bool = false
+    @objc public var use_middlewarePing:                Bool = false
+    @objc public var use_storeLocalAutoUploadAll:       Bool = false
+    @objc public var use_imi_viewer:                    Bool = false                                                // Don't touch me !!
+    @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
+    
+    @objc public var disable_intro:                     Bool = false
+    @objc public var disable_request_login_url:         Bool = false
+    @objc public var disable_multiaccount:              Bool = false
+    @objc public var disable_manage_account:            Bool = false
+    @objc public var disable_more_external_site:        Bool = false
+    @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
+    
+    override init() {
+        
+        if folderBrandAutoUpload != "" {
+            folderDefaultAutoUpload = folderBrandAutoUpload
+        }
+    }
+}
+
+//MARK: - Color
+
 class NCBrandColor: NSObject {
 
     @objc static let sharedInstance: NCBrandColor = {
@@ -80,73 +155,3 @@ class NCBrandColor: NSObject {
         }
     }
 }
-
-@objc class NCBrandOptions: NSObject {
-    
-    @objc static let sharedInstance: NCBrandOptions = {
-        let instance = NCBrandOptions()
-        return instance
-    }()
-    
-    @objc public let brand:                             String = "Nextcloud"
-    @objc public let mailMe:                            String = "ios@nextcloud.com"
-    @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2019"
-    @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
-    @objc public let loginBaseUrl:                      String = "https://cloud.nextcloud.com"
-    @objc public let pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
-    @objc public let linkLoginHost:                     String = "https://nextcloud.com/install"
-    @objc public let linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
-    @objc public let middlewarePingUrl:                 String = ""
-    @objc public let webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
-    // Personalized
-    @objc public let webCloseViewProtocolPersonalized:  String = ""                                                 // example "abc://change/plan"      Don't touch me !!
-    @objc public let folderBrandAutoUpload:             String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
-
-    // Auto Upload default folder
-    @objc public var folderDefaultAutoUpload:           String = "Photos"
-    
-    // Capabilities Group
-    @objc public let capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
-    
-    // User Agent
-    @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
-        
-    // Options
-    @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
-    @objc public var use_default_auto_upload:           Bool = false
-    @objc public var use_themingColor:                  Bool = true
-    @objc public var use_themingBackground:             Bool = true
-    @objc public var use_themingLogo:                   Bool = false
-    @objc public var use_middlewarePing:                Bool = false
-    @objc public var use_storeLocalAutoUploadAll:       Bool = false
-    @objc public var use_imi_viewer:                    Bool = false                                                // Don't touch me !!
-    @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
-
-    @objc public var disable_intro:                     Bool = false
-    @objc public var disable_request_login_url:         Bool = false
-    @objc public var disable_multiaccount:              Bool = false
-    @objc public var disable_manage_account:            Bool = false
-    @objc public var disable_more_external_site:        Bool = false
-    @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
-
-    override init() {
-        
-        if folderBrandAutoUpload != "" {
-            folderDefaultAutoUpload = folderBrandAutoUpload
-        }
-    }
-}
-
-@objc class NCBrandConfiguration: NSObject {
-    
-    @objc static let sharedInstance: NCBrandConfiguration = {
-        let instance = NCBrandConfiguration()
-        return instance
-    }()
-    
-    @objc public let configuration_bundleId:            String = "it.twsweb.Nextcloud"
-    @objc public let configuration_serverUrl:           String = "serverUrl"
-    @objc public let configuration_username:            String = "username"
-    @objc public let configuration_password:            String = "password"
-}
-
