@@ -288,7 +288,54 @@
                 self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
             }
             
-            [self handleButtonLogin:self];
+            NSString *url = self.baseUrl.text;
+            NSString *user = self.user.text;
+            NSString *token = self.password.text;
+            
+            self.login.enabled = NO;
+            [self.activity startAnimating];
+            
+            [[OCNetworking sharedManager] checkServerUrl:[NSString stringWithFormat:@"%@%@", url, k_webDAV] user:user userID:user password:token completion:^(NSString *message, NSInteger errorCode) {
+
+                [self.activity stopAnimating];
+                self.login.enabled = YES;
+                
+                if (errorCode == 0) {
+                    
+                    NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
+                    
+                    // NO account found, clear
+                    if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
+                    
+                    // STOP Intro
+                    [CCUtility setIntro:YES];
+                    
+                    [[NCManageDatabase sharedInstance] deleteAccount:account];
+                    [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
+                    
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+                    
+                    // Setting appDelegate active account
+                    [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+                    
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                    
+                } else {
+                    
+                    if (errorCode != NSURLErrorServerCertificateUntrusted) {
+                        
+                        NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
+                        
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                        
+                        [alertController addAction:okAction];
+                        [self presentViewController:alertController animated:YES completion:nil];
+                    }
+                }
+            }];
         }
     }
 }
@@ -356,9 +403,6 @@
                 [self dismissViewControllerAnimated:YES completion:nil];
                 
             } else {
-                
-                self.login.enabled = YES;
-                [self.activity stopAnimating];
                 
                 if (errorCode != NSURLErrorServerCertificateUntrusted) {
                     
