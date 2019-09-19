@@ -336,17 +336,15 @@
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+        NSInteger errorCode = httpResponse.statusCode;
+        
         NSString *message;
-        NSInteger errorCode = 0;
         NSString *token = nil;
         
-        if (error) {
+        if (error || !(errorCode >= 200 && errorCode < 300)) {
             
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-            errorCode = httpResponse.statusCode;
-            
-            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-                errorCode = error.code;
+            if (errorCode == 0) errorCode = error.code;
             
             // Error
             if (errorCode == 503)
