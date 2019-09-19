@@ -139,11 +139,9 @@
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 
-// Timer Error Networking
+// Login
 - (void)startTimerErrorNetworking;
-
-// Login View
-- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector;
+- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector unauthorized:(BOOL)unauthorized;
 
 // Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;

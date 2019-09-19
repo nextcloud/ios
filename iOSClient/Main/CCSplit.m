@@ -134,7 +134,7 @@
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
         [CCUtility setIntro:YES];
-        [appDelegate openLoginView:self selector:k_intro_login];
+        [appDelegate openLoginView:self selector:k_intro_login unauthorized:false];
         
     
     } else {
@@ -146,7 +146,7 @@
         
         } else {
             if (appDelegate.activeAccount.length == 0) {
-                [appDelegate openLoginView:self selector:k_intro_login];
+                [appDelegate openLoginView:self selector:k_intro_login unauthorized:false];
             }
         }
     }
@@ -160,7 +160,7 @@
             {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     if (appDelegate.activeAccount.length == 0) {
-                        [appDelegate openLoginView:self selector:k_intro_login];
+                        [appDelegate openLoginView:self selector:k_intro_login unauthorized:false];
                     }
                 });
             }
@@ -168,7 +168,7 @@
             
         case k_intro_signup:
             {
-                [appDelegate openLoginView:self selector:k_intro_signup];
+                [appDelegate openLoginView:self selector:k_intro_signup unauthorized:false];
             }
             break;
     }

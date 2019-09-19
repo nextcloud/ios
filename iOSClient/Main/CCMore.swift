@@ -436,7 +436,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.activeAccount)
                 
-                self.appDelegate.openLoginView(self, selector: Int(k_intro_login)) 
+                self.appDelegate.openLoginView(self, selector: Int(k_intro_login), unauthorized:false)
             }
             
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
