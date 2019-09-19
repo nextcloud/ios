@@ -134,10 +134,6 @@ class NCBrandColor: NSObject {
         if folderBrandAutoUpload != "" {
             folderDefaultAutoUpload = folderBrandAutoUpload
         }
-        
-        if use_configuration {
-            disable_intro = true
-        }
     }
 }
 

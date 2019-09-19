@@ -51,6 +51,4 @@
 
 @property (nonatomic, weak) IBOutlet UIButton *qrCode;
 
-@property NSInteger loginType;
-
 @end

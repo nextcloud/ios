@@ -269,7 +269,7 @@ PKPushRegistry *pushRegistry;
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
-        [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add selector:k_intro_login];
+        [self openLoginView:self.window.rootViewController selector:k_intro_login];
     }
     
     // check certificate untrusted (-1202)
@@ -278,7 +278,7 @@ PKPushRegistry *pushRegistry;
     }
 }
 
-- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
+- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector
 {
     @synchronized (self) {
 
@@ -305,7 +305,6 @@ PKPushRegistry *pushRegistry;
                 self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 
                 self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-                self.activeLoginWeb.loginType = loginType;
 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
@@ -327,7 +326,6 @@ PKPushRegistry *pushRegistry;
                 } else {
                     self.activeLoginWeb.urlBase = self.activeUrl;
                 }
-                self.activeLoginWeb.loginType = loginType;
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
@@ -339,7 +337,6 @@ PKPushRegistry *pushRegistry;
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             
             self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-            self.activeLoginWeb.loginType = loginType;
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                 [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
@@ -350,7 +347,6 @@ PKPushRegistry *pushRegistry;
             if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
                 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-                _activeLogin.loginType = loginType;
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:_activeLogin animated:YES completion:nil];
@@ -407,7 +403,7 @@ PKPushRegistry *pushRegistry;
             [self settingActiveAccount:newAccount activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
         } else {
-            [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+            [self openLoginView:self.window.rootViewController selector:k_intro_login];
         }
     }
 }

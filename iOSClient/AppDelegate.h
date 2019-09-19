@@ -143,7 +143,7 @@
 - (void)startTimerErrorNetworking;
 
 // Login View
-- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
+- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector;
 
 // Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;

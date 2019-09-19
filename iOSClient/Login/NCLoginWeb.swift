@@ -33,7 +33,6 @@ class NCLoginWeb: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
-    @objc var loginType: Int = 0
     @objc weak var delegate: NCLoginWebDelegate?
 
     @IBOutlet weak var buttonExit: UIButton!
@@ -59,7 +58,8 @@ class NCLoginWeb: UIViewController {
         }
         
         // button exit
-        if loginType == k_login_Add_Forced {
+        let listAccount = NCManageDatabase.sharedInstance.getAccounts()
+        if listAccount?.count == 0 {
             buttonExit.isHidden = true
         } else {
             self.view.bringSubviewToFront(buttonExit)

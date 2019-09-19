@@ -103,20 +103,19 @@
         _imageBaseUrl.hidden = YES;
         _baseUrl.hidden = YES;
     }
-
-    if (_loginType == k_login_Add ) {
-        _imageUser.hidden = YES;
-        _user.hidden = YES;
-        _imagePassword.hidden = YES;
-        _password.hidden = YES;
-    }
     
-    if (_loginType == k_login_Add_Forced) {
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+    if ([listAccount count] == 0) {
         _imageUser.hidden = YES;
         _user.hidden = YES;
         _imagePassword.hidden = YES;
         _password.hidden = YES;
         _annulla.hidden = YES;
+    } else {
+        _imageUser.hidden = YES;
+        _user.hidden = YES;
+        _imagePassword.hidden = YES;
+        _password.hidden = YES;
     }
 }
 
@@ -184,7 +183,6 @@
                 appDelegate.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 appDelegate.activeLoginWeb.delegate = self;
                 appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
-                appDelegate.activeLoginWeb.loginType = _loginType;
                 
                 [self presentViewController:appDelegate.activeLoginWeb animated:YES completion:nil];
             }

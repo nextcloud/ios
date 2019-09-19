@@ -338,7 +338,7 @@
     
     // Open Login
     if (listAccount.count == 0) {
-        [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+        [appDelegate openLoginView:self selector:k_intro_login];
     }
 }
 
@@ -396,7 +396,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
+    [appDelegate openLoginView:self selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -407,7 +407,7 @@
 {    
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
+    [appDelegate openLoginView:self selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
