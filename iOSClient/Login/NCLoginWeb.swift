@@ -29,7 +29,6 @@ class NCLoginWeb: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
-    @objc var buttonExitVisible = true
 
     @IBOutlet weak var buttonExit: UIButton!
 
@@ -53,11 +52,8 @@ class NCLoginWeb: UIViewController {
             urlBase =  urlBase + k_flowEndpoint
         }
         
-        if buttonExitVisible {
-            self.view.bringSubviewToFront(buttonExit)
-        } else {
-            buttonExit.isHidden = true
-        }
+        // buttonExitVisible
+        self.view.bringSubviewToFront(buttonExit)
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
     }
