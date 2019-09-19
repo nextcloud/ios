@@ -269,7 +269,7 @@ PKPushRegistry *pushRegistry;
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
-        [self openLoginView:self.window.rootViewController selector:k_intro_login unauthorized:true];
+        [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
@@ -278,7 +278,7 @@ PKPushRegistry *pushRegistry;
     }
 }
 
-- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector unauthorized:(BOOL)unauthorized
+- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb
 {
     @synchronized (self) {
 
@@ -340,7 +340,7 @@ PKPushRegistry *pushRegistry;
                 [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
             });
             
-        } else if (unauthorized) {
+        } else if (openLoginWeb) {
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
@@ -412,7 +412,7 @@ PKPushRegistry *pushRegistry;
             [self settingActiveAccount:newAccount activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
         } else {
-            [self openLoginView:self.window.rootViewController selector:k_intro_login unauthorized:false];
+            [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:false];
         }
     }
 }

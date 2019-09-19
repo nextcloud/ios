@@ -141,7 +141,7 @@
 
 // Login
 - (void)startTimerErrorNetworking;
-- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector unauthorized:(BOOL)unauthorized;
+- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb;
 
 // Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;

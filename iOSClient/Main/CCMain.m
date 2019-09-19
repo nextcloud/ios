@@ -2075,7 +2075,7 @@
 
 - (void)addNewAccount:(CCMenuItem *)sender
 {
-    [appDelegate openLoginView:self selector:k_intro_login unauthorized:false];
+    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
