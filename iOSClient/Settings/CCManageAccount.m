@@ -29,7 +29,7 @@
 
 #define actionSheetCancellaAccount 1
 
-@interface CCManageAccount () <CCLoginDelegate, NCLoginWebDelegate>
+@interface CCManageAccount ()
 {
     AppDelegate *appDelegate;
 }
@@ -386,15 +386,6 @@
             }
         }
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate Login ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loginSuccess
-{
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -191,9 +191,9 @@
             if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
                 
                 appDelegate.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+                appDelegate.activeLoginWeb.delegate = self;
                 appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
                 appDelegate.activeLoginWeb.loginType = _loginType;
-                appDelegate.activeLoginWeb.delegate = self;
                 
                 [self presentViewController:appDelegate.activeLoginWeb animated:YES completion:nil];
             }
@@ -304,13 +304,8 @@
 #pragma mark === NCLoginWebDelegate ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)loginSuccess
-{
-    [self.delegate loginSuccess];
-}
-
 - (void)loginWebDismiss
-{   
+{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -363,7 +358,7 @@
                     // Setting appDelegate active account
                     [appDelegate settingActiveAccount:account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:token];
                     
-                    [self.delegate loginSuccess];
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
                     
                     [self dismissViewControllerAnimated:YES completion:nil];
                     
@@ -383,7 +378,7 @@
                     // Setting appDelegate active account
                     [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
                     
-                    [self.delegate loginSuccess];
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
                     
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                         [self dismissViewControllerAnimated:YES completion:nil];
@@ -428,8 +423,7 @@
                     // Setting appDelegate active account
                     [appDelegate settingActiveAccount:account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:password];
                     
-                    [self.delegate loginSuccess:_loginType];
-                    
+         
                     [self dismissViewControllerAnimated:YES completion:nil];
                     
                 } else {
@@ -450,7 +444,6 @@
                     // Setting appDelegate active account
                     [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
                     
-                    [self.delegate loginSuccess:_loginType];
                     
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                         [self dismissViewControllerAnimated:YES completion:nil];

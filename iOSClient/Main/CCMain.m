@@ -36,7 +36,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, NCLoginWebDelegate, NCSelectDelegate, UITextFieldDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -308,7 +308,6 @@
 //
 // Callers :
 //
-// loginSuccess (delagate)
 // ChangeDefaultAccount (delegate)
 // Split : inizialize
 // Settings Advanced : removeAllFiles
@@ -913,15 +912,6 @@
         
         [self presentViewController:notificationVC animated:YES completion:nil];
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate Login ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loginSuccess
-{
-   [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 #pragma mark -

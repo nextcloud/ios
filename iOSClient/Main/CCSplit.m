@@ -27,7 +27,7 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCSplit () <CCLoginDelegate, NCLoginWebDelegate>
+@interface CCSplit ()
 {
     AppDelegate *appDelegate;
     BOOL prevRunningInFullScreen;
@@ -173,15 +173,6 @@
             }
             break;
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate Login ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loginSuccess
-{
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

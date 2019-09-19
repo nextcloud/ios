@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginWebDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -306,7 +306,6 @@ PKPushRegistry *pushRegistry;
                 
                 self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
                 self.activeLoginWeb.loginType = loginType;
-                self.activeLoginWeb.delegate = delegate;
 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
@@ -329,7 +328,6 @@ PKPushRegistry *pushRegistry;
                     self.activeLoginWeb.urlBase = self.activeUrl;
                 }
                 self.activeLoginWeb.loginType = loginType;
-                self.activeLoginWeb.delegate = delegate;
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
@@ -342,7 +340,6 @@ PKPushRegistry *pushRegistry;
             
             self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
             self.activeLoginWeb.loginType = loginType;
-            self.activeLoginWeb.delegate = delegate;
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                 [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
@@ -353,7 +350,6 @@ PKPushRegistry *pushRegistry;
             if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
                 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-                _activeLogin.delegate = delegate;
                 _activeLogin.loginType = loginType;
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
@@ -362,15 +358,6 @@ PKPushRegistry *pushRegistry;
             }
         }
     }
-}
-
-- (void)loginSuccess
-{
-    //
-}
-- (void)loginWebDismiss
-{
-    [self startTimerErrorNetworking];
 }
 
 - (void)startTimerErrorNetworking

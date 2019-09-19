@@ -24,7 +24,7 @@
 
 import UIKit
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, NCLoginWebDelegate {
+class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var themingBackground: UIImageView!
     @IBOutlet weak var disclosureIndicator: UIImageView!
@@ -479,13 +479,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         let controller = CCManageAccount.init()
         
         self.navigationController?.pushViewController(controller, animated: true)
-    }
-    
-    func loginSuccess() {
-        
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-        
-        appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))        
     }
 }
 

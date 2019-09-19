@@ -24,7 +24,6 @@
 import Foundation
 
 @objc protocol NCLoginWebDelegate: class {
-    func loginSuccess()
     @objc optional func loginWebDismiss()
 }
 
@@ -67,6 +66,20 @@ class NCLoginWeb: UIViewController {
         }
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Stop timer error network
+        appDelegate.timerErrorNetworking.invalidate()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        // Start timer error network
+        appDelegate.startTimerErrorNetworking()
     }
     
     func loadWebPage(webView: WKWebView, url: URL)  {
@@ -136,8 +149,9 @@ extension NCLoginWeb: WKNavigationDelegate {
                         CCUtility.setPassword(account, password: token)
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: appDelegate.activeUserID, activePassword: token)
                         
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
+                        
                         self.dismiss(animated: true) {
-                            self.delegate?.loginSuccess()
                             self.delegate?.loginWebDismiss?()
                         }
                     }
@@ -163,8 +177,9 @@ extension NCLoginWeb: WKNavigationDelegate {
                         
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
                         
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
+                        
                         self.dismiss(animated: true) {
-                            self.delegate?.loginSuccess()
                             self.delegate?.loginWebDismiss?()
                         }
                     }
