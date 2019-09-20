@@ -293,6 +293,12 @@
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
         [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
     }
+    // color textview searchbbar
+    UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
+    if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
+        searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        searchTextView.textColor = NCBrandColor.sharedInstance.textView;
+    }
     
     // Title
     [self setTitle];
@@ -1287,6 +1293,12 @@
         UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
         if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
             [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
+        }
+        // color textview searchbbar
+        UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
+        if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
+            searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+            searchTextView.textColor = NCBrandColor.sharedInstance.textView;
         }
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
