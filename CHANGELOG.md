@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.24.1] - 2019-09-20
+- See https://github.com/nextcloud/ios/milestone/54
+
 ## [2.24.0] - 2019-09-19
 - See https://github.com/nextcloud/ios/milestone/52
 
