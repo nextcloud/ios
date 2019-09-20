@@ -39,12 +39,7 @@
 	self = [super initWithFrame:frame];
 	if( self )
 	{
-#if SVGKIT_UIKIT
-		self.backgroundColor = [UIColor clearColor];
-#else
-        self.layer.backgroundColor = [NSColor clearColor].CGColor;
-#endif
-        
+        [self populateFromImage:nil];
 	}
 	return self;
 }
@@ -118,8 +113,10 @@
 -(void) removeInternalRedrawOnResizeObservers
 {
   if (!self.didRegisterInternalRedrawObservers) return;
-	[self removeObserver:self  forKeyPath:@"layer" context:(__bridge void * _Nullable)(internalContextPointerBecauseApplesDemandsIt)];
+	[self removeObserver:self forKeyPath:@"layer" context:(__bridge void * _Nullable)(internalContextPointerBecauseApplesDemandsIt)];
+#if !SVGKIT_MAC || USE_SUBLAYERS_INSTEAD_OF_BLIT
 	[self.layer removeObserver:self forKeyPath:@"transform" context:(__bridge void * _Nullable)(internalContextPointerBecauseApplesDemandsIt)];
+#endif
   self.didRegisterInternalRedrawObservers = false;
 }
 

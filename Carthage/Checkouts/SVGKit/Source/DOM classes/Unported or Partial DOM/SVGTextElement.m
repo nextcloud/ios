@@ -5,6 +5,7 @@
 #import "SVGGradientLayer.h"
 #import "SVGHelperUtilities.h"
 #import "SVGUtils.h"
+#import "SVGTextLayer.h"
 
 @implementation SVGTextElement
 
@@ -27,7 +28,8 @@
 	 
 	 NB: the local bits (x/y offset) have to be pre-transformed by
 	 */
-	CGAffineTransform textTransformAbsoluteWithLocalPositionOffset = CGAffineTransformConcat( CGAffineTransformMakeTranslation( [self.x pixelsValue], [self.y pixelsValue]), textTransformAbsolute);
+    CGRect viewport = CGRectFromSVGRect(self.rootOfCurrentDocumentFragment.viewBox);
+	CGAffineTransform textTransformAbsoluteWithLocalPositionOffset = CGAffineTransformConcat( CGAffineTransformMakeTranslation( [self.x pixelsValueWithDimension:viewport.size.width], [self.y pixelsValueWithDimension:viewport.size.height]), textTransformAbsolute);
 	
 	/**
 	 Apple's CATextLayer is poor - one of those classes Apple hasn't finished writing?
@@ -118,7 +120,7 @@
 											  suggestedUntransformedSize.width,
 											  suggestedUntransformedSize.height); // everything's been pre-scaled by [self transformAbsolute]
 	
-    CATextLayer *label = [[CATextLayer alloc] init];
+    CATextLayer *label = [SVGTextLayer layer];
     [SVGHelperUtilities configureCALayer:label usingElement:self];
 	
 	/** This is complicated for three reasons.
