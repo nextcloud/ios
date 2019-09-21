@@ -162,9 +162,13 @@ extension TLPhotoLibrary {
     func fetchCollection(configure: TLPhotosPickerConfigure) {
         let useCameraButton = configure.usedCameraButton
         let options = getOption(configure: configure)
+        let fetchCollectionOption = configure.fetchCollectionOption
         
         func getAlbum(subType: PHAssetCollectionSubtype, result: inout [TLAssetsCollection]) {
-            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: subType, options: nil)
+            let collectionOption = fetchCollectionOption[.assetCollections(.album)]
+            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .album,
+                                                                          subtype: subType,
+                                                                          options: collectionOption)
             var collections = [PHAssetCollection]()
             fetchCollection.enumerateObjects { (collection, index, _) in 
                 if configure.allowedAlbumCloudShared == false && collection.assetCollectionSubtype == .albumCloudShared {
@@ -184,9 +188,19 @@ extension TLPhotoLibrary {
         }
         
         @discardableResult
-        func getSmartAlbum(subType: PHAssetCollectionSubtype, useCameraButton: Bool = false, result: inout [TLAssetsCollection]) -> TLAssetsCollection? {
-            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: subType, options: nil)
-            if let collection = fetchCollection.firstObject, !result.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
+        func getSmartAlbum(subType: PHAssetCollectionSubtype,
+                           useCameraButton: Bool = false,
+                           result: inout [TLAssetsCollection])
+            -> TLAssetsCollection?
+        {
+            let collectionOption = fetchCollectionOption[.assetCollections(.smartAlbum)]
+            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum,
+                                                                          subtype: subType,
+                                                                          options: collectionOption)
+            if
+                let collection = fetchCollection.firstObject,
+                result.contains(where: { $0.localIdentifier == collection.localIdentifier }) == false
+            {
                 var assetsCollection = TLAssetsCollection(collection: collection)
                 assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
                 if assetsCollection.count > 0 || useCameraButton {
@@ -196,7 +210,7 @@ extension TLPhotoLibrary {
             }
             return nil
         }
-        if let fetchCollectionTypes: [(PHAssetCollectionType,PHAssetCollectionSubtype)] = configure.fetchCollectionTypes {
+        if let fetchCollectionTypes = configure.fetchCollectionTypes {
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 var assetCollections = [TLAssetsCollection]()
                 for (type,subType) in fetchCollectionTypes {
@@ -214,8 +228,11 @@ extension TLPhotoLibrary {
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 var assetCollections = [TLAssetsCollection]()
                 //Camera Roll
-                let camerarollCollection = getSmartAlbum(subType: .smartAlbumUserLibrary, useCameraButton: useCameraButton, result: &assetCollections)
+                let camerarollCollection = getSmartAlbum(subType: .smartAlbumUserLibrary,
+                                                         useCameraButton: useCameraButton,
+                                                         result: &assetCollections)
                 if var cameraRoll = camerarollCollection {
+                    cameraRoll.title = configure.customLoclizedTitle[cameraRoll.title] ?? cameraRoll.title
                     cameraRoll.useCameraButton = useCameraButton
                     assetCollections[0] = cameraRoll
                     DispatchQueue.main.async {
@@ -237,7 +254,8 @@ extension TLPhotoLibrary {
                     getSmartAlbum(subType: .smartAlbumVideos, result: &assetCollections)
                 }
                 //Album
-                let albumsResult = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+                let collectionOption = fetchCollectionOption[.topLevelUserCollections]
+                let albumsResult = PHCollectionList.fetchTopLevelUserCollections(with: collectionOption)
                 albumsResult.enumerateObjects({ (collection, index, stop) -> Void in
                     guard let collection = collection as? PHAssetCollection else { return }
                     var assetsCollection = TLAssetsCollection(collection: collection)

@@ -1,3 +1,62 @@
+3.18.0 Release notes (2019-08-13)
+=============================================================
+
+The file format for synchronized Realms has changed. Old Realms will be
+automatically upgraded when they are opened. Once upgraded, the files will not
+be openable by older versions of Realm. The upgrade should not take a
+significant amount of time to run or run any risk of errors.
+
+This does not effect non-synchronized Realms.
+
+### Enhancements
+
+* Improve performance of queries on Date properties
+  ([Core #3344](https://github.com/realm/realm-core/pull/3344), [Core #3351](https://github.com/realm/realm-core/pull/3351)).
+* Syncronized Realms are now more aggressive about trimming local history that
+  is no longer needed. This should reduce file size growth in write-heavy
+  workloads. ([Sync #3007](https://github.com/realm/realm-sync/issues/3007)).
+* Add support for building Realm as an xcframework.
+  ([PR #6237](https://github.com/realm/realm-cocoa/pull/6237)).
+* Add prebuilt libraries for Xcode 11 to the release package.
+  ([PR #6248](https://github.com/realm/realm-cocoa/pull/6248)).
+* Add a prebuilt library for Catalyst/UIKit For Mac to the release package
+  ([PR #6248](https://github.com/realm/realm-cocoa/pull/6248)).
+
+### Fixed
+
+* If a signal interrupted a msync() call, Realm would throw an exception and
+  the write transaction would fail. This behavior has new been changed to retry
+  the system call instead. ([Core #3352](https://github.com/realm/realm-core/issues/3352))
+* Queries on the sum or average of an integer property would sometimes give
+  incorrect results. ([Core #3356](https://github.com/realm/realm-core/pull/3356)).
+* Opening query-based synchronized Realms with a small number of subscriptions
+  performed an unneccesary write transaction. ([ObjectStore #815](https://github.com/realm/realm-object-store/pull/815)).
+
+### Compatibility
+
+* File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.21.0 or later.
+* Carthage release for Swift is built with Xcode 11.0
+
+### Deprecations
+
+* `RLMIdentityProviderNickname` has been deprecated in favor of `RLMIdentityProviderUsernamePassword`.
+* `+[RLMIdentityProvider credentialsWithNickname]` has been deprecated in favor of `+[RLMIdentityProvider credentialsWithUsername]`.
+* `Sync.nickname(String, Bool)` has been deprecated in favor of `Sync.usernamePassword(String, String, Bool)`.
+
+3.17.3 Release notes (2019-07-24)
+=============================================================
+
+### Enhancements
+
+* Add Xcode 10.3 binaries to the release package. Remove the Xcode 9.2 and 9.3 binaries.
+
+### Compatibility
+
+* File format: Generates Realms with format v9 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.21.0 or later.
+* Carthage release for Swift is built with Xcode 10.3.
+
 3.17.1 Release notes (2019-07-10)
 =============================================================
 

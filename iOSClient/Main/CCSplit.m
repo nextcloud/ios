@@ -135,7 +135,6 @@
         
         [CCUtility setIntro:YES];
         [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-        
     
     } else {
     

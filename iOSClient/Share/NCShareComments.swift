@@ -130,12 +130,12 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     func tapMenu(with tableComments: tableComments?, sender: Any) {
      
         var items = [ActionSheetItem]()
-        let appearanceDelete = ActionSheetItemAppearance.init()
-        appearanceDelete.textColor = UIColor.red
+        //let appearanceDelete = ActionSheetItemAppearance.init()
+        //appearanceDelete.textColor = UIColor.red
         
         items.append(ActionSheetItem(title: NSLocalizedString("_edit_comment_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
-        itemDelete.customAppearance = appearanceDelete
+        //itemDelete.customAppearance = appearanceDelete
         items.append(itemDelete)
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
@@ -188,7 +188,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         }
         
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         

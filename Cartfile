@@ -1,19 +1,19 @@
-github "tilltue/TLPhotoPicker" == 1.9.3
+github "tilltue/TLPhotoPicker"
 github "kishikawakatsumi/UICKeyChainStore" == 2.1.2
-github "danielsaidi/Sheeeeeeeeet" == 1.2.2
+github "danielsaidi/Sheeeeeeeeet"
 github "MortimerGoro/MGSwipeTableCell" == 1.6.8
 github "dzenbot/DZNEmptyDataSet" == 1.8.1
 github "ealeksandrov/EAIntroView" == 2.12.0
 github "calimarkus/JDStatusBarNotification" == 1.6.0
 github "ChangbaDevs/KTVHTTPCache" == 2.0.1
 github "jdg/MBProgressHUD" == 1.1.0
-github "realm/realm-cocoa" == 3.17.1
+github "realm/realm-cocoa"
 github "SVGKit/SVGKit" "3.x"
 github "WeTransfer/WeScan" == 1.1.0
-github "malcommac/SwiftRichString" == 3.0.0
+github "malcommac/SwiftRichString"
 github "yannickl/QRCodeReader.swift" >= 10.1.0
-github "weichsel/ZIPFoundation" == 0.9.9
-github "rechsteiner/Parchment" == 1.6.0
+github "weichsel/ZIPFoundation" ~> 0.9
+github "rechsteiner/Parchment"
 github "WenchaoD/FSCalendar"
 github "AssistoLab/DropDown"
 github "krzyzanowskim/OpenSSL"

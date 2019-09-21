@@ -334,8 +334,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         if !isEditMode {
             
             var items = [ActionSheetItem]()
-            let appearanceDelete = ActionSheetItemAppearance.init()
-            appearanceDelete.textColor = UIColor.red
+//            let appearanceDelete = ActionSheetItemAppearance.init()
+//            appearanceDelete.textColor = UIColor.red
             
             // 0 == CCMore, 1 = first NCOffline ....
             if (self == self.navigationController?.viewControllers[1]) {
@@ -344,7 +344,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             items.append(ActionSheetItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
             let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
-            itemDelete.customAppearance = appearanceDelete
+//            itemDelete.customAppearance = appearanceDelete
             items.append(itemDelete)
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
@@ -367,7 +367,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             actionSheet?.headerView?.frame.size.height = 50
             
             ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
             ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
@@ -507,6 +507,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
             
             let navigationController = UINavigationController.init(rootViewController: viewController)
+            navigationController.modalPresentationStyle = .fullScreen
             self.present(navigationController, animated: true, completion: nil)
             
             return
@@ -776,7 +777,7 @@ extension NCOffline {
         actionSheet?.headerView?.frame.size.height = 50
         
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         

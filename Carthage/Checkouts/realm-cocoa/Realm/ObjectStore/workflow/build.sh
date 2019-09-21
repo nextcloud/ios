@@ -8,11 +8,14 @@
 
 flavor=${1:-linux}
 sync=${2}
+extra_flags=${3}
 
 nprocs=4
 if [ "$(uname)" = "Linux" ]; then
   nprocs=$(grep -c ^processor /proc/cpuinfo)
 fi
+
+: ${OPENSSL_ROOT_DIR:=/usr/local}
 
 set -e
 
@@ -27,8 +30,8 @@ if [ "${flavor}" = "android" ]; then
 fi
 
 if [ "${sync}" = "sync" ]; then
-    cmake_flags="${cmake_flags} -DREALM_ENABLE_SYNC=1 -DREALM_ENABLE_SERVER=1"
+    cmake_flags="${cmake_flags} -DREALM_ENABLE_SYNC=1 -DREALM_ENABLE_SERVER=1 -DOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}"
 fi
 
-cmake ${cmake_flags} ..
+cmake ${cmake_flags} ${extra_flags} ..
 make VERBOSE=1 -j${nprocs}

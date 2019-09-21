@@ -39,7 +39,7 @@ class NCPhotosPickerViewController: NSObject {
         var configure = TLPhotosPickerConfigure()
         
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
-        configure.defaultCameraRollTitle = NSLocalizedString("_camera_roll_", comment: "")
+        //configure.defaultCameraRollTitle = NSLocalizedString("_camera_roll_", comment: "")
         configure.doneTitle = NSLocalizedString("_done_", comment: "")
         configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
         configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")

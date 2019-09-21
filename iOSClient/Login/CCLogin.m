@@ -118,6 +118,9 @@
         _baseUrl.hidden = YES;
     }
     
+    // QrCode image
+    [self.qrCode setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"qrcode"] width:100 height:100 color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     if ([listAccount count] == 0) {
         _imageUser.hidden = YES;

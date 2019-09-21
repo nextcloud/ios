@@ -348,17 +348,16 @@
     [self initializeForm];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
- 
-    self.navigationItem.title = NSLocalizedString(@"_credentials_", nil);
+    [super viewWillAppear:animated];
     
+    self.navigationItem.title = NSLocalizedString(@"_credentials_", nil);
+
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
-    // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     

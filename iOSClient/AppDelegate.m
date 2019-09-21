@@ -1116,6 +1116,7 @@ PKPushRegistry *pushRegistry;
     viewController.touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
 
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
     return navigationController;
 }
 

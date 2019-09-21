@@ -499,6 +499,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
             viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
             
             let navigationController = UINavigationController.init(rootViewController: viewController)
+            navigationController.modalPresentationStyle = .fullScreen
             self.present(navigationController, animated: true, completion: nil)
             
             return

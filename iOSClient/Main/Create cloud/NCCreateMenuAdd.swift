@@ -123,7 +123,7 @@ class NCCreateMenuAdd: NSObject {
         }
         
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         

@@ -296,7 +296,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actionSheet?.headerView?.frame.size.height = 50
             
             ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
             ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
@@ -312,12 +312,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         if !isEditMode {
             var items = [ActionSheetItem]()
-            let appearanceDelete = ActionSheetItemAppearance.init()
-            appearanceDelete.textColor = UIColor.red
+            //let appearanceDelete = ActionSheetItemAppearance.init()
+            //appearanceDelete.textColor = UIColor.red
             
             items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
             let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red))
-            itemDelete.customAppearance = appearanceDelete
+//            itemDelete.customAppearance = appearanceDelete
             items.append(itemDelete)
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
@@ -336,7 +336,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actionSheet?.headerView?.frame.size.height = 50
             
             ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
             ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
@@ -410,7 +410,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 }
                 
                 ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-                ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+                ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
                 ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
                 ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
@@ -459,7 +459,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 }
                 
                 ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-                ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
+                ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
                 ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
                 ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 

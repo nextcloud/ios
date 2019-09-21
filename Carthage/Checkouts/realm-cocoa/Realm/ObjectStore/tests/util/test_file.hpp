@@ -82,13 +82,11 @@ struct TestLogger : realm::util::Logger::LevelThreshold, realm::util::Logger {
     void do_log(realm::util::Logger::Level, std::string) override {}
     Level get() const noexcept override { return Level::off; }
     TestLogger() : Logger::LevelThreshold(), Logger(static_cast<Logger::LevelThreshold&>(*this)) { }
-
-    static realm::sync::Server::Config server_config();
 };
 
 using StartImmediately = realm::util::TaggedBool<class StartImmediatelyTag>;
 
-class SyncServer {
+class SyncServer : private realm::sync::Clock {
 public:
     SyncServer(StartImmediately start_immediately=true);
     ~SyncServer();
@@ -99,10 +97,22 @@ public:
     std::string url_for_realm(realm::StringData realm_name) const;
     std::string base_url() const { return m_url; }
 
+    template <class R, class P>
+    void advance_clock(std::chrono::duration<R, P> duration = std::chrono::seconds(1)) noexcept
+    {
+        m_now += std::chrono::duration_cast<time_point::duration>(duration).count();
+    }
+
 private:
     realm::sync::Server m_server;
     std::thread m_thread;
     std::string m_url;
+    std::atomic<time_point::rep> m_now{0};
+
+    time_point now() const noexcept override
+    {
+        return time_point{time_point::duration{m_now}};
+    }
 };
 
 struct SyncTestFile : TestFile {

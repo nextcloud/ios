@@ -503,8 +503,9 @@
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
         viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
         
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        [self presentViewController:navController animated:YES completion:nil];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:navigationController animated:YES completion:nil];
             
         return;
     }
