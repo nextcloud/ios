@@ -132,7 +132,7 @@
     
     // Dark Mode
     if (@available(iOS 13.0, *)) {
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkModeAutomatic" rowType:XLFormRowDescriptorTypeBooleanSwitch title:[NSString stringWithFormat:@"%@ (beta)", NSLocalizedString(@"_dark_mode_automatic_", nil)]];
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkModeDetect" rowType:XLFormRowDescriptorTypeBooleanSwitch title:[NSString stringWithFormat:@"%@ (beta)", NSLocalizedString(@"_dark_mode_detect_", nil)]];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themeLightDark"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -145,6 +145,9 @@
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themeLightDark"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+    if (@available(iOS 13.0, *)) {
+        row.hidden = [NSString stringWithFormat:@"$%@==1", @"darkModeDetect"];
+    }
     [section addFormRow:row];
     
     // Section : E2EEncryption --------------------------------------------------------------
@@ -244,6 +247,7 @@
     XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];
     XLFormRowDescriptor *rowFavoriteOffline = [self.form formRowWithTag:@"favoriteoffline"];
     XLFormRowDescriptor *rowDarkMode = [self.form formRowWithTag:@"darkMode"];
+    XLFormRowDescriptor *rowDarkModeDetect = [self.form formRowWithTag:@"darkModeDetect"];
 
     // ------------------------------------------------------------------
     
@@ -259,7 +263,8 @@
     if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
     if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
     if ([CCUtility getDarkMode]) [rowDarkMode setValue:@1]; else [rowDarkMode setValue:@0];
-    
+    if ([CCUtility getDarkModeDetect]) [rowDarkModeDetect setValue:@1]; else [rowDarkModeDetect setValue:@0];
+
     // -----------------------------------------------------------------
     
     [self.tableView reloadData];
@@ -332,6 +337,15 @@
         [[NCMainCommon sharedInstance] createImagesThemingColor];
         [self initializeForm];
         [self reloadForm];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"darkModeDetect"]) {
+        
+        if ([[rowDescriptor.value valueData] boolValue] == YES) {
+            [CCUtility setDarkModeDetect:true];
+        } else {
+            [CCUtility setDarkModeDetect:false];
+        }
     }
 }
 

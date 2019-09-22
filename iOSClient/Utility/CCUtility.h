@@ -171,6 +171,9 @@
 + (BOOL)getDarkMode;
 + (void)setDarkMode:(BOOL)disable;
 
++ (BOOL)getDarkModeDetect;
++ (void)setDarkModeDetect:(BOOL)disable;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

@@ -668,6 +668,17 @@
     [UICKeyChainStore setString:sDisable forKey:@"darkMode" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getDarkModeDetect
+{
+    return [[UICKeyChainStore stringForKey:@"darkModeDetect" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setDarkModeDetect:(BOOL)disable
+{
+    NSString *sDisable = (disable) ? @"true" : @"false";
+    [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
