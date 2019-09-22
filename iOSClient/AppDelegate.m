@@ -1028,13 +1028,13 @@ PKPushRegistry *pushRegistry;
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
-- (void)changeTheming:(UIViewController *)vc
+- (void)changeTheming:(UIViewController *)viewController
 {
     // Change Navigation & TabBar color
-    vc.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    vc.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+    viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     // Change bar bottom line shadow
-    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
+    viewController.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     
     // Change button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
@@ -1048,6 +1048,13 @@ PKPushRegistry *pushRegistry;
     
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
+}
+
+- (void)settingDarkMode
+{
+    [NCBrandColor.sharedInstance setDarkMode];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
+    [[NCMainCommon sharedInstance] createImagesThemingColor];
 }
 
 #pragma --------------------------------------------------------------------------------------------

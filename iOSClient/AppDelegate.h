@@ -169,7 +169,8 @@
 
 // Theming Color
 - (void)settingThemingColorBrand;
-- (void)changeTheming:(UIViewController *)vc;
+- (void)changeTheming:(UIViewController *)viewController;
+- (void)settingDarkMode;
 
 // Task Networking
 - (void)loadAutoDownloadUpload;
