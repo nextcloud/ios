@@ -670,7 +670,15 @@
 
 + (BOOL)getDarkModeDetect
 {
-    return [[UICKeyChainStore stringForKey:@"darkModeDetect" service:k_serviceShareKeyChain] boolValue];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"darkModeDetect" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setDarkModeDetect:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
 }
 
 + (void)setDarkModeDetect:(BOOL)disable
