@@ -279,7 +279,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self];
+        [appDelegate changeTheming:self tableView:self.tableView];
     
     // Refresh control
     refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;

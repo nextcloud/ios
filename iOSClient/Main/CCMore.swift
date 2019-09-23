@@ -58,10 +58,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         
-        if #available(iOS 11, *) {
-            //tableView.contentInsetAdjustmentBehavior = .never
-        }
-        
         themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         
         // create tap gesture recognizer
@@ -186,10 +182,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // User data & Theming
         changeUserProfile()
         changeTheming()
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        tableView.separatorColor = NCBrandColor.sharedInstance.separator
-
+    
         // Title
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
@@ -228,7 +221,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)
         
         if (self.isViewLoaded && (self.view.window != nil)) {
-            appDelegate.changeTheming(self)
+            appDelegate.changeTheming(self, tableView: tableView)
+            viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         }
     }
     

@@ -160,6 +160,8 @@
 {
     [super viewDidLoad];
     
+    self.tableView.showsVerticalScrollIndicator = NO;
+
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
 }
 
@@ -169,7 +171,6 @@
     [super viewWillAppear:animated];
     
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
     // Color
@@ -180,7 +181,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self];
+        [appDelegate changeTheming:self tableView:self.tableView];
 }
 
 - (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

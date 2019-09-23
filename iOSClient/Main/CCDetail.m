@@ -140,7 +140,7 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self];
+    [appDelegate changeTheming:self tableView:nil];
     
     if (self.toolbar) {
         self.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;

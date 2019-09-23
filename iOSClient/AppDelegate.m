@@ -1028,7 +1028,7 @@ PKPushRegistry *pushRegistry;
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
-- (void)changeTheming:(UIViewController *)viewController
+- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView
 {
     // Change Navigation & TabBar color
     viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
@@ -1050,6 +1050,13 @@ PKPushRegistry *pushRegistry;
     tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
             
+    // TableView
+    if (tableView) {
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        tableView.separatorColor = NCBrandColor.sharedInstance.separator;
+        [tableView reloadData];
+    }
+    
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
 }

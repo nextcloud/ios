@@ -171,7 +171,7 @@
 
 // Theming Color
 - (void)settingThemingColorBrand;
-- (void)changeTheming:(UIViewController *)viewController;
+- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView;
 - (void)settingDarkMode;
 
 // Task Networking

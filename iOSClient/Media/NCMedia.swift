@@ -158,7 +158,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     @objc func changeTheming() {
         
         if self.isViewLoaded && self.view?.window != nil {
-            appDelegate.changeTheming(self)
+            appDelegate.changeTheming(self, tableView: nil)
         }
     }
 

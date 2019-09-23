@@ -366,7 +366,7 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self];
+    [appDelegate changeTheming:self tableView:self.tableView];
 }
 
 #pragma --------------------------------------------------------------------------------------------
