@@ -1046,6 +1046,10 @@ PKPushRegistry *pushRegistry;
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
+    tabBarController.tabBar.translucent = NO;
+    tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+            
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
 }
