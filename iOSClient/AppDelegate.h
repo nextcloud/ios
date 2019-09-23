@@ -130,6 +130,8 @@
 
 @property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
 
+@property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
+
 // Shares
 @property (nonatomic, strong) NSArray *shares;
 

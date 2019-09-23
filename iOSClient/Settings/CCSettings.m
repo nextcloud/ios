@@ -342,8 +342,29 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             [CCUtility setDarkModeDetect:true];
+            
+            // detect Dark Mode
+            if (@available(iOS 12.0, *)) {
+                appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
+                if (appDelegate.preferredUserInterfaceStyle == UIUserInterfaceStyleDark) {
+                    [CCUtility setDarkMode:YES];
+                } else {
+                    [CCUtility setDarkMode:NO];
+                }
+                
+                [appDelegate settingDarkMode];
+            }
+            
         } else {
             [CCUtility setDarkModeDetect:false];
+            
+            [appDelegate settingDarkMode];
+            
+            [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+            [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
+            self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+            [self initializeForm];
+            [self reloadForm];
         }
     }
 }

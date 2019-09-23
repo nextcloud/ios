@@ -1053,8 +1053,8 @@ PKPushRegistry *pushRegistry;
 - (void)settingDarkMode
 {
     [NCBrandColor.sharedInstance setDarkMode];
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
     [[NCMainCommon sharedInstance] createImagesThemingColor];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

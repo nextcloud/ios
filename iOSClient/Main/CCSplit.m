@@ -282,9 +282,15 @@
     
     // detect Dark Mode
     if (@available(iOS 12.0, *)) {
-        UIUserInterfaceStyle interfaceStyle = self.traitCollection.userInterfaceStyle;
-        if (interfaceStyle == UIUserInterfaceStyleDark) {
-        } else {
+        appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
+        if ([CCUtility getDarkModeDetect]) {
+            if (appDelegate.preferredUserInterfaceStyle == UIUserInterfaceStyleDark) {
+                [CCUtility setDarkMode:YES];
+            } else {
+                [CCUtility setDarkMode:NO];
+            }
+                
+            [appDelegate settingDarkMode];
         }
     }
     
