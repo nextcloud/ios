@@ -249,7 +249,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self tableView:self.tableView];
+        [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
 }
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

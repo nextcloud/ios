@@ -221,7 +221,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)
         
         if (self.isViewLoaded && (self.view.window != nil)) {
-            appDelegate.changeTheming(self, tableView: tableView)
+            appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
             viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         }
     }

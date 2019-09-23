@@ -366,7 +366,7 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self tableView:self.tableView];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

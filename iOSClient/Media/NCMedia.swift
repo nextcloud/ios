@@ -109,7 +109,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // Aspect Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
@@ -158,7 +158,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     @objc func changeTheming() {
         
         if self.isViewLoaded && self.view?.window != nil {
-            appDelegate.changeTheming(self, tableView: nil)
+            appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView)
         }
     }
 

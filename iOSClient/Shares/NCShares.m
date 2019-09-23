@@ -95,7 +95,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self tableView:self.tableView];
+        [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
     
     // Reload Table View
     [self.tableView reloadData];
