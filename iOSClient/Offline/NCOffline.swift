@@ -334,18 +334,14 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         if !isEditMode {
             
             var items = [ActionSheetItem]()
-//            let appearanceDelete = ActionSheetItemAppearance.init()
-//            appearanceDelete.textColor = UIColor.red
-            
+            ActionSheetDeleteItemCell.appearance().titleColor = .red
+
             // 0 == CCMore, 1 = first NCOffline ....
             if (self == self.navigationController?.viewControllers[1]) {
                 items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
             }
             items.append(ActionSheetItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
-//            itemDelete.customAppearance = appearanceDelete
-            items.append(itemDelete)
+            items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in

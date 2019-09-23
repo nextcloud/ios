@@ -312,13 +312,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         if !isEditMode {
             var items = [ActionSheetItem]()
-            //let appearanceDelete = ActionSheetItemAppearance.init()
-            //appearanceDelete.textColor = UIColor.red
+            ActionSheetDeleteItemCell.appearance().titleColor = .red
             
             items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red))
-//            itemDelete.customAppearance = appearanceDelete
-            items.append(itemDelete)
+            items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red)))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in

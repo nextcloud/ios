@@ -25,6 +25,7 @@ import Foundation
 import SVGKit
 import KTVHTTPCache
 import ZIPFoundation
+import Sheeeeeeeeet
 
 class NCUtility: NSObject {
     @objc static let sharedInstance: NCUtility = {
@@ -457,3 +458,11 @@ class NCUtility: NSObject {
         return(error, bundleDirectory, immPath)
     }
 }
+
+class ActionSheetDeleteItem: ActionSheetItem {
+    override open func cell(for tableView: UITableView) -> ActionSheetItemCell {
+        return ActionSheetDeleteItemCell(style: cellStyle, reuseIdentifier: cellReuseIdentifier)
+    }
+}
+
+class ActionSheetDeleteItemCell: ActionSheetItemCell {}
