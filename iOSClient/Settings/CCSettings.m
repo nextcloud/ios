@@ -42,22 +42,6 @@
 
 @implementation CCSettings
 
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    
-    if (self) {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        [self initializeForm];        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-        
-        appDelegate.activeSettings = self;
-    }
-    
-    return self;
-}
-
 - (void)initializeForm
 {
     XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
@@ -206,6 +190,15 @@
     */
     
     self.form = form;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self initializeForm];
 }
 
 - (void)viewWillAppear:(BOOL)animated

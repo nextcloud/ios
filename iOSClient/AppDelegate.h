@@ -115,7 +115,6 @@
 @property (nonatomic, strong) CCFavorites *activeFavorites;
 @property (nonatomic, strong) NCMedia *activeMedia;
 @property (nonatomic, retain) CCDetail *activeDetail;
-@property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
