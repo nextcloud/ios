@@ -37,23 +37,9 @@
 
 @implementation CCManageAccount
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    
-    if (self) {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    }
-    
-    return self;
-}
-
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_credentials_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
         
@@ -345,6 +331,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     [self initializeForm];
 }
 
@@ -352,21 +341,18 @@
 {
     [super viewWillAppear:animated];
     
-    self.navigationItem.title = NSLocalizedString(@"_credentials_", nil);
-
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
-    [self initializeForm];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];    
 }
 
 - (void)changeTheming
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [self initializeForm];
 }
 
 #pragma --------------------------------------------------------------------------------------------

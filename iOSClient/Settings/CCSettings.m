@@ -49,9 +49,7 @@
     if (self) {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        [self initializeForm];
-        
+        [self initializeForm];        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
         appDelegate.activeSettings = self;
@@ -62,11 +60,10 @@
 
 - (void)initializeForm
 {
-    XLFormDescriptor *form;
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
-    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
     // Section AUTO UPLOAD OF CAMERA IMAGES ----------------------------
@@ -209,7 +206,6 @@
     */
     
     self.form = form;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -228,8 +224,8 @@
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [self initializeForm];
 }
 
 #pragma --------------------------------------------------------------------------------------------

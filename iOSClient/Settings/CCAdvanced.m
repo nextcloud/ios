@@ -35,17 +35,11 @@
 
 @implementation CCAdvanced
 
-- (id)init
+- (void)initializeForm
 {
-    XLFormDescriptor *form ;
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_advanced_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    
-    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_advanced_", nil)];
     
     // Section HIDDEN FILES -------------------------------------------------
 
@@ -153,35 +147,34 @@
     row.action.formSelector = @selector(exitNextcloud:);
     [section addFormRow:row];
 
-    return [super initWithForm:form];
+    self.form = form;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    self.tableView.showsVerticalScrollIndicator = NO;
-
-    _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self initializeForm];
 }
 
-// Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
-    // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [self initializeForm];
 }
 
 - (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

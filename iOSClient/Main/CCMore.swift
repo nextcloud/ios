@@ -74,7 +74,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeUserProfile), name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
     }
     
-    // Apparirà
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
@@ -182,7 +181,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // User data & Theming
         changeUserProfile()
         changeTheming()
-    
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        tableView.separatorColor = NCBrandColor.sharedInstance.separator
+
         // Title
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
