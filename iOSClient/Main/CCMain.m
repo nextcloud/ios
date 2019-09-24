@@ -272,6 +272,9 @@
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
     
+    // createImagesThemingColor
+    [[NCMainCommon sharedInstance] createImagesThemingColor];
+    
     // Refresh control
     refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
     refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand;

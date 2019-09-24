@@ -289,7 +289,7 @@
                 [CCUtility setDarkMode:NO];
             }
                 
-            [appDelegate settingDarkMode];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
         }
     }
     

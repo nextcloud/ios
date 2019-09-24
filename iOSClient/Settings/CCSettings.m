@@ -201,6 +201,7 @@
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
     [self initializeForm];
+    [self reloadForm];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -300,7 +301,6 @@
             [CCUtility setDarkMode:false];
         }
         
-        [appDelegate settingDarkMode];
         [self changeTheming];
         [self initializeForm];
         [self reloadForm];
@@ -320,16 +320,13 @@
                     [CCUtility setDarkMode:NO];
                 }
                 
-                [appDelegate settingDarkMode];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
             }
             
         } else {
             [CCUtility setDarkModeDetect:false];
             
-            [appDelegate settingDarkMode];
-            [self changeTheming];
-            [self initializeForm];
-            [self reloadForm];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
         }
     }
 }

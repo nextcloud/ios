@@ -1002,6 +1002,9 @@ PKPushRegistry *pushRegistry;
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView
 {
+    // Dark Mode
+    [NCBrandColor.sharedInstance setDarkMode];
+    
     // NavigationBar
     if (viewController.navigationController.navigationBar) {
         viewController.navigationController.navigationBar.translucent = false;
@@ -1046,13 +1049,6 @@ PKPushRegistry *pushRegistry;
     
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
-}
-
-- (void)settingDarkMode
-{
-    [NCBrandColor.sharedInstance setDarkMode];
-    [[NCMainCommon sharedInstance] createImagesThemingColor];
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
