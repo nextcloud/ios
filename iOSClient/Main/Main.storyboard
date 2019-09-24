@@ -30,20 +30,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="RbN-9l-HP2">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="554"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="RbN-9l-HP2">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                                 <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="RbN-9l-HP2" firstAttribute="top" secondItem="UsN-KI-3bQ" secondAttribute="top" id="PQF-xh-bxZ"/>
+                            <constraint firstItem="RbN-9l-HP2" firstAttribute="leading" secondItem="UsN-KI-3bQ" secondAttribute="leading" id="exJ-dx-QyW"/>
+                            <constraint firstItem="UsN-KI-3bQ" firstAttribute="bottom" secondItem="RbN-9l-HP2" secondAttribute="bottom" id="gMy-ww-Gd1"/>
+                            <constraint firstItem="UsN-KI-3bQ" firstAttribute="trailing" secondItem="RbN-9l-HP2" secondAttribute="trailing" id="oal-6v-evn"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="UsN-KI-3bQ"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="1CO-Ie-Aaj"/>
                     <connections>
                         <segue destination="eZl-ut-xpC" kind="presentation" identifier="AcknowledgementsSegue" modalPresentationStyle="formSheet" id="J9C-Ex-Q6i"/>
-                        <segue destination="DEi-yz-wEj" kind="show" identifier="CCManageAutoUploadSegue" id="Aij-5E-cNN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wVn-RD-GD2" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -123,23 +127,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="38M-dR-dlY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="12026" y="1218"/>
-        </scene>
-        <!--Manage Auto Upload-->
-        <scene sceneID="YAa-hT-VHe">
-            <objects>
-                <viewController id="DEi-yz-wEj" customClass="CCManageAutoUpload" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="WFy-lj-QJi">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <viewLayoutGuide key="safeArea" id="un0-l9-x74"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="y2u-7Z-uGO"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="g5a-uE-sF6" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="11142" y="2045"/>
         </scene>
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">

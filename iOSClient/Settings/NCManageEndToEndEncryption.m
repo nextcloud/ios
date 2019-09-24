@@ -97,7 +97,6 @@
         row.action.formSelector = @selector(readPassphrase:);
         [section addFormRow:row];
         
-        
         // Section DELETE -------------------------------------------------
         
         section = [XLFormSectionDescriptor formSection];

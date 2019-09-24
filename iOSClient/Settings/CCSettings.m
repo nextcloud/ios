@@ -60,8 +60,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"autoUpload"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
-    
-    row.action.formSegueIdentifier = @"CCManageAutoUploadSegue";
+    row.action.viewControllerClass = [CCManageAutoUpload class];
     [section addFormRow:row];
 
     // Section FOLDERS FAVORITES OFFLINE ------------------------------------
@@ -177,17 +176,6 @@
         [self deselectFormRow:sender];
     };
     [section addFormRow:row];
-    
-    // Contact us mail
-    /*
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmail" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_contact_by_email_", nil)];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"email"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(sendMail:);
-    [section addFormRow:row];
-    */
     
     self.tableView.showsVerticalScrollIndicator = NO;
     self.form = form;
