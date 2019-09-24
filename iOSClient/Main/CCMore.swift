@@ -71,10 +71,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         themingBackground.addGestureRecognizer(tapImageLogo)
         
         // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeUserProfile), name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
         
         // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
     }
     

@@ -189,12 +189,7 @@
     
     // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    [self initializeForm];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self reloadForm];
+    [self changeTheming];
 }
 
 - (void)changeTheming
@@ -301,9 +296,7 @@
             [CCUtility setDarkMode:false];
         }
         
-        [self changeTheming];
-        [self initializeForm];
-        [self reloadForm];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"darkModeDetect"]) {
@@ -319,15 +312,13 @@
                 } else {
                     [CCUtility setDarkMode:NO];
                 }
-                
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
             }
             
         } else {
-            [CCUtility setDarkModeDetect:false];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
+            [CCUtility setDarkModeDetect:false];            
         }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
     }
 }
 

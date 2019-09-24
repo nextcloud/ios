@@ -191,7 +191,7 @@
     
     // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    [self initializeForm];
+    [self changeTheming];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -211,14 +211,13 @@
                 break;
         }
     }];
-
-    [self reloadForm];
 }
 
 - (void)changeTheming
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
     [self initializeForm];
+    [self reloadForm];
 }
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

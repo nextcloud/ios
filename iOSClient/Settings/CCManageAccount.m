@@ -337,7 +337,7 @@
     
     // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    [self initializeForm];
+    [self changeTheming];
 }
 
 - (void)changeTheming
