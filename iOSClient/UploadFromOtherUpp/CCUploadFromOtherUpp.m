@@ -49,7 +49,7 @@
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
     // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 

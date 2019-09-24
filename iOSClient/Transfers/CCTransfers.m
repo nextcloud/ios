@@ -94,7 +94,7 @@
     [super viewDidAppear:animated];
         
     // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {

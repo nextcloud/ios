@@ -894,7 +894,7 @@ PKPushRegistry *pushRegistry;
     [tabBarController.view addConstraint:constraint];
 }
 
-- (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden
+- (void)aspectNavigationControllerBar:(UINavigationBar *)nav
 {
     nav.translucent = NO;
     nav.barTintColor = NCBrandColor.sharedInstance.brand;
@@ -903,11 +903,9 @@ PKPushRegistry *pushRegistry;
     // Change bar bottom line shadow
     nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     
-    if (!online)
+    if (![self.reachability isReachable])
         [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
-    
-    nav.hidden = hidden;
-    
+        
     [nav setAlpha:1];
 }
 

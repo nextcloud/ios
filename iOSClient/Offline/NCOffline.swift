@@ -114,7 +114,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         super.viewWillAppear(animated)
         
         // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         

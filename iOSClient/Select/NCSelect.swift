@@ -135,7 +135,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         super.viewWillAppear(animated)
         
         // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
         toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
         toolbar.tintColor = NCBrandColor.sharedInstance.textView
         

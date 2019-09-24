@@ -170,7 +170,7 @@
         return;
     
     // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
@@ -540,7 +540,7 @@
 - (void)setTitle
 {
     // Color text self.navigationItem.title
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     
     if (_isSelectedMode) {
         
@@ -620,7 +620,7 @@
 
 - (void)setUINavigationBarDefault
 {
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     
     UIBarButtonItem *buttonMore, *buttonNotification;
     
@@ -649,7 +649,7 @@
 
 - (void)setUINavigationBarSelected
 {
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     
     UIImage *icon = [UIImage imageNamed:@"navigationControllerMenu"];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];

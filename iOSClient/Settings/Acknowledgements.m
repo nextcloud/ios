@@ -38,7 +38,7 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     self.navigationController.navigationBar.translucent = false;
     
     NSURL *rtfPath;
@@ -64,7 +64,7 @@
     [super viewDidAppear:animated];
     
     // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     
     [self.txtTermini setContentOffset:CGPointZero animated:NO];
     self.txtTermini.hidden = false;

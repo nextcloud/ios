@@ -92,7 +92,7 @@
     self.navigationController.navigationBar.topItem.title = @"";
     
     // Color Navigation Controller
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
 
     // TabBar
     self.tabBarController.tabBar.hidden = YES;

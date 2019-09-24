@@ -93,7 +93,7 @@ class DragDropViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
         
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand

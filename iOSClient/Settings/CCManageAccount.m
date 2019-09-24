@@ -345,7 +345,7 @@
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];    
 }
 

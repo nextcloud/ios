@@ -67,7 +67,7 @@
     
     // Settings Navigation Controller
     UINavigationController *navigationController = [self.viewControllers lastObject];
-    [appDelegate aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
+    [appDelegate aspectNavigationControllerBar:navigationController.navigationBar];
     
     [self inizialize];    
 }
@@ -196,7 +196,7 @@
     UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
     
     // Color
-    [appDelegate aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
+    [appDelegate aspectNavigationControllerBar:secondaryNC.navigationBar];
     
     // Ensure back button is enabled
     UIViewController *detailViewController = [secondaryNC visibleViewController];

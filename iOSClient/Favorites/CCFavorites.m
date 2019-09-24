@@ -102,7 +102,7 @@
     [super viewWillAppear:animated];
     
     // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;

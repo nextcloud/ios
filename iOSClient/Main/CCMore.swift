@@ -189,7 +189,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
         // Aspect
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
 
         // +

@@ -199,7 +199,7 @@
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 
     // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Request permission for camera roll access
