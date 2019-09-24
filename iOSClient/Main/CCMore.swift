@@ -188,6 +188,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @objc func changeTheming() {
         
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+
         self.view.backgroundColor = NCBrandColor.sharedInstance.brand
         viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
@@ -202,9 +204,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         labelUsername.textColor = NCBrandColor.sharedInstance.brandText
         
-        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)
-        
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)        
     }
     
     @objc func changeUserProfile() {

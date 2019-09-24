@@ -1005,6 +1005,9 @@ PKPushRegistry *pushRegistry;
     // Dark Mode
     [NCBrandColor.sharedInstance setDarkMode];
     
+    // View
+    viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+
     // NavigationBar
     if (viewController.navigationController.navigationBar) {
         viewController.navigationController.navigationBar.translucent = false;
@@ -1035,6 +1038,7 @@ PKPushRegistry *pushRegistry;
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
                 
+    // TableView
     if (tableView) {
         tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         tableView.separatorColor = NCBrandColor.sharedInstance.separator;

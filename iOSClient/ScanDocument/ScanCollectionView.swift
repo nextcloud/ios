@@ -61,7 +61,6 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self

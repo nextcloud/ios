@@ -61,7 +61,6 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
 
         self.metadataDetail = [[tableMetadata alloc] init];
@@ -87,33 +86,12 @@
 
     self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
     
-    // Change bar bottom line shadow and remove title back button <"title"
-    self.navigationController.navigationBar.topItem.title = @"";
-    self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
-    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
-    [self.navigationController.navigationBar setAlpha:1];
-
-    // TabBar
-    self.tabBarController.tabBar.hidden = YES;
-    self.tabBarController.tabBar.translucent = YES;
+    [self changeTheming];
     
     // Open View
     if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.ocId length] > 0) {        
         [self viewFile];
     }
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-     // TabBar
-    self.tabBarController.tabBar.hidden = YES;
-    self.tabBarController.tabBar.translucent = YES;
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -150,7 +128,12 @@
         self.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
     }
     
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    // reload image
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image]) {
+        
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+        [self viewImage];
+    }
 }
 
 - (void)changeToDisplayMode
