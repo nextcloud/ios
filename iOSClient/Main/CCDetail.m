@@ -59,17 +59,7 @@
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder])  {
-        
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-
-        self.metadataDetail = [[tableMetadata alloc] init];
-        self.photos = [[NSMutableArray alloc] init];
-        self.photoDataSource = [NSMutableArray new];
-        indexNowVisible = -1;
-        ocIdNowVisible = nil;
-
         appDelegate.activeDetail = self;
     }
     return self;
@@ -82,21 +72,23 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
+    self.metadataDetail = [[tableMetadata alloc] init];
+    self.photos = [[NSMutableArray alloc] init];
+    self.photoDataSource = [NSMutableArray new];
+    indexNowVisible = -1;
+    ocIdNowVisible = nil;
     self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
     
+    // Notification
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
+    
     // Change bar bottom line shadow and remove title back button <"title"
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
     self.navigationController.navigationBar.topItem.title = @"";
     
-    // Color Navigation Controller
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-
-    // TabBar
-    self.tabBarController.tabBar.hidden = YES;
-    self.tabBarController.tabBar.translucent = YES;
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
     
     // Open View
     if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.ocId length] > 0) {        
@@ -108,6 +100,7 @@
 {
     [super viewWillAppear:animated];
     
+     // TabBar
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
     self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
@@ -147,6 +140,9 @@
         self.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
     }
     
+    // TabBar
+    self.tabBarController.tabBar.hidden = YES;
+    self.tabBarController.tabBar.translucent = YES;
     self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 

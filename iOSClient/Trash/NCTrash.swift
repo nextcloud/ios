@@ -80,16 +80,15 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;        
+        self.collectionView.emptyDataSetSource = self;
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar)
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.navigationItem.title = titleCurrentFolder
 
@@ -122,6 +121,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.actionSheet?.viewDidLayoutSubviews()
         }
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView)
     }
     
     // MARK: DZNEmpty

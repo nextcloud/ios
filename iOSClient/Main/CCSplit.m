@@ -43,8 +43,6 @@
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder])  {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         prevRunningInFullScreen = YES;
     }
     
@@ -55,6 +53,7 @@
 {
     [super viewDidLoad];
 
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.delegate = self;
     
     // Display mode SPLIT
@@ -66,8 +65,8 @@
     [appDelegate createTabBarController:tabBarController];
     
     // Settings Navigation Controller
-    UINavigationController *navigationController = [self.viewControllers lastObject];
-    [appDelegate aspectNavigationControllerBar:navigationController.navigationBar];
+//    UINavigationController *navigationController = [self.viewControllers lastObject];
+//    [appDelegate aspectNavigationControllerBar:navigationController.navigationBar];
     
     [self inizialize];    
 }
@@ -196,7 +195,7 @@
     UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
     
     // Color
-    [appDelegate aspectNavigationControllerBar:secondaryNC.navigationBar];
+//    [appDelegate aspectNavigationControllerBar:secondaryNC.navigationBar];
     
     // Ensure back button is enabled
     UIViewController *detailViewController = [secondaryNC visibleViewController];

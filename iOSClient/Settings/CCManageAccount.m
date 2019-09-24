@@ -320,6 +320,7 @@
         [section addFormRow:row];
     }
     
+    self.tableView.showsVerticalScrollIndicator = NO;
     self.form = form;
     
     // Open Login
@@ -333,20 +334,10 @@
     [super viewDidLoad];
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     [self initializeForm];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.showsVerticalScrollIndicator = NO;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar];    
 }
 
 - (void)changeTheming

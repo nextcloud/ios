@@ -48,22 +48,16 @@
     serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
-// E' apparsa
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
     
     [self.tableView reloadData];
+}
+
+- (void)changeTheming
+{
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

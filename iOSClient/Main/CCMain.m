@@ -88,15 +88,12 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        appDelegate.activeMain = self;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:@"initializeMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-        
-        // Active Main
-        appDelegate.activeMain = self;
     }
     
     return self;
@@ -159,6 +156,10 @@
     
     // Title
     [self setTitle];
+
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -169,15 +170,6 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar];
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-
-    // Plus Button
-    [appDelegate plusButtonVisibile:true];
-
     if (_isSelectedMode)
         [self setUINavigationBarSelected];
     else
@@ -278,8 +270,7 @@
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
     
     // Refresh control
     refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
@@ -539,9 +530,6 @@
 
 - (void)setTitle
 {
-    // Color text self.navigationItem.title
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    
     if (_isSelectedMode) {
         
         NSUInteger totali = [sectionDataSource.allRecordsDataSource count];
@@ -620,8 +608,6 @@
 
 - (void)setUINavigationBarDefault
 {
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    
     UIBarButtonItem *buttonMore, *buttonNotification;
     
     // =
@@ -648,9 +634,7 @@
 }
 
 - (void)setUINavigationBarSelected
-{
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    
+{    
     UIImage *icon = [UIImage imageNamed:@"navigationControllerMenu"];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
 

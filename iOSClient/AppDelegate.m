@@ -830,7 +830,7 @@ PKPushRegistry *pushRegistry;
         }
     }
     
-    [self aspectTabBar:tabBarController.tabBar];
+    //[self aspectTabBar:tabBarController.tabBar];
     
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
@@ -892,30 +892,6 @@ PKPushRegistry *pushRegistry;
     // Height
     constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
     [tabBarController.view addConstraint:constraint];
-}
-
-- (void)aspectNavigationControllerBar:(UINavigationBar *)nav
-{
-    nav.translucent = NO;
-    nav.barTintColor = NCBrandColor.sharedInstance.brand;
-    nav.tintColor = NCBrandColor.sharedInstance.brandText;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
-    // Change bar bottom line shadow
-    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
-    
-    if (![self.reachability isReachable])
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
-        
-    [nav setAlpha:1];
-}
-
-- (void)aspectTabBar:(UITabBar *)tab
-{
-    tab.translucent = NO;
-    tab.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    tab.tintColor = NCBrandColor.sharedInstance.brandElement;
-        
-    [tab setAlpha:1];
 }
 
 - (void)plusButtonVisibile:(BOOL)visible
@@ -1026,27 +1002,36 @@ PKPushRegistry *pushRegistry;
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView
 {
-    // Change Navigation & TabBar color
-    viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-    // Change bar bottom line shadow
-    viewController.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
+    // NavigationBar
+    if (viewController.navigationController.navigationBar) {
+        viewController.navigationController.navigationBar.translucent = false;
+        viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+        viewController.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
+        if ([self.reachability isReachable]) {
+            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
+        } else {
+            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
+        }
+        viewController.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
+        [viewController.navigationController.navigationBar setAlpha:1];
+    }
     
-    // Change button Plus
+    //tabBar
+    if (viewController.tabBarController.tabBar) {
+        viewController.tabBarController.tabBar.translucent = NO;
+        viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+        viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+        [viewController.tabBarController.tabBar setAlpha:1];
+    }
+    
+    //tabBar button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
-    
     UIButton *button = [tabBarController.view viewWithTag:99];
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
-    
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
-    
-    tabBarController.tabBar.translucent = NO;
-    tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-            
-    // TableView
+                
     if (tableView) {
         tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         tableView.separatorColor = NCBrandColor.sharedInstance.separator;

@@ -43,7 +43,7 @@
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder])  {
-        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissCCLogin) name:@"dismissCCLogin" object:nil];
     }
     
@@ -54,7 +54,6 @@
 {
     [super viewDidLoad];
     
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     Ivar ivar =  class_getInstanceVariable([UITextField class], "_placeholderLabel");
 
     // Background color

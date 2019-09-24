@@ -53,12 +53,7 @@
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder])  {
-        
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-        
         appDelegate.activeTransfers = self;
     }
     return self;
@@ -68,6 +63,8 @@
     
     [super viewDidLoad];
     
+    self.title = NSLocalizedString(@"_transfers_", nil);
+
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
@@ -84,7 +81,9 @@
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
-    self.title = NSLocalizedString(@"_transfers_", nil);
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+    [self changeTheming];
     
     [self reloadDatasource:nil action:k_action_NULL];
 }
@@ -93,19 +92,12 @@
 {
     [super viewDidAppear:animated];
         
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [self reloadDatasource:nil action:k_action_NULL];
-    });
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

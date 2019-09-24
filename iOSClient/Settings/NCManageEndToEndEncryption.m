@@ -61,6 +61,7 @@
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [section addFormRow:row];
         
+        self.tableView.showsVerticalScrollIndicator = NO;
         self.form = form;
 
         return;
@@ -154,31 +155,23 @@
     [section addFormRow:row];
 #endif
     
+    self.tableView.showsVerticalScrollIndicator = NO;
     self.form = form;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    [self initializeForm];
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        
     // E2EE
     self.endToEndInitialize = [NCEndToEndInitialize new];
     self.endToEndInitialize.delegate = self;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
     
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.showsVerticalScrollIndicator = NO;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-    
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar];
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
 }
 
 - (void)changeTheming

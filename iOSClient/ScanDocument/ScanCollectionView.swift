@@ -88,13 +88,15 @@ class DragDropViewController: UIViewController {
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizer)
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        
+                
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
         
@@ -108,6 +110,10 @@ class DragDropViewController: UIViewController {
         }
         
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil)
     }
     
     //MARK: Button Action

@@ -46,6 +46,8 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        self.title = NSLocalizedString("_activity_", comment: "")
+
         // empty Data Source
         tableView.emptyDataSetDelegate = self;
         tableView.emptyDataSetSource = self;
@@ -55,16 +57,9 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         tableView.tableFooterView = UIView()
         tableView.contentInset = insets
         
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar)
-        if filterFileId == nil {
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        } else {
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        }
-        
-        self.title = NSLocalizedString("_activity_", comment: "")
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,6 +71,15 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        if filterFileId == nil {
+            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        } else {
+            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        }
     }
     
     // MARK: DZNEmpty

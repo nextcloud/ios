@@ -59,6 +59,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.dataSource = self
         
         themingBackground.image = #imageLiteral(resourceName: "themingBackground")
+        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -72,6 +73,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeUserProfile), name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+        
+        // Theming view
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -178,37 +182,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             labelQuotaExternalSite.text = item.name
         }
         
-        // User data & Theming
         changeUserProfile()
-        changeTheming()
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        tableView.separatorColor = NCBrandColor.sharedInstance.separator
-
-        // Title
-        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
-        
-        // Aspect
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar)
-
-        // +
-        appDelegate.plusButtonVisibile(true)
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: animated)
-        
         tableView.reloadData()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     @objc func changeTheming() {
         
         self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
         
         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-themingBackground.png"
         
@@ -222,10 +204,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)
         
-        if (self.isViewLoaded && (self.view.window != nil)) {
-            appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
-            viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        }
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
     }
     
     @objc func changeUserProfile() {
@@ -266,8 +245,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             progressQuota.progress = 0
         }
 
-        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
-        
         switch Double(tabAccount.quotaTotal) {
         case Double(k_quota_space_not_computed):
             quota = "0"

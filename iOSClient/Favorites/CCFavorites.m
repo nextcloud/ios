@@ -51,12 +51,7 @@
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder])  {
-        
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-        
         appDelegate.activeFavorites = self;
     }
     return self;
@@ -93,22 +88,15 @@
     else
         self.title = NSLocalizedString(@"_favorites_", nil);
     
+    // Notification
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
+    
     // Query data source
     [self queryDatasource];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar];
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-    
-    // Plus Button
-    [appDelegate plusButtonVisibile:true];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -118,18 +106,12 @@
     // Active Main
     appDelegate.activeFavorites = self;
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [self reloadDatasource:nil action:k_action_NULL];
-    });
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
-    
-    // Reload Table View
-    [self.tableView reloadData];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -158,8 +158,6 @@
 
 // TabBarController
 - (void)createTabBarController:(UITabBarController *)tabBarController;
-- (void)aspectNavigationControllerBar:(UINavigationBar *)nav;
-- (void)aspectTabBar:(UITabBar *)tab;
 - (void)plusButtonVisibile:(BOOL)visible;
 - (void)selectedTabBarController:(NSInteger)index;
 - (NSString *)getTabBarControllerActiveServerUrl;
