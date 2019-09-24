@@ -57,7 +57,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar)
         if filterFileId == nil {
             tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         } else {

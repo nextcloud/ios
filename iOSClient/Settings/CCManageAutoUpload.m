@@ -200,7 +200,7 @@
 
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar];
     
     // Request permission for camera roll access
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {

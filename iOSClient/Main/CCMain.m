@@ -171,7 +171,7 @@
     
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar];
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
 

@@ -830,7 +830,7 @@ PKPushRegistry *pushRegistry;
         }
     }
     
-    [self aspectTabBar:tabBarController.tabBar hidden:NO];
+    [self aspectTabBar:tabBarController.tabBar];
     
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
@@ -909,14 +909,12 @@ PKPushRegistry *pushRegistry;
     [nav setAlpha:1];
 }
 
-- (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
+- (void)aspectTabBar:(UITabBar *)tab
 {
     tab.translucent = NO;
     tab.barTintColor = NCBrandColor.sharedInstance.tabBar;
     tab.tintColor = NCBrandColor.sharedInstance.brandElement;
-    
-    tab.hidden = hidden;
-    
+        
     [tab setAlpha:1];
 }
 

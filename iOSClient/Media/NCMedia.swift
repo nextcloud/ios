@@ -108,7 +108,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         // Aspect Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar)
         collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         // Configure Refresh Control

@@ -190,7 +190,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         // Aspect
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar)
 
         // +
         appDelegate.plusButtonVisibile(true)

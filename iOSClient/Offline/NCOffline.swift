@@ -115,7 +115,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar)
         collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.navigationItem.title = titleCurrentFolder

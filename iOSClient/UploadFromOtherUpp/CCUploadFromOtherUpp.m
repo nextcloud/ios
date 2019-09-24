@@ -50,7 +50,7 @@
     
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar];
 }
 
 - (void)didReceiveMemoryWarning
