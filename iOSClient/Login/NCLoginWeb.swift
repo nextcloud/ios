@@ -162,7 +162,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         decisionHandler(.allow)
 
-        /*
+        /* TEST NOT GOOD DON'T WORKS
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
