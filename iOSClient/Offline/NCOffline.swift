@@ -608,7 +608,8 @@ extension NCOffline: UICollectionViewDataSource {
                 }
                 
                 header.delegate = self
-                
+                header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+                header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
                 header.setStatusButton(count: sectionDatasource.allOcId.count)
                 header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
@@ -676,6 +677,7 @@ extension NCOffline: UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
         } else {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            (cell as! NCListCell).separator.backgroundColor = NCBrandColor.sharedInstance.separator
         }
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)

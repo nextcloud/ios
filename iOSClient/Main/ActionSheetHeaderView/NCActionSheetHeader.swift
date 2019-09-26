@@ -50,6 +50,7 @@ class NCActionSheetHeader: NSObject {
         
         let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
         
+        headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         headerView.imageItem.image = image
         headerView.label.text = text
         headerView.label.textColor = NCBrandColor.sharedInstance.icon
