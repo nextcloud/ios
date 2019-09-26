@@ -180,15 +180,16 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-        name.textColor = NCBrandColor.sharedInstance.textView
+        name.textColor = NCBrandColor.sharedInstance.backgroundView
         
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
+            cell.backgroundColor = NCBrandColor.sharedInstance.textView
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {
-            cell.backgroundColor = UIColor.black
+            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             imageSelect.isHidden = true
         }
         
