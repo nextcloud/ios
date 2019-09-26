@@ -36,14 +36,12 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.metadata = metadata
         
         // Navigation Controller
         var image = CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray)
         image = image?.withRenderingMode(.alwaysOriginal)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundForm
         
         // Pagination
         addChild(pagingViewController)
@@ -51,11 +49,6 @@ class NCSharePaging: UIViewController {
         pagingViewController.didMove(toParent: self)
         
         // Customization
-        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        pagingViewController.textColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
         pagingViewController.indicatorOptions = .visible(
             height: 1,
             zIndex: Int.max,
@@ -74,6 +67,20 @@ class NCSharePaging: UIViewController {
         
         pagingViewController.dataSource = self        
         pagingViewController.select(index: indexPage)
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil)
+        
+        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.textColor = NCBrandColor.sharedInstance.textView
+        pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
+        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
     }
     
     @objc func exitTapped() {

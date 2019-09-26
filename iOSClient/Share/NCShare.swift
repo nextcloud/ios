@@ -58,14 +58,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
-        shareLinkLabel.textColor = NCBrandColor.sharedInstance.textView
         shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar()
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
 
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
 
         tableView.register(UINib.init(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
         tableView.register(UINib.init(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
@@ -102,6 +100,16 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
         networking?.readShare()
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        
+        shareLinkLabel.textColor = NCBrandColor.sharedInstance.textView
     }
         
     @objc func reloadData() {
