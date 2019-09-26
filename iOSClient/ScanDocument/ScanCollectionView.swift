@@ -65,13 +65,11 @@ class DragDropViewController: UIViewController {
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast //default value - .immediate
-        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
@@ -113,6 +111,9 @@ class DragDropViewController: UIViewController {
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil)
+        
+        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
     //MARK: Button Action
