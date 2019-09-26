@@ -19,4 +19,16 @@ open class TLCollectionTableViewCell: UITableViewCell {
             self.thumbImageView.accessibilityIgnoresInvertColors = true
         }
     }
+    
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if #available(iOS 12.0, *) {
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            if userInterfaceStyle.rawValue == 2 {
+                self.contentView.backgroundColor = .black
+            }else {
+                self.contentView.backgroundColor = .white
+            }
+        }
+    }
 }

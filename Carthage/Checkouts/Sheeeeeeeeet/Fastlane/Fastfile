@@ -25,6 +25,8 @@ platform :ios do
 
     git_commit(
       path: [
+        "Sheeeeeeeeet/Info.plist",
+        "SheeeeeeeeetDemo/Info.plist",
         "Sheeeeeeeeet.podspec",
         "Fastlane/"
       ],

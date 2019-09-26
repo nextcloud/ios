@@ -131,9 +131,13 @@ extension PHFetchOptions {
 //MARK: - Load Collection
 extension TLPhotoLibrary {
     func getOption(configure: TLPhotosPickerConfigure) -> PHFetchOptions {
-        
-        let options = configure.fetchOption ?? PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        let options: PHFetchOptions
+        if let fetchOption = configure.fetchOption {
+            options = fetchOption
+        }else {
+            options = PHFetchOptions()
+            options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        }
         if let mediaType = configure.mediaType {
             let mediaPredicate = NSPredicate(format: "mediaType = %i", mediaType.rawValue)
             options.merge(predicate: mediaPredicate)
@@ -179,6 +183,7 @@ extension TLPhotoLibrary {
             for collection in collections {
                 if !result.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
                     var assetsCollection = TLAssetsCollection(collection: collection)
+                    assetsCollection.title = configure.customLocalizedTitle[assetsCollection.title] ?? assetsCollection.title
                     assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
                     if assetsCollection.count > 0 {
                         result.append(assetsCollection)
@@ -202,6 +207,7 @@ extension TLPhotoLibrary {
                 result.contains(where: { $0.localIdentifier == collection.localIdentifier }) == false
             {
                 var assetsCollection = TLAssetsCollection(collection: collection)
+                assetsCollection.title = configure.customLocalizedTitle[assetsCollection.title] ?? assetsCollection.title
                 assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
                 if assetsCollection.count > 0 || useCameraButton {
                     result.append(assetsCollection)
@@ -232,7 +238,7 @@ extension TLPhotoLibrary {
                                                          useCameraButton: useCameraButton,
                                                          result: &assetCollections)
                 if var cameraRoll = camerarollCollection {
-                    cameraRoll.title = configure.customLoclizedTitle[cameraRoll.title] ?? cameraRoll.title
+                    cameraRoll.title = configure.customLocalizedTitle[cameraRoll.title] ?? cameraRoll.title
                     cameraRoll.useCameraButton = useCameraButton
                     assetCollections[0] = cameraRoll
                     DispatchQueue.main.async {
@@ -259,6 +265,7 @@ extension TLPhotoLibrary {
                 albumsResult.enumerateObjects({ (collection, index, stop) -> Void in
                     guard let collection = collection as? PHAssetCollection else { return }
                     var assetsCollection = TLAssetsCollection(collection: collection)
+                    assetsCollection.title = configure.customLocalizedTitle[assetsCollection.title] ?? assetsCollection.title
                     assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
                     if assetsCollection.count > 0, !assetCollections.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
                         assetCollections.append(assetsCollection)

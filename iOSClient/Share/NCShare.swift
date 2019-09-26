@@ -338,7 +338,7 @@ extension NCShare: UITableViewDataSource {
                 
                 cell.tableShare = tableShare
                 cell.delegate = self
-                cell.labelTitle.text = tableShare.shareWith
+                cell.labelTitle.text = tableShare.shareWithDisplayName
                 cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
                 cell.labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
                 cell.labelCanEdit.textColor = NCBrandColor.sharedInstance.textView
