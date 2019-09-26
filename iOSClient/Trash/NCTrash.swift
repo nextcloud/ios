@@ -535,9 +535,11 @@ extension NCTrash: UICollectionViewDataSource {
             }
             
             trashHeader.delegate = self
-            
+            trashHeader.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            trashHeader.separator.backgroundColor = NCBrandColor.sharedInstance.separator
             trashHeader.setStatusButton(datasource: datasource)
             trashHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
+            
             
             return trashHeader
             
@@ -588,7 +590,8 @@ extension NCTrash: UICollectionViewDataSource {
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-            
+            cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+
             if tableTrash.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
