@@ -75,11 +75,6 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
-        if filterFileId == nil {
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        } else {
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        }
     }
     
     // MARK: DZNEmpty
@@ -155,11 +150,7 @@ extension NCActivity: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
-        if filterFileId == nil {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        } else {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        }
+        view.backgroundColor = .clear
         
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)

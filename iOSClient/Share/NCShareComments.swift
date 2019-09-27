@@ -67,7 +67,6 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         else{
             labelUser.text = tabAccount.displayName
         }
-        labelUser.textColor = NCBrandColor.sharedInstance.textView
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
@@ -84,12 +83,22 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 }
             })
         }
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         reloadData()
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        
+        labelUser.textColor = NCBrandColor.sharedInstance.textView
     }
     
     @objc func reloadData() {

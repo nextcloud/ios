@@ -81,9 +81,8 @@ class NCSharePaging: UIViewController {
         pagingViewController.textColor = NCBrandColor.sharedInstance.textView
         pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
         pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
-        
-            
-        (pagingViewController.view as! NCSharePagingView).setupConstraints()        
+        (pagingViewController.view as! NCSharePagingView).setupConstraints()
+        pagingViewController.reloadMenu()
     }
     
     @objc func exitTapped() {
