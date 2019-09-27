@@ -52,7 +52,7 @@ extern RLMIdentityProvider const RLMIdentityProviderJWT;
 extern RLMIdentityProvider const RLMIdentityProviderAnonymous;
 
 /// A Nickname account as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderNickname __deprecated_msg("Use RLMIdentityProviderUsernamePassword instead");
+extern RLMIdentityProvider const RLMIdentityProviderNickname;
 
 /**
  Opaque credentials representing a specific Realm Object Server user.
@@ -103,7 +103,7 @@ extern RLMIdentityProvider const RLMIdentityProviderNickname __deprecated_msg("U
 /**
  Construct and return credentials from a nickname
  */
-+ (instancetype)credentialsWithNickname:(NSString *)nickname isAdmin:(BOOL)isAdmin __deprecated_msg("Use +credentialsWithUsername instead");
++ (instancetype)credentialsWithNickname:(NSString *)nickname isAdmin:(BOOL)isAdmin;
 
 /**
  Construct and return special credentials representing a token that can

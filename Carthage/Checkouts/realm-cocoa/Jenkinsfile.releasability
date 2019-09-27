@@ -1,10 +1,8 @@
-xcodeVersions = ['10.0', '10.1', '10.2.1', '10.3', '11.0']
-platforms = ['osx', 'ios', 'watchos', 'tvos', 'catalyst']
-carthagePlatforms = ['osx', 'ios', 'watchos', 'tvos']
-platformNames = ['osx': 'macOS', 'ios': 'iOS', 'watchos': 'watchOS', 'tvos': 'tvOS', 'catalyst': 'Catalyst']
-carthageXcodeVersion = '11.0'
-objcXcodeVersion = '10.1'
-docsSwiftVersion = '5.1'
+xcodeVersions = ['9.4', '10.0', '10.1', '10.2.1', '10.3']
+platforms = ['osx', 'ios', 'watchos', 'tvos']
+platformNames = ['osx': 'macOS', 'ios': 'iOS', 'watchos': 'watchOS', 'tvos': 'tvOS']
+carthageXcodeVersion = '10.3'
+docsSwiftVersion = '5.0.1'
 
 def installationTest(platform, test, language) {
   return {
@@ -22,9 +20,8 @@ def installationTest(platform, test, language) {
 
       if [[ -f \$archive ]]; then
         mv \$archive .
-        unzip realm-${language}-*.zip
-        rm realm-${language}-*.zip
-        mv realm-${language}-* realm-${language}-latest
+        unzip realm-${language}-*zip
+        find . -name 'realm-${language}-*' -print0 | xargs -J% mv % realm-${language}-latest
       fi
 
       export REALM_XCODE_VERSION=${carthageXcodeVersion}
@@ -33,6 +30,20 @@ def installationTest(platform, test, language) {
     }
   }
 }
+
+def buildObjC(platform, outputDirectory=null) {
+  return {
+    node('osx') {
+      deleteDir()
+      unstash 'source'
+      sh "XCMODE=xcpretty ./build.sh package-${platform}"
+      dir(outputDirectory ?: "build/${platform}") {
+        stash includes: "realm-framework-${platform}.zip", name: "${platform}-objc"
+      }
+    }
+  }
+}
+
 
 def doBuild() {
   stage('prepare') {
@@ -83,19 +94,14 @@ def doBuild() {
         }
       },
 
-      'iOS Obj-C static': {
-        node('osx') {
-          deleteDir()
-          unstash 'source'
-          sh "XCMODE=xcpretty REALM_XCODE_VERSION=${objcXcodeVersion} ./build.sh package-ios-static"
-          dir("build/ios-static") {
-            stash includes: "realm-framework-ios-static.zip", name: "ios-static"
-          }
-        }
-      }
+      'macOS Obj-C': buildObjC('osx', 'build/DerivedData/Realm/Build/Products/Release'),
+      'iOS Obj-C': buildObjC('ios'),
+      'watchOS Obj-C': buildObjC('watchos'),
+      'tvOS Obj-C': buildObjC('tvos'),
+      'iOS Obj-C static': buildObjC('ios-static'),
     ]
 
-    for (def p in carthagePlatforms) {
+    for (def p in platforms) {
       def platform = p
       def platformName = platformNames[platform]
       parallelBuilds["${platformName} Carthage"] = {
@@ -106,10 +112,6 @@ def doBuild() {
           export REALM_XCODE_VERSION=${carthageXcodeVersion}
           . ./scripts/swift-version.sh
           set_xcode_and_swift_versions
-
-          if [ "${platform}" != osx ]; then
-            ./scripts/reset-simulators.rb
-          fi
 
           carthage build --no-skip-current --platform ${platform}
           carthage archive --output Carthage-${platform}.framework.zip
@@ -125,14 +127,14 @@ def doBuild() {
       def platformName = platformNames[platform]
       for (def v in xcodeVersions) {
         def xcodeVersion = v
-        parallelBuilds["${platformName} ${xcodeVersion}"] = {
+        parallelBuilds["${platformName} Swift ${xcodeVersion}"] = {
           node('osx') {
             deleteDir()
             unstash 'source'
-            sh "XCMODE=xcpretty REALM_XCODE_VERSION=${xcodeVersion} ./build.sh package ${platform}"
+            sh "XCMODE=xcpretty ./build.sh package-${platform}-swift-${xcodeVersion}"
             dir("build/${platform}") {
-              stash includes: "realm-framework-${platform}-${xcodeVersion}.zip",
-                    name: "${platform}-${xcodeVersion}"
+              stash includes: "realm-swift-framework-${platform}-swift-${xcodeVersion}.zip",
+                    name: "${platform}-swift-${xcodeVersion}"
             }
           }
         }
@@ -149,19 +151,14 @@ def doBuild() {
           deleteDir()
 
           for (def platform in platforms) {
-            unstash "${platform}-${objcXcodeVersion}"
+            unstash "${platform}-objc"
           }
 
-          // The 10.x builds don't actually have a framework for catalyst, so
-          // use the 11.0 version instead
-          unstash 'catalyst-11.0'
-          sh "mv realm-framework-catalyst-11.0.zip realm-framework-catalyst-${objcXcodeVersion}.zip"
-
-          unstash 'ios-static'
+          unstash 'ios-static-objc'
           unstash 'examples'
           unstash 'source'
 
-          sh "REALM_XCODE_VERSION=${objcXcodeVersion} ./build.sh package-release objc"
+          sh './build.sh package-release objc'
           stash include: 'realm-objc-*.zip', name: 'objc-packaged'
           archiveArtifacts artifacts: 'realm-objc-*.zip'
         }
@@ -172,7 +169,7 @@ def doBuild() {
 
           for (def platform in platforms) {
             for (def xcodeVersion in xcodeVersions) {
-              unstash "${platform}-${xcodeVersion}"
+              unstash "${platform}-swift-${xcodeVersion}"
             }
           }
 
@@ -180,6 +177,7 @@ def doBuild() {
           unstash 'source'
 
           sh './build.sh package-release swift'
+          sh 'rm realm-swift-framework-*.zip'
           stash include: 'realm-swift-*.zip', name: 'swift-packaged'
           archiveArtifacts artifacts: 'realm-swift-*.zip'
         }
@@ -188,7 +186,7 @@ def doBuild() {
         node('osx') {
           deleteDir()
 
-          for (def platform in carthagePlatforms) {
+          for (def platform in platforms) {
             unstash "${platform}-carthage"
           }
 
@@ -208,30 +206,12 @@ def doBuild() {
 
   stage('test') {
     def parallelBuilds = [
-      'Test Obj-C Examples': {
+      'Test Examples': {
         node('osx') {
           deleteDir()
 
+          // FIXME: Split Obj-C and Swift.
           unstash 'objc-packaged'
-
-          def sha = params.sha
-          sh """
-          curl -O https://raw.githubusercontent.com/realm/realm-cocoa/${sha}/build.sh
-          mkdir -p scripts
-          curl https://raw.githubusercontent.com/realm/realm-cocoa/${sha}/scripts/swift-version.sh -o scripts/swift-version.sh
-          curl https://raw.githubusercontent.com/realm/realm-cocoa/${sha}/scripts/reset-simulators.sh -o scripts/reset-simulators.sh
-          curl https://raw.githubusercontent.com/realm/realm-cocoa/${sha}/scripts/reset-simulators.rb -o scripts/reset-simulators.rb
-          chmod +x scripts/reset-simulators.rb
-
-          XCMODE=xcpretty sh build.sh package-test-examples-objc
-          """
-        }
-      },
-
-      'Test Swift Examples': {
-        node('osx') {
-          deleteDir()
-
           unstash 'swift-packaged'
 
           def sha = params.sha
@@ -243,7 +223,7 @@ def doBuild() {
           curl https://raw.githubusercontent.com/realm/realm-cocoa/${sha}/scripts/reset-simulators.rb -o scripts/reset-simulators.rb
           chmod +x scripts/reset-simulators.rb
 
-          XCMODE=xcpretty sh build.sh package-test-examples-swift
+          XCMODE=xcpretty sh build.sh package-test-examples
           """
         }
       },
@@ -253,8 +233,7 @@ def doBuild() {
           deleteDir()
           unstash 'source'
 
-          sh './scripts/reset-simulators.rb'
-          sh 'XCMODE=xcpretty sh build.sh test-ios-static'
+          sh 'XCMODE=xcpretty IS_RUNNING_PACKAGING=1 sh build.sh test-ios-static'
         }
       },
 
@@ -268,7 +247,7 @@ def doBuild() {
       }
     ]
 
-    for (def platform in ["osx", "ios", "watchos"]) {
+    for (def platform in ["osx", "ios"]) {
       def platformName = platformNames[platform]
       for (def test in ["dynamic", "cocoapods", "carthage"]) {
         parallelBuilds["Installation - ${platformName} Obj-C ${test}"] = installationTest(platform, test, 'objc')
@@ -278,7 +257,7 @@ def doBuild() {
     parallelBuilds["Installation - iOS Obj-C static"] = installationTest('ios', 'static', 'objc')
     parallelBuilds["Installation - iOS Obj-C CocoaPods dynamic"] = installationTest('ios', 'cocoapods-dynamic', 'objc')
 
-    for (def platform in ["osx", "ios", "watchos"]) {
+    for (def platform in ["osx", "ios"]) {
       def platformName = platformNames[platform]
       for (def test in ["cocoapods", "carthage"]) {
         parallelBuilds["Installation - ${platformName} Swift ${test}"] = installationTest(platform, test, 'swift')
