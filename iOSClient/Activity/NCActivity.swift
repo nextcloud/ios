@@ -153,7 +153,7 @@ extension NCActivity: UITableViewDelegate {
         view.backgroundColor = .clear
         
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.font = UIFont.boldSystemFont(ofSize: 13)
         label.textColor = NCBrandColor.sharedInstance.textView
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
