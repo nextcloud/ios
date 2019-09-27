@@ -1009,7 +1009,7 @@ PKPushRegistry *pushRegistry;
 
     // NavigationBar
     if (viewController.navigationController.navigationBar) {
-        viewController.navigationController.navigationBar.translucent = false;
+        viewController.navigationController.navigationBar.translucent = NO;
         viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
         viewController.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
         if ([self.reachability isReachable]) {

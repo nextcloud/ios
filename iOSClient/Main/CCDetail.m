@@ -83,7 +83,7 @@
     [super viewDidLoad];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
-    
+        
     [self changeTheming];
     
     // Open View
@@ -92,11 +92,19 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.tabBarController.tabBar.hidden = YES;
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
 
-    [self.navigationController setNavigationBarHidden:false];
+    self.navigationController.navigationBarHidden = NO;
+    self.tabBarController.tabBar.hidden = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -347,6 +355,8 @@
         
         [self.navigationController pushViewController:self.photoBrowser animated:NO];
     }
+    
+    self.navigationController.navigationBar.topItem.title = _metadataDetail.fileNameView;
 }
 
 - (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser
