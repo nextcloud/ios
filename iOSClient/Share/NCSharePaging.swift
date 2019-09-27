@@ -81,6 +81,9 @@ class NCSharePaging: UIViewController {
         pagingViewController.textColor = NCBrandColor.sharedInstance.textView
         pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
         pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
+        
+            
+        (pagingViewController.view as! NCSharePagingView).setupConstraints()        
     }
     
     @objc func exitTapped() {
@@ -149,7 +152,8 @@ extension NCSharePaging: PagingViewControllerDataSource {
     }
 }
 
-class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
+class 
+NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
     
     public var image: UIImage?
     public var metadata: tableMetadata?
