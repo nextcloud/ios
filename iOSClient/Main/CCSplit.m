@@ -273,7 +273,7 @@
     BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
     
     // detect Dark Mode
-    if (@available(iOS 12.0, *)) {
+    if (@available(iOS 13.0, *)) {
         appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
         if ([CCUtility getDarkModeDetect]) {
             if (appDelegate.preferredUserInterfaceStyle == UIUserInterfaceStyleDark) {
