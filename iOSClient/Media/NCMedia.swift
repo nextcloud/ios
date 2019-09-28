@@ -152,7 +152,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView)
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
 
     // MARK: DZNEmpty

@@ -168,7 +168,7 @@
 
 // Theming Color
 - (void)settingThemingColorBrand;
-- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView;
+- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form;
 
 // Task Networking
 - (void)loadAutoDownloadUpload;

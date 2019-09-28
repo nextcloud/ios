@@ -50,7 +50,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     }
     
      @objc func changeTheming() {
-           appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+           appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
        }
 
     @objc func viewClose() {

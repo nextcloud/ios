@@ -122,7 +122,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView)
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
         
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand

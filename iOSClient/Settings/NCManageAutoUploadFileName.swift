@@ -168,7 +168,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
         initializeForm()
         self.reloadForm()
     }

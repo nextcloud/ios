@@ -96,7 +96,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
         
         labelUser.textColor = NCBrandColor.sharedInstance.textView
     }

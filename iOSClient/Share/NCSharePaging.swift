@@ -74,10 +74,10 @@ class NCSharePaging: UIViewController {
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil)
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
         
-        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundView
+        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.textColor = NCBrandColor.sharedInstance.textView
         pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
         pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
@@ -187,7 +187,7 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
-        headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         headerView.ocId = metadata!.ocId
         
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, fileNameView: metadata!.fileNameView)) {

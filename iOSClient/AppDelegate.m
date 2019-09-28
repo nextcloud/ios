@@ -999,14 +999,15 @@ PKPushRegistry *pushRegistry;
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
-- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView
+- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
 {
     // Dark Mode
     [NCBrandColor.sharedInstance setDarkMode];
     
     // View
-    viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-
+    if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+    else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        
     // NavigationBar
     if (viewController.navigationController.navigationBar) {
         viewController.navigationController.navigationBar.translucent = NO;
@@ -1039,14 +1040,16 @@ PKPushRegistry *pushRegistry;
                 
     // TableView
     if (tableView) {
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        if (form) tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        else tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         tableView.separatorColor = NCBrandColor.sharedInstance.separator;
         [tableView reloadData];
     }
     
     // CollectionView
     if (collectionView) {
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        if (form) collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        else collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         [collectionView reloadData];
     }
     

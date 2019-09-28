@@ -179,7 +179,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView)
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
     
     // MARK: DZNEmpty

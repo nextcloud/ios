@@ -215,7 +215,7 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
     [self initializeForm];
     [self reloadForm];
 }

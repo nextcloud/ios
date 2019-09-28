@@ -107,7 +107,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
         
         shareLinkLabel.textColor = NCBrandColor.sharedInstance.textView
     }

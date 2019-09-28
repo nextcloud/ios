@@ -74,7 +74,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil)
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
     }
     
     // MARK: DZNEmpty

@@ -70,7 +70,7 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self tableView:nil collectionView:nil];
+    [appDelegate changeTheming:self tableView:nil collectionView:nil form:false];
 }
 
 - (void)cancelPressed

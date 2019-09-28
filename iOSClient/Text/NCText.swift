@@ -125,7 +125,7 @@ class NCText: UIViewController, UITextViewDelegate {
     
     @objc func changeTheming() {
     
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil)
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
         
         textView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         textView.textColor = NCBrandColor.sharedInstance.textView

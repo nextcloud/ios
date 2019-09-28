@@ -130,7 +130,7 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
     }
 
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: collectionView)
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: collectionView, form: false)
         initializeForm()
     }
     
