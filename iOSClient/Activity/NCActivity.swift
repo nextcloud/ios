@@ -200,13 +200,6 @@ extension NCActivity: UITableViewDataSource {
             cell.didSelectItemEnable = self.didSelectItemEnable
             cell.subject.textColor = NCBrandColor.sharedInstance.textView
             
-            /*
-            if filterFileId == nil {
-                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            } else {
-                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            }
-            */
             // icon
             if activity.icon.count > 0 {
                 
