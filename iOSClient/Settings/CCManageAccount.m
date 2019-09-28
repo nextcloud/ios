@@ -96,7 +96,6 @@
         // Modify Account
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        row.cellConfigAtConfigure[@"switchControl.onTintColor"] = NCBrandColor.sharedInstance.brand;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -112,7 +111,6 @@
             // New Account nextcloud
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-            row.cellConfigAtConfigure[@"switchControl.onTintColor"] = NCBrandColor.sharedInstance.brand;
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
             [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"add"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -124,7 +122,6 @@
         // delete Account
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        row.cellConfigAtConfigure[@"switchControl.onTintColor"] = NCBrandColor.sharedInstance.brand;
         [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
@@ -312,7 +309,6 @@
         // Edit profile
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"editUserProfile" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_user_editprofile_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        row.cellConfigAtConfigure[@"switchControl.onTintColor"] = NCBrandColor.sharedInstance.brand;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"editUserProfile"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
