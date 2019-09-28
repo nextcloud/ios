@@ -110,10 +110,10 @@ class DragDropViewController: UIViewController {
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
         
-        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
     }
     
     //MARK: Button Action
