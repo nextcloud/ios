@@ -202,7 +202,7 @@
                                     <constraint firstAttribute="height" constant="30" id="YkC-Vc-Xvs"/>
                                     <constraint firstAttribute="width" constant="30" id="cFS-ia-6uF"/>
                                 </constraints>
-                                <state key="normal" image="exit"/>
+                                <state key="normal" image="exitCircle"/>
                                 <connections>
                                     <action selector="touchUpInsideButtonExit:" destination="yEb-Ky-35s" eventType="touchUpInside" id="yOK-1Z-3bI"/>
                                 </connections>
@@ -262,7 +262,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="exit" width="300" height="300"/>
+        <image name="exitCircle" width="329" height="329"/>
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>

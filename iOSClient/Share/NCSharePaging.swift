@@ -39,7 +39,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.metadata = metadata
         
         // Navigation Controller
-        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exitCircle")!, width: 70, height: 70, color: NCBrandColor.sharedInstance.brandText)
+        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exitCircle")!, width: 60, height: 60, color: NCBrandColor.sharedInstance.brandText)
         image = image?.withRenderingMode(.alwaysOriginal)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
         
