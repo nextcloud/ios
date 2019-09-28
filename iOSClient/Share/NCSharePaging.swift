@@ -39,7 +39,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.metadata = metadata
         
         // Navigation Controller
-        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray)
+        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exitCircle")!, width: 70, height: 70, color: NCBrandColor.sharedInstance.brandText)
         image = image?.withRenderingMode(.alwaysOriginal)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
         
@@ -76,8 +76,8 @@ class NCSharePaging: UIViewController {
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil)
         
-        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundView
         pagingViewController.textColor = NCBrandColor.sharedInstance.textView
         pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
         pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
@@ -187,7 +187,7 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
-        headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         headerView.ocId = metadata!.ocId
         
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, fileNameView: metadata!.fileNameView)) {
@@ -227,7 +227,7 @@ class NCSharePagingView: PagingView {
             collectionView.heightAnchor.constraint(equalToConstant: options.menuHeight),
             collectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             
-            headerView.topAnchor.constraint(equalTo: topAnchor),
+            headerView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             headerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             
