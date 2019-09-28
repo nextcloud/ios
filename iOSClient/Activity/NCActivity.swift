@@ -42,7 +42,7 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     var canFetchActivity = true
     var dateAutomaticFetch : Date?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     
@@ -74,7 +74,12 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+        
+        if filterFileId == nil {
+            appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+        } else {
+            appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        }
     }
     
     // MARK: DZNEmpty

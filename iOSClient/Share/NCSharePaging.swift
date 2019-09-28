@@ -74,7 +74,7 @@ class NCSharePaging: UIViewController {
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
         
         pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
@@ -234,7 +234,7 @@ class NCSharePagingView: PagingView {
             pageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             pageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            pageView.topAnchor.constraint(equalTo: topAnchor)
+            pageView.topAnchor.constraint(equalTo: topAnchor, constant: 10)
         ])
     }
 }
