@@ -147,25 +147,25 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         guard let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: metadata.account) else { return }
         let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
 
-        if capabilities.isFilesSharingPublicPasswordEnforced {
-            
-            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: NSLocalizedString("_enforce_password_protection_", comment: ""), preferredStyle: .alert)
+        if capabilities.isFilesSharingPublicPasswordEnforced && shares.firstShareLink == nil {
+            let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
             alertController.addTextField { (textField) in
                 textField.isSecureTextEntry = true
                 textField.addTarget(self, action: #selector(self.minCharTextFieldDidChange(sender:)), for: UIControl.Event.editingChanged)
-
             }
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in })
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in
-                
-            })
+            let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in
+                let password = alertController.textFields?.first?.text
+                self.networking?.share(password: password ?? "", permission: 1, hideDownload: false)
+            }
+            okAction.isEnabled = false
+            alertController.addAction(okAction)
+            
             self.present(alertController, animated: true, completion:nil)
-        }
-        
-        if shares.firstShareLink != nil {
-            tapMenu(with: shares.firstShareLink!, sender: sender)
-        } else {
+        } else if shares.firstShareLink == nil {
             networking?.share(password: "", permission: 1, hideDownload: false)
+        } else {
+            tapMenu(with: shares.firstShareLink!, sender: sender)
         }
     }
     
