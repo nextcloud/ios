@@ -164,7 +164,7 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
     [self initializeForm];
 }
 
