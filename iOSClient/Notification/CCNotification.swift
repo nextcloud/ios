@@ -50,7 +50,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     }
     
      @objc func changeTheming() {
-           appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+           appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
        }
 
     @objc func viewClose() {
@@ -77,7 +77,6 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         cell.delegate = self
-        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
         let urlIcon = URL(string: notification.icon)
@@ -141,7 +140,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         
-        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
+        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: .gray), for: .normal)
         
         cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
         cell.primary.setTitleColor(.white, for: .normal)
