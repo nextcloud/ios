@@ -28,6 +28,36 @@ class NCManageAutoUploadFileName: XLFormViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let dateExample = Date()
     
+    // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
+    }
+    
+    func reloadForm() {
+        
+        self.form.delegate = nil
+        
+        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
+        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
+        
+        self.tableView.reloadData()
+        self.form.delegate = self
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        initializeForm()
+        self.reloadForm()
+    }
+    
+    //MARK: XLForm
+
     func initializeForm() {
         
         let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_autoupload_filename_title_", comment: "")) as XLFormDescriptor
@@ -143,34 +173,6 @@ class NCManageAutoUploadFileName: XLFormViewController {
             
             self.reloadFormRow(previewFileName)
         }
-    }
-    
-    // MARK: - View Life Cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        changeTheming()
-    }
-    
-    func reloadForm() {
-        
-        self.form.delegate = nil
-        
-        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
-        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
-        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
-        
-        self.tableView.reloadData()
-        self.form.delegate = self
-    }
-    
-    @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
-        initializeForm()
-        self.reloadForm()
     }
     
     // MARK: - Utility
