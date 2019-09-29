@@ -121,12 +121,7 @@ class NCCreateMenuAdd: NSObject {
             
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
-        
-//        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-//        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-//        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-//        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-        
+                
         actionSheet.present(in: viewController, from: view)
     }
 }

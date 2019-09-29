@@ -365,11 +365,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
-            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-            
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
             
@@ -776,12 +771,7 @@ extension NCOffline {
         let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
         actionSheet?.headerView = headerView
         actionSheet?.headerView?.frame.size.height = 50
-        
-        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-        
+     
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
 }
