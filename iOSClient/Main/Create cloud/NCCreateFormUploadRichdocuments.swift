@@ -79,6 +79,11 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         getTemplate()
     }
     
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: collectionView, form: false)
+        initializeForm()
+    }
+    
     // MARK: - Tableview (XLForm)
 
     func initializeForm() {
@@ -129,15 +134,10 @@ class NCCreateFormUploadRichdocuments: XLFormViewController, NCSelectDelegate, U
         self.form = form
     }
 
-    @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: collectionView, form: false)
-        initializeForm()
-    }
-    
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
-        header.textLabel?.textColor = NCBrandColor.sharedInstance.textView
+        header.textLabel?.textColor = .gray
         header.tintColor = NCBrandColor.sharedInstance.backgroundForm
     }
 

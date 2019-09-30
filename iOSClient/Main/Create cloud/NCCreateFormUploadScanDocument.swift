@@ -63,11 +63,43 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         self.serverUrl = serverUrl
         self.arrayImages = arrayImages
+    }
+    
+    // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
         
+        super.viewDidLoad()
+        
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        self.navigationItem.rightBarButtonItem = saveButton
+        
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+
+        //        self.tableView.sectionHeaderHeight = 10
+        //        self.tableView.sectionFooterHeight = 10
+        //        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        
+        
+        //        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+        //        let rowCell = row.cell(forForm: self)
+        //        rowCell.becomeFirstResponder()
+        
+        #if GOOGLEMOBILEVISION
+        textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
+        #endif
+        
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
         initializeForm()
     }
     
-    //MARK: XLFormDescriptorDelegate
+    //MARK: XLForm
     
     func initializeForm() {
         
@@ -332,37 +364,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         }
         
         return newFileName
-    }
-    
-    // MARK: - View Life Cycle
-    
-    override func viewDidLoad() {
-        
-        super.viewDidLoad()
-        
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
-        self.navigationItem.rightBarButtonItem = saveButton
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-
-        //        self.tableView.sectionHeaderHeight = 10
-        //        self.tableView.sectionFooterHeight = 10
-        //        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        
-        
-        //        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
-        //        let rowCell = row.cell(forForm: self)
-        //        rowCell.becomeFirstResponder()
-        
-        #if GOOGLEMOBILEVISION
-        textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
-        #endif
     }
     
     // MARK: - Action
