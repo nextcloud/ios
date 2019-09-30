@@ -140,7 +140,8 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
      
         var items = [ActionSheetItem]()
         ActionSheetDeleteItemCell.appearance().titleColor = .red
-
+        ActionSheet.applyAppearance(NCAppearance())
+        
         items.append(ActionSheetItem(title: NSLocalizedString("_edit_comment_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))

@@ -282,6 +282,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
         if !isEditMode {
             var items = [ActionSheetItem]()
+            ActionSheet.applyAppearance(NCAppearance())
             
             items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
@@ -312,6 +313,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         if !isEditMode {
             var items = [ActionSheetItem]()
             ActionSheetDeleteItemCell.appearance().titleColor = .red
+            ActionSheet.applyAppearance(NCAppearance())
             
             items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
             items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red)))
@@ -385,6 +387,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             if indexPath.row == 0 {
                 
                 var items = [ActionSheetItem]()
+                ActionSheet.applyAppearance(NCAppearance())
                 
                 items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
                 items.append(ActionSheetDangerButton(title: NSLocalizedString("_ok_", comment: "")))
@@ -427,6 +430,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             if indexPath.row == 2 {
                 
                 var items = [ActionSheetItem]()
+                ActionSheet.applyAppearance(NCAppearance())
                 
                 items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_selected_", comment: "")))
                 items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))

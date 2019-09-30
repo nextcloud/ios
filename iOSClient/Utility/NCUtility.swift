@@ -458,13 +458,3 @@ class NCUtility: NSObject {
         return(error, bundleDirectory, immPath)
     }
 }
-
-// MARK: - Sheeeeeeeeet
-
-class ActionSheetDeleteItem: ActionSheetItem {
-    override open func cell(for tableView: UITableView) -> ActionSheetItemCell {
-        return ActionSheetDeleteItemCell(style: cellStyle, reuseIdentifier: cellReuseIdentifier)
-    }
-}
-
-class ActionSheetDeleteItemCell: ActionSheetItemCell {}

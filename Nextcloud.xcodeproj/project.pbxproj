@@ -83,6 +83,9 @@
 		F7169A1C1EE590930086BD69 /* NCShares.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A181EE590930086BD69 /* NCShares.m */; };
 		F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A1A1EE590930086BD69 /* NCSharesCell.m */; };
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
+		F718088D2341FEB20039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
+		F718088E2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
+		F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
 		F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */; };
@@ -739,6 +742,7 @@
 		F7169A1B1EE590930086BD69 /* NCSharesCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSharesCell.xib; sourceTree = "<group>"; };
 		F7169A301EE59BB70086BD69 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A4C1EE59C640086BD69 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetAppearance.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVisionTextModel.framework; sourceTree = "<group>"; };
@@ -2414,6 +2418,7 @@
 			isa = PBXGroup;
 			children = (
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
+				F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
 				F76C3B871C638A4C00DC4301 /* CCError.h */,
@@ -3337,6 +3342,7 @@
 				F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
+				F718088E2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
@@ -3442,6 +3448,7 @@
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
 				F7434B4220E2405500417916 /* OCSharedDto.m in Sources */,
+				F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F7434B3F20E2404B00417916 /* OCNotifications.m in Sources */,
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
 				F7434B5420E240A300417916 /* NSString+Encode.m in Sources */,
@@ -3670,6 +3677,7 @@
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
+				F718088D2341FEB20039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,

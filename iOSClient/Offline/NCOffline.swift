@@ -338,6 +338,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             
             var items = [ActionSheetItem]()
             ActionSheetDeleteItemCell.appearance().titleColor = .red
+            ActionSheet.applyAppearance(NCAppearance())
 
             // 0 == CCMore, 1 = first NCOffline ....
             if (self == self.navigationController?.viewControllers[1]) {
@@ -751,6 +752,7 @@ extension NCOffline {
     func deleteItem(with metadata: tableMetadata, sender: Any) {
         
         var items = [ActionSheetItem]()
+        ActionSheet.applyAppearance(NCAppearance())
         
         guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
             return
