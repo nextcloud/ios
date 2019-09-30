@@ -142,12 +142,16 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         
         cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: .gray), for: .normal)
         
+        cell.primary.isEnabled = false
+        cell.primary.isHidden = true
         cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
         cell.primary.setTitleColor(.white, for: .normal)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
         cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brand.cgColor
         
+        cell.secondary.isEnabled = false
+        cell.secondary.isHidden = true
         cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
         cell.secondary.setTitleColor(.gray, for: .normal)
         cell.secondary.layer.cornerRadius = 15
@@ -156,35 +160,17 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         cell.secondary.layer.borderWidth = 0.3
         cell.secondary.layer.borderColor = UIColor.gray.cgColor
         
+        cell.messageBottomMargin.constant = 10
+        
         // Action
-        if notification.actions.count == 0 {
-            
-            cell.primary.isEnabled = false
-            cell.primary.isHidden = true
-            
-            cell.secondary.isEnabled = false
-            cell.secondary.isHidden = true
-            
-            cell.messageBottomMargin.constant = 10
-            
-        } else {
-            
-            cell.primary.isEnabled = true
-            cell.primary.isHidden = false
-            
-            cell.secondary.isEnabled = true
-            cell.secondary.isHidden = false
+        if notification.actions.count > 0  {
             
             if notification.actions.count == 1 {
                 
+                let action = notification.actions[0] as! OCNotificationsAction
+
                 cell.primary.isEnabled = true
                 cell.primary.isHidden = false
-                
-                cell.secondary.isEnabled = false
-                cell.secondary.isHidden = true
-                
-                let action = notification.actions[0] as! OCNotificationsAction
-                
                 cell.primary.setTitle(action.label, for: .normal)
                 
             } else if notification.actions.count == 2 {
@@ -207,6 +193,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                     }
                 }
             }
+            
             let widthPrimary = cell.primary.intrinsicContentSize.width + 30;
             let widthSecondary = cell.secondary.intrinsicContentSize.width + 30;
             
