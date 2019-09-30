@@ -169,18 +169,44 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
             
         } else {
             
-            for action in notification.actions {
+            cell.primary.isEnabled = true
+            cell.primary.isHidden = false
+            
+            cell.secondary.isEnabled = true
+            cell.secondary.isHidden = false
+            
+            if notification.actions.count == 1 {
                 
-                let label = (action as! OCNotificationsAction).label
-                let primary = (action as! OCNotificationsAction).primary
+                cell.primary.isEnabled = true
+                cell.primary.isHidden = false
                 
-                if primary {
-                    cell.primary.setTitle(label, for: .normal)
-                } else {
-                    cell.secondary.setTitle(label, for: .normal)
+                cell.secondary.isEnabled = false
+                cell.secondary.isHidden = true
+                
+                let action = notification.actions[0] as! OCNotificationsAction
+                
+                cell.primary.setTitle(action.label, for: .normal)
+                
+            } else if notification.actions.count == 2 {
+            
+                cell.primary.isEnabled = true
+                cell.primary.isHidden = false
+                
+                cell.secondary.isEnabled = true
+                cell.secondary.isHidden = false
+            
+                for action in notification.actions {
+                    
+                    let label = (action as! OCNotificationsAction).label
+                    let primary = (action as! OCNotificationsAction).primary
+                    
+                    if primary {
+                        cell.primary.setTitle(label, for: .normal)
+                    } else {
+                        cell.secondary.setTitle(label, for: .normal)
+                    }
                 }
             }
-            
             let widthPrimary = cell.primary.intrinsicContentSize.width + 30;
             let widthSecondary = cell.secondary.intrinsicContentSize.width + 30;
             
