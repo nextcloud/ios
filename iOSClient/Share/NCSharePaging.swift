@@ -65,8 +65,11 @@ class NCSharePaging: UIViewController {
             pagingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
         
-        pagingViewController.dataSource = self        
+        pagingViewController.dataSource = self
+        pagingViewController.delegate = self
         pagingViewController.select(index: indexPage)
+        let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemForIndex: indexPage) as PagingIndexItem
+        self.title = pagingIndexItem.title
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
@@ -101,6 +104,15 @@ class NCSharePaging: UIViewController {
         appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, ocId: nil, action: Int(k_action_NULL))
         appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
         appDelegate.activeOffline?.loadDatasource()
+    }
+}
+
+extension NCSharePaging: PagingViewControllerDelegate {
+    
+    func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, willScrollToItem pagingItem: T, startingViewController: UIViewController, destinationViewController: UIViewController) where T : PagingItem, T : Comparable, T : Hashable {
+        
+        guard let item = pagingItem as? PagingIndexItem else { return }
+        self.title = item.title
     }
 }
 
@@ -151,8 +163,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
     }
 }
 
-class 
-NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
+class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
     
     public var image: UIImage?
     public var metadata: tableMetadata?
