@@ -88,10 +88,6 @@ class NCSharePaging: UIViewController {
         pagingViewController.reloadMenu()
     }
     
-    @objc func exitTapped() {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -105,7 +101,13 @@ class NCSharePaging: UIViewController {
         appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
         appDelegate.activeOffline?.loadDatasource()
     }
+    
+    @objc func exitTapped() {
+        self.dismiss(animated: true, completion: nil)
+    }
 }
+
+// MARK: - PagingViewController Delegate
 
 extension NCSharePaging: PagingViewControllerDelegate {
     
@@ -115,6 +117,8 @@ extension NCSharePaging: PagingViewControllerDelegate {
         self.title = item.title
     }
 }
+
+// MARK: - PagingViewController DataSource
 
 extension NCSharePaging: PagingViewControllerDataSource {
     
@@ -162,6 +166,8 @@ extension NCSharePaging: PagingViewControllerDataSource {
         return 3
     }
 }
+
+// MARK: - Header
 
 class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
     
