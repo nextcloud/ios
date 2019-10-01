@@ -311,8 +311,8 @@ private extension UIAlertAction {
 		get {
 			return self.value(forKey: "image") as? UIImage
 		} set {
-//			let imageWithGoodDimensions = newValue?.scale(to: CGSize(width: 30, height: 30))
-//			self.setValue(imageWithGoodDimensions?.withRenderingMode(.alwaysOriginal), forKey: "image")
+            let imageWithGoodDimensions = NCUtility.sharedInstance.resizeImage(image: newValue!, newWidth: 30)
+            self.setValue(imageWithGoodDimensions.withRenderingMode(.alwaysOriginal), forKey: "image")
 		}
 	}
 	
