@@ -1,3 +1,1 @@
-#import "Expecta.h"
-
-EXPMatcherInterface(match, (NSString *expected));
+../../../Expecta/Expecta/Matchers/EXPMatchers+match.h

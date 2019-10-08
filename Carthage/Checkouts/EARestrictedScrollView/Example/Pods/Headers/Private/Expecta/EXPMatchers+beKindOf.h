@@ -1,4 +1,1 @@
-#import "Expecta.h"
-
-EXPMatcherInterface(beKindOf,  (Class expected));
-EXPMatcherInterface(beAKindOf, (Class expected));
+../../../Expecta/Expecta/Matchers/EXPMatchers+beKindOf.h

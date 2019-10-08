@@ -16,7 +16,7 @@ github "weichsel/ZIPFoundation" == 0.9.9
 github "rechsteiner/Parchment" == 1.6.0
 github "WenchaoD/FSCalendar"
 github "AssistoLab/DropDown"
-github "krzyzanowskim/OpenSSL"
+github "krzyzanowskim/OpenSSL" "1.0.218"
 
 github "https://github.com/marinofaggiana/FastScroll" "master"
 github "https://github.com/marinofaggiana/AFNetworking" "master"
