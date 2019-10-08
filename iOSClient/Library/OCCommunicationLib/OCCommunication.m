@@ -1860,7 +1860,7 @@
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     [request.defaultHeaders setObject:self.userAgent forKey:@"User-Agent"];
-
+    
     [request subscribingPushProxy:serverPath pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         if (successRequest) {
@@ -1881,7 +1881,7 @@
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     [request.defaultHeaders setObject:self.userAgent forKey:@"User-Agent"];
-
+    
     [request unsubscribingPushProxy:serverPath deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         if (successRequest) {

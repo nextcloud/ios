@@ -219,6 +219,9 @@
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
 		F75153242226920200323DDC /* FastScroll.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75153232226920200323DDC /* FastScroll.framework */; };
+		F75464A6234CD219009740BD /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F75464A4234CD218009740BD /* NCXMLGetAppPasswordParser.m */; };
+		F75464A7234CD219009740BD /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F75464A4234CD218009740BD /* NCXMLGetAppPasswordParser.m */; };
+		F75464A8234CD219009740BD /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F75464A4234CD218009740BD /* NCXMLGetAppPasswordParser.m */; };
 		F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC421772B6100BB1CDF /* DropdownItem.swift */; };
 		F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC521772B6100BB1CDF /* DropUpMenu.swift */; };
 		F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC721772B6100BB1CDF /* DropdownMenu.swift */; };
@@ -882,6 +885,8 @@
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701922723E0D0041C76C /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701A22723EC80041C76C /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F75464A4234CD218009740BD /* NCXMLGetAppPasswordParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLGetAppPasswordParser.m; sourceTree = "<group>"; };
+		F75464A5234CD219009740BD /* NCXMLGetAppPasswordParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLGetAppPasswordParser.h; sourceTree = "<group>"; };
 		F754EEC421772B6100BB1CDF /* DropdownItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownItem.swift; sourceTree = "<group>"; };
 		F754EEC521772B6100BB1CDF /* DropUpMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUpMenu.swift; sourceTree = "<group>"; };
 		F754EEC621772B6100BB1CDF /* DropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropdownMenu.h; sourceTree = "<group>"; };
@@ -1544,6 +1549,8 @@
 			children = (
 				F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */,
 				F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */,
+				F75464A5234CD219009740BD /* NCXMLGetAppPasswordParser.h */,
+				F75464A4234CD218009740BD /* NCXMLGetAppPasswordParser.m */,
 				F7D2D125230804DF00FD3ED7 /* NCXMLListParser.h */,
 				F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */,
 				F700228C1EC4C9100080073F /* OCXMLServerErrorsParser.h */,
@@ -3347,6 +3354,7 @@
 				F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
+				F75464A7234CD219009740BD /* NCXMLGetAppPasswordParser.m in Sources */,
 				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
 				F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
 				F74E432720B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */,
@@ -3419,6 +3427,7 @@
 				F7434B3D20E2404300417916 /* OCExternalSites.m in Sources */,
 				F7D2D129230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
 				F7434B4420E2405C00417916 /* OCUserProfile.m in Sources */,
+				F75464A8234CD219009740BD /* NCXMLGetAppPasswordParser.m in Sources */,
 				F7434B5E20E241EC00417916 /* CCGraphics.m in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F7434B5B20E241D100417916 /* NCEndToEndMetadata.swift in Sources */,
@@ -3605,6 +3614,7 @@
 				F73B4F051F470D9100BBEE4B /* nsCharSetProber.cpp in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
+				F75464A6234CD219009740BD /* NCXMLGetAppPasswordParser.m in Sources */,
 				F7501C332212E57500FB1415 /* NCMedia.swift in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
