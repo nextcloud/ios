@@ -136,13 +136,36 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
 
         guard let metadata = self.metadata else { return }
-
+        guard let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: metadata.account) else { return }
         let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
-        if shares.firstShareLink != nil {
-            tapMenu(with: shares.firstShareLink!, sender: sender)
-        } else {
+
+        if capabilities.isFilesSharingPublicPasswordEnforced && shares.firstShareLink == nil {
+            let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
+            alertController.addTextField { (textField) in
+                textField.isSecureTextEntry = true
+                textField.addTarget(self, action: #selector(self.minCharTextFieldDidChange(sender:)), for: UIControl.Event.editingChanged)
+            }
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in })
+            let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in
+                let password = alertController.textFields?.first?.text
+                self.networking?.share(password: password ?? "", permission: 1, hideDownload: false)
+            }
+            okAction.isEnabled = false
+            alertController.addAction(okAction)
+            
+            self.present(alertController, animated: true, completion:nil)
+        } else if shares.firstShareLink == nil {
             networking?.share(password: "", permission: 1, hideDownload: false)
+        } else {
+            tapMenu(with: shares.firstShareLink!, sender: sender)
         }
+    }
+    
+    @objc func minCharTextFieldDidChange(sender: UITextField) {
+        guard let alertController = self.presentedViewController as? UIAlertController else { return }
+        guard let password = alertController.textFields?.first else { return }
+        guard let ok = alertController.actions.last else { return }
+        ok.isEnabled =  password.text?.count ?? 0 >= 8
     }
     
     @objc func tapLinkMenuViewWindow(gesture: UITapGestureRecognizer) {
@@ -338,7 +361,7 @@ extension NCShare: UITableViewDataSource {
                 
                 cell.tableShare = tableShare
                 cell.delegate = self
-                cell.labelTitle.text = tableShare.shareWith
+                cell.labelTitle.text = tableShare.shareWithDisplayName
                 cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
                 cell.labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
                 cell.labelCanEdit.textColor = NCBrandColor.sharedInstance.textView
