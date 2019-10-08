@@ -80,7 +80,6 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         cell.delegate = self
-        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
         let urlIcon = URL(string: notification.icon)
@@ -144,14 +143,18 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         
-        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray), for: .normal)
+        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: .gray), for: .normal)
         
+        cell.primary.isEnabled = false
+        cell.primary.isHidden = true
         cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
         cell.primary.setTitleColor(.white, for: .normal)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
         cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brand.cgColor
         
+        cell.secondary.isEnabled = false
+        cell.secondary.isHidden = true
         cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
         cell.secondary.setTitleColor(.gray, for: .normal)
         cell.secondary.layer.cornerRadius = 15
@@ -160,28 +163,37 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         cell.secondary.layer.borderWidth = 0.3
         cell.secondary.layer.borderColor = UIColor.gray.cgColor
         
+        cell.messageBottomMargin.constant = 10
+        
         // Action
-        if notification.actions.count == 0 {
+        if notification.actions.count > 0  {
             
-            cell.primary.isEnabled = false
-            cell.primary.isHidden = true
-            
-            cell.secondary.isEnabled = false
-            cell.secondary.isHidden = true
-            
-            cell.messageBottomMargin.constant = 10
-            
-        } else {
-            
-            for action in notification.actions {
+            if notification.actions.count == 1 {
                 
-                let label = (action as! OCNotificationsAction).label
-                let primary = (action as! OCNotificationsAction).primary
+                let action = notification.actions[0] as! OCNotificationsAction
+
+                cell.primary.isEnabled = true
+                cell.primary.isHidden = false
+                cell.primary.setTitle(action.label, for: .normal)
                 
-                if primary {
-                    cell.primary.setTitle(label, for: .normal)
-                } else {
-                    cell.secondary.setTitle(label, for: .normal)
+            } else if notification.actions.count == 2 {
+            
+                cell.primary.isEnabled = true
+                cell.primary.isHidden = false
+                
+                cell.secondary.isEnabled = true
+                cell.secondary.isHidden = false
+            
+                for action in notification.actions {
+                    
+                    let label = (action as! OCNotificationsAction).label
+                    let primary = (action as! OCNotificationsAction).primary
+                    
+                    if primary {
+                        cell.primary.setTitle(label, for: .normal)
+                    } else {
+                        cell.secondary.setTitle(label, for: .normal)
+                    }
                 }
             }
             
