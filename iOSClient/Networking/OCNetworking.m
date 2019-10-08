@@ -28,6 +28,7 @@
 #import "CCCertificate.h"
 #import "NSString+Encode.h"
 #import "NCBridgeSwift.h"
+#import "NCXMLGetAppPasswordParser.h"
 
 @implementation OCNetworking
 
@@ -318,6 +319,54 @@
     
     [task resume];
 }
+
+- (void)getAppPassword:(NSString *)serverUrl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *token, NSString *message, NSInteger errorCode))completion
+{
+    NSData *authData = [[NSString stringWithFormat:@"%@:%@", username, password] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
+    NSString *URLString = [NSString stringWithFormat:@"%@/ocs/v2.php/core/getapppassword", serverUrl];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:URLString] cachePolicy:0 timeoutInterval:20.0];
+    [request setValue:authValue forHTTPHeaderField:@"Authorization"];
+    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+        NSInteger errorCode = httpResponse.statusCode;
+        
+        NSString *message;
+        NSString *token = nil;
+        
+        if (error || !(errorCode >= 200 && errorCode < 300)) {
+            
+            if (errorCode == 0) errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedString(@"_server_error_retry_", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+        } else {
+            
+            NCXMLGetAppPasswordParser *parser = [NCXMLGetAppPasswordParser new];
+            [parser initParserWithData:data];
+            token = parser.token;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(token, message, errorCode);
+        });
+    }];
+    
+    [task resume];
+}
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== download / upload =====
@@ -1460,13 +1509,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1507,13 +1549,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1552,13 +1587,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -1597,13 +1625,6 @@
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
         // Error
         if (errorCode == 503) {
             message = NSLocalizedString(@"_server_error_retry_", nil);
@@ -2111,6 +2132,9 @@
 
 - (void)deletingServerNotification:(NSString *)serverUrl notificationId:(NSInteger)notificationId completion:(void(^)(NSString *message, NSInteger errorCode))completion
 {
+//    NSData *authData = [[NSString stringWithFormat:@"%@:%@", tableAccount.user, [CCUtility getPassword:tableAccount.account]] dataUsingEncoding:NSUTF8StringEncoding];
+//    NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
+
     // Delete
     NSString *URLString = [NSString stringWithFormat:@"%@/ocs/v2.php/apps/notifications/api/v2/notifications/%ld", serverUrl, (long)notificationId];
     
@@ -2120,6 +2144,7 @@
     }
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:URLString] cachePolicy:0 timeoutInterval:20.0];
+//    [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
     [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
     [request setHTTPMethod: @"DELETE"];
