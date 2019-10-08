@@ -1,1 +1,4 @@
-../../../Expecta/Expecta/Matchers/EXPMatchers+raise.h
+#import "Expecta.h"
+
+EXPMatcherInterface(raise, (NSString *expectedExceptionName));
+#define raiseAny() raise(nil)

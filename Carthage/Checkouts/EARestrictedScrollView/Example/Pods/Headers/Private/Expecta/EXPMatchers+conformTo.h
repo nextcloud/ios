@@ -1,1 +1,3 @@
-../../../Expecta/Expecta/Matchers/EXPMatchers+conformTo.h
+#import "Expecta.h"
+
+EXPMatcherInterface(conformTo, (Protocol *expected));
