@@ -337,28 +337,23 @@
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        NSInteger errorCode = httpResponse.statusCode;
+        NSInteger errorCode = 0;
         
-        NSString *message;
+        NSString *message = @"";
         NSString *token = nil;
         
-        if (error || !(errorCode >= 200 && errorCode < 300)) {
-            
-            if (errorCode == 0) errorCode = error.code;
-            
-            // Error
-            if (errorCode == 503)
-                message = NSLocalizedString(@"_server_error_retry_", nil);
-            else
-                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-            
-        } else {
+        if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
             
             NCXMLGetAppPasswordParser *parser = [NCXMLGetAppPasswordParser new];
             [parser initParserWithData:data];
             token = parser.token;
+            
+        } else {
+            
+            errorCode = httpResponse.statusCode;
+            message = [NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode];
         }
-        
+    
         dispatch_async(dispatch_get_main_queue(), ^{
             completion(token, message, errorCode);
         });
