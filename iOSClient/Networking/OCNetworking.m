@@ -338,7 +338,6 @@
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         NSInteger errorCode = 0;
-        
         NSString *message = @"";
         NSString *token = nil;
         
