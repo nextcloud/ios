@@ -109,9 +109,7 @@
 		F736B54F234DCE43008A5C9F /* NCCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736B54D234DCE43008A5C9F /* NCCommunication.swift */; };
 		F736B550234DCE43008A5C9F /* NCCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736B54D234DCE43008A5C9F /* NCCommunication.swift */; };
 		F736B554234DCF7B008A5C9F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
-		F736B555234DCF7B008A5C9F /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F736B557234DCF92008A5C9F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
-		F736B558234DCF92008A5C9F /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
@@ -642,7 +640,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F736B555234DCF7B008A5C9F /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -653,7 +650,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F736B558234DCF92008A5C9F /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
