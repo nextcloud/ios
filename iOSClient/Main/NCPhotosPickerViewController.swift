@@ -85,15 +85,17 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
+        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+
         self.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         
-//        self.titleLabel.textColor = NCBrandColor.sharedInstance.brandText
-//        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        
         self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.brandText)
         
         self.collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
