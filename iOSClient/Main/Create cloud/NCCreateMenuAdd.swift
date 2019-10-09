@@ -32,7 +32,12 @@ class NCCreateMenuAdd: NSObject {
         super.init()
    
         var items = [ActionSheetItem]()
-        ActionSheet.applyAppearance(NCAppearance())
+//        ActionSheet.applyAppearance(NCAppearance())
+        
+        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         

@@ -1,92 +1,130 @@
 # Release Notes
 
 
-## 2.1.0
-
-This version adds Xcode 11 and iOS 13 support, including support for dark mode and high contrast color variants.
-
-There is a new `ActionSheetColor` enum with sheet-specific semantic colors. It uses the new, adaptive system colors in iOS 13 and falls back to older, non-adaptive colors in iOS 12 and below. You can either use the enum directly or use the static `UIColor` extension `.sheetColor(...)`.
-
-The appearance model has been extended with new a appearance type, which you can use to style your sheets. There is an `ActionSheetAppearance` base class as well as a standard `StandardActionSheetAppearance` appearance which applies a standard look, including dark mode support, high contrast color variants and SFSymbol icons on iOS 13.
-
-There are adjustments to how sheets can be dismissed. The `isDismissableWithTapOnBackground` has been renamed to `isDismissable`, since it also affects if the system can dismiss the action sheet.
-
-
 ## 2.0.2
 
-This version makes table view footer view sizes smaller to avoid a scroll offset issue that could occur when rotating devices that displayed sheets with a single custom item.
+This version makes table view footer view sizes smaller to avoid a scroll offset
+issue that could occur when rotating devices that displayed sheets with a single
+custom item.
 
 
 ## 2.0.1
 
-This version adjusts accessibility traits for selected select items and improves the overall accessibility experience when working with selectable items.
+This version adjusts accessibility traits for selected select items and improves
+the overall accessibility experience when working with selectable items.
 
 
 ## 2.0.0
 
-This version upgrades Sheeeeeeeeet and its unit test dependencies to Swift 5. It contains no breaking changes.
+This version upgrades Sheeeeeeeeet and its unit test dependencies to Swift 5. The
+version contains no breaking changes.
 
 
 ## 1.4.1
 
-This version makes `currentContext` the default presentation mode for the default presenter. This is due to accessibility issues with using `keyWindow` while being ina modal presentation. I will change how the default presenteras presents action sheets, but that is a future improvement.
+This version makes `currentContext` the default presentation mode for the default
+presenter. This is due to accessibility issues with using `keyWindow` while being
+ina modal presentation. I will change how the default presenteras presents action
+sheets, but that is a future improvement.
 
 
 ## 1.4.0
 
-This version removes the old deprecated appearance model, so if your app uses it, it's time to start using the appearance proxy model. Just follow the readme, and you'll be done in no time.
+This version removes the old deprecated appearance model, so if your app uses it,
+it's time to start using the appearance proxy model. Just follow the readme, and
+you'll be done in no time.
 
-This version also change which presenter to use, so that apps behaves correct on iPads in split screen. We still have to come up with a way to switch between the default and popover presenters when the split screen size changes, but that is a future improvement.
+This version also change which presenter to use, so that apps behaves correct on
+iPads in split screen. We still have to come up with a way to switch between the
+default and popover presenters when the split screen size changes, but that is a
+future improvement.
 
 
 ## 1.3.3
 
-This version adds a new `headerViewLandscapeMode` property to `ActionSheet`. You can set it to `.hidden` to let action sheets hide their header view in landscape orientation. This will free up more screen estate for the action sheet's options.
+This version adds a new `headerViewLandscapeMode` property to `ActionSheet`. You
+can set it to `.hidden` to let action sheets hide their header view in landscape
+orientation. This will free up more screen estate for the action sheet's options.
 
 
 ## 1.3.3
 
-This version adds a new `headerViewLandscapeMode` property to `ActionSheet`. You can set it to `.hidden` to let action sheets hide their header view in landscape orientation. This will free up more screen estate for the action sheet's options.
+This version adds a new `headerViewLandscapeMode` property to `ActionSheet`. You
+can set it to `.hidden` to let action sheets hide their header view in landscape
+orientation. This will free up more screen estate for the action sheet's options.
 
 
 ## 1.3.2
 
-This version makes the `ActionSheet` `backgroundView` outlet public, so that you can add your own custom effects to it. The other outlets are still internal.
+This version makes the `ActionSheet` `backgroundView` outlet public, so that you
+can add your own custom effects to it. The other outlets are still internal.
 
-The version also fixes a bug that caused action sheets to be misplaced when they were presented from a custom presentation controller. This fix also adds a brand new `presentationStyle` property to `StandardActionSheetPresenter`, which can be either `keyWindow` (default) or `currentContext`. Setting it to `keyWindow` will present the action sheet in the app's key window (full screen), while setting it to `currentContext` will present it in the presenting view controller's view (it looks straaange, but perhaps you can find a nice use case for it).
+The version also fixes a bug that caused action sheets to be misplaced when they
+were presented from a custom presentation controller. This fix also adds a brand
+new `presentationStyle` property to `StandardActionSheetPresenter`, which can be
+either `keyWindow` (default) or `currentContext`. Setting it to `keyWindow` will
+present the action sheet in the app's key window (full screen), while setting it
+to `currentContext` will present it in the presenting view controller's view (it
+looks straaange, but perhaps you can find a nice use case for it).
 
 
 ## 1.3.1
 
-This version fixes an iOS 9 bug that caused the popover to become square with no arrow. It was caused by the popover presenter, that set the background color for the popover after it had been presented, which is not supported in iOS 9. It now sets the bg color for all iOS versions before it presents the popover, then only refreshes it for iOS 10 and later.
+This version fixes an iOS 9 bug that caused the popover to become square with no
+arrow. It was caused by the popover presenter, that set the background color for
+the popover after it had been presented, which is not supported in iOS 9. It now
+sets the bg color for all iOS versions before it presents the popover, then only
+refreshes it for iOS 10 and later.
 
-This version fixes another iOS 9 bug that caused the item cell separator line to behave strangely and not honor the insets set using the appearance proxy. I have added a fix to the item cell class, that only runs for iOS 9.
+This version fixes another iOS 9 bug that caused the item cell separator line to
+behave strangely and not honor the insets set using the appearance proxy. I have
+added a fix to the item cell class, that only runs for iOS 9.
 
 
 ## 1.3.0
 
 This version removes the last separator line from the item and button table view.
 
-This version also changes the default behavior of the popover presenter. It used to keep the popover presented as the device orientation changed, but this can be wrong in many cases. For instance, in collection or table views, the orientation change may cause cells to shuffle around as they are reused. If a reused cell is used as the popover source view, and the popover is still presented, the popover will point to the cell, but the cell model will have changed. In this case, your action sheet will appear to point to a specific object, but will be contextually bound to another one. 
+This version also changes the default behavior of the popover presenter. It used
+to keep the popover presented as the device orientation changed, but this can be
+wrong in many cases. For instance, in collection or table views, the orientation
+change may cause cells to shuffle around as they are reused. If a reused cell is
+used as the popover source view, and the popover is still presented, the popover
+will point to the cell, but the cell model will have changed. In this case, your
+action sheet will appear to point to a specific object, but will be contextually
+bound to another one. 
 
-Another way that orientation changes may mess with popovers are if a source view is removed from the view hierarchy when the orientation changes. If your popover is still presented, but the source view is removed, the popover arrow will point to a random point, e.g. the top-left part of the screen.
+Another way that orientation changes may mess with popovers are if a source view
+is removed from the view hierarchy when the orientation changes. If your popover
+is still presented, but the source view is removed, the popover arrow will point
+to a random point, e.g. the top-left part of the screen.
 
-To solve these bugs, I have added new orientation change handling in the popover presenter. It has a new `isListeningToOrientationChanges` property, as well as a `handleOrientationChange` and `setupOrientationChangeDetection` function. If you want to, you can override these functions to customize their behavior, otherwise just set `isListeningToOrientationChanges` to `false` to make the popover behave like before.
+To solve these bugs, I have added new orientation change handling in the popover
+presenter. It has a new `isListeningToOrientationChanges` property, as well as a
+`handleOrientationChange` and `setupOrientationChangeDetection` function. If you
+want to, you can override these functions to customize their behavior, otherwise
+just set `isListeningToOrientationChanges` to `false` to make the popover behave
+like before.
 
 
 ## 1.2.4
 
-This version fixes the https://github.com/danielsaidi/Sheeeeeeeeet/issues/64 bug, which caused an iPad popover to become a bottom action sheet on black background, if the idiom changes from pad to phone while the action sheet is open. I now let the popover remain as long as the action sheet is open.
+This version fixes the https://github.com/danielsaidi/Sheeeeeeeeet/issues/64 bug,
+which caused an iPad popover to become a bottom action sheet on black background,
+if the idiom changes from pad to phone while the action sheet is open. I now let
+the popover remain as long as the action sheet is open.
 
 
 ## 1.2.3
 
-This version reloads data when scrolling to row to solve a bug that could happen on some iPad devices.
+This version reloads data when scrolling to row to solve a bug that could happen
+on some iPad devices.
 
 
 ## 1.2.2
 
-This hotfix adds two new properties to `ActionSheetSelectItem`, that can be used to style the selected fonts: `selectedTitleFont` and `selectedSubtitleFont`.
+This hotfix adds two new properties to `ActionSheetSelectItem`, that can be used
+to style the selected fonts: `selectedTitleFont` and `selectedSubtitleFont`.
 
 
 ## 1.2.1
@@ -96,17 +134,27 @@ This hotfix fixes a font bug in the title item and color bugs in the select item
 
 ## 1.2.0
 
-This is a huge update, that completely rewrites how action sheet appearances are handled. Instead of the old appearance model, Sheeeeeeeeet now relies on the iOS appearance proxy model as much as possible.
+This is a huge update, that completely rewrites how action sheet appearances are
+handled. Instead of the old appearance model, Sheeeeeeeeet now relies on the iOS
+appearance proxy model as much as possible.
 
-The old appearance model is still around, but has been marked as deprecated, and will be removed in `1.4.0`. Make sure that you switch over to the new appearance model as soon as possible. Have a look at the example app and [here][Appearance] to see how you should customize the action sheet appearance from now on. 
+The old appearance model is still around, but has been marked as deprecated, and
+will be removed in `1.4.0`. Make sure that you switch over to the new appearance
+model as soon as possible. Have a look at the example app and [here][Appearance]
+to see how you should customize the action sheet appearance from now on.
 
 In short, item appearance customizations are handled in three different ways now:
 
-* Item appearances such as colors and fonts, are customized with cell properties, for instance: `ActionSheetSelectItemCell.appearance().titleColor = .green`.
-* Item heights are now customized by setting the `height` property of every item type you want to customize, for instance: `ActionSheetTitle.height = 22`.
-* Action sheet margins, insets etc. are now customized by setting the properties of each `ActionSheet` instance. If you want to change the default values for all action sheets in your app, you have to subclass `ActionSheet`.
+* Item appearances such as colors and fonts, are customized with cell properties,
+for instance: `ActionSheetSelectItemCell.appearance().titleColor = .green`.
+* Item heights are now customized by setting the `height` property of every item
+type you want to customize, for instance: `ActionSheetTitle.height = 22`.
+* Action sheet margins, insets etc. are now customized by setting the properties
+of each `ActionSheet` instance. If you want to change the default values for all
+action sheets in your app, you have to subclass `ActionSheet`.
 
-All built-in action sheet items now have their own cells. Your custom items only have to use custom cells if you want to apply custom item appearances to them.
+All built-in action sheet items now have their own cells. Your custom items only
+have to use custom cells if you want to apply custom item appearances to them.
 
 Sheeeeeeeeet now contains several new views, which are used by the action sheets:
 
@@ -116,54 +164,75 @@ Sheeeeeeeeet now contains several new views, which are used by the action sheets
   * `ActionSheetBackgroundView`
   * `ActionSheetStackView`
 
-The new classes make it easy to modify the appearance of these views, since they have appearance properties as well. For instance, to change the corner radius of the table views, just type: `ActionSheetTableView.appearance().cornerRadius = 8`.
+The new classes make it easy to modify the appearance of these views, since they
+have appearance properties as well. For instance, to change the corner radius of
+the table views, just type: `ActionSheetTableView.appearance().cornerRadius = 8`.
 
 `ActionSheet` has two new extensions: 
   * `items<T>(ofType:)`
   * `scrollToFirstSelectedItem(at:)`
 
-This new version has also rebuilt all unit tests from scratch. They are now more robust and easier to maintain.
+This new version has also rebuilt all unit tests from scratch. They are now more
+robust and easier to maintain.
 
 
 ## 1.1.0
 
-This version increases the action sheet integrity by restricting what you can do with it. This involves some breaking changes, but they should not affect you. If you think any new rule is bad or affect you, please let me know.
+This version increases the action sheet integrity by restricting what you can do
+with it. This involves some breaking changes, but they should not affect you. If
+you think any new rule is bad or affect you, please let me know.
 
 
 **New Features**
 
-@sebbo176 has added support for subtitles in the various select items, which now also changes the cell style of an item if the subtitle is set. He has also added an unselected icon to the select items, which means that you can now have images for unselected items as well (e.g. an unchecked checkbox).
+@sebbo176 has added support for subtitles in the various select items, which now
+also changes the cell style of an item if the subtitle is set. He has also added
+an unselected icon to the select items, which means that you can now have images
+for unselected items as well (e.g. an unchecked checkbox).
 
 
 **Breaking Changes - ActionSheet:**
 
-* The `items` and `buttons` properties are now `internal(set)`, which means that they can only be set with `init(...)` or with `setup(items:)`. This protects the integrity of the item and button separation logic.
-* The code no longer contains any `didSet` events, since these events called the same functionality many times. Call `refresh` if you change any outlets manually from now on.
-* Since the `didSet` events have been removed, `refreshHeaderVisibility` is only called once and has therefore been moved into `refreshHeader`.
-* Since the `didSet` events have been removed, `refreshButtonsVisibility` is now only called once and has therefore been moved into `refreshButtons`.
-* A small delay in `handleTap(on:)`, that should not be needed, has been removed.
+* The `items` and `buttons` properties are now `internal(set)`, which means that
+they can only be set with `init(...)` or with `setup(items:)`. This protects the
+integrity of the item and button separation logic.
 
+* The code no longer contains any `didSet` events, since these events called the
+same functionality many times. Call `refresh` if you change any outlets manually
+from now on.
+
+* Since the `didSet` events have been removed, `refreshHeaderVisibility` is only
+called once and has therefore been moved into `refreshHeader`.
+
+* Since the `didSet` events have been removed, `refreshButtonsVisibility` is now
+only called once and has therefore been moved into `refreshButtons`.
+
+* A small delay in `handleTap(on:)`, that should not be needed, has been removed.
 Let me know if it causes any side-effects.
 
 
 
 ## 1.0.3
 
-This version removes a debug print that I used to ensure that action sheets were properly deinitialized after being dismissed.
+This version removes a debug print that I used to ensure that action sheets were
+properly deinitialized after being dismissed.
 
 
 
 ## 1.0.2
 
-This version adds new background color properties to the action sheet appearance class. They can be used to set the background color of an entire sheet.
+This version adds new background color properties to the action sheet appearance
+class. They can be used to set the background color of an entire sheet.
 
-This version fixes a bug, where the background color behind an action sheet went black when the action sheet was presented in a split view.
+This version fixes a bug, where the background color behind an action sheet went
+black when the action sheet was presented in a split view.
 
 
 
 ## 1.0.1
 
-This version fixes a bug, where the presenters incorrectly updated the scrolling behavior of the action sheet when rotating the device.
+This version fixes a bug, where the presenters incorrectly updated the scrolling
+behavior of the action sheet when rotating the device.
 
 
 
@@ -171,15 +240,28 @@ This version fixes a bug, where the presenters incorrectly updated the scrolling
 
 Sheeeeeeeeet 1.0.0 is finally here, with many internal changes and some external.
 
-This version decouples action sheets from their presentation to great extent. An action sheet still styles its items and components, but the presenters now takes care of a lot more than before. The sheet setup is now also based on constraints instead of manual calculations, which means that popover scrolling etc. works by how the constraints are setup, instead of relying on manual calculations.
+This version decouples action sheets from their presentation to great extent. An
+action sheet still styles its items and components, but the presenters now takes
+care of a lot more than before. The sheet setup is now also based on constraints
+instead of manual calculations, which means that popover scrolling etc. works by
+how the constraints are setup, instead of relying on manual calculations.
 
-This should result in much more robust action sheets, but it requires testing on a wide range of devices and orientations, so please let me know if there are any issues with this approach.
+This should result in much more robust action sheets, but it requires testing on
+a wide range of devices and orientations, so please let me know if there are any
+issues with this approach.
 
-`IMPORTANT` The button item values have changed. Insted of `true` and `nil` they now have a strong `ButtonType` value. You can still create custom buttons with a custom value, though. You can also use the new `isOkButton` and `isCancelButton` extensions to quickly see if a user tapped "OK" or "Cancel".
+`IMPORTANT` The button item values have changed. Insted of `true` and `nil` they
+now have a strong `ButtonType` value. You can still create custom buttons with a
+custom value, though. You can also use the new `isOkButton` and `isCancelButton`
+extensions to quickly see if a user tapped "OK" or "Cancel".
 
 ### Breaking changes
 
-Since the presentation logic has been rewritten from scratch, you have to adjust your code to fit the new structure, if you have subclassed any presenter or made presentation tweaks in your sheets. The changes are too many and extensive to be listed here, so please have a look at the new structure. There is much less code, so changing your code to the new standard should be easy.
+Since the presentation logic has been rewritten from scratch, you have to adjust
+your code to fit the new structure, if you have subclassed any presenter or made
+presentation tweaks in your sheets. The changes are too many and extensive to be
+listed here, so please have a look at the new structure. There is much less code,
+so changing your code to the new standard should be easy.
 
 * `ActionSheetButton` and its sublasses has new values.
 * `ActionSheet.itemTapAction` has been removed
@@ -192,25 +274,30 @@ Since the presentation logic has been rewritten from scratch, you have to adjust
 ### New features
 
 * `ActionSheetAppearance` has new properties, which adds new way to style sheets.
-* `ActionSheetButton` adds `isOkButton` and `isCancelButton` extension functions to `ActionSheetItem`. They can be used to quickly check if a cancel or ok button was tapped, instead of having to check if the item can be cast to a button type. 
+* `ActionSheetButton` adds `isOkButton` and `isCancelButton` extension functions
+to `ActionSheetItem`. They can be used to quickly check if a cancel or ok button
+was tapped, instead of having to check if the item can be cast to a button type. 
 
 ### Bug fixes
 
-* The big presentation adjustments solves the scrolling issues that occured with popovers and many items.
-* The `hideSeparator()` function is adjusted to behave correctly when the device is rotated.
+* The big presentation adjustments solves the scrolling issues that occured with
+popovers and many items.
+* The `hideSeparator()` function is adjusted to behave correctly when the device
+is rotated.
 
 ### Deprecated logic
 
-Instead of deprecating presentation-related properties and functions that are no longer used or available, I removed them completely. Let me know if you used any properties that are no longer available.
+Instead of deprecating presentation-related properties and functions that are no
+longer used or available, I removed them completely. Let me know if you used any
+properties that are no longer available.
 
 * `ActionSheetItem.setupItemsAndButtons(with:)` is renamed to `setup(items:)`
 * `ActionSheetItem.itemSelectAction` is renamed to `selectAction`
 
-Perform the deprecation warnings, and you should be all good. Deprecated members will be removed in the next minor version.
+Perform the deprecation warnings, and you should be all good. Deprecated members
+will be removed in the next minor version.
 
 
-
-# Legacy versions
 
 ## 0.11.0
 

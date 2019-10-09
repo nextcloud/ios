@@ -71,7 +71,7 @@ public struct TLPHAsset {
     }
     
     public func photoSize(options: PHImageRequestOptions? = nil ,completion: @escaping ((Int)->Void), livePhotoVideoSize: Bool = false) {
-        guard let phAsset = self.phAsset, self.type == .photo || self.type == .livePhoto else { completion(-1); return }
+        guard let phAsset = self.phAsset, self.type == .photo else { completion(-1); return }
         var resource: PHAssetResource? = nil
         if phAsset.mediaSubtypes.contains(.photoLive) == true, livePhotoVideoSize {
             resource = PHAssetResource.assetResources(for: phAsset).filter { $0.type == .pairedVideo }.first
@@ -219,57 +219,55 @@ public struct TLPHAsset {
         }
     }
     
-    private func videoFilename(phAsset: PHAsset) -> URL? {
-        guard let resource = (PHAssetResource.assetResources(for: phAsset).filter{ $0.type == .video }).first else {
-            return nil
-        }
-        var writeURL: URL?
+    //Apparently, this method is not be safety to export a video.
+    //There is many way that export a video.
+    //This method was one of them.
+    public func exportVideoFile(options: PHVideoRequestOptions? = nil, progressBlock:((Float) -> Void)? = nil, completionBlock:@escaping ((URL,String) -> Void)) {
+        guard let phAsset = self.phAsset, phAsset.mediaType == .video else { return }
+        var type = PHAssetResourceType.video
+        guard let resource = (PHAssetResource.assetResources(for: phAsset).filter{ $0.type == type }).first else { return }
         let fileName = resource.originalFilename
+        var writeURL: URL? = nil
         if #available(iOS 10.0, *) {
             writeURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName)")
         } else {
             writeURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("\(fileName)")
         }
-        return writeURL
-    }
-    
-    //Apparently, This is not the only way to export video.
-    //There is many way that export a video.
-    //This method was one of them.
-    public func exportVideoFile(options: PHVideoRequestOptions? = nil,
-                                outputURL: URL? = nil,
-                                outputFileType: AVFileType = .mov,
-                                progressBlock:((Double) -> Void)? = nil,
-                                completionBlock:@escaping ((URL,String) -> Void)) {
-        guard
-            let phAsset = self.phAsset,
-            phAsset.mediaType == .video,
-            let writeURL = outputURL ?? videoFilename(phAsset: phAsset),
-            let mimetype = MIMEType(writeURL)
-            else {
-                return
-        }
+        guard let localURL = writeURL,let mimetype = MIMEType(writeURL) else { return }
         var requestOptions = PHVideoRequestOptions()
         if let options = options {
             requestOptions = options
         }else {
             requestOptions.isNetworkAccessAllowed = true
         }
-        requestOptions.progressHandler = { (progress, error, stop, info) in
-            DispatchQueue.main.async {
-                progressBlock?(progress)
-            }
-        }
-        PHImageManager.default().requestAVAsset(forVideo: phAsset, options: requestOptions) { (avasset, avaudioMix, infoDict) in
-            guard let avasset = avasset else {
-                return
-            }
+        //iCloud download progress
+        //options.progressHandler = { (progress, error, stop, info) in
+            
+        //}
+        PHImageManager.default().requestAVAsset(forVideo: phAsset, options: options) { (avasset, avaudioMix, infoDict) in
+            guard let avasset = avasset else { return }
             let exportSession = AVAssetExportSession.init(asset: avasset, presetName: AVAssetExportPresetHighestQuality)
-            exportSession?.outputURL = writeURL
-            exportSession?.outputFileType = outputFileType
+            exportSession?.outputURL = localURL
+            exportSession?.outputFileType = AVFileType.mov
             exportSession?.exportAsynchronously(completionHandler: {
-                completionBlock(writeURL, mimetype)
+                completionBlock(localURL,mimetype)
             })
+            func checkExportSession() {
+                DispatchQueue.global().async { [weak exportSession] in
+                    guard let exportSession = exportSession else { return }
+                    switch exportSession.status {
+                    case .waiting,.exporting:
+                        DispatchQueue.main.async {
+                            progressBlock?(exportSession.progress)
+                        }
+                        Thread.sleep(forTimeInterval: 1)
+                        checkExportSession()
+                    default:
+                        break
+                    }
+                }
+            }
+            checkExportSession()
         }
     }
     

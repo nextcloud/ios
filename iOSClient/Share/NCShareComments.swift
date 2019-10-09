@@ -140,7 +140,12 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
      
         var items = [ActionSheetItem]()
         ActionSheetDeleteItemCell.appearance().titleColor = .red
-        ActionSheet.applyAppearance(NCAppearance())
+//        ActionSheet.applyAppearance(NCAppearance())
+        
+        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         items.append(ActionSheetItem(title: NSLocalizedString("_edit_comment_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))

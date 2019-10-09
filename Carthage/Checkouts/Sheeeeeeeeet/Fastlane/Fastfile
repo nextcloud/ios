@@ -1,16 +1,8 @@
-fastlane_version "2.129.0"
+fastlane_version "2.30.2"
 
 default_platform :ios
 
 platform :ios do
-
-
-  # Test =======================
-  
-  desc "Run unit tests"
-  lane :test do
-    spm(command: "test")
-  end
 
 
   # Version ================
@@ -19,17 +11,16 @@ platform :ios do
   lane :version do |options|
     ensure_git_status_clean
     ensure_git_branch(branch: 'master')
-    # test        TODO: This doesn't work since SPM can't find UIKit in terminal
+    test
     version = version_bump_podspec(path: "Sheeeeeeeeet.podspec", version_number: options[:name])
     increment_version_number(version_number: version)
 
     git_commit(
       path: [
-        "Sheeeeeeeeet/Info.plist",
-        "SheeeeeeeeetDemo/Info.plist",
         "Sheeeeeeeeet.podspec",
-        "Fastlane/"
-      ],
+        "*/Info.plist",
+        "*/*.pbxproj",
+        "Fastlane/"],
       message: "Bump to #{version}"
     )
 
@@ -38,5 +29,15 @@ platform :ios do
     push_to_git_remote()
     pod_push()
   end
+
   
+  # Test =======================
+
+  desc "Run unit tests"
+  lane :test do
+    scan(
+      project: "Sheeeeeeeeet.xcodeproj",
+      scheme: "Sheeeeeeeeet"
+    )    
+  end
 end

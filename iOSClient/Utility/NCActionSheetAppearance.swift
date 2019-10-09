@@ -24,6 +24,7 @@
 import UIKit
 import Sheeeeeeeeet
 
+/*
 class NCAppearance: StandardActionSheetAppearance {
 
      override func applyColors() {
@@ -34,6 +35,7 @@ class NCAppearance: StandardActionSheetAppearance {
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
     }
 }
+*/
 
 // MARK: - Delete Cell
 

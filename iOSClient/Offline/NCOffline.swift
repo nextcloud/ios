@@ -338,8 +338,13 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             
             var items = [ActionSheetItem]()
             ActionSheetDeleteItemCell.appearance().titleColor = .red
-            ActionSheet.applyAppearance(NCAppearance())
+//            ActionSheet.applyAppearance(NCAppearance())
 
+            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
+            
             // 0 == CCMore, 1 = first NCOffline ....
             if (self == self.navigationController?.viewControllers[1]) {
                 items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
@@ -752,7 +757,12 @@ extension NCOffline {
     func deleteItem(with metadata: tableMetadata, sender: Any) {
         
         var items = [ActionSheetItem]()
-        ActionSheet.applyAppearance(NCAppearance())
+//        ActionSheet.applyAppearance(NCAppearance())
+        
+        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
             return
