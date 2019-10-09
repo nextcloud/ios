@@ -108,8 +108,6 @@
 		F736B54E234DCE43008A5C9F /* NCCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736B54D234DCE43008A5C9F /* NCCommunication.swift */; };
 		F736B54F234DCE43008A5C9F /* NCCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736B54D234DCE43008A5C9F /* NCCommunication.swift */; };
 		F736B550234DCE43008A5C9F /* NCCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736B54D234DCE43008A5C9F /* NCCommunication.swift */; };
-		F736B552234DCF58008A5C9F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
-		F736B553234DCF58008A5C9F /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F736B554234DCF7B008A5C9F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
 		F736B555234DCF7B008A5C9F /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F736B557234DCF92008A5C9F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
@@ -482,6 +480,7 @@
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
+		F7CD050C234E724A00064685 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
 		F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D2D129230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
@@ -655,17 +654,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F736B558234DCF92008A5C9F /* Alamofire.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F75A3FFF1EBCB55B00B213E8 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				F736B553234DCF58008A5C9F /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1476,6 +1464,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7CD050C234E724A00064685 /* Alamofire.framework in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7D4B68C2295663D000C2C86 /* FirebaseCoreDiagnostics.framework in Frameworks */,
@@ -1501,7 +1490,6 @@
 				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
 				F7D4B6892295663D000C2C86 /* nanopb.framework in Frameworks */,
-				F736B552234DCF58008A5C9F /* Alamofire.framework in Frameworks */,
 				F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */,
 				F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */,
 				F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */,
@@ -3016,7 +3004,6 @@
 				F77B0F981D118A16002130FE /* Embed App Extensions */,
 				F73B02C01DC0F1C900EC2C33 /* ShellScript */,
 				F7A377371EB24469002856D3 /* ShellScript */,
-				F75A3FFF1EBCB55B00B213E8 /* Embed Frameworks */,
 				F75A40001EBCB82B00B213E8 /* ShellScript */,
 			);
 			buildRules = (
