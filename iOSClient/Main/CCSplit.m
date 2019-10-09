@@ -125,12 +125,14 @@
 
 - (void)showIntro
 {
-    // Brand
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
         [CCUtility setIntro:YES];
-        [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-    
+        
+        if (appDelegate.activeAccount.length == 0) {
+            [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
+        }
+        
     } else {
     
         if ([CCUtility getIntro] == NO) {
@@ -139,6 +141,7 @@
             [_intro show];
         
         } else {
+            
             if (appDelegate.activeAccount.length == 0) {
                 [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
             }
