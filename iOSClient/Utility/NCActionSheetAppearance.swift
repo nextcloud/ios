@@ -24,16 +24,9 @@
 import UIKit
 import Sheeeeeeeeet
 
-extension ActionSheetAppearance {
-    
-    static var demoColorful: ActionSheetAppearance {
-        NCAppearance()
-    }
-}
+class NCAppearance: StandardActionSheetAppearance {
 
-class NCAppearance: ActionSheetAppearance {
-
-    override func applyColors() {
+     override func applyColors() {
       
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
