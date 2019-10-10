@@ -575,41 +575,21 @@
 
 - (UIImage *)getImageLogoHome
 {
+    UIImage *image = [UIImage imageNamed:@"themingLogo"];
+    
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
-        return [UIImage imageNamed:@"themingLogo"];
+        image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]]];
+        if (image == nil) image = [UIImage imageNamed:@"themingLogo"];
+    }
         
-        /*
-        UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
-        NSInteger multiplier = 2;
-        NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
-        
-        UIImage *image = [UIImage imageWithContentsOfFile:fileNameThemingLogo];
-        if (image != nil) {
-            imageThemingLogo = image;
-            multiplier = 1;
-        }
-        
-        if ([appDelegate.reachability isReachable] == NO) {
+    if ([appDelegate.reachability isReachable] == NO) {
             
-            return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:NCBrandColor.sharedInstance.icon];
+        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"nonetwork"] width:50 height:50 color:NCBrandColor.sharedInstance.icon];
             
-        } else {
-            
-            return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:NCBrandColor.sharedInstance.brandText];
-        }
-        */
-        
     } else {
         
-        if ([appDelegate.reachability isReachable] == NO) {
-            
-            return [UIImage imageNamed:@"themingLogo"];
-            
-        } else {
-            
-            return [UIImage imageNamed:@"themingLogo"];
-        }
+        return image;
     }
 }
 
