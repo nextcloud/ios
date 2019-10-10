@@ -21,10 +21,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCMove.h"
+#import "NCSelectDestination.h"
 #import "NCBridgeSwift.h"
 
-@interface CCMove ()
+@interface NCSelectDestination ()
 {    
     NSString *activeAccount;
     NSString *activePassword;
@@ -42,7 +42,7 @@
 }
 @end
 
-@implementation CCMove
+@implementation NCSelectDestination
 
 // MARK: - View
 
@@ -126,6 +126,9 @@
         [self.move setEnabled:NO];
         [self.move setTintColor: [UIColor clearColor]];
     }
+    
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -394,7 +397,7 @@
     [CCUtility getDirectoryProviderStorageOcId:metadata.ocId];
     
     // colors
-    cell.textLabel.textColor = [UIColor blackColor];
+    cell.textLabel.textColor = NCBrandColor.sharedInstance.textView;
     
     cell.detailTextLabel.text = @"";
     
@@ -504,7 +507,9 @@
         
     nomeDir = metadata.fileName;
     
-    CCMove *viewController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMoveVC"];
+    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCSelectDestination" bundle:nil] instantiateInitialViewController];
+    
+    NCSelectDestination *viewController = (NCSelectDestination *)navigationController.topViewController;
     
     viewController.delegate = self.delegate;
     viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;

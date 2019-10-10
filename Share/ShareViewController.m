@@ -26,7 +26,7 @@
 
 @import MobileCoreServices;
 
-@interface ShareViewController ()
+@interface ShareViewController () <NCSelectDestinationDelegate>
 {
     NSURL *dirGroup;
     NSUInteger totalSize;
@@ -103,6 +103,9 @@
         
     if ([[CCUtility getBlockCode] length] > 0 && [CCUtility getOnlyLockDir] == NO)
         [self openBKPasscode];
+    
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.shareTable.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (void)didReceiveMemoryWarning
@@ -182,9 +185,9 @@
 
 - (IBAction)destinyFolderButtonTapped:(UIBarButtonItem *)sender
 {
-    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
+    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCSelectDestination" bundle:nil] instantiateInitialViewController];
     
-    CCMove *viewController = (CCMove *)navigationController.topViewController;
+    NCSelectDestination *viewController = (NCSelectDestination *)navigationController.topViewController;
     
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_select_", nil);
@@ -439,7 +442,7 @@
     NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] error:nil] fileSize];
     
     cell.labelInformazioni.text = [NSString stringWithFormat:@"%@\r\r%@", fileName, [CCUtility transformedSize:fileSize]];
-    cell.labelInformazioni.textColor = [UIColor blackColor];
+    cell.labelInformazioni.textColor = NCBrandColor.sharedInstance.textView;
 
     cell.fileImageView.image = image;
     

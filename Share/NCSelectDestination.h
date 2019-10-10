@@ -1,5 +1,5 @@
 //
-//  CCMove.h
+//  NCSelectDestination.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
@@ -31,11 +31,11 @@
 
 @class tableMetadata;
 
-@protocol CCMoveDelegate;
+@protocol NCSelectDestinationDelegate;
 
-@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface NCSelectDestination : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
-@property (nonatomic, weak) id <CCMoveDelegate> delegate;
+@property (nonatomic, weak) id <NCSelectDestinationDelegate> delegate;
 
 @property BOOL includeDirectoryE2EEncryption;
 @property BOOL includeImages;
@@ -64,7 +64,7 @@
 
 @end
 
-@protocol CCMoveDelegate <NSObject>
+@protocol NCSelectDestinationDelegate <NSObject>
 
 @optional - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type;
 @optional - (void)dismissMove;

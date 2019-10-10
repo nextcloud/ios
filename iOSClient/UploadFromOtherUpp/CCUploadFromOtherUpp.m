@@ -152,6 +152,7 @@
 {
     UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
     
+    /*
     CCMove *viewController = (CCMove *)navigationController.topViewController;
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_select_", nil);
@@ -162,6 +163,7 @@
     viewController.includeDirectoryE2EEncryption = NO;
     
     [self presentViewController:navigationController animated:YES completion:nil];
+    */
 }
 
 -(void)upload
