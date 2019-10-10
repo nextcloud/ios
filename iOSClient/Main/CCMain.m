@@ -577,6 +577,9 @@
 {
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
+        return [UIImage imageNamed:@"themingLogo"];
+        
+        /*
         UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
         NSInteger multiplier = 2;
         NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
@@ -595,16 +598,17 @@
             
             return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:NCBrandColor.sharedInstance.brandText];
         }
+        */
         
     } else {
         
         if ([appDelegate.reachability isReachable] == NO) {
             
-            return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:NCBrandColor.sharedInstance.icon];
+            return [UIImage imageNamed:@"themingLogo"];
             
         } else {
             
-            return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:NCBrandColor.sharedInstance.brandText];
+            return [UIImage imageNamed:@"themingLogo"];
         }
     }
 }
