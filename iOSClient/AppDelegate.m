@@ -1513,13 +1513,8 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Open CCUploadFromOtherUpp  =====
+#pragma mark ===== OpenURL  =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
-{
-    return YES;
-}
 
 // Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
