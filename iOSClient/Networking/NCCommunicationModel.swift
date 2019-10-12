@@ -23,6 +23,8 @@
 
 import Foundation
 
+//MARK: -
+//MARK: File
 
 @objc class NCFile: NSObject {
     private override init() {}
@@ -53,3 +55,5 @@ import Foundation
     let trashbinOriginalLocation = ""
     let trashbinDeletionTime = NSDate()
 }
+
+//MARK: -

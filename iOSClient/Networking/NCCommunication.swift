@@ -64,6 +64,7 @@ class NCCommunication: NSObject {
         do {
             try url = path.asURL()
         } catch _ {
+            completionHandler(nil, nil)
             return
         }
         
