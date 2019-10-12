@@ -88,12 +88,11 @@ class NCCommunication: NSObject {
             case .success( _):
                 var files = [NCFile]()
                 if let data = response.data {
-                    
                     let xml = XML.parse(data)
                     let elements = xml["d:multistatus", "d:response"]
                     for element in elements {
                         let file = NCFile()
-                        if let href = element["d:href"].text { file.path = href }
+                        if let href = element["d:href"].text { file.path = href.removingPercentEncoding ?? "" }
                         files.append(file)
                     }
                 }
