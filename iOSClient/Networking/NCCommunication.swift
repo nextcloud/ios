@@ -93,6 +93,7 @@ class NCCommunication: NSObject {
                     for element in elements {
                         let file = NCFile()
                         if let href = element["d:href"].text { file.path = href.removingPercentEncoding ?? "" }
+                        if let getetag = element["d:getetag"].text { file.etag = getetag.replacingOccurrences(of: "\"", with: "")}
                         files.append(file)
                     }
                 }
