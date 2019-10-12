@@ -23,8 +23,7 @@
 
 import Foundation
 
-//MARK: -
-//MARK: File
+//MARK: - File
 
 @objc class NCFile: NSObject {
     

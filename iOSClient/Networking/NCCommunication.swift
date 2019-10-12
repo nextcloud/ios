@@ -31,6 +31,8 @@ class NCCommunication: NSObject {
         return instance
     }()
     
+    //MARK: - webDAV
+
     @objc func readFolder(serverUrl: String, account: String, user: String, password: String, depth: String, userAgent: String, completionHandler: @escaping (_ result: [NCFile], _ account: String,_ error: Error?) -> Void) {
         
         var files = [NCFile]()
