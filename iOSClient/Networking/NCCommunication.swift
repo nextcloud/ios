@@ -89,8 +89,10 @@ class NCCommunication: NSObject {
                 
                 if let data = response.data {
                     let xml = XML.parse(data)
-                    let numberOfHits = xml.ResultSet.Result.Hit.all?.count
-                    
+                    let elements = xml["d:multistatus", "d:response"]
+                    for element in elements {
+                        print(element["d:href"].text)
+                    }
                     print("success")
 
                 }
