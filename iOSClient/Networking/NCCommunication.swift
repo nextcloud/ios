@@ -23,6 +23,7 @@
 
 import Foundation
 import Alamofire
+import SwiftyXMLParser
 
 class NCCommunication: NSObject {
     @objc static let sharedInstance: NCCommunication = {
@@ -85,11 +86,13 @@ class NCCommunication: NSObject {
             case.failure(let error):
                 completionHandler(nil, error)
             case .success( _):
-                /*
+                
                 if let data = response.data {
-                    print("JSON: \(data)")
+                    let xml = XML.parse(data)
+                    print("success")
+
                 }
-                */
+                
                 print("success")
             }
         }
