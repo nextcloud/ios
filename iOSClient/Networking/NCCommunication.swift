@@ -97,16 +97,19 @@ class NCCommunication: NSObject {
                         }
                         let propstat = element["d:propstat"][0]
                         
-                        if let getlastmodified = propstat["d:prop", "d:getlastmodified"].text {
-                            let dateFormatter = DateFormatter()
-                            dateFormatter.locale = Locale.init(identifier: "en_US_POSIX")
-                            dateFormatter.dateFormat = "EEE, dd MMM y HH:mm:ss zzz"
-                            if let date = dateFormatter.date(from: getlastmodified) {
-                                file.date = date as NSDate
-                            }
-                        }
                         if let getetag = propstat["d:prop", "d:getetag"].text {
                             file.etag = getetag.replacingOccurrences(of: "\"", with: "")
+                        }
+                        if let getlastmodified = propstat["d:prop", "d:getlastmodified"].text {
+                            if let date = NCCommunicationCommon.sharedInstance.convertDate(getlastmodified, format: "EEE, dd MMM y HH:mm:ss zzz") {
+                                file.date = date
+                            }
+                        }
+                        if let quotaavailablebytes = propstat["d:prop", "d:quota-available-bytes"].text {
+                            file.quotaAvailableBytes = Double(quotaavailablebytes) ?? 0
+                        }
+                        if let quotausedbytes = propstat["d:prop", "d:quota-used-bytes"].text {
+                            file.quotaUsedBytes = Double(quotausedbytes) ?? 0
                         }
                         
                         files.append(file)
