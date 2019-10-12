@@ -92,8 +92,14 @@ class NCCommunication: NSObject {
                     let elements = xml["d:multistatus", "d:response"]
                     for element in elements {
                         let file = NCFile()
-                        if let href = element["d:href"].text { file.path = href.removingPercentEncoding ?? "" }
-                        if let getetag = element["d:getetag"].text { file.etag = getetag.replacingOccurrences(of: "\"", with: "")}
+                        if let href = element["d:href"].text {
+                            file.path = href.removingPercentEncoding ?? ""
+                        }
+                        let propstat = element["d:propstat"][0]
+                        if let getetag = propstat["d:prop", "d:getetag"].text {
+                            file.etag = getetag.replacingOccurrences(of: "\"", with: "")
+                        }
+                        
                         files.append(file)
                     }
                 }
