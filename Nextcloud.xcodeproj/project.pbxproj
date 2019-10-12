@@ -89,6 +89,9 @@
 		F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */; };
 		F72382C32295856A005B8A07 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BF22958569005B8A07 /* GoogleToolboxForMac.framework */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
+		F724B1CC2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */; };
+		F724B1CD2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */; };
+		F724B1CE2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
@@ -763,6 +766,7 @@
 		F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleMVTextDetectorResources.bundle; sourceTree = "<group>"; };
 		F72382BF22958569005B8A07 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
 		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
+		F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCommunicationModel.swift; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
@@ -1893,6 +1897,7 @@
 			children = (
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
 				F736B54D234DCE43008A5C9F /* NCCommunication.swift */,
+				F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */,
 				F732BA031D76CE1500E9878B /* CCNetworking.h */,
 				F732BA041D76CE1500E9878B /* CCNetworking.m */,
 				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
@@ -3409,6 +3414,7 @@
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
+				F724B1CD2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */,
 				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
 				F736B54F234DCE43008A5C9F /* NCCommunication.swift in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
@@ -3464,6 +3470,7 @@
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
 				F7434B4220E2405500417916 /* OCSharedDto.m in Sources */,
+				F724B1CE2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */,
 				F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F7434B3F20E2404B00417916 /* OCNotifications.m in Sources */,
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
@@ -3726,6 +3733,7 @@
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F760F79221F21F61006B1A73 /* EmojisCollectionViewDelegate.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
+				F724B1CC2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
