@@ -36,7 +36,7 @@ class NCCommunication: NSObject {
     @objc func readFolder(serverUrl: String, account: String, user: String, password: String, depth: String, userAgent: String, completionHandler: @escaping (_ result: [NCFile], _ account: String,_ error: Error?) -> Void) {
         
         var files = [NCFile]()
-        let dataListFile =
+        let dataFile =
         """
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
