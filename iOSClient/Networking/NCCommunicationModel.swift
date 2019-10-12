@@ -27,33 +27,32 @@ import Foundation
 //MARK: File
 
 @objc class NCFile: NSObject {
-    private override init() {}
     
-    let commentsUnread: Bool = false
-    let contentType = ""
-    let creationDate = NSDate()
-    let date = NSDate()
-    let directory: Bool = false
-    let displayName = ""
-    let encrypted: Bool = false
-    let etag = ""
-    let favorite: Bool = false
-    let fileId = ""
-    let fileName = ""
-    let hasPreview: Bool = false
-    let mountType = ""
-    let ocId = ""
-    let ownerId = ""
-    let ownerDisplayName = ""
-    let path = ""
-    let permissions = ""
-    let quotaUsedBytes: Double = 0
-    let quotaAvailableBytes: Double = 0
-    let resourceType = ""
-    let size: Double = 0
-    let trashbinFileName = ""
-    let trashbinOriginalLocation = ""
-    let trashbinDeletionTime = NSDate()
+    @objc var commentsUnread: Bool = false
+    @objc var contentType = ""
+    @objc var creationDate = NSDate()
+    @objc var date = NSDate()
+    @objc var directory: Bool = false
+    @objc var displayName = ""
+    @objc var encrypted: Bool = false
+    @objc var etag = ""
+    @objc var favorite: Bool = false
+    @objc var fileId = ""
+    @objc var fileName = ""
+    @objc var hasPreview: Bool = false
+    @objc var mountType = ""
+    @objc var ocId = ""
+    @objc var ownerId = ""
+    @objc var ownerDisplayName = ""
+    @objc var path = ""
+    @objc var permissions = ""
+    @objc var quotaUsedBytes: Double = 0
+    @objc var quotaAvailableBytes: Double = 0
+    @objc var resourceType = ""
+    @objc var size: Double = 0
+    @objc var trashbinFileName = ""
+    @objc var trashbinOriginalLocation = ""
+    @objc var trashbinDeletionTime = NSDate()
 }
 
 //MARK: -

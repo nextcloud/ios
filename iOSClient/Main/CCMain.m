@@ -1228,7 +1228,9 @@
 #ifdef DEBUG
     
     [[NCCommunication sharedInstance] readFolderWithPath:serverUrl user:appDelegate.activeUserID password:appDelegate.activePassword completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
-        
+        for (NCFile *file in files) {
+            NSLog(file.path);
+        }
         NSLog(@"end");
     }];
 #endif

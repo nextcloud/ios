@@ -86,18 +86,18 @@ class NCCommunication: NSObject {
             case.failure(let error):
                 completionHandler(nil, error)
             case .success( _):
-                
+                var files = [NCFile]()
                 if let data = response.data {
+                    
                     let xml = XML.parse(data)
                     let elements = xml["d:multistatus", "d:response"]
                     for element in elements {
-                        print(element["d:href"].text)
+                        let file = NCFile()
+                        if let href = element["d:href"].text { file.path = href }
+                        files.append(file)
                     }
-                    print("success")
-
                 }
-                
-                print("success")
+                completionHandler(files, nil)
             }
         }
     }
