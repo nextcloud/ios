@@ -96,6 +96,15 @@ class NCCommunication: NSObject {
                             file.path = href.removingPercentEncoding ?? ""
                         }
                         let propstat = element["d:propstat"][0]
+                        
+                        if let getlastmodified = propstat["d:prop", "d:getlastmodified"].text {
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.locale = Locale.init(identifier: "en_US_POSIX")
+                            dateFormatter.dateFormat = "EEE, dd MMM y HH:mm:ss zzz"
+                            if let date = dateFormatter.date(from: getlastmodified) {
+                                file.date = date as NSDate
+                            }
+                        }
                         if let getetag = propstat["d:prop", "d:getetag"].text {
                             file.etag = getetag.replacingOccurrences(of: "\"", with: "")
                         }
