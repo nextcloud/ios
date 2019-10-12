@@ -161,12 +161,13 @@ class NCCommunication: NSObject {
         
         AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination).downloadProgress { progress in
             //self.postProgress(progress: progress)
-        } .responseData { response in
-            /*
-                if let data = response.result.value {
-                    //                        let image = UIImage(data: data)
-                }
-            */
+        }.responseData { response in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(account, error)
+            case .success( _):
+                completionHandler(account, nil)
+            }
         }
     }
 
