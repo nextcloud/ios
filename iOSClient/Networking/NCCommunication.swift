@@ -89,6 +89,8 @@ class NCCommunication: NSObject {
                 
                 if let data = response.data {
                     let xml = XML.parse(data)
+                    let numberOfHits = xml.ResultSet.Result.Hit.all?.count
+                    
                     print("success")
 
                 }
