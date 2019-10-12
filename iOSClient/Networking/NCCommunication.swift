@@ -68,7 +68,7 @@ class NCCommunication: NSObject {
         </d:propfind>
         """
 
-        // URL
+        // url
         var url: URLConvertible
         do {
             try url = serverUrl.asURL()
@@ -126,4 +126,49 @@ class NCCommunication: NSObject {
             }
         }
     }
+    
+    //MARK: - Download
+    
+    @objc func download(serverUrl: String, fileName: String, fileNamePathDestination: String, account: String, user: String, password: String, userAgent: String, completionHandler: @escaping (_ account: String,_ error: Error?) -> Void) {
+        
+        // url
+        var serverUrl = serverUrl
+        var url: URLConvertible
+        do {
+            if serverUrl.last == "/" {
+                serverUrl = serverUrl + fileName
+            } else {
+                serverUrl = serverUrl + "/" + fileName
+            }
+            try url = serverUrl.asURL()
+        } catch let error {
+            completionHandler(account, error)
+            return
+        }
+        
+        // Destination
+        var destination: Alamofire.DownloadRequest.Destination?
+        if let fileNamePathDestinationURL = URL(string: fileNamePathDestination) {
+            let destinationFile: DownloadRequest.Destination = { _, _ in
+                return (fileNamePathDestinationURL, [.removePreviousFile, .createIntermediateDirectories])
+            }
+            destination = destinationFile
+        }
+        
+        // Headers
+        var headers: HTTPHeaders = [.authorization(username: user, password: password)]
+        headers.update(.userAgent(userAgent))
+        
+        AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination).downloadProgress { progress in
+            //self.postProgress(progress: progress)
+        } .responseData { response in
+            /*
+                if let data = response.result.value {
+                    //                        let image = UIImage(data: data)
+                }
+            */
+        }
+    }
+
 }
+
