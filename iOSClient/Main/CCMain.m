@@ -1227,7 +1227,7 @@
     
 #ifdef DEBUG
     
-    [[NCCommunication sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUserID  password:appDelegate.activePassword completionHandler:^(NSArray<NCFile *> *files, NSString *account, NSError *error) {
+    [[NCCommunication sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUserID password:appDelegate.activePassword depth:@"1" userAgent:[CCUtility getUserAgent] completionHandler:^(NSArray<NCFile *> *files, NSString *account, NSError *error) {
         for (NCFile *file in files) {
             //NSLog(file.etag);
         }

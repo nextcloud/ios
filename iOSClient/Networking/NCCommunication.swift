@@ -58,7 +58,7 @@ class NCCommunication: NSObject {
     <trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>"
     """
     
-    @objc func readFolder(serverUrl: String, account: String, user: String, password: String, completionHandler: @escaping (_ result: [NCFile], _ account: String,_ error: Error?) -> Void) {
+    @objc func readFolder(serverUrl: String, account: String, user: String, password: String, depth: String, userAgent: String, completionHandler: @escaping (_ result: [NCFile], _ account: String,_ error: Error?) -> Void) {
         
         var files = [NCFile]()
 
@@ -73,9 +73,9 @@ class NCCommunication: NSObject {
         
         // Headers
         var headers: HTTPHeaders = [.authorization(username: user, password: password)]
-        headers.update(.userAgent(CCUtility.getUserAgent()))
+        headers.update(.userAgent(userAgent))
         headers.update(.contentType("application/xml"))
-        headers.update(name: "Depth", value: "1")
+        headers.update(name: "Depth", value: depth)
 
         // Parameters
         //let parameters: Parameters = ["":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><d:prop>" + NCResource + "</d:prop></d:propfind>"]
