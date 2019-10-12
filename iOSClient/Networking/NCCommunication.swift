@@ -58,14 +58,14 @@ class NCCommunication: NSObject {
     <trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>"
     """
     
-    @objc func readFolder(path: String, user: String, password: String, completionHandler: @escaping (_ result: [NCFile]?, _ error: Error?) -> Void) {
+    @objc func readFolder(serverUrl: String, account: String, user: String, password: String, completionHandler: @escaping (_ result: [NCFile]?, _ account: String,_ error: Error?) -> Void) {
         
         // URL
         var url: URLConvertible
         do {
-            try url = path.asURL()
+            try url = serverUrl.asURL()
         } catch _ {
-            completionHandler(nil, nil)
+            completionHandler(nil, account, nil)
             return
         }
         
@@ -84,7 +84,7 @@ class NCCommunication: NSObject {
         AF.request(url, method: method, parameters:[:], encoding: URLEncoding.httpBody, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseData { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(nil, error)
+                completionHandler(nil, account, error)
             case .success( _):
                 var files = [NCFile]()
                 if let data = response.data {
@@ -115,7 +115,7 @@ class NCCommunication: NSObject {
                         files.append(file)
                     }
                 }
-                completionHandler(files, nil)
+                completionHandler(files, account, nil)
             }
         }
     }
