@@ -27,9 +27,9 @@ import SwiftyXMLParser
 
 class NCCommunication: NSObject {
     
-    var username = ""
+    var user = ""
     var password = ""
-    var userAgent = ""
+    var userAgent: String?
     
     @objc static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
@@ -38,15 +38,15 @@ class NCCommunication: NSObject {
     
     //MARK: - Settings
 
-    @objc func settingAccount(user: String, password: String, userAgent: String) {
-        NCCommunication.sharedInstance.username = username
-        NCCommunication.sharedInstance.password = password
-        NCCommunication.sharedInstance.userAgent = userAgent
+    @objc func settingAccount(user: String, password: String, userAgent: String?) {
+        self.user = user
+        self.password = password
+        self.userAgent = userAgent
     }
                             
     //MARK: - webDAV
 
-    @objc func createFolder(serverUrl: String, fileName: String ,user: String, password: String, userAgent: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func createFolder(serverUrl: String, fileName: String, completionHandler: @escaping (_ error: Error?) -> Void) {
         
         // url
         var serverUrl = serverUrl
@@ -64,8 +64,8 @@ class NCCommunication: NSObject {
         }
         
         // Headers
-        var headers: HTTPHeaders = [.authorization(username: user, password: password)]
-        headers.update(.userAgent(userAgent))
+        var headers: HTTPHeaders = [.authorization(username: self.user, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         headers.update(.contentType("application/xml"))
 
         // Method

@@ -1745,7 +1745,7 @@
 - (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
-    [[NCCommunication sharedInstance] createFolderWithServerUrl:serverUrl fileName:fileNameFolder user:appDelegate.activeUserID password:appDelegate.activePassword userAgent:[CCUtility getUserAgent] completionHandler:^(NSError *error) {
+    [[NCCommunication sharedInstance] createFolderWithServerUrl:serverUrl fileName:fileNameFolder completionHandler:^(NSError *error) {
         NSLog(@"x");
     }];
     
