@@ -26,11 +26,24 @@ import Alamofire
 import SwiftyXMLParser
 
 class NCCommunication: NSObject {
+    
+    var username = ""
+    var password = ""
+    var userAgent = ""
+    
     @objc static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
         return instance
     }()
     
+    //MARK: - Settings
+
+    @objc func settingAccount(user: String, password: String, userAgent: String) {
+        NCCommunication.sharedInstance.username = username
+        NCCommunication.sharedInstance.password = password
+        NCCommunication.sharedInstance.userAgent = userAgent
+    }
+                            
     //MARK: - webDAV
 
     @objc func createFolder(serverUrl: String, fileName: String ,user: String, password: String, userAgent: String, completionHandler: @escaping (_ error: Error?) -> Void) {
@@ -50,7 +63,21 @@ class NCCommunication: NSObject {
             return
         }
         
+        // Headers
+        var headers: HTTPHeaders = [.authorization(username: user, password: password)]
+        headers.update(.userAgent(userAgent))
         
+        // Method
+        let method = HTTPMethod(rawValue: "MKCOL")
+        
+        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseData { (response) in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(error)
+            case .success( _):
+                completionHandler(nil)
+            }
+        }
     }
     
     @objc func readFolder(serverUrl: String, user: String, password: String, depth: String, userAgent: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
