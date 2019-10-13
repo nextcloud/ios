@@ -68,10 +68,43 @@ class NCCommunication: NSObject {
         // headers
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
-        headers.update(.contentType("application/xml"))
 
         // method
         let method = HTTPMethod(rawValue: "MKCOL")
+        
+        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(error)
+            case .success( _):
+                completionHandler(nil)
+            }
+        }
+    }
+    
+    @objc func deleteFileOrFolder(serverUrl: String, fileName: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+        
+        // url
+        var serverUrl = serverUrl
+        var url: URLConvertible
+        do {
+            if serverUrl.last == "/" {
+                serverUrl = serverUrl + fileName
+            } else {
+                serverUrl = serverUrl + "/" + fileName
+            }
+            try url = serverUrl.asURL()
+        } catch let error {
+            completionHandler(error)
+            return
+        }
+        
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+        
+        // method
+        let method = HTTPMethod(rawValue: "DELETE")
         
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
