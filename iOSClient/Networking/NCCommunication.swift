@@ -66,11 +66,15 @@ class NCCommunication: NSObject {
         // Headers
         var headers: HTTPHeaders = [.authorization(username: user, password: password)]
         headers.update(.userAgent(userAgent))
-        
+        headers.update(.contentType("application/xml"))
+
         // Method
         let method = HTTPMethod(rawValue: "MKCOL")
         
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseData { (response) in
+            
+            let x = response.response?.statusCode
+            
             switch response.result {
             case.failure(let error):
                 completionHandler(error)

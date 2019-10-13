@@ -1745,6 +1745,13 @@
 - (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
+    [[NCCommunication sharedInstance] createFolderWithServerUrl:serverUrl fileName:fileNameFolder user:appDelegate.activeUserID password:appDelegate.activePassword userAgent:[CCUtility getUserAgent] completionHandler:^(NSError *error) {
+        NSLog(@"x");
+    }];
+    
+    return;
+    
+    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     NSString *ocIdTemp = [[NSUUID UUID] UUIDString];
     
