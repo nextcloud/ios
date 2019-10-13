@@ -26,15 +26,14 @@ import Alamofire
 import SwiftyXMLParser
 
 class NCCommunication: NSObject {
-    
-    var user = ""
-    var password = ""
-    var userAgent: String?
-    
     @objc static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
         return instance
     }()
+    
+    var user = ""
+    var password = ""
+    var userAgent: String?
     
     //MARK: - Settings
 
