@@ -37,12 +37,15 @@ class NCCommunication: NSObject {
     
     //MARK: - Settings
 
-    @objc func settingAccount(username: String, password: String, userAgent: String?) {
+    @objc func settingAccount(username: String, password: String) {
         self.username = username
         self.password = password
+    }
+    
+    @objc func settingUserAgent(_ userAgent: String) {
         self.userAgent = userAgent
     }
-                            
+    
     //MARK: - webDAV
 
     @objc func createFolder(serverUrl: String, fileName: String, completionHandler: @escaping (_ error: Error?) -> Void) {
