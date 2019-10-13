@@ -33,7 +33,27 @@ class NCCommunication: NSObject {
     
     //MARK: - webDAV
 
-    @objc func readFolder(serverUrl: String, account: String, user: String, password: String, depth: String, userAgent: String, completionHandler: @escaping (_ result: [NCFile], _ account: String,_ error: Error?) -> Void) {
+    @objc func createFolder(serverUrl: String, fileName: String ,user: String, password: String, userAgent: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+        
+        // url
+        var serverUrl = serverUrl
+        var url: URLConvertible
+        do {
+            if serverUrl.last == "/" {
+                serverUrl = serverUrl + fileName
+            } else {
+                serverUrl = serverUrl + "/" + fileName
+            }
+            try url = serverUrl.asURL()
+        } catch let error {
+            completionHandler(error)
+            return
+        }
+        
+        
+    }
+    
+    @objc func readFolder(serverUrl: String, user: String, password: String, depth: String, userAgent: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
         let dataFile =
@@ -73,7 +93,7 @@ class NCCommunication: NSObject {
         do {
             try url = serverUrl.asURL()
         } catch let error {
-            completionHandler(files, account, error)
+            completionHandler(files, error)
             return
         }
         
@@ -92,7 +112,7 @@ class NCCommunication: NSObject {
         AF.request(url, method: method, parameters:[:], encoding: URLEncoding.httpBody, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseData { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(files, account, error)
+                completionHandler(files, error)
             case .success( _):
                 if let data = response.data {
                     let xml = XML.parse(data)
@@ -122,14 +142,14 @@ class NCCommunication: NSObject {
                         files.append(file)
                     }
                 }
-                completionHandler(files, account, nil)
+                completionHandler(files, nil)
             }
         }
     }
     
     //MARK: - Download
     
-    @objc func download(serverUrl: String, fileName: String, fileNamePathDestination: String, account: String, user: String, password: String, userAgent: String, completionHandler: @escaping (_ account: String,_ error: Error?) -> Void) {
+    @objc func download(serverUrl: String, fileName: String, fileNamePathDestination: String, user: String, password: String, userAgent: String, completionHandler: @escaping (_ error: Error?) -> Void) {
         
         // url
         var serverUrl = serverUrl
@@ -142,7 +162,7 @@ class NCCommunication: NSObject {
             }
             try url = serverUrl.asURL()
         } catch let error {
-            completionHandler(account, error)
+            completionHandler(error)
             return
         }
         
@@ -164,9 +184,9 @@ class NCCommunication: NSObject {
         }.responseData { response in
             switch response.result {
             case.failure(let error):
-                completionHandler(account, error)
+                completionHandler(error)
             case .success( _):
-                completionHandler(account, nil)
+                completionHandler(nil)
             }
         }
     }
