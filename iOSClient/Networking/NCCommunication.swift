@@ -116,6 +116,36 @@ class NCCommunication: NSObject {
         }
     }
     
+    @objc func moveFileOrFolder(fileNamePath: String, fileNamePathDestination: String,completionHandler: @escaping (_ error: Error?) -> Void) {
+        
+        // url
+        var url: URLConvertible
+        do {
+            try url = fileNamePath.asURL()
+        } catch let error {
+            completionHandler(error)
+            return
+        }
+        
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+        headers.update(name: "Destination", value: fileNamePathDestination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
+        headers.update(name: "Overwrite", value: "T")
+        
+        // method
+        let method = HTTPMethod(rawValue: "MOVE")
+        
+        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(error)
+            case .success( _):
+                completionHandler(nil)
+            }
+        }
+    }
+    
     @objc func readFolder(serverUrl: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
