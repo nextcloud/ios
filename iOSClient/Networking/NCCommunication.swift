@@ -31,14 +31,14 @@ class NCCommunication: NSObject {
         return instance
     }()
     
-    var user = ""
+    var username = ""
     var password = ""
     var userAgent: String?
     
     //MARK: - Settings
 
-    @objc func settingAccount(user: String, password: String, userAgent: String?) {
-        self.user = user
+    @objc func settingAccount(username: String, password: String, userAgent: String?) {
+        self.username = username
         self.password = password
         self.userAgent = userAgent
     }
@@ -63,7 +63,7 @@ class NCCommunication: NSObject {
         }
         
         // headers
-        var headers: HTTPHeaders = [.authorization(username: self.user, password: self.password)]
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         headers.update(.contentType("application/xml"))
 
@@ -125,7 +125,7 @@ class NCCommunication: NSObject {
         }
         
         // headers
-        var headers: HTTPHeaders = [.authorization(username: self.user, password: self.password)]
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         headers.update(.contentType("application/xml"))
         headers.update(name: "Depth", value: depth)
@@ -203,7 +203,7 @@ class NCCommunication: NSObject {
         }
         
         // headers
-        var headers: HTTPHeaders = [.authorization(username: self.user, password: self.password)]
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
         AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination).downloadProgress { progress in
