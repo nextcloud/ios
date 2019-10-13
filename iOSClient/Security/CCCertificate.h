@@ -35,7 +35,7 @@
 
 @property (weak) id<CCCertificateDelegate> delegate;
 
-+ (id)sharedManager;
++ (CCCertificate *)sharedManager;
 
 - (BOOL)checkTrustedChallenge:(NSURLAuthenticationChallenge *)challenge;
 - (BOOL)acceptCertificate;

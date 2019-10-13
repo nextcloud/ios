@@ -25,7 +25,7 @@ import Foundation
 import Alamofire
 import SwiftyXMLParser
 
-class NCCommunication: NSObject {
+class NCCommunication: SessionDelegate {
     @objc static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
         return instance
@@ -283,6 +283,17 @@ class NCCommunication: NSObject {
             }
         }
     }
+    
+    //MARK: - SessionDelegate
 
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        
+        if CCCertificate.sharedManager().checkTrustedChallenge(challenge) {
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling,             URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
+        } else {
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        }
+        
+    }
 }
 
