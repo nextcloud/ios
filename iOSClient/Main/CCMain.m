@@ -1227,7 +1227,7 @@
     
 #ifdef DEBUG
     
-    [[NCCommunication sharedInstance] readFolderWithServerUrl:serverUrl user:appDelegate.activeUserID password:appDelegate.activePassword depth:@"1" userAgent:[CCUtility getUserAgent] completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
+    [[NCCommunication sharedInstance] readFolderWithServerUrl:serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
         for (NCFile *file in files) {
             //NSLog(file.etag);
         }
@@ -1744,13 +1744,6 @@
 
 - (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {
-    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
-    [[NCCommunication sharedInstance] createFolderWithServerUrl:serverUrl fileName:fileNameFolder completionHandler:^(NSError *error) {
-        NSLog(@"x");
-    }];
-    
-    return;
-    
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     NSString *ocIdTemp = [[NSUUID UUID] UUIDString];

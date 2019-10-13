@@ -63,12 +63,12 @@ class NCCommunication: NSObject {
             return
         }
         
-        // Headers
+        // headers
         var headers: HTTPHeaders = [.authorization(username: self.user, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         headers.update(.contentType("application/xml"))
 
-        // Method
+        // method
         let method = HTTPMethod(rawValue: "MKCOL")
         
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
@@ -81,7 +81,7 @@ class NCCommunication: NSObject {
         }
     }
     
-    @objc func readFolder(serverUrl: String, user: String, password: String, depth: String, userAgent: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
+    @objc func readFolder(serverUrl: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
         let dataFile =
@@ -125,16 +125,16 @@ class NCCommunication: NSObject {
             return
         }
         
-        // Headers
-        var headers: HTTPHeaders = [.authorization(username: user, password: password)]
-        headers.update(.userAgent(userAgent))
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.user, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         headers.update(.contentType("application/xml"))
         headers.update(name: "Depth", value: depth)
 
         // Parameters
         //let parameters: Parameters = ["":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><d:prop>" + NCResourceList + "</d:prop></d:propfind>"]
         
-        // Method
+        // method
         let method = HTTPMethod(rawValue: "PROPFIND")
         
         AF.request(url, method: method, parameters:[:], encoding: URLEncoding.httpBody, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseData { (response) in
@@ -177,7 +177,7 @@ class NCCommunication: NSObject {
     
     //MARK: - Download
     
-    @objc func download(serverUrl: String, fileName: String, fileNamePathDestination: String, user: String, password: String, userAgent: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func download(serverUrl: String, fileName: String, fileNamePathDestination: String, completionHandler: @escaping (_ error: Error?) -> Void) {
         
         // url
         var serverUrl = serverUrl
@@ -194,7 +194,7 @@ class NCCommunication: NSObject {
             return
         }
         
-        // Destination
+        // destination
         var destination: Alamofire.DownloadRequest.Destination?
         if let fileNamePathDestinationURL = URL(string: fileNamePathDestination) {
             let destinationFile: DownloadRequest.Destination = { _, _ in
@@ -203,9 +203,9 @@ class NCCommunication: NSObject {
             destination = destinationFile
         }
         
-        // Headers
-        var headers: HTTPHeaders = [.authorization(username: user, password: password)]
-        headers.update(.userAgent(userAgent))
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.user, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
         AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination).downloadProgress { progress in
             //self.postProgress(progress: progress)
