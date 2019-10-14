@@ -149,6 +149,7 @@ class NCCommunication: SessionDelegate {
     @objc func readFileOrFolder(serverUrl: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
+        var isNotFirstFileOfList: Bool = false
         let dataFile =
         """
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -159,17 +160,20 @@ class NCCommunication: SessionDelegate {
         <d:getetag />
         <d:getcontenttype />
         <d:resourcetype />
-        <d:getcontentlength />
+        <d:quota-available-bytes />
+        <d:quota-used-bytes />
+
         <permissions xmlns=\"http://owncloud.org/ns\"/>
         <id xmlns=\"http://owncloud.org/ns\"/>
         <fileid xmlns=\"http://owncloud.org/ns\"/>
         <size xmlns=\"http://owncloud.org/ns\"/>
         <favorite xmlns=\"http://owncloud.org/ns\"/>
-        <is-encrypted xmlns=\"http://nextcloud.org/ns\"/>
-        <mount-type xmlns=\"http://nextcloud.org/ns\"/>
+        <share-types xmlns=\"http://owncloud.org/ns\"/>
         <owner-id xmlns=\"http://owncloud.org/ns\"/>
         <owner-display-name xmlns=\"http://owncloud.org/ns\"/>
         <comments-unread xmlns=\"http://owncloud.org/ns\"/>
+
+        <is-encrypted xmlns=\"http://nextcloud.org/ns\"/>
         <has-preview xmlns=\"http://nextcloud.org/ns\"/>
 
         </d:prop>
@@ -216,8 +220,12 @@ class NCCommunication: SessionDelegate {
                         let file = NCFile()
                         if let href = element["d:href"].text {
                             file.path = href.removingPercentEncoding ?? ""
+                            if isNotFirstFileOfList { file.fileName = (file.path as NSString).lastPathComponent }
+                            if href.last == "/" { file.directory = true }
                         }
                         let propstat = element["d:propstat"][0]
+                        
+                        // d:
                         
                         if let getlastmodified = propstat["d:prop", "d:getlastmodified"].text {
                             if let date = NCCommunicationCommon.sharedInstance.convertDate(getlastmodified, format: "EEE, dd MMM y HH:mm:ss zzz") {
@@ -227,7 +235,12 @@ class NCCommunication: SessionDelegate {
                         if let getetag = propstat["d:prop", "d:getetag"].text {
                             file.etag = getetag.replacingOccurrences(of: "\"", with: "")
                         }
-                       
+                        if let getcontenttype = propstat["d:prop", "d:getcontenttype"].text {
+                            file.contentType = getcontenttype
+                        }
+                        if let resourcetype = propstat["d:prop", "d:resourcetype"].text {
+                            file.resourceType = resourcetype
+                        }
                         if let quotaavailablebytes = propstat["d:prop", "d:quota-available-bytes"].text {
                             file.quotaAvailableBytes = Double(quotaavailablebytes) ?? 0
                         }
@@ -235,6 +248,45 @@ class NCCommunication: SessionDelegate {
                             file.quotaUsedBytes = Double(quotausedbytes) ?? 0
                         }
                         
+                        // oc:
+                       
+                        if let permissions = propstat["d:prop", "oc:permissions"].text {
+                            file.permissions = permissions
+                        }
+                        if let ocId = propstat["d:prop", "oc:id"].text {
+                            file.ocId = ocId
+                        }
+                        if let fileId = propstat["d:prop", "oc:fileid"].text {
+                            file.fileId = fileId
+                        }
+                        if let size = propstat["d:prop", "oc:size"].text {
+                            file.size = Double(size) ?? 0
+                        }
+                        if let favorite = propstat["d:prop", "oc:favorite"].text {
+                            file.favorite = (favorite as NSString).boolValue
+                        }
+                        if let sharetypes = propstat["d:prop", "oc:share-types"].text {
+                            file.shareType = sharetypes
+                        }
+                        if let ownerid = propstat["d:prop", "oc:owner-id"].text {
+                            file.ownerId = ownerid
+                        }
+                        if let ownerdisplayname = propstat["d:prop", "oc:owner-display-name"].text {
+                            file.ownerDisplayName = ownerdisplayname
+                        }
+                        if let commentsunread = propstat["d:prop", "oc:comments-unread"].text {
+                            file.commentsUnread = (commentsunread as NSString).boolValue
+                        }
+                        
+                        // nc:
+                        if let encrypted = propstat["d:prop", "nc:encrypted"].text {
+                            file.encrypted = (encrypted as NSString).boolValue
+                        }
+                        if let haspreview = propstat["d:prop", "nc:has-preview"].text {
+                            file.hasPreview = (haspreview as NSString).boolValue
+                        }
+                        
+                        isNotFirstFileOfList = true;
                         files.append(file)
                     }
                 }

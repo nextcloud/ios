@@ -29,10 +29,8 @@ import Foundation
     
     @objc var commentsUnread: Bool = false
     @objc var contentType = ""
-    @objc var creationDate = NSDate()
     @objc var date = NSDate()
     @objc var directory: Bool = false
-    @objc var displayName = ""
     @objc var encrypted: Bool = false
     @objc var etag = ""
     @objc var favorite: Bool = false
@@ -48,6 +46,7 @@ import Foundation
     @objc var quotaUsedBytes: Double = 0
     @objc var quotaAvailableBytes: Double = 0
     @objc var resourceType = ""
+    @objc var shareType = ""
     @objc var size: Double = 0
     @objc var trashbinFileName = ""
     @objc var trashbinOriginalLocation = ""
