@@ -175,6 +175,7 @@ class NCCommunication: SessionDelegate {
 
         <is-encrypted xmlns=\"http://nextcloud.org/ns\"/>
         <has-preview xmlns=\"http://nextcloud.org/ns\"/>
+        <mount-type xmlns=\"http://nextcloud.org/ns\"/>
 
         </d:prop>
         </d:propfind>
@@ -265,9 +266,6 @@ class NCCommunication: SessionDelegate {
                         if let favorite = propstat["d:prop", "oc:favorite"].text {
                             file.favorite = (favorite as NSString).boolValue
                         }
-                        if let sharetypes = propstat["d:prop", "oc:share-types"].text {
-                            file.shareType = sharetypes
-                        }
                         if let ownerid = propstat["d:prop", "oc:owner-id"].text {
                             file.ownerId = ownerid
                         }
@@ -284,6 +282,9 @@ class NCCommunication: SessionDelegate {
                         }
                         if let haspreview = propstat["d:prop", "nc:has-preview"].text {
                             file.hasPreview = (haspreview as NSString).boolValue
+                        }
+                        if let mounttype = propstat["d:prop", "nc:mount-type"].text {
+                            file.mountType = mounttype
                         }
                         
                         isNotFirstFileOfList = true;

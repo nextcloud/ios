@@ -46,7 +46,6 @@ import Foundation
     @objc var quotaUsedBytes: Double = 0
     @objc var quotaAvailableBytes: Double = 0
     @objc var resourceType = ""
-    @objc var shareType = ""
     @objc var size: Double = 0
     @objc var trashbinFileName = ""
     @objc var trashbinOriginalLocation = ""
