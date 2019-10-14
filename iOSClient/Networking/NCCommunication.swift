@@ -65,12 +65,12 @@ class NCCommunication: SessionDelegate {
             return
         }
         
+        // method
+        let method = HTTPMethod(rawValue: "MKCOL")
+        
         // headers
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
-
-        // method
-        let method = HTTPMethod(rawValue: "MKCOL")
         
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
@@ -99,13 +99,13 @@ class NCCommunication: SessionDelegate {
             return
         }
         
-        // headers
-        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
-        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
-        
         // method
         let method = HTTPMethod(rawValue: "DELETE")
         
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+                
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
@@ -127,14 +127,14 @@ class NCCommunication: SessionDelegate {
             return
         }
         
+        // method
+        let method = HTTPMethod(rawValue: "MOVE")
+        
         // headers
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         headers.update(name: "Destination", value: fileNamePathDestination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
         headers.update(name: "Overwrite", value: "T")
-        
-        // method
-        let method = HTTPMethod(rawValue: "MOVE")
         
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
@@ -154,15 +154,11 @@ class NCCommunication: SessionDelegate {
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
         <d:prop>"
-        <d:displayname/>
-        <d:getcontenttype/>
-        <d:resourcetype/>
-        <d:getcontentlength/>
-        <d:getlastmodified/>
-        <d:creationdate/>
-        <d:getetag/>
-        <d:quota-used-bytes/>
-        <d:quota-available-bytes/>
+        <d:getlastmodified />
+        <d:getetag />
+        <d:getcontenttype />
+        <d:resourcetype />
+        <d:getcontentlength />
         <permissions xmlns=\"http://owncloud.org/ns\"/>
         <id xmlns=\"http://owncloud.org/ns\"/>
         <fileid xmlns=\"http://owncloud.org/ns\"/>
@@ -174,9 +170,6 @@ class NCCommunication: SessionDelegate {
         <owner-display-name xmlns=\"http://owncloud.org/ns\"/>
         <comments-unread xmlns=\"http://owncloud.org/ns\"/>
         <has-preview xmlns=\"http://nextcloud.org/ns\"/>
-        <trashbin-filename xmlns=\"http://nextcloud.org/ns\"/>
-        <trashbin-original-location xmlns=\"http://nextcloud.org/ns\"/>
-        <trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>"
         </d:prop>
         </d:propfind>
         """
@@ -190,19 +183,26 @@ class NCCommunication: SessionDelegate {
             return
         }
         
+        // method
+        let method = HTTPMethod(rawValue: "PROPFIND")
+        
         // headers
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         headers.update(.contentType("application/xml"))
         headers.update(name: "Depth", value: depth)
 
-        // Parameters
-        //let parameters: Parameters = ["":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><d:prop>" + NCResourceList + "</d:prop></d:propfind>"]
+        // request
+        var urlRequest: URLRequest
+        do {
+            try urlRequest = URLRequest(url: url, method: method, headers: headers)
+            urlRequest.httpBody = dataFile.data(using: .utf8)
+        } catch let error {
+            completionHandler(files, error)
+            return
+        }
         
-        // method
-        let method = HTTPMethod(rawValue: "PROPFIND")
-        
-        AF.request(url, method: method, parameters:[:], encoding: URLEncoding.httpBody, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseData { (response) in
+        AF.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
             switch response.result {
             case.failure(let error):
                 completionHandler(files, error)
