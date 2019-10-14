@@ -182,11 +182,15 @@ class NCCommunication: SessionDelegate {
         """
 
         // url
+        var serverUrl = String(serverUrl)
         var url: URLConvertible
         do {
+            if depth == "1" && serverUrl.last != "/" { serverUrl = serverUrl + "/" }
+            if depth == "0" && serverUrl.last == "/" { serverUrl = String(serverUrl.removeLast()) }
+            serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: CharacterSet(charactersIn: ";?@&=$+{}<>,!'* ").inverted)! //";?@&=$+{}<>,!'*"
             try url = serverUrl.asURL()
         } catch let error {
-            completionHandler(files, error)
+            completionHandler(files,error)
             return
         }
         
@@ -220,9 +224,22 @@ class NCCommunication: SessionDelegate {
                     for element in elements {
                         let file = NCFile()
                         if let href = element["d:href"].text {
-                            file.path = href.removingPercentEncoding ?? ""
-                            if isNotFirstFileOfList { file.fileName = (file.path as NSString).lastPathComponent }
-                            if href.last == "/" { file.directory = true }
+                            var fileNamePath = href
+                            // directory
+                            if href.last == "/" {
+                                fileNamePath = String(href[..<href.index(before: href.endIndex)])
+                                file.directory = true
+                            }
+                            // path
+                            file.path = (fileNamePath as NSString).deletingLastPathComponent + "/"
+                            file.path = file.path.removingPercentEncoding ?? ""
+                            // fileName
+                            if isNotFirstFileOfList {
+                                file.fileName = (fileNamePath as NSString).lastPathComponent
+                                file.fileName = file.fileName.removingPercentEncoding ?? ""
+                            } else {
+                                file.fileName = ""
+                            }
                         }
                         let propstat = element["d:propstat"][0]
                         
@@ -278,7 +295,7 @@ class NCCommunication: SessionDelegate {
                         
                         // nc:
                         if let encrypted = propstat["d:prop", "nc:encrypted"].text {
-                            file.encrypted = (encrypted as NSString).boolValue
+                            file.e2eEncrypted = (encrypted as NSString).boolValue
                         }
                         if let haspreview = propstat["d:prop", "nc:has-preview"].text {
                             file.hasPreview = (haspreview as NSString).boolValue

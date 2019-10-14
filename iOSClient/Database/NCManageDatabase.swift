@@ -1781,6 +1781,61 @@ class NCManageDatabase: NSObject {
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
 
+    @objc func addMetadata(files: [NCFile], account: String, serverUrl: String, removeFirst: Bool) {
+    
+        var isNotFirstFileOfList: Bool = false
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                for file in files {
+                    
+                    if removeFirst == true && isNotFirstFileOfList == false {
+                        isNotFirstFileOfList = true
+                        continue
+                    }
+                    
+                    let metadata = tableMetadata()
+                    
+                    metadata.account = account
+                    metadata.commentsUnread = file.commentsUnread
+                    metadata.contentType = file.contentType
+                    metadata.date = file.date
+                    metadata.directory = file.directory
+                    metadata.e2eEncrypted = file.e2eEncrypted
+                    metadata.etag = file.etag
+                    metadata.favorite = file.favorite
+                    metadata.fileId = file.fileId
+                    metadata.fileName = file.fileName
+                    metadata.fileNameView = file.fileName
+                    metadata.hasPreview = file.hasPreview
+                    metadata.mountType = file.mountType
+                    metadata.ocId = file.ocId
+                    metadata.ownerId = file.ownerId
+                    metadata.ownerDisplayName = file.ownerDisplayName
+                    metadata.permissions = file.permissions
+                    metadata.quotaUsedBytes = file.quotaUsedBytes
+                    metadata.quotaAvailableBytes = file.quotaAvailableBytes
+                    metadata.resourceType = file.resourceType
+                    metadata.serverUrl = serverUrl
+                    metadata.size = file.size
+                
+                    realm.add(metadata, update: .all)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+        
+        // Create directory records
+        for file in files {
+            if file.directory { _ = self.addDirectory(encrypted: file.e2eEncrypted, favorite: file.favorite, ocId: file.ocId, permissions: file.permissions, serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: file.fileName), account: account) }
+        }
+        
+        self.setDateReadDirectory(serverUrl: serverUrl, account: account)
+    }
+    
     @objc func deleteMetadata(predicate: NSPredicate) {
         
         var directoryToClearDate = [String:String]()

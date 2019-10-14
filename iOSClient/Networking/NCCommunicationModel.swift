@@ -31,7 +31,7 @@ import Foundation
     @objc var contentType = ""
     @objc var date = NSDate()
     @objc var directory: Bool = false
-    @objc var encrypted: Bool = false
+    @objc var e2eEncrypted: Bool = false
     @objc var etag = ""
     @objc var favorite: Bool = false
     @objc var fileId = ""
