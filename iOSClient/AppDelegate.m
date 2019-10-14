@@ -383,8 +383,6 @@ PKPushRegistry *pushRegistry;
     
     // Setting Account to Networking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
-    [[NCCommunication sharedInstance] settingAccountWithUsername:activeUserID password:activePassword];
-    [[NCCommunication sharedInstance] settingUserAgent:[CCUtility getUserAgent]];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
