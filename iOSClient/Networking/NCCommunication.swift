@@ -105,7 +105,7 @@ class NCCommunication: SessionDelegate {
         // headers
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
-                
+        
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
@@ -146,7 +146,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func readFolder(serverUrl: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
+    @objc func readFileOrFolder(serverUrl: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
         let dataFile =
@@ -154,6 +154,7 @@ class NCCommunication: SessionDelegate {
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
         <d:prop>"
+
         <d:getlastmodified />
         <d:getetag />
         <d:getcontenttype />
@@ -170,6 +171,7 @@ class NCCommunication: SessionDelegate {
         <owner-display-name xmlns=\"http://owncloud.org/ns\"/>
         <comments-unread xmlns=\"http://owncloud.org/ns\"/>
         <has-preview xmlns=\"http://nextcloud.org/ns\"/>
+
         </d:prop>
         </d:propfind>
         """
@@ -217,14 +219,15 @@ class NCCommunication: SessionDelegate {
                         }
                         let propstat = element["d:propstat"][0]
                         
-                        if let getetag = propstat["d:prop", "d:getetag"].text {
-                            file.etag = getetag.replacingOccurrences(of: "\"", with: "")
-                        }
                         if let getlastmodified = propstat["d:prop", "d:getlastmodified"].text {
                             if let date = NCCommunicationCommon.sharedInstance.convertDate(getlastmodified, format: "EEE, dd MMM y HH:mm:ss zzz") {
                                 file.date = date
                             }
                         }
+                        if let getetag = propstat["d:prop", "d:getetag"].text {
+                            file.etag = getetag.replacingOccurrences(of: "\"", with: "")
+                        }
+                       
                         if let quotaavailablebytes = propstat["d:prop", "d:quota-available-bytes"].text {
                             file.quotaAvailableBytes = Double(quotaavailablebytes) ?? 0
                         }

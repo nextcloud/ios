@@ -1227,7 +1227,7 @@
     
 #ifdef DEBUG
     
-    [[NCCommunication sharedInstance] readFolderWithServerUrl:serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrl:serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
         for (NCFile *file in files) {
             //NSLog(file.etag);
         }
