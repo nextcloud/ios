@@ -1225,16 +1225,6 @@
 
     [self tableViewReloadData];
     
-#ifdef DEBUG
-    
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrl:serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
-        for (NCFile *file in files) {
-            //NSLog(file.etag);
-        }
-        NSLog(@"end");
-    }];
-#endif
-    
     [[OCNetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
