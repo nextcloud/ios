@@ -103,8 +103,8 @@
     buttonLogin.clipsToBounds = YES;
     [buttonLogin setTitle:NSLocalizedString(@"_log_in_", nil) forState:UIControlStateNormal];
     buttonLogin.titleLabel.font = [UIFont systemFontOfSize:14];
-    [buttonLogin setTitleColor:NCBrandColor.sharedInstance.customer forState:UIControlStateNormal];
-    buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customerText;
+    [buttonLogin setTitleColor:NCBrandColor.sharedInstance.introBackground forState:UIControlStateNormal];
+    buttonLogin.backgroundColor = NCBrandColor.sharedInstance.introText;
     [buttonLogin addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchDown];
     
     [buttonView addSubview:buttonLogin];
@@ -151,10 +151,10 @@
 
     page1.title = NSLocalizedString(@"_intro_1_title_", nil);
     page1.titlePositionY = titlePositionY;
-    page1.titleColor = NCBrandColor.sharedInstance.customerText;
+    page1.titleColor = NCBrandColor.sharedInstance.introText;
     page1.titleFont = [UIFont systemFontOfSize:23];
 
-    page1.bgColor = NCBrandColor.sharedInstance.customer;
+    page1.bgColor = NCBrandColor.sharedInstance.introBackground;
     page1.showTitleView = YES;
 
     EAIntroPage *page2 = [EAIntroPage page];
@@ -164,10 +164,10 @@
 
     page2.title = NSLocalizedString(@"_intro_2_title_", nil);
     page2.titlePositionY = titlePositionY;
-    page2.titleColor = NCBrandColor.sharedInstance.customerText;
+    page2.titleColor = NCBrandColor.sharedInstance.introText;
     page2.titleFont = [UIFont systemFontOfSize:23];
     
-    page2.bgColor = NCBrandColor.sharedInstance.customer;
+    page2.bgColor = NCBrandColor.sharedInstance.introBackground;
     page2.showTitleView = YES;
 
     EAIntroPage *page3 = [EAIntroPage page];
@@ -177,10 +177,10 @@
 
     page3.title = NSLocalizedString(@"_intro_3_title_", nil);
     page3.titlePositionY = titlePositionY;
-    page3.titleColor = NCBrandColor.sharedInstance.customerText;
+    page3.titleColor = NCBrandColor.sharedInstance.introText;
     page3.titleFont = [UIFont systemFontOfSize:23];
     
-    page3.bgColor = NCBrandColor.sharedInstance.customer;
+    page3.bgColor = NCBrandColor.sharedInstance.introBackground;
     page3.showTitleView = YES;
     
     // INTRO
@@ -190,8 +190,8 @@
     self.intro.tapToNext = NO;
     self.intro.pageControlY = height - buttonPosition + 50;
     self.intro.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft;
-    self.intro.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.customerText;
-    self.intro.pageControl.backgroundColor = NCBrandColor.sharedInstance.customer;
+    self.intro.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.introText;
+    self.intro.pageControl.backgroundColor = NCBrandColor.sharedInstance.introBackground;
 //    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 //    intro.skipButton.enabled = NO;
     self.intro.swipeToExit = NO ;

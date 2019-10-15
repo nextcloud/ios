@@ -107,9 +107,11 @@ class NCBrandColor: NSObject {
     }()
 
     // Color
-    @objc public let customer:              UIColor = .white
-    @objc public var customerText:          UIColor = UIColor(red: 0.0/255.0, green: 152.0/255.0, blue: 255.0/255.0, alpha: 1.0)    // BLU NC : #0098FF
+    @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 152.0/255.0, blue: 255.0/255.0, alpha: 1.0)    // BLU NC : #0098FF
+    @objc public var customerText:          UIColor = .white
     
+    @objc public let introText:             UIColor = UIColor(red: 0.0/255.0, green: 152.0/255.0, blue: 255.0/255.0, alpha: 1.0)    // BLU NC : #0098FF
+    @objc public var introBackground:       UIColor = .white
     
     @objc public var brand:                 UIColor                                                                                 // don't touch me
     @objc public var brandElement:          UIColor                                                                                 // don't touch me
@@ -134,7 +136,7 @@ class NCBrandColor: NSObject {
     override init() {
         self.brand = self.customer
         self.brandElement = self.customer
-        self.brandText = self.customerText        
+        self.brandText = self.customerText
     }
     
     @objc public func setDarkMode() {

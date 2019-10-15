@@ -57,7 +57,7 @@
     Ivar ivar =  class_getInstanceVariable([UITextField class], "_placeholderLabel");
 
     // Background color
-    self.view.backgroundColor = NCBrandColor.sharedInstance.customer;
+    self.view.backgroundColor = NCBrandColor.sharedInstance.introBackground;
     
     // Image Brand
     self.imageBrand.image = [UIImage imageNamed:@"logo"];
