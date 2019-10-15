@@ -183,14 +183,10 @@ class NCCommunication: SessionDelegate {
 
         // url
         var serverUrl = String(serverUrl)
-        var url: URLConvertible
-        do {
-            if depth == "1" && serverUrl.last != "/" { serverUrl = serverUrl + "/" }
-            if depth == "0" && serverUrl.last == "/" { serverUrl = String(serverUrl.removeLast()) }
-            serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: CharacterSet(charactersIn: ";?@&=$+{}<>,!'* ").inverted)! //";?@&=$+{}<>,!'*"
-            try url = serverUrl.asURL()
-        } catch let error {
-            completionHandler(files,error)
+        if depth == "1" && serverUrl.last != "/" { serverUrl = serverUrl + "/" }
+        if depth == "0" && serverUrl.last == "/" { serverUrl = String(serverUrl.removeLast()) }
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
+            completionHandler(files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -307,11 +303,53 @@ class NCCommunication: SessionDelegate {
                         isNotFirstFileOfList = true;
                         files.append(file)
                     }
+                    completionHandler(files, nil)
+                } else {
+                    completionHandler(files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil))
                 }
-                completionHandler(files, nil)
             }
         }
     }
+    
+    //MARK: - API
+    @objc func downloadPreview(serverUrl: String, fileNamePathSource: String, fileNamePathLocalDestination: String, width: CGFloat, height: CGFloat, completionHandler: @escaping (_ data: Data?, _ error: Error?) -> Void) {
+        
+        // url
+        var serverUrl = String(serverUrl)
+        if serverUrl.last != "/" { serverUrl = serverUrl + "/" }
+        serverUrl = serverUrl + "index.php/core/preview.png?file=" + fileNamePathSource + "&x=\(width)&y=\(height)&a=1&mode=cover"
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
+            completionHandler(nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            return
+        }
+        
+        // method
+        let method = HTTPMethod(rawValue: "GET")
+        
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+
+        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(nil, error)
+            case .success( _):
+                if let data = response.data {
+                    do {
+                        let url = URL.init(fileURLWithPath: fileNamePathLocalDestination)
+                        try  data.write(to: url, options: .atomic)
+                        completionHandler(data, nil)
+                    } catch let error {
+                        completionHandler(nil, error)
+                    }
+                } else {
+                    completionHandler(nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorCannotDecodeContentData, userInfo: nil))
+                }
+            }
+        }
+    }
+    
     
     //MARK: - Download
     
