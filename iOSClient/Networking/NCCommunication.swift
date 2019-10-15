@@ -48,7 +48,7 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - webDAV
 
-    @objc func createFolder(serverUrl: String, fileName: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func createFolder(serverUrl: String, fileName: String, completionHandler: @escaping (_ ocId: String?, _ date: NSDate?, _ error: Error?) -> Void) {
         
         // url
         var serverUrl = serverUrl
@@ -61,7 +61,7 @@ class NCCommunication: SessionDelegate {
             }
             try url = serverUrl.asURL()
         } catch let error {
-            completionHandler(error)
+            completionHandler(nil, nil, error)
             return
         }
         
@@ -75,9 +75,14 @@ class NCCommunication: SessionDelegate {
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(error)
+                completionHandler(nil, nil, error)
             case .success( _):
-                completionHandler(nil)
+                let ocId = response.response?.allHeaderFields["OC-FileId"] as! String?
+                if let dateString = response.response?.allHeaderFields["Date"] as! String? {
+                    if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
+                        completionHandler(ocId, date, nil)
+                    } else { completionHandler(nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                } else { completionHandler(nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
             }
         }
     }

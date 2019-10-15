@@ -35,6 +35,10 @@ class NCManageDatabase: NSObject {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
 
+        let bundleUrl: URL = Bundle.main.bundleURL
+        let bundlePathExtension: String = bundleUrl.pathExtension
+        let isAppex: Bool = bundlePathExtension == "appex"
+        
         let configCompact = Realm.Configuration(
             
             fileURL: databaseFilePath,
@@ -102,13 +106,28 @@ class NCManageDatabase: NSObject {
             // handle error compacting or opening Realm
         }
         
-        let config = Realm.Configuration(
+        if isAppex {
+            
+            // App Extension config
+            
+            let config = Realm.Configuration(
+                fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
+                schemaVersion: UInt64(k_databaseSchemaVersion),
+                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self]
+            )
+            Realm.Configuration.defaultConfiguration = config
+            
+        } else {
+            
+            // App config
+            
+            let config = Realm.Configuration(
+                fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
+                schemaVersion: UInt64(k_databaseSchemaVersion)
+            )
+            Realm.Configuration.defaultConfiguration = config
+        }
         
-            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: UInt64(k_databaseSchemaVersion)
-        )
-        
-        Realm.Configuration.defaultConfiguration = config
         _ = try! Realm()
     }
     
