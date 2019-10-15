@@ -114,29 +114,29 @@
 #define k_permission_can_move                           @"V"
 
 // Session
-#define k_domain_session_queue                          @"it.twsweb.Crypto-Cloud"
+#define k_domain_session_queue                          @"com.infomaniak.Crypto-Cloud"
 
-#define k_download_session                              @"it.twsweb.Crypto-Cloud.download.session"
-#define k_download_session_foreground                   @"it.twsweb.Crypto-Cloud.download.sessionforeground"
-#define k_download_session_wwan                         @"it.twsweb.Crypto-Cloud.download.sessionwwan"
-#define k_upload_session                                @"it.twsweb.Crypto-Cloud.upload.session"
-#define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
-#define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
+#define k_download_session                              @"com.infomaniak.Crypto-Cloud.download.session"
+#define k_download_session_foreground                   @"com.infomaniak.Crypto-Cloud.download.sessionforeground"
+#define k_download_session_wwan                         @"com.infomaniak.Crypto-Cloud.download.sessionwwan"
+#define k_upload_session                                @"com.infomaniak.Crypto-Cloud.upload.session"
+#define k_upload_session_foreground                     @"com.infomaniak.Crypto-Cloud.upload.sessionforeground"
+#define k_upload_session_wwan                           @"com.infomaniak.Crypto-Cloud.upload.sessionwwan"
 
 // Session Download Upload Extension
-#define k_download_session_extension                    @"com.nextcloud.download.session.extension"
-#define k_upload_session_extension                      @"com.nextcloud.upload.session.extension"
+#define k_download_session_extension                    @"com.infomaniak.download.session.extension"
+#define k_upload_session_extension                      @"com.infomaniak.upload.session.extension"
 
 // OperationQueue
-#define k_queue                                         @"it.twsweb.Crypto-Cloud.queue"
-#define k_download_queue                                @"it.twsweb.Crypto-Cloud.download.queue"
-#define k_download_queuewwan                            @"it.twsweb.Crypto-Cloud.download.queuewwan"
-#define k_upload_queue                                  @"it.twsweb.Crypto-Cloud.upload.queue"
-#define k_upload_queuewwan                              @"it.twsweb.Crypto-Cloud.upload.queuewwan"
+#define k_queue                                         @"com.infomaniak.Crypto-Cloud.queue"
+#define k_download_queue                                @"com.infomaniak.Crypto-Cloud.download.queue"
+#define k_download_queuewwan                            @"com.infomaniak.Crypto-Cloud.download.queuewwan"
+#define k_upload_queue                                  @"com.infomaniak.Crypto-Cloud.upload.queue"
+#define k_upload_queuewwan                              @"com.infomaniak.Crypto-Cloud.upload.queuewwan"
 
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
-#define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
+#define k_metadataKeyedUnarchiver                       @"com.infomaniak.drive.metadata"
 
 // TaskIdentifier
 #define k_taskIdentifierDone                            0

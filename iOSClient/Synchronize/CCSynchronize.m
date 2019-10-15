@@ -45,7 +45,7 @@
             sharedSynchronize.foldersInSynchronized = [NSMutableOrderedSet new];
             
             sharedSynchronize->_operationSynchronizeQueue = [NSOperationQueue new];
-            sharedSynchronize->_operationSynchronizeQueue.name = @"com.nextcloud.operationSynchronizeQueue";
+            sharedSynchronize->_operationSynchronizeQueue.name = @"com.infomaniak.operationSynchronizeQueue";
             sharedSynchronize->_operationSynchronizeQueue.maxConcurrentOperationCount = 1;
         }
         return sharedSynchronize;
