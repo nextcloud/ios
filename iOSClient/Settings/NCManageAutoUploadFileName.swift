@@ -28,16 +28,36 @@ class NCManageAutoUploadFileName: XLFormViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let dateExample = Date()
     
-    required init(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.initializeForm()
+    // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.initializeForm()
-    }
+    func reloadForm() {
         
+        self.form.delegate = nil
+        
+        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
+        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
+        
+        self.tableView.reloadData()
+        self.form.delegate = self
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        initializeForm()
+        self.reloadForm()
+    }
+    
+    //MARK: XLForm
+
     func initializeForm() {
         
         let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_autoupload_filename_title_", comment: "")) as XLFormDescriptor
@@ -109,6 +129,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
         section.addFormRow(row)
         
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         self.form = form
     }
     
@@ -152,35 +173,6 @@ class NCManageAutoUploadFileName: XLFormViewController {
             
             self.reloadFormRow(previewFileName)
         }
-    }
-    
-    // MARK: - View Life Cycle
-    
-    override func viewDidLoad() {
-        
-        super.viewDidLoad()
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-                
-        self.reloadForm()
-    }
-    
-    func reloadForm() {
-        
-        self.form.delegate = nil
-        
-        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
-        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
-        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
-        
-        self.tableView.reloadData()
-        self.form.delegate = self
     }
     
     // MARK: - Utility

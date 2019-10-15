@@ -40,6 +40,7 @@
 @class CCMore;
 @class NCMedia;
 @class NCOffline;
+@class NCAppConfigView;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
 
@@ -114,12 +115,12 @@
 @property (nonatomic, strong) CCFavorites *activeFavorites;
 @property (nonatomic, strong) NCMedia *activeMedia;
 @property (nonatomic, retain) CCDetail *activeDetail;
-@property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
 @property (nonatomic, retain) CCMore *activeMore;
 @property (nonatomic, retain) NCOffline *activeOffline;
+@property (nonatomic, retain) NCAppConfigView *appConfigView;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
@@ -127,6 +128,8 @@
 @property (nonatomic, strong) NSMutableArray *filterocId;
 
 @property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
+
+@property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
 
 // Shares
 @property (nonatomic, strong) NSArray *shares;
@@ -137,11 +140,9 @@
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 
-// Timer Error Networking
+// Login
 - (void)startTimerErrorNetworking;
-
-// Login View
-- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
+- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb;
 
 // Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
@@ -157,8 +158,6 @@
 
 // TabBarController
 - (void)createTabBarController:(UITabBarController *)tabBarController;
-- (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden;
-- (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
 - (void)selectedTabBarController:(NSInteger)index;
 - (NSString *)getTabBarControllerActiveServerUrl;
@@ -169,7 +168,7 @@
 
 // Theming Color
 - (void)settingThemingColorBrand;
-- (void)changeTheming:(UIViewController *)vc;
+- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form;
 
 // Task Networking
 - (void)loadAutoDownloadUpload;

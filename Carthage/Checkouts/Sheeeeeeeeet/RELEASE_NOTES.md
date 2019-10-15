@@ -1,6 +1,126 @@
 # Release Notes
 
 
+## 2.0.2
+
+This version makes table view footer view sizes smaller to avoid a scroll offset
+issue that could occur when rotating devices that displayed sheets with a single
+custom item.
+
+
+## 2.0.1
+
+This version adjusts accessibility traits for selected select items and improves
+the overall accessibility experience when working with selectable items.
+
+
+## 2.0.0
+
+This version upgrades Sheeeeeeeeet and its unit test dependencies to Swift 5. The
+version contains no breaking changes.
+
+
+## 1.4.1
+
+This version makes `currentContext` the default presentation mode for the default
+presenter. This is due to accessibility issues with using `keyWindow` while being
+ina modal presentation. I will change how the default presenteras presents action
+sheets, but that is a future improvement.
+
+
+## 1.4.0
+
+This version removes the old deprecated appearance model, so if your app uses it,
+it's time to start using the appearance proxy model. Just follow the readme, and
+you'll be done in no time.
+
+This version also change which presenter to use, so that apps behaves correct on
+iPads in split screen. We still have to come up with a way to switch between the
+default and popover presenters when the split screen size changes, but that is a
+future improvement.
+
+
+## 1.3.3
+
+This version adds a new `headerViewLandscapeMode` property to `ActionSheet`. You
+can set it to `.hidden` to let action sheets hide their header view in landscape
+orientation. This will free up more screen estate for the action sheet's options.
+
+
+## 1.3.3
+
+This version adds a new `headerViewLandscapeMode` property to `ActionSheet`. You
+can set it to `.hidden` to let action sheets hide their header view in landscape
+orientation. This will free up more screen estate for the action sheet's options.
+
+
+## 1.3.2
+
+This version makes the `ActionSheet` `backgroundView` outlet public, so that you
+can add your own custom effects to it. The other outlets are still internal.
+
+The version also fixes a bug that caused action sheets to be misplaced when they
+were presented from a custom presentation controller. This fix also adds a brand
+new `presentationStyle` property to `StandardActionSheetPresenter`, which can be
+either `keyWindow` (default) or `currentContext`. Setting it to `keyWindow` will
+present the action sheet in the app's key window (full screen), while setting it
+to `currentContext` will present it in the presenting view controller's view (it
+looks straaange, but perhaps you can find a nice use case for it).
+
+
+## 1.3.1
+
+This version fixes an iOS 9 bug that caused the popover to become square with no
+arrow. It was caused by the popover presenter, that set the background color for
+the popover after it had been presented, which is not supported in iOS 9. It now
+sets the bg color for all iOS versions before it presents the popover, then only
+refreshes it for iOS 10 and later.
+
+This version fixes another iOS 9 bug that caused the item cell separator line to
+behave strangely and not honor the insets set using the appearance proxy. I have
+added a fix to the item cell class, that only runs for iOS 9.
+
+
+## 1.3.0
+
+This version removes the last separator line from the item and button table view.
+
+This version also changes the default behavior of the popover presenter. It used
+to keep the popover presented as the device orientation changed, but this can be
+wrong in many cases. For instance, in collection or table views, the orientation
+change may cause cells to shuffle around as they are reused. If a reused cell is
+used as the popover source view, and the popover is still presented, the popover
+will point to the cell, but the cell model will have changed. In this case, your
+action sheet will appear to point to a specific object, but will be contextually
+bound to another one. 
+
+Another way that orientation changes may mess with popovers are if a source view
+is removed from the view hierarchy when the orientation changes. If your popover
+is still presented, but the source view is removed, the popover arrow will point
+to a random point, e.g. the top-left part of the screen.
+
+To solve these bugs, I have added new orientation change handling in the popover
+presenter. It has a new `isListeningToOrientationChanges` property, as well as a
+`handleOrientationChange` and `setupOrientationChangeDetection` function. If you
+want to, you can override these functions to customize their behavior, otherwise
+just set `isListeningToOrientationChanges` to `false` to make the popover behave
+like before.
+
+
+## 1.2.4
+
+This version fixes the https://github.com/danielsaidi/Sheeeeeeeeet/issues/64 bug,
+which caused an iPad popover to become a bottom action sheet on black background,
+if the idiom changes from pad to phone while the action sheet is open. I now let
+the popover remain as long as the action sheet is open.
+
+
+## 1.2.3
+
+This version reloads data when scrolling to row to solve a bug that could happen
+on some iPad devices.
+
+
 ## 1.2.2
 
 This hotfix adds two new properties to `ActionSheetSelectItem`, that can be used

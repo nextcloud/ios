@@ -30,15 +30,7 @@
 @class NCLoginWeb;
 @class NCLoginQRCode;
 
-@protocol CCLoginDelegate <NSObject>
-
-- (void)loginSuccess:(NSInteger)loginType;
-
-@end
-
 @interface CCLogin : UIViewController <UITextFieldDelegate, CCCertificateDelegate>
-
-@property (nonatomic, weak) id <CCLoginDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UIImageView *imageBrand;
 
@@ -58,7 +50,5 @@
 @property (nonatomic, weak) IBOutlet UIButton *loginTypeView;
 
 @property (nonatomic, weak) IBOutlet UIButton *qrCode;
-
-@property NSInteger loginType;
 
 @end

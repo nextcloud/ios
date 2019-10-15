@@ -30,11 +30,11 @@
 #import "CCGlobal.h"
 #import "CCGraphics.h"
 #import "CCCellShareExt.h"
-#import "CCMove.h"
+#import "NCSelectDestination.h"
 #import "CCError.h"
 #import "CCHud.h"
 
-@interface ShareViewController : UIViewController <UITableViewDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCMoveDelegate>
+@interface ShareViewController : UIViewController <UITableViewDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, NCSelectDestinationDelegate>
 
 @property (nonatomic, strong) NSString *activeAccount;
 @property (nonatomic, strong) NSString *activeUrl;

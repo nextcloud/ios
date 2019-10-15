@@ -24,7 +24,7 @@
 
 import UIKit
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, NCLoginWebDelegate {
+class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var themingBackground: UIImageView!
     @IBOutlet weak var disclosureIndicator: UIImageView!
@@ -58,11 +58,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         tableView.delegate = self
         tableView.dataSource = self
         
-        if #available(iOS 11, *) {
-            //tableView.contentInsetAdjustmentBehavior = .never
-        }
-        
         themingBackground.image = #imageLiteral(resourceName: "themingBackground")
+        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -74,11 +71,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         themingBackground.addGestureRecognizer(tapImageLogo)
         
         // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeUserProfile), name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+        
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
-    // Apparirà
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
@@ -183,37 +182,17 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             labelQuotaExternalSite.text = item.name
         }
         
-        // User data & Theming
         changeUserProfile()
-        changeTheming()
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        tableView.separatorColor = NCBrandColor.sharedInstance.separator
-
-        // Title
-        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
-        
-        // Aspect
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-
-        // +
-        appDelegate.plusButtonVisibile(true)
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: animated)
-        
         tableView.reloadData()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     @objc func changeTheming() {
         
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+
         self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
         
         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-themingBackground.png"
         
@@ -225,11 +204,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         labelUsername.textColor = NCBrandColor.sharedInstance.brandText
         
-        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)
-        
-        if (self.isViewLoaded && (self.view.window != nil)) {
-            appDelegate.changeTheming(self)
-        }
+        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)        
     }
     
     @objc func changeUserProfile() {
@@ -270,8 +245,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             progressQuota.progress = 0
         }
 
-        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
-        
         switch Double(tabAccount.quotaTotal) {
         case Double(k_quota_space_not_computed):
             quota = "0"
@@ -436,7 +409,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.activeAccount)
                 
-                self.appDelegate.openLoginView(self, delegate: self, loginType: Int(k_login_Add_Forced), selector: Int(k_intro_login)) 
+                self.appDelegate.openLoginView(self, selector: Int(k_intro_login), openLoginWeb:false)
             }
             
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -479,13 +452,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         let controller = CCManageAccount.init()
         
         self.navigationController?.pushViewController(controller, animated: true)
-    }
-    
-    func loginSuccess(_ loginType: NSInteger) {
-        
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-        
-        appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))        
     }
 }
 

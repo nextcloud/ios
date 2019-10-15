@@ -82,7 +82,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         78
+#define k_databaseSchemaVersion                         79
 
 // Intro selector
 #define k_intro_login                                   0
@@ -92,7 +92,6 @@
 #define k_login_Add                                     0
 #define k_login_Add_Forced                              1
 #define k_login_Add_SignUp                              2
-#define k_login_Modify_Password                         3
 
 // Picker select image
 #define k_pickerControllerMax                           1000.0

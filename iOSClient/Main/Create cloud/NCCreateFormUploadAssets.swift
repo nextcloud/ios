@@ -60,18 +60,44 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         requestOptions.resizeMode = PHImageRequestOptionsResizeMode.exact
         requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
         requestOptions.isSynchronous = true
+    }
+    
+    // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
         if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image {
             PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, info) in
                 self.imagePreview = image
-                self.initializeForm()
             })
-        } else {
-            self.initializeForm()
         }
+        
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
-    //MARK: XLFormDescriptorDelegate
+    override func viewWillDisappear(_ animated: Bool)
+    {
+        super.viewWillDisappear(animated)
+        
+        self.delegate?.dismissFormUploadAssets()
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        initializeForm()
+        self.reloadForm()
+    }
+    
+    //MARK: XLForm
     
     func initializeForm() {
         
@@ -268,36 +294,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
             
             self.reloadFormRow(previewFileName)
         }
-    }
-    
-    // MARK: - View Life Cycle
-    
-    override func viewDidLoad() {
-        
-        super.viewDidLoad()
-        
-        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
-        
-        self.navigationItem.leftBarButtonItem = cancelButton
-        self.navigationItem.rightBarButtonItem = saveButton
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        
-        self.reloadForm()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool)
-    {
-        super.viewWillDisappear(animated)
-        
-        self.delegate?.dismissFormUploadAssets()
     }
     
     func reloadForm() {

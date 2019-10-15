@@ -27,7 +27,7 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCSplit () <CCLoginDelegate, NCLoginWebDelegate>
+@interface CCSplit ()
 {
     AppDelegate *appDelegate;
     BOOL prevRunningInFullScreen;
@@ -43,8 +43,6 @@
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder])  {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         prevRunningInFullScreen = YES;
     }
     
@@ -55,6 +53,7 @@
 {
     [super viewDidLoad];
 
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.delegate = self;
     
     // Display mode SPLIT
@@ -64,10 +63,6 @@
     // Settings TabBar
     UITabBarController *tabBarController = [self.viewControllers firstObject];
     [appDelegate createTabBarController:tabBarController];
-    
-    // Settings Navigation Controller
-    UINavigationController *navigationController = [self.viewControllers lastObject];
-    [appDelegate aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
     
     [self inizialize];    
 }
@@ -130,14 +125,14 @@
 
 - (void)showIntro
 {
-    // Brand
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
         [CCUtility setIntro:YES];
+        
         if (appDelegate.activeAccount.length == 0) {
-            [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+            [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
         }
-    
+        
     } else {
     
         if ([CCUtility getIntro] == NO) {
@@ -146,8 +141,9 @@
             [_intro show];
         
         } else {
+            
             if (appDelegate.activeAccount.length == 0) {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
+                [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
             }
         }
     }
@@ -161,7 +157,7 @@
             {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     if (appDelegate.activeAccount.length == 0) {
-                        [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
+                        [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
                     }
                 });
             }
@@ -169,19 +165,10 @@
             
         case k_intro_signup:
             {
-                [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_signup];
+                [appDelegate openLoginView:self selector:k_intro_signup openLoginWeb:false];
             }
             break;
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate Login ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loginSuccess:(NSInteger)loginType
-{
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -205,9 +192,6 @@
     
     // No detail view present
     UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
-    
-    // Color
-    [appDelegate aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
     
     // Ensure back button is enabled
     UIViewController *detailViewController = [secondaryNC visibleViewController];
@@ -290,6 +274,20 @@
 {
     // simply create a property of 'BOOL' type
     BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
+    
+    // detect Dark Mode
+    if (@available(iOS 13.0, *)) {
+        appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
+        if ([CCUtility getDarkModeDetect]) {
+            if (appDelegate.preferredUserInterfaceStyle == UIUserInterfaceStyleDark) {
+                [CCUtility setDarkMode:YES];
+            } else {
+                [CCUtility setDarkMode:NO];
+            }
+                
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
+        }
+    }
     
     prevRunningInFullScreen = isRunningInFullScreen;
     

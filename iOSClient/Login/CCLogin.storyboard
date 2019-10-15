@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_5" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,7 +11,7 @@
         <!--Login-->
         <scene sceneID="fVe-zF-WhZ">
             <objects>
-                <viewController storyboardIdentifier="CCLoginNextcloud" id="yj9-jo-WIn" customClass="CCLogin" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCLoginNextcloud" modalPresentationStyle="fullScreen" id="yj9-jo-WIn" customClass="CCLogin" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Bv6-g3-l0M">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -52,21 +50,21 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginURL" translatesAutoresizingMaskIntoConstraints="NO" id="s9o-RX-XeS">
-                                <rect key="frame" x="10" y="173.66666666666666" width="25" height="25"/>
+                                <rect key="frame" x="10" y="173.5" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="fh1-RS-gPF"/>
                                     <constraint firstAttribute="height" constant="25" id="rDO-8n-TTv"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginUser" translatesAutoresizingMaskIntoConstraints="NO" id="4OF-5u-Hd1">
-                                <rect key="frame" x="10" y="217.66666666666666" width="25" height="25"/>
+                                <rect key="frame" x="10" y="217.5" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="FlR-Hd-bH5"/>
                                     <constraint firstAttribute="height" constant="25" id="ViZ-ks-cWQ"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginPassword" translatesAutoresizingMaskIntoConstraints="NO" id="7q8-rl-x2M">
-                                <rect key="frame" x="10" y="261.66666666666669" width="25" height="25"/>
+                                <rect key="frame" x="10" y="261.5" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="P8q-8P-IZg"/>
                                     <constraint firstAttribute="width" constant="25" id="glL-CW-aF0"/>
@@ -92,7 +90,7 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owR-PS-F32" userLabel="loginTypeView">
-                                <rect key="frame" x="153.66666666666666" y="822" width="106.99999999999997" height="40"/>
+                                <rect key="frame" x="153.5" y="822" width="107" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="PaU-7J-gkn"/>
                                 </constraints>
@@ -102,7 +100,7 @@
                                 </connections>
                             </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fhk-o9-J0l">
-                                <rect key="frame" x="379" y="261.66666666666669" width="25" height="25"/>
+                                <rect key="frame" x="379" y="261.5" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="Tme-Lb-bhd"/>
                                     <constraint firstAttribute="width" constant="25" id="uVC-Cm-7w6"/>
@@ -130,7 +128,6 @@
                                     <constraint firstAttribute="width" constant="50" id="3hb-Ez-hOz"/>
                                     <constraint firstAttribute="height" constant="50" id="OLT-tb-4Qb"/>
                                 </constraints>
-                                <state key="normal" backgroundImage="qrcode"/>
                                 <connections>
                                     <action selector="handleQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="IW6-a9-880"/>
                                 </connections>
@@ -205,7 +202,7 @@
                                     <constraint firstAttribute="height" constant="30" id="YkC-Vc-Xvs"/>
                                     <constraint firstAttribute="width" constant="30" id="cFS-ia-6uF"/>
                                 </constraints>
-                                <state key="normal" image="exit"/>
+                                <state key="normal" image="exitCircle"/>
                                 <connections>
                                     <action selector="touchUpInsideButtonExit:" destination="yEb-Ky-35s" eventType="touchUpInside" id="yOK-1Z-3bI"/>
                                 </connections>
@@ -213,7 +210,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="vqz-4v-cZu" firstAttribute="trailing" secondItem="cu2-5h-AYD" secondAttribute="trailing" constant="10" id="tMX-8y-Q7J"/>
+                            <constraint firstItem="vqz-4v-cZu" firstAttribute="trailing" secondItem="cu2-5h-AYD" secondAttribute="trailing" constant="10" id="e12-jJ-irn"/>
                             <constraint firstItem="cu2-5h-AYD" firstAttribute="top" secondItem="vqz-4v-cZu" secondAttribute="top" constant="10" id="w2J-N0-HHq"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="vqz-4v-cZu"/>
@@ -226,13 +223,50 @@
             </objects>
             <point key="canvasLocation" x="4511.594202898551" y="-1210.0446428571429"/>
         </scene>
+        <!--App Config View-->
+        <scene sceneID="BeF-ke-GzC">
+            <objects>
+                <viewController storyboardIdentifier="NCAppConfigView" id="Ak5-da-5qm" customClass="NCAppConfigView" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="lrn-aT-NFz">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="uEr-qx-rv2">
+                                <rect key="frame" x="95.5" y="374.5" width="223" height="157"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="898-PT-7ao">
+                                <rect key="frame" x="10" y="94" width="394" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.0" green="0.50935935970000001" blue="0.78929150100000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="x9O-1Y-Id9" firstAttribute="trailing" secondItem="898-PT-7ao" secondAttribute="trailing" constant="10" id="6MT-gN-3XS"/>
+                            <constraint firstItem="898-PT-7ao" firstAttribute="top" secondItem="x9O-1Y-Id9" secondAttribute="top" constant="50" id="Iks-eT-vBH"/>
+                            <constraint firstItem="898-PT-7ao" firstAttribute="leading" secondItem="x9O-1Y-Id9" secondAttribute="leading" constant="10" id="S9I-wm-Vx0"/>
+                            <constraint firstItem="uEr-qx-rv2" firstAttribute="centerX" secondItem="x9O-1Y-Id9" secondAttribute="centerX" id="aL5-QX-ULn"/>
+                            <constraint firstItem="uEr-qx-rv2" firstAttribute="centerY" secondItem="x9O-1Y-Id9" secondAttribute="centerY" id="rrc-Gc-BmU"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="x9O-1Y-Id9"/>
+                    </view>
+                    <connections>
+                        <outlet property="logoImage" destination="uEr-qx-rv2" id="g4x-Pf-mpw"/>
+                        <outlet property="titleLabel" destination="898-PT-7ao" id="DjP-TA-Zqd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JhO-p5-bOq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5477" y="-1214"/>
+        </scene>
     </scenes>
     <resources>
-        <image name="exit" width="300" height="300"/>
+        <image name="exitCircle" width="329" height="329"/>
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>
-        <image name="qrcode" width="300" height="300"/>
+        <image name="logo" width="223" height="157.5"/>
         <image name="visiblePassword" width="25" height="25"/>
     </resources>
 </document>

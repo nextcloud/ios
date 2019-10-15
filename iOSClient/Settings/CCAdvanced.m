@@ -35,17 +35,11 @@
 
 @implementation CCAdvanced
 
-- (id)init
+- (void)initializeForm
 {
-    XLFormDescriptor *form ;
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_advanced_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    
-    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_advanced_", nil)];
     
     // Section HIDDEN FILES -------------------------------------------------
 
@@ -56,7 +50,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     if ([CCUtility getShowHiddenFiles]) row.value = @"1";
     else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -70,7 +64,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     if ([CCUtility getFormatCompatibility]) row.value = @"1";
     else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -84,7 +78,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     if ([CCUtility getDisableLocalCacheAfterUpload]) row.value = @"1";
     else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -101,7 +95,7 @@
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
         if ([CCUtility getDisableFilesApp]) row.value = @"1";
         else row.value = @"0";
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [section addFormRow:row];
     }
@@ -114,7 +108,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"crashservice" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_crashservice_title_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"crashservice"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
     if ([CCUtility getDisableCrashservice]) row.value = @"1";
@@ -130,7 +124,7 @@
     // Clear cache
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
@@ -148,39 +142,30 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"exit"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
     row.action.formSelector = @selector(exitNextcloud:);
     [section addFormRow:row];
 
-    return [super initWithForm:form];
+    self.tableView.showsVerticalScrollIndicator = NO;
+    self.form = form;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
-}
-
-// Apparirà
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.showsVerticalScrollIndicator = NO;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
 }
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
+    [self initializeForm];
 }
 
 - (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

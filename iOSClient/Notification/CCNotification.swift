@@ -32,29 +32,26 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        self.navigationController?.navigationBar.isTranslucent = false
-
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
         
-        self.tableView.separatorColor = NCBrandColor.sharedInstance.separator
         self.tableView.tableFooterView = UIView()
         self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 50.0
         self.tableView.allowsSelection = false
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         // Register to receive notification reload data
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadDatasource), name: Notification.Name("notificationReloadData"), object: nil)
 
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
+        
         reloadDatasource()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
+     @objc func changeTheming() {
+           appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+       }
 
     @objc func viewClose() {
         

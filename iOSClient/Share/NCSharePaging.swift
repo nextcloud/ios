@@ -36,14 +36,12 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.metadata = metadata
         
         // Navigation Controller
-        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: UIColor.gray)
+        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exitCircle")!, width: 60, height: 60, color: NCBrandColor.sharedInstance.brandText)
         image = image?.withRenderingMode(.alwaysOriginal)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundForm
         
         // Pagination
         addChild(pagingViewController)
@@ -51,11 +49,6 @@ class NCSharePaging: UIViewController {
         pagingViewController.didMove(toParent: self)
         
         // Customization
-        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        pagingViewController.textColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
         pagingViewController.indicatorOptions = .visible(
             height: 1,
             zIndex: Int.max,
@@ -72,12 +65,27 @@ class NCSharePaging: UIViewController {
             pagingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
         
-        pagingViewController.dataSource = self        
+        pagingViewController.dataSource = self
+        pagingViewController.delegate = self
         pagingViewController.select(index: indexPage)
+        let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemForIndex: indexPage) as PagingIndexItem
+        self.title = pagingIndexItem.title
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
-    @objc func exitTapped() {
-        self.dismiss(animated: true, completion: nil)
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
+        
+        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.textColor = NCBrandColor.sharedInstance.textView
+        pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
+        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
+        (pagingViewController.view as! NCSharePagingView).setupConstraints()
+        pagingViewController.reloadMenu()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,7 +101,24 @@ class NCSharePaging: UIViewController {
         appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
         appDelegate.activeOffline?.loadDatasource()
     }
+    
+    @objc func exitTapped() {
+        self.dismiss(animated: true, completion: nil)
+    }
 }
+
+// MARK: - PagingViewController Delegate
+
+extension NCSharePaging: PagingViewControllerDelegate {
+    
+    func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, willScrollToItem pagingItem: T, startingViewController: UIViewController, destinationViewController: UIViewController) where T : PagingItem, T : Comparable, T : Hashable {
+        
+        guard let item = pagingItem as? PagingIndexItem else { return }
+        self.title = item.title
+    }
+}
+
+// MARK: - PagingViewController DataSource
 
 extension NCSharePaging: PagingViewControllerDataSource {
     
@@ -141,6 +166,8 @@ extension NCSharePaging: PagingViewControllerDataSource {
         return 3
     }
 }
+
+// MARK: - Header
 
 class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
     
@@ -217,14 +244,14 @@ class NCSharePagingView: PagingView {
             collectionView.heightAnchor.constraint(equalToConstant: options.menuHeight),
             collectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             
-            headerView.topAnchor.constraint(equalTo: topAnchor),
+            headerView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             headerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             
             pageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             pageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            pageView.topAnchor.constraint(equalTo: topAnchor)
+            pageView.topAnchor.constraint(equalTo: topAnchor, constant: 10)
         ])
     }
 }

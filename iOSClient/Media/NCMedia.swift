@@ -94,22 +94,18 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         collectionView.emptyDataSetDelegate = self
         collectionView.emptyDataSetSource = self
         
-        // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: view)
         }
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Aspect Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
@@ -156,10 +152,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
     
     @objc func changeTheming() {
-        
-        if self.isViewLoaded && self.view?.window != nil {
-            appDelegate.changeTheming(self)
-        }
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
 
     // MARK: DZNEmpty

@@ -129,15 +129,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
         buttonCreateFolder.title = NSLocalizedString("_create_folder_", comment: "")
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
-        toolbar.tintColor = NCBrandColor.sharedInstance.textView
         
         self.navigationItem.title = titleCurrentFolder
         
@@ -177,6 +176,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.actionSheet?.viewDidLayoutSubviews()
         }
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
     
     // MARK: DZNEmpty
@@ -499,6 +502,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
             viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
             
             let navigationController = UINavigationController.init(rootViewController: viewController)
+            navigationController.modalPresentationStyle = .fullScreen
             self.present(navigationController, animated: true, completion: nil)
             
             return

@@ -67,7 +67,6 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         else{
             labelUser.text = tabAccount.displayName
         }
-        labelUser.textColor = NCBrandColor.sharedInstance.textView
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
@@ -84,12 +83,22 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 }
             })
         }
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         reloadData()
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        
+        labelUser.textColor = NCBrandColor.sharedInstance.textView
     }
     
     @objc func reloadData() {
@@ -130,13 +139,16 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     func tapMenu(with tableComments: tableComments?, sender: Any) {
      
         var items = [ActionSheetItem]()
-        let appearanceDelete = ActionSheetItemAppearance.init()
-        appearanceDelete.textColor = UIColor.red
+        ActionSheetDeleteItemCell.appearance().titleColor = .red
+//        ActionSheet.applyAppearance(NCAppearance())
+        
+        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         items.append(ActionSheetItem(title: NSLocalizedString("_edit_comment_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-        let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
-        itemDelete.customAppearance = appearanceDelete
-        items.append(itemDelete)
+        items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
         items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
         actionSheet = ActionSheet(items: items) { sheet, item in
@@ -186,11 +198,6 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
             }
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
-        
-        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
-        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         actionSheet?.present(in: self, from: sender as! UIButton)
     }

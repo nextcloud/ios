@@ -45,11 +45,29 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         self.fileName = fileName
         self.serverUrl = serverUrl
         self.text = text
-        
-        initializeForm()
     }
     
-    //MARK: XLFormDescriptorDelegate
+    // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
+        self.navigationItem.rightBarButtonItem = saveButton
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
+    }
+    
+    @objc func changeTheming() {
+           appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+           initializeForm()
+    }
+    
+    //MARK: XLForm
     
     func initializeForm() {
         
@@ -126,24 +144,6 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
         if tag == "fileName" {
             CCUtility.selectFileName(from: textField)
         }
-    }
-    
-    // MARK: - View Life Cycle
-    
-    override func viewDidLoad() {
-        
-        super.viewDidLoad()
-        
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
-        self.navigationItem.rightBarButtonItem = saveButton
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
     // MARK: - Action

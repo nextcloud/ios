@@ -36,7 +36,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, NCLoginWebDelegate, NCSelectDelegate, UITextFieldDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -88,15 +88,12 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        appDelegate.activeMain = self;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:@"initializeMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-        
-        // Active Main
-        appDelegate.activeMain = self;
     }
     
     return self;
@@ -159,6 +156,10 @@
     
     // Title
     [self setTitle];
+
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -169,15 +170,6 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-
-    // Plus Button
-    [appDelegate plusButtonVisibile:true];
-
     if (_isSelectedMode)
         [self setUINavigationBarSelected];
     else
@@ -278,8 +270,10 @@
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
+    
+    // createImagesThemingColor
+    [[NCMainCommon sharedInstance] createImagesThemingColor];
     
     // Refresh control
     refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
@@ -292,6 +286,12 @@
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
         [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
+    }
+    // color textview searchbbar
+    UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
+    if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
+        searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        searchTextView.textColor = NCBrandColor.sharedInstance.textView;
     }
     
     // Title
@@ -308,7 +308,6 @@
 //
 // Callers :
 //
-// loginSuccess (delagate)
 // ChangeDefaultAccount (delegate)
 // Split : inizialize
 // Settings Advanced : removeAllFiles
@@ -534,9 +533,6 @@
 
 - (void)setTitle
 {
-    // Color text self.navigationItem.title
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    
     if (_isSelectedMode) {
         
         NSUInteger totali = [sectionDataSource.allRecordsDataSource count];
@@ -579,44 +575,26 @@
 
 - (UIImage *)getImageLogoHome
 {
+    UIImage *image = [UIImage imageNamed:@"themingLogo"];
+    
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
-        UIImage *imageThemingLogo = [UIImage imageNamed:@"themingLogo"];
-        NSInteger multiplier = 2;
-        NSString *fileNameThemingLogo = [NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
+        image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]]];
+        if (image == nil) image = [UIImage imageNamed:@"themingLogo"];
+    }
         
-        UIImage *image = [UIImage imageWithContentsOfFile:fileNameThemingLogo];
-        if (image != nil) {
-            imageThemingLogo = image;
-            multiplier = 1;
-        }
-        
-        if ([appDelegate.reachability isReachable] == NO) {
+    if ([appDelegate.reachability isReachable] == NO) {
             
-            return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:NCBrandColor.sharedInstance.icon];
+        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"nonetwork"] width:50 height:50 color:NCBrandColor.sharedInstance.icon];
             
-        } else {
-            
-            return [CCGraphics changeThemingColorImage:imageThemingLogo multiplier:multiplier color:NCBrandColor.sharedInstance.brandText];
-        }
-        
     } else {
         
-        if ([appDelegate.reachability isReachable] == NO) {
-            
-            return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:NCBrandColor.sharedInstance.icon];
-            
-        } else {
-            
-            return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themingLogo"] multiplier:2 color:NCBrandColor.sharedInstance.brandText];
-        }
+        return image;
     }
 }
 
 - (void)setUINavigationBarDefault
 {
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    
     UIBarButtonItem *buttonMore, *buttonNotification;
     
     // =
@@ -643,9 +621,7 @@
 }
 
 - (void)setUINavigationBarSelected
-{
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    
+{    
     UIImage *icon = [UIImage imageNamed:@"navigationControllerMenu"];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
 
@@ -913,15 +889,6 @@
         
         [self presentViewController:notificationVC animated:YES completion:nil];
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate Login ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loginSuccess:(NSInteger)loginType
-{
-   [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 #pragma mark -
@@ -1297,6 +1264,12 @@
         UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
         if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
             [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
+        }
+        // color textview searchbbar
+        UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
+        if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
+            searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+            searchTextView.textColor = NCBrandColor.sharedInstance.textView;
         }
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
@@ -2085,7 +2058,7 @@
 
 - (void)addNewAccount:(CCMenuItem *)sender
 {
-    [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
+    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2824,6 +2797,7 @@
         viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:navigationController animated:YES completion:nil];
         
         return;
@@ -4057,8 +4031,9 @@
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
             viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
             
-            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
-            [self presentViewController:navController animated:YES completion:nil];
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+            navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:navigationController animated:YES completion:nil];
             
             return;
         }

@@ -23,19 +23,12 @@
 
 import Foundation
 
-@objc protocol NCLoginWebDelegate: class {
-    func loginSuccess(_: NSInteger)
-    @objc optional func webDismiss()
-}
-
 class NCLoginWeb: UIViewController {
     
     var webView: WKWebView?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
-    @objc var loginType: Int = 0
-    @objc weak var delegate: NCLoginWebDelegate?
 
     @IBOutlet weak var buttonExit: UIButton!
 
@@ -59,14 +52,24 @@ class NCLoginWeb: UIViewController {
             urlBase =  urlBase + k_flowEndpoint
         }
         
-        // button exit
-        if loginType == k_login_Add_Forced {
-            buttonExit.isHidden = true
-        } else {
-            self.view.bringSubviewToFront(buttonExit)
-        }
+        // buttonExitVisible
+        self.view.bringSubviewToFront(buttonExit)
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Stop timer error network
+        appDelegate.timerErrorNetworking.invalidate()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        // Start timer error network
+        appDelegate.startTimerErrorNetworking()
     }
     
     func loadWebPage(webView: WKWebView, url: URL)  {
@@ -82,8 +85,9 @@ class NCLoginWeb: UIViewController {
     }
     
     @IBAction func touchUpInsideButtonExit(_ sender: UIButton) {
+        
         self.dismiss(animated: true) {
-            self.delegate?.webDismiss?()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
         }
     }
 }
@@ -115,59 +119,32 @@ extension NCLoginWeb: WKNavigationDelegate {
                     }
                     
                     let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
-                    let password : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
+                    let token : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
                     
                     let account : String = "\(username) \(serverUrl)"
                     
-                    // Login Flow
-                    if (loginType == k_login_Modify_Password && NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
+                    // NO account found, clear
+                    if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
                         
-                        // Verify if change the active account
-                        guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
-                            self.dismiss(animated: true, completion: nil)
-                            return
-                        }
-                        if (activeAccount.account != account) {
-                            self.dismiss(animated: true, completion: nil)
-                            return
-                        }
+                    // STOP Intro
+                    CCUtility.setIntro(true)
                         
-                        // Change Password & setting active account
-                        CCUtility.setPassword(account, password: password)
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: appDelegate.activeUserID, activePassword: password)
+                    // Add new account
+                    NCManageDatabase.sharedInstance.deleteAccount(account)
+                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
                         
-                        self.dismiss(animated: true) {
-                            self.delegate?.loginSuccess(NSInteger(self.loginType))
-                            self.delegate?.webDismiss?()
-                        }
+                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                        self.dismiss(animated: true, completion: nil)
+                        return
                     }
+                        
+                    appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
+                        
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
                     
-                    if (loginType == k_login_Add || loginType == k_login_Add_Forced) {
-                        
-                        // NO account found, clear
-                        if NCManageDatabase.sharedInstance.getAccounts() == nil {
-                            NCUtility.sharedInstance.removeAllSettings()
-                        }
-                        
-                        // STOP Intro
-                        CCUtility.setIntro(true)
-                        
-                        // Add new account
-                        NCManageDatabase.sharedInstance.deleteAccount(account)
-                        NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
-                        
-                        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
-                            self.dismiss(animated: true, completion: nil)
-                            return
-                        }
-                        
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
-                        
-                        self.dismiss(animated: true) {
-                            self.delegate?.loginSuccess(NSInteger(self.loginType))
-                            self.delegate?.webDismiss?()
-                        }
-                    }
+                    self.dismiss(animated: true) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
+                    } 
                 }
             }
         }
@@ -185,7 +162,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         decisionHandler(.allow)
 
-        /*
+        /* TEST NOT GOOD DON'T WORKS
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return

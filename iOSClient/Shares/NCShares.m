@@ -39,22 +39,12 @@
 #pragma mark ===== Init =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if (self = [super initWithCoder:aDecoder])  {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:@"SharesReloadDatasource" object:nil];
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"NCSharesCell" bundle:nil] forCellReuseIdentifier:@"Cell"];
 
@@ -73,6 +63,12 @@
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:@"SharesReloadDatasource" object:nil];
+    
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
 }
 
 // Apparirà
@@ -80,25 +76,12 @@
 {
     [super viewWillAppear:animated];
     
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-
-    // Plus Button
-    [appDelegate plusButtonVisibile:true];
-    
     [self reloadDatasource];
 }
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self];
-    
-    // Reload Table View
-    [self.tableView reloadData];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------

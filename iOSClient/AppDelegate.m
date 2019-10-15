@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, CCLoginDelegate, NCLoginWebDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -118,7 +118,6 @@ PKPushRegistry *pushRegistry;
     [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     [UINavigationBar appearance].translucent = NO;
-    [[UIView appearanceWhenContainedInInstancesOfClasses:@[[UIAlertController class]]] setTintColor:[UIColor blackColor]];
     
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
@@ -269,7 +268,7 @@ PKPushRegistry *pushRegistry;
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
-        [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
+        [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
@@ -278,30 +277,24 @@ PKPushRegistry *pushRegistry;
     }
 }
 
-- (void)openLoginView:(UIViewController *)viewController delegate:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
+- (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb
 {
-    BOOL loginWebFlow = NO;
-    
     @synchronized (self) {
 
         // use appConfig [MDM]
         if ([NCBrandOptions sharedInstance].use_configuration) {
             
-            NSDictionary *serverConfig = [[NSUserDefaults standardUserDefaults] dictionaryForKey:NCBrandConfiguration.sharedInstance.configuration_key];
+            if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
             
-            NSString *serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.configuration_serverUrl];
-            NSString *username = serverConfig[NCBrandConfiguration.sharedInstance.configuration_username];
-            NSString *password = serverConfig[NCBrandConfiguration.sharedInstance.configuration_password];
-            
-            if (serverUrl && [serverUrl isKindOfClass:[NSString class]] && username && [username isKindOfClass:[NSString class]] && password && [password isKindOfClass:[NSString class]]) {
-            
-            } else {
-                [self messageNotification:@"MDM" description:@"Parameter XML error" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                self.appConfigView = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCAppConfigView"];
+                            
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    [viewController presentViewController:self.appConfigView animated:YES completion:nil];
+                });
             }
-            
+        
             return;
         }
-        
         
         // only for personalized LoginWeb [customer]
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
@@ -309,29 +302,18 @@ PKPushRegistry *pushRegistry;
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
                 self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                
                 self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-                self.activeLoginWeb.loginType = loginType;
-                self.activeLoginWeb.delegate = delegate;
 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
                 });
             }
+            
             return;
         }
         
-        // ------------------- Nextcloud -------------------------
-        //
-        
-        // Login flow : LoginWeb
-        if (loginType == k_login_Modify_Password) {
-            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-            if (account.loginFlow)
-                loginWebFlow = YES;
-        }
-            
-        if (loginWebFlow || selector == k_intro_signup) {
+        // normal login
+        if (selector == k_intro_signup) {
             
             if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
@@ -342,8 +324,6 @@ PKPushRegistry *pushRegistry;
                 } else {
                     self.activeLoginWeb.urlBase = self.activeUrl;
                 }
-                self.activeLoginWeb.loginType = loginType;
-                self.activeLoginWeb.delegate = delegate;
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
@@ -353,22 +333,28 @@ PKPushRegistry *pushRegistry;
         } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
             
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-            
             self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-            self.activeLoginWeb.loginType = loginType;
-            self.activeLoginWeb.delegate = delegate;
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                 [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
             });
-                           
+            
+        } else if (openLoginWeb) {
+            
+            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
+                self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+                self.activeLoginWeb.urlBase = self.activeUrl;
+
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
+                });
+            }
+            
         } else {
             
             if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
                 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-                _activeLogin.delegate = delegate;
-                _activeLogin.loginType = loginType;
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [viewController presentViewController:_activeLogin animated:YES completion:nil];
@@ -376,15 +362,6 @@ PKPushRegistry *pushRegistry;
             }
         }
     }
-}
-
-- (void)loginSuccess:(NSInteger)loginType
-{
-    //
-}
-- (void)webDismiss
-{
-    [self startTimerErrorNetworking];
 }
 
 - (void)startTimerErrorNetworking
@@ -404,7 +381,7 @@ PKPushRegistry *pushRegistry;
     self.activeUserID = activeUserID;
     self.activePassword = activePassword;
     
-    // Setting Account to CCNetworking
+    // Setting Account to Networking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
 }
 
@@ -434,7 +411,7 @@ PKPushRegistry *pushRegistry;
             [self settingActiveAccount:newAccount activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
         } else {
-            [self openLoginView:self.window.rootViewController delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+            [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:false];
         }
     }
 }
@@ -852,7 +829,7 @@ PKPushRegistry *pushRegistry;
         }
     }
     
-    [self aspectTabBar:tabBarController.tabBar hidden:NO];
+    //[self aspectTabBar:tabBarController.tabBar];
     
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
@@ -914,34 +891,6 @@ PKPushRegistry *pushRegistry;
     // Height
     constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
     [tabBarController.view addConstraint:constraint];
-}
-
-- (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden
-{
-    nav.translucent = NO;
-    nav.barTintColor = NCBrandColor.sharedInstance.brand;
-    nav.tintColor = NCBrandColor.sharedInstance.brandText;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
-    // Change bar bottom line shadow
-    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
-    
-    if (!online)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
-    
-    nav.hidden = hidden;
-    
-    [nav setAlpha:1];
-}
-
-- (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
-{
-    tab.translucent = NO;
-    tab.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    tab.tintColor = NCBrandColor.sharedInstance.brandElement;
-    
-    tab.hidden = hidden;
-    
-    [tab setAlpha:1];
 }
 
 - (void)plusButtonVisibile:(BOOL)visible
@@ -1050,23 +999,59 @@ PKPushRegistry *pushRegistry;
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
-- (void)changeTheming:(UIViewController *)vc
+- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
 {
-    // Change Navigation & TabBar color
-    vc.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    vc.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-    // Change bar bottom line shadow
-    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
+    // Dark Mode
+    [NCBrandColor.sharedInstance setDarkMode];
     
-    // Change button Plus
+    // View
+    if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+    else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        
+    // NavigationBar
+    if (viewController.navigationController.navigationBar) {
+        viewController.navigationController.navigationBar.translucent = NO;
+        viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+        viewController.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
+        if ([self.reachability isReachable]) {
+            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
+        } else {
+            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
+        }
+        viewController.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
+        [viewController.navigationController.navigationBar setAlpha:1];
+    }
+    
+    //tabBar
+    if (viewController.tabBarController.tabBar) {
+        viewController.tabBarController.tabBar.translucent = NO;
+        viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+        viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+        [viewController.tabBarController.tabBar setAlpha:1];
+    }
+    
+    //tabBar button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
-    
     UIButton *button = [tabBarController.view viewWithTag:99];
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
-    
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+                
+    // TableView
+    if (tableView) {
+        if (form) tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        else tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        tableView.separatorColor = NCBrandColor.sharedInstance.separator;
+        [tableView reloadData];
+    }
+    
+    // CollectionView
+    if (collectionView) {
+        if (form) collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        else collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        [collectionView reloadData];
+    }
     
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
@@ -1138,6 +1123,7 @@ PKPushRegistry *pushRegistry;
     viewController.touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
 
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
     return navigationController;
 }
 
@@ -1527,13 +1513,8 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Open CCUploadFromOtherUpp  =====
+#pragma mark ===== OpenURL  =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
-{
-    return YES;
-}
 
 // Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options

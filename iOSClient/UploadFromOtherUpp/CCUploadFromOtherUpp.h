@@ -23,9 +23,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "CCMove.h"
-
-@interface CCUploadFromOtherUpp : UITableViewController <UITableViewDelegate, UITableViewDataSource, CCMoveDelegate>
+@interface CCUploadFromOtherUpp : UITableViewController <UITableViewDelegate, UITableViewDataSource>
 
 - (IBAction)Annula:(UIBarButtonItem *)sender;
 

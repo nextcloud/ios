@@ -29,7 +29,7 @@
 
 #define actionSheetCancellaAccount 1
 
-@interface CCManageAccount () <CCLoginDelegate, NCLoginWebDelegate>
+@interface CCManageAccount ()
 {
     AppDelegate *appDelegate;
 }
@@ -37,23 +37,9 @@
 
 @implementation CCManageAccount
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    
-    if (self) {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    }
-    
-    return self;
-}
-
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_credentials_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
         
@@ -110,7 +96,7 @@
         // Modify Account
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -125,7 +111,7 @@
             // New Account nextcloud
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
             [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"add"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -137,7 +123,7 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
         [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(deleteAccount:);
@@ -154,9 +140,9 @@
     if ([tableAccount.displayName length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_full_name_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"user"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.displayName;
         [section addFormRow:row];
@@ -166,8 +152,8 @@
     if ([tableAccount.address length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useraddress" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_address_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"address"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.address;
@@ -178,8 +164,8 @@
     if ([tableAccount.city length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercity" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_city_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"city"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.city;
@@ -193,8 +179,8 @@
     if ([tableAccount.country length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercountry" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_country_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"country"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = [[NSLocale systemLocale] displayNameForKey:NSLocaleCountryCode value:tableAccount.country];
@@ -206,8 +192,8 @@
     if ([tableAccount.phone length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userphone" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_phone_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"phone"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.phone;
@@ -218,8 +204,8 @@
     if ([tableAccount.email length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_email_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"email"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.email;
@@ -230,8 +216,8 @@
     if ([tableAccount.webpage length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userweb" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_web_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"web"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.webpage;
@@ -242,8 +228,8 @@
     if ([tableAccount.twitter length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"twitter"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.twitter;
@@ -260,8 +246,8 @@
         // Business Type
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesstype" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesstype_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"businesstype"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.businessType;
@@ -270,8 +256,8 @@
         // Business Size
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesssize" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesssize_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"users"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.businessSize;
@@ -280,8 +266,8 @@
         // Role
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userrole" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_role_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"role"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         if ([tableAccount.role isEqualToString:@"owner"]) row.value = NSLocalizedString(@"_user_owner_", nil);
@@ -293,8 +279,8 @@
         // Company
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercompany" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_company_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"company"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.company;
@@ -307,8 +293,8 @@
             
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"trial" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_trial_expired_day_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
             [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
             [row.cellConfig setObject:[UIColor redColor] forKey:@"detailTextLabel.textColor"];
             [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"timer"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
@@ -323,7 +309,7 @@
         // Edit profile
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"editUserProfile" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_user_editprofile_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"editUserProfile"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -334,35 +320,30 @@
         [section addFormRow:row];
     }
     
+    self.tableView.showsVerticalScrollIndicator = NO;
     self.form = form;
     
     // Open Login
     if (listAccount.count == 0) {
-        [appDelegate openLoginView:self delegate:self loginType:k_login_Add_Forced selector:k_intro_login];
+        [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
     }
 }
 
-// Apparirà
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidLoad
 {
-    [super viewWillAppear:animated];
- 
-    self.navigationItem.title = NSLocalizedString(@"_credentials_", nil);
+    [super viewDidLoad];
     
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.showsVerticalScrollIndicator = NO;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    [self initializeForm];
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
 }
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
+    [self initializeForm];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -389,15 +370,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate Login ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loginSuccess:(NSInteger)loginType
-{
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark === Add Account ===
 #pragma --------------------------------------------------------------------------------------------
 
@@ -405,7 +377,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self delegate:self loginType:k_login_Add selector:k_intro_login];
+    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -416,7 +388,7 @@
 {    
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self delegate:self loginType:k_login_Modify_Password selector:k_intro_login];
+    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:true];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -108,16 +108,15 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: view)
         }
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        
+
         self.navigationItem.title = titleCurrentFolder
         
         (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
@@ -142,6 +141,10 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.actionSheet?.viewDidLayoutSubviews()
         }
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
     
     // MARK: DZNEmpty
@@ -334,18 +337,20 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         if !isEditMode {
             
             var items = [ActionSheetItem]()
-            let appearanceDelete = ActionSheetItemAppearance.init()
-            appearanceDelete.textColor = UIColor.red
+            ActionSheetDeleteItemCell.appearance().titleColor = .red
+//            ActionSheet.applyAppearance(NCAppearance())
+
+            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
             // 0 == CCMore, 1 = first NCOffline ....
             if (self == self.navigationController?.viewControllers[1]) {
                 items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
             }
             items.append(ActionSheetItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red))
-            itemDelete.customAppearance = appearanceDelete
-            items.append(itemDelete)
+            items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in
@@ -365,11 +370,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
-            
-            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
-            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -507,6 +507,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
             
             let navigationController = UINavigationController.init(rootViewController: viewController)
+            navigationController.modalPresentationStyle = .fullScreen
             self.present(navigationController, animated: true, completion: nil)
             
             return
@@ -608,7 +609,8 @@ extension NCOffline: UICollectionViewDataSource {
                 }
                 
                 header.delegate = self
-                
+                header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+                header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
                 header.setStatusButton(count: sectionDatasource.allOcId.count)
                 header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
@@ -676,6 +678,7 @@ extension NCOffline: UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
         } else {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            (cell as! NCListCell).separator.backgroundColor = NCBrandColor.sharedInstance.separator
         }
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
@@ -754,6 +757,12 @@ extension NCOffline {
     func deleteItem(with metadata: tableMetadata, sender: Any) {
         
         var items = [ActionSheetItem]()
+//        ActionSheet.applyAppearance(NCAppearance())
+        
+        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
         guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
             return
@@ -774,12 +783,7 @@ extension NCOffline {
         let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
         actionSheet?.headerView = headerView
         actionSheet?.headerView?.frame.size.height = 50
-        
-        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
-        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-        
+     
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
 }

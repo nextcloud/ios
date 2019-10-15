@@ -65,27 +65,16 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         }
     }
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
-        
-        self.navigationItem.leftBarButtonItem = cancelButton
-        self.navigationItem.rightBarButtonItem = saveButton
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        labelTimer.textColor = NCBrandColor.sharedInstance.textView
-        labelDuration.textColor = NCBrandColor.sharedInstance.textView
-
         // title
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
         
@@ -93,12 +82,13 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioPlay")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
         // Progress view
+        progressView.progress = 0
         progressView.progressTintColor = .green
         progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
-        progressView.progress = 0
         
-        // form
-        initializeForm()
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -107,6 +97,17 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         updateTimerUI()
     }
     
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        
+        labelTimer.textColor = NCBrandColor.sharedInstance.textView
+        labelDuration.textColor = NCBrandColor.sharedInstance.textView
+        
+        initializeForm()
+    }
+    
+    //MARK: XLForm
+
     func initializeForm() {
         
         let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
@@ -152,9 +153,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         self.form = form
     }
-    
-    //MARK: XLFormDescriptorDelegate
-    
+        
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
@@ -189,7 +188,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
-        header.textLabel?.textColor = .lightGray
+        header.textLabel?.textColor = .gray
+        header.tintColor = NCBrandColor.sharedInstance.backgroundForm
     }
     
     // MARK: - Action

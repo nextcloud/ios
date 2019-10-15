@@ -34,48 +34,13 @@
 
 @implementation CCManageAutoUpload
 
-//  From Settings
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if (self = [super initWithCoder:aDecoder])  {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        [self initializeForm];
-    }
-    
-    return self;
-}
-
-// From Media
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    
-    if (self) {
-        
-        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc ] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
-        self.navigationItem.rightBarButtonItem = doneButton;
-        
-        [self initializeForm];
-    }
-    
-    return self;
-}
-
 - (void)initializeForm
 {
-    XLFormDescriptor *form ;
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_autoupload_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
  
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
-    
-    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_autoupload_", nil)];
     
     // Auto Upload
     
@@ -87,7 +52,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     if (tableAccount.autoUpload) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
 
@@ -101,7 +66,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
@@ -118,7 +83,7 @@
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadImage) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
 
@@ -127,7 +92,7 @@
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadWWAnPhoto) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -141,7 +106,7 @@
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadVideo) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -150,7 +115,7 @@
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadWWAnVideo) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -164,7 +129,7 @@
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadBackground) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -179,7 +144,7 @@
     row.value = 0;
     if (tableAccount.autoUploadFull) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -193,7 +158,7 @@
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadCreateSubfolder) row.value = @1;
     else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
@@ -204,7 +169,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFileName" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_filenamemask_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     row.action.viewControllerClass = [NCManageAutoUploadFileName class];
     [section addFormRow:row];
@@ -213,21 +178,25 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
+    
+    self.tableView.showsVerticalScrollIndicator = NO;
     self.form = form;
 }
 
-// Apparirà
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    // changeTheming
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [self changeTheming];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.showsVerticalScrollIndicator = NO;
-    self.tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-
-    // Color
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Request permission for camera roll access
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
@@ -242,14 +211,13 @@
                 break;
         }
     }];
-
-    [self reloadForm];
 }
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [appDelegate changeTheming:self];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
+    [self initializeForm];
+    [self reloadForm];
 }
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

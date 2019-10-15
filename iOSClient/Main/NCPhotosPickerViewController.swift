@@ -39,7 +39,6 @@ class NCPhotosPickerViewController: NSObject {
         var configure = TLPhotosPickerConfigure()
         
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
-        configure.defaultCameraRollTitle = NSLocalizedString("_camera_roll_", comment: "")
         configure.doneTitle = NSLocalizedString("_done_", comment: "")
         configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
         configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
@@ -86,19 +85,19 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.textView
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.textView
+        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+
+        self.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.icon
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.graySoft
-        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.graySoft)
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        
+        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.brandText)
         
         self.collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        if CCUtility.getDarkMode() {
-            self.navigationBar.barStyle = .black
-        }
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.textView
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.textView
+    }
+    
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     }
 }

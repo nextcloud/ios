@@ -107,8 +107,10 @@
 "_sharing_"                 = "Sharing";
 "_details_"                 = "Details";
 "_dark_mode_"               = "Dark mode";
+"_dark_mode_detect_"        = "Detect iOS dark mode";
 "_screen_"                  = "Screen";
 "_wipe_account_"            = "Account wiped from server";
+"_appconfig_view_title_"    = "Account configuration in progress…";
 
 // App
 

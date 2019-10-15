@@ -42,10 +42,12 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     var canFetchActivity = true
     var dateAutomaticFetch : Date?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        self.title = NSLocalizedString("_activity_", comment: "")
+
         // empty Data Source
         tableView.emptyDataSetDelegate = self;
         tableView.emptyDataSetSource = self;
@@ -55,16 +57,9 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         tableView.tableFooterView = UIView()
         tableView.contentInset = insets
         
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-        if filterFileId == nil {
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        } else {
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        }
-        
-        self.title = NSLocalizedString("_activity_", comment: "")
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,6 +71,15 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+    }
+    
+    @objc func changeTheming() {
+        
+        if filterFileId == nil {
+            appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+        } else {
+            appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        }
     }
     
     // MARK: DZNEmpty
@@ -151,14 +155,10 @@ extension NCActivity: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
-        if filterFileId == nil {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        } else {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        }
+        view.backgroundColor = .clear
         
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.font = UIFont.boldSystemFont(ofSize: 13)
         label.textColor = NCBrandColor.sharedInstance.textView
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
@@ -200,13 +200,6 @@ extension NCActivity: UITableViewDataSource {
             cell.didSelectItemEnable = self.didSelectItemEnable
             cell.subject.textColor = NCBrandColor.sharedInstance.textView
             
-            /*
-            if filterFileId == nil {
-                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            } else {
-                cell.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            }
-            */
             // icon
             if activity.icon.count > 0 {
                 

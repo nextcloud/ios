@@ -48,16 +48,9 @@ class NCText: UIViewController, UITextViewDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowHandle(info:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector:#selector(self.keyboardWillHideHandle), name: UIResponder.keyboardWillHideNotification, object: nil)
-
-        self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_untitled_txt_", comment: "")
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
-        self.navigationController?.navigationBar.isTranslucent = false
-
-        self.navigationController?.toolbar.barTintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement
         
+        self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_untitled_txt_", comment: "")
+                
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
         nextButton.title = NSLocalizedString("_next_", comment: "")
         
@@ -89,10 +82,12 @@ class NCText: UIViewController, UITextViewDelegate {
         textView.becomeFirstResponder()
         textView.delegate = self
         textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
-        textView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        textView.textColor = NCBrandColor.sharedInstance.textView
-        //textView.font = UIFont(name: "NameOfTheFont", size: 20)
+        textView.font = UIFont(name: "NameOfTheFont", size: 20)
 
+        // Theming view
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
+        
         textViewDidChange(textView)
     }
 
@@ -126,6 +121,14 @@ class NCText: UIViewController, UITextViewDelegate {
         } else {
             nextButton.isEnabled = true
         }
+    }
+    
+    @objc func changeTheming() {
+    
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        
+        textView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        textView.textColor = NCBrandColor.sharedInstance.textView
     }
     
     @IBAction func cancelButtonTapped(_ sender: AnyObject) {

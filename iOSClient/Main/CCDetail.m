@@ -61,7 +61,6 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
 
         self.metadataDetail = [[tableMetadata alloc] init];
@@ -84,19 +83,8 @@
     [super viewDidLoad];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
-
-    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
-    
-    // Change bar bottom line shadow and remove title back button <"title"
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
-    self.navigationController.navigationBar.topItem.title = @"";
-    
-    // Color Navigation Controller
-    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-
-    // TabBar
-    self.tabBarController.tabBar.hidden = YES;
-    self.tabBarController.tabBar.translucent = YES;
+        
+    [self changeTheming];
     
     // Open View
     if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.ocId length] > 0) {        
@@ -109,15 +97,14 @@
     [super viewWillAppear:animated];
     
     self.tabBarController.tabBar.hidden = YES;
-    self.tabBarController.tabBar.translucent = YES;
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
 
-    [self.navigationController setNavigationBarHidden:false];
+    self.navigationController.navigationBarHidden = NO;
+    self.tabBarController.tabBar.hidden = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -140,14 +127,22 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self];
+    [appDelegate changeTheming:self tableView:nil collectionView:nil form:false];
     
     if (self.toolbar) {
         self.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
         self.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
     }
     
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    // Logo
+    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
+
+    // reload image
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image]) {
+        
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+        [self viewImage];
+    }
 }
 
 - (void)changeToDisplayMode
@@ -360,6 +355,8 @@
         
         [self.navigationController pushViewController:self.photoBrowser animated:NO];
     }
+    
+    self.navigationController.navigationBar.topItem.title = _metadataDetail.fileNameView;
 }
 
 - (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser

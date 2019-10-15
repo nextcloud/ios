@@ -74,22 +74,19 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         collectionView.refreshControl = refreshControl
         
         // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;        
+        self.collectionView.emptyDataSetSource = self;
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.navigationItem.title = titleCurrentFolder
 
@@ -122,6 +119,13 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.actionSheet?.viewDidLayoutSubviews()
         }
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
     }
     
     // MARK: DZNEmpty
@@ -278,6 +282,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
         if !isEditMode {
             var items = [ActionSheetItem]()
+//            ActionSheet.applyAppearance(NCAppearance())
+            
+            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
             items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
@@ -295,11 +305,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
             
-            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
-            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-            
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
@@ -312,13 +317,16 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         if !isEditMode {
             var items = [ActionSheetItem]()
-            let appearanceDelete = ActionSheetItemAppearance.init()
-            appearanceDelete.textColor = UIColor.red
+            ActionSheetDeleteItemCell.appearance().titleColor = .red
+//            ActionSheet.applyAppearance(NCAppearance())
+            
+            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
             items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red))
-            itemDelete.customAppearance = appearanceDelete
-            items.append(itemDelete)
+            items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red)))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             actionSheet = ActionSheet(items: items) { sheet, item in
@@ -334,11 +342,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: tableTrash.directory, iconName: tableTrash.iconName, ocId: tableTrash.fileId, fileNameView: tableTrash.fileName, text: tableTrash.trashbinFileName)
             actionSheet?.headerView = headerView
             actionSheet?.headerView?.frame.size.height = 50
-            
-            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
-            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -394,6 +397,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             if indexPath.row == 0 {
                 
                 var items = [ActionSheetItem]()
+//                ActionSheet.applyAppearance(NCAppearance())
+                
+                ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+                ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
                 items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
                 items.append(ActionSheetDangerButton(title: NSLocalizedString("_ok_", comment: "")))
@@ -408,11 +417,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     }
                     if item is ActionSheetCancelButton { return }
                 }
-                
-                ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-                ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
-                ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-                ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
                 actionSheet?.present(in: self, from: self.view)
             }
@@ -441,6 +445,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             if indexPath.row == 2 {
                 
                 var items = [ActionSheetItem]()
+//                ActionSheet.applyAppearance(NCAppearance())
+                
+                ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
+                ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+                ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
                 items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_selected_", comment: "")))
                 items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
@@ -457,11 +467,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     }
                     if item is ActionSheetCancelButton { return }
                 }
-                
-                ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-                ActionSheetTableView.appearance().separatorLineColor = NCBrandColor.sharedInstance.separator
-                ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-                ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
                 actionSheet?.present(in: self, from: self.view)
             }
@@ -534,9 +539,11 @@ extension NCTrash: UICollectionViewDataSource {
             }
             
             trashHeader.delegate = self
-            
+            trashHeader.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            trashHeader.separator.backgroundColor = NCBrandColor.sharedInstance.separator
             trashHeader.setStatusButton(datasource: datasource)
             trashHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
+            
             
             return trashHeader
             
@@ -587,7 +594,8 @@ extension NCTrash: UICollectionViewDataSource {
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-            
+            cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+
             if tableTrash.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)

@@ -61,18 +61,15 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast //default value - .immediate
-        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
@@ -88,13 +85,15 @@ class DragDropViewController: UIViewController {
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizer)
+        
+        // changeTheming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        
+                
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
         
@@ -108,6 +107,13 @@ class DragDropViewController: UIViewController {
         }
         
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
+    }
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
+        
+        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
     }
     
     //MARK: Button Action
