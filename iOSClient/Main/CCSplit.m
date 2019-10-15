@@ -73,6 +73,13 @@
     [super viewWillAppear:animated];
     
     [self showIntro];
+
+    [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationPortrait]forKey:@"orientation"];
+ }
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator

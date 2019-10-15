@@ -109,13 +109,6 @@
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
     [self.loginTypeView setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forState:UIControlStateNormal];
-
-    // Brand
-    if ([NCBrandOptions sharedInstance].disable_request_login_url) {
-        _baseUrl.text = [NCBrandOptions sharedInstance].loginBaseUrl;
-        _imageBaseUrl.hidden = YES;
-        _baseUrl.hidden = YES;
-    }
     
     // QrCode image
     [self.qrCode setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"qrcode"] width:100 height:100 color:[UIColor whiteColor]] forState:UIControlStateNormal];
@@ -132,6 +125,15 @@
         _user.hidden = YES;
         _imagePassword.hidden = YES;
         _password.hidden = YES;
+    }
+    
+    // Brand
+    if ([NCBrandOptions sharedInstance].disable_request_login_url) {
+        _baseUrl.text = [NCBrandOptions sharedInstance].loginBaseUrl;
+        _imageBaseUrl.hidden = YES;
+        _baseUrl.hidden = YES;
+        _login.hidden = YES;
+        [self handleButtonLogin:self.login];
     }
 }
 

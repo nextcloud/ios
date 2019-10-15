@@ -52,11 +52,6 @@
     return self;
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
-}
-
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
     [self.delegate introFinishSelector:selector];
@@ -78,13 +73,13 @@
     CGFloat width = self.rootView.bounds.size.width;
     
     if (height <= 568) { // iPhone 5
-        titleIconPositionY = 20;
-        titlePositionY = height / 2 + 40.0;
-        buttonPosition = height / 2 + 70.0;
+        titleIconPositionY = 60;
+        titlePositionY = height / 2 + 60.0;
+        buttonPosition = height / 2 + 100.0;
     } else {
-        titleIconPositionY = 40;
-        titlePositionY = height / 2 + 40.0;
-        buttonPosition = height / 2 + 120.0;
+        titleIconPositionY = 100;
+        titlePositionY = height / 2 + 60.0;
+        buttonPosition = height / 2 + 100.0;
     }
     
     // SafeArea
@@ -108,35 +103,37 @@
     buttonLogin.clipsToBounds = YES;
     [buttonLogin setTitle:NSLocalizedString(@"_log_in_", nil) forState:UIControlStateNormal];
     buttonLogin.titleLabel.font = [UIFont systemFontOfSize:14];
-    [buttonLogin setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [buttonLogin setTitleColor:NCBrandColor.sharedInstance.customer forState:UIControlStateNormal];
     buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customerText;
     [buttonLogin addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchDown];
     
     [buttonView addSubview:buttonLogin];
     
-    UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
-    buttonSignUp.layer.cornerRadius = 20;
-    buttonSignUp.clipsToBounds = YES;
-    [buttonSignUp setTitle:NSLocalizedString(@"_sign_up_", nil) forState:UIControlStateNormal];
-    buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
-    [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    buttonSignUp.backgroundColor = [UIColor colorWithRed:25.0/255.0 green:89.0/255.0 blue:141.0/255.0 alpha:1.000];
-    [buttonSignUp addTarget:self action:@selector(signUp:) forControlEvents:UIControlEventTouchDown];
+    if (![NCBrandOptions sharedInstance].disable_request_login_url) {
+        UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
+        buttonSignUp.layer.cornerRadius = 20;
+        buttonSignUp.clipsToBounds = YES;
+        [buttonSignUp setTitle:NSLocalizedString(@"_sign_up_", nil) forState:UIControlStateNormal];
+        buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
+        [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        buttonSignUp.backgroundColor = [UIColor colorWithRed:25.0/255.0 green:89.0/255.0 blue:141.0/255.0 alpha:1.000];
+        [buttonSignUp addTarget:self action:@selector(signUp:) forControlEvents:UIControlEventTouchDown];
+            
+        [buttonView addSubview:buttonSignUp];
+    
+        UIButton *buttonHost = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        buttonHost.frame = CGRectMake(50.0, height - buttonPosition - 30.0 - safeAreaBottom, width - 100.0, 20.0);
+        buttonHost.layer.cornerRadius = 20;
+        buttonHost.clipsToBounds = YES;
+        [buttonHost setTitle:NSLocalizedString(@"_host_your_own_server", nil) forState:UIControlStateNormal];
+        buttonHost.titleLabel.font = [UIFont systemFontOfSize:14];
+        [buttonHost setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forState:UIControlStateNormal];
+        buttonHost.backgroundColor = [UIColor clearColor];
+        [buttonHost addTarget:self action:@selector(host:) forControlEvents:UIControlEventTouchDown];
         
-    [buttonView addSubview:buttonSignUp];
-    
-    UIButton *buttonHost = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    buttonHost.frame = CGRectMake(50.0, height - buttonPosition - 30.0 - safeAreaBottom, width - 100.0, 20.0);
-    buttonHost.layer.cornerRadius = 20;
-    buttonHost.clipsToBounds = YES;
-    [buttonHost setTitle:NSLocalizedString(@"_host_your_own_server", nil) forState:UIControlStateNormal];
-    buttonHost.titleLabel.font = [UIFont systemFontOfSize:14];
-    [buttonHost setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forState:UIControlStateNormal];
-    buttonHost.backgroundColor = [UIColor clearColor];
-    [buttonHost addTarget:self action:@selector(host:) forControlEvents:UIControlEventTouchDown];
-    
-    [buttonView addSubview:buttonHost];
+        [buttonView addSubview:buttonHost];
+    }
     
     // Pages
     
@@ -185,28 +182,15 @@
     
     page3.bgColor = NCBrandColor.sharedInstance.customer;
     page3.showTitleView = YES;
-
-    EAIntroPage *page4 = [EAIntroPage page];
-    
-    page4.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro4"]];
-    page4.titleIconPositionY = titleIconPositionY;
-    
-    page4.title = NSLocalizedString(@"_intro_4_title_", nil);
-    page4.titlePositionY = titlePositionY;
-    page4.titleColor = NCBrandColor.sharedInstance.customerText;
-    page4.titleFont = [UIFont systemFontOfSize:23];
-    
-    page4.bgColor = NCBrandColor.sharedInstance.customer;
-    page4.showTitleView = YES;
     
     // INTRO
     
-    self.intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3,page4]];
+    self.intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3]];
 
     self.intro.tapToNext = NO;
     self.intro.pageControlY = height - buttonPosition + 50;
     self.intro.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft;
-    self.intro.pageControl.currentPageIndicatorTintColor = [UIColor whiteColor];
+    self.intro.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.customerText;
     self.intro.pageControl.backgroundColor = NCBrandColor.sharedInstance.customer;
 //    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 //    intro.skipButton.enabled = NO;

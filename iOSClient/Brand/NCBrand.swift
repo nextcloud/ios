@@ -47,11 +47,11 @@ import UIKit
         return instance
     }()
     
-    @objc public var brand:                             String = "Nextcloud"
-    @objc public var mailMe:                            String = "ios@nextcloud.com"
-    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2019"
-    @objc public var textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
-    @objc public var loginBaseUrl:                      String = "https://cloud.nextcloud.com"
+    @objc public var brand:                             String = "kDrive"
+    @objc public var mailMe:                            String = "support@infomaniak.com"
+    @objc public var textCopyrightNextcloudiOS:         String = "kDrive for iOS %@ © 2019"
+    @objc public var textCopyrightNextcloudServer:      String = "kDrive Server %@"
+    @objc public var loginBaseUrl:                      String = "https://connect.drive.infomaniak.com"
     @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
     @objc public var linkLoginHost:                     String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
@@ -68,7 +68,7 @@ import UIKit
     @objc public var capabilitiesGroups:                String = "group.com.infomaniak.Crypto-Cloud"
     
     // User Agent
-    @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
+    @objc public var userAgent:                         String = "kDrive-iOS"                                    // Don't touch me !!
     
     // Options
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
@@ -82,7 +82,7 @@ import UIKit
     @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
     
     @objc public var disable_intro:                     Bool = false
-    @objc public var disable_request_login_url:         Bool = false
+    @objc public var disable_request_login_url:         Bool = true
     @objc public var disable_multiaccount:              Bool = false
     @objc public var disable_manage_account:            Bool = false
     @objc public var disable_more_external_site:        Bool = false
@@ -107,8 +107,9 @@ class NCBrandColor: NSObject {
     }()
 
     // Color
-    @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
-    @objc public var customerText:          UIColor = .white
+    @objc public let customer:              UIColor = .white
+    @objc public var customerText:          UIColor = UIColor(red: 0.0/255.0, green: 152.0/255.0, blue: 255.0/255.0, alpha: 1.0)    // BLU NC : #0098FF
+    
     
     @objc public var brand:                 UIColor                                                                                 // don't touch me
     @objc public var brandElement:          UIColor                                                                                 // don't touch me
