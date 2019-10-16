@@ -1842,19 +1842,17 @@ class NCManageDatabase: NSObject {
                     
                     // Directory
                     if file.directory {
-                        let result = realm.objects(tableDirectory.self).filter("ocId == %@", file.ocId).first
-                        if result == nil {
                             
-                            let directory = tableDirectory()
-                            
-                            directory.account = account
-                            directory.e2eEncrypted = file.e2eEncrypted
-                            directory.favorite = file.favorite
-                            directory.permissions = file.permissions
-                            directory.serverUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: file.fileName)
-                            
-                            realm.add(directory, update: .all)
-                        }
+                        let directory = tableDirectory()
+                        
+                        directory.account = account
+                        directory.e2eEncrypted = file.e2eEncrypted
+                        directory.favorite = file.favorite
+                        directory.ocId = file.ocId
+                        directory.permissions = file.permissions
+                        directory.serverUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: file.fileName)
+                        
+                        realm.add(directory, update: .all)
                     }
                 }
             }
