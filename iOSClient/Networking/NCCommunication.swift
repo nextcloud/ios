@@ -189,7 +189,7 @@ class NCCommunication: SessionDelegate {
         // url
         var serverUrl = String(serverUrl)
         if depth == "1" && serverUrl.last != "/" { serverUrl = serverUrl + "/" }
-        if depth == "0" && serverUrl.last == "/" { serverUrl = String(serverUrl.removeLast()) }
+        if depth == "0" && serverUrl.last == "/" { serverUrl = String(serverUrl.remove(at: serverUrl.index(before: serverUrl.endIndex))) }
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
             completionHandler(files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
