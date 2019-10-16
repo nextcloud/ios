@@ -34,13 +34,13 @@ extension FileProviderExtension {
         
         let serverUrl = tableDirectory.serverUrl
         
-        OCNetworking.sharedManager().createFolder(withAccount: fileProviderData.sharedInstance.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, ocId, date, message, errorCode) in
+        NCCommunication.sharedInstance.createFolder(serverUrl: serverUrl, fileName: directoryName) { (ocId, date, error) in
             
-            if errorCode == 0 && account == fileProviderData.sharedInstance.account {
+            if error == nil {
                 
                 let metadata = tableMetadata()
                 
-                metadata.account = account!
+                metadata.account = fileProviderData.sharedInstance.account
                 metadata.directory = true
                 metadata.ocId = ocId!
                 metadata.fileName = directoryName
@@ -53,7 +53,7 @@ extension FileProviderExtension {
                     return
                 }
                 
-                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: account!) else {
+                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, permissions: nil, serverUrl: serverUrl + "/" + directoryName, account: fileProviderData.sharedInstance.account) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -65,10 +65,11 @@ extension FileProviderExtension {
                 
                 let item = FileProviderItem(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
+                
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
-        })
+        }
     }
     
     override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
