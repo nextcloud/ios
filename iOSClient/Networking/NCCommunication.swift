@@ -338,11 +338,11 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - File transfer
     
-    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ error: Error?) -> Void) -> URLSessionTask? {
+    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return nil
         }
         
@@ -367,9 +367,16 @@ class NCCommunication: SessionDelegate {
         .response { response in
             switch response.result {
             case.failure(let error):
-                completionHandler(error)
+                completionHandler(nil, nil, 0, error)
             case .success( _):
-                completionHandler(nil)
+                let lenght = response.response?.allHeaderFields["lenght"] as! Double
+                var etag = response.response?.allHeaderFields["OC-ETag"] as! String?
+                if etag != nil { etag = etag!.replacingOccurrences(of: "\"", with: "") }
+                if let dateString = response.response?.allHeaderFields["Date"] as! String? {
+                    if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
+                        completionHandler(etag, date, lenght, nil)
+                    } else { completionHandler(nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                } else { completionHandler(nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
             }
         }
         

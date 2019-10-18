@@ -215,13 +215,15 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        let task = OCNetworking.sharedManager().download(withAccount: metadata.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), completion: { (account, lenght, etag, date, message, errorCode) in
+        let task = NCCommunication.sharedInstance.download(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, fileNamePathLocalDestination: url.path, progressHandler: { (progress) in
+            
+        }) { (etag, date, lenght, error) in
             
             // remove Task
             self.outstandingSessionTasks.removeValue(forKey: url)
             
-            if errorCode == 0 && account == metadata.account {
-
+            if error == nil {
+                
                 guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
                     completionHandler(NSFileProviderError(.noSuchItem))
                     return
@@ -238,16 +240,14 @@ class FileProviderExtension: NSFileProviderExtension {
                 
             } else {
                 
-                if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
-                    completionHandler(NSFileProviderError(.noSuchItem))
-                } else {
+//                if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+//                    completionHandler(NSFileProviderError(.noSuchItem))
+//                } else {
                     completionHandler(NSFileProviderError(.serverUnreachable))
-                }
-                
-                return
+//                }
             }
-        })
-       
+        }
+        
         // Add and register task
         if task != nil {
             outstandingSessionTasks[url] = task
@@ -267,15 +267,14 @@ class FileProviderExtension: NSFileProviderExtension {
         let fileNameServerUrl = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
         
-        OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileNameLocalPath, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
-        }, completion: { (account, ocId, etag, date, message, errorCode) in
-            
-            if account == fileProviderData.sharedInstance.account && errorCode == 0 {
+        _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileNameLocalPath, progressHandler: { (progress) in
+        }) { (ocId, etag, date, error) in
+            if error == nil {
                 NCManageDatabase.sharedInstance.setLocalFile(ocId: itemIdentifier.rawValue, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag!)
                 // remove preview ico
                 CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, fileNameView: fileName))
             }
-        })
+        }
     }
     
     /*

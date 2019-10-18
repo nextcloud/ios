@@ -350,14 +350,11 @@ extension FileProviderExtension {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                 
-                OCNetworking.sharedManager()?.upload(withAccount: fileProviderData.sharedInstance.account, fileNameServerUrl: fileNameServerUrl, fileNameLocalPath: fileTemporaryDirectory, encode: true, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtension(), progress: { (progress) in
-                    
-                }, completion: { (account, ocId, etag, date, message, errorCode) in
-                    
-                    if account == fileProviderData.sharedInstance.account && errorCode == 0 {
-                        
+                _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileTemporaryDirectory, progressHandler: { (progress) in
+                }) { (ocId, etag, date, error) in
+                    if error == nil {
                         _ = fileProviderUtility.sharedInstance.moveFile(fileTemporaryDirectory, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))
-                        
+                                               
                         let metadata = tableMetadata()
                         metadata.account = fileProviderData.sharedInstance.account
                         metadata.date = date! as NSDate
@@ -368,21 +365,19 @@ extension FileProviderExtension {
                         metadata.fileNameView = fileName
                         metadata.serverUrl = tableDirectory.serverUrl
                         metadata.size = size
-                        
+                       
                         guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
                             completionHandler(nil, NSFileProviderError(.noSuchItem))
                             return
                         }
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDB)
-                        
+                       
                         let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
                         completionHandler(item, nil)
-
                     } else {
-                        
                         completionHandler(nil, NSFileProviderError(.serverUnreachable))
-                    }                   
-                })
+                    }
+                }
             }
         }
     }
