@@ -27,11 +27,8 @@
 @interface NCSelectDestination ()
 {    
     NSString *activeAccount;
-    NSString *activePassword;
     NSString *activeUrl;
-    NSString *activeUser;
-    NSString *activeUserID;
-    
+  
     BOOL _loadingFolder;
     
     // Automatic Upload Folder
@@ -55,10 +52,10 @@
     if (tableAccount) {
         
         activeAccount = tableAccount.account;
-        activePassword = [CCUtility getPassword:tableAccount.account];
         activeUrl = tableAccount.url;
-        activeUser = tableAccount.user;
-        activeUserID = tableAccount.userID;
+        
+        [[NCCommunication sharedInstance] settingAccountWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
+        [[NCCommunication sharedInstance] settingUserAgent:[CCUtility getUserAgent]];
         
     } else {
         
@@ -103,7 +100,7 @@
     _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
     
     // read file->folder
-    [self readFile];
+    [self readFolder];
 }
 
 // Apparirà
@@ -268,26 +265,18 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-// MARK: - Read File
-
-- (void)readFile
-{
-    [[OCNetworking sharedManager] readFileWithAccount:activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
-        if (errorCode == 0) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, _serverUrl]];
-            if ([metadata.etag isEqualToString:directory.etag] == NO) {
-                [self readFolder];
-            }
-        } else {
-            [self readFolder];
-        }
-    }];
-}
-
 // MARK: - Read Folder
 
 - (void)readFolder
 {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrl:_serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *file, NSError *error) {
+        
+        
+        
+        
+    }];
+    
+    /*
     [[OCNetworking sharedManager] readFolderWithAccount:activeAccount serverUrl:_serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:activeAccount]) {
@@ -325,7 +314,7 @@
         [self.tableView reloadData];
         
     }];
-    
+    */
     _loadingFolder = YES;
     [self.tableView reloadData];
 }
