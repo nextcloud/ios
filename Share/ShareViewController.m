@@ -212,19 +212,18 @@
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
         
-        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:fileNameServer fileNameLocalPath:fileNameLocal encode:true communication:[[OCNetworking sharedManager] sharedOCCommunication] progress:^(NSProgress *progress) {
+        [[NCCommunication sharedInstance] uploadWithServerUrlFileName:fileNameServer fileNamePathSource:fileNameLocal completionHandler:^(NSString *ocId, NSString *etag, NSDate *date, NSError *error) {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.hud progress:progress.fractionCompleted];
-            });
-            
-        } completion:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode) {
+            /*
+             dispatch_async(dispatch_get_main_queue(), ^{
+             [self.hud progress:progress.fractionCompleted];
+             });
+             */
             
             [self.hud hideHud];
-            
             [self.filesName removeObject:fileName];
-
-            if (errorCode == 0) {
+            
+            if (error == nil) {
                 
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                 
@@ -247,12 +246,12 @@
                 
             } else {
                 
-                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:error.description preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
-                                                               [alert dismissViewControllerAnimated:YES completion:nil];
-                                                               [self closeShareViewController];
-                                                           }];
+                    [alert dismissViewControllerAnimated:YES completion:nil];
+                    [self closeShareViewController];
+                }];
                 [alert addAction:ok];
                 [self presentViewController:alert animated:YES completion:nil];
             }
