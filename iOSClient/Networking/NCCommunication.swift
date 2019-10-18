@@ -418,21 +418,25 @@ class NCCommunication: SessionDelegate {
             return
         }
         
+        //
         let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
         
         // headers
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        AF.upload(fileNamePathSourceUrl, to: url)
+        AF.upload(fileNamePathSourceUrl, to: url, method: .post, headers: headers, interceptor: nil, fileManager: .default)
         .uploadProgress { progress in
             print("Upload Progress: \(progress.fractionCompleted)")
         }
-        
-        .responseJSON { response in
-            debugPrint(response)
+        .responseData { response in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(error)
+            case .success( _):
+                completionHandler(nil)
+            }
         }
-        
     }
     
     //MARK: - SessionDelegate
