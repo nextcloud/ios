@@ -404,13 +404,10 @@ class NCCommunication: SessionDelegate {
     @objc func upload(serverUrlFileName: String, fileNamePathSource: String, completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) {
         
         // url
-        var url: URLConvertible
-        do {
-            try url = serverUrlFileName.asURL()
-        } catch let error {
-            completionHandler(nil, nil, nil, error)
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
+            completionHandler(nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
-        }        
+        }
         let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
         
         // headers
@@ -421,6 +418,7 @@ class NCCommunication: SessionDelegate {
         .uploadProgress { progress in
             print("Upload Progress: \(progress.fractionCompleted)")
         }
+        .validate(statusCode: 200..<300)
         .responseData { response in
             switch response.result {
             case.failure(let error):
