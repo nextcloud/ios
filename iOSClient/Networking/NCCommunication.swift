@@ -357,7 +357,7 @@ class NCCommunication: SessionDelegate {
     }
     
     
-    //MARK: - Download
+    //MARK: - File transfer
     
     @objc func download(serverUrl: String, fileName: String, fileNamePathDestination: String, completionHandler: @escaping (_ error: Error?) -> Void) {
         
@@ -399,6 +399,40 @@ class NCCommunication: SessionDelegate {
                 completionHandler(nil)
             }
         }
+    }
+    
+    @objc func upload(serverUrl: String, fileName: String, fileNamePathSource: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+        
+        // url
+        var serverUrl = serverUrl
+        var url: URLConvertible
+        do {
+            if serverUrl.last == "/" {
+                serverUrl = serverUrl + fileName
+            } else {
+                serverUrl = serverUrl + "/" + fileName
+            }
+            try url = serverUrl.asURL()
+        } catch let error {
+            completionHandler(error)
+            return
+        }
+        
+        let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
+        
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+        
+        AF.upload(fileNamePathSourceUrl, to: url)
+        .uploadProgress { progress in
+            print("Upload Progress: \(progress.fractionCompleted)")
+        }
+        
+        .responseJSON { response in
+            debugPrint(response)
+        }
+        
     }
     
     //MARK: - SessionDelegate
