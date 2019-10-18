@@ -23,7 +23,6 @@
 
 #import <MBProgressHUD/MBProgressHUD.h>
 
-#import "OCCommunication.h"
 #import "OCNetworking.h"
 #import "CCBKPasscode.h"
 #import "CCGlobal.h"
