@@ -338,12 +338,12 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - File transfer
     
-    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ error: Error?) -> Void) -> URLSessionTask? {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
             completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
-            return
+            return nil
         }
         
         // destination
@@ -359,7 +359,7 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination)
+        let request = AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination)
         .downloadProgress { progress in
             progressHandler(progress)
         }
@@ -372,14 +372,16 @@ class NCCommunication: SessionDelegate {
                 completionHandler(nil)
             }
         }
+        
+        return request.task
     }
     
-    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) {
+    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) -> URLSessionTask? {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
             completionHandler(nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
-            return
+            return nil
         }
         let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
         
@@ -387,7 +389,7 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        AF.upload(fileNamePathSourceUrl, to: url, method: .put, headers: headers, interceptor: nil, fileManager: .default)
+        let request = AF.upload(fileNamePathSourceUrl, to: url, method: .put, headers: headers, interceptor: nil, fileManager: .default)
         .uploadProgress { progress in
             progressHandler(progress)
         }
@@ -407,6 +409,8 @@ class NCCommunication: SessionDelegate {
                 } else { completionHandler(nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
             }
         }
+        
+        return request.task
     }
     
     //MARK: - SessionDelegate
