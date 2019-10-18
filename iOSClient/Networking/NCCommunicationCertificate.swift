@@ -30,8 +30,6 @@ class NCCommunicationCertificate: NSObject {
         return instance
     }()
 
-    // Returns the leaf certificate from a SecTrust object (that is always the
-    // certificate at index 0).
     static func secTrustGetLeafCertificate(_ trust: SecTrust) -> SecCertificate? {
         
         let result: SecCertificate?
@@ -46,7 +44,7 @@ class NCCommunicationCertificate: NSObject {
         return result
     }
     
-    @objc func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
+    func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
         
         var trusted = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
