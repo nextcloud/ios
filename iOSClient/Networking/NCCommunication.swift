@@ -34,6 +34,7 @@ class NCCommunication: SessionDelegate {
     var username = ""
     var password = ""
     var userAgent: String?
+    var directoryCertificate: String = ""
     
     //MARK: - Settings
 
@@ -403,13 +404,11 @@ class NCCommunication: SessionDelegate {
     //MARK: - SessionDelegate
 
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        
-        if CCCertificate.sharedManager().checkTrustedChallenge(challenge) {
-            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling,             URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
+        if NCCommunicationCertificate.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: directoryCertificate) {
+             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
-        
     }
 }
 
