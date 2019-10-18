@@ -316,16 +316,13 @@
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
-    [[OCNetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *ocId, NSDate *date, NSString *message, NSInteger errorCode) {
-       
-        if (errorCode == 0 && [account isEqualToString:activeAccount]) {
-            [self readFolder];
-        } else if (errorCode != 0) {
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    [[NCCommunication sharedInstance] createFolderWithServerUrl:_serverUrl fileName:fileNameFolder completionHandler:^(NSString *ocID, NSDate *date, NSError *error) {
+        if (error == nil) {
+           [self readFolder];
+        } else {
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:error.description preferredStyle:UIAlertControllerStyleAlert];
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }]];
             [self presentViewController:alertController animated:YES completion:nil];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }
