@@ -133,7 +133,7 @@ extension FileProviderExtension {
         
         NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo) { (error) in
        
-            if error != nil {
+            if error == nil {
                 
                 if metadataFrom.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: fileProviderData.sharedInstance.account)
@@ -174,7 +174,7 @@ extension FileProviderExtension {
         
         NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo) { (error) in
        
-            if error != nil {
+            if error == nil {
                 
                 // Rename metadata
                 guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, ocId: metadata.ocId) else {
