@@ -309,7 +309,7 @@ class NCCommunication: SessionDelegate {
         </d:set>
         </d:propertyupdate>
         """
-        let body = NSString.init(format: dataFile as NSString, (favorite ? 1 : 0))
+        let body = NSString.init(format: dataFile as NSString, (favorite ? 1 : 0)) as String
         
         // url
         let serverUrlFileName = urlString + "/remote.php/dav/files/" + username + "/" + fileName
@@ -331,7 +331,7 @@ class NCCommunication: SessionDelegate {
         var urlRequest: URLRequest
         do {
             try urlRequest = URLRequest(url: url, method: method, headers: headers)
-            urlRequest.httpBody = (body as String).data(using: .utf8)
+            urlRequest.httpBody = body.data(using: .utf8)
         } catch let error {
             completionHandler(error)
             return
