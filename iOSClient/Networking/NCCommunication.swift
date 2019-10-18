@@ -389,9 +389,12 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination).downloadProgress { progress in
+        AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination)
+        .downloadProgress { progress in
             //self.postProgress(progress: progress)
-        }.responseData { response in
+        }
+        .validate(statusCode: 200..<300)
+        .response { response in
             switch response.result {
             case.failure(let error):
                 completionHandler(error)
@@ -401,7 +404,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) {
+    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
@@ -414,18 +417,19 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        AF.upload(fileNamePathSourceUrl, to: url, method: .post, headers: headers, interceptor: nil, fileManager: .default)
+        AF.upload(fileNamePathSourceUrl, to: url, method: .put, headers: headers, interceptor: nil, fileManager: .default)
         .uploadProgress { progress in
-            print("Upload Progress: \(progress.fractionCompleted)")
+            progressHandler(progress)
         }
         .validate(statusCode: 200..<300)
-        .responseData { response in
+        .response { response in
             switch response.result {
             case.failure(let error):
                 completionHandler(nil, nil, nil, error)
             case .success( _):
                 let ocId = response.response?.allHeaderFields["OC-FileId"] as! String?
-                let etag = response.response?.allHeaderFields["etag"] as! String?
+                var etag = response.response?.allHeaderFields["OC-ETag"] as! String?
+                if etag != nil { etag = etag!.replacingOccurrences(of: "\"", with: "") }
                 if let dateString = response.response?.allHeaderFields["Date"] as! String? {
                     if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
                         completionHandler(ocId, etag, date, nil)
