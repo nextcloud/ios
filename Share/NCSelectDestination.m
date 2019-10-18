@@ -269,52 +269,45 @@
 
 - (void)readFolder
 {
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrl:_serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *file, NSError *error) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrl:_serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
         
+        if (error == nil && files.count >= 1) {
+
+            NCFile *fileDirectory = files[0];
         
-        
-        
-    }];
-    
-    /*
-    [[OCNetworking sharedManager] readFolderWithAccount:activeAccount serverUrl:_serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
-        
-        if (errorCode == 0 && [account isEqualToString:activeAccount]) {
-            
             // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted account:activeAccount];
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
-            [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:fileDirectory.etag ocId:fileDirectory.ocId encrypted:fileDirectory.e2eEncrypted account:activeAccount];
             
+            // Delete metadata
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
+            
+            // In download
             NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
             
-            // insert in Database
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+            // Insert in Database
+            [[NCManageDatabase sharedInstance] addMetadataWithFiles:files account:activeAccount serverUrl:_serverUrl removeFirst:true];
+            
             // reinsert metadatas in Download
             if (metadatasInDownload) {
                 (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
             }
-            
-        } else if (errorCode != 0) {
+                               
+        } else {
             
             self.move.enabled = NO;
             
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:error.description preferredStyle:UIAlertControllerStyleAlert];
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             }]];
             
             [self presentViewController:alertController animated:YES completion:nil];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
         
         _loadingFolder = NO;
-        
         [self.tableView reloadData];
-        
     }];
-    */
+    
     _loadingFolder = YES;
     [self.tableView reloadData];
 }

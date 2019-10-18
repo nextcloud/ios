@@ -1837,7 +1837,9 @@ class NCManageDatabase: NSObject {
                     metadata.resourceType = file.resourceType
                     metadata.serverUrl = serverUrl
                     metadata.size = file.size
-                
+                    
+                    CCUtility.insertTypeFileIconName(file.fileName, metadata: metadata)
+                                    
                     realm.add(metadata, update: .all)
                     
                     // Directory
