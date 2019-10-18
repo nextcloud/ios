@@ -49,20 +49,11 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - webDAV
 
-    @objc func createFolder(serverUrl: String, fileName: String, completionHandler: @escaping (_ ocId: String?, _ date: NSDate?, _ error: Error?) -> Void) {
+    @objc func createFolder(_ serverUrlFileName: String, completionHandler: @escaping (_ ocId: String?, _ date: NSDate?, _ error: Error?) -> Void) {
         
         // url
-        var serverUrl = serverUrl
-        var url: URLConvertible
-        do {
-            if serverUrl.last == "/" {
-                serverUrl = serverUrl + fileName
-            } else {
-                serverUrl = serverUrl + "/" + fileName
-            }
-            try url = serverUrl.asURL()
-        } catch let error {
-            completionHandler(nil, nil, error)
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
+            completionHandler(nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -88,20 +79,11 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func deleteFileOrFolder(serverUrl: String, fileName: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func deleteFileOrFolder(_ serverUrlFileName: String, completionHandler: @escaping (_ error: Error?) -> Void) {
         
         // url
-        var serverUrl = serverUrl
-        var url: URLConvertible
-        do {
-            if serverUrl.last == "/" {
-                serverUrl = serverUrl + fileName
-            } else {
-                serverUrl = serverUrl + "/" + fileName
-            }
-            try url = serverUrl.asURL()
-        } catch let error {
-            completionHandler(error)
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
+            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         

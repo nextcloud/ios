@@ -316,7 +316,9 @@
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
-    [[NCCommunication sharedInstance] createFolderWithServerUrl:_serverUrl fileName:fileNameFolder completionHandler:^(NSString *ocID, NSDate *date, NSError *error) {
+    NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", _serverUrl, fileNameFolder];
+     
+    [[NCCommunication sharedInstance] createFolder:serverUrlFileName completionHandler:^(NSString *ocID, NSDate *date, NSError *error) {
         if (error == nil) {
            [self readFolder];
         } else {
