@@ -235,10 +235,10 @@ extension FileProviderExtension {
         }
         
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
             
-            OCNetworking.sharedManager().settingFavorite(withAccount: metadata.account, fileName: fileNamePath, favorite: favorite, completion: { (account, message, errorCode) in
-                if errorCode == 0 && account == metadata.account {
+            NCCommunication.sharedInstance.setFavorite(urlString: fileProviderData.sharedInstance.accountUrl, fileName: fileNamePath, favorite: favorite) { (error) in
+                if error == nil {
                     // Change DB
                     metadata.favorite = favorite
                     guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
@@ -251,18 +251,17 @@ extension FileProviderExtension {
                     fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])
 
                     completionHandler(item, nil)
-                    
                 } else {
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                    
+                        
                     fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                     fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])
-                    
+                                
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
                 }
-            })
+            }
         }
     }
     

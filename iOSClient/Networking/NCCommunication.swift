@@ -139,7 +139,7 @@ class NCCommunication: SessionDelegate {
         """
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
-        <d:prop>"
+        <d:prop>
 
         <d:getlastmodified />
         <d:getetag />
@@ -292,6 +292,57 @@ class NCCommunication: SessionDelegate {
                 } else {
                     completionHandler(files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil))
                 }
+            }
+        }
+    }
+    
+    @objc func setFavorite(urlString: String, fileName: String, favorite: Bool, completionHandler: @escaping (_ error: Error?) -> Void) {
+        
+        let dataFile =
+        """
+        <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+        <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+        <d:set>
+        <d:prop>
+        <oc:favorite>%i</oc:favorite>
+        </d:prop>
+        </d:set>
+        </d:propertyupdate>
+        """
+        let body = NSString.init(format: dataFile as NSString, (favorite ? 1 : 0))
+        
+        // url
+        let serverUrlFileName = urlString + "/remote.php/dav/files/" + username + "/" + fileName
+ 
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
+            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            return
+        }
+        
+        // method
+        let method = HTTPMethod(rawValue: "PROPPATCH")
+        
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+        headers.update(.contentType("application/xml"))
+        
+        // request
+        var urlRequest: URLRequest
+        do {
+            try urlRequest = URLRequest(url: url, method: method, headers: headers)
+            urlRequest.httpBody = (body as String).data(using: .utf8)
+        } catch let error {
+            completionHandler(error)
+            return
+        }
+        
+        AF.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(error)
+            case .success( _):
+                completionHandler(nil)
             }
         }
     }
