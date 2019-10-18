@@ -359,20 +359,11 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - File transfer
     
-    @objc func download(serverUrl: String, fileName: String, fileNamePathDestination: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func download(serverUrlFileName: String, fileNamePathDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ error: Error?) -> Void) {
         
         // url
-        var serverUrl = serverUrl
-        var url: URLConvertible
-        do {
-            if serverUrl.last == "/" {
-                serverUrl = serverUrl + fileName
-            } else {
-                serverUrl = serverUrl + "/" + fileName
-            }
-            try url = serverUrl.asURL()
-        } catch let error {
-            completionHandler(error)
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
+            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -391,7 +382,7 @@ class NCCommunication: SessionDelegate {
         
         AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination)
         .downloadProgress { progress in
-            //self.postProgress(progress: progress)
+            progressHandler(progress)
         }
         .validate(statusCode: 200..<300)
         .response { response in
