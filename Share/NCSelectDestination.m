@@ -269,7 +269,7 @@
 
 - (void)readFolder
 {
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrl:_serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
         
         if (error == nil && files.count >= 1) {
 

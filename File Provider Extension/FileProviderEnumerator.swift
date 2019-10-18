@@ -125,7 +125,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             // Update the WorkingSet -> Favorite
             fileProviderData.sharedInstance.updateFavoriteForWorkingSet()
             
-            NCCommunication.sharedInstance.readFileOrFolder(serverUrl: serverUrl, depth: "1", completionHandler: { (files, error) in
+            NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", completionHandler: { (files, error) in
                 
                 if error == nil && files.count >= 1 {
                     

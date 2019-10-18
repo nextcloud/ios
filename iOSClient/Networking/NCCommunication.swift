@@ -104,14 +104,11 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func moveFileOrFolder(fileNamePath: String, fileNamePathDestination: String,completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func moveFileOrFolder(serverUrlFileNameSource: String, serverUrlFileNameDestination: String, completionHandler: @escaping (_ error: Error?) -> Void) {
         
         // url
-        var url: URLConvertible
-        do {
-            try url = fileNamePath.asURL()
-        } catch let error {
-            completionHandler(error)
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileNameSource) else {
+            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -121,7 +118,7 @@ class NCCommunication: SessionDelegate {
         // headers
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
-        headers.update(name: "Destination", value: fileNamePathDestination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
+        headers.update(name: "Destination", value: serverUrlFileNameDestination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
         headers.update(name: "Overwrite", value: "T")
         
         AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
@@ -134,7 +131,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func readFileOrFolder(serverUrl: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
+    @objc func readFileOrFolder(serverUrlFileName: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
         var isNotFirstFileOfList: Bool = false
@@ -170,10 +167,10 @@ class NCCommunication: SessionDelegate {
         """
 
         // url
-        var serverUrl = String(serverUrl)
-        if depth == "1" && serverUrl.last != "/" { serverUrl = serverUrl + "/" }
-        if depth == "0" && serverUrl.last == "/" { serverUrl = String(serverUrl.remove(at: serverUrl.index(before: serverUrl.endIndex))) }
-        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
+        var serverUrlFileName = String(serverUrlFileName)
+        if depth == "1" && serverUrlFileName.last != "/" { serverUrlFileName = serverUrlFileName + "/" }
+        if depth == "0" && serverUrlFileName.last == "/" { serverUrlFileName = String(serverUrlFileName.remove(at: serverUrlFileName.index(before: serverUrlFileName.endIndex))) }
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
             completionHandler(files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
@@ -300,12 +297,12 @@ class NCCommunication: SessionDelegate {
     }
     
     //MARK: - API
-    @objc func downloadPreview(serverUrl: String, fileNamePathSource: String, fileNamePathLocalDestination: String, width: CGFloat, height: CGFloat, completionHandler: @escaping (_ data: Data?, _ error: Error?) -> Void) {
+    @objc func downloadPreview(serverUrl: String, fileNamePath: String, fileNamePathLocalDestination: String, width: CGFloat, height: CGFloat, completionHandler: @escaping (_ data: Data?, _ error: Error?) -> Void) {
         
         // url
         var serverUrl = String(serverUrl)
         if serverUrl.last != "/" { serverUrl = serverUrl + "/" }
-        serverUrl = serverUrl + "index.php/core/preview.png?file=" + fileNamePathSource + "&x=\(width)&y=\(height)&a=1&mode=cover"
+        serverUrl = serverUrl + "index.php/core/preview.png?file=" + fileNamePath + "&x=\(width)&y=\(height)&a=1&mode=cover"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
             completionHandler(nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
@@ -341,7 +338,7 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - File transfer
     
-    @objc func download(serverUrlFileName: String, fileNamePathDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
@@ -351,9 +348,9 @@ class NCCommunication: SessionDelegate {
         
         // destination
         var destination: Alamofire.DownloadRequest.Destination?
-        if let fileNamePathDestinationURL = URL(string: fileNamePathDestination) {
+        if let fileNamePathLocalDestinationURL = URL(string: fileNamePathLocalDestination) {
             let destinationFile: DownloadRequest.Destination = { _, _ in
-                return (fileNamePathDestinationURL, [.removePreviousFile, .createIntermediateDirectories])
+                return (fileNamePathLocalDestinationURL, [.removePreviousFile, .createIntermediateDirectories])
             }
             destination = destinationFile
         }
