@@ -349,7 +349,7 @@ extension FileProviderExtension {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                 
-                _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileTemporaryDirectory, progressHandler: { (progress) in
+                _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileTemporaryDirectory, wwan: false, progressHandler: { (progress) in
                 }) { (ocId, etag, date, error) in
                     if error == nil {
                         _ = fileProviderUtility.sharedInstance.moveFile(fileTemporaryDirectory, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))

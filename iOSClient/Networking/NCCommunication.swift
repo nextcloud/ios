@@ -429,11 +429,17 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - File transfer
     
-    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
+    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, wwan: Bool, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
         
+        // session
         let sessionManager: Alamofire.Session
-        sessionManager = sessionManagerTransfer
-        sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.download_session
+        if wwan {
+            sessionManager = sessionManagerTransferWWan
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.download_session_wwan
+        } else {
+            sessionManager = sessionManagerTransfer
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.download_session
+        }
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
@@ -478,11 +484,17 @@ class NCCommunication: SessionDelegate {
         return request.task
     }
     
-    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) -> URLSessionTask? {
+    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, wwan: Bool, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) -> URLSessionTask? {
         
+        // session
         let sessionManager: Alamofire.Session
-        sessionManager = sessionManagerTransfer
-        sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.upload_session
+        if wwan {
+            sessionManager = sessionManagerTransferWWan
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.upload_session_wwan
+        } else {
+            sessionManager = sessionManagerTransfer
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.upload_session
+        }
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {

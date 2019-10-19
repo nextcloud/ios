@@ -215,7 +215,7 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        let task = NCCommunication.sharedInstance.download(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, fileNamePathLocalDestination: url.path, progressHandler: { (progress) in
+        let task = NCCommunication.sharedInstance.download(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, fileNamePathLocalDestination: url.path, wwan: false, progressHandler: { (progress) in
             
         }) { (etag, date, lenght, error) in
             
@@ -267,7 +267,7 @@ class FileProviderExtension: NSFileProviderExtension {
         let fileNameServerUrl = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
         
-        _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileNameLocalPath, progressHandler: { (progress) in
+        _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileNameLocalPath, wwan: false, progressHandler: { (progress) in
         }) { (ocId, etag, date, error) in
             if error == nil {
                 NCManageDatabase.sharedInstance.setLocalFile(ocId: itemIdentifier.rawValue, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag!)
