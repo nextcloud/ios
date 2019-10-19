@@ -269,23 +269,23 @@
 
 - (void)readFolder
 {
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" completionHandler:^(NSArray<NCFile *> *files, NSError *error) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" account:activeAccount completionHandler:^(NSString *account, NSArray<NCFile *> *files, NSError *error) {
         
         if (error == nil && files.count >= 1) {
 
             NCFile *fileDirectory = files[0];
         
             // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:fileDirectory.etag ocId:fileDirectory.ocId encrypted:fileDirectory.e2eEncrypted account:activeAccount];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:fileDirectory.etag ocId:fileDirectory.ocId encrypted:fileDirectory.e2eEncrypted account:account];
             
             // Delete metadata
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
             
             // In download
-            NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+            NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
             
             // Insert in Database
-            [[NCManageDatabase sharedInstance] addMetadataWithFiles:files account:activeAccount serverUrl:_serverUrl removeFirst:true];
+            [[NCManageDatabase sharedInstance] addMetadataWithFiles:files account:account serverUrl:_serverUrl removeFirst:true];
             
             // reinsert metadatas in Download
             if (metadatasInDownload) {
@@ -318,7 +318,7 @@
 {
     NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", _serverUrl, fileNameFolder];
      
-    [[NCCommunication sharedInstance] createFolder:serverUrlFileName completionHandler:^(NSString *ocID, NSDate *date, NSError *error) {
+    [[NCCommunication sharedInstance] createFolder:serverUrlFileName account:activeAccount completionHandler:^(NSString *account, NSString *ocID, NSDate *date, NSError *error) {
         if (error == nil) {
            [self readFolder];
         } else {

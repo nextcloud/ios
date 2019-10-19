@@ -34,13 +34,13 @@ extension FileProviderExtension {
         
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
         
-        NCCommunication.sharedInstance.createFolder(serverUrlFileName) { (ocId, date, error) in
+        NCCommunication.sharedInstance.createFolder(serverUrlFileName, account: fileProviderData.sharedInstance.account) { (account, ocId, date, error) in
             
             if error == nil {
                 
                 let metadata = tableMetadata()
                 
-                metadata.account = fileProviderData.sharedInstance.account
+                metadata.account = account
                 metadata.directory = true
                 metadata.ocId = ocId!
                 metadata.fileName = directoryName
@@ -53,7 +53,7 @@ extension FileProviderExtension {
                     return
                 }
                 
-                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, account: fileProviderData.sharedInstance.account) else {
+                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, account: account) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -81,7 +81,7 @@ extension FileProviderExtension {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         
-        NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName) { (error) in
+        NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, account: fileProviderData.sharedInstance.account) { (account, error) in
             
             if error == nil { //|| error == kOCErrorServerPathNotFound {
             
@@ -94,7 +94,7 @@ extension FileProviderExtension {
                 
                 if metadata.directory {
                     let dirForDelete = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: fileProviderData.sharedInstance.account)
+                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: account)
                 }
                 
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -131,12 +131,12 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo) { (error) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, account: fileProviderData.sharedInstance.account) { (account, error) in
        
             if error == nil {
                 
                 if metadataFrom.directory {
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: fileProviderData.sharedInstance.account)
+                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
                     NCManageDatabase.sharedInstance.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)                    
                 }
                 
@@ -172,7 +172,7 @@ extension FileProviderExtension {
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         
-        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo) { (error) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, account: fileProviderData.sharedInstance.account) { (account, error) in
        
             if error == nil {
                 
@@ -184,7 +184,7 @@ extension FileProviderExtension {
                 
                 if metadata.directory {
                     
-                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, encrypted: directoryTable.e2eEncrypted, account: fileProviderData.sharedInstance.account)
+                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, encrypted: directoryTable.e2eEncrypted, account: account)
                     
                 } else {
                     
@@ -237,7 +237,7 @@ extension FileProviderExtension {
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
             
-            NCCommunication.sharedInstance.setFavorite(urlString: fileProviderData.sharedInstance.accountUrl, fileName: fileNamePath, favorite: favorite) { (error) in
+            NCCommunication.sharedInstance.setFavorite(urlString: fileProviderData.sharedInstance.accountUrl, fileName: fileNamePath, favorite: favorite, account: fileProviderData.sharedInstance.account) { (account, error) in
                 if error == nil {
                     // Change DB
                     metadata.favorite = favorite
@@ -349,13 +349,13 @@ extension FileProviderExtension {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                 
-                _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileTemporaryDirectory, wwan: false, progressHandler: { (progress) in
-                }) { (ocId, etag, date, error) in
+                _ = NCCommunication.sharedInstance.upload(serverUrlFileName: fileNameServerUrl, fileNamePathSource: fileTemporaryDirectory, wwan: false, account: fileProviderData.sharedInstance.account, progressHandler: { (progress) in
+                }) { (account, ocId, etag, date, error) in
                     if error == nil {
                         _ = fileProviderUtility.sharedInstance.moveFile(fileTemporaryDirectory, toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName))
                                                
                         let metadata = tableMetadata()
-                        metadata.account = fileProviderData.sharedInstance.account
+                        metadata.account = account
                         metadata.date = date! as NSDate
                         metadata.directory = false
                         metadata.etag = etag!

@@ -90,11 +90,11 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - webDAV
 
-    @objc func createFolder(_ serverUrlFileName: String, completionHandler: @escaping (_ ocId: String?, _ date: NSDate?, _ error: Error?) -> Void) {
+    @objc func createFolder(_ serverUrlFileName: String, account: String, completionHandler: @escaping (_ account: String, _ ocId: String?, _ date: NSDate?, _ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -108,23 +108,23 @@ class NCCommunication: SessionDelegate {
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(nil, nil, error)
+                completionHandler(account, nil, nil, error)
             case .success( _):
                 let ocId = response.response?.allHeaderFields["OC-FileId"] as! String?
                 if let dateString = response.response?.allHeaderFields["Date"] as! String? {
                     if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
-                        completionHandler(ocId, date, nil)
-                    } else { completionHandler(nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
-                } else { completionHandler(nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                        completionHandler(account, ocId, date, nil)
+                    } else { completionHandler(account, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                } else { completionHandler(account, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
             }
         }
     }
     
-    @objc func deleteFileOrFolder(_ serverUrlFileName: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func deleteFileOrFolder(_ serverUrlFileName: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -138,18 +138,18 @@ class NCCommunication: SessionDelegate {
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(error)
+                completionHandler(account, error)
             case .success( _):
-                completionHandler(nil)
+                completionHandler(account, nil)
             }
         }
     }
     
-    @objc func moveFileOrFolder(serverUrlFileNameSource: String, serverUrlFileNameDestination: String, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func moveFileOrFolder(serverUrlFileNameSource: String, serverUrlFileNameDestination: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileNameSource) else {
-            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -165,14 +165,14 @@ class NCCommunication: SessionDelegate {
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(error)
+                completionHandler(account, error)
             case .success( _):
-                completionHandler(nil)
+                completionHandler(account, nil)
             }
         }
     }
     
-    @objc func readFileOrFolder(serverUrlFileName: String, depth: String, completionHandler: @escaping (_ result: [NCFile], _ error: Error?) -> Void) {
+    @objc func readFileOrFolder(serverUrlFileName: String, depth: String, account: String, completionHandler: @escaping (_ account: String, _ result: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
         var isNotFirstFileOfList: Bool = false
@@ -212,7 +212,7 @@ class NCCommunication: SessionDelegate {
         if depth == "1" && serverUrlFileName.last != "/" { serverUrlFileName = serverUrlFileName + "/" }
         if depth == "0" && serverUrlFileName.last == "/" { serverUrlFileName = String(serverUrlFileName.remove(at: serverUrlFileName.index(before: serverUrlFileName.endIndex))) }
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -231,14 +231,14 @@ class NCCommunication: SessionDelegate {
             try urlRequest = URLRequest(url: url, method: method, headers: headers)
             urlRequest.httpBody = dataFile.data(using: .utf8)
         } catch let error {
-            completionHandler(files, error)
+            completionHandler(account, files, error)
             return
         }
         
         sessionManagerData.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(files, error)
+                completionHandler(account, files, error)
             case .success( _):
                 if let data = response.data {
                     let xml = XML.parse(data)
@@ -329,15 +329,15 @@ class NCCommunication: SessionDelegate {
                         isNotFirstFileOfList = true;
                         files.append(file)
                     }
-                    completionHandler(files, nil)
+                    completionHandler(account, files, nil)
                 } else {
-                    completionHandler(files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil))
+                    completionHandler(account, files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil))
                 }
             }
         }
     }
     
-    @objc func setFavorite(urlString: String, fileName: String, favorite: Bool, completionHandler: @escaping (_ error: Error?) -> Void) {
+    @objc func setFavorite(urlString: String, fileName: String, favorite: Bool, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
         
         let dataFile =
         """
@@ -356,7 +356,7 @@ class NCCommunication: SessionDelegate {
         let serverUrlFileName = urlString + "/remote.php/dav/files/" + username + "/" + fileName
  
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -374,29 +374,29 @@ class NCCommunication: SessionDelegate {
             try urlRequest = URLRequest(url: url, method: method, headers: headers)
             urlRequest.httpBody = body.data(using: .utf8)
         } catch let error {
-            completionHandler(error)
+            completionHandler(account, error)
             return
         }
         
         sessionManagerData.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(error)
+                completionHandler(account, error)
             case .success( _):
-                completionHandler(nil)
+                completionHandler(account, nil)
             }
         }
     }
     
     //MARK: - API
-    @objc func downloadPreview(serverUrl: String, fileNamePath: String, fileNamePathLocalDestination: String, width: CGFloat, height: CGFloat, completionHandler: @escaping (_ data: Data?, _ error: Error?) -> Void) {
+    @objc func downloadPreview(serverUrl: String, fileNamePath: String, fileNamePathLocalDestination: String, width: CGFloat, height: CGFloat, account: String, completionHandler: @escaping (_ account: String, _ data: Data?, _ error: Error?) -> Void) {
         
         // url
         var serverUrl = String(serverUrl)
         if serverUrl.last != "/" { serverUrl = serverUrl + "/" }
         serverUrl = serverUrl + "index.php/core/preview.png?file=" + fileNamePath + "&x=\(width)&y=\(height)&a=1&mode=cover"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
-            completionHandler(nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -410,18 +410,18 @@ class NCCommunication: SessionDelegate {
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(nil, error)
+                completionHandler(account, nil, error)
             case .success( _):
                 if let data = response.data {
                     do {
                         let url = URL.init(fileURLWithPath: fileNamePathLocalDestination)
                         try  data.write(to: url, options: .atomic)
-                        completionHandler(data, nil)
+                        completionHandler(account, data, nil)
                     } catch let error {
-                        completionHandler(nil, error)
+                        completionHandler(account, nil, error)
                     }
                 } else {
-                    completionHandler(nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorCannotDecodeContentData, userInfo: nil))
+                    completionHandler(account, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorCannotDecodeContentData, userInfo: nil))
                 }
             }
         }
@@ -429,7 +429,7 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - File transfer
     
-    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, wwan: Bool, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
+    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ account: String, _ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
         
         // session
         let sessionManager: Alamofire.Session
@@ -443,7 +443,7 @@ class NCCommunication: SessionDelegate {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return nil
         }
         
@@ -468,23 +468,23 @@ class NCCommunication: SessionDelegate {
         .response { response in
             switch response.result {
             case.failure(let error):
-                completionHandler(nil, nil, 0, error)
+                completionHandler(account, nil, nil, 0, error)
             case .success( _):
                 let lenght = response.response?.allHeaderFields["lenght"] as! Double
                 var etag = response.response?.allHeaderFields["OC-ETag"] as! String?
                 if etag != nil { etag = etag!.replacingOccurrences(of: "\"", with: "") }
                 if let dateString = response.response?.allHeaderFields["Date"] as! String? {
                     if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
-                        completionHandler(etag, date, lenght, nil)
-                    } else { completionHandler(nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
-                } else { completionHandler(nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                        completionHandler(account, etag, date, lenght, nil)
+                    } else { completionHandler(account, nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                } else { completionHandler(account, nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
             }
         }
         
         return request.task
     }
     
-    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, wwan: Bool, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) -> URLSessionTask? {
+    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) -> URLSessionTask? {
         
         // session
         let sessionManager: Alamofire.Session
@@ -498,7 +498,7 @@ class NCCommunication: SessionDelegate {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return nil
         }
         let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
@@ -515,16 +515,16 @@ class NCCommunication: SessionDelegate {
         .response { response in
             switch response.result {
             case.failure(let error):
-                completionHandler(nil, nil, nil, error)
+                completionHandler(account, nil, nil, nil, error)
             case .success( _):
                 let ocId = response.response?.allHeaderFields["OC-FileId"] as! String?
                 var etag = response.response?.allHeaderFields["OC-ETag"] as! String?
                 if etag != nil { etag = etag!.replacingOccurrences(of: "\"", with: "") }
                 if let dateString = response.response?.allHeaderFields["Date"] as! String? {
                     if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
-                        completionHandler(ocId, etag, date, nil)
-                    } else { completionHandler(nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
-                } else { completionHandler(nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                        completionHandler(account, ocId, etag, date, nil)
+                    } else { completionHandler(account, nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                } else { completionHandler(account, nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
             }
         }
         
