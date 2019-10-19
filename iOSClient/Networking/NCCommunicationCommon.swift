@@ -29,7 +29,13 @@ class NCCommunicationCommon: NSObject {
         let instance = NCCommunicationCommon()
         return instance
     }()
-
+    
+    // Session
+    @objc public let download_session: String = "com.nextcloud.download.session"
+    @objc public let download_session_wwan: String = "com.nextcloud.download.sessionwwan"
+    @objc public let upload_session: String = "com.nextcloud.upload.session"
+    @objc public let upload_session_wwan: String = "com.nextcloud.upload.sessionwwan"
+    
     func convertDate(_ dateString: String, format: String) -> NSDate? {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale.init(identifier: "en_US_POSIX")
