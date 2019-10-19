@@ -46,14 +46,14 @@ class NCCommunication: SessionDelegate {
     private lazy var sessionManagerTransfer: Alamofire.Session = {
         let configuration = URLSessionConfiguration.af.default
         configuration.allowsCellularAccess = true
-        configuration.httpMaximumConnectionsPerHost = 5
+        configuration.httpMaximumConnectionsPerHost = NCCommunicationCommon.sharedInstance.session_maximumConnectionsPerHost
         return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
     }()
     
     private lazy var sessionManagerTransferWWan: Alamofire.Session = {
         let configuration = URLSessionConfiguration.af.default
         configuration.allowsCellularAccess = false
-        configuration.httpMaximumConnectionsPerHost = 5
+        configuration.httpMaximumConnectionsPerHost = NCCommunicationCommon.sharedInstance.session_maximumConnectionsPerHost
         return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
     }()
     
@@ -432,10 +432,10 @@ class NCCommunication: SessionDelegate {
         let sessionManager: Alamofire.Session
         if wwan {
             sessionManager = sessionManagerTransferWWan
-            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.download_session_wwan
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.session_description_download_wwan
         } else {
             sessionManager = sessionManagerTransfer
-            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.download_session
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.session_description_download
         }
         
         // url
@@ -487,10 +487,10 @@ class NCCommunication: SessionDelegate {
         let sessionManager: Alamofire.Session
         if wwan {
             sessionManager = sessionManagerTransferWWan
-            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.upload_session_wwan
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.session_description_upload_wwan
         } else {
             sessionManager = sessionManagerTransfer
-            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.upload_session
+            sessionManager.session.sessionDescription = NCCommunicationCommon.sharedInstance.session_description_upload
         }
         
         // url
