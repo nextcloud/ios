@@ -59,7 +59,7 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - Setting
 
-    @objc func setting(username: String, password: String, userAgent: String) {
+    @objc func setting(username: String, password: String, userAgent: String?) {
         self.username = username
         self.password = password
         self.userAgent = userAgent
@@ -169,7 +169,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func readFileOrFolder(serverUrlFileName: String, depth: String, account: String, completionHandler: @escaping (_ account: String, _ result: [NCFile], _ error: Error?) -> Void) {
+    @objc func readFileOrFolder(serverUrlFileName: String, depth: String, account: String, completionHandler: @escaping (_ account: String, _ files: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
         var isNotFirstFileOfList: Bool = false
@@ -424,6 +424,29 @@ class NCCommunication: SessionDelegate {
         }
     }
     
+    @objc func getExternalSite(urlString: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
+        
+        // url
+        var urlString = String(urlString)
+        if urlString.last != "/" { urlString = urlString + "/" }
+        urlString = urlString + "ocs/v2.php/apps/external/api/v1"
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
+            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            return
+        }
+        
+        // method
+        let method = HTTPMethod(rawValue: "GET")
+        
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+        
+        sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding(destination: .queryString), headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { response in
+            
+        }
+    }
+           
     //MARK: - File transfer
     
     @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ account: String, _ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
