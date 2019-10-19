@@ -429,7 +429,7 @@ class NCCommunication: SessionDelegate {
         // url
         var urlString = String(urlString)
         if urlString.last != "/" { urlString = urlString + "/" }
-        urlString = urlString + "ocs/v2.php/apps/external/api/v1"
+        urlString = urlString + "ocs/v2.php/apps/external/api/v1?format=json"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
             completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
@@ -442,8 +442,13 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding(destination: .queryString), headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { response in
-            
+        sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
+            switch response.result {
+                case.failure(let error):
+                    completionHandler(account, error)
+                case .success(let json):
+                    completionHandler(account, nil)
+            }
         }
     }
            

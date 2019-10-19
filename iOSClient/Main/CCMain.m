@@ -218,6 +218,13 @@
 
     // Title
     [self setTitle];
+    
+#ifdef DEBUG
+    [[NCCommunication sharedInstance] settingWithUsername:appDelegate.activeUserID password:appDelegate.activePassword userAgent:[CCUtility getUserAgent]];
+    [[NCCommunication sharedInstance] getExternalSiteWithUrlString:appDelegate.activeUrl account:appDelegate.activeAccount completionHandler:^(NSString *account, NSError *error) {
+        
+    }];
+#endif
 }
 
 - (void)viewWillDisappear:(BOOL)animated
