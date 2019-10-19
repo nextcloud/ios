@@ -57,14 +57,11 @@ class NCCommunication: SessionDelegate {
         return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
     }()
     
-    //MARK: - Settings
+    //MARK: - Setting
 
-    @objc func settingAccount(username: String, password: String) {
+    @objc func setting(username: String, password: String, userAgent: String) {
         self.username = username
         self.password = password
-    }
-    
-    @objc func settingUserAgent(_ userAgent: String) {
         self.userAgent = userAgent
     }
     

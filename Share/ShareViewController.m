@@ -59,8 +59,7 @@
         
         _activeAccount = tableAccount.account;
         
-        [[NCCommunication sharedInstance] settingAccountWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
-        [[NCCommunication sharedInstance] settingUserAgent:[CCUtility getUserAgent]];
+        [[NCCommunication sharedInstance] settingWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent]];
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             

@@ -54,8 +54,7 @@
         activeAccount = tableAccount.account;
         activeUrl = tableAccount.url;
         
-        [[NCCommunication sharedInstance] settingAccountWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
-        [[NCCommunication sharedInstance] settingUserAgent:[CCUtility getUserAgent]];
+        [[NCCommunication sharedInstance] settingWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent]];
         
     } else {
         
