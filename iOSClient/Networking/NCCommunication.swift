@@ -36,6 +36,18 @@ class NCCommunication: SessionDelegate {
     var userAgent: String?
     var directoryCertificate: String = ""
     
+    // Session Manager
+    
+    private lazy var sessionManager: Alamofire.Session = {
+        let configuration = URLSessionConfiguration.af.default
+        return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
+    }()
+   
+    private lazy var sessionManagerTransfer: Alamofire.Session = {
+        let configuration = URLSessionConfiguration.af.default
+        return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
+    }()
+    
     //MARK: - Settings
 
     @objc func settingAccount(username: String, password: String) {
@@ -45,6 +57,26 @@ class NCCommunication: SessionDelegate {
     
     @objc func settingUserAgent(_ userAgent: String) {
         self.userAgent = userAgent
+    }
+    
+    //MARK: - monitor
+    
+    private func makeEvents() -> [EventMonitor] {
+        let events = ClosureEventMonitor()
+        events.requestDidFinish = { request in
+            print("Request finished \(request)")
+        }
+        events.taskDidComplete = { session, task, error in
+            print("Request failed \(session) \(task) \(String(describing: error))")
+            /*
+            if  let urlString = (error as NSError?)?.userInfo["NSErrorFailingURLStringKey"] as? String,
+                let resumedata = (error as NSError?)?.userInfo[NSURLSessionDownloadTaskResumeData] as? Data {
+                print("Found resume data for url \(urlString)")
+                //self.startDownload(urlString, resumeData: resumedata)
+            }
+            */
+        }
+        return [events]
     }
     
     //MARK: - webDAV
@@ -64,7 +96,7 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
+        sessionManager.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
                 completionHandler(nil, nil, error)
@@ -94,7 +126,7 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
+        sessionManager.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
                 completionHandler(error)
@@ -121,7 +153,7 @@ class NCCommunication: SessionDelegate {
         headers.update(name: "Destination", value: serverUrlFileNameDestination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
         headers.update(name: "Overwrite", value: "T")
         
-        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
+        sessionManager.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
                 completionHandler(error)
@@ -194,7 +226,7 @@ class NCCommunication: SessionDelegate {
             return
         }
         
-        AF.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
+        sessionManager.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
             switch response.result {
             case.failure(let error):
                 completionHandler(files, error)
@@ -337,7 +369,7 @@ class NCCommunication: SessionDelegate {
             return
         }
         
-        AF.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
+        sessionManager.request(urlRequest).validate(statusCode: 200..<300).responseData { (response) in
             switch response.result {
             case.failure(let error):
                 completionHandler(error)
@@ -366,7 +398,7 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
 
-        AF.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
+        sessionManager.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response { (response) in
             switch response.result {
             case.failure(let error):
                 completionHandler(nil, error)
@@ -410,7 +442,7 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        let request = AF.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination)
+        let request = sessionManagerTransfer.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil, to: destination)
         .downloadProgress { progress in
             progressHandler(progress)
         }
@@ -447,7 +479,7 @@ class NCCommunication: SessionDelegate {
         var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
-        let request = AF.upload(fileNamePathSourceUrl, to: url, method: .put, headers: headers, interceptor: nil, fileManager: .default)
+        let request = sessionManagerTransfer.upload(fileNamePathSourceUrl, to: url, method: .put, headers: headers, interceptor: nil, fileManager: .default)
         .uploadProgress { progress in
             progressHandler(progress)
         }
