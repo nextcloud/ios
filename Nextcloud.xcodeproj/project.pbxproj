@@ -551,6 +551,7 @@
 		F7D4B69A2295666E000C2C86 /* FirebaseMLCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */; };
 		F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
+		F7D88011235CD46200867DD4 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D88010235CD46200867DD4 /* SwiftyJSON.framework */; };
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
 		F7DBC37F23325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
 		F7DBC38023325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
@@ -672,6 +673,16 @@
 				F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7D88013235CD46200867DD4 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1350,6 +1361,7 @@
 		F7D5328F1F5D443B006568B1 /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D532A41F5D4461006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D6650620FF341600BFBA9E /* NCMainCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainCommon.swift; sourceTree = "<group>"; };
+		F7D88010235CD46200867DD4 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
 		F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAppConfigView.swift; sourceTree = "<group>"; };
 		F7DBC37D23325E2D001A85BA /* NCXMLGetAppPasswordParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLGetAppPasswordParser.h; sourceTree = "<group>"; };
 		F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLGetAppPasswordParser.m; sourceTree = "<group>"; };
@@ -1486,6 +1498,7 @@
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
+				F7D88011235CD46200867DD4 /* SwiftyJSON.framework in Frameworks */,
 				F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */,
@@ -2882,6 +2895,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7D88010235CD46200867DD4 /* SwiftyJSON.framework */,
 				F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */,
 				F736B551234DCF57008A5C9F /* Alamofire.framework */,
 				F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */,
@@ -3010,6 +3024,7 @@
 				F73B02C01DC0F1C900EC2C33 /* ShellScript */,
 				F7A377371EB24469002856D3 /* ShellScript */,
 				F75A40001EBCB82B00B213E8 /* ShellScript */,
+				F7D88013235CD46200867DD4 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -3345,6 +3360,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftyXMLParser.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
 			);
 			outputPaths = (
 			);

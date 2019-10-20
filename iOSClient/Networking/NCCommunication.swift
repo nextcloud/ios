@@ -24,6 +24,7 @@
 import Foundation
 import Alamofire
 import SwiftyXMLParser
+import SwiftyJSON
 
 class NCCommunication: SessionDelegate {
     @objc static let sharedInstance: NCCommunication = {
@@ -443,10 +444,12 @@ class NCCommunication: SessionDelegate {
         if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
         
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
+            debugPrint(response)
             switch response.result {
                 case.failure(let error):
                     completionHandler(account, error)
                 case .success(let json):
+                    let json = JSON(json)
                     completionHandler(account, nil)
             }
         }
