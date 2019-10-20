@@ -425,14 +425,16 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func getExternalSite(urlString: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
+    @objc func getExternalSite(urlString: String, account: String, completionHandler: @escaping (_ account: String, _ externalFiles: [NCExternalFile], _ error: Error?) -> Void) {
         
+        var externalFiles = [NCExternalFile]()
+
         // url
         var urlString = String(urlString)
         if urlString.last != "/" { urlString = urlString + "/" }
         urlString = urlString + "ocs/v2.php/apps/external/api/v1?format=json"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
-            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, externalFiles, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
             return
         }
         
@@ -446,11 +448,22 @@ class NCCommunication: SessionDelegate {
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
             debugPrint(response)
             switch response.result {
-                case.failure(let error):
-                    completionHandler(account, error)
-                case .success(let json):
-                    let json = JSON(json)
-                    completionHandler(account, nil)
+            case.failure(let error):
+                completionHandler(account, externalFiles, error)
+            case .success(let json):
+                let json = JSON(json)
+                let ocsdata = json["ocs"]["data"]
+                for (_, subJson):(String, JSON) in ocsdata {
+                    let extrernalFile = NCExternalFile()
+                    if let id = subJson["id"].int { extrernalFile.idExternalSite = id }
+                    if let name = subJson["name"].string { extrernalFile.name = name }
+                    if let url = subJson["url"].string { extrernalFile.url = url }
+                    if let lang = subJson["lang"].string { extrernalFile.lang = lang }
+                    if let icon = subJson["icon"].string { extrernalFile.icon = icon }
+                    if let type = subJson["type"].string { extrernalFile.type = type }
+                    externalFiles.append(extrernalFile)
+                }
+                completionHandler(account, externalFiles, nil)
             }
         }
     }

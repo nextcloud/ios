@@ -52,17 +52,15 @@ import Foundation
     @objc var trashbinDeletionTime = NSDate()
 }
 
-struct NCExternalFile: Codable {
-    let idExternalSite: Int
-    let name = ""
-    let url = ""
-    let lang = ""
-    let icon = ""
-    let type = ""
+@objc class NCExternalFile: NSObject {
+    
+    @objc var idExternalSite: Int = 0
+    @objc var name = ""
+    @objc var url = ""
+    @objc var lang = ""
+    @objc var icon = ""
+    @objc var type = ""
 }
-
-
-//MARK: -
 
 
 

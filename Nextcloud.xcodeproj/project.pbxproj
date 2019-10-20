@@ -96,8 +96,6 @@
 		F724B1CD2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */; };
 		F724B1CE2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
-		F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
-		F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
 		F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */; };
 		F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */; };
@@ -1457,7 +1455,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7B6F70321BD0EA0007D194D /* JDStatusBarNotification.framework in Frameworks */,
 				F7B6F70221BD0E6D007D194D /* MBProgressHUD.framework in Frameworks */,
 				F7B6F70121BD0DD3007D194D /* DZNEmptyDataSet.framework in Frameworks */,
@@ -1472,7 +1469,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7C40C152199BA750004137E /* Realm.framework in Frameworks */,
 				F7C40C162199BA780004137E /* RealmSwift.framework in Frameworks */,
 				F736B557234DCF92008A5C9F /* Alamofire.framework in Frameworks */,
@@ -3890,7 +3886,6 @@
 		F7145A261D12E3B700CAFEEC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -3934,7 +3929,6 @@
 		F7145A271D12E3B700CAFEEC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -3977,7 +3971,6 @@
 		F771E3F020E2392E00AFB62D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -4027,7 +4020,6 @@
 		F771E3F120E2392E00AFB62D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
