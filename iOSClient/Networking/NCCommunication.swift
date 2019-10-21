@@ -35,7 +35,7 @@ class NCCommunication: SessionDelegate {
     var username = ""
     var password = ""
     var userAgent: String?
-    var directoryCertificate: String = ""
+    var directoryCertificate: String?
     
     // Session Manager
     
@@ -64,6 +64,10 @@ class NCCommunication: SessionDelegate {
         self.username = username
         self.password = password
         self.userAgent = userAgent
+    }
+    
+    @objc func setting(directoryCertificate: String) {
+        self.directoryCertificate = directoryCertificate
     }
     
     //MARK: - monitor
@@ -575,7 +579,13 @@ class NCCommunication: SessionDelegate {
     //MARK: - SessionDelegate
 
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        if NCCommunicationCertificate.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: directoryCertificate) {
+        if directoryCertificate == nil {
+            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+            let documentsDirectory = paths[0]
+            directoryCertificate = documentsDirectory + "/certificate"
+        }
+        
+        if NCCommunicationCertificate.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: directoryCertificate!) {
              completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
