@@ -27,8 +27,8 @@ import Alamofire
 import SwiftyXMLParser
 import SwiftyJSON
 
-class NCCommunication: SessionDelegate {
-    @objc static let sharedInstance: NCCommunication = {
+@objc public class NCCommunication:  SessionDelegate {
+    @objc public static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
         return instance
     }()
@@ -61,13 +61,13 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - Setting
 
-    @objc func setting(username: String, password: String, userAgent: String?) {
+    @objc public func setting(username: String, password: String, userAgent: String?) {
         self.username = username
         self.password = password
         self.userAgent = userAgent
     }
     
-    @objc func setting(directoryCertificate: String) {
+    @objc public func setting(directoryCertificate: String) {
         self.directoryCertificate = directoryCertificate
     }
     
@@ -93,7 +93,7 @@ class NCCommunication: SessionDelegate {
     
     //MARK: - webDAV
 
-    @objc func createFolder(_ serverUrlFileName: String, account: String, completionHandler: @escaping (_ account: String, _ ocId: String?, _ date: NSDate?, _ error: Error?) -> Void) {
+    @objc public func createFolder(_ serverUrlFileName: String, account: String, completionHandler: @escaping (_ account: String, _ ocId: String?, _ date: NSDate?, _ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
@@ -123,7 +123,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func deleteFileOrFolder(_ serverUrlFileName: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
+    @objc public func deleteFileOrFolder(_ serverUrlFileName: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
@@ -148,7 +148,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func moveFileOrFolder(serverUrlFileNameSource: String, serverUrlFileNameDestination: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
+    @objc public func moveFileOrFolder(serverUrlFileNameSource: String, serverUrlFileNameDestination: String, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileNameSource) else {
@@ -175,7 +175,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func readFileOrFolder(serverUrlFileName: String, depth: String, account: String, completionHandler: @escaping (_ account: String, _ files: [NCFile], _ error: Error?) -> Void) {
+    @objc public func readFileOrFolder(serverUrlFileName: String, depth: String, account: String, completionHandler: @escaping (_ account: String, _ files: [NCFile], _ error: Error?) -> Void) {
         
         var files = [NCFile]()
         var isNotFirstFileOfList: Bool = false
@@ -340,7 +340,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func setFavorite(urlString: String, fileName: String, favorite: Bool, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
+    @objc public func setFavorite(urlString: String, fileName: String, favorite: Bool, account: String, completionHandler: @escaping (_ account: String, _ error: Error?) -> Void) {
         
         let dataFile =
         """
@@ -392,7 +392,7 @@ class NCCommunication: SessionDelegate {
     }
     
     //MARK: - API
-    @objc func downloadPreview(serverUrl: String, fileNamePath: String, fileNamePathLocalDestination: String, width: CGFloat, height: CGFloat, account: String, completionHandler: @escaping (_ account: String, _ data: Data?, _ error: Error?) -> Void) {
+    @objc public func downloadPreview(serverUrl: String, fileNamePath: String, fileNamePathLocalDestination: String, width: CGFloat, height: CGFloat, account: String, completionHandler: @escaping (_ account: String, _ data: Data?, _ error: Error?) -> Void) {
         
         // url
         var serverUrl = String(serverUrl)
@@ -430,7 +430,7 @@ class NCCommunication: SessionDelegate {
         }
     }
     
-    @objc func getExternalSite(urlString: String, account: String, completionHandler: @escaping (_ account: String, _ externalFiles: [NCExternalFile], _ error: Error?) -> Void) {
+    @objc public func getExternalSite(urlString: String, account: String, completionHandler: @escaping (_ account: String, _ externalFiles: [NCExternalFile], _ error: Error?) -> Void) {
         
         var externalFiles = [NCExternalFile]()
 
@@ -475,7 +475,7 @@ class NCCommunication: SessionDelegate {
            
     //MARK: - File transfer
     
-    @objc func download(serverUrlFileName: String, fileNamePathLocalDestination: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ account: String, _ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
+    @objc public func download(serverUrlFileName: String, fileNamePathLocalDestination: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ account: String, _ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
         
         // session
         let sessionManager: Alamofire.Session
@@ -530,7 +530,7 @@ class NCCommunication: SessionDelegate {
         return request.task
     }
     
-    @objc func upload(serverUrlFileName: String, fileNamePathSource: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) -> URLSessionTask? {
+    @objc public func upload(serverUrlFileName: String, fileNamePathSource: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void ,completionHandler: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ error: Error?) -> Void) -> URLSessionTask? {
         
         // session
         let sessionManager: Alamofire.Session

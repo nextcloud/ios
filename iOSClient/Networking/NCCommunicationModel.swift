@@ -25,41 +25,41 @@ import Foundation
 
 //MARK: - File
 
-@objc class NCFile: NSObject {
+@objc public class NCFile: NSObject {
     
-    @objc var commentsUnread: Bool = false
-    @objc var contentType = ""
-    @objc var date = NSDate()
-    @objc var directory: Bool = false
-    @objc var e2eEncrypted: Bool = false
-    @objc var etag = ""
-    @objc var favorite: Bool = false
-    @objc var fileId = ""
-    @objc var fileName = ""
-    @objc var hasPreview: Bool = false
-    @objc var mountType = ""
-    @objc var ocId = ""
-    @objc var ownerId = ""
-    @objc var ownerDisplayName = ""
-    @objc var path = ""
-    @objc var permissions = ""
-    @objc var quotaUsedBytes: Double = 0
-    @objc var quotaAvailableBytes: Double = 0
-    @objc var resourceType = ""
-    @objc var size: Double = 0
-    @objc var trashbinFileName = ""
-    @objc var trashbinOriginalLocation = ""
-    @objc var trashbinDeletionTime = NSDate()
+    @objc public var commentsUnread: Bool = false
+    @objc public var contentType = ""
+    @objc public var date = NSDate()
+    @objc public var directory: Bool = false
+    @objc public var e2eEncrypted: Bool = false
+    @objc public var etag = ""
+    @objc public var favorite: Bool = false
+    @objc public var fileId = ""
+    @objc public var fileName = ""
+    @objc public var hasPreview: Bool = false
+    @objc public var mountType = ""
+    @objc public var ocId = ""
+    @objc public var ownerId = ""
+    @objc public var ownerDisplayName = ""
+    @objc public var path = ""
+    @objc public var permissions = ""
+    @objc public var quotaUsedBytes: Double = 0
+    @objc public var quotaAvailableBytes: Double = 0
+    @objc public var resourceType = ""
+    @objc public var size: Double = 0
+    @objc public var trashbinFileName = ""
+    @objc public var trashbinOriginalLocation = ""
+    @objc public var trashbinDeletionTime = NSDate()
 }
 
-@objc class NCExternalFile: NSObject {
+@objc public class NCExternalFile: NSObject {
     
-    @objc var idExternalSite: Int = 0
-    @objc var name = ""
-    @objc var url = ""
-    @objc var lang = ""
-    @objc var icon = ""
-    @objc var type = ""
+    @objc public var idExternalSite: Int = 0
+    @objc public var name = ""
+    @objc public var url = ""
+    @objc public var lang = ""
+    @objc public var icon = ""
+    @objc public var type = ""
 }
 
 

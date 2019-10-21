@@ -31,11 +31,11 @@ class NCCommunicationCommon: NSObject {
     }()
     
     // Session
-    @objc public let session_maximumConnectionsPerHost = 5
-    @objc public let session_description_download: String = "com.nextcloud.download.session"
-    @objc public let session_description_download_wwan: String = "com.nextcloud.download.sessionwwan"
-    @objc public let session_description_upload: String = "com.nextcloud.upload.session"
-    @objc public let session_description_upload_wwan: String = "com.nextcloud.upload.sessionwwan"
+    @objc let session_maximumConnectionsPerHost = 5
+    @objc let session_description_download: String = "com.nextcloud.download.session"
+    @objc let session_description_download_wwan: String = "com.nextcloud.download.sessionwwan"
+    @objc let session_description_upload: String = "com.nextcloud.upload.session"
+    @objc let session_description_upload_wwan: String = "com.nextcloud.upload.sessionwwan"
     
     func convertDate(_ dateString: String, format: String) -> NSDate? {
         let dateFormatter = DateFormatter()
