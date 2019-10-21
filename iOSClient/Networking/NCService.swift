@@ -112,6 +112,10 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
         
+        NCCommunication.sharedInstance.getServerStatus(urlString: appDelegate.activeUrl) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, error) in
+            
+        }
+
         OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, extendedSupport, message, errorCode) in
             if errorCode == 0 {
                 if extendedSupport == false {

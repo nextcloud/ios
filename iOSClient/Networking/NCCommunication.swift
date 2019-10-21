@@ -472,7 +472,56 @@ import SwiftyJSON
             }
         }
     }
-           
+    
+    @objc public func getServerStatus(urlString: String, completionHandler: @escaping (_ serverProductName: String?, _ serverVersion: String? , _ versionMajor: Int, _ versionMinor: Int, _ versionMicro: Int, _ extendedSupport: Bool, _ error: Error?) -> Void) {
+                
+        // url
+        var urlString = String(urlString)
+        if urlString.last != "/" { urlString = urlString + "/" }
+        urlString = urlString + "status.php"
+        guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
+            completionHandler(nil, nil, 0, 0, 0, false, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            return
+        }
+        
+        // method
+        let method = HTTPMethod(rawValue: "GET")
+        
+        // headers
+        var headers: HTTPHeaders = [.authorization(username: self.username, password: self.password)]
+        if let userAgent = self.userAgent { headers.update(.userAgent(userAgent)) }
+        headers.update(name: "OCS-APIRequest", value: "true")
+
+        sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
+            switch response.result {
+            case.failure(let error):
+                completionHandler(nil, nil, 0, 0, 0, false, error)
+            case .success(let json):
+                let json = JSON(json)
+                var versionMajor = 0, versionMinor = 0, versionMicro = 0
+                
+                let serverProductName = json["productname"].string?.lowercased()
+                let serverVersion = json["version"].string
+                let serverVersionString = json["versionstring"].string
+                let extendedSupport = json["extendedSupport"].bool
+                
+                if let arrayVersion = serverVersion?.components(separatedBy: ".") {
+                    if arrayVersion.count == 1 {
+                        versionMajor = Int(arrayVersion[0]) ?? 0
+                    } else if arrayVersion.count == 2 {
+                        versionMajor = Int(arrayVersion[0]) ?? 0
+                        versionMinor = Int(arrayVersion[1]) ?? 0
+                    } else if arrayVersion.count >= 3 {
+                        versionMajor = Int(arrayVersion[0]) ?? 0
+                        versionMinor = Int(arrayVersion[1]) ?? 0
+                        versionMicro = Int(arrayVersion[2]) ?? 0
+                    }
+                }
+                
+                completionHandler(serverProductName, serverVersionString, versionMajor, versionMinor, versionMicro, extendedSupport!, nil)
+            }
+        }
+    }
     //MARK: - File transfer
     
     @objc public func download(serverUrlFileName: String, fileNamePathLocalDestination: String, wwan: Bool, account: String, progressHandler: @escaping (_ progress: Progress) -> Void , completionHandler: @escaping (_ account: String, _ etag: String?, _ date: NSDate?, _ lenght: Double, _ error: Error?) -> Void) -> URLSessionTask? {
