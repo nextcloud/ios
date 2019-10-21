@@ -92,7 +92,7 @@ class NCCommunication: SessionDelegate {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return
         }
         
@@ -112,8 +112,8 @@ class NCCommunication: SessionDelegate {
                 if let dateString = response.response?.allHeaderFields["Date"] as! String? {
                     if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
                         completionHandler(account, ocId, date, nil)
-                    } else { completionHandler(account, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
-                } else { completionHandler(account, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                    } else { completionHandler(account, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorBadServerResponse, description: "Response error decode date format")) }
+                } else { completionHandler(account, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorBadServerResponse, description: "Response error decode date format")) }
             }
         }
     }
@@ -122,7 +122,7 @@ class NCCommunication: SessionDelegate {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return
         }
         
@@ -147,7 +147,7 @@ class NCCommunication: SessionDelegate {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileNameSource) else {
-            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return
         }
         
@@ -210,7 +210,7 @@ class NCCommunication: SessionDelegate {
         if depth == "1" && serverUrlFileName.last != "/" { serverUrlFileName = serverUrlFileName + "/" }
         if depth == "0" && serverUrlFileName.last == "/" { serverUrlFileName = String(serverUrlFileName.remove(at: serverUrlFileName.index(before: serverUrlFileName.endIndex))) }
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, files, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return
         }
         
@@ -329,7 +329,7 @@ class NCCommunication: SessionDelegate {
                     }
                     completionHandler(account, files, nil)
                 } else {
-                    completionHandler(account, files, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil))
+                    completionHandler(account, files, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorBadServerResponse, description: "Response error decode XML"))
                 }
             }
         }
@@ -354,7 +354,7 @@ class NCCommunication: SessionDelegate {
         let serverUrlFileName = urlString + "/remote.php/dav/files/" + username + "/" + fileName
  
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return
         }
         
@@ -394,7 +394,7 @@ class NCCommunication: SessionDelegate {
         if serverUrl.last != "/" { serverUrl = serverUrl + "/" }
         serverUrl = serverUrl + "index.php/core/preview.png?file=" + fileNamePath + "&x=\(width)&y=\(height)&a=1&mode=cover"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
-            completionHandler(account, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return
         }
         
@@ -419,7 +419,7 @@ class NCCommunication: SessionDelegate {
                         completionHandler(account, nil, error)
                     }
                 } else {
-                    completionHandler(account, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorCannotDecodeContentData, userInfo: nil))
+                    completionHandler(account, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorCannotDecodeContentData, description: "Response error data null"))
                 }
             }
         }
@@ -434,7 +434,7 @@ class NCCommunication: SessionDelegate {
         if urlString.last != "/" { urlString = urlString + "/" }
         urlString = urlString + "ocs/v2.php/apps/external/api/v1?format=json"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
-            completionHandler(account, externalFiles, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, externalFiles, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return
         }
         
@@ -484,7 +484,7 @@ class NCCommunication: SessionDelegate {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, nil, 0, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return nil
         }
         
@@ -517,8 +517,8 @@ class NCCommunication: SessionDelegate {
                 if let dateString = response.response?.allHeaderFields["Date"] as! String? {
                     if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
                         completionHandler(account, etag, date, lenght, nil)
-                    } else { completionHandler(account, nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
-                } else { completionHandler(account, nil, nil, 0, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                    } else { completionHandler(account, nil, nil, 0, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorBadServerResponse, description: "Response error decode date format")) }
+                } else { completionHandler(account, nil, nil, 0, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorBadServerResponse, description: "Response error decode date format")) }
             }
         }
         
@@ -539,7 +539,7 @@ class NCCommunication: SessionDelegate {
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil))
+            completionHandler(account, nil, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
             return nil
         }
         let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
@@ -564,8 +564,8 @@ class NCCommunication: SessionDelegate {
                 if let dateString = response.response?.allHeaderFields["Date"] as! String? {
                     if let date = NCCommunicationCommon.sharedInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz") {
                         completionHandler(account, ocId, etag, date, nil)
-                    } else { completionHandler(account, nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
-                } else { completionHandler(account, nil, nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)) }
+                    } else { completionHandler(account, nil, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorBadServerResponse, description: "Response error decode date format")) }
+                } else { completionHandler(account, nil, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorBadServerResponse, description: "Response error decode date format")) }
             }
         }
         
