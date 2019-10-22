@@ -27,7 +27,7 @@ import Alamofire
 import SwiftyXMLParser
 import SwiftyJSON
 
-@objc public class NCCommunication:  SessionDelegate {
+@objc public class NCCommunication: NSObject, URLSessionDelegate {
     @objc public static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
         return instance
@@ -628,7 +628,7 @@ import SwiftyJSON
     
     //MARK: - SessionDelegate
 
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if directoryCertificate == nil {
             let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
             let documentsDirectory = paths[0]
