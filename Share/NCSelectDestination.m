@@ -54,8 +54,8 @@
         activeAccount = tableAccount.account;
         activeUrl = tableAccount.url;
         
-        [[NCCommunication sharedInstance] settingWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent]];
-        
+        (void)[[NCCommunication sharedInstance] initWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent] delegate:nil];
+       
     } else {
         
         UIAlertController * alert= [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"_no_active_account_", nil) preferredStyle:UIAlertControllerStyleAlert];

@@ -59,7 +59,7 @@
         
         _activeAccount = tableAccount.account;
         
-        [[NCCommunication sharedInstance] settingWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent]];
+        (void)[[NCCommunication sharedInstance] initWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent] delegate:nil];
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             

@@ -27,6 +27,10 @@ import Alamofire
 import SwiftyXMLParser
 import SwiftyJSON
 
+@objc public protocol NCCommunicationDelegate {
+   @objc func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
+}
+
 @objc public class NCCommunication: SessionDelegate {
     @objc public static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
@@ -37,6 +41,7 @@ import SwiftyJSON
     var password = ""
     var userAgent: String?
     var directoryCertificate: String?
+    @objc public var delegate: NCCommunicationDelegate?
     
     // Session Manager
     
@@ -59,12 +64,15 @@ import SwiftyJSON
         return Alamofire.Session(configuration: configuration, delegate: self, rootQueue:  DispatchQueue(label: "com.nextcloud.sessionManagerTransferWWan.rootQueue"), startRequestsImmediately: true, requestQueue: nil, serializationQueue: nil, interceptor: nil, serverTrustManager: nil, redirectHandler: nil, cachedResponseHandler: nil, eventMonitors: self.makeEvents())
     }()
     
-    //MARK: - Setting
+    //MARK: - Initializer
 
-    @objc public func setting(username: String, password: String, userAgent: String?) {
+    init() { }
+    
+    @objc public init(username: String, password: String, userAgent: String?, delegate: NCCommunicationDelegate?) {
         self.username = username
         self.password = password
         self.userAgent = userAgent
+        self.delegate = delegate
     }
     
     @objc public func setting(directoryCertificate: String) {
@@ -495,6 +503,14 @@ import SwiftyJSON
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
             switch response.result {
             case.failure(let error):
+                
+//                #if DEBUG
+                print(response.request?.allHTTPHeaderFields)
+                print(response.request.debugDescription)
+                print(response.debugDescription)
+                //print(HTTPURLResponse.localizedString(forStatusCode: confirmedResponse.statusCode))
+//                #endif
+                
                 completionHandler(nil, nil, 0, 0, 0, false, error)
             case .success(let json):
                 let json = JSON(json)
@@ -629,6 +645,17 @@ import SwiftyJSON
     //MARK: - SessionDelegate
 
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        
+        delegate?.urlSession(session, didReceive: challenge, completionHandler: { (authChallengeDisposition, credential) in
+            completionHandler(authChallengeDisposition, credential)
+        })
+        
+        if delegate == nil {
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        }
+        
+        
+        /*
         if directoryCertificate == nil {
             let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
             let documentsDirectory = paths[0]
@@ -640,6 +667,7 @@ import SwiftyJSON
         } else {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
+        */
     }
 }
 

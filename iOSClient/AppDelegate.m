@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, NCCommunicationDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -383,6 +383,8 @@ PKPushRegistry *pushRegistry;
     
     // Setting Account to Networking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
+    
+    (void)[[NCCommunication sharedInstance] initWithUsername:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] delegate:self];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -1257,6 +1259,16 @@ PKPushRegistry *pushRegistry;
         
         NSLog(@"[LOG] End 20 sec. Start handle Events For Background URLSession: %@", identifier);
     });
+}
+
+- (void)urlSession:(NSURLSession * _Nonnull)session didReceive:(NSURLAuthenticationChallenge * _Nonnull)challenge completionHandler:(void (^ _Nonnull)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+    
+    // The pinnning check
+    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
+        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    } else {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
