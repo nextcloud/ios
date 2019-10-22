@@ -27,7 +27,7 @@ import Alamofire
 import SwiftyXMLParser
 import SwiftyJSON
 
-@objc public class NCCommunication: NSObject, URLSessionDelegate {
+@objc public class NCCommunication: SessionDelegate {
     @objc public static let sharedInstance: NCCommunication = {
         let instance = NCCommunication()
         return instance
@@ -42,21 +42,21 @@ import SwiftyJSON
     
     private lazy var sessionManagerData: Alamofire.Session = {
         let configuration = URLSessionConfiguration.af.default
-        return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
+        return Alamofire.Session(configuration: configuration, delegate: self, rootQueue:  DispatchQueue(label: "com.nextcloud.sessionManagerData.rootQueue"), startRequestsImmediately: true, requestQueue: nil, serializationQueue: nil, interceptor: nil, serverTrustManager: nil, redirectHandler: nil, cachedResponseHandler: nil, eventMonitors: self.makeEvents())
     }()
    
     private lazy var sessionManagerTransfer: Alamofire.Session = {
         let configuration = URLSessionConfiguration.af.default
         configuration.allowsCellularAccess = true
         configuration.httpMaximumConnectionsPerHost = NCCommunicationCommon.sharedInstance.session_maximumConnectionsPerHost
-        return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
+        return Alamofire.Session(configuration: configuration, delegate: self, rootQueue:  DispatchQueue(label: "com.nextcloud.sessionManagerTransfer.rootQueue"), startRequestsImmediately: true, requestQueue: nil, serializationQueue: nil, interceptor: nil, serverTrustManager: nil, redirectHandler: nil, cachedResponseHandler: nil, eventMonitors: self.makeEvents())
     }()
     
     private lazy var sessionManagerTransferWWan: Alamofire.Session = {
         let configuration = URLSessionConfiguration.af.default
         configuration.allowsCellularAccess = false
         configuration.httpMaximumConnectionsPerHost = NCCommunicationCommon.sharedInstance.session_maximumConnectionsPerHost
-        return Alamofire.Session(configuration: configuration, eventMonitors: self.makeEvents())
+        return Alamofire.Session(configuration: configuration, delegate: self, rootQueue:  DispatchQueue(label: "com.nextcloud.sessionManagerTransferWWan.rootQueue"), startRequestsImmediately: true, requestQueue: nil, serializationQueue: nil, interceptor: nil, serverTrustManager: nil, redirectHandler: nil, cachedResponseHandler: nil, eventMonitors: self.makeEvents())
     }()
     
     //MARK: - Setting

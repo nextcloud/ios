@@ -174,9 +174,7 @@
     // Remove trailing slash
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
-    
-    
-    /*
+        
     [[NCCommunication sharedInstance] getServerStatusWithUrlString:self.baseUrl.text completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSError *error) {
         
         if (error == nil) {
@@ -226,8 +224,8 @@
         }
         
     }];
-    */
     
+    /*
     [[OCNetworking sharedManager] serverStatusUrl:self.baseUrl.text completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, BOOL extendedSupport, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0) {
@@ -276,6 +274,7 @@
             }
         }
     }];
+    */
 }
 
 - (void)trustedCerticateAccepted
