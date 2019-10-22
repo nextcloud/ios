@@ -176,6 +176,57 @@
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
     
+    /*
+    [[NCCommunication sharedInstance] getServerStatusWithUrlString:self.baseUrl.text completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSError *error) {
+        
+        if (error == nil) {
+            
+            [self.activity stopAnimating];
+            self.login.enabled = YES;
+            
+            // Login Flow
+            if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
+                
+                appDelegate.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+                appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
+                
+                [self presentViewController:appDelegate.activeLoginWeb animated:YES completion:nil];
+            }
+            
+            // NO Login Flow available
+            if (versionMajor < k_flow_version_available) {
+                
+                [self.loginTypeView setHidden:YES];
+                
+                _imageUser.hidden = NO;
+                _user.hidden = NO;
+                _imagePassword.hidden = NO;
+                _password.hidden = NO;
+                
+                [_user becomeFirstResponder];
+            }
+            
+        } else {
+            
+            [self.activity stopAnimating];
+            self.login.enabled = YES;
+            
+            if ([error code] == NSURLErrorServerCertificateUntrusted) {
+                
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:nil viewController:self delegate:self];
+                
+            } else {
+                
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error description] preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                
+                [alertController addAction:okAction];
+                [self presentViewController:alertController animated:YES completion:nil];
+            }
+        }
+        
+    }];
+    */
     
     [[OCNetworking sharedManager] serverStatusUrl:self.baseUrl.text completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, BOOL extendedSupport, NSString *message, NSInteger errorCode) {
         
