@@ -54,6 +54,8 @@
         activeAccount = tableAccount.account;
         activeUrl = tableAccount.url;
         
+        // Networking
+        [NCCommunication sharedInstance].delegate = [NCNetworking sharedInstance];
         (void)[[NCCommunication sharedInstance] initWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent] delegate:nil];
        
     } else {

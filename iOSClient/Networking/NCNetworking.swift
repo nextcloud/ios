@@ -30,10 +30,6 @@ import Foundation
         return instance
     }()
     
-    @objc override init() {
-        super.init()
-    }
-    
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if CCCertificate.sharedManager().checkTrustedChallenge(challenge) {
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))

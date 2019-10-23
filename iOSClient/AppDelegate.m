@@ -53,6 +53,9 @@ PKPushRegistry *pushRegistry;
 {
     [CCUtility createDirectoryStandard];
     
+    // Networking
+    [NCCommunication sharedInstance].delegate = [NCNetworking sharedInstance];
+    
     // Verify upgrade
     if ([self upgrade]) {
         // Set account, if no exists clear all
@@ -66,9 +69,6 @@ PKPushRegistry *pushRegistry;
             [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
         }
     }
-    
-    // Networking
-    [NCCommunication sharedInstance].delegate = [[NCNetworking sharedInstance] init];
     
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
@@ -387,7 +387,7 @@ PKPushRegistry *pushRegistry;
     // Setting Account to Networking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
     
-    (void)[[NCCommunication sharedInstance] initWithUsername:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] delegate:self];
+    (void)[[NCCommunication sharedInstance] initWithUsername:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] delegate:nil];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe

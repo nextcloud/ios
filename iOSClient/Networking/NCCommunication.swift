@@ -72,7 +72,9 @@ import SwiftyJSON
         self.username = username
         self.password = password
         self.userAgent = userAgent
-        self.delegate = delegate
+        if delegate != nil {
+            self.delegate = delegate
+        }
     }
     
     @objc public func setting(directoryCertificate: String) {
