@@ -497,6 +497,8 @@ import SwiftyJSON
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
             switch response.result {
             case.failure(let error):
+                let errorCode = error._code
+                let description = error.localizedDescription
                 completionHandler(nil, nil, 0, 0, 0, false, error)
             case .success(let json):
                 let json = JSON(json)
