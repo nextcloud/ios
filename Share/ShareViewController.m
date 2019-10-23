@@ -58,10 +58,8 @@
     } else {
         
         _activeAccount = tableAccount.account;
-        _activePassword = [CCUtility getPassword:tableAccount.account];
-        _activeUrl = tableAccount.url;
-        _activeUser = tableAccount.user;
-        _activeUserID = tableAccount.userID;
+        
+        (void)[[NCCommunication sharedInstance] initWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent] delegate:nil];
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             
@@ -77,7 +75,7 @@
             
             [CCUtility setActiveAccountExt:self.activeAccount];
 
-            _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl];
+            _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:tableAccount.url];
             [CCUtility setServerUrlExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
@@ -212,24 +210,18 @@
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
         
-        [[OCNetworking sharedManager] uploadWithAccount:self.activeAccount fileNameServerUrl:fileNameServer fileNameLocalPath:fileNameLocal encode:true communication:[[OCNetworking sharedManager] sharedOCCommunication] progress:^(NSProgress *progress) {
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.hud progress:progress.fractionCompleted];
-            });
-            
-        } completion:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *message, NSInteger errorCode) {
-            
+        (void)[[NCCommunication sharedInstance] uploadWithServerUrlFileName:fileNameServer fileNamePathSource:fileNameLocal wwan:false account:self.activeAccount progressHandler:^(NSProgress * progress) {
+            [self.hud progress:progress.fractionCompleted];
+        } completionHandler:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSError *error) {
             [self.hud hideHud];
-            
             [self.filesName removeObject:fileName];
-
-            if (errorCode == 0) {
-                
+           
+            if (error == nil) {
+               
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
-                
+               
                 tableMetadata *metadata = [tableMetadata new];
-                
+               
                 metadata.account = self.activeAccount;
                 metadata.date = date;
                 metadata.etag = etag;
@@ -238,21 +230,21 @@
                 metadata.fileNameView = fileNameForUpload;
                 metadata.serverUrl = self.serverUrl;
                 (void)[CCUtility insertTypeFileIconName:fileNameForUpload metadata:metadata];
-                
+               
                 metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
-                
+               
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
                 [self performSelector:@selector(selectPost) withObject:nil];
-                
+               
             } else {
-                
-                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+               
+                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:error.description preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
-                                                               [alert dismissViewControllerAnimated:YES completion:nil];
-                                                               [self closeShareViewController];
-                                                           }];
+                                                          handler:^(UIAlertAction * action) {
+                   [alert dismissViewControllerAnimated:YES completion:nil];
+                   [self closeShareViewController];
+                }];
                 [alert addAction:ok];
                 [self presentViewController:alert animated:YES completion:nil];
             }

@@ -156,7 +156,7 @@ open class NCAudioRecorder : NSObject {
     
     fileprivate let session = AVAudioSession.sharedInstance()
     var recorder: AVAudioRecorder?
-    fileprivate var player: AVAudioPlayer?
+    fileprivate var player: AVAudioPlayer!
     fileprivate var link: CADisplayLink?
     
     var metering: Bool {

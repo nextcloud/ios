@@ -84,6 +84,9 @@
 		F718088D2341FEB20039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
 		F718088E2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
 		F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
+		F72132C32359919400C201B5 /* NCCommunicationCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */; };
+		F72132C42359919400C201B5 /* NCCommunicationCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */; };
+		F72132C52359919400C201B5 /* NCCommunicationCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
 		F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */; };
@@ -93,8 +96,6 @@
 		F724B1CD2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */; };
 		F724B1CE2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
-		F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
-		F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
 		F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */; };
 		F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */; };
@@ -548,6 +549,7 @@
 		F7D4B69A2295666E000C2C86 /* FirebaseMLCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */; };
 		F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
+		F7D88011235CD46200867DD4 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D88010235CD46200867DD4 /* SwiftyJSON.framework */; };
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
 		F7DBC37F23325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
 		F7DBC38023325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
@@ -671,6 +673,16 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F7D88013235CD46200867DD4 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -764,6 +776,7 @@
 		F7169A301EE59BB70086BD69 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A4C1EE59C640086BD69 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetAppearance.swift; sourceTree = "<group>"; };
+		F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCommunicationCertificate.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVisionTextModel.framework; sourceTree = "<group>"; };
@@ -1346,6 +1359,7 @@
 		F7D5328F1F5D443B006568B1 /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D532A41F5D4461006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D6650620FF341600BFBA9E /* NCMainCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainCommon.swift; sourceTree = "<group>"; };
+		F7D88010235CD46200867DD4 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
 		F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAppConfigView.swift; sourceTree = "<group>"; };
 		F7DBC37D23325E2D001A85BA /* NCXMLGetAppPasswordParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLGetAppPasswordParser.h; sourceTree = "<group>"; };
 		F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLGetAppPasswordParser.m; sourceTree = "<group>"; };
@@ -1441,7 +1455,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7B6F70321BD0EA0007D194D /* JDStatusBarNotification.framework in Frameworks */,
 				F7B6F70221BD0E6D007D194D /* MBProgressHUD.framework in Frameworks */,
 				F7B6F70121BD0DD3007D194D /* DZNEmptyDataSet.framework in Frameworks */,
@@ -1456,7 +1469,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7C40C152199BA750004137E /* Realm.framework in Frameworks */,
 				F7C40C162199BA780004137E /* RealmSwift.framework in Frameworks */,
 				F736B557234DCF92008A5C9F /* Alamofire.framework in Frameworks */,
@@ -1482,6 +1494,7 @@
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
+				F7D88011235CD46200867DD4 /* SwiftyJSON.framework in Frameworks */,
 				F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */,
@@ -1906,6 +1919,7 @@
 				F736B54D234DCE43008A5C9F /* NCCommunication.swift */,
 				F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */,
 				F7E8561A235202DF009A3330 /* NCCommunicationCommon.swift */,
+				F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */,
 				F732BA031D76CE1500E9878B /* CCNetworking.h */,
 				F732BA041D76CE1500E9878B /* CCNetworking.m */,
 				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
@@ -2877,6 +2891,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7D88010235CD46200867DD4 /* SwiftyJSON.framework */,
 				F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */,
 				F736B551234DCF57008A5C9F /* Alamofire.framework */,
 				F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */,
@@ -3005,6 +3020,7 @@
 				F73B02C01DC0F1C900EC2C33 /* ShellScript */,
 				F7A377371EB24469002856D3 /* ShellScript */,
 				F75A40001EBCB82B00B213E8 /* ShellScript */,
+				F7D88013235CD46200867DD4 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -3340,6 +3356,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftyXMLParser.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
 			);
 			outputPaths = (
 			);
@@ -3377,6 +3394,7 @@
 				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
+				F72132C42359919400C201B5 /* NCCommunicationCertificate.swift in Sources */,
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F7E8561C235202DF009A3330 /* NCCommunicationCommon.swift in Sources */,
@@ -3487,6 +3505,7 @@
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
 				F7E8561D235202DF009A3330 /* NCCommunicationCommon.swift in Sources */,
 				F7434B5420E240A300417916 /* NSString+Encode.m in Sources */,
+				F72132C52359919400C201B5 /* NCCommunicationCertificate.swift in Sources */,
 				F7434B4E20E2408A00417916 /* OCWebDAVClient.m in Sources */,
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
 				F7434B4D20E2408600417916 /* OCHTTPRequestOperation.m in Sources */,
@@ -3633,6 +3652,7 @@
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
 				F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */,
 				F760F78721F21F61006B1A73 /* PhotoEditor+Font.swift in Sources */,
+				F72132C32359919400C201B5 /* NCCommunicationCertificate.swift in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F762CB1A1EACB66200B38484 /* XLForm.m in Sources */,
 				F73B4EFC1F470D9100BBEE4B /* LangGreekModel.cpp in Sources */,
@@ -3874,7 +3894,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 864VDCS2QY;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3918,7 +3938,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 864VDCS2QY;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3968,7 +3988,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 864VDCS2QY;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4018,7 +4038,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 864VDCS2QY;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4060,7 +4080,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 864VDCS2QY;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4107,7 +4127,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 864VDCS2QY;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (

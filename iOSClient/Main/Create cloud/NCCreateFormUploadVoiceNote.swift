@@ -37,7 +37,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     private var durationPlayer: TimeInterval = 0
     private var counterSecondPlayer: TimeInterval = 0
     
-    private var audioPlayer = AVAudioPlayer()
+    private var audioPlayer: AVAudioPlayer!
     private var timer = Timer()
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
