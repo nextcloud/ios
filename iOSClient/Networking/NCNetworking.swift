@@ -41,7 +41,7 @@ import OpenSSL
     
     // Pinning
     
-    func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
+    @objc func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
         
         var trusted = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
@@ -50,11 +50,12 @@ import OpenSSL
         if let trust: SecTrust = protectionSpace.serverTrust {
             saveCertificate(trust, certName: "tmp.der", directoryCertificate: directoryCertificate)
             do {
-                // Get the directory contents urls (including subfolders urls)
                 let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
-                print(directoryContents)
+                let certTmpPath = directoryCertificate+"/"+"tmp.der"
                 for file in directoryContents {
-                    if FileManager.default.contentsEqual(atPath: directoryCertificate+"/"+"tmp.der", andPath: file.absoluteString) {
+                    let certPath = file.path
+                    if certPath == certTmpPath { continue }
+                    if FileManager.default.contentsEqual(atPath:certTmpPath, andPath: certPath) {
                         trusted = true
                     }
                 }
@@ -62,6 +63,16 @@ import OpenSSL
         }
         
         return trusted
+    }
+    
+    @objc func wrtiteCertificate(directoryCertificate: String) {
+        
+        let certificateAtPath = directoryCertificate + "/tmp.der"
+        let certificateToPath = directoryCertificate + "/" + CCUtility.getTimeIntervalSince197() + ".der"
+        
+        do {
+            try FileManager.default.moveItem(atPath: certificateAtPath, toPath: certificateToPath)
+        } catch { }
     }
     
     private func saveCertificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
