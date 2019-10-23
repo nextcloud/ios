@@ -84,9 +84,9 @@
 		F718088D2341FEB20039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
 		F718088E2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
 		F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
-		F72132C32359919400C201B5 /* NCCommunicationCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */; };
-		F72132C42359919400C201B5 /* NCCommunicationCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */; };
-		F72132C52359919400C201B5 /* NCCommunicationCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */; };
+		F72132C32359919400C201B5 /* NCCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCertificate.swift */; };
+		F72132C42359919400C201B5 /* NCCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCertificate.swift */; };
+		F72132C52359919400C201B5 /* NCCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72132C22359919400C201B5 /* NCCertificate.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
 		F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */; };
@@ -106,6 +106,9 @@
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
+		F736267923604A8A0083CF36 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736267823604A8A0083CF36 /* NCNetworking.swift */; };
+		F736267A23604A8A0083CF36 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736267823604A8A0083CF36 /* NCNetworking.swift */; };
+		F736267B23604A8A0083CF36 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736267823604A8A0083CF36 /* NCNetworking.swift */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
 		F736B54E234DCE43008A5C9F /* NCCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736B54D234DCE43008A5C9F /* NCCommunication.swift */; };
 		F736B54F234DCE43008A5C9F /* NCCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736B54D234DCE43008A5C9F /* NCCommunication.swift */; };
@@ -776,7 +779,7 @@
 		F7169A301EE59BB70086BD69 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A4C1EE59C640086BD69 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetAppearance.swift; sourceTree = "<group>"; };
-		F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCommunicationCertificate.swift; sourceTree = "<group>"; };
+		F72132C22359919400C201B5 /* NCCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCertificate.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVisionTextModel.framework; sourceTree = "<group>"; };
@@ -803,6 +806,7 @@
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
 		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
+		F736267823604A8A0083CF36 /* NCNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworking.swift; sourceTree = "<group>"; };
 		F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F736B54D234DCE43008A5C9F /* NCCommunication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCommunication.swift; sourceTree = "<group>"; };
 		F736B551234DCF57008A5C9F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
@@ -1916,10 +1920,11 @@
 			isa = PBXGroup;
 			children = (
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
+				F736267823604A8A0083CF36 /* NCNetworking.swift */,
 				F736B54D234DCE43008A5C9F /* NCCommunication.swift */,
 				F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */,
 				F7E8561A235202DF009A3330 /* NCCommunicationCommon.swift */,
-				F72132C22359919400C201B5 /* NCCommunicationCertificate.swift */,
+				F72132C22359919400C201B5 /* NCCertificate.swift */,
 				F732BA031D76CE1500E9878B /* CCNetworking.h */,
 				F732BA041D76CE1500E9878B /* CCNetworking.m */,
 				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
@@ -3394,7 +3399,7 @@
 				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
-				F72132C42359919400C201B5 /* NCCommunicationCertificate.swift in Sources */,
+				F72132C42359919400C201B5 /* NCCertificate.swift in Sources */,
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F7E8561C235202DF009A3330 /* NCCommunicationCommon.swift in Sources */,
@@ -3437,6 +3442,7 @@
 				F70022B41EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022CC1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
+				F736267A23604A8A0083CF36 /* NCNetworking.swift in Sources */,
 				F7B6ACDC22FC2D15008AB646 /* NCComments.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
@@ -3493,6 +3499,7 @@
 				F736B550234DCE43008A5C9F /* NCCommunication.swift in Sources */,
 				F7B6ACDD22FC2D15008AB646 /* NCComments.m in Sources */,
 				F7434B5D20E241E800417916 /* CCUtility.m in Sources */,
+				F736267B23604A8A0083CF36 /* NCNetworking.swift in Sources */,
 				F7434B5220E2409900417916 /* OCXMLShareByLinkParser.m in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
@@ -3505,7 +3512,7 @@
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
 				F7E8561D235202DF009A3330 /* NCCommunicationCommon.swift in Sources */,
 				F7434B5420E240A300417916 /* NSString+Encode.m in Sources */,
-				F72132C52359919400C201B5 /* NCCommunicationCertificate.swift in Sources */,
+				F72132C52359919400C201B5 /* NCCertificate.swift in Sources */,
 				F7434B4E20E2408A00417916 /* OCWebDAVClient.m in Sources */,
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
 				F7434B4D20E2408600417916 /* OCHTTPRequestOperation.m in Sources */,
@@ -3652,7 +3659,7 @@
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
 				F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */,
 				F760F78721F21F61006B1A73 /* PhotoEditor+Font.swift in Sources */,
-				F72132C32359919400C201B5 /* NCCommunicationCertificate.swift in Sources */,
+				F72132C32359919400C201B5 /* NCCertificate.swift in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F762CB1A1EACB66200B38484 /* XLForm.m in Sources */,
 				F73B4EFC1F470D9100BBEE4B /* LangGreekModel.cpp in Sources */,
@@ -3765,6 +3772,7 @@
 				F760F78921F21F61006B1A73 /* UIView+Image.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F760F79221F21F61006B1A73 /* EmojisCollectionViewDelegate.swift in Sources */,
+				F736267923604A8A0083CF36 /* NCNetworking.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F724B1CC2351BFBD00A5753B /* NCCommunicationModel.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,

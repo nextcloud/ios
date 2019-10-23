@@ -1,5 +1,5 @@
 //
-//  NCCommunicationCertificate.swift
+//  NCCertificate.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 18/10/19.
@@ -24,13 +24,13 @@
 import Foundation
 import OpenSSL
 
-class NCCommunicationCertificate: NSObject {
-    @objc static let sharedInstance: NCCommunicationCertificate = {
-        let instance = NCCommunicationCertificate()
-        return instance
-    }()
-
-    static func secTrustGetLeafCertificate(_ trust: SecTrust) -> SecCertificate? {
+class NCCertificate: NSObject {
+   
+    override init() {
+        super.init()
+    }
+    
+    func secTrustGetLeafCertificate(_ trust: SecTrust) -> SecCertificate? {
         
         let result: SecCertificate?
         
@@ -69,7 +69,7 @@ class NCCommunicationCertificate: NSObject {
     
     private func saveCertificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
         
-        let currentServerCert = NCCommunicationCertificate.secTrustGetLeafCertificate(trust)
+        let currentServerCert = secTrustGetLeafCertificate(trust)
         let certNamePath = directoryCertificate + "/" + certName
         let data: CFData = SecCertificateCopyData(currentServerCert!)
         let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))

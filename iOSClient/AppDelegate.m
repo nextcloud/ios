@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, NCCommunicationDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -66,6 +66,9 @@ PKPushRegistry *pushRegistry;
             [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
         }
     }
+    
+    // Networking
+    [NCCommunication sharedInstance].delegate = [[NCNetworking sharedInstance] init];
     
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
@@ -1259,16 +1262,6 @@ PKPushRegistry *pushRegistry;
         
         NSLog(@"[LOG] End 20 sec. Start handle Events For Background URLSession: %@", identifier);
     });
-}
-
-- (void)urlSession:(NSURLSession * _Nonnull)session didReceive:(NSURLAuthenticationChallenge * _Nonnull)challenge completionHandler:(void (^ _Nonnull)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
-    
-    // The pinnning check
-    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
-        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    } else {
-        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
