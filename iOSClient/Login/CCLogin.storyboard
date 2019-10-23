@@ -191,7 +191,7 @@
         <!--Login Web-->
         <scene sceneID="3Rv-vf-u17">
             <objects>
-                <viewController storyboardIdentifier="NCLoginWeb" modalPresentationStyle="fullScreen" id="yEb-Ky-35s" customClass="NCLoginWeb" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCLoginWeb" id="yEb-Ky-35s" customClass="NCLoginWeb" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UX5-cJ-bY6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -226,13 +226,13 @@
         <!--App Config View-->
         <scene sceneID="BeF-ke-GzC">
             <objects>
-                <viewController storyboardIdentifier="NCAppConfigView" id="Ak5-da-5qm" customClass="NCAppConfigView" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCAppConfigView" id="Ak5-da-5qm" customClass="NCAppConfigView" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lrn-aT-NFz">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="uEr-qx-rv2">
-                                <rect key="frame" x="95.5" y="315.5" width="223" height="275.5"/>
+                                <rect key="frame" x="95.5" y="374.5" width="223" height="157"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="898-PT-7ao">
                                 <rect key="frame" x="10" y="94" width="394" height="20.5"/>
@@ -266,7 +266,7 @@
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>
-        <image name="logo" width="223" height="275.5"/>
+        <image name="logo" width="223" height="157.5"/>
         <image name="visiblePassword" width="25" height="25"/>
     </resources>
 </document>
