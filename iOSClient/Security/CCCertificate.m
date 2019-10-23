@@ -187,10 +187,6 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
         
         NSLog(@"[LOG] Error: %@", [error localizedDescription]);
         return NO;
-        
-    } else {
-        
-        [[NCManageDatabase sharedInstance] addCertificates:[NSString stringWithFormat:@"%f.der", dateCertificate]];
     }
     
     return YES;

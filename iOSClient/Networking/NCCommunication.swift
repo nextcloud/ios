@@ -73,6 +73,12 @@ import SwiftyJSON
         self.password = password
         self.userAgent = userAgent
     }
+   
+    @objc public func inito(username: String, password: String, userAgent: String?) {
+           self.username = username
+           self.password = password
+           self.userAgent = userAgent
+    }
     
     @objc public func setting(directoryCertificate: String) {
         self.directoryCertificate = directoryCertificate

@@ -199,11 +199,6 @@ class tableCapabilities: Object {
     @objc dynamic var isExtendedSupportEnabled: Bool = false
 }
 
-class tableCertificates: Object {
-    
-    @objc dynamic var certificateLocation = ""
-}
-
 class tableComments: Object {
     
     @objc dynamic var account = ""

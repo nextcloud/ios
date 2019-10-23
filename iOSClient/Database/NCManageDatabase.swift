@@ -992,37 +992,6 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
-    //MARK: Table Certificates
-    
-    @objc func addCertificates(_ certificateLocation: String) {
-    
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                let addObject = tableCertificates()
-            
-                addObject.certificateLocation = certificateLocation
-            
-                realm.add(addObject)
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    @objc func getCertificatesLocation(_ localCertificatesFolder: String) -> [String] {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let results = realm.objects(tableCertificates.self)
-    
-        return Array(results.map { "\(localCertificatesFolder)/\($0.certificateLocation)" })
-    }
-   
-    //MARK: -
     //MARK: Table Comments
     
     @objc func addComments(_ listOfComments: [NCComments], account: String, objectId: String) {
