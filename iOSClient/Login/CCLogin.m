@@ -211,7 +211,7 @@
             
             if ([error code] == NSURLErrorServerCertificateUntrusted) {
                 
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:nil viewController:self delegate:self];
+                //[[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:nil viewController:self delegate:self];
                 
             } else {
                 

@@ -215,7 +215,6 @@
 		F7434B5D20E241E800417916 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F7434B5E20E241EC00417916 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7434B6020E2445200417916 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
-		F7434B6120E2445C00417916 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7434B6220E249F700417916 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F745B250222D871800346520 /* QRCodeReader.framework */; };
@@ -393,7 +392,6 @@
 		F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */; };
 		F77D49A91DC238E500CDC568 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading.gif */; };
 		F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
-		F77EB62A1EC0B50A003F814F /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F781996922636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
@@ -615,7 +613,6 @@
 		F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CE01E5B14C700E19C62 /* MWTapDetectingView.m */; };
 		F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CE21E5B14C700E19C62 /* MWZoomingScrollView.m */; };
 		F7F54D0E1E5B14C800E19C62 /* UIImage+MWPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CE41E5B14C700E19C62 /* UIImage+MWPhotoBrowser.m */; };
-		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */; };
@@ -1438,8 +1435,6 @@
 		F7F54CE41E5B14C700E19C62 /* UIImage+MWPhotoBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MWPhotoBrowser.m"; sourceTree = "<group>"; };
 		F7F67BAD1A24D27800EE80DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		F7F801001D98205A007537BC /* CCCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCertificate.h; sourceTree = "<group>"; };
-		F7F801011D98205A007537BC /* CCCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCertificate.m; sourceTree = "<group>"; };
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
 		F7F8D7191ED6183000E711F3 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
@@ -2964,8 +2959,6 @@
 			children = (
 				F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */,
 				F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */,
-				F7F801001D98205A007537BC /* CCCertificate.h */,
-				F7F801011D98205A007537BC /* CCCertificate.m */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
 				F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */,
 				F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */,
@@ -3428,7 +3421,6 @@
 				F70022CF1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
 				F70022EA1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
-				F77EB62A1EC0B50A003F814F /* CCCertificate.m in Sources */,
 				F70022D81EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F781996A22636BFA00EBDF6A /* HCFeatures.m in Sources */,
@@ -3481,7 +3473,6 @@
 				F7434B4020E2404E00417916 /* OCNotificationsAction.m in Sources */,
 				F7434B5320E2409E00417916 /* OCXMLSharedParser.m in Sources */,
 				F7434B4320E2405900417916 /* OCShareUser.m in Sources */,
-				F7434B6120E2445C00417916 /* CCCertificate.m in Sources */,
 				F7434B5A20E241BB00417916 /* NCNetworkingEndToEnd.m in Sources */,
 				F76673EE22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
 				F7434B3820E2400600417916 /* NCBrand.swift in Sources */,
@@ -3650,7 +3641,6 @@
 				F762CB191EACB66200B38484 /* XLFormValidator.m in Sources */,
 				F760F78C21F21F61006B1A73 /* StickersViewController.swift in Sources */,
 				F762CB0D1EACB66200B38484 /* NSArray+XLFormAdditions.m in Sources */,
-				F7F801031D98205A007537BC /* CCCertificate.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
 				F760F77D21F21F61006B1A73 /* ColorsCollectionViewDelegate.swift in Sources */,

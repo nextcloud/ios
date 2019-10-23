@@ -25,7 +25,6 @@
 #import "NCEndToEndEncryption.h"
 #import "NCNetworkingEndToEnd.h"
 #import "AppDelegate.h"
-#import "CCCertificate.h"
 #import "NSDate+ISO8601.h"
 #import "NSString+Encode.h"
 #import "NCBridgeSwift.h"
@@ -219,11 +218,13 @@
 {
     // The pinnning check
     
+    /*
     if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
         completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
     } else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
     }
+    */
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error

@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import Foundation
+import OpenSSL
 
 @objc class NCNetworking: NSObject, NCCommunicationDelegate {
     @objc public static let sharedInstance: NCNetworking = {
@@ -31,10 +31,76 @@ import Foundation
     }()
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        if CCCertificate.sharedManager().checkTrustedChallenge(challenge) {
+        
+        if NCNetworking.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
+    }
+    
+    // Pinning
+    
+    func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
+        
+        var trusted = false
+        let protectionSpace: URLProtectionSpace = challenge.protectionSpace
+        let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
+        
+        if let trust: SecTrust = protectionSpace.serverTrust {
+            saveCertificate(trust, certName: "tmp.der", directoryCertificate: directoryCertificate)
+            do {
+                // Get the directory contents urls (including subfolders urls)
+                let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
+                print(directoryContents)
+                for file in directoryContents {
+                    if FileManager.default.contentsEqual(atPath: directoryCertificate+"/"+"tmp.der", andPath: file.absoluteString) {
+                        trusted = true
+                    }
+                }
+            } catch { print(error) }
+        }
+        
+        return trusted
+    }
+    
+    private func saveCertificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
+        
+        let currentServerCert = secTrustGetLeafCertificate(trust)
+        let certNamePath = directoryCertificate + "/" + certName
+        let data: CFData = SecCertificateCopyData(currentServerCert!)
+        let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
+        let x509cert = d2i_X509_bio(mem, nil)
+
+        BIO_free(mem)
+        if x509cert == nil {
+            print("[LOG] OpenSSL couldn't parse X509 Certificate")
+        } else {
+            if FileManager.default.fileExists(atPath: certNamePath) {
+                do {
+                    try FileManager.default.removeItem(atPath: certNamePath)
+                } catch { }
+            }
+            let file = fopen(certNamePath, "w")
+            if file != nil {
+                PEM_write_X509(file, x509cert);
+            }
+            fclose(file);
+            X509_free(x509cert);
+        }
+    }
+    
+    private func secTrustGetLeafCertificate(_ trust: SecTrust) -> SecCertificate? {
+        
+        let result: SecCertificate?
+        
+        if SecTrustGetCertificateCount(trust) > 0 {
+            result = SecTrustGetCertificateAtIndex(trust, 0)!
+            assert(result != nil);
+        } else {
+            result = nil
+        }
+        
+        return result
     }
 }

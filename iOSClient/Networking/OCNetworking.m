@@ -25,7 +25,6 @@
 
 #import "CCUtility.h"
 #import "CCGraphics.h"
-#import "CCCertificate.h"
 #import "NSString+Encode.h"
 #import "NCBridgeSwift.h"
 #import "NCXMLGetAppPasswordParser.h"
@@ -3040,11 +3039,15 @@
 -(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
 {
     // The pinnning check
+    
+    
+    /*
     if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
         completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
     } else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
     }
+    */
 }
 
 @end
@@ -3058,11 +3061,13 @@
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
 {
     // The pinnning check
+    /*
     if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
         completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
     } else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
     }
+    */
 }
 
 @end
