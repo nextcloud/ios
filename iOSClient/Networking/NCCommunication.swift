@@ -475,14 +475,14 @@ import SwiftyJSON
         }
     }
     
-    @objc public func getServerStatus(urlString: String, completionHandler: @escaping (_ serverProductName: String?, _ serverVersion: String? , _ versionMajor: Int, _ versionMinor: Int, _ versionMicro: Int, _ extendedSupport: Bool, _ error: Error?) -> Void) {
+    @objc public func getServerStatus(urlString: String, completionHandler: @escaping (_ serverProductName: String?, _ serverVersion: String? , _ versionMajor: Int, _ versionMinor: Int, _ versionMicro: Int, _ extendedSupport: Bool, _ errorCode: Int, _ errorDescription: String?) -> Void) {
                 
         // url
         var urlString = String(urlString)
         if urlString.last != "/" { urlString = urlString + "/" }
         urlString = urlString + "status.php"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
-            completionHandler(nil, nil, 0, 0, 0, false, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(nil, nil, 0, 0, 0, false, NSURLErrorUnsupportedURL, "Invalid ServerUrl")
             return
         }
         
@@ -497,9 +497,8 @@ import SwiftyJSON
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
             switch response.result {
             case.failure(let error):
-                let errorCode = error._code
-                let description = error.localizedDescription
-                completionHandler(nil, nil, 0, 0, 0, false, error)
+                let error = NCCommunicationCommon.sharedInstance.getError(error: error, httResponse: response.response)
+                completionHandler(nil, nil, 0, 0, 0, false, error.errorCode, error.description)
             case .success(let json):
                 let json = JSON(json)
                 var versionMajor = 0, versionMinor = 0, versionMicro = 0
@@ -522,7 +521,7 @@ import SwiftyJSON
                     }
                 }
                 
-                completionHandler(serverProductName, serverVersionString, versionMajor, versionMinor, versionMicro, extendedSupport!, nil)
+                completionHandler(serverProductName, serverVersionString, versionMajor, versionMinor, versionMicro, extendedSupport!, 0, "")
             }
         }
     }

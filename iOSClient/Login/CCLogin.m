@@ -175,9 +175,9 @@
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
         
-    [[NCCommunication sharedInstance] getServerStatusWithUrlString:self.baseUrl.text completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSError *error) {
+    [[NCCommunication sharedInstance] getServerStatusWithUrlString:self.baseUrl.text completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSInteger errorCode, NSString *errorDescription) {
         
-        if (error == nil) {
+        if (errorCode == 0) {
             
             [self.activity stopAnimating];
             self.login.enabled = YES;
@@ -209,13 +209,13 @@
             [self.activity stopAnimating];
             self.login.enabled = YES;
             
-            if ([error code] == NSURLErrorServerCertificateUntrusted) {
+            if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 
                 //[[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:nil viewController:self delegate:self];
                 
             } else {
                 
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error description] preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:errorDescription preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
                 
                 [alertController addAction:okAction];

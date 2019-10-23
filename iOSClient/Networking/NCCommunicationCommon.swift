@@ -63,7 +63,16 @@ class NCCommunicationCommon: NSObject {
     }
     
     func getError(code: Int, description: String) -> Error {
-        
         return NSError(domain: "Nextcloud", code: code, userInfo: [NSLocalizedDescriptionKey : description])
+    }
+    
+    func getError(error: AFError?, httResponse: HTTPURLResponse?) -> (errorCode: Int, description: String?) {
+        if let errorCode = httResponse?.statusCode  {
+            return(errorCode, httResponse?.description)
+        }
+        if let errorCode = error?._code {
+            return(errorCode, error?.localizedDescription)
+        }
+        return(0,"")
     }
  }
