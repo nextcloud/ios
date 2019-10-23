@@ -48,7 +48,7 @@ import OpenSSL
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         
         if let trust: SecTrust = protectionSpace.serverTrust {
-            saveCertificate(trust, certName: "tmp.der", directoryCertificate: directoryCertificate)
+            saveX509Certificate(trust, certName: "tmp.der", directoryCertificate: directoryCertificate)
             do {
                 let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
                 let certTmpPath = directoryCertificate+"/"+"tmp.der"
@@ -57,6 +57,7 @@ import OpenSSL
                     if certPath == certTmpPath { continue }
                     if FileManager.default.contentsEqual(atPath:certTmpPath, andPath: certPath) {
                         trusted = true
+                        break
                     }
                 }
             } catch { print(error) }
@@ -75,7 +76,7 @@ import OpenSSL
         } catch { }
     }
     
-    private func saveCertificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
+    private func saveX509Certificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
         
         let currentServerCert = secTrustGetLeafCertificate(trust)
         let certNamePath = directoryCertificate + "/" + certName
