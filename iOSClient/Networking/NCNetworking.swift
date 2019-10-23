@@ -32,14 +32,13 @@ import OpenSSL
     
     //MARK: - Communication Delegate
        
-       func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-           
-           if NCNetworking.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
-               completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
-           } else {
-               completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
-           }
-       }
+    func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        if NCNetworking.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
+        } else {
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        }
+    }
     
     //MARK: - Pinning check
     

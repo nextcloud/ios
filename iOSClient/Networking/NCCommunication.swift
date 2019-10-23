@@ -28,7 +28,7 @@ import SwiftyXMLParser
 import SwiftyJSON
 
 @objc public protocol NCCommunicationDelegate {
-   @objc func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
+    @objc func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
 }
 
 @objc public class NCCommunication: SessionDelegate {
@@ -631,13 +631,13 @@ import SwiftyJSON
     //MARK: - SessionDelegate
 
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        
-        delegate?.urlSession(session, didReceive: challenge, completionHandler: { (authChallengeDisposition, credential) in
-            completionHandler(authChallengeDisposition, credential)
-        })
-        
+                
         if delegate == nil {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        } else {
+            delegate?.authenticationChallenge(challenge, completionHandler: { (authChallengeDisposition, credential) in
+                completionHandler(authChallengeDisposition, credential)
+            })
         }
     }
 }
