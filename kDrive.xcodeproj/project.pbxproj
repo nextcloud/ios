@@ -565,9 +565,9 @@
 		F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */; };
 		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
 		F7E856192351D7BE009A3330 /* SwiftyXMLParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */; };
-		F7E8561B235202DF009A3330 /* NSCommunicationCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8561A235202DF009A3330 /* NSCommunicationCommon.swift */; };
-		F7E8561C235202DF009A3330 /* NSCommunicationCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8561A235202DF009A3330 /* NSCommunicationCommon.swift */; };
-		F7E8561D235202DF009A3330 /* NSCommunicationCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8561A235202DF009A3330 /* NSCommunicationCommon.swift */; };
+		F7E8561B235202DF009A3330 /* NCCommunicationCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8561A235202DF009A3330 /* NCCommunicationCommon.swift */; };
+		F7E8561C235202DF009A3330 /* NCCommunicationCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8561A235202DF009A3330 /* NCCommunicationCommon.swift */; };
+		F7E8561D235202DF009A3330 /* NCCommunicationCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8561A235202DF009A3330 /* NCCommunicationCommon.swift */; };
 		F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E9C41820F4CA870040CF18 /* CCTransfers.m */; };
 		F7ECBA6D1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */; };
 		F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CAF1E5B14C700E19C62 /* ImageError.png */; };
@@ -1363,7 +1363,7 @@
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E4D9C322ED929B003675FD /* NCShareComments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareComments.swift; sourceTree = "<group>"; };
 		F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyXMLParser.framework; path = Carthage/Build/iOS/SwiftyXMLParser.framework; sourceTree = "<group>"; };
-		F7E8561A235202DF009A3330 /* NSCommunicationCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSCommunicationCommon.swift; sourceTree = "<group>"; };
+		F7E8561A235202DF009A3330 /* NCCommunicationCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCommunicationCommon.swift; sourceTree = "<group>"; };
 		F7E9C41520F4CA870040CF18 /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
 		F7E9C41820F4CA870040CF18 /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadRichdocuments.swift; sourceTree = "<group>"; };
@@ -1905,7 +1905,7 @@
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
 				F736B54D234DCE43008A5C9F /* NCCommunication.swift */,
 				F724B1CB2351BFBD00A5753B /* NCCommunicationModel.swift */,
-				F7E8561A235202DF009A3330 /* NSCommunicationCommon.swift */,
+				F7E8561A235202DF009A3330 /* NCCommunicationCommon.swift */,
 				F732BA031D76CE1500E9878B /* CCNetworking.h */,
 				F732BA041D76CE1500E9878B /* CCNetworking.m */,
 				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
@@ -3379,7 +3379,7 @@
 				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
-				F7E8561C235202DF009A3330 /* NSCommunicationCommon.swift in Sources */,
+				F7E8561C235202DF009A3330 /* NCCommunicationCommon.swift in Sources */,
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F7B6ACD722FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
 				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
@@ -3485,7 +3485,7 @@
 				F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F7434B3F20E2404B00417916 /* OCNotifications.m in Sources */,
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
-				F7E8561D235202DF009A3330 /* NSCommunicationCommon.swift in Sources */,
+				F7E8561D235202DF009A3330 /* NCCommunicationCommon.swift in Sources */,
 				F7434B5420E240A300417916 /* NSString+Encode.m in Sources */,
 				F7434B4E20E2408A00417916 /* OCWebDAVClient.m in Sources */,
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
@@ -3668,7 +3668,7 @@
 				F7DBC37F23325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */,
 				F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
-				F7E8561B235202DF009A3330 /* NSCommunicationCommon.swift in Sources */,
+				F7E8561B235202DF009A3330 /* NCCommunicationCommon.swift in Sources */,
 				F7D423861F0596C6009C9782 /* ReaderThumbRequest.m in Sources */,
 				F73B4EF51F470D9100BBEE4B /* JpCntx.cpp in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
