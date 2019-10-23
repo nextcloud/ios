@@ -40,7 +40,6 @@ import SwiftyJSON
     var username = ""
     var password = ""
     var userAgent: String?
-    var directoryCertificate: String?
     @objc public var delegate: NCCommunicationDelegate?
     
     // Session Manager
@@ -64,26 +63,16 @@ import SwiftyJSON
         return Alamofire.Session(configuration: configuration, delegate: self, rootQueue:  DispatchQueue(label: "com.nextcloud.sessionManagerTransferWWan.rootQueue"), startRequestsImmediately: true, requestQueue: nil, serializationQueue: nil, interceptor: nil, serverTrustManager: nil, redirectHandler: nil, cachedResponseHandler: nil, eventMonitors: self.makeEvents())
     }()
     
-    //MARK: - Initializer
+    //MARK: - Initializer / Setup
 
     init() { }
     
-    @objc public init(username: String, password: String, userAgent: String?) {
-        self.username = username
-        self.password = password
-        self.userAgent = userAgent
-    }
-   
-    @objc public func inito(username: String, password: String, userAgent: String?) {
+    @objc public func setup(username: String, password: String, userAgent: String?) {
            self.username = username
            self.password = password
            self.userAgent = userAgent
     }
-    
-    @objc public func setting(directoryCertificate: String) {
-        self.directoryCertificate = directoryCertificate
-    }
-    
+
     //MARK: - monitor
     
     private func makeEvents() -> [EventMonitor] {
@@ -650,21 +639,6 @@ import SwiftyJSON
         if delegate == nil {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
-        
-        
-        /*
-        if directoryCertificate == nil {
-            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-            let documentsDirectory = paths[0]
-            directoryCertificate = documentsDirectory + "/certificate"
-        }
-        
-        if NCCommunicationCertificate.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: directoryCertificate!) {
-             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
-        } else {
-            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
-        }
-        */
     }
 }
 

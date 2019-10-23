@@ -80,7 +80,7 @@ class fileProviderData: NSObject {
             accountUrl = tableAccounts.url
             homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccounts.url)
             
-            _ = NCCommunication.init(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
+            NCCommunication.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
             
             return true
         }
@@ -101,7 +101,7 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                _ = NCCommunication.init(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
+                 NCCommunication.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
 
                 foundAccount = true
             }
@@ -128,7 +128,7 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                _ = NCCommunication.init(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
+                NCCommunication.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
 
                 foundAccount = true
             }

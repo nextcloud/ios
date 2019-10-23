@@ -59,7 +59,7 @@
         
         // Networking
         [NCCommunication sharedInstance].delegate = [NCNetworking sharedInstance];
-        (void)[[NCCommunication sharedInstance] initWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent]];
+        [[NCCommunication sharedInstance] setupWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent]];
         
         _activeAccount = tableAccount.account;
         
