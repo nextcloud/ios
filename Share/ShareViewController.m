@@ -57,9 +57,11 @@
         
     } else {
         
-        _activeAccount = tableAccount.account;
+        // Networking
+        [NCCommunication sharedInstance].delegate = [NCNetworking sharedInstance];
+        (void)[[NCCommunication sharedInstance] initWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent]];
         
-        (void)[[NCCommunication sharedInstance] initWithUsername:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]  userAgent:[CCUtility getUserAgent] delegate:nil];
+        _activeAccount = tableAccount.account;
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             

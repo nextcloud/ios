@@ -68,13 +68,10 @@ import SwiftyJSON
 
     init() { }
     
-    @objc public init(username: String, password: String, userAgent: String?, delegate: NCCommunicationDelegate?) {
+    @objc public init(username: String, password: String, userAgent: String?) {
         self.username = username
         self.password = password
         self.userAgent = userAgent
-        if delegate != nil {
-            self.delegate = delegate
-        }
     }
     
     @objc public func setting(directoryCertificate: String) {
