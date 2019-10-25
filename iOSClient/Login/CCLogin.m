@@ -238,17 +238,6 @@
     }];
 }
 
-- (void)trustedCerticateAccepted
-{
-    NSLog(@"[LOG] Certificate trusted");
-}
-
-- (void)trustedCerticateDenied
-{
-   // if (_loginType == k_login_Modify_Password)
-        //[self handleAnnulla:self];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == TextField ==
 #pragma --------------------------------------------------------------------------------------------
