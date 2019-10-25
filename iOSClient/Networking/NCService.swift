@@ -112,7 +112,7 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
         
-        OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, extendedSupport, message, errorCode) in
+        NCCommunication.sharedInstance.getServerStatus(urlString: appDelegate.activeUrl) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
             if errorCode == 0 {
                 if extendedSupport == false {
                     if serverProductName == "owncloud" {
@@ -122,8 +122,7 @@ class NCService: NSObject {
                     }
                 }
             }
-            
-        })
+        }
     }
     
     private func requestServerCapabilities() {

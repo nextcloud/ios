@@ -70,8 +70,21 @@ class NCCommunicationCommon: NSObject {
         if let errorCode = httResponse?.statusCode  {
             return(errorCode, httResponse?.description)
         }
-        if let errorCode = error?._code {
-            return(errorCode, error?.localizedDescription)
+        if let error = error {
+            switch error {
+            case .createUploadableFailed(let error as NSError):
+                return(error.code, error.description)
+            case .createURLRequestFailed(let error as NSError):
+                return(error.code, error.description)
+            case .requestAdaptationFailed(let error as NSError):
+                return(error.code, error.description)
+            case .sessionInvalidated(let error as NSError):
+                return(error.code, error.description)
+            case .sessionTaskFailed(let error as NSError):
+                return(error.code, error.description)
+            default:
+                return(error._code, error.localizedDescription)
+            }
         }
         return(0,"")
     }

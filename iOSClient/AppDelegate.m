@@ -271,12 +271,26 @@ PKPushRegistry *pushRegistry;
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
+        
         [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
     if ([CCUtility getCertificateError:self.activeAccount]) {
-        //[[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:self.activeAccount viewController:self.window.rootViewController delegate:self];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [[NCNetworking sharedInstance] wrtiteCertificateWithDirectoryCertificate:[CCUtility getDirectoryCerificates]];
+            [self startTimerErrorNetworking];
+        }]];
+                       
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_no_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+            [self startTimerErrorNetworking];
+        }]];
+        [self.window.rootViewController presentViewController:alertController animated:YES completion:^{
+            // Stop timer error network
+            [self.timerErrorNetworking invalidate];
+        }];
     }
 }
 
