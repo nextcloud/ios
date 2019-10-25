@@ -99,7 +99,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -129,7 +129,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -154,7 +154,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileNameSource) else {
-            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -217,7 +217,7 @@ import SwiftyJSON
         if depth == "1" && serverUrlFileName.last != "/" { serverUrlFileName = serverUrlFileName + "/" }
         if depth == "0" && serverUrlFileName.last == "/" { serverUrlFileName = String(serverUrlFileName.remove(at: serverUrlFileName.index(before: serverUrlFileName.endIndex))) }
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, files, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, files, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -361,7 +361,7 @@ import SwiftyJSON
         let serverUrlFileName = urlString + "/remote.php/dav/files/" + username + "/" + fileName
  
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -401,7 +401,7 @@ import SwiftyJSON
         if serverUrl.last != "/" { serverUrl = serverUrl + "/" }
         serverUrl = serverUrl + "index.php/core/preview.png?file=" + fileNamePath + "&x=\(width)&y=\(height)&a=1&mode=cover"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
-            completionHandler(account, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -441,7 +441,7 @@ import SwiftyJSON
         if urlString.last != "/" { urlString = urlString + "/" }
         urlString = urlString + "ocs/v2.php/apps/external/api/v1?format=json"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
-            completionHandler(account, externalFiles, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, externalFiles, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -482,7 +482,7 @@ import SwiftyJSON
         if urlString.last != "/" { urlString = urlString + "/" }
         urlString = urlString + "status.php"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
-            completionHandler(nil, nil, 0, 0, 0, false, NSURLErrorUnsupportedURL, "Invalid ServerUrl")
+            completionHandler(nil, nil, 0, 0, 0, false, NSURLErrorUnsupportedURL, "Invalid server url")
             return
         }
         
@@ -540,7 +540,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, 0, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, nil, 0, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return nil
         }
         
@@ -595,7 +595,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return nil
         }
         let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
