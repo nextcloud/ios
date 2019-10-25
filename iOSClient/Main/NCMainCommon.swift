@@ -1156,6 +1156,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         viewController.setup(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
         self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
+    
+    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
+    }
 }
     
 //MARK: - Main TabBarController
