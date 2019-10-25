@@ -503,25 +503,24 @@ import SwiftyJSON
                 let json = JSON(json)
                 var versionMajor = 0, versionMinor = 0, versionMicro = 0
                 
-                let serverProductName = json["productname"].string?.lowercased()
-                let serverVersion = json["version"].string
-                let serverVersionString = json["versionstring"].string
-                let extendedSupport = json["extendedSupport"].bool
-                
-                if let arrayVersion = serverVersion?.components(separatedBy: ".") {
-                    if arrayVersion.count == 1 {
-                        versionMajor = Int(arrayVersion[0]) ?? 0
-                    } else if arrayVersion.count == 2 {
-                        versionMajor = Int(arrayVersion[0]) ?? 0
-                        versionMinor = Int(arrayVersion[1]) ?? 0
-                    } else if arrayVersion.count >= 3 {
-                        versionMajor = Int(arrayVersion[0]) ?? 0
-                        versionMinor = Int(arrayVersion[1]) ?? 0
-                        versionMicro = Int(arrayVersion[2]) ?? 0
-                    }
+                let serverProductName = json["productname"].string?.lowercased() ?? ""
+                let serverVersion = json["version"].string ?? ""
+                let serverVersionString = json["versionstring"].string ?? ""
+                let extendedSupport = json["extendedSupport"].bool ?? false
+                    
+                let arrayVersion = serverVersion.components(separatedBy: ".")
+                if arrayVersion.count == 1 {
+                    versionMajor = Int(arrayVersion[0]) ?? 0
+                } else if arrayVersion.count == 2 {
+                    versionMajor = Int(arrayVersion[0]) ?? 0
+                    versionMinor = Int(arrayVersion[1]) ?? 0
+                } else if arrayVersion.count >= 3 {
+                    versionMajor = Int(arrayVersion[0]) ?? 0
+                    versionMinor = Int(arrayVersion[1]) ?? 0
+                    versionMicro = Int(arrayVersion[2]) ?? 0
                 }
                 
-                completionHandler(serverProductName, serverVersionString, versionMajor, versionMinor, versionMicro, extendedSupport!, 0, "")
+                completionHandler(serverProductName, serverVersionString, versionMajor, versionMinor, versionMicro, extendedSupport, 0, "")
             }
         }
     }
