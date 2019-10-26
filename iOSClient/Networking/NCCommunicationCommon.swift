@@ -73,15 +73,15 @@ class NCCommunicationCommon: NSObject {
         if let error = error {
             switch error {
             case .createUploadableFailed(let error as NSError):
-                return(error.code, error.description)
+                return(error.code, error.localizedDescription)
             case .createURLRequestFailed(let error as NSError):
-                return(error.code, error.description)
+                return(error.code, error.localizedDescription)
             case .requestAdaptationFailed(let error as NSError):
-                return(error.code, error.description)
+                return(error.code, error.localizedDescription)
             case .sessionInvalidated(let error as NSError):
-                return(error.code, error.description)
+                return(error.code, error.localizedDescription)
             case .sessionTaskFailed(let error as NSError):
-                return(error.code, error.description)
+                return(error.code, error.localizedDescription)
             default:
                 return(error._code, error.localizedDescription)
             }
