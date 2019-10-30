@@ -25,7 +25,6 @@
 
 #import "CCUtility.h"
 #import "CCGraphics.h"
-#import "CCCertificate.h"
 #import "NSString+Encode.h"
 #import "NCBridgeSwift.h"
 #import "NCXMLGetAppPasswordParser.h"
@@ -185,6 +184,7 @@
     }];
 }
 
+/*
 - (void)serverStatusUrl:(NSString *)serverUrl completion:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, BOOL extendedSupport,NSString *message, NSInteger errorCode))completion
 {
     NSString *urlTest = [serverUrl stringByAppendingString:k_serverStatus];
@@ -274,6 +274,7 @@
     
     [task resume];
 }
+*/
 
 - (void)downloadContentsOfUrl:(NSString *)serverUrl completion:(void(^)(NSData *data, NSString *message, NSInteger errorCode))completion
 {
@@ -3040,7 +3041,7 @@
 -(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
 {
     // The pinnning check
-    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
+    if ([[NCNetworking sharedInstance] checkTrustedChallengeWithChallenge:challenge directoryCertificate:[CCUtility getDirectoryCerificates]]) {
         completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
     } else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
@@ -3058,7 +3059,7 @@
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
 {
     // The pinnning check
-    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
+    if ([[NCNetworking sharedInstance] checkTrustedChallengeWithChallenge:challenge directoryCertificate:[CCUtility getDirectoryCerificates]]) {
         completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
     } else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);

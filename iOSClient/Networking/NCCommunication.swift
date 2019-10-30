@@ -28,7 +28,7 @@ import SwiftyXMLParser
 import SwiftyJSON
 
 @objc public protocol NCCommunicationDelegate {
-   @objc func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
+    @objc func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
 }
 
 @objc public class NCCommunication: SessionDelegate {
@@ -40,7 +40,6 @@ import SwiftyJSON
     var username = ""
     var password = ""
     var userAgent: String?
-    var directoryCertificate: String?
     @objc public var delegate: NCCommunicationDelegate?
     
     // Session Manager
@@ -64,21 +63,16 @@ import SwiftyJSON
         return Alamofire.Session(configuration: configuration, delegate: self, rootQueue:  DispatchQueue(label: "com.nextcloud.sessionManagerTransferWWan.rootQueue"), startRequestsImmediately: true, requestQueue: nil, serializationQueue: nil, interceptor: nil, serverTrustManager: nil, redirectHandler: nil, cachedResponseHandler: nil, eventMonitors: self.makeEvents())
     }()
     
-    //MARK: - Initializer
+    //MARK: - Initializer / Setup
 
     init() { }
     
-    @objc public init(username: String, password: String, userAgent: String?, delegate: NCCommunicationDelegate?) {
-        self.username = username
-        self.password = password
-        self.userAgent = userAgent
-        self.delegate = delegate
+    @objc public func setup(username: String, password: String, userAgent: String?) {
+           self.username = username
+           self.password = password
+           self.userAgent = userAgent
     }
-    
-    @objc public func setting(directoryCertificate: String) {
-        self.directoryCertificate = directoryCertificate
-    }
-    
+
     //MARK: - monitor
     
     private func makeEvents() -> [EventMonitor] {
@@ -105,7 +99,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -135,7 +129,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -160,7 +154,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileNameSource) else {
-            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -223,7 +217,7 @@ import SwiftyJSON
         if depth == "1" && serverUrlFileName.last != "/" { serverUrlFileName = serverUrlFileName + "/" }
         if depth == "0" && serverUrlFileName.last == "/" { serverUrlFileName = String(serverUrlFileName.remove(at: serverUrlFileName.index(before: serverUrlFileName.endIndex))) }
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, files, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, files, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -367,7 +361,7 @@ import SwiftyJSON
         let serverUrlFileName = urlString + "/remote.php/dav/files/" + username + "/" + fileName
  
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -407,7 +401,7 @@ import SwiftyJSON
         if serverUrl.last != "/" { serverUrl = serverUrl + "/" }
         serverUrl = serverUrl + "index.php/core/preview.png?file=" + fileNamePath + "&x=\(width)&y=\(height)&a=1&mode=cover"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrl) else {
-            completionHandler(account, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -447,7 +441,7 @@ import SwiftyJSON
         if urlString.last != "/" { urlString = urlString + "/" }
         urlString = urlString + "ocs/v2.php/apps/external/api/v1?format=json"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
-            completionHandler(account, externalFiles, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, externalFiles, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return
         }
         
@@ -481,14 +475,14 @@ import SwiftyJSON
         }
     }
     
-    @objc public func getServerStatus(urlString: String, completionHandler: @escaping (_ serverProductName: String?, _ serverVersion: String? , _ versionMajor: Int, _ versionMinor: Int, _ versionMicro: Int, _ extendedSupport: Bool, _ error: Error?) -> Void) {
+    @objc public func getServerStatus(urlString: String, completionHandler: @escaping (_ serverProductName: String?, _ serverVersion: String? , _ versionMajor: Int, _ versionMinor: Int, _ versionMicro: Int, _ extendedSupport: Bool, _ errorCode: Int, _ errorDescription: String?) -> Void) {
                 
         // url
         var urlString = String(urlString)
         if urlString.last != "/" { urlString = urlString + "/" }
         urlString = urlString + "status.php"
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(urlString) else {
-            completionHandler(nil, nil, 0, 0, 0, false, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(nil, nil, 0, 0, 0, false, NSURLErrorUnsupportedURL, "Invalid server url")
             return
         }
         
@@ -503,30 +497,30 @@ import SwiftyJSON
         sessionManagerData.request(url, method: method, parameters:nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).responseJSON { (response) in
             switch response.result {
             case.failure(let error):
-                completionHandler(nil, nil, 0, 0, 0, false, error)
+                let error = NCCommunicationCommon.sharedInstance.getError(error: error, httResponse: response.response)
+                completionHandler(nil, nil, 0, 0, 0, false, error.errorCode, error.description)
             case .success(let json):
                 let json = JSON(json)
                 var versionMajor = 0, versionMinor = 0, versionMicro = 0
                 
-                let serverProductName = json["productname"].string?.lowercased()
-                let serverVersion = json["version"].string
-                let serverVersionString = json["versionstring"].string
-                let extendedSupport = json["extendedSupport"].bool
-                
-                if let arrayVersion = serverVersion?.components(separatedBy: ".") {
-                    if arrayVersion.count == 1 {
-                        versionMajor = Int(arrayVersion[0]) ?? 0
-                    } else if arrayVersion.count == 2 {
-                        versionMajor = Int(arrayVersion[0]) ?? 0
-                        versionMinor = Int(arrayVersion[1]) ?? 0
-                    } else if arrayVersion.count >= 3 {
-                        versionMajor = Int(arrayVersion[0]) ?? 0
-                        versionMinor = Int(arrayVersion[1]) ?? 0
-                        versionMicro = Int(arrayVersion[2]) ?? 0
-                    }
+                let serverProductName = json["productname"].string?.lowercased() ?? ""
+                let serverVersion = json["version"].string ?? ""
+                let serverVersionString = json["versionstring"].string ?? ""
+                let extendedSupport = json["extendedSupport"].bool ?? false
+                    
+                let arrayVersion = serverVersion.components(separatedBy: ".")
+                if arrayVersion.count == 1 {
+                    versionMajor = Int(arrayVersion[0]) ?? 0
+                } else if arrayVersion.count == 2 {
+                    versionMajor = Int(arrayVersion[0]) ?? 0
+                    versionMinor = Int(arrayVersion[1]) ?? 0
+                } else if arrayVersion.count >= 3 {
+                    versionMajor = Int(arrayVersion[0]) ?? 0
+                    versionMinor = Int(arrayVersion[1]) ?? 0
+                    versionMicro = Int(arrayVersion[2]) ?? 0
                 }
                 
-                completionHandler(serverProductName, serverVersionString, versionMajor, versionMinor, versionMicro, extendedSupport!, nil)
+                completionHandler(serverProductName, serverVersionString, versionMajor, versionMinor, versionMicro, extendedSupport, 0, "")
             }
         }
     }
@@ -546,7 +540,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, 0, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, nil, 0, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return nil
         }
         
@@ -601,7 +595,7 @@ import SwiftyJSON
         
         // url
         guard let url = NCCommunicationCommon.sharedInstance.encodeUrlString(serverUrlFileName) else {
-            completionHandler(account, nil, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid ServerUrl"))
+            completionHandler(account, nil, nil, nil, NCCommunicationCommon.sharedInstance.getError(code: NSURLErrorUnsupportedURL, description: "Invalid server url"))
             return nil
         }
         let fileNamePathSourceUrl = URL.init(fileURLWithPath: fileNamePathSource)
@@ -637,29 +631,14 @@ import SwiftyJSON
     //MARK: - SessionDelegate
 
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        
-        delegate?.urlSession(session, didReceive: challenge, completionHandler: { (authChallengeDisposition, credential) in
-            completionHandler(authChallengeDisposition, credential)
-        })
-        
+                
         if delegate == nil {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
-        }
-        
-        
-        /*
-        if directoryCertificate == nil {
-            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-            let documentsDirectory = paths[0]
-            directoryCertificate = documentsDirectory + "/certificate"
-        }
-        
-        if NCCommunicationCertificate.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: directoryCertificate!) {
-             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
-            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+            delegate?.authenticationChallenge(challenge, completionHandler: { (authChallengeDisposition, credential) in
+                completionHandler(authChallengeDisposition, credential)
+            })
         }
-        */
     }
 }
 

@@ -63,7 +63,29 @@ class NCCommunicationCommon: NSObject {
     }
     
     func getError(code: Int, description: String) -> Error {
-        
         return NSError(domain: "Nextcloud", code: code, userInfo: [NSLocalizedDescriptionKey : description])
+    }
+    
+    func getError(error: AFError?, httResponse: HTTPURLResponse?) -> (errorCode: Int, description: String?) {
+        if let errorCode = httResponse?.statusCode  {
+            return(errorCode, httResponse?.description)
+        }
+        if let error = error {
+            switch error {
+            case .createUploadableFailed(let error as NSError):
+                return(error.code, error.localizedDescription)
+            case .createURLRequestFailed(let error as NSError):
+                return(error.code, error.localizedDescription)
+            case .requestAdaptationFailed(let error as NSError):
+                return(error.code, error.localizedDescription)
+            case .sessionInvalidated(let error as NSError):
+                return(error.code, error.localizedDescription)
+            case .sessionTaskFailed(let error as NSError):
+                return(error.code, error.localizedDescription)
+            default:
+                return(error._code, error.localizedDescription)
+            }
+        }
+        return(0,"")
     }
  }

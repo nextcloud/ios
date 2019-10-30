@@ -1,8 +1,8 @@
 //
-//  NCCommunicationCertificate.swift
+//  NCNetworking.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 18/10/19.
+//  Created by Marino Faggiana on 23/10/19.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -24,41 +24,41 @@
 import Foundation
 import OpenSSL
 
-class NCCommunicationCertificate: NSObject {
-    @objc static let sharedInstance: NCCommunicationCertificate = {
-        let instance = NCCommunicationCertificate()
+@objc class NCNetworking: NSObject, NCCommunicationDelegate {
+    @objc public static let sharedInstance: NCNetworking = {
+        let instance = NCNetworking()
         return instance
     }()
-
-    static func secTrustGetLeafCertificate(_ trust: SecTrust) -> SecCertificate? {
-        
-        let result: SecCertificate?
-        
-        if SecTrustGetCertificateCount(trust) > 0 {
-            result = SecTrustGetCertificateAtIndex(trust, 0)!
-            assert(result != nil);
+    
+    //MARK: - Communication Delegate
+       
+    func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        if NCNetworking.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
-            result = nil
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
-        
-        return result
     }
     
-    func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
+    //MARK: - Pinning check
+    
+    @objc func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
         
         var trusted = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         
         if let trust: SecTrust = protectionSpace.serverTrust {
-            saveCertificate(trust, certName: "tmp.der", directoryCertificate: directoryCertificate)
+            saveX509Certificate(trust, certName: "tmp.der", directoryCertificate: directoryCertificate)
             do {
-                // Get the directory contents urls (including subfolders urls)
                 let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
-                print(directoryContents)
+                let certTmpPath = directoryCertificate+"/"+"tmp.der"
                 for file in directoryContents {
-                    if FileManager.default.contentsEqual(atPath: directoryCertificate+"/"+"tmp.der", andPath: file.absoluteString) {
+                    let certPath = file.path
+                    if certPath == certTmpPath { continue }
+                    if FileManager.default.contentsEqual(atPath:certTmpPath, andPath: certPath) {
                         trusted = true
+                        break
                     }
                 }
             } catch { print(error) }
@@ -67,9 +67,19 @@ class NCCommunicationCertificate: NSObject {
         return trusted
     }
     
-    private func saveCertificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
+    @objc func wrtiteCertificate(directoryCertificate: String) {
         
-        let currentServerCert = NCCommunicationCertificate.secTrustGetLeafCertificate(trust)
+        let certificateAtPath = directoryCertificate + "/tmp.der"
+        let certificateToPath = directoryCertificate + "/" + CCUtility.getTimeIntervalSince197() + ".der"
+        
+        do {
+            try FileManager.default.moveItem(atPath: certificateAtPath, toPath: certificateToPath)
+        } catch { }
+    }
+    
+    private func saveX509Certificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
+        
+        let currentServerCert = secTrustGetLeafCertificate(trust)
         let certNamePath = directoryCertificate + "/" + certName
         let data: CFData = SecCertificateCopyData(currentServerCert!)
         let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
@@ -91,5 +101,19 @@ class NCCommunicationCertificate: NSObject {
             fclose(file);
             X509_free(x509cert);
         }
+    }
+    
+    private func secTrustGetLeafCertificate(_ trust: SecTrust) -> SecCertificate? {
+        
+        let result: SecCertificate?
+        
+        if SecTrustGetCertificateCount(trust) > 0 {
+            result = SecTrustGetCertificateAtIndex(trust, 0)!
+            assert(result != nil);
+        } else {
+            result = nil
+        }
+        
+        return result
     }
 }

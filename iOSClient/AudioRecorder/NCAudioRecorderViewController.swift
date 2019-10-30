@@ -31,6 +31,7 @@ import QuartzCore
 
 @objc protocol NCAudioRecorderViewControllerDelegate : class {
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String)
+    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String)
 }
 
 class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate {
@@ -82,7 +83,9 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
         if recording.state == .record {
             startStop()
         } else {
-            dismiss(animated: true, completion: nil)
+            dismiss(animated: true) {
+                self.delegate?.didFinishWithoutRecording(self, fileName: self.fileName)
+            }
         }
     }
     
@@ -156,7 +159,7 @@ open class NCAudioRecorder : NSObject {
     
     fileprivate let session = AVAudioSession.sharedInstance()
     var recorder: AVAudioRecorder?
-    fileprivate var player: AVAudioPlayer!
+    fileprivate var player: AVAudioPlayer?
     fileprivate var link: CADisplayLink?
     
     var metering: Bool {

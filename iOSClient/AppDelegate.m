@@ -36,7 +36,7 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, NCCommunicationDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
 PKPushRegistry *pushRegistry;
 }
@@ -52,6 +52,9 @@ PKPushRegistry *pushRegistry;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [CCUtility createDirectoryStandard];
+    
+    // Networking
+    [NCCommunication sharedInstance].delegate = [NCNetworking sharedInstance];
     
     // Verify upgrade
     if ([self upgrade]) {
@@ -268,12 +271,26 @@ PKPushRegistry *pushRegistry;
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
+        
         [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
     if ([CCUtility getCertificateError:self.activeAccount]) {
-        [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:self.activeAccount viewController:self.window.rootViewController delegate:self];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [[NCNetworking sharedInstance] wrtiteCertificateWithDirectoryCertificate:[CCUtility getDirectoryCerificates]];
+            [self startTimerErrorNetworking];
+        }]];
+                       
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_no_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+            [self startTimerErrorNetworking];
+        }]];
+        [self.window.rootViewController presentViewController:alertController animated:YES completion:^{
+            // Stop timer error network
+            [self.timerErrorNetworking invalidate];
+        }];
     }
 }
 
@@ -384,7 +401,7 @@ PKPushRegistry *pushRegistry;
     // Setting Account to Networking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
     
-    (void)[[NCCommunication sharedInstance] initWithUsername:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] delegate:self];
+    [[NCCommunication sharedInstance] setupWithUsername:activeUserID password:activePassword userAgent:[CCUtility getUserAgent]];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -1259,16 +1276,6 @@ PKPushRegistry *pushRegistry;
         
         NSLog(@"[LOG] End 20 sec. Start handle Events For Background URLSession: %@", identifier);
     });
-}
-
-- (void)urlSession:(NSURLSession * _Nonnull)session didReceive:(NSURLAuthenticationChallenge * _Nonnull)challenge completionHandler:(void (^ _Nonnull)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
-    
-    // The pinnning check
-    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
-        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    } else {
-        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

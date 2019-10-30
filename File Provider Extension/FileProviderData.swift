@@ -65,6 +65,9 @@ class fileProviderData: NSObject {
             return false
         }
         
+        // Networking
+        NCCommunication.sharedInstance.delegate = NCNetworking.sharedInstance
+        
         // NO DOMAIN -> Set default account
         if domain == nil {
             
@@ -77,7 +80,7 @@ class fileProviderData: NSObject {
             accountUrl = tableAccounts.url
             homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccounts.url)
             
-            NCCommunication.init(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), delegate: nil)
+            NCCommunication.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
             
             return true
         }
@@ -98,7 +101,7 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                NCCommunication.init(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), delegate: nil)
+                 NCCommunication.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
 
                 foundAccount = true
             }
@@ -125,7 +128,7 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                NCCommunication.init(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), delegate: nil)
+                NCCommunication.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent())
 
                 foundAccount = true
             }
