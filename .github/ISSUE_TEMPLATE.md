@@ -4,6 +4,8 @@
 
 ### Steps to reproduce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 
+### Resoning OR Why should it be changed/implemented?                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+
 ### iOS version
 
 ### App version
