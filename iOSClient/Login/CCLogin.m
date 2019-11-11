@@ -174,8 +174,8 @@
     // Remove trailing slash
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
-    
-    [[OCNetworking sharedManager] serverStatusUrl:self.baseUrl.text completion:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor, BOOL extendedSupport, NSString *message, NSInteger errorCode) {
+        
+    [[NCCommunication sharedInstance] getServerStatusWithUrlString:self.baseUrl.text completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0) {
             
@@ -211,29 +211,31 @@
             
             if (errorCode == NSURLErrorServerCertificateUntrusted) {
                 
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:nil viewController:self delegate:self];
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
+                [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                    [[NCNetworking sharedInstance] wrtiteCertificateWithDirectoryCertificate:[CCUtility getDirectoryCerificates]];
+                    [appDelegate startTimerErrorNetworking];
+                }]];
+                               
+                [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_no_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                    [appDelegate startTimerErrorNetworking];
+                }]];
+                [self presentViewController:alertController animated:YES completion:^{
+                    // Stop timer error network
+                    [appDelegate.timerErrorNetworking invalidate];
+                }];
                 
             } else {
                 
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:errorDescription preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
                 
                 [alertController addAction:okAction];
                 [self presentViewController:alertController animated:YES completion:nil];
             }
         }
+        
     }];
-}
-
-- (void)trustedCerticateAccepted
-{
-    NSLog(@"[LOG] Certificate trusted");
-}
-
-- (void)trustedCerticateDenied
-{
-   // if (_loginType == k_login_Modify_Password)
-        //[self handleAnnulla:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------

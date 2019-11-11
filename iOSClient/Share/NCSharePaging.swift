@@ -24,6 +24,7 @@
 
 import Foundation
 import Parchment
+import NCCommunication
 
 class NCSharePaging: UIViewController {
     
@@ -269,7 +270,8 @@ class NCShareHeaderView: UIView {
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-            OCNetworking.sharedManager()?.settingFavorite(withAccount: metadata.account, fileName: metadata.fileName, favorite: !metadata.favorite, completion: { (account, message, errorCode) in
+            
+            NCCommunication.sharedInstance.setFavorite(urlString: appDelegate.activeUrl, fileName: metadata.fileName, favorite: !metadata.favorite, account: metadata.account) { (account, errorCode, errorDescription) in
                 if errorCode == 0 {
                     NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite)
                     if !metadata.favorite {
@@ -280,7 +282,7 @@ class NCShareHeaderView: UIView {
                     self.appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, ocId: nil, action: Int(k_action_NULL))
                     self.appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
                 }
-            })
+            }
         }
     }
 }

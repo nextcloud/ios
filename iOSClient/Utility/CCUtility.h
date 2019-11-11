@@ -241,6 +241,8 @@
 
 + (void)selectFileNameFrom:(UITextField *)textField;
 
++ (NSString *)getTimeIntervalSince197;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;

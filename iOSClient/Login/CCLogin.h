@@ -24,13 +24,12 @@
 #import <UIKit/UIKit.h>
 
 #import "UIImage+animatedGIF.h"
-#import "CCCertificate.h"
 #import "OCNetworking.h"
 
 @class NCLoginWeb;
 @class NCLoginQRCode;
 
-@interface CCLogin : UIViewController <UITextFieldDelegate, CCCertificateDelegate>
+@interface CCLogin : UIViewController <UITextFieldDelegate>
 
 @property (nonatomic, weak) IBOutlet UIImageView *imageBrand;
 

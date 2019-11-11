@@ -23,15 +23,15 @@
 
 import Foundation
 import SVGKit
+import NCCommunication
 
 class NCService: NSObject {
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     @objc static let sharedInstance: NCService = {
         let instance = NCService()
         return instance
     }()
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     //MARK: -
     //MARK: Start Services API NC
@@ -112,7 +112,7 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
         
-        OCNetworking.sharedManager().serverStatusUrl(appDelegate.activeUrl, completion: { (serverProductName, versionMajor, versionMicro, versionMinor, extendedSupport, message, errorCode) in
+        NCCommunication.sharedInstance.getServerStatus(urlString: appDelegate.activeUrl) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
             if errorCode == 0 {
                 if extendedSupport == false {
                     if serverProductName == "owncloud" {
@@ -122,8 +122,7 @@ class NCService: NSObject {
                     }
                 }
             }
-            
-        })
+        }
     }
     
     private func requestServerCapabilities() {

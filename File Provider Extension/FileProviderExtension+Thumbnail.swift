@@ -22,6 +22,7 @@
 //
 
 import FileProvider
+import NCCommunication
 
 extension FileProviderExtension {
 
@@ -35,10 +36,7 @@ extension FileProviderExtension {
             guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 
                 counterProgress += 1
-                if (counterProgress == progress.totalUnitCount) {
-                    completionHandler(nil)
-                }
-                
+                if (counterProgress == progress.totalUnitCount) { completionHandler(nil) }
                 continue
             }
             
@@ -47,37 +45,29 @@ extension FileProviderExtension {
                 let width = NCUtility.sharedInstance.getScreenWidthForPreview()
                 let height = NCUtility.sharedInstance.getScreenHeightForPreview()
                 
-                OCNetworking.sharedManager().downloadPreview(withAccount: metadata.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, preview, message, errorCode) in
-                   
-                    if errorCode == 0 && account == metadata.account {
-                        do {
-                            let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                            let data = try Data.init(contentsOf: url)
-                            perThumbnailCompletionHandler(itemIdentifier, data, nil)
-                        } catch let error {
-                            print("error: \(error)")
-                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.noSuchItem))
-                        }
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let serverUrl = fileProviderData.sharedInstance.accountUrl
+                    
+                NCCommunication.sharedInstance.downloadPreview(serverUrl: serverUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath ,width: width, height: height, account: fileProviderData.sharedInstance.account) { (account, data, errorCode, errorDescription) in
+                    if errorCode == 0 && data != nil {
+                        perThumbnailCompletionHandler(itemIdentifier, data, nil)
                     } else {
                         perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                     }
                     
                     counterProgress += 1
-                    if (counterProgress == progress.totalUnitCount) {
-                        completionHandler(nil)
-                    }
-                })
-                
+                    if (counterProgress == progress.totalUnitCount) { completionHandler(nil) }
+                }
+               
             } else {
                 
                 counterProgress += 1
-                if (counterProgress == progress.totalUnitCount) {
-                    completionHandler(nil)
-                }
+                if (counterProgress == progress.totalUnitCount) { completionHandler(nil) }
             }
         }
         
         return progress
     }
-
+    
 }

@@ -1,3 +1,4 @@
+github "nextcloud/ios-communication-library" "develop"
 github "tilltue/TLPhotoPicker" "1.9.3"
 github "kishikawakatsumi/UICKeyChainStore" "v2.1.2"
 github "danielsaidi/Sheeeeeeeeet" "2.0.2"
@@ -17,9 +18,6 @@ github "rechsteiner/Parchment" "v1.7.0"
 github "WenchaoD/FSCalendar" "2.8.0"
 github "AssistoLab/DropDown" "v2.3.13"
 github "krzyzanowskim/OpenSSL" "1.0.218"
-github "Alamofire/Alamofire" "5.0.0-rc.2"
-github "https://github.com/yahoojapan/SwiftyXMLParser"
 
 github "https://github.com/marinofaggiana/FastScroll" "master"
 github "https://github.com/marinofaggiana/AFNetworking" "master"
-
