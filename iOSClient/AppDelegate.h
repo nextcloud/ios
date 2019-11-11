@@ -41,6 +41,7 @@
 @class NCMedia;
 @class NCOffline;
 @class NCAppConfigView;
+@class IMImagemeterViewer;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
 
@@ -121,6 +122,7 @@
 @property (nonatomic, retain) CCMore *activeMore;
 @property (nonatomic, retain) NCOffline *activeOffline;
 @property (nonatomic, retain) NCAppConfigView *appConfigView;
+@property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;

@@ -83,9 +83,6 @@
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F716FE7823795E5000FABE50 /* NCCommunication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F716FE7723795E5000FABE50 /* NCCommunication.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		F716FE7A23795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F716FE7923795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift */; };
-		F718088D2341FEB20039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
-		F718088E2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
-		F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
 		F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F72382BE22958569005B8A07 /* GoogleMVTextDetectorResources.bundle */; };
@@ -101,14 +98,10 @@
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72E0B9C21AD60BC00898D7B /* WeScan.framework */; };
-		F72FBC5C2379648F002CEAD0 /* NCCommunication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F716FE7723795E5000FABE50 /* NCCommunication.framework */; };
-		F72FBC5D237964A2002CEAD0 /* NCCommunication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F716FE7723795E5000FABE50 /* NCCommunication.framework */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
-		F736B554234DCF7B008A5C9F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
-		F736B557234DCF92008A5C9F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
@@ -478,7 +471,6 @@
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
-		F7CD050C234E724A00064685 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F736B551234DCF57008A5C9F /* Alamofire.framework */; };
 		F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D2D129230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
@@ -563,7 +555,6 @@
 		F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */; };
 		F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */; };
 		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
-		F7E856192351D7BE009A3330 /* SwiftyXMLParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */; };
 		F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E9C41820F4CA870040CF18 /* CCTransfers.m */; };
 		F7ECBA6D1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* NCCreateFormUploadRichdocuments.swift */; };
 		F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CAF1E5B14C700E19C62 /* ImageError.png */; };
@@ -760,7 +751,6 @@
 		F7169A4C1EE59C640086BD69 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F716FE7723795E5000FABE50 /* NCCommunication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NCCommunication.framework; path = Carthage/Build/iOS/NCCommunication.framework; sourceTree = "<group>"; };
 		F716FE7923795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileProviderExtension+NetworkingDelegate.swift"; sourceTree = "<group>"; };
-		F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetAppearance.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMLVisionTextModel.framework; sourceTree = "<group>"; };
@@ -1434,7 +1424,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F72FBC5C2379648F002CEAD0 /* NCCommunication.framework in Frameworks */,
 				F7267A83225DFCE800D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7B6F70321BD0EA0007D194D /* JDStatusBarNotification.framework in Frameworks */,
 				F7B6F70221BD0E6D007D194D /* MBProgressHUD.framework in Frameworks */,
@@ -1442,7 +1431,6 @@
 				F7C40C132199BA6A0004137E /* Realm.framework in Frameworks */,
 				F7C40C142199BA6E0004137E /* RealmSwift.framework in Frameworks */,
 				F79918A42199806500C2E308 /* UICKeyChainStore.framework in Frameworks */,
-				F736B554234DCF7B008A5C9F /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1450,11 +1438,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F72FBC5D237964A2002CEAD0 /* NCCommunication.framework in Frameworks */,
 				F7267A84225DFCEC00D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7C40C152199BA750004137E /* Realm.framework in Frameworks */,
 				F7C40C162199BA780004137E /* RealmSwift.framework in Frameworks */,
-				F736B557234DCF92008A5C9F /* Alamofire.framework in Frameworks */,
 				F79918A52199816500C2E308 /* UICKeyChainStore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1464,7 +1450,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F716FE7823795E5000FABE50 /* NCCommunication.framework in Frameworks */,
-				F7CD050C234E724A00064685 /* Alamofire.framework in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7D4B68C2295663D000C2C86 /* FirebaseCoreDiagnostics.framework in Frameworks */,
@@ -1511,7 +1496,6 @@
 				F7D4B68A2295663D000C2C86 /* FIRAnalyticsConnector.framework in Frameworks */,
 				F700510322DF6897003A3356 /* Parchment.framework in Frameworks */,
 				F7D4B6882295663D000C2C86 /* GoogleUtilities.framework in Frameworks */,
-				F7E856192351D7BE009A3330 /* SwiftyXMLParser.framework in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
 				F7D4B6972295666E000C2C86 /* GoogleAPIClientForREST.framework in Frameworks */,
 			);
@@ -2446,7 +2430,6 @@
 			isa = PBXGroup;
 			children = (
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
-				F718088C2341FEB20039A736 /* NCActionSheetAppearance.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
 				F76C3B871C638A4C00DC4301 /* CCError.h */,
@@ -3335,6 +3318,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftyXMLParser.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/NCCommunication.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
 			);
 			outputPaths = (
 			);
@@ -3366,7 +3350,6 @@
 				F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
-				F718088E2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
@@ -3473,7 +3456,6 @@
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
 				F7434B4220E2405500417916 /* OCSharedDto.m in Sources */,
-				F718088F2342067C0039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F7434B3F20E2404B00417916 /* OCNotifications.m in Sources */,
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
 				F7434B5420E240A300417916 /* NSString+Encode.m in Sources */,
@@ -3701,7 +3683,6 @@
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
-				F718088D2341FEB20039A736 /* NCActionSheetAppearance.swift in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
