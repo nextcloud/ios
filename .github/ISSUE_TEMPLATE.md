@@ -10,7 +10,7 @@
 
 ### Server configuration
 
-**Operating system**:
+**Operating system:**
 
 **Web server:**
 
