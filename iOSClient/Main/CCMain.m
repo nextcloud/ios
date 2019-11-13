@@ -581,6 +581,11 @@
 {
     UIImage *image = [UIImage imageNamed:@"themingLogo"];
     
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    if ([capabilities.themingColorText isEqualToString:@"#000000"] && [UIImage imageNamed:@"themingLogoBlack"]) {
+        image = [UIImage imageNamed:@"themingLogoBlack"];
+    }
+   
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
         image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]]];
