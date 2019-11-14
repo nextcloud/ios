@@ -188,7 +188,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     func tapCopy(with tableShare: tableShare?, sender: Any) {
-        NCShareCommon.sharedInstance.copyLink(tableShare: tableShare, viewController: self)
+        NCShareCommon.sharedInstance.copyLink(tableShare: tableShare, viewController: self, sender: sender)
     }
     
     func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: UISwitch) {

@@ -173,7 +173,7 @@ class NCShareCommon: NSObject {
         return(calendarView: calendar, viewWindow: viewWindow)
     }
     
-    func copyLink(tableShare: tableShare?, viewController: UIViewController) {
+    func copyLink(tableShare: tableShare?, viewController: UIViewController, sender: Any) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         var url: String = ""
@@ -191,8 +191,16 @@ class NCShareCommon: NSObject {
         if let name = URL(string: url), !name.absoluteString.isEmpty {
             let objectsToShare = [name]
             
-            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
-            viewController.present(activityVC, animated: true, completion: nil)
+            let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                if activityViewController.responds(to: #selector(getter: UIViewController.popoverPresentationController)) {
+                    activityViewController.popoverPresentationController?.sourceView = sender as? UIView
+                    activityViewController.popoverPresentationController?.sourceRect = (sender as AnyObject).bounds
+                }
+            }
+            
+            viewController.present(activityViewController, animated: true, completion: nil)
         }
     }
 }
