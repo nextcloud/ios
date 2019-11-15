@@ -146,7 +146,7 @@ PKPushRegistry *pushRegistry;
     [self startTimerErrorNetworking];
 
     // Fabric
-    if (![CCUtility getDisableCrashservice]) {
+    if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
         [Fabric with:@[[Crashlytics class]]];
     }
     
