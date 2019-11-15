@@ -28,9 +28,6 @@ import FastScroll
 class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
     @IBOutlet weak var collectionView : FastScrollCollectionView!
-    @IBOutlet weak var menuButtonMore: UIButton!
-    @IBOutlet weak var menuButtonSwitch: UIButton!
-    @IBOutlet weak var menuView: UIView!
     
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -70,6 +67,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more"), style: .plain, target: self, action: #selector(touchUpInsideMenuButtonMore))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "switchGridChange"), style: .plain, target: self, action: #selector(touchUpInsideMenuButtonSwitch))
+
         // Cell
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
@@ -111,12 +111,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
         refreshControl.addTarget(self, action: #selector(loadNetworkDatasource), for: .valueChanged)
-        
-        menuView.backgroundColor = NCBrandColor.sharedInstance.brand
-        menuButtonSwitch.setImage(UIImage(named: "switchGridChange")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        menuButtonSwitch.tintColor = NCBrandColor.sharedInstance.brandText
-        menuButtonMore.setImage(UIImage(named: "moreBig")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        menuButtonMore.tintColor = NCBrandColor.sharedInstance.brandText
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
@@ -183,7 +177,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     // MARK: IBAction
     
-    @IBAction func touchUpInsideMenuButtonSwitch(_ sender: Any) {
+    @objc func touchUpInsideMenuButtonSwitch(_ sender: Any) {
         
         let itemSizeStart = self.gridLayout.itemSize
         
@@ -210,7 +204,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         })
     }
     
-    @IBAction func touchUpInsideMenuButtonMore(_ sender: Any) {
+    @objc func touchUpInsideMenuButtonMore(_ sender: Any) {
         
         var menu: DropdownMenu?
 
@@ -247,7 +241,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         menu?.highlightColor = NCBrandColor.sharedInstance.brand
         menu?.tableView.alwaysBounceVertical = false
         menu?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
-        menu?.topOffsetY = menuView.bounds.height
         menu?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
         menu?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
         menu?.textColor = NCBrandColor.sharedInstance.textView
