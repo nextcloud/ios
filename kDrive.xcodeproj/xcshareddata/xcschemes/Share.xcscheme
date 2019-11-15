@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F72D100B210B6B16009C96B7"
-               BuildableName = "Notification Service Extension.appex"
-               BlueprintName = "Notification Service Extension"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BlueprintIdentifier = "F71459B41D12E3B700CAFEEC"
+               BuildableName = "Share.appex"
+               BlueprintName = "Share"
+               ReferencedContainer = "container:kDrive.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -30,9 +30,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-               BuildableName = "Nextcloud.app"
-               BlueprintName = "Nextcloud"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "kDrive.app"
+               BlueprintName = "kDrive"
+               ReferencedContainer = "container:kDrive.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -42,25 +42,24 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>
-      </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F72D100B210B6B16009C96B7"
-            BuildableName = "Notification Service Extension.appex"
-            BlueprintName = "Notification Service Extension"
-            ReferencedContainer = "container:Nextcloud.xcodeproj">
+            BlueprintIdentifier = "F71459B41D12E3B700CAFEEC"
+            BuildableName = "Share.appex"
+            BlueprintName = "Share"
+            ReferencedContainer = "container:kDrive.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <Testables>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = ""
       selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
+      askForAppToLaunch = "Yes"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
@@ -72,13 +71,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-            BuildableName = "Nextcloud.app"
-            BlueprintName = "Nextcloud"
-            ReferencedContainer = "container:Nextcloud.xcodeproj">
+            BuildableName = "kDrive.app"
+            BlueprintName = "kDrive"
+            ReferencedContainer = "container:kDrive.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -92,9 +89,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-            BuildableName = "Nextcloud.app"
-            BlueprintName = "Nextcloud"
-            ReferencedContainer = "container:Nextcloud.xcodeproj">
+            BuildableName = "kDrive.app"
+            BlueprintName = "kDrive"
+            ReferencedContainer = "container:kDrive.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -1250,7 +1250,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     
     lazy var operationQueueNetworkingMain: OperationQueue = {
         let queue = OperationQueue()
-        queue.name = "com.nextcloud.operationQueueNetworkingMain"
+        queue.name = "com.infomaniak.operationQueueNetworkingMain"
         queue.maxConcurrentOperationCount = 1
         return queue
     }()
