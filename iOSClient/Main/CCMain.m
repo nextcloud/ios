@@ -1711,7 +1711,7 @@
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
         
-        textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
+        textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     }];
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
