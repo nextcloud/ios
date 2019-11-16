@@ -486,7 +486,9 @@
      viewController.layoutViewSelect = k_layout_view_move;
      
      [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
-     [self presentViewController:navigationController animated:YES completion:nil];
+     [self presentViewController:navigationController animated:YES completion:^{
+         [self.tableView reloadData];
+     }];
  }
 
 @end
