@@ -534,7 +534,7 @@
         } else {
             
             if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
-                [[OCNetworking sharedManager] checkRemoteUser:metadata.account];
+                [[OCNetworking sharedManager] checkRemoteUser:metadata.account function:@"download" errorCode:errorCode];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
                 [CCUtility setCertificateError:metadata.account error:YES];
 
@@ -1092,7 +1092,7 @@
         } else {
 
             if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
-                [[OCNetworking sharedManager] checkRemoteUser:metadata.account];
+                [[OCNetworking sharedManager] checkRemoteUser:metadata.account function:@"upload" errorCode:errorCode];
             else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
                 [CCUtility setCertificateError:metadata.account error:YES];
             

@@ -108,7 +108,7 @@
 
 #pragma mark ===== Check remote user =====
 
-- (void)checkRemoteUser:(NSString *)account;
+- (void)checkRemoteUser:(NSString *)account function:(NSString *)function errorCode:(NSInteger)errorCode;
 
 #pragma mark ===== Trash =====
 

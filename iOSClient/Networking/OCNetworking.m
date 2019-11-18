@@ -381,7 +381,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"download" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -430,7 +430,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"download" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -484,7 +484,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"upload" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -612,7 +612,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"read file or folder" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -690,7 +690,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"read file or folder" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -749,7 +749,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"create folder" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -802,7 +802,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"delete file or folder" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -846,7 +846,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"move file or folder" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -966,7 +966,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"search" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1022,7 +1022,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"search" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1337,7 +1337,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"setting favorite" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1665,7 +1665,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get activity" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1709,7 +1709,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get external sites" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1754,7 +1754,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get notification" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1799,7 +1799,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"set notification" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1844,7 +1844,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get capabilities" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1889,7 +1889,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get user profile" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2346,7 +2346,7 @@
 #pragma mark ===== Check remote user =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)checkRemoteUser:(NSString *)account
+- (void)checkRemoteUser:(NSString *)account function:(NSString *)function errorCode:(NSInteger)errorCode
 {
  #ifndef EXTENSION
     @synchronized(self) {
@@ -2376,7 +2376,10 @@
                     
                 } else {
                     
-                    [CCUtility setPassword:account password:nil];
+                    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
+                        [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] visible:YES delay:k_dismissAfterSecond*2 type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        [CCUtility setPassword:account password:nil];
+                    }
                 }
                 
                 self.checkRemoteUserInProgress = false;
@@ -2384,7 +2387,10 @@
             
         } else if ([CCUtility getPassword:account] != nil) {
             
-            [CCUtility setPassword:account password:nil];
+            if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
+                [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] visible:YES delay:k_dismissAfterSecond*2 type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [CCUtility setPassword:account password:nil];
+            }
         }
     }
 #endif
@@ -2419,7 +2425,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get remote wipe status" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2817,7 +2823,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get user profile" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2891,7 +2897,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"put user profile" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2938,7 +2944,7 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account];
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get features" errorCode:errorCode];
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
