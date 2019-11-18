@@ -27,4 +27,4 @@
 #import "NCRichDocumentTemplate.h"
 #import "HCFeatures.h"
 #import "NCComments.h"
-#import "CCCertificate.h"
+#import "CCSplit.h"
