@@ -136,10 +136,10 @@
     } else {
     
         if ([CCUtility getIntro] == NO) {
-        
-            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
-            [_intro show];
-        
+            IntroView *intro = [IntroView instanceFromNib];
+            intro.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+            intro.delegate = self;
+            [self.view addSubview:intro];
         } else {
             
             if (appDelegate.activeAccount.length == 0) {
