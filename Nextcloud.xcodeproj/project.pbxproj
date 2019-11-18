@@ -90,6 +90,7 @@
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
+		F72747762382E31600E9B76D /* IMCreate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72747752382E31600E9B76D /* IMCreate.swift */; };
 		F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */; };
 		F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
@@ -757,6 +758,7 @@
 		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
+		F72747752382E31600E9B76D /* IMCreate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMCreate.swift; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
 		F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCActionSheetHeaderView.xib; sourceTree = "<group>"; };
 		F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeaderView.swift; sourceTree = "<group>"; };
@@ -1614,6 +1616,7 @@
 		F704FA5A232A341800BBA952 /* Imagemeter */ = {
 			isa = PBXGroup;
 			children = (
+				F72747752382E31600E9B76D /* IMCreate.swift */,
 				F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */,
 			);
 			path = Imagemeter;
@@ -3701,6 +3704,7 @@
 				F73B4F031F470D9100BBEE4B /* LangVietnameseModel.cpp in Sources */,
 				F73B4F021F470D9100BBEE4B /* LangTurkishModel.cpp in Sources */,
 				F7F54D0B1E5B14C800E19C62 /* MWTapDetectingImageView.m in Sources */,
+				F72747762382E31600E9B76D /* IMCreate.swift in Sources */,
 				F7D423821F0596C6009C9782 /* ReaderThumbCache.m in Sources */,
 				F760F79A21F21F61006B1A73 /* PhotoEditor+Crop.swift in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
