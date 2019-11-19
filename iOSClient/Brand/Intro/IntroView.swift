@@ -18,8 +18,8 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
     @IBOutlet weak var pageControl: UIPageControl!
     
     @objc var delegate: CCSplit?
-    private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
-    private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
+    private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: "")]
+    private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3")]
     private var timerAutoScroll: Timer?
 
     @objc func autoScroll() {
@@ -47,9 +47,9 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "introCell", for: indexPath) as! IntroCollectionViewCell
-        cell.backgroundColor = NCBrandColor.sharedInstance.customer
+        cell.backgroundColor = NCBrandColor.sharedInstance.introBackground
 
-        cell.titleLabel.textColor = NCBrandColor.sharedInstance.customerText
+        cell.titleLabel.textColor = NCBrandColor.sharedInstance.introText
         cell.titleLabel.text = titles[indexPath.row]
         cell.imageView.image = images[indexPath.row]
         return cell
@@ -76,26 +76,31 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
     @objc class func instanceFromNib() -> IntroView {
         let view = UINib(nibName: "IntroView", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! IntroView
 
+        view.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.introText
+        view.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft
+        
         view.buttonLogin.layer.cornerRadius = 20
-        view.buttonLogin.setTitleColor(.black, for: .normal)
-        view.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customerText
+        view.buttonLogin.setTitleColor(.white, for: .normal)
+        view.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customer
         view.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
 
         view.buttonSignUp.layer.cornerRadius = 20
         view.buttonSignUp.setTitleColor(.white, for: .normal)
         view.buttonSignUp.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
         view.buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
+        view.buttonSignUp.isHidden = true
 
         view.buttonHost.layer.cornerRadius = 20
         view.buttonHost.setTitle(NSLocalizedString("_host_your_own_server", comment: ""), for: .normal)
         view.buttonHost.setTitleColor(UIColor(red: 1, green: 1, blue: 1, alpha: 0.7), for: .normal)
+        view.buttonHost.isHidden = true
 
         view.introCollectionView.register(UINib(nibName: "IntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
         view.introCollectionView.dataSource = view
         view.introCollectionView.delegate = view
-        view.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.customer
+        view.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.introBackground
         view.pageControl.numberOfPages = view.titles.count
-        view.backgroundView.backgroundColor = NCBrandColor.sharedInstance.customer
+        view.backgroundView.backgroundColor = NCBrandColor.sharedInstance.introBackground
         view.timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: view, selector: (#selector(IntroView.autoScroll)), userInfo: nil, repeats: true)
 
         return view
