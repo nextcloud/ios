@@ -1,9 +1,9 @@
 //
-//  NSCommunicationCommon.swift
-//  Nextcloud
+//  IMCreate.swift
+//  HandwerkCloud
 //
-//  Created by Marino Faggiana on 12/10/19.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 17/11/2019.
+//  Copyright (c) 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -23,21 +23,8 @@
 
 import Foundation
 
-class NCCommunicationCommon: NSObject {
-    @objc static let sharedInstance: NCCommunicationCommon = {
-        let instance = NCCommunicationCommon()
-        return instance
-    }()
-
-    
-    func convertDate(_ dateString: String, format: String) -> NSDate? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale.init(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = format
-        if let date = dateFormatter.date(from: dateString) {
-            return date as NSDate
-        } else {
-            return nil
-        }
+class IMCreate: NSObject {
+    init(fileName: String, directory: String) {
+        super.init()
     }
 }

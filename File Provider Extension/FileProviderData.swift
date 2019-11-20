@@ -21,6 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import NCCommunication
+
 class fileProviderData: NSObject {
     @objc static let sharedInstance: fileProviderData = {
         let instance = fileProviderData()
@@ -55,28 +57,37 @@ class fileProviderData: NSObject {
     // UserDefaults
     var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.sharedInstance.capabilitiesGroups)
     
+    // Error
+    enum FileProviderError: Error {
+        case downloadError
+        case uploadError
+    }
+    
     // MARK: - 
     
-    func setupActiveAccount(domain: String?) -> Bool {
+    func setupActiveAccount(domain: String?, providerExtension: NSFileProviderExtension) -> Bool {
         
         var foundAccount: Bool = false
         
         if CCUtility.getDisableFilesApp() || NCBrandOptions.sharedInstance.disable_openin_file {
             return false
         }
-        
+                
         // NO DOMAIN -> Set default account
         if domain == nil {
             
-            guard let tableAccounts = NCManageDatabase.sharedInstance.getAccountActive() else { return false }
+            guard let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() else { return false }
             
-            account = tableAccounts.account
-            accountUser = tableAccounts.user
-            accountUserID = tableAccounts.userID
-            accountPassword = CCUtility.getPassword(tableAccounts.account)
-            accountUrl = tableAccounts.url
-            homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccounts.url)
-    
+            account = tableAccount.account
+            accountUser = tableAccount.user
+            accountUserID = tableAccount.userID
+            accountPassword = CCUtility.getPassword(tableAccount.account)
+            accountUrl = tableAccount.url
+            homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
+            
+            NCCommunicationCommon.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, delegate: NCNetworking.sharedInstance)
+            NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+            
             return true
         }
         
@@ -96,6 +107,9 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
+                NCCommunicationCommon.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, delegate: NCNetworking.sharedInstance)
+                NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+
                 foundAccount = true
             }
         }
@@ -103,7 +117,7 @@ class fileProviderData: NSObject {
         return foundAccount
     }
     
-    func setupActiveAccount(itemIdentifier: NSFileProviderItemIdentifier) -> Bool {
+    func setupActiveAccount(itemIdentifier: NSFileProviderItemIdentifier, providerExtension: NSFileProviderExtension) -> Bool {
         
         var foundAccount: Bool = false
 
@@ -120,6 +134,9 @@ class fileProviderData: NSObject {
                 accountPassword = CCUtility.getPassword(tableAccount.account)
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
+                
+                NCCommunicationCommon.sharedInstance.setup(username: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, delegate: NCNetworking.sharedInstance)
+                NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
                 
                 foundAccount = true
             }
@@ -139,15 +156,12 @@ class fileProviderData: NSObject {
         // (ADD)
         for (identifier, _) in listFavoriteIdentifierRank {
             
-            if !oldListFavoriteIdentifierRank.keys.contains(identifier) {
-            
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
+            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 
-                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                updateWorkingSet = true
-            }
+            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            updateWorkingSet = true
         }
         
         // (REMOVE)

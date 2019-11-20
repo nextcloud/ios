@@ -25,86 +25,127 @@ import FileProvider
 
 class FileProviderItem: NSObject, NSFileProviderItem {
 
-    // Providing Required Properties
-    var itemIdentifier: NSFileProviderItemIdentifier                // The item's persistent identifier
-    var filename: String = ""                                       // The item's filename
-    var typeIdentifier: String = ""                                 // The item's uniform type identifiers
-    var capabilities: NSFileProviderItemCapabilities {              // The item's capabilities
-        if (self.isDirectory) {
+    var metadata: tableMetadata
+    var parentItemIdentifier: NSFileProviderItemIdentifier
+
+    var itemIdentifier: NSFileProviderItemIdentifier {
+        return fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+    }
+    
+    var filename: String {
+        return metadata.fileNameView
+    }
+    
+    var documentSize: NSNumber? {
+        return NSNumber(value: metadata.size)
+    }
+    
+    var typeIdentifier: String {
+        return CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
+    }
+    
+    var contentModificationDate: Date? {
+        return metadata.date as Date
+    }
+    
+    var creationDate: Date? {
+        return metadata.date as Date
+    }
+    
+    var lastUsedDate: Date? {
+        return metadata.date as Date
+    }
+
+    var capabilities: NSFileProviderItemCapabilities {
+        if (metadata.directory) {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
         } else {
             return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
         }
     }
     
-    // Managing Content
-    var childItemCount: NSNumber?                                   // The number of items contained by this item
-    var documentSize: NSNumber?                                     // The document's size, in bytes
-
-    // Specifying Content Location
-    var parentItemIdentifier: NSFileProviderItemIdentifier          // The persistent identifier of the item's parent folder
-    var isTrashed: Bool = false                                     // A Boolean value that indicates whether an item is in the trash
-   
-    // Tracking Usage
-    var contentModificationDate: Date?                              // The date the item was last modified
-    var creationDate: Date?                                         // The date the item was created
-    var lastUsedDate: Date? = Date()                                // The date the item was last used, default to the moment when the item is created 
-
-    // Tracking Versions
-    var versionIdentifier: Data?                                    // A data value used to determine when the item changes
-    var isMostRecentVersionDownloaded: Bool = true                  // A Boolean value that indicates whether the item is the most recent version downloaded from the server
-
-    // Monitoring File Transfers
-    var isUploading: Bool = false                                   // A Boolean value that indicates whether the item is currently uploading to your remote server
-    var isUploaded: Bool = true                                     // A Boolean value that indicates whether the item has been uploaded to your remote server
-    var uploadingError: Error?                                      // An error that occurred while uploading to your remote server
+    var isTrashed: Bool {
+        return false
+    }
     
-    var isDownloading: Bool = false                                 // A Boolean value that indicates whether the item is currently downloading from your remote server
-    var isDownloaded: Bool = true                                   // A Boolean value that indicates whether the item has been downloaded from your remote server
-    var downloadingError: Error?                                    // An error that occurred while downloading the item
+    var childItemCount: NSNumber? {
+        return nil
+    }
 
-    var tagData: Data?                                              // Tag
-    var favoriteRank: NSNumber?                                     // Favorite
-    var isDirectory = false
+    var versionIdentifier: Data? {
+        return metadata.etag.data(using: .utf8)
+    }
+    
+    var tagData: Data? {
+        if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+            return tableTag.tagIOS
+        } else {
+            return nil
+        }
+    }
+    
+    var favoriteRank: NSNumber? {
+        if let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.ocId] {
+            return rank
+        } else {
+            return nil
+        }
+    }
+
+    var isMostRecentVersionDownloaded: Bool {
+        return true
+    }
+    
+    var isDownloaded: Bool {
+        if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var isDownloading: Bool {
+        if metadata.status == Int(k_metadataStatusInDownload) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var downloadingError: Error? {
+        if metadata.status == Int(k_metadataStatusDownloadError) {
+            return fileProviderData.FileProviderError.downloadError
+        } else {
+            return nil
+        }
+    }
+
+    var isUploaded: Bool {
+        if metadata.status == Int(k_metadataStatusInUpload) {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    var isUploading: Bool {
+        if metadata.status == Int(k_metadataStatusInUpload) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var uploadingError: Error? {
+        if metadata.status == Int(k_metadataStatusUploadError) {
+            return fileProviderData.FileProviderError.uploadError
+        } else {
+            return nil
+        }
+    }
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
-        
+        self.metadata = metadata
         self.parentItemIdentifier = parentItemIdentifier
-        self.itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                
-        self.contentModificationDate = metadata.date as Date
-        self.creationDate = metadata.date as Date
-        self.documentSize = NSNumber(value: metadata.size)
-        self.filename = metadata.fileNameView
-        self.isDirectory = metadata.directory
-        self.typeIdentifier = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
-        self.versionIdentifier = metadata.etag.data(using: .utf8)
-        
-        if (!metadata.directory) {
-            
-            self.documentSize = NSNumber(value: metadata.size)
-           
-            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            if tableLocalFile == nil {
-//                isMostRecentVersionDownloaded = false
-            } else {
-//                isMostRecentVersionDownloaded = true
-            }
-            
-        } else {
-            
-            // Favorite directory
-            let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.ocId]
-            if (rank == nil) {
-                favoriteRank = nil
-            } else {
-                favoriteRank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.ocId]
-            }
-        }
-        
-        // Tag
-        if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-            tagData = tableTag.tagIOS
-        }
     }
 }

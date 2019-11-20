@@ -53,6 +53,9 @@ PKPushRegistry *pushRegistry;
 {
     [CCUtility createDirectoryStandard];
     
+    // Networking
+    [[NCCommunicationCommon sharedInstance] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups delegate:[NCNetworking sharedInstance]];
+    
     // Verify upgrade
     if ([self upgrade]) {
         // Set account, if no exists clear all
@@ -143,7 +146,7 @@ PKPushRegistry *pushRegistry;
     [self startTimerErrorNetworking];
 
     // Fabric
-    if (![CCUtility getDisableCrashservice]) {
+    if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
         [Fabric with:@[[Crashlytics class]]];
     }
     
@@ -268,12 +271,26 @@ PKPushRegistry *pushRegistry;
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.activeAccount].length == 0) {
+        
         [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
     if ([CCUtility getCertificateError:self.activeAccount]) {
-        [[CCCertificate sharedManager] presentViewControllerCertificateWithAccount:self.activeAccount viewController:self.window.rootViewController delegate:self];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [[NCNetworking sharedInstance] wrtiteCertificateWithDirectoryCertificate:[CCUtility getDirectoryCerificates]];
+            [self startTimerErrorNetworking];
+        }]];
+                       
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_no_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+            [self startTimerErrorNetworking];
+        }]];
+        [self.window.rootViewController presentViewController:alertController animated:YES completion:^{
+            // Stop timer error network
+            [self.timerErrorNetworking invalidate];
+        }];
     }
 }
 
@@ -383,6 +400,9 @@ PKPushRegistry *pushRegistry;
     
     // Setting Account to Networking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
+    
+    [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
+    [[NCCommunicationCommon sharedInstance] setupWithUsername:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups delegate:[NCNetworking sharedInstance]];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -1434,7 +1454,7 @@ PKPushRegistry *pushRegistry;
     
     // Verify internal error download (lost task)
     //
-    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusDownloading] sorted:nil ascending:true];
     for (tableMetadata *metadata in matadatasInDownloading) {
         
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];

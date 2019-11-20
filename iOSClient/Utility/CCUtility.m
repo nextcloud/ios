@@ -1361,6 +1361,11 @@
     textField.selectedTextRange = textRange;
 }
 
++ (NSString *)getTimeIntervalSince197
+{
+    return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------

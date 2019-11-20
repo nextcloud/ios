@@ -35,6 +35,11 @@ class NCUtility: NSObject {
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     let cache = NSCache<NSString, UIImage>()
+    struct bundleDirectoryType {
+        var error: Bool = false
+        var bundleDirectory: String = ""
+        var immPath: String = ""
+    }
     
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
@@ -436,7 +441,7 @@ class NCUtility: NSObject {
         }
     }
     
-    func IMGetBundleDirectory(metadata: tableMetadata) -> (error: Bool, bundleDirectory: String, immPath: String) {
+    func IMGetBundleDirectory(metadata: tableMetadata) -> bundleDirectoryType {
         
         var error = true
         var bundleDirectory = ""
@@ -455,6 +460,14 @@ class NCUtility: NSObject {
             })
         }
         
-        return(error, bundleDirectory, immPath)
+        return bundleDirectoryType(error: error, bundleDirectory: bundleDirectory, immPath: immPath)
     }
 }
+
+class ActionSheetDeleteItem: ActionSheetItem {
+    override open func cell(for tableView: UITableView) -> ActionSheetItemCell {
+        return ActionSheetDeleteItemCell(style: cellStyle, reuseIdentifier: cellReuseIdentifier)
+    }
+}
+
+class ActionSheetDeleteItemCell: ActionSheetItemCell {}

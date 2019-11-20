@@ -82,7 +82,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         79
+#define k_databaseSchemaVersion                         80
 
 // Intro selector
 #define k_intro_login                                   0
@@ -92,9 +92,6 @@
 #define k_login_Add                                     0
 #define k_login_Add_Forced                              1
 #define k_login_Add_SignUp                              2
-
-// Picker select image
-#define k_pickerControllerMax                           1000.0
 
 // define Nextcloud IOS
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
@@ -124,7 +121,6 @@
 #define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 
 // Session Download Upload Extension
-#define k_download_session_extension                    @"com.nextcloud.download.session.extension"
 #define k_upload_session_extension                      @"com.nextcloud.upload.session.extension"
 
 // OperationQueue
@@ -304,5 +300,8 @@
 #define k_nextcloud_version_17_0                        17
 
 // -----------------------------------------------------------------------------------------------------------
+// INTERNAL
 // -----------------------------------------------------------------------------------------------------------
+
+#define k_fileProvider_domain                           0
 
