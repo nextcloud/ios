@@ -22,6 +22,7 @@
 //
 
 import RealmSwift
+import NCCommunication
 
 class NCManageDatabase: NSObject {
         
@@ -35,80 +36,98 @@ class NCManageDatabase: NSObject {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
 
-        let configCompact = Realm.Configuration(
-            
-            fileURL: databaseFilePath,
-            schemaVersion: UInt64(k_databaseSchemaVersion),
-            
-            migrationBlock: { migration, oldSchemaVersion in
-                
-                if oldSchemaVersion < 41 {
-                    migration.deleteData(forType: tableActivity.className())
-                    migration.deleteData(forType: tableMetadata.className())
-                    migration.deleteData(forType: tableDirectory.className())
-                }
-                
-                if oldSchemaVersion < 61 {
-                    migration.deleteData(forType: tableShare.className())
-                }
-                
-                if oldSchemaVersion < 74 {
-                    
-                    migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
-                        newObject!["ocId"] = oldObject!["fileID"]
-                    }
-                    
-                    migration.enumerateObjects(ofType: tableTrash.className()) { oldObject, newObject in
-                        newObject!["fileId"] = oldObject!["fileID"]
-                    }
-                    
-                    migration.enumerateObjects(ofType: tableTag.className()) { oldObject, newObject in
-                        newObject!["ocId"] = oldObject!["fileID"]
-                    }
-                    
-                    migration.enumerateObjects(ofType: tableE2eEncryptionLock.className()) { oldObject, newObject in
-                        newObject!["ocId"] = oldObject!["fileID"]
-                    }
-                }
-                
-                if oldSchemaVersion < 78 {
-                    migration.deleteData(forType: tableActivity.className())
-                    migration.deleteData(forType: tableActivityPreview.className())
-                    migration.deleteData(forType: tableActivitySubjectRich.className())
-                    migration.deleteData(forType: tableComments.className())
-                    migration.deleteData(forType: tableDirectory.className())
-                    migration.deleteData(forType: tableMetadata.className())
-                    migration.deleteData(forType: tableMedia.className())
-                    migration.deleteData(forType: tableE2eEncryptionLock.className())
-                    migration.deleteData(forType: tableTag.className())
-                    migration.deleteData(forType: tableTrash.className())
-                }
-                
-            }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                
-                // totalBytes refers to the size of the file on disk in bytes (data + free space)
-                // usedBytes refers to the number of bytes used by data in the file
-                
-                // Compact if the file is over 100MB in size and less than 50% 'used'
-                let oneHundredMB = 100 * 1024 * 1024
-                return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
-            }
-        )
+        let bundleUrl: URL = Bundle.main.bundleURL
+        let bundlePathExtension: String = bundleUrl.pathExtension
+        let isAppex: Bool = bundlePathExtension == "appex"
         
-        do {
-            // Realm is compacted on the first open if the configuration block conditions were met.
-            _ = try Realm(configuration: configCompact)
-        } catch {
-            // handle error compacting or opening Realm
+        if isAppex {
+            
+            // App Extension config
+            
+            let config = Realm.Configuration(
+                fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
+                schemaVersion: UInt64(k_databaseSchemaVersion),
+                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self]
+            )
+            
+            Realm.Configuration.defaultConfiguration = config
+            
+        } else {
+            
+            // App config
+
+            let configCompact = Realm.Configuration(
+                
+                fileURL: databaseFilePath,
+                schemaVersion: UInt64(k_databaseSchemaVersion),
+                
+                migrationBlock: { migration, oldSchemaVersion in
+                    
+                    if oldSchemaVersion < 41 {
+                        migration.deleteData(forType: tableActivity.className())
+                        migration.deleteData(forType: tableMetadata.className())
+                        migration.deleteData(forType: tableDirectory.className())
+                    }
+                    
+                    if oldSchemaVersion < 61 {
+                        migration.deleteData(forType: tableShare.className())
+                    }
+                    
+                    if oldSchemaVersion < 74 {
+                        
+                        migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
+                            newObject!["ocId"] = oldObject!["fileID"]
+                        }
+                        
+                        migration.enumerateObjects(ofType: tableTrash.className()) { oldObject, newObject in
+                            newObject!["fileId"] = oldObject!["fileID"]
+                        }
+                        
+                        migration.enumerateObjects(ofType: tableTag.className()) { oldObject, newObject in
+                            newObject!["ocId"] = oldObject!["fileID"]
+                        }
+                        
+                        migration.enumerateObjects(ofType: tableE2eEncryptionLock.className()) { oldObject, newObject in
+                            newObject!["ocId"] = oldObject!["fileID"]
+                        }
+                    }
+                    
+                    if oldSchemaVersion < 78 {
+                        migration.deleteData(forType: tableActivity.className())
+                        migration.deleteData(forType: tableActivityPreview.className())
+                        migration.deleteData(forType: tableActivitySubjectRich.className())
+                        migration.deleteData(forType: tableComments.className())
+                        migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableMetadata.className())
+                        migration.deleteData(forType: tableMedia.className())
+                        migration.deleteData(forType: tableE2eEncryptionLock.className())
+                        migration.deleteData(forType: tableTag.className())
+                        migration.deleteData(forType: tableTrash.className())
+                    }
+                    
+                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                    
+                    // totalBytes refers to the size of the file on disk in bytes (data + free space)
+                    // usedBytes refers to the number of bytes used by data in the file
+                    
+                    // Compact if the file is over 100MB in size and less than 50% 'used'
+                    let oneHundredMB = 100 * 1024 * 1024
+                    return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+                }
+            )
+            
+            do {
+                _ = try Realm(configuration: configCompact)
+            } catch { }
+                        
+            let config = Realm.Configuration(
+                fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
+                schemaVersion: UInt64(k_databaseSchemaVersion)
+            )
+            
+            Realm.Configuration.defaultConfiguration = config
         }
         
-        let config = Realm.Configuration(
-        
-            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: UInt64(k_databaseSchemaVersion)
-        )
-        
-        Realm.Configuration.defaultConfiguration = config
         _ = try! Realm()
     }
     
@@ -974,37 +993,6 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
-    //MARK: Table Certificates
-    
-    @objc func addCertificates(_ certificateLocation: String) {
-    
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                let addObject = tableCertificates()
-            
-                addObject.certificateLocation = certificateLocation
-            
-                realm.add(addObject)
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    @objc func getCertificatesLocation(_ localCertificatesFolder: String) -> [String] {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let results = realm.objects(tableCertificates.self)
-    
-        return Array(results.map { "\(localCertificatesFolder)/\($0.certificateLocation)" })
-    }
-   
-    //MARK: -
     //MARK: Table Comments
     
     @objc func addComments(_ listOfComments: [NCComments], account: String, objectId: String) {
@@ -1781,7 +1769,7 @@ class NCManageDatabase: NSObject {
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
 
-    @objc func addMetadata(files: [NCFile], account: String, serverUrl: String, removeFirst: Bool) {
+    @objc func addMetadatas(files: [NCFile], account: String, serverUrl: String, removeFirst: Bool) {
     
         var isNotFirstFileOfList: Bool = false
         let realm = try! Realm()
@@ -1792,6 +1780,10 @@ class NCManageDatabase: NSObject {
                     
                     if removeFirst == true && isNotFirstFileOfList == false {
                         isNotFirstFileOfList = true
+                        continue
+                    }
+                    
+                    if !CCUtility.getShowHiddenFiles() && file.fileName.first == "." {
                         continue
                     }
                     
@@ -1819,18 +1811,30 @@ class NCManageDatabase: NSObject {
                     metadata.resourceType = file.resourceType
                     metadata.serverUrl = serverUrl
                     metadata.size = file.size
-                
+                    
+                    CCUtility.insertTypeFileIconName(file.fileName, metadata: metadata)
+                                    
                     realm.add(metadata, update: .all)
+                    
+                    // Directory
+                    if file.directory {
+                            
+                        let directory = tableDirectory()
+                        
+                        directory.account = account
+                        directory.e2eEncrypted = file.e2eEncrypted
+                        directory.favorite = file.favorite
+                        directory.ocId = file.ocId
+                        directory.permissions = file.permissions
+                        directory.serverUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: file.fileName)
+                        
+                        realm.add(directory, update: .all)
+                    }
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             return
-        }
-        
-        // Create directory records
-        for file in files {
-            if file.directory { _ = self.addDirectory(encrypted: file.e2eEncrypted, favorite: file.favorite, ocId: file.ocId, permissions: file.permissions, serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: file.fileName), account: account) }
         }
         
         self.setDateReadDirectory(serverUrl: serverUrl, account: account)

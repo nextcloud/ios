@@ -382,7 +382,11 @@
     
     // Registeration domain File Provider
     if (@available(iOS 11, *) ) {
-        [FileProviderDomain.sharedInstance registerDomain];
+        if (k_fileProvider_domain) {
+            [FileProviderDomain.sharedInstance registerDomain];
+        } else {
+            [FileProviderDomain.sharedInstance removeAllDomain];
+        }        
     }    
 }
 
@@ -577,6 +581,11 @@
 {
     UIImage *image = [UIImage imageNamed:@"themingLogo"];
     
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    if ([capabilities.themingColorText isEqualToString:@"#000000"] && [UIImage imageNamed:@"themingLogoBlack"]) {
+        image = [UIImage imageNamed:@"themingLogoBlack"];
+    }
+   
     if ([NCBrandOptions sharedInstance].use_themingLogo) {
         
         image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]]];
@@ -773,7 +782,7 @@
 
 - (void)openAssetsPickerController
 {
-    NCPhotosPickerViewController *viewController = [[NCPhotosPickerViewController alloc] init:self];
+    NCPhotosPickerViewController *viewController = [[NCPhotosPickerViewController alloc] init:self maxSelectedAssets:100];
     
     [viewController openPhotosPickerViewControllerWithPhAssets:^(NSArray<PHAsset *> * _Nonnull assets) {
         if (assets.count > 0) {
@@ -1889,7 +1898,7 @@
 {
     NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
     
-    [[OCNetworking sharedManager] settingFavoriteWithAccount:appDelegate.activeAccount fileName:fileNameServerUrl favorite:favorite completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+    [[NCCommunication sharedInstance] setFavoriteWithUrlString:appDelegate.activeUrl fileName:fileNameServerUrl favorite:favorite account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDecription) {
         
         if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
             
@@ -1910,7 +1919,7 @@
                 else
                     selector = selectorReadFolder;
                 
-                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName] selector:selector account:appDelegate.activeAccount];                
+                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName] selector:selector account:appDelegate.activeAccount];
             }
             
             if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
@@ -1929,10 +1938,11 @@
             }
             
         } else if (errorCode != 0) {
-            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_error_" description:errorDecription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
+        
     }];
 }
 

@@ -28,6 +28,7 @@ import ZIPFoundation
 //MARK: - Main Common
 
 class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
+    
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
         instance.createImagesThemingColor()
@@ -1146,8 +1147,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         self.appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
     }
     
-    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) { }
-
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
         
         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
@@ -1156,6 +1155,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
         viewController.setup(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
         self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+    }
+    
+    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
     }
 }
     

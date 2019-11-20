@@ -27,10 +27,12 @@ import TLPhotoPicker
 class NCPhotosPickerViewController: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var sourceViewController : UIViewController
+    var sourceViewController: UIViewController
+    var maxSelectedAssets = 1
 
-    @objc init (_ viewController : UIViewController) {
+    @objc init (_ viewController: UIViewController, maxSelectedAssets: Int) {
         sourceViewController = viewController
+        self.maxSelectedAssets = maxSelectedAssets
     }
     
     @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]) -> ()) {
@@ -43,7 +45,7 @@ class NCPhotosPickerViewController: NSObject {
         configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
         configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
         
-        configure.maxSelectedAssets = Int(k_pickerControllerMax)
+        configure.maxSelectedAssets = self.maxSelectedAssets
         configure.selectedColor = NCBrandColor.sharedInstance.brand
         
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
@@ -85,19 +87,19 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
-
-        self.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.textView
+        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.textView
         
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.brandText
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brandText
-        
-        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.brandText)
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.icon
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.graySoft
+        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.graySoft)
         
         self.collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        if CCUtility.getDarkMode() {
+            self.navigationBar.barStyle = .black
+        }
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.textView
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.textView
     }
 }

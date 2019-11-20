@@ -27,11 +27,8 @@
 @interface NCSelectDestination ()
 {    
     NSString *activeAccount;
-    NSString *activePassword;
     NSString *activeUrl;
-    NSString *activeUser;
-    NSString *activeUserID;
-    
+  
     BOOL _loadingFolder;
     
     // Automatic Upload Folder
@@ -55,10 +52,7 @@
     if (tableAccount) {
         
         activeAccount = tableAccount.account;
-        activePassword = [CCUtility getPassword:tableAccount.account];
         activeUrl = tableAccount.url;
-        activeUser = tableAccount.user;
-        activeUserID = tableAccount.userID;
         
     } else {
         
@@ -103,7 +97,7 @@
     _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
     
     // read file->folder
-    [self readFile];
+    [self readFolder];
 }
 
 // Apparirà
@@ -268,62 +262,47 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-// MARK: - Read File
-
-- (void)readFile
-{
-    [[OCNetworking sharedManager] readFileWithAccount:activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
-        if (errorCode == 0) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, _serverUrl]];
-            if ([metadata.etag isEqualToString:directory.etag] == NO) {
-                [self readFolder];
-            }
-        } else {
-            [self readFolder];
-        }
-    }];
-}
-
 // MARK: - Read Folder
 
 - (void)readFolder
 {
-    [[OCNetworking sharedManager] readFolderWithAccount:activeAccount serverUrl:_serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" account:activeAccount completionHandler:^(NSString *account, NSArray<NCFile *> *files, NSInteger errorCode, NSString *errorDecription) {
         
-        if (errorCode == 0 && [account isEqualToString:activeAccount]) {
-            
+        if (errorCode == 0 && files.count >= 1) {
+
+            NCFile *fileDirectory = files[0];
+        
             // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted account:activeAccount];
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
-            [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:_serverUrl account:activeAccount];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:fileDirectory.etag ocId:fileDirectory.ocId encrypted:fileDirectory.e2eEncrypted account:account];
             
-            NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", activeAccount, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+            // Delete metadata
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
             
-            // insert in Database
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+            // In download
+            NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+            
+            // Insert in Database
+            [[NCManageDatabase sharedInstance] addMetadatasWithFiles:files account:account serverUrl:_serverUrl removeFirst:true];
+            
             // reinsert metadatas in Download
             if (metadatasInDownload) {
                 (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
             }
-            
-        } else if (errorCode != 0) {
+                               
+        } else {
             
             self.move.enabled = NO;
             
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:errorDecription preferredStyle:UIAlertControllerStyleAlert];
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             }]];
             
             [self presentViewController:alertController animated:YES completion:nil];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
         
         _loadingFolder = NO;
-        
         [self.tableView reloadData];
-        
     }];
     
     _loadingFolder = YES;
@@ -334,16 +313,15 @@
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
-    [[OCNetworking sharedManager] createFolderWithAccount:activeAccount serverUrl:_serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *ocId, NSDate *date, NSString *message, NSInteger errorCode) {
-       
-        if (errorCode == 0 && [account isEqualToString:activeAccount]) {
-            [self readFolder];
-        } else if (errorCode != 0) {
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", _serverUrl, fileNameFolder];
+     
+    [[NCCommunication sharedInstance] createFolder:serverUrlFileName account:activeAccount completionHandler:^(NSString *account, NSString *ocID, NSDate *date, NSInteger errorCode, NSString *errorDecription) {
+        if (errorCode == 0) {
+           [self readFolder];
+        } else {
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:errorDecription preferredStyle:UIAlertControllerStyleAlert];
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }]];
             [self presentViewController:alertController animated:YES completion:nil];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
 }

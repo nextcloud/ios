@@ -123,16 +123,17 @@
         [section addFormRow:row];
     }
     */
+    
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkMode" rowType:XLFormRowDescriptorTypeBooleanSwitch title:[NSString stringWithFormat:@"%@ (beta)", NSLocalizedString(@"_dark_mode_", nil)]];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themeLightDark"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
-    /*
+    
     if (@available(iOS 13.0, *)) {
         row.hidden = [NSString stringWithFormat:@"$%@==1", @"darkModeDetect"];
     }
-    */
+    
     [section addFormRow:row];
     
     // Section : E2EEncryption --------------------------------------------------------------

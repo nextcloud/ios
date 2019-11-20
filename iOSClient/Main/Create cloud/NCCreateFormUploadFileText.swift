@@ -216,6 +216,17 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
             
             if success {
                 
+                /* TEST
+                let serverUrlFileName = serverUrl + "/" + fileNameSave
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameSave)!
+                
+                _ = NCCommunication.sharedInstance.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, account: self.appDelegate.activeAccount, progressHandler: { (progress) in
+                    //
+                }, completionHandler: { (account, etag, ocId, date, errorCode, errorDescription) in
+                    print(")")
+                })
+                */
+                
                 let metadataForUpload = tableMetadata()
                 
                 metadataForUpload.account = self.appDelegate.activeAccount
