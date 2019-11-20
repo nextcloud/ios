@@ -275,6 +275,7 @@
     // simply create a property of 'BOOL' type
     BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
     
+    /*
     // detect Dark Mode
     if (@available(iOS 13.0, *)) {
         appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
@@ -288,6 +289,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
         }
     }
+    */
     
     prevRunningInFullScreen = isRunningInFullScreen;
     
