@@ -213,7 +213,7 @@
         
         (void)[[NCCommunication sharedInstance] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil account:self.activeAccount progressHandler:^(NSProgress * progress) {
             [self.hud progress:progress.fractionCompleted];
-        } completionHandler:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSInteger errorCode, NSString *errorDescription) {
+        } completionHandler:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, NSString *contentType, int64_t size, NSInteger errorCode, NSString *errorDescription) {
             [self.hud hideHud];
             [self.filesName removeObject:fileName];
            

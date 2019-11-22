@@ -1221,6 +1221,11 @@
     }
 }
 
++ (void)createDirectoryAtPath:(NSString *)atPath
+{
+    [[NSFileManager defaultManager] createDirectoryAtPath:atPath withIntermediateDirectories:true attributes:nil error:nil];
+}
+
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
 {
     NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
