@@ -48,6 +48,10 @@ class NCPhotosPickerViewController: NSObject {
         configure.maxSelectedAssets = self.maxSelectedAssets
         configure.selectedColor = NCBrandColor.sharedInstance.brand
         
+        if maxSelectedAssets == 1 {
+            configure.singleSelectedMode = true
+        }
+        
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
             
             for asset: TLPHAsset in assets {
