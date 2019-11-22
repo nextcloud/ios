@@ -102,11 +102,17 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
     }
     
     @IBAction func login(_ sender: Any) {
-        delegate?.introFinishSelector(0)
+        delegate?.introFinishSelector(Int(k_intro_login))
+        UIView.animate(withDuration: 1.7) {
+            self.alpha = 0
+        }
     }
     
     @IBAction func signup(_ sender: Any) {
-        delegate?.introFinishSelector(1)
+        delegate?.introFinishSelector(Int(k_intro_signup))
+        UIView.animate(withDuration: 1.7) {
+            self.alpha = 0
+        }
     }
     
     @IBAction func host(_ sender: Any) {
