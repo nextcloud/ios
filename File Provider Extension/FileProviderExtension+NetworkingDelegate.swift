@@ -11,7 +11,7 @@ import NCCommunication
 
 extension FileProviderExtension: NCNetworkingDelegate {
 
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, description: String?, error: Error?, statusCode: Int) {
+    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, error: Error?, statusCode: Int) {
                 
         guard let ocIdTemp = description else { return }
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
@@ -41,6 +41,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             if let ocId = ocId { metadata.ocId = ocId }
             if let date = date { metadata.date = date }
             metadata.session = ""
+            metadata.size = Double(size)
             metadata.status = Int(k_metadataStatusNormal)
                   
             guard let metadataUpdated = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
