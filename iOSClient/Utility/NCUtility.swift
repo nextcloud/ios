@@ -52,11 +52,14 @@ class NCUtility: NSObject {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
-                    
                     let characters = Array(name)
                     
                     if characters.count < 2 {
-                        resultFileName = name + " " + "1" + "." + ext
+                        if ext == "" {
+                            resultFileName = name + " " + "1"
+                        } else {
+                            resultFileName = name + " " + "1" + "." + ext
+                        }
                     } else {
                         let space = characters[characters.count-2]
                         let numChar = characters[characters.count-1]
@@ -64,9 +67,17 @@ class NCUtility: NSObject {
                         if (space == " " && num != nil) {
                             name = String(name.dropLast())
                             num = num! + 1
-                            resultFileName = name + "\(num!)" + "." + ext
+                            if ext == "" {
+                                resultFileName = name + "\(num!)"
+                            } else {
+                                resultFileName = name + "\(num!)" + "." + ext
+                            }
                         } else {
-                            resultFileName = name + " " + "1" + "." + ext
+                            if ext == "" {
+                                resultFileName = name + " " + "1"
+                            } else {
+                                resultFileName = name + " " + "1" + "." + ext
+                            }
                         }
                     }
                     
