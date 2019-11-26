@@ -947,6 +947,8 @@ PKPushRegistry *pushRegistry;
     
     if ([tableDirectory.permissions containsString:@"CK"]) {
         (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
+    } else {
+        [self messageNotification:@"_warning_" description:@"_no_permission_add_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
     }
 }
 
