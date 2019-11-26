@@ -452,6 +452,41 @@ class NCUtility: NSObject {
         }
     }
     
+    func IMUnzip(metadata: tableMetadata) -> Bool {
+        
+        // bak
+        let atPathBak = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
+        let toPathBak = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension + ".bak"
+        CCUtility.copyFile(atPath: atPathBak, toPath: toPathBak)
+        
+        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let destination = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+        let removeAtPath = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension
+        
+        try? FileManager.default.removeItem(atPath: removeAtPath)
+        try? FileManager().unzipItem(at: source, to: destination)
+        
+        let bundleDirectory = NCUtility.sharedInstance.IMGetBundleDirectory(metadata: metadata)
+        if bundleDirectory.error {
+            return false
+        }
+        
+        if let fileHandle = FileHandle(forReadingAtPath: bundleDirectory.immPath) {
+            //                        let dataFormat = fileHandle.readData(ofLength: 1)
+            //                        if dataFormat.starts(with: [0x01]) {
+            //                            appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            //                            return;
+            //                        }
+            let dataZip = fileHandle.readData(ofLength: 4)
+            if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
+                try? FileManager().unzipItem(at: NSURL(fileURLWithPath: bundleDirectory.immPath) as URL, to: NSURL(fileURLWithPath: bundleDirectory.bundleDirectory) as URL)
+            }
+            fileHandle.closeFile()
+        }
+        
+        return true
+    }
+    
     func IMGetBundleDirectory(metadata: tableMetadata) -> bundleDirectoryType {
         
         var error = true
