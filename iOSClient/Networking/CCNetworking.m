@@ -1042,6 +1042,8 @@
     NSString *tempSession = metadata.session;
     NSString *errorMessage = @"";
     BOOL isE2EEDirectory = false;
+    BOOL isIMIFile = false;
+    if ([fileName.pathExtension.lowercaseString isEqualToString:@"imi"]) isIMIFile = true;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
@@ -1102,40 +1104,67 @@
         }
         
     } else {
-            
-        // Replace Metadata
-        metadata.date = date;
-        if (isE2EEDirectory) {
-            metadata.e2eEncrypted = true;
-        } else {
-            metadata.e2eEncrypted = false;
-        }
-        metadata.etag = etag;
-        metadata.ocId = ocId;
-        metadata.session = @"";
-        metadata.sessionError = @"";
-        metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-        metadata.status = k_metadataStatusNormal;
-        
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName]];
-        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        
-        NSLog(@"[LOG] Insert new upload : %@ - ocId : %@", metadata.fileName, ocId);
-
+    
         // remove tempocId and adjust the directory provider storage
-        if ([tempocId isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:metadata.directory]]) {
+        if (isIMIFile) {
             
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
+            // Update metadata tempocId
+            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
             
-            // adjust file system Directory Provider Storage
-            if ([tempSession isEqualToString:k_upload_session_extension]) {
-                // this is for File Provider Extension [Apple Works and ... ?]
-                [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
+            // Add metadata ocId
+            metadata.date = date;
+            if (isE2EEDirectory) {
+                metadata.e2eEncrypted = true;
             } else {
-                [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
+                metadata.e2eEncrypted = false;
+            }
+            metadata.etag = etag;
+            metadata.ocId = ocId;
+            metadata.session = @"";
+            metadata.sessionError = @"";
+            metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+            metadata.status = k_metadataStatusNormal;
+            
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+            
+            if (![tempocId isEqualToString:metadata.ocId]) {
+                [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
+            }
+            
+        } else {
+            
+            // Replace Metadata
+            metadata.date = date;
+            if (isE2EEDirectory) {
+                metadata.e2eEncrypted = true;
+            } else {
+                metadata.e2eEncrypted = false;
+            }
+            metadata.etag = etag;
+            metadata.ocId = ocId;
+            metadata.session = @"";
+            metadata.sessionError = @"";
+            metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+            metadata.status = k_metadataStatusNormal;
+            
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName]];
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+            
+            NSLog(@"[LOG] Insert new upload : %@ - ocId : %@", metadata.fileName, ocId);
+            
+            if ([tempocId isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:metadata.directory]]) {
+                
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
+                
+                // adjust file system Directory Provider Storage
+                if ([tempSession isEqualToString:k_upload_session_extension]) {
+                    // this is for File Provider Extension [Apple Works and ... ?]
+                    [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
+                } else {
+                    [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
+                }
             }
         }
-        
 #ifndef EXTENSION
         
         // EXIF
@@ -1163,7 +1192,7 @@
  #endif
         
         // Add Local or Remove from cache
-        if ([CCUtility getDisableLocalCacheAfterUpload]) {
+        if ([CCUtility getDisableLocalCacheAfterUpload] && !isIMIFile) {
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
         } else {
             // Add Local

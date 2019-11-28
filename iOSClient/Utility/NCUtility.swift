@@ -452,6 +452,33 @@ class NCUtility: NSObject {
         }
     }
     
+    func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: CGFloat(1.0)
+        )
+    }
+    
+    func RGBFromUIColor(uicolorValue: UIColor) -> UInt32 {
+        
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+
+        if uicolorValue.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+
+            var colorAsUInt : UInt32 = 0
+
+            colorAsUInt += UInt32(red * 255.0) << 16 +
+                           UInt32(green * 255.0) << 8 +
+                           UInt32(blue * 255.0)
+
+            return colorAsUInt
+        }
+        
+        return 0
+    }
+    
     func IMUnzip(metadata: tableMetadata) -> Bool {
         
         // bak
