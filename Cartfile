@@ -1,4 +1,4 @@
-github "nextcloud/ios-communication-library" "master"
+github "nextcloud/ios-communication-library" "develop"
 github "tilltue/TLPhotoPicker" "1.9.3"
 github "kishikawakatsumi/UICKeyChainStore" "v2.1.2"
 github "danielsaidi/Sheeeeeeeeet" "2.0.2"

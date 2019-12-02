@@ -213,6 +213,15 @@
         
             // Read (file) Folder
             [self readFileReloadFolder];
+            
+            // TEST
+            /*
+            NSString *directoryPath = [CCUtility returnPathfromServerUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
+            
+            [[NCCommunication sharedInstance] searchReadFolderWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUserID directoryPath:directoryPath lastFileName:@"" limit:100 account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *message) {
+                
+            }];
+            */
         }
     }
 

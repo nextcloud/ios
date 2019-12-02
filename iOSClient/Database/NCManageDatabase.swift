@@ -2099,6 +2099,32 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getMetadatas(predicate: NSPredicate, page: Int, limit: Int, sorted: String, ascending: Bool) -> [tableMetadata]? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results : Results<tableMetadata>
+        results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+        
+        if results.count > 0 {
+        
+            let nFrom = (page - 1) * limit
+            let nTo = nFrom + (limit - 1)
+            var metadatas = [tableMetadata]()
+            
+            for n in nFrom...nTo {
+                metadatas.append(results[n])
+            }
+            
+            return metadatas
+            
+        } else {
+            
+            return nil
+        }
+    }
+    
     @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
         
         let realm = try! Realm()
