@@ -535,6 +535,16 @@ class NCUtility: NSObject {
         
         return bundleDirectoryType(error: error, bundleDirectory: bundleDirectory, immPath: immPath)
     }
+    
+    @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
+        
+        for char in permissions {
+            if metadataPermissions.contains(char) == false {
+                return false
+            }
+        }
+        return true
+    }
 }
 
 class ActionSheetDeleteItem: ActionSheetItem {
