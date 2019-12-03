@@ -233,6 +233,14 @@
 
 + (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
 
++ (BOOL)isDocumentModifiableWithOnlyOffice:(NSString *)mimeType;
+
++ (BOOL)isDoc:(NSString *)mimeType;
+
++ (BOOL)isSpreadsheet:(NSString *)mimeType;
+
++ (BOOL)isPresentation:(NSString *)mimeType;
+
 + (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;

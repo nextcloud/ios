@@ -1307,6 +1307,40 @@
     return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
 }
 
++ (BOOL)isDocumentModifiableWithOnlyOffice:(NSString *)mimeType
+{
+    return  [self isDoc:mimeType] ||
+            [self isSpreadsheet:mimeType] ||
+            [self isPresentation:mimeType];
+}
+
++ (BOOL)isDoc:(NSString *)mimeType
+{
+    return [mimeType hasPrefix:@"application/msword"] ||
+        [mimeType hasPrefix:@"application/vnd.ms-word"] ||
+        [mimeType hasPrefix:@"application/vnd.oasis.opendocument.text"] ||
+        [mimeType hasPrefix:@"application/vnd.openxmlformats-officedocument.wordprocessingml"];
+}
+
++ (BOOL)isSpreadsheet:(NSString *)mimeType
+{
+    return [mimeType hasPrefix:@"application/vnd.ms-excel"] ||
+        [mimeType hasPrefix:@"application/msexcel"] ||
+        [mimeType hasPrefix:@"application/x-msexcel"] ||
+        [mimeType hasPrefix:@"application/vnd.openxmlformats-officedocument.spreadsheetml"] ||
+        [mimeType hasPrefix:@"application/vnd.oasis.opendocument.spreadsheet"];
+}
+
++ (BOOL)isPresentation:(NSString *)mimeType
+{
+    return [mimeType hasPrefix:@"application/powerpoint"] ||
+        [mimeType hasPrefix:@"application/mspowerpoint"] ||
+        [mimeType hasPrefix:@"application/vnd.ms-powerpoint"] ||
+        [mimeType hasPrefix:@"application/x-mspowerpoint"] ||
+        [mimeType hasPrefix:@"application/vnd.openxmlformats-officedocument.presentationml"] ||
+        [mimeType hasPrefix:@"application/vnd.oasis.opendocument.presentation"];
+}
+
 + (NSString *)getMimeType:(NSString *)fileNameView
 {
     CFStringRef fileUTI = nil;

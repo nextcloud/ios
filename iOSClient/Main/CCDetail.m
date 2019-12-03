@@ -275,7 +275,7 @@
     buttonShare  = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     buttonDelete = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] style:UIBarButtonItemStylePlain target:self action:@selector(deleteButtonPressed:)];
     
-    if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
+    if ([CCUtility isDocumentModifiableExtension:fileNameExtension] || [CCUtility isDocumentModifiableWithOnlyOffice:self.metadataDetail.contentType]) {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
             [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
@@ -929,7 +929,7 @@
 - (void)modifyTxtButtonPressed:(UIBarButtonItem *)sender
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", self.metadataDetail.ocId]];
-    if (metadata) {
+    if (metadata && ![self openOnlyOffice:metadata]) {
         
         UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
         
@@ -943,6 +943,45 @@
         
         [self presentViewController:navigationController animated:YES completion:nil];
     }
+}
+
+- (Boolean)openOnlyOffice:(tableMetadata *)metadata
+{
+    NSString *type;
+    if ([CCUtility isDoc:metadata.contentType]) {
+        type = @"text";
+    } else if ([CCUtility isSpreadsheet:metadata.contentType]) {
+        type = @"spreadsheet";
+    } else if ([CCUtility isPresentation:metadata.contentType]) {
+        type = @"presentation";
+    } else {
+        return false;
+    }
+
+    NSString *serveurURL = metadata.serverUrl;
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@".+?(\\d+)\\.connect\\.drive\\.infomaniak\\.com.*"
+                                                                           options:NSRegularExpressionCaseInsensitive error:&error];
+
+    NSArray *matches = [regex matchesInString:serveurURL
+                                      options:0
+                                        range:NSMakeRange(0, [serveurURL length])];
+    NSString *driveID = @"";
+    for (NSTextCheckingResult *match in matches) {
+        driveID = [serveurURL substringWithRange:[match rangeAtIndex:1]];
+    }
+
+    NSString *stringFileId = metadata.fileId;
+    NSRegularExpression *regexFileID = [NSRegularExpression regularExpressionWithPattern:@"^0*" options:NSRegularExpressionCaseInsensitive error:&error];
+    NSString *fileID = [regexFileID stringByReplacingMatchesInString:stringFileId options:0 range:NSMakeRange(0, [stringFileId length]) withTemplate:@""];
+
+    NSString *url = [NSString stringWithFormat:@"https://drive.infomaniak.com/app/drive/%@/preview/%@/%@", driveID, type, fileID];
+    
+    NSLog(@"url %@", url);
+
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url] options:@{} completionHandler:nil];
+
+    return true;
 }
 
 - (void)actionButtonPressed:(UIBarButtonItem *)sender
