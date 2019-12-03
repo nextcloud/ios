@@ -2114,7 +2114,11 @@ class NCManageDatabase: NSObject {
             var metadatas = [tableMetadata]()
             
             for n in nFrom...nTo {
-                metadatas.append(results[n])
+                if n == results.count {
+                    break
+                }
+                let metadata = tableMetadata.init(value: results[n])
+                metadatas.append(metadata)
             }
             
             return metadatas
