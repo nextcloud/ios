@@ -441,6 +441,7 @@
 		F7B6F70121BD0DD3007D194D /* DZNEmptyDataSet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */; };
 		F7B6F70221BD0E6D007D194D /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF22199978B0004137E /* MBProgressHUD.framework */; };
 		F7B6F70321BD0EA0007D194D /* JDStatusBarNotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEC219993330004137E /* JDStatusBarNotification.framework */; };
+		F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
 		F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1190,6 +1191,7 @@
 		F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLCommentsParser.h; sourceTree = "<group>"; };
 		F7B6ACD922FC2D14008AB646 /* NCComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCComments.h; sourceTree = "<group>"; };
 		F7B6ACDA22FC2D15008AB646 /* NCComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCComments.m; sourceTree = "<group>"; };
+		F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+fixedOrientation.swift"; sourceTree = "<group>"; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2431,9 +2433,6 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
-				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
-				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
 				F76C3B871C638A4C00DC4301 /* CCError.h */,
 				F76C3B881C638A4C00DC4301 /* CCError.m */,
 				F7A54C341C6267B500E2C8BF /* CCExifGeo.h */,
@@ -2444,10 +2443,14 @@
 				F7514EDB1C7B1336008F3338 /* CCHud.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
+				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
+				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
+				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
 				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
 				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
+				F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -3667,6 +3670,7 @@
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F760F77F21F21F61006B1A73 /* PhotoEditor+Controls.swift in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
+				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
