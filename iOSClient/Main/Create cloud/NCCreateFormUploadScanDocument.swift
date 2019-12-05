@@ -676,6 +676,12 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
         let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
         
+        if let image = results.enhancedScan?.image {
+            do {
+                try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
+            } catch { }
+        }
+        
         // V 1.0
         /*
         if (results.doesUserPreferEnhancedImage && results.enhancedImage != nil) {
