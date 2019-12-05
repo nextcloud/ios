@@ -547,10 +547,3 @@ class NCUtility: NSObject {
     }
 }
 
-class ActionSheetDeleteItem: ActionSheetItem {
-    override open func cell(for tableView: UITableView) -> ActionSheetItemCell {
-        return ActionSheetDeleteItemCell(style: cellStyle, reuseIdentifier: cellReuseIdentifier)
-    }
-}
-
-class ActionSheetDeleteItemCell: ActionSheetItemCell {}

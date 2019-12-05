@@ -677,6 +677,7 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
         
         // V 1.0
+        /*
         if (results.doesUserPreferEnhancedImage && results.enhancedImage != nil) {
             do {
                 try results.enhancedImage!.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
@@ -686,7 +687,8 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
                 try results.scannedImage.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
             } catch { }
         }
-    
+        */
+        
         // 0.9.1
         /*
         do {

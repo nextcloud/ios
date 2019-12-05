@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -38,7 +36,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X8O-Gg-slz">
-                    <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                     <items>
                         <navigationItem id="5CU-MZ-p1K">
                             <nil key="title"/>
@@ -98,7 +96,7 @@
                     </items>
                 </navigationBar>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="4gR-Bn-quP">
-                    <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                    <rect key="frame" x="0.0" y="44" width="375" height="623"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="VDa-Pp-VBq">
                         <size key="itemSize" width="50" height="50"/>
@@ -112,10 +110,10 @@
                     </connections>
                 </collectionView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HPm-Vc-F86">
-                    <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                    <rect key="frame" x="0.0" y="44" width="375" height="623"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="gi6-Sw-3Zf">
-                            <rect key="frame" x="137.5" y="239" width="100" height="125.5"/>
+                            <rect key="frame" x="137.5" y="249" width="100" height="125.5"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YDZ-o1-AXT">
                                     <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
@@ -140,20 +138,20 @@
                     </constraints>
                 </view>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="AEv-G6-dRI">
-                    <rect key="frame" x="177" y="323" width="20" height="20"/>
+                    <rect key="frame" x="177.5" y="323.5" width="20" height="20"/>
                 </activityIndicatorView>
                 <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jcn-hC-Umh" customClass="TLAlbumPopView" customModule="TLPhotoPicker" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                    <rect key="frame" x="0.0" y="44" width="375" height="623"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GKD-We-AdT">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
                         </view>
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eL2-gJ-b87">
                             <rect key="frame" x="1" y="17" width="373" height="130"/>
                             <subviews>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" rowHeight="75" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="grw-Nk-Sxr">
-                                    <rect key="frame" x="10" y="0.0" width="363" height="130"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="373" height="130"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </tableView>
                             </subviews>
@@ -162,12 +160,12 @@
                                 <constraint firstItem="grw-Nk-Sxr" firstAttribute="top" secondItem="eL2-gJ-b87" secondAttribute="top" id="DAx-an-6Qt"/>
                                 <constraint firstAttribute="height" constant="130" id="cet-yf-3jU"/>
                                 <constraint firstAttribute="trailing" secondItem="grw-Nk-Sxr" secondAttribute="trailing" id="nM5-IG-MPJ"/>
-                                <constraint firstItem="grw-Nk-Sxr" firstAttribute="leading" secondItem="eL2-gJ-b87" secondAttribute="leading" constant="10" id="o4b-cS-L3T"/>
+                                <constraint firstItem="grw-Nk-Sxr" firstAttribute="leading" secondItem="eL2-gJ-b87" secondAttribute="leading" id="o4b-cS-L3T"/>
                                 <constraint firstAttribute="bottom" secondItem="grw-Nk-Sxr" secondAttribute="bottom" id="sPK-1G-qLo"/>
                             </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5zn-je-qLx">
-                            <rect key="frame" x="180" y="10" width="14" height="7"/>
+                            <rect key="frame" x="180.5" y="10" width="14" height="7"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="7" id="eZN-nB-EHu"/>
                                 <constraint firstAttribute="width" constant="14" id="hWo-ji-iBX"/>

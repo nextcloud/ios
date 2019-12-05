@@ -16,9 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "util/test_file.hpp"
+#include "util/test_utils.hpp"
 
 #include "list.hpp"
 #include "object.hpp"
@@ -108,17 +109,28 @@ TEST_CASE("thread safe reference") {
 
         REQUIRE(get_current_version() != reference_version); // Ensure advanced
         REQUIRE_NOTHROW(shared_group.begin_read(reference_version)); shared_group.end_read(); // Ensure pinned
+        bool did_run_section = false;
 
         SECTION("destroyed without being resolved") {
+            did_run_section = true;
             ref = {}; // Destroy thread safe reference, unpinning version
         }
         SECTION("exception thrown on resolve") {
+            did_run_section = true;
             r->begin_transaction(); // Get into state that'll throw exception on resolve
             REQUIRE_THROWS(r->resolve_thread_safe_reference(std::move(*ref)));
             r->commit_transaction();
         }
-        r->begin_transaction(); r->commit_transaction(); // Clean up old versions
-        REQUIRE_THROWS(shared_group.begin_read(reference_version)); // Ensure unpinned
+        {
+            // Clean up old versions by creating a write with dirty data
+            r->begin_transaction();
+            foo.row().set_int(0, 1);
+            r->commit_transaction();
+        }
+
+        catch2_ensure_section_run_workaround(did_run_section, "cleanup properly unpins version", [&](){
+            REQUIRE_THROWS(shared_group.begin_read(reference_version)); // Ensure unpinned
+        });
     }
 
     SECTION("version mismatch") {
@@ -232,7 +244,10 @@ TEST_CASE("thread safe reference") {
 
         REQUIRE(num.row().get_int(0) == 7);
         auto ref = r->obtain_thread_safe_reference(num);
+        bool did_run_section = false;
+
         SECTION("same realm") {
+            did_run_section = true;
             {
                 Object num = r->resolve_thread_safe_reference(std::move(ref));
                 REQUIRE(num.row().get_int(0) == 7);
@@ -244,6 +259,7 @@ TEST_CASE("thread safe reference") {
             REQUIRE(num.row().get_int(0) == 9);
         }
         SECTION("different realm") {
+            did_run_section = true;
             {
                 SharedRealm r = Realm::get_shared_realm(config);
                 Object num = r->resolve_thread_safe_reference(std::move(ref));
@@ -255,8 +271,11 @@ TEST_CASE("thread safe reference") {
             }
             REQUIRE(num.row().get_int(0) == 7);
         }
-        r->refresh();
-        REQUIRE(num.row().get_int(0) == 9);
+        catch2_ensure_section_run_workaround(did_run_section, "same thread", [&](){
+            r->begin_transaction(); // advance to latest version by starting a write
+            REQUIRE(num.row().get_int(0) == 9);
+            r->cancel_transaction();
+        });
     }
 
     SECTION("passing over") {
@@ -510,7 +529,6 @@ TEST_CASE("thread safe reference") {
             List list(r, *get_table(*r, "int array"), 0, 0);
             r->commit_transaction();
 
-            auto& table = *get_table(*r, "string object");
             auto results = list.as_results().distinct({"self"}).sort({{"self", true}});
 
             REQUIRE(results.size() == 3);

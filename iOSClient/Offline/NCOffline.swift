@@ -336,9 +336,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         if !isEditMode {
             
-            var items = [ActionSheetItem]()
-            ActionSheetDeleteItemCell.appearance().titleColor = .red
-//            ActionSheet.applyAppearance(NCAppearance())
+            var items = [MenuItem]()
 
             ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
@@ -347,13 +345,13 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             
             // 0 == CCMore, 1 = first NCOffline ....
             if (self == self.navigationController?.viewControllers[1]) {
-                items.append(ActionSheetItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
+                items.append(MenuItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
             }
-            items.append(ActionSheetItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-            items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+            items.append(MenuItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(MenuItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
+            items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
-            actionSheet = ActionSheet(items: items) { sheet, item in
+            actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
                 if item.value as? Int == 0 {
                     if metadata.directory {
                         NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
@@ -364,8 +362,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                 }
                 if item.value as? Int == 1 { NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
-                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-            }
+                if item is CancelButton { print("Cancel buttons has the value `true`") }
+            })
             
             let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
             actionSheet?.headerView = headerView
@@ -756,8 +754,7 @@ extension NCOffline {
     
     func deleteItem(with metadata: tableMetadata, sender: Any) {
         
-        var items = [ActionSheetItem]()
-//        ActionSheet.applyAppearance(NCAppearance())
+        var items = [MenuItem]()
         
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
@@ -768,17 +765,17 @@ extension NCOffline {
             return
         }
         
-        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        items.append(DestructiveButton(title: NSLocalizedString("_delete_", comment: "")))
+        items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
         
-        actionSheet = ActionSheet(items: items) { sheet, item in
-            if item is ActionSheetDangerButton {
+        actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
+            if item is DestructiveButton  {
                 NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderocId: tableDirectory.ocId) { (errorCode, message) in
                     self.loadDatasource()
                 }
             }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-        }
+            if item is CancelButton { print("Cancel buttons has the value `true`") }
+        })
         
         let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
         actionSheet?.headerView = headerView

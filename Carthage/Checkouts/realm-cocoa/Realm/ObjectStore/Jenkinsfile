@@ -46,7 +46,7 @@ if (env.BRANCH_NAME == 'master') {
   env.DOCKER_PUSH = "1"
 }
 
-def doDockerBuild(String flavor, Boolean withCoverage, Boolean enableSync) {
+def doDockerBuild(String flavor, Boolean withCoverage, Boolean enableSync, String sanitizerFlags = "") {
   def sync = enableSync ? "sync" : ""
   def label = "${flavor}${enableSync ? '-sync' : ''}"
 
@@ -59,7 +59,7 @@ def doDockerBuild(String flavor, Boolean withCoverage, Boolean enableSync) {
           if(withCoverage) {
             sh "rm -rf coverage.build ${label}.build && ./workflow/test_coverage.sh ${sync} && mv coverage.build ${label}.build"
           } else {
-            sh "./workflow/build.sh ${flavor} ${sync}"
+            sh "./workflow/build.sh ${flavor} ${sync} ${sanitizerFlags}"
           }
         }
       }
@@ -82,7 +82,7 @@ def doAndroidDockerBuild() {
             sh '''rm -rf build
               mkdir build
               cd build
-              cmake -DREALM_PLATFORM=Android -DANDROID_NDK=/opt/android-ndk -GNinja ..
+              cmake -DREALM_PLATFORM=Android -DANDROID_NDK=/opt/android-ndk -GNinja -DCMAKE_MAKE_PROGRAM=ninja ..
               ninja
               adb connect emulator
               timeout 10m adb wait-for-device
@@ -168,8 +168,10 @@ stage('prepare') {
 
 stage('unit-tests') {
   parallel(
-    linux: doDockerBuild('linux', true, false),
+    linux: doDockerBuild('linux', false, false),
     linux_sync: doDockerBuild('linux', true, true),
+    linux_asan: doDockerBuild('linux', false, true, '-DSANITIZE_ADDRESS=1'),
+    linux_tsan: doDockerBuild('linux', false, true, '-DSANITIZE_THREAD=1'),
     android: doAndroidDockerBuild(),
     macos: doBuild('osx', 'macOS', false, ''),
     macos_sync: doBuild('osx', 'macOS', true, ''),
@@ -181,9 +183,7 @@ stage('unit-tests') {
 
 stage('publish') {
   node('docker') {
-    publishReport('linux')
     publishReport('linux-sync')
-    publishReport('macOS')
     publishReport('macOS-sync')
   }
 }

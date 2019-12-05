@@ -42,7 +42,5 @@ if(REALM_ENABLE_SYNC)
   add_definitions(-DREALM_ENABLE_SYNC)
 endif()
 
-set(PEGTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/pegtl)
-
 add_subdirectory(src)
 add_subdirectory(tests)

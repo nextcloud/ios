@@ -64,6 +64,11 @@ public:
     // If the Realm is already on disk, it will be fully synchronized before being returned.
     // Timeouts and interruptions are not handled by this method and must be handled by upper layers.
     std::shared_ptr<AsyncOpenTask> get_synchronized_realm(Realm::Config config);
+
+    // Creates the underlying sync session if it doesn't already exists.
+    // This is also created as part of opening a Realm, so only use this
+    // method if the session needs to exist before the Realm does.
+    void create_session(const Realm::Config& config);
 #endif
 
     // Get a Realm which is not bound to the current execution context
@@ -209,7 +214,7 @@ private:
     void pin_version(VersionID version);
 
     void set_config(const Realm::Config&);
-    void create_sync_session(bool force_client_reset, bool validate_sync_history);
+    void create_sync_session(bool force_client_resync, bool validate_sync_history);
     void do_get_realm(Realm::Config config, std::shared_ptr<Realm>& realm,
                       std::unique_lock<std::mutex>& realm_lock, bool bind_to_context=true);
 

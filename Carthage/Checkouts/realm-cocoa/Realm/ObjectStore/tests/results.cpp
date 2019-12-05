@@ -16,11 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "util/event_loop.hpp"
 #include "util/index_helpers.hpp"
-#include "util/templated_test_case.hpp"
 #include "util/test_file.hpp"
 
 #include "impl/object_accessor_impl.hpp"
@@ -2687,7 +2686,7 @@ struct ResultsFromLinkView {
     }
 };
 
-TEMPLATE_TEST_CASE("results: aggregate", ResultsFromTable, ResultsFromQuery, ResultsFromTableView, ResultsFromLinkView) {
+TEMPLATE_TEST_CASE("results: aggregate", "[query][aggregate]", ResultsFromTable, ResultsFromQuery, ResultsFromTableView, ResultsFromLinkView) {
     InMemoryTestFile config;
     config.cache = false;
     config.automatic_change_notifications = false;

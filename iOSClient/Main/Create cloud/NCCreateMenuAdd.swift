@@ -31,23 +31,22 @@ class NCCreateMenuAdd: NSObject {
     @objc init(viewController: UIViewController, view : UIView) {
         super.init()
    
-        var items = [ActionSheetItem]()
-//        ActionSheet.applyAppearance(NCAppearance())
+        var items = [MenuItem]()
         
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 10, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        items.append(MenuItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 10, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 20, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        items.append(MenuItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 20, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
         if NCBrandOptions.sharedInstance.use_imi_viewer {
-            items.append(ActionSheetItem(title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), value: 21, image: CCGraphics.scale(UIImage.init(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
+            items.append(MenuItem(title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), value: 21, image: CCGraphics.scale(UIImage.init(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
         }
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 30, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        items.append(MenuItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 30, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
@@ -55,22 +54,22 @@ class NCCreateMenuAdd: NSObject {
         }
 #endif
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_voice_memo_", comment: ""), value: 50, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        items.append(MenuItem(title: NSLocalizedString("_create_voice_memo_", comment: ""), value: 50, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
-        items.append(ActionSheetItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 60, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)))
+        items.append(MenuItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 60, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)))
         
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 70, image: UIImage.init(named: "create_file_document")))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 80, image: UIImage(named: "create_file_xls")))
-                items.append(ActionSheetItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 90, image: UIImage(named: "create_file_ppt")))
+                items.append(MenuItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 70, image: UIImage.init(named: "create_file_document")))
+                items.append(MenuItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 80, image: UIImage(named: "create_file_xls")))
+                items.append(MenuItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 90, image: UIImage(named: "create_file_ppt")))
             }
         }
         
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
         
-        let actionSheet = ActionSheet(items: items) { sheet, item in
-            
+        let actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
+
             if item.value as? Int == 10 { self.appDelegate.activeMain.openAssetsPickerController() }
             if item.value as? Int == 20 { self.appDelegate.activeMain.openImportDocumentPicker() }
             if item.value as? Int == 21 {
@@ -132,9 +131,10 @@ class NCCreateMenuAdd: NSObject {
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
             }
             
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-        }
+            if item is CancelButton { print("Cancel buttons has the value `true`") }
+        })
                 
         actionSheet.present(in: viewController, from: view)
+        
     }
 }
