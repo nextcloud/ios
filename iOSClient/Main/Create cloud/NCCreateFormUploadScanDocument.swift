@@ -645,6 +645,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     }
 }
 
+@available(iOS 11, *)
+
 class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     
     @objc static let sharedInstance: NCCreateScanDocument = {
@@ -654,12 +656,10 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewController: UIViewController?
-    var openScan: Bool = false
     
-    func openScannerDocument(viewController: UIViewController, openScan: Bool) {
+    func openScannerDocument(viewController: UIViewController) {
         
         self.viewController = viewController
-        self.openScan = openScan
         
         let scannerVC = ImageScannerController()
         scannerVC.imageScannerDelegate = self
@@ -690,7 +690,9 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         }
 
         scanner.dismiss(animated: true, completion: {
-            if (self.openScan) {
+            if self.viewController is DragDropViewController {
+                (self.viewController as! DragDropViewController).loadImage()
+            } else {
                 let storyboard = UIStoryboard(name: "Scan", bundle: nil)
                 let controller = storyboard.instantiateInitialViewController()!
                 

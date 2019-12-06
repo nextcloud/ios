@@ -83,7 +83,7 @@ class NCCreateMenuAdd: NSObject {
             }
             if item.value as? Int == 40 {
                 if #available(iOS 11.0, *) {
-                    NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self.appDelegate.activeMain, openScan: true)
+                    NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self.appDelegate.activeMain)
                 }
             }
             
