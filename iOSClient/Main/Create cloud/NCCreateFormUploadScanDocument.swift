@@ -675,33 +675,20 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
         let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+        let image: UIImage?
         
-        if let image = results.enhancedScan?.image {
-            do {
-                try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
-            } catch { }
-        }
-        
-        // V 1.0
-        /*
-        if (results.doesUserPreferEnhancedImage && results.enhancedImage != nil) {
-            do {
-                try results.enhancedImage!.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
-            } catch { }
+        if results.doesUserPreferEnhancedScan {
+            image = results.enhancedScan?.image
         } else {
+            image = results.originalScan.image
+        }
+        
+        if image != nil {
             do {
-                try results.scannedImage.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+                try image!.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
             } catch { }
         }
-        */
-        
-        // 0.9.1
-        /*
-        do {
-            try results.scannedImage.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
-        } catch { }
-        */
-        
+
         scanner.dismiss(animated: true, completion: {
             if (self.openScan) {
                 let storyboard = UIStoryboard(name: "Scan", bundle: nil)
