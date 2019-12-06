@@ -50,7 +50,7 @@ class NCCreateMenuAdd: NSObject {
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
-            items.append(ActionSheetItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 40, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(MenuItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 40, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         }
 #endif
         
