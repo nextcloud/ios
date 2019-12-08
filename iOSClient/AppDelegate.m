@@ -942,8 +942,14 @@ PKPushRegistry *pushRegistry;
     // Test Maintenance
     if (self.maintenanceMode)
         return;
-        
-    (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
+    
+    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, self.activeMain.serverUrl]];
+    
+    if ([tableDirectory.permissions containsString:@"CK"]) {
+        (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
+    } else {
+        [self messageNotification:@"_warning_" description:@"_no_permission_add_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+    }
 }
 
 - (void)selectedTabBarController:(NSInteger)index

@@ -1,11 +1,9 @@
 //
-//  CCSplit.h
+//  IntroCollectionViewCell.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 09/10/15.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Created by Philippe Weidmann on 18.11.19.
+//  Copyright © 2019 Philippe Weidmann. All rights reserved.
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -21,16 +19,16 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <UIKit/UIKit.h>
 
-#import "CCLogin.h"
-#import "CCDetail.h"
+import UIKit
 
-@interface CCSplit : UISplitViewController <UISplitViewControllerDelegate>
+class IntroCollectionViewCell: UICollectionViewCell {
 
-@property (nonatomic, strong) NSString *version;
-@property (nonatomic, strong) NSString *build;
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var imageView: UIImageView!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
 
-- (void)introFinishSelector:(NSInteger)selector;
-
-@end
+}

@@ -3,7 +3,22 @@
 //  File Provider Extension
 //
 //  Created by Marino Faggiana on 02/11/2019.
-//  Copyright © 2019 TWS. All rights reserved.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 import FileProvider
@@ -11,7 +26,7 @@ import NCCommunication
 
 extension FileProviderExtension: NCNetworkingDelegate {
 
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, description: String?, error: Error?, statusCode: Int) {
+    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, error: Error?, statusCode: Int) {
                 
         guard let ocIdTemp = description else { return }
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
@@ -41,6 +56,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             if let ocId = ocId { metadata.ocId = ocId }
             if let date = date { metadata.date = date }
             metadata.session = ""
+            metadata.size = Double(size)
             metadata.status = Int(k_metadataStatusNormal)
                   
             guard let metadataUpdated = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }

@@ -45,6 +45,23 @@
 //#if TARGET_OS_SIMULATOR
 //#endif
 
+// PERMISSION:
+//
+// Create file or folder or Full permission RGDNVW
+// Full permission for folder               RGDNVCK
+// Full permission for a file               SRGDNVW
+// Full permission                          SRMGDNVW
+// Update file                              SGDNVW
+// Update file                              RGD
+// Delete file                              RGNVW
+// Read file                                RDNVW
+// Create folder                            RGDNV
+// Read folder                              RDNVCK
+// Shared File read                         SGD
+// Sharing related                          SRGDNVCK
+// Reshare file, but not edit               SRGD
+
+
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 
 #endif

@@ -102,49 +102,56 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         if (urlString.hasPrefix(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true) {
             
+            var server: String = ""
+            var user: String = ""
+            var password: String = ""
+            
             let keyValue = url.path.components(separatedBy: "&")
-            if (keyValue.count >= 3) {
+            for value in keyValue {
+                if value.contains("server:") { server = value }
+                if value.contains("user:") { user = value }
+                if value.contains("password:") { password = value }
+            }
+            
+            if server != "" && user != "" && password != "" {
                 
-                if (keyValue[0].contains("server:") && keyValue[1].contains("user:") && keyValue[2].contains("password:")) {
-                    
-                    var serverUrl : String = keyValue[0].replacingOccurrences(of: "/server:", with: "")
-                    
-                    // Login Flow NC 12
-                    if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && serverUrl.hasPrefix("http://") == false && serverUrl.hasPrefix("https://") == false) {
-                        serverUrl = urlBase
-                    }
-                    
-                    if (serverUrl.last == "/") {
-                        serverUrl = String(serverUrl.dropLast())
-                    }
-                    
-                    let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
-                    let token : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
-                    
-                    let account : String = "\(username) \(serverUrl)"
-                    
-                    // NO account found, clear
-                    if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
-                        
-                    // STOP Intro
-                    CCUtility.setIntro(true)
-                        
-                    // Add new account
-                    NCManageDatabase.sharedInstance.deleteAccount(account)
-                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
-                        
-                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
-                        self.dismiss(animated: true, completion: nil)
-                        return
-                    }
-                        
-                    appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
-                        
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-                    
-                    self.dismiss(animated: true) {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
-                    } 
+                var serverUrl: String = server.replacingOccurrences(of: "/server:", with: "")
+                
+                // Login Flow NC 12
+                if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && serverUrl.hasPrefix("http://") == false && serverUrl.hasPrefix("https://") == false) {
+                    serverUrl = urlBase
+                }
+                
+                if (serverUrl.last == "/") {
+                    serverUrl = String(serverUrl.dropLast())
+                }
+                
+                let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
+                let token: String = password.replacingOccurrences(of: "password:", with: "")
+                
+                let account : String = "\(username) \(serverUrl)"
+                
+                // NO account found, clear
+                if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
+                
+                // STOP Intro
+                CCUtility.setIntro(true)
+                
+                // Add new account
+                NCManageDatabase.sharedInstance.deleteAccount(account)
+                NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
+                
+                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                    self.dismiss(animated: true, completion: nil)
+                    return
+                }
+                
+                appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
+                
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
+                
+                self.dismiss(animated: true) {
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
                 }
             }
         }

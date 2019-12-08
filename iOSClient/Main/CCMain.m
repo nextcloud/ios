@@ -213,6 +213,15 @@
         
             // Read (file) Folder
             [self readFileReloadFolder];
+            
+            // TEST
+            /*
+            NSString *directoryPath = [CCUtility returnPathfromServerUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
+            
+            [[NCCommunication sharedInstance] searchReadFolderWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUserID directoryPath:directoryPath lastFileName:@"" limit:100 account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *message) {
+                
+            }];
+            */
         }
     }
 
@@ -1478,6 +1487,13 @@
         
     } else  {
         
+        // verify permission
+        BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:@"RGD"]; // Update file
+        if (permission == false) {
+            [appDelegate messageNotification:@"_error_" description:@"_no_permission_modify_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            return;
+        }
+        
         // Plain
         
         NSString *fileNameNew = [CCUtility removeForbiddenCharactersServer:fileName];
@@ -1563,6 +1579,13 @@
 
 - (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
+    // verify permission
+    BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:@"RGNVW"]; // Delete file
+    if (permission == false) {
+        [appDelegate messageNotification:@"_error_" description:@"_no_permission_modify_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        return;
+    }
+    
     [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrlTo fileName:metadata.fileName completion:^(NSString *account, tableMetadata *metadataReadFile, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
@@ -1744,6 +1767,7 @@
 - (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
+    fileNameFolder = [[NCUtility sharedInstance] createFileName:fileNameFolder serverUrl:self.serverUrl account:appDelegate.activeAccount];
     if (![fileNameFolder length]) return;
     NSString *ocIdTemp = [[NSUUID UUID] UUIDString];
     

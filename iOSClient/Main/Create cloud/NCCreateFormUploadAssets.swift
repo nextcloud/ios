@@ -107,7 +107,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
         
-        // Section Photo Editor only for one photo & IMI
+        // Section Photo Editor only for one photo
         
         if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image && self.imagePreview != nil {
             
@@ -124,18 +124,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
             row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
             
             section.addFormRow(row)
-            
-            if NCBrandOptions.sharedInstance.use_imi_viewer {
-                
-                row = XLFormRowDescriptor(tag: "createIMI", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""))
-                row.value = 0
-                row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
-                
-                row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-                row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
-                
-                section.addFormRow(row)
-            }
         }
         
         // Section: Destination Folder
@@ -249,14 +237,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
         
-        if formRow.tag == "createIMI" {
-            if (formRow.value! as AnyObject).boolValue  == true {
-                
-            } else {
-                
-            }
-        }
-        else if formRow.tag == "useFolderAutoUpload" {
+        if formRow.tag == "useFolderAutoUpload" {
             
             if (formRow.value! as AnyObject).boolValue  == true {
                 

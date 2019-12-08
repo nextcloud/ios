@@ -947,7 +947,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 }
             }
         } else {
-            delete(metadatas: copyMetadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
+            delete(metadatas: copyMetadatas, serverUrl: serverUrl, e2ee: e2ee) { (errorCode, message) in
+                if errorCode != 0 {
+                    self.appDelegate.messageNotification("_delete_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                }
+            }
         }
     }
     
@@ -958,6 +962,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         var completionMessage = ""
                 
         for metadata in metadatas {
+            
+            // verify permission
+            let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: "RGNVW")
+            if permission == false {
+                completion(Int(k_CCErrorInternalError), "_no_permission_delete_file_")
+                return
+            }
             
             self.appDelegate.filterocId.add(metadata.ocId)
             
@@ -1310,29 +1321,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         return
                     }
                     
-                    let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                    let destination =  URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                    
-                    try? FileManager().unzipItem(at: source, to: destination)
-                    
-                    let bundleDirectory = NCUtility.sharedInstance.IMGetBundleDirectory(metadata: metadata)
-                    
-                    if bundleDirectory.error {
-                        appDelegate.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    if !NCUtility.sharedInstance.IMUnzip(metadata: metadata) {
+                        appDelegate.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                         return
-                    }
-                    
-                    if let fileHandle = FileHandle(forReadingAtPath: bundleDirectory.immPath) {
-                        //                        let dataFormat = fileHandle.readData(ofLength: 1)
-                        //                        if dataFormat.starts(with: [0x01]) {
-                        //                            appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                        //                            return;
-                        //                        }
-                        let dataZip = fileHandle.readData(ofLength: 4)
-                        if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                            try? FileManager().unzipItem(at: NSURL(fileURLWithPath: bundleDirectory.immPath) as URL, to: NSURL(fileURLWithPath: bundleDirectory.bundleDirectory) as URL)
-                        }
-                        fileHandle.closeFile()
                     }
                     
                     let storyboard = UIStoryboard(name: "IMImagemeter", bundle: nil)

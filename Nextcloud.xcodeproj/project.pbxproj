@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		375CF03E238282B8000F2B53 /* IntroCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375CF03C238282B7000F2B53 /* IntroCollectionViewCell.swift */; };
+		375CF03F238282B8000F2B53 /* IntroCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 375CF03D238282B7000F2B53 /* IntroCollectionViewCell.xib */; };
+		379DC949237EF4DD008EC025 /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379DC948237EF4DD008EC025 /* IntroView.swift */; };
+		379DC94B237EF4EB008EC025 /* IntroView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 379DC94A237EF4EB008EC025 /* IntroView.xib */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F70022B31EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
@@ -62,7 +66,6 @@
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */; };
-		F710E8101EF95C9C00DC2427 /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F710E80E1EF95C9C00DC2427 /* CCIntro.m */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -438,6 +441,7 @@
 		F7B6F70121BD0DD3007D194D /* DZNEmptyDataSet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */; };
 		F7B6F70221BD0E6D007D194D /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF22199978B0004137E /* MBProgressHUD.framework */; };
 		F7B6F70321BD0EA0007D194D /* JDStatusBarNotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEC219993330004137E /* JDStatusBarNotification.framework */; };
+		F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
 		F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -445,8 +449,6 @@
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE421998D5A0004137E /* MGSwipeTableCell.framework */; };
 		F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */; };
-		F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE8219991A60004137E /* EAIntroView.framework */; };
-		F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEA219991AC0004137E /* EARestrictedScrollView.framework */; };
 		F7C40BED219993330004137E /* JDStatusBarNotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEC219993330004137E /* JDStatusBarNotification.framework */; };
 		F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */; };
 		F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF0219994F20004137E /* KTVHTTPCache.framework */; };
@@ -664,6 +666,10 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		375CF03C238282B7000F2B53 /* IntroCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroCollectionViewCell.swift; sourceTree = "<group>"; };
+		375CF03D238282B7000F2B53 /* IntroCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IntroCollectionViewCell.xib; sourceTree = "<group>"; };
+		379DC948237EF4DD008EC025 /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
+		379DC94A237EF4EB008EC025 /* IntroView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IntroView.xib; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F70022661EC4C9100080073F /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
 		F70022671EC4C9100080073F /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
@@ -737,8 +743,6 @@
 		F70F05571C889184008DAB36 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZIPFoundation.framework; path = Carthage/Build/iOS/ZIPFoundation.framework; sourceTree = "<group>"; };
-		F710E80D1EF95C9C00DC2427 /* CCIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIntro.h; sourceTree = "<group>"; };
-		F710E80E1EF95C9C00DC2427 /* CCIntro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCIntro.m; sourceTree = "<group>"; };
 		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A171EE590930086BD69 /* NCShares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCShares.h; sourceTree = "<group>"; };
@@ -1187,6 +1191,7 @@
 		F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLCommentsParser.h; sourceTree = "<group>"; };
 		F7B6ACD922FC2D14008AB646 /* NCComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCComments.h; sourceTree = "<group>"; };
 		F7B6ACDA22FC2D15008AB646 /* NCComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCComments.m; sourceTree = "<group>"; };
+		F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+fixedOrientation.swift"; sourceTree = "<group>"; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1463,10 +1468,8 @@
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
-				F7C40BE9219991A60004137E /* EAIntroView.framework in Frameworks */,
 				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
 				F7D4B68B2295663D000C2C86 /* FirebaseInstanceID.framework in Frameworks */,
-				F7C40BEB219991AC0004137E /* EARestrictedScrollView.framework in Frameworks */,
 				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F72382C32295856A005B8A07 /* GoogleToolboxForMac.framework in Frameworks */,
@@ -1678,9 +1681,11 @@
 		F710E80C1EF95C9C00DC2427 /* Intro */ = {
 			isa = PBXGroup;
 			children = (
-				F710E80D1EF95C9C00DC2427 /* CCIntro.h */,
-				F710E80E1EF95C9C00DC2427 /* CCIntro.m */,
 				F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */,
+				379DC948237EF4DD008EC025 /* IntroView.swift */,
+				375CF03C238282B7000F2B53 /* IntroCollectionViewCell.swift */,
+				375CF03D238282B7000F2B53 /* IntroCollectionViewCell.xib */,
+				379DC94A237EF4EB008EC025 /* IntroView.xib */,
 			);
 			path = Intro;
 			sourceTree = "<group>";
@@ -2428,9 +2433,6 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
-				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
-				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
 				F76C3B871C638A4C00DC4301 /* CCError.h */,
 				F76C3B881C638A4C00DC4301 /* CCError.m */,
 				F7A54C341C6267B500E2C8BF /* CCExifGeo.h */,
@@ -2441,10 +2443,14 @@
 				F7514EDB1C7B1336008F3338 /* CCHud.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
+				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
+				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
+				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
 				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
 				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
+				F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -3124,6 +3130,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F79728D422F96F2E003CACA7 /* NCShareLinkFolderMenuView.xib in Resources */,
+				375CF03F238282B8000F2B53 /* IntroCollectionViewCell.xib in Resources */,
 				F760F78421F21F61006B1A73 /* ColorCollectionViewCell.xib in Resources */,
 				F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */,
 				F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */,
@@ -3134,6 +3141,7 @@
 				F7F54CF51E5B14C700E19C62 /* PlayButtonOverlayLarge@2x.png in Resources */,
 				F77D49A91DC238E500CDC568 /* loading.gif in Resources */,
 				F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */,
+				379DC94B237EF4EB008EC025 /* IntroView.xib in Resources */,
 				F78ACD4421903CF20088454D /* NCListCell.xib in Resources */,
 				F78ACD4621903D010088454D /* NCGridCell.xib in Resources */,
 				F7F54CF91E5B14C700E19C62 /* PlayButtonOverlayLargeTap@3x.png in Resources */,
@@ -3293,8 +3301,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MGSwipeTableCell.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DZNEmptyDataSet.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/EAIntroView.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/EARestrictedScrollView.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/JDStatusBarNotification.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
@@ -3482,6 +3488,7 @@
 				F73B4F0D1F470D9100BBEE4B /* nsLatin1Prober.cpp in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
 				F762CB071EACB66200B38484 /* XLFormOptionsObject.m in Sources */,
+				375CF03E238282B8000F2B53 /* IntroCollectionViewCell.swift in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F7F54D0E1E5B14C800E19C62 /* UIImage+MWPhotoBrowser.m in Sources */,
 				F7F54D091E5B14C800E19C62 /* MWPhoto.m in Sources */,
@@ -3588,7 +3595,6 @@
 				F760F78D21F21F61006B1A73 /* Protocols.swift in Sources */,
 				F762CAFF1EACB66200B38484 /* XLFormPickerCell.m in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
-				F710E8101EF95C9C00DC2427 /* CCIntro.m in Sources */,
 				F77B0E411D118A16002130FE /* CCSplit.m in Sources */,
 				F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */,
@@ -3664,6 +3670,7 @@
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F760F77F21F21F61006B1A73 /* PhotoEditor+Controls.swift in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
+				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
@@ -3690,6 +3697,7 @@
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
+				379DC949237EF4DD008EC025 /* IntroView.swift in Sources */,
 				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
@@ -3842,7 +3850,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3886,7 +3894,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3936,7 +3944,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3986,7 +3994,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4028,7 +4036,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4075,7 +4083,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (

@@ -222,6 +222,7 @@
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)removeFileAtPath:(NSString *)atPath;
++ (void)createDirectoryAtPath:(NSString *)atPath;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
 + (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
