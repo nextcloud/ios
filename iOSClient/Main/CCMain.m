@@ -60,7 +60,6 @@
     NSDate *_dateReadDataSource;
     
     // Search
-    BOOL _isSearchMode;
     NSString *_searchFileName;
     NSMutableArray *_searchResultMetadatas;
     NSString *_noFilesSearchTitle;
@@ -190,7 +189,7 @@
     appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
     
     // Query data source
-    if (!_isSearchMode) {
+    if (self.searchController.isActive == false) {
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
     }
 }
@@ -271,7 +270,7 @@
 // detect scroll for remove keyboard in search mode
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    if (_isSearchMode && scrollView == self.tableView) {
+    if (self.searchController.isActive && scrollView == self.tableView) {
         
         [self.searchController.searchBar endEditing:YES];
     }
@@ -418,7 +417,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    if (_isSearchMode)
+    if (self.searchController.isActive)
         return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"search"] width:300 height:300 color:NCBrandColor.sharedInstance.brandElement];
     else
         return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] width:300 height:300 color:NCBrandColor.sharedInstance.brandElement];
@@ -443,7 +442,7 @@
 {
     NSString *text;
     
-    if (_isSearchMode) {
+    if (self.searchController.isActive) {
         
         text = _noFilesSearchTitle;
         
@@ -461,7 +460,7 @@
 {
     NSString *text;
     
-    if (_isSearchMode) {
+    if (self.searchController.isActive) {
         
         text = _noFilesSearchDescription;
         
@@ -508,12 +507,8 @@
 {
     refreshControl = [UIRefreshControl new];
     
-    if (@available(iOS 10, *)) {
-        _tableView.refreshControl = refreshControl;
-    } else {
-        [_tableView addSubview:refreshControl];
-    }
-       
+    self.tableView.refreshControl = refreshControl;
+    
     refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
     refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand;
     
@@ -1144,7 +1139,7 @@
         return;
     }
     
-    if (_isSearchMode == NO) {
+    if (self.searchController.isActive == NO) {
         
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted account:account];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
@@ -1167,12 +1162,12 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         // File is changed ??
-        if (!_isSearchMode && metadatasToInsertInDB)
+        if (!self.searchController.isActive && metadatasToInsertInDB)
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:serverUrl account:account withDownload:NO];
     });
     
     // Search Mode
-    if (_isSearchMode) {
+    if (self.searchController.isActive) {
         
         // Fix managed -> Unmanaged _searchResultMetadatas
         if (metadatasToInsertInDB)
@@ -1182,7 +1177,7 @@
     }
     
     // this is the same directory
-    if ([serverUrl isEqualToString:_serverUrl] && !_isSearchMode) {
+    if ([serverUrl isEqualToString:_serverUrl] && !self.searchController.isActive) {
         
         // reload
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
@@ -1228,7 +1223,7 @@
     }
     
     // Search Mode
-    if (_isSearchMode) {
+    if (self.searchController.isActive) {
         
         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
             
@@ -1301,6 +1296,10 @@
 
 - (void)searchStartTimer
 {
+    if (self.searchController.isActive == false) {
+        return;
+    }
+    
     NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
     [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:_searchFileName serverUrl:startDirectory contentType:nil lteDateLastModified:nil gteDateLastModified:nil depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
@@ -1342,45 +1341,50 @@
 {
     // Color text "Cancel"
     [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:NCBrandColor.sharedInstance.brandText];
-
-    _isSearchMode = YES;
-    [self deleteRefreshControl];
     
-    NSString *fileName = [CCUtility removeForbiddenCharactersServer:searchController.searchBar.text];
-    
-    if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
+    if (searchController.isActive) {
+        [self deleteRefreshControl];
         
-        _searchFileName = fileName;
+        NSString *fileName = [CCUtility removeForbiddenCharactersServer:searchController.searchBar.text];
         
-        // First : filter
+        if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
             
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@", appDelegate.activeAccount, _serverUrl, fileName] sorted:nil ascending:NO];
+            _searchFileName = fileName;
             
-        [_searchResultMetadatas removeAllObjects];
-        for (tableMetadata *record in records)
-            [_searchResultMetadatas addObject:record];
+            // First : filter
+                
+            NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@", appDelegate.activeAccount, _serverUrl, fileName] sorted:nil ascending:NO];
+                
+            [_searchResultMetadatas removeAllObjects];
+            for (tableMetadata *record in records)
+                [_searchResultMetadatas addObject:record];
+            
+            [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
         
-        [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
-    
-        // Version >= 12
-        if ([[NCManageDatabase sharedInstance] getServerVersionWithAccount:appDelegate.activeAccount] >= 12) {
-            
-            [_timerWaitInput invalidate];
-            _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];
+            // Version >= 12
+            if ([[NCManageDatabase sharedInstance] getServerVersionWithAccount:appDelegate.activeAccount] >= 12) {
+                
+                [_timerWaitInput invalidate];
+                _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];
+            }
         }
-    }
-    
-    if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
+        
+        if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
 
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+        }
+        
+    } else {
+        
+        [self createRefreshControl];
+
+        [self reloadDatasource:self.serverUrl ocId:nil action:k_action_NULL];
     }
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [self cancelSearchBar];
-    
-    [self readFolder:_serverUrl];
 }
 
 - (void)cancelSearchBar
@@ -1388,9 +1392,7 @@
     if (self.searchController.active) {
         
         [self.searchController setActive:NO];
-        [self createRefreshControl];
     
-        _isSearchMode = NO;
         _searchFileName = @"";
         _dateReadDataSource = nil;
         _searchResultMetadatas = [NSMutableArray new];
@@ -1424,7 +1426,7 @@
     [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderocId:_metadataFolder.ocId completion:^(NSInteger errorCode, NSString *message) {
         
         // Reload
-        if (_isSearchMode)
+        if (self.searchController.isActive)
             [self readFolder:self.serverUrl];
         else
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
@@ -1639,7 +1641,7 @@
                             [self tableViewSelect:NO];
                             
                             // reload Datasource
-                            if (_isSearchMode)
+                            if (self.searchController.isActive)
                                 [self readFolder:metadata.serverUrl];
                             else
                                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
@@ -1653,7 +1655,7 @@
                         [self tableViewSelect:NO];
                         
                         // reload Datasource
-                        if (_isSearchMode)
+                        if (self.searchController.isActive)
                             [self readFolder:metadata.serverUrl];
                         else
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:nil action:k_action_NULL];
@@ -1929,7 +1931,7 @@
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:favorite];
 
             _dateReadDataSource = nil;
-            if (_isSearchMode)
+            if (self.searchController.isActive)
                 [self readFolder:self.serverUrl];
             else
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
@@ -3367,7 +3369,7 @@
         return;
     
     // Search Mode
-    if (_isSearchMode) {
+    if (self.searchController.isActive) {
         
         // Create metadatas
         NSMutableArray *metadatas = [NSMutableArray new];

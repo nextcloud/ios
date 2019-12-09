@@ -664,9 +664,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
                 let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
-                    cell.shared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
+                    if let avatar = UIImage(contentsOfFile: fileNameSourceAvatar) {
+                        cell.shared.image = avatar
+                    }
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                    if let avatar = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar) {
+                        cell.shared.image = avatar
+                    }
                 } else {
                     let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
