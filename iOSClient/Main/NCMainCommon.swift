@@ -968,13 +968,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         for metadata in metadatas {
             
             // verify permission
-            /*
-            let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: "RGNVW")
+            let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: "D")
             if permission == false {
                 completion(Int(k_CCErrorInternalError), "_no_permission_delete_file_")
                 return
             }
-            */
             
             self.appDelegate.filterocId.add(metadata.ocId)
             
