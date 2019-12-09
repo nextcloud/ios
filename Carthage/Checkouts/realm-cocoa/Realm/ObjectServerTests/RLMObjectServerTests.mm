@@ -95,6 +95,24 @@
     XCTAssertTrue(user.isAdmin);
 }
 
+- (void)testCustomRefreshTokenAuthentication {
+    RLMSyncCredentials *credentials = [RLMSyncCredentials credentialsWithCustomRefreshToken:@"token" identity:@"custom_identity1" isAdmin:NO];
+    XCTAssertNotNil(credentials);
+
+    RLMSyncUser *user = [self logInUserForCredentials:credentials server:[RLMObjectServerTests authServerURL]];
+    XCTAssertEqualObjects(user.refreshToken, @"token");
+    XCTAssertEqualObjects(user.identity, @"custom_identity1");
+    XCTAssertFalse(user.isAdmin);
+
+    credentials = [RLMSyncCredentials credentialsWithCustomRefreshToken:@"token" identity:@"custom_identity2" isAdmin:YES];
+    XCTAssertNotNil(credentials);
+
+    user = [self logInUserForCredentials:credentials server:[RLMObjectServerTests authServerURL]];
+    XCTAssertEqualObjects(user.refreshToken, @"token");
+    XCTAssertEqualObjects(user.identity, @"custom_identity2");
+    XCTAssertTrue(user.isAdmin);
+}
+
 /// An invalid username/password credential should not be able to log in a user and a corresponding error should be generated.
 - (void)testInvalidPasswordAuthentication {
     [self logInUserForCredentials:[RLMSyncTestCase basicCredentialsWithName:NSStringFromSelector(_cmd) register:YES]
@@ -1742,52 +1760,6 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     XCTAssertNotNil(realm);
     XCTAssertNil(error);
 }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-- (void)testAutomaticSyncConfiguration {
-    NSURL *server = [RLMObjectServerTests authServerURL];
-
-    // Automatic configuration should throw when there are no logged-in users.
-    XCTAssertThrows([RLMSyncConfiguration automaticConfiguration]);
-
-    RLMSyncCredentials *credsA = [RLMObjectServerTests basicCredentialsWithName:@"a" register:YES];
-    RLMSyncUser *userA = [self logInUserForCredentials:credsA server:server];
-
-    // Now that there's a logged-in user, we should be able to retrieve the configuration.
-    RLMRealmConfiguration *configuration = [RLMSyncConfiguration automaticConfiguration];
-    XCTAssert(configuration);
-
-    @autoreleasepool {
-        // And open it successfully.
-        RLMRealm *realm = [self openRealmWithConfiguration:configuration];
-        [self waitForDownloadsForRealm:realm];
-    }
-
-
-    RLMSyncCredentials *credsB = [RLMObjectServerTests basicCredentialsWithName:@"b" register:YES];
-    RLMSyncUser *userB = [self logInUserForCredentials:credsB server:server];
-
-    // Automatic configuration should throw since there's more than one logged-in user.
-    XCTAssertThrows([RLMSyncConfiguration automaticConfiguration]);
-
-    // It should still be possible to explicitly retrieve an automatic configuration for a user.
-    RLMRealmConfiguration *configurationA = [RLMSyncConfiguration automaticConfigurationForUser:userA];
-    XCTAssert(configurationA);
-    XCTAssertEqualObjects(configuration.syncConfiguration, configurationA.syncConfiguration);
-
-    RLMRealmConfiguration *configurationB = [RLMSyncConfiguration automaticConfigurationForUser:userB];
-    XCTAssert(configurationB);
-    XCTAssertNotEqualObjects(configuration.syncConfiguration, configurationB.syncConfiguration);
-
-
-    [userB logOut];
-
-    // Now that we're back to a single logged-in user, we should be able to retrieve the configuration.
-    configuration = [RLMSyncConfiguration automaticConfiguration];
-    XCTAssert(configuration);
-}
-#pragma clang diagnostic pop
 
 #pragma mark - Partial sync
 

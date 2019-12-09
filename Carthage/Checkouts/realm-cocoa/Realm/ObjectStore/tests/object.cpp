@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "util/event_loop.hpp"
 #include "util/index_helpers.hpp"
@@ -297,21 +297,21 @@ TEST_CASE("object") {
     }
 
     TestContext d(r);
-    auto create = [&](util::Any&& value, bool update, bool update_only_diff = false) {
+    auto create = [&](util::Any&& value, CreatePolicy policy = CreatePolicy::ForceCreate) {
         r->begin_transaction();
-        auto obj = Object::create(d, r, *r->schema().find("all types"), value, update, update_only_diff);
+        auto obj = Object::create(d, r, *r->schema().find("all types"), value, policy);
         r->commit_transaction();
         return obj;
     };
-    auto create_sub = [&](util::Any&& value, bool update, bool update_only_diff = false) {
+    auto create_sub = [&](util::Any&& value, CreatePolicy policy = CreatePolicy::ForceCreate) {
         r->begin_transaction();
-        auto obj = Object::create(d, r, *r->schema().find("link target"), value, update, update_only_diff);
+        auto obj = Object::create(d, r, *r->schema().find("link target"), value, policy);
         r->commit_transaction();
         return obj;
     };
-    auto create_company = [&](util::Any&& value, bool update, bool update_only_diff = false) {
+    auto create_company = [&](util::Any&& value, CreatePolicy policy = CreatePolicy::ForceCreate) {
         r->begin_transaction();
-        auto obj = Object::create(d, r, *r->schema().find("person"), value, update, update_only_diff);
+        auto obj = Object::create(d, r, *r->schema().find("person"), value, policy);
         r->commit_transaction();
         return obj;
     };
@@ -336,7 +336,7 @@ TEST_CASE("object") {
             {"data array", AnyVec{"d"s, "e"s, "f"s}},
             {"date array", AnyVec{}},
             {"object array", AnyVec{AnyDict{{"value", INT64_C(20)}}}},
-        }, false);
+        });
 
         auto row = obj.row();
         REQUIRE(row.get_int(0) == 1);
@@ -398,7 +398,7 @@ TEST_CASE("object") {
         auto obj = create(AnyDict{
             {"pk", INT64_C(1)},
             {"float", 6.6f},
-        }, false);
+        });
 
         auto row = obj.row();
         REQUIRE(row.get_int(0) == 1);
@@ -434,7 +434,7 @@ TEST_CASE("object") {
             {"date", Timestamp(10, 20)},
             {"object", AnyDict{{"value", INT64_C(10)}}},
             {"array", AnyVector{AnyDict{{"value", INT64_C(20)}}}},
-        }, false);
+        });
 
         auto row = obj.row();
         REQUIRE(row.get_int(0) == 10);
@@ -443,7 +443,7 @@ TEST_CASE("object") {
     SECTION("create does not complain about missing values for nullable fields") {
         r->begin_transaction();
         realm::Object obj;
-        REQUIRE_NOTHROW(obj = Object::create(d, r, *r->schema().find("all optional types"), util::Any(AnyDict{}), false));
+        REQUIRE_NOTHROW(obj = Object::create(d, r, *r->schema().find("all optional types"), util::Any(AnyDict{})));
         r->commit_transaction();
 
         REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "pk").has_value());
@@ -468,7 +468,7 @@ TEST_CASE("object") {
         REQUIRE_THROWS(create(AnyDict{
             {"pk", INT64_C(1)},
             {"float", 6.6f},
-        }, false));
+        }));
     }
 
     SECTION("create always sets the PK first") {
@@ -481,7 +481,7 @@ TEST_CASE("object") {
         };
         // Core will throw if the list is populated before the PK is set
         r->begin_transaction();
-        REQUIRE_NOTHROW(Object::create(d, r, *r->schema().find("pk after list"), util::Any(value), false));
+        REQUIRE_NOTHROW(Object::create(d, r, *r->schema().find("pk after list"), util::Any(value)));
     }
 
     SECTION("create with update") {
@@ -506,7 +506,7 @@ TEST_CASE("object") {
             {"data array", AnyVec{"d"s, "e"s, "f"s}},
             {"date array", AnyVec{}},
             {"object array", AnyVec{AnyDict{{"value", INT64_C(20)}}}},
-        }, false);
+        });
 
         auto token = obj.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
             change = c;
@@ -518,7 +518,7 @@ TEST_CASE("object") {
             {"pk", INT64_C(1)},
             {"int", INT64_C(6)},
             {"string", "a"s},
-        }, true);
+        }, CreatePolicy::UpdateAll);
 
         callback_called = false;
         advance_and_notify(*r);
@@ -563,7 +563,7 @@ TEST_CASE("object") {
             {"assistant", donald},
             {"team", AnyVec{donald, charley}}
         };
-        Object obj = create_company(eddie, true);
+        Object obj = create_company(eddie, CreatePolicy::UpdateAll);
 
         auto table = r->read_group().get_table("class_person");
         REQUIRE(table->size() == 5);
@@ -575,7 +575,7 @@ TEST_CASE("object") {
         advance_and_notify(*r);
 
         // First update unconditionally
-        create_company(eddie, true, false);
+        create_company(eddie, CreatePolicy::UpdateAll);
 
         callback_called = false;
         advance_and_notify(*r);
@@ -583,7 +583,7 @@ TEST_CASE("object") {
         REQUIRE_INDICES(change.modifications, 0, 1, 2, 3, 4);
 
         // Now, only update where differences (there should not be any diffs - so no update)
-        create_company(eddie, true, true);
+        create_company(eddie, CreatePolicy::UpdateModified);
 
         REQUIRE(table->size() == 5);
         callback_called = false;
@@ -594,7 +594,7 @@ TEST_CASE("object") {
         donald["scores"] = AnyVec{INT64_C(3), INT64_C(4), INT64_C(5)};
         // Insert the new donald
         eddie["assistant"] = donald;
-        create_company(eddie, true, true);
+        create_company(eddie, CreatePolicy::UpdateModified);
 
         REQUIRE(table->size() == 5);
         callback_called = false;
@@ -605,7 +605,7 @@ TEST_CASE("object") {
         // Shorten list
         donald["scores"] = AnyVec{INT64_C(3), INT64_C(4)};
         eddie["assistant"] = donald;
-        create_company(eddie, true, true);
+        create_company(eddie, CreatePolicy::UpdateModified);
 
         REQUIRE(table->size() == 5);
         callback_called = false;
@@ -615,9 +615,7 @@ TEST_CASE("object") {
     }
 
     SECTION("create with update - identical sub-object") {
-        bool callback_called;
-        bool sub_callback_called;
-        Object sub_obj = create_sub(AnyDict{{"value", INT64_C(10)}}, false);
+        Object sub_obj = create_sub(AnyDict{{"value", INT64_C(10)}});
         Object obj = create(AnyDict{
             {"pk", INT64_C(1)},
             {"bool", true},
@@ -628,12 +626,20 @@ TEST_CASE("object") {
             {"data", "olleh"s},
             {"date", Timestamp(10, 20)},
             {"object", sub_obj},
-        }, false);
+        });
 
+        auto obj_table = r->read_group().get_table("class_all types");
+        Results result(r, *obj_table);
+        bool callback_called;
+        bool results_callback_called;
+        bool sub_callback_called;
         auto token1 = obj.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) {
             callback_called = true;
         });
-        auto token2 = sub_obj.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) {
+        auto token2 = result.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) {
+            results_callback_called = true;
+        });
+        auto token3 = sub_obj.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) {
             sub_callback_called = true;
         });
         advance_and_notify(*r);
@@ -651,13 +657,15 @@ TEST_CASE("object") {
             {"data", "olleh"s},
             {"date", Timestamp(10, 20)},
             {"object", AnyDict{{"value", INT64_C(10)}}},
-        }, true, true);
+        }, CreatePolicy::UpdateModified);
 
         REQUIRE(table->size() == 1);
         callback_called = false;
+        results_callback_called = false;
         sub_callback_called = false;
         advance_and_notify(*r);
         REQUIRE(!callback_called);
+        REQUIRE(!results_callback_called);
         REQUIRE(!sub_callback_called);
 
         // Now change sub object
@@ -671,12 +679,14 @@ TEST_CASE("object") {
             {"data", "olleh"s},
             {"date", Timestamp(10, 20)},
             {"object", AnyDict{{"value", INT64_C(11)}}},
-        }, true, true);
+        }, CreatePolicy::UpdateModified);
 
         callback_called = false;
+        results_callback_called = false;
         sub_callback_called = false;
         advance_and_notify(*r);
         REQUIRE(!callback_called);
+        REQUIRE(results_callback_called);
         REQUIRE(sub_callback_called);
     }
 
@@ -691,16 +701,18 @@ TEST_CASE("object") {
             {"string", "hello"s},
             {"data", "olleh"s},
             {"date", Timestamp(10, 20)},
-            {"object array", AnyVec{ AnyDict{{"value", INT64_C(20)}}, AnyDict{{"value", INT64_C(21)}} } },
+            {"object array", AnyVec{AnyDict{{"value", INT64_C(20)}}, AnyDict{{"value", INT64_C(21)}}}},
         };
-        Object obj = create(dict, false);
+        Object obj = create(dict);
 
-        auto token1 = obj.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) {
+        auto obj_table = r->read_group().get_table("class_all types");
+        Results result(r, *obj_table);
+        auto token1 = result.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) {
             callback_called = true;
         });
         advance_and_notify(*r);
 
-        create(dict, true, true);
+        create(dict, CreatePolicy::UpdateModified);
 
         callback_called = false;
         advance_and_notify(*r);
@@ -708,15 +720,15 @@ TEST_CASE("object") {
 
         // Now change list
         dict["object array"] = AnyVec{AnyDict{{"value", INT64_C(23)}}};
-        create(dict, true, true);
+        create(dict, CreatePolicy::UpdateModified);
 
         callback_called = false;
         advance_and_notify(*r);
         REQUIRE(callback_called);
     }
 
-    for (auto diffed_update : {false, true}) {
-        SECTION("set existing fields to null with update "s + (diffed_update ? "(diffed)" : "(all)")) {
+    for (auto policy : {CreatePolicy::UpdateAll, CreatePolicy::UpdateModified}) {
+        SECTION("set existing fields to null with update "s + (policy == CreatePolicy::UpdateModified ? "(diffed)" : "(all)")) {
             AnyDict initial_values{
                 {"pk", INT64_C(1)},
                 {"bool", true},
@@ -741,7 +753,7 @@ TEST_CASE("object") {
 
             // Missing fields in dictionary do not update anything
             Object::create(d, r, *r->schema().find("all optional types"),
-                           util::Any(AnyDict{{"pk", INT64_C(1)}}), true, diffed_update);
+                           util::Any(AnyDict{{"pk", INT64_C(1)}}), policy);
 
             REQUIRE(any_cast<bool>(obj.get_property_value<util::Any>(d, "bool")) == true);
             REQUIRE(any_cast<int64_t>(obj.get_property_value<util::Any>(d, "int")) == 5);
@@ -776,7 +788,7 @@ TEST_CASE("object") {
                 {"data array", AnyVec{util::Any()}},
                 {"date array", AnyVec{Timestamp()}},
             };
-            Object::create(d, r, *r->schema().find("all optional types"), util::Any(null_values), true, diffed_update);
+            Object::create(d, r, *r->schema().find("all optional types"), util::Any(null_values), policy);
 
             REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "bool").has_value());
             REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "int").has_value());
@@ -795,7 +807,7 @@ TEST_CASE("object") {
             REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "date array")).get<Timestamp>(0) == Timestamp());
 
             // Set all properties back to non-null
-            Object::create(d, r, *r->schema().find("all optional types"), util::Any(initial_values), true, diffed_update);
+            Object::create(d, r, *r->schema().find("all optional types"), util::Any(initial_values), policy);
             REQUIRE(any_cast<bool>(obj.get_property_value<util::Any>(d, "bool")) == true);
             REQUIRE(any_cast<int64_t>(obj.get_property_value<util::Any>(d, "int")) == 5);
             REQUIRE(any_cast<float>(obj.get_property_value<util::Any>(d, "float")) == 2.2f);
@@ -824,7 +836,7 @@ TEST_CASE("object") {
             {"date", Timestamp(10, 20)},
             {"object", AnyDict{{"value", INT64_C(10)}}},
             {"array", AnyVector{AnyDict{{"value", INT64_C(20)}}}},
-        }, false);
+        });
         REQUIRE_THROWS(create(AnyDict{
             {"pk", INT64_C(1)},
             {"bool", true},
@@ -836,7 +848,7 @@ TEST_CASE("object") {
             {"date", Timestamp(10, 20)},
             {"object", AnyDict{{"value", INT64_C(10)}}},
             {"array", AnyVector{AnyDict{{"value", INT64_C(20)}}}},
-        }, false));
+        }));
     }
 
     SECTION("create with explicit null pk does not fall back to default") {
@@ -848,7 +860,7 @@ TEST_CASE("object") {
         };
         auto create = [&](util::Any&& value, StringData type) {
             r->begin_transaction();
-            auto obj = Object::create(d, r, *r->schema().find(type), value, false);
+            auto obj = Object::create(d, r, *r->schema().find(type), value);
             r->commit_transaction();
             return obj;
         };
@@ -875,41 +887,41 @@ TEST_CASE("object") {
         link_table.add_empty_row();
         Object linkobj(r, *r->schema().find("link target"), link_table[0]);
 
-        obj.set_property_value(d, "bool", util::Any(true), false);
+        obj.set_property_value(d, "bool", util::Any(true));
         REQUIRE(any_cast<bool>(obj.get_property_value<util::Any>(d, "bool")) == true);
 
-        obj.set_property_value(d, "int", util::Any(INT64_C(5)), false);
+        obj.set_property_value(d, "int", util::Any(INT64_C(5)));
         REQUIRE(any_cast<int64_t>(obj.get_property_value<util::Any>(d, "int")) == 5);
 
-        obj.set_property_value(d, "float", util::Any(1.23f), false);
+        obj.set_property_value(d, "float", util::Any(1.23f));
         REQUIRE(any_cast<float>(obj.get_property_value<util::Any>(d, "float")) == 1.23f);
 
-        obj.set_property_value(d, "double", util::Any(1.23), false);
+        obj.set_property_value(d, "double", util::Any(1.23));
         REQUIRE(any_cast<double>(obj.get_property_value<util::Any>(d, "double")) == 1.23);
 
-        obj.set_property_value(d, "string", util::Any("abc"s), false);
+        obj.set_property_value(d, "string", util::Any("abc"s));
         REQUIRE(any_cast<std::string>(obj.get_property_value<util::Any>(d, "string")) == "abc");
 
-        obj.set_property_value(d, "data", util::Any("abc"s), false);
+        obj.set_property_value(d, "data", util::Any("abc"s));
         REQUIRE(any_cast<std::string>(obj.get_property_value<util::Any>(d, "data")) == "abc");
 
-        obj.set_property_value(d, "date", util::Any(Timestamp(1, 2)), false);
+        obj.set_property_value(d, "date", util::Any(Timestamp(1, 2)));
         REQUIRE(any_cast<Timestamp>(obj.get_property_value<util::Any>(d, "date")) == Timestamp(1, 2));
 
         REQUIRE_FALSE(obj.get_property_value<util::Any>(d, "object").has_value());
-        obj.set_property_value(d, "object", util::Any(linkobj), false);
+        obj.set_property_value(d, "object", util::Any(linkobj));
         REQUIRE(any_cast<Object>(obj.get_property_value<util::Any>(d, "object")).row().get_index() == linkobj.row().get_index());
 
         auto linking = any_cast<Results>(linkobj.get_property_value<util::Any>(d, "origin"));
         REQUIRE(linking.size() == 1);
 
-        REQUIRE_THROWS(obj.set_property_value(d, "pk", util::Any(INT64_C(5)), false));
-        REQUIRE_THROWS(obj.set_property_value(d, "not a property", util::Any(INT64_C(5)), false));
+        REQUIRE_THROWS(obj.set_property_value(d, "pk", util::Any(INT64_C(5))));
+        REQUIRE_THROWS(obj.set_property_value(d, "not a property", util::Any(INT64_C(5))));
 
         r->commit_transaction();
 
         REQUIRE_THROWS(obj.get_property_value<util::Any>(d, "not a property"));
-        REQUIRE_THROWS(obj.set_property_value(d, "int", util::Any(INT64_C(5)), false));
+        REQUIRE_THROWS(obj.set_property_value(d, "int", util::Any(INT64_C(5))));
     }
 
     SECTION("list property self-assign is a no-op") {
@@ -925,14 +937,14 @@ TEST_CASE("object") {
 
             {"bool array", AnyVec{true, false}},
             {"object array", AnyVec{AnyDict{{"value", INT64_C(20)}}}},
-        }, false);
+        });
 
         REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "bool array")).size() == 2);
         REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "object array")).size() == 1);
 
         r->begin_transaction();
-        obj.set_property_value(d, "bool array", obj.get_property_value<util::Any>(d, "bool array"), false);
-        obj.set_property_value(d, "object array", obj.get_property_value<util::Any>(d, "object array"), false);
+        obj.set_property_value(d, "bool array", obj.get_property_value<util::Any>(d, "bool array"));
+        obj.set_property_value(d, "object array", obj.get_property_value<util::Any>(d, "object array"));
         r->commit_transaction();
 
         REQUIRE(any_cast<List&&>(obj.get_property_value<util::Any>(d, "bool array")).size() == 2);
@@ -973,8 +985,8 @@ TEST_CASE("object") {
 
         r1->begin_transaction();
         r2->begin_transaction();
-        auto obj = Object::create(c1, r1, *r1->schema().find("pk after list"), util::Any(v1), false);
-        Object::create(c2, r2, *r2->schema().find("pk after list"), util::Any(v2), false);
+        auto obj = Object::create(c1, r1, *r1->schema().find("pk after list"), util::Any(v1));
+        Object::create(c2, r2, *r2->schema().find("pk after list"), util::Any(v2));
         r2->commit_transaction();
         r1->commit_transaction();
 

@@ -4,17 +4,17 @@ import os
 import sys
 import re
 import string
+import glob
+import fnmatch
 
 from scriptCommon import catchPath
-import generateSingleHeader
-import updateWandbox
 
 versionParser = re.compile( r'(\s*static\sVersion\sversion)\s*\(\s*(.*)\s*,\s*(.*)\s*,\s*(.*)\s*,\s*\"(.*)\"\s*,\s*(.*)\s*\).*' )
 rootPath = os.path.join( catchPath, 'include/' )
-versionPath = os.path.join( rootPath, "internal/catch_version.hpp" )
+versionPath = os.path.join( rootPath, "internal/catch_version.cpp" )
+definePath = os.path.join(rootPath, 'catch.hpp')
 readmePath = os.path.join( catchPath, "README.md" )
-conanPath = os.path.join(catchPath, 'conanfile.py')
-conanTestPath = os.path.join(catchPath, 'test_package', 'conanfile.py')
+cmakePath = os.path.join(catchPath, 'CMakeLists.txt')
 
 class Version:
     def __init__(self):
@@ -79,7 +79,9 @@ class Version:
             f.write( line + "\n" )
 
 def updateReadmeFile(version):
-    downloadParser = re.compile( r'<a href=\"https://github.com/philsquared/Catch/releases/download/v\d+\.\d+\.\d+/catch.hpp\">' )
+    import updateWandbox
+
+    downloadParser = re.compile( r'<a href=\"https://github.com/catchorg/Catch2/releases/download/v\d+\.\d+\.\d+/catch.hpp\">' )
     success, wandboxLink = updateWandbox.uploadFiles()
     if not success:
         print('Error when uploading to wandbox: {}'.format(wandboxLink))
@@ -91,48 +93,74 @@ def updateReadmeFile(version):
     f.close()
     f = open( readmePath, 'w' )
     for line in lines:
-        line = downloadParser.sub( r'<a href="https://github.com/philsquared/Catch/releases/download/v{0}/catch.hpp">'.format(version.getVersionString()) , line)
+        line = downloadParser.sub( r'<a href="https://github.com/catchorg/Catch2/releases/download/v{0}/catch.hpp">'.format(version.getVersionString()) , line)
         if '[![Try online](https://img.shields.io/badge/try-online-blue.svg)]' in line:
             line = '[![Try online](https://img.shields.io/badge/try-online-blue.svg)]({0})'.format(wandboxLink)
         f.write( line + "\n" )
 
-def updateConanFile(version):
-    conanParser = re.compile( r'    version = "\d+\.\d+\.\d+.*"')
-    f = open( conanPath, 'r' )
-    lines = []
-    for line in f:
-        m = conanParser.match( line )
-        if m:
-            lines.append( '    version = "{0}"'.format(format(version.getVersionString())) )
-        else:
-            lines.append( line.rstrip() )
-    f.close()
-    f = open( conanPath, 'w' )
-    for line in lines:
-        f.write( line + "\n" )
 
-def updateConanTestFile(version):
-    conanParser = re.compile( r'    requires = \"Catch\/\d+\.\d+\.\d+.*@%s\/%s\" % \(username, channel\)')
-    f = open( conanTestPath, 'r' )
-    lines = []
-    for line in f:
-        m = conanParser.match( line )
-        if m:
-            lines.append( '    requires = "Catch/{0}@%s/%s" % (username, channel)'.format(format(version.getVersionString())) )
-        else:
-            lines.append( line.rstrip() )
-    f.close()
-    f = open( conanTestPath, 'w' )
-    for line in lines:
-        f.write( line + "\n" )
+def updateCmakeFile(version):
+    with open(cmakePath, 'rb') as file:
+        lines = file.readlines()
+    replacementRegex = re.compile(b'project\\(Catch2 LANGUAGES CXX VERSION \\d+\\.\\d+\\.\\d+\\)')
+    replacement = 'project(Catch2 LANGUAGES CXX VERSION {0})'.format(version.getVersionString()).encode('ascii')
+    with open(cmakePath, 'wb') as file:
+        for line in lines:
+            file.write(replacementRegex.sub(replacement, line))
+
+
+def updateVersionDefine(version):
+    # First member of the tuple is the compiled regex object, the second is replacement if it matches
+    replacementRegexes = [(re.compile(b'#define CATCH_VERSION_MAJOR \\d+'),'#define CATCH_VERSION_MAJOR {}'.format(version.majorVersion).encode('ascii')),
+                          (re.compile(b'#define CATCH_VERSION_MINOR \\d+'),'#define CATCH_VERSION_MINOR {}'.format(version.minorVersion).encode('ascii')),
+                          (re.compile(b'#define CATCH_VERSION_PATCH \\d+'),'#define CATCH_VERSION_PATCH {}'.format(version.patchNumber).encode('ascii')),
+                         ]
+    with open(definePath, 'rb') as file:
+        lines = file.readlines()
+    with open(definePath, 'wb') as file:
+        for line in lines:
+            for replacement in replacementRegexes:
+                line = replacement[0].sub(replacement[1], line)
+            file.write(line)
+
+
+def updateVersionPlaceholder(filename, version):
+    with open(filename, 'rb') as file:
+        lines = file.readlines()
+    placeholderRegex = re.compile(b' in Catch X.Y.Z')
+    replacement = ' in Catch {}.{}.{}'.format(version.majorVersion, version.minorVersion, version.patchNumber).encode('ascii')
+    with open(filename, 'wb') as file:
+        for line in lines:
+            file.write(placeholderRegex.sub(replacement, line))
+
+
+def updateDocumentationVersionPlaceholders(version):
+    print('Updating version placeholder in documentation')
+    docsPath = os.path.join(catchPath, 'docs/')
+    for basePath, _, files in os.walk(docsPath):
+        for file in files:
+            if fnmatch.fnmatch(file, "*.md") and "contributing.md" != file:
+                updateVersionPlaceholder(os.path.join(basePath, file), version)
+
 
 def performUpdates(version):
     # First update version file, so we can regenerate single header and
     # have it ready for upload to wandbox, when updating readme
     version.updateVersionFile()
-    # ToDo: Regenerate single header
-    generateSingleHeader.generate(version)
-    updateReadmeFile(version)
+    updateVersionDefine(version)
 
-    updateConanFile(version)
-    updateConanTestFile(version)
+    import generateSingleHeader
+    generateSingleHeader.generate(version)
+
+    # Then copy the reporters to single include folder to keep them in sync
+    # We probably should have some kind of convention to select which reporters need to be copied automagically,
+    # but this works for now
+    import shutil
+    for rep in ('automake', 'tap', 'teamcity'):
+        sourceFile = os.path.join(catchPath, 'include/reporters/catch_reporter_{}.hpp'.format(rep))
+        destFile = os.path.join(catchPath, 'single_include', 'catch2', 'catch_reporter_{}.hpp'.format(rep))
+        shutil.copyfile(sourceFile, destFile)
+
+    updateReadmeFile(version)
+    updateCmakeFile(version)
+    updateDocumentationVersionPlaceholders(version)

@@ -121,7 +121,10 @@ SyncTestFile::SyncTestFile(SyncServer& server, std::string name, bool is_partial
     schema_mode = SchemaMode::Additive;
 }
 
-sync::Server::Config TestLogger::server_config() {
+SyncServer::SyncServer(StartImmediately start_immediately)
+: m_server(util::make_temp_dir(), util::none, ([&] {
+    using namespace std::literals::chrono_literals;
+
     sync::Server::Config config;
 #if TEST_ENABLE_SYNC_LOGGING
     auto logger = new util::StderrLogger;
@@ -130,11 +133,18 @@ sync::Server::Config TestLogger::server_config() {
 #else
     config.logger = new TestLogger;
 #endif
-    return config;
-}
+    config.log_compaction_clock = this;
+#if REALM_SYNC_VER_MAJOR > 4 || (REALM_SYNC_VER_MAJOR == 4 && REALM_SYNC_VER_MINOR >= 7)
+    config.disable_history_compaction = false;
+#else
+    config.enable_log_compaction = true;
+#endif
+    config.history_ttl = 1s;
+    config.history_compaction_interval = 1s;
+    config.state_realm_dir = util::make_temp_dir();
 
-SyncServer::SyncServer(StartImmediately start_immediately)
-: m_server(util::make_temp_dir(), util::none, TestLogger::server_config())
+    return config;
+})())
 {
 #if TEST_ENABLE_SYNC_LOGGING
     SyncManager::shared().set_log_level(util::Logger::Level::all);
@@ -184,7 +194,7 @@ std::string SyncServer::url_for_realm(StringData realm_name) const
     return util::format("%1/%2", m_url, realm_name);
 }
 
-static void wait_for_session(Realm& realm, bool (SyncSession::*fn)(std::function<void(std::error_code)>))
+static void wait_for_session(Realm& realm, void (SyncSession::*fn)(std::function<void(std::error_code)>))
 {
     std::condition_variable cv;
     std::mutex wait_mutex;

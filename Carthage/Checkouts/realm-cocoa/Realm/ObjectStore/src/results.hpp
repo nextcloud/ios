@@ -328,7 +328,9 @@ auto Results::last(Context& ctx)
 template<typename Context, typename T>
 size_t Results::index_of(Context& ctx, T value)
 {
-    return dispatch([&](auto t) { return this->index_of(ctx.template unbox<std::decay_t<decltype(*t)>>(value)); });
+    return dispatch([&](auto t) {
+        return this->index_of(ctx.template unbox<std::decay_t<decltype(*t)>>(value, CreatePolicy::Skip));
+    });
 }
 
 template <typename ValueType, typename ContextType>
@@ -352,7 +354,7 @@ void Results::set_property_value(ContextType& ctx, StringData prop_name, ValueTy
     size_t size = snapshot.size();
     for (size_t i = 0; i < size; ++i) {
         Object obj(m_realm, *m_object_schema, snapshot.get(i));
-        obj.set_property_value_impl(ctx, *prop, value, true, false, false);
+        obj.set_property_value_impl(ctx, *prop, value, CreatePolicy::ForceCreate, false);
     }
 }
 

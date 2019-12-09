@@ -32,6 +32,18 @@ namespace _impl {
     class ObjectNotifier;
 }
 
+enum class CreatePolicy : int8_t {
+    // Do not create objects if given something that could be converted to a
+    // Realm object but isn't. Used for things like find().
+    Skip,
+    // Throw an exception if an object with the same PK already exists.
+    ForceCreate,
+    // If an object with the same PK already exists, set all fields in the input.
+    UpdateAll,
+    // If an object with the same PK already exists, only set fields which have changed.
+    UpdateModified
+};
+
 class Object {
 public:
     Object();
@@ -65,7 +77,7 @@ public:
     // property getter/setter
     template<typename ValueType, typename ContextType>
     void set_property_value(ContextType& ctx, StringData prop_name,
-                            ValueType value, bool try_update);
+                            ValueType value, CreatePolicy policy = CreatePolicy::ForceCreate);
 
     template<typename ValueType, typename ContextType>
     ValueType get_property_value(ContextType& ctx, StringData prop_name);
@@ -77,13 +89,13 @@ public:
     template<typename ValueType, typename ContextType>
     static Object create(ContextType& ctx, std::shared_ptr<Realm> const& realm,
                          const ObjectSchema &object_schema, ValueType value,
-                         bool try_update = false, bool update_only_diff = false,
+                         CreatePolicy policy = CreatePolicy::ForceCreate,
                          size_t current_row = size_t(-1), Row* = nullptr);
 
     template<typename ValueType, typename ContextType>
     static Object create(ContextType& ctx, std::shared_ptr<Realm> const& realm,
                          StringData object_type, ValueType value,
-                         bool try_update = false, bool update_only_diff = false,
+                         CreatePolicy policy = CreatePolicy::ForceCreate,
                          size_t current_row = size_t(-1), Row* = nullptr);
 
     template<typename ValueType, typename ContextType>
@@ -109,7 +121,7 @@ private:
 
     template<typename ValueType, typename ContextType>
     void set_property_value_impl(ContextType& ctx, const Property &property,
-                                 ValueType value, bool try_update, bool update_only_diff, bool is_default);
+                                 ValueType value, CreatePolicy policy, bool is_default);
     template<typename ValueType, typename ContextType>
     ValueType get_property_value_impl(ContextType& ctx, const Property &property);
 

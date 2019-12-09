@@ -141,6 +141,12 @@ static const NSTimeInterval RLMRefreshBuffer = 10;
         return NO;
     }
 
+    // Realm Cloud will give us a url prefix in the auth response that we need
+    // to pass onto objectstore to have it connect to the proper sync worker
+    if (model.urlPrefix) {
+        session->set_url_prefix(model.urlPrefix.UTF8String);
+    }
+
     // Calculate the resolved path.
     NSString *resolvedURLString = nil;
     RLMServerPath resolvedPath = model.accessToken.tokenData.path;
@@ -263,12 +269,10 @@ static const NSTimeInterval RLMRefreshBuffer = 10;
     RLMSyncCompletionBlock handler = ^(NSError *error, NSDictionary *json) {
         [weakSelf _onRefreshCompletionWithError:error json:json];
     };
-    [RLMNetworkClient sendRequestToEndpoint:[RLMSyncAuthEndpoint endpoint]
-                                     server:self.authServerURL
-                                       JSON:json
-                                    timeout:60
-                                    options:[[RLMSyncManager sharedManager] networkRequestOptions]
-                                 completion:handler];
+    [RLMSyncAuthEndpoint sendRequestToServer:self.authServerURL
+                                        JSON:json
+                                     timeout:60.0
+                                  completion:handler];
 }
 
 @end

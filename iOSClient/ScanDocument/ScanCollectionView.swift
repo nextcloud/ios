@@ -89,24 +89,12 @@ class DragDropViewController: UIViewController {
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-                
+        
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
-        
         segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brand
         
-        // Save button
-        if imagesDestination.count == 0 {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
-        
-        loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
+        loadImage()
     }
     
     @objc func changeTheming() {
@@ -139,7 +127,7 @@ class DragDropViewController: UIViewController {
     
     @IBAction func add(sender: UIButton) {
         
-        NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self, openScan: false)
+        NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self)
     }
     
     @IBAction func transferDown(sender: UIButton) {
@@ -185,27 +173,35 @@ class DragDropViewController: UIViewController {
         collectionViewDestination.reloadData()
     }
     
-    //MARK: Private Methods
-    
-    private func loadImage(atPath: String, items: inout [String]) {
+    func loadImage() {
         
-        items.removeAll()
+        itemsSource.removeAll()
 
         do {
+            let atPath = CCUtility.getDirectoryScan()!
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents {
                 if fileName.first != "." {
-                    items.append(fileName)
+                    itemsSource.append(fileName)
                 }
             }
         } catch {
             print(error.localizedDescription)
         }
         
-        items = items.sorted()
+        itemsSource = itemsSource.sorted()
         
         collectionViewSource.reloadData()
+        
+        // Save button
+        if imagesDestination.count == 0 {
+            save.isEnabled = false
+        } else {
+            save.isEnabled = true
+        }
     }
+    
+    //MARK: Private Methods
     
     func filter(image: UIImage) -> UIImage? {
         
@@ -365,8 +361,8 @@ class DragDropViewController: UIViewController {
             } catch {
                 return
             }
-            
-            loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
+
+            loadImage()
         }
     }
 }

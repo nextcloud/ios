@@ -16,8 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+// FIXME: the nextafter define below can be removed once we upgrade to an
+// Android ndk version which has support for std::nextafter (absent in ndk r10e)
+#define CATCH_CONFIG_GLOBAL_NEXTAFTER
 #define CATCH_CONFIG_RUNNER
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 
 #include <limits.h>
 

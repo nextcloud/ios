@@ -281,21 +281,20 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     func tapMoreListItem(with objectId: String, sender: Any) {
 
         if !isEditMode {
-            var items = [ActionSheetItem]()
-//            ActionSheet.applyAppearance(NCAppearance())
+            var items = [MenuItem]()
             
             ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
             ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
-            items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+            items.append(DestructiveButton(title: NSLocalizedString("_delete_", comment: "")))
+            items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
-            actionSheet = ActionSheet(items: items) { sheet, item in
-                if item is ActionSheetDangerButton { self.deleteItem(with: objectId) }
-                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-            }
+            actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
+                if item is DestructiveButton { self.deleteItem(with: objectId) }
+                if item is CancelButton { print("Cancel buttons has the value `true`") }
+            })
             
             guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
                 return
@@ -316,24 +315,22 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     func tapMoreGridItem(with objectId: String, sender: Any) {
         
         if !isEditMode {
-            var items = [ActionSheetItem]()
-            ActionSheetDeleteItemCell.appearance().titleColor = .red
-//            ActionSheet.applyAppearance(NCAppearance())
-            
+            var items = [MenuItem]()
+
             ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
             ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
             ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
             
-            items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-            items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red)))
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+            items.append(MenuItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(MenuItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: UIColor.red)))
+            items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
-            actionSheet = ActionSheet(items: items) { sheet, item in
+            actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
                 if item.value as? Int == 0 { self.restoreItem(with: objectId) }
                 if item.value as? Int == 1 { self.deleteItem(with: objectId) }
-                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-            }
+                if item is CancelButton { print("Cancel buttons has the value `true`") }
+            })
             
             guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
                 return
@@ -396,27 +393,26 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             // Empty Trash
             if indexPath.row == 0 {
                 
-                var items = [ActionSheetItem]()
-//                ActionSheet.applyAppearance(NCAppearance())
+                var items = [MenuItem]()
                 
                 ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
                 ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
                 ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
                 ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
-                items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
-                items.append(ActionSheetDangerButton(title: NSLocalizedString("_ok_", comment: "")))
-                items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+                items.append(MenuItem(title: NSLocalizedString("_trash_delete_all_", comment: "")))
+                items.append(DestructiveButton(title: NSLocalizedString("_ok_", comment: "")))
+                items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
-                actionSheet = ActionSheet(items: items) { sheet, item in
-                    if item is ActionSheetDangerButton {
+                actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
+                    if item is DestructiveButton {
                         self.emptyTrash()
                         //for record: tableTrash in self.datasource {
                         //    self.deleteItem(with: record.ocId)
                         //}
                     }
-                    if item is ActionSheetCancelButton { return }
-                }
+                    if item is CancelButton { return }
+                })
                 
                 actionSheet?.present(in: self, from: self.view)
             }
@@ -444,20 +440,19 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             // Delete selected files
             if indexPath.row == 2 {
                 
-                var items = [ActionSheetItem]()
-//                ActionSheet.applyAppearance(NCAppearance())
+                var items = [MenuItem]()
                 
                 ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
                 ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
                 ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
                 ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
                 
-                items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_selected_", comment: "")))
-                items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-                items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+                items.append(MenuItem(title: NSLocalizedString("_trash_delete_selected_", comment: "")))
+                items.append(DestructiveButton(title: NSLocalizedString("_delete_", comment: "")))
+                items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
-                actionSheet = ActionSheet(items: items) { sheet, item in
-                    if item is ActionSheetDangerButton {
+                actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
+                    if item is DestructiveButton {
                         for ocId in self.selectocId {
                             self.deleteItem(with: ocId)
                         }
@@ -465,8 +460,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                         self.selectocId.removeAll()
                         self.collectionView.reloadData()
                     }
-                    if item is ActionSheetCancelButton { return }
-                }
+                    if item is CancelButton { return }
+                })
                 
                 actionSheet?.present(in: self, from: self.view)
             }

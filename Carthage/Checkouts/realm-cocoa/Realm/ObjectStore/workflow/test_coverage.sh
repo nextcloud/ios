@@ -11,15 +11,23 @@ if [ "$(uname)" = "Linux" ]; then
   nprocs=$(grep -c ^processor /proc/cpuinfo)
 fi
 
+: ${OPENSSL_ROOT_DIR:=/usr/local}
+
 set -e
 
+if [ "${TMPDIR}" = "" ]; then
+  TMPDIR="/tmp"
+fi
+
+echo "TMPDIR: ${TMPDIR}"
+ls "${TMPDIR}/realm*" | while read filename; do rm -rf "$filename"; done
 rm -rf coverage.build
 mkdir -p coverage.build
 cd coverage.build
 
 cmake_flags=""
 if [ "${sync}" = "sync" ]; then
-    cmake_flags="${cmake_flags} -DREALM_ENABLE_SYNC=1"
+    cmake_flags="${cmake_flags} -DREALM_ENABLE_SYNC=1 -DREALM_ENABLE_SERVER=1 -DOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}"
 fi
 
 cmake ${cmake_flags} -DCMAKE_BUILD_TYPE=Coverage -DDEPENDENCIES_FILE="dependencies${deps_suffix}.list" ..
