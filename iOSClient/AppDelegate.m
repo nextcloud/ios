@@ -569,13 +569,7 @@ PKPushRegistry *pushRegistry;
 
                     if (delete || deleteAll) {
                         
-                        if (deleteAll) {
-                            notificationId = 0;
-                        }
-                        
-                        [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
-                            NSLog(@"Deleting Server Notification error: %ld", (long)errorCode);
-                        }];
+                        // TODO: Delete notifications locally
                         
                     } else {
                         
