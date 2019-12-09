@@ -563,7 +563,7 @@ PKPushRegistry *pushRegistry;
                     
                     NSString *app = [json objectForKey:@"app"];
                     NSString *subject = [json objectForKey:@"subject"];
-                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
+                    //NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
                     BOOL delete = [[json objectForKey:@"delete"] boolValue];
                     BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
 
