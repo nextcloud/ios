@@ -206,6 +206,22 @@
             return;
         }
         
+        // Direct Editing
+        if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
+            NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
+            if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
+                
+                [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
+                
+                NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
+                [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+                    
+                }];
+                
+            }
+            return;
+        }
+        
         // RichDocument
         if ([[NCUtility sharedInstance] isRichDocument:self.metadataDetail] && appDelegate.reachability.isReachable) {
             

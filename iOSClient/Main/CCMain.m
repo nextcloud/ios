@@ -1490,8 +1490,8 @@
     } else  {
         
         // verify permission
-        BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:@"NV"]; // Update file
-        if (permission == false) {
+        BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:k_permission_can_rename];
+        if (![metadata.permissions isEqualToString:@""] && permission == false) {
             [appDelegate messageNotification:@"_error_" description:@"_no_permission_modify_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
             return;
         }
@@ -1582,8 +1582,8 @@
 - (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
     // verify permission
-    BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:@"NV"]; // Delete file
-    if (permission == false) {
+    BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:k_permission_can_move];
+    if (![metadata.permissions isEqualToString:@""] && permission == false) {
         [appDelegate messageNotification:@"_error_" description:@"_no_permission_modify_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
         return;
     }
@@ -3891,6 +3891,14 @@
                 if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && _metadataFolder.e2eEncrypted == NO) {
                     
                     [self shouldPerformSegue:self.metadata];
+                    
+                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isDirectEditing:self.metadata] != nil) {
+                    
+                    if (appDelegate.reachability.isReachable) {
+                        [self shouldPerformSegue:self.metadata];
+                    } else {
+                        [appDelegate messageNotification:@"_info_" description:@"_go_online_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                    }
                     
                 } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
                     

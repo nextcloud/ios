@@ -268,7 +268,7 @@ class NCService: NSObject {
                 if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
                     
                     OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount{
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
                             let itemsOCSharedDto = items as! [OCSharedDto]
                             NCManageDatabase.sharedInstance.deleteTableShare(account: account!)
                             self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
@@ -283,6 +283,15 @@ class NCService: NSObject {
                 // Get Handwerkcloud
                 if (capabilities!.isHandwerkcloudEnabled) {
                     self.requestHC()
+                }
+                
+                // NCTextObtainEditorDetails
+                if capabilities!.versionMajor >= k_nextcloud_version_18_0 {
+                    NCCommunication.sharedInstance.NCTextObtainEditorDetails(urlString: self.appDelegate.activeUrl, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
+                        }
+                    }
                 }
               
             } else if errorCode != 0 {

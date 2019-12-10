@@ -218,6 +218,26 @@ class tableComments: Object {
     }
 }
 
+class tableDirectEditingCreators: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var editor = ""
+    @objc dynamic var ext = ""
+    @objc dynamic var identifier = ""
+    @objc dynamic var mimetype = ""
+    @objc dynamic var name = ""
+    @objc dynamic var templates: Int = 0
+}
+
+class tableDirectEditingEditors: Object {
+    
+    @objc dynamic var account = ""
+    let mimetypes = List<String>()
+    @objc dynamic var name = ""
+    let optionalMimetypes = List<String>()
+    @objc dynamic var secure: Int = 0
+}
+
 class tableDirectory: Object {
     
     @objc dynamic var account = ""
