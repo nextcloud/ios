@@ -228,7 +228,7 @@
             }
             
         } else if (errorCode != 0) {
-            [appDelegate messageNotification:@"_error_" description:errorDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+//            [appDelegate messageNotification:@"_error_" description:errorDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
