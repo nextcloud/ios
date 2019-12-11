@@ -20,7 +20,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                     <subviews>
                         <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="twJ-n3-mgv">
-                            <rect key="frame" x="52.666666666666657" y="501" width="270" height="50"/>
+                            <rect key="frame" x="52.666666666666657" y="712" width="270" height="50"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="270" id="fg7-vj-OWg"/>
                                 <constraint firstAttribute="height" constant="50" id="nuu-SU-mRi"/>
@@ -29,18 +29,6 @@
                             <state key="normal" title="Login"/>
                             <connections>
                                 <action selector="login:" destination="iN0-l3-epB" eventType="touchUpInside" id="neB-f8-gWJ"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FfA-1J-1vc">
-                            <rect key="frame" x="52.666666666666657" y="567" width="270" height="40"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="270" id="XMy-Bo-AbU"/>
-                                <constraint firstAttribute="height" constant="40" id="pbU-Yz-Qz5"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal" title="Signup"/>
-                            <connections>
-                                <action selector="signup:" destination="iN0-l3-epB" eventType="touchUpInside" id="hQK-vz-uRg"/>
                             </connections>
                         </button>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="NgB-S6-3Cp">
@@ -62,18 +50,6 @@
                                 <constraint firstAttribute="height" constant="10" id="raN-SI-1Y0"/>
                             </constraints>
                         </pageControl>
-                        <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Om8-k2-tHk">
-                            <rect key="frame" x="52.666666666666657" y="740" width="270" height="30"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="30" id="GNx-pk-SxY"/>
-                                <constraint firstAttribute="width" constant="270" id="edq-KT-xx7"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal" title="Host"/>
-                            <connections>
-                                <action selector="host:" destination="iN0-l3-epB" eventType="touchUpInside" id="g4o-hg-ifv"/>
-                            </connections>
-                        </button>
                     </subviews>
                     <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -81,17 +57,13 @@
                         <constraint firstItem="twJ-n3-mgv" firstAttribute="centerX" secondItem="eXx-EZ-qlO" secondAttribute="centerX" id="664-10-bMf"/>
                         <constraint firstItem="NgB-S6-3Cp" firstAttribute="leading" secondItem="eXx-EZ-qlO" secondAttribute="leading" constant="8" id="AUg-aI-b8x"/>
                         <constraint firstItem="twJ-n3-mgv" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Zxj-8i-ZOp" secondAttribute="bottom" constant="8" id="CiK-vp-QWa"/>
-                        <constraint firstItem="Om8-k2-tHk" firstAttribute="bottom" secondItem="eXx-EZ-qlO" secondAttribute="bottomMargin" id="MI4-7x-BGg"/>
-                        <constraint firstItem="FfA-1J-1vc" firstAttribute="centerX" secondItem="eXx-EZ-qlO" secondAttribute="centerX" id="MV1-pv-egh"/>
                         <constraint firstItem="Zxj-8i-ZOp" firstAttribute="centerX" secondItem="eXx-EZ-qlO" secondAttribute="centerX" id="Ps1-ur-W19"/>
+                        <constraint firstAttribute="bottom" secondItem="twJ-n3-mgv" secondAttribute="bottom" constant="50" id="QKg-O7-Kpi"/>
                         <constraint firstItem="NgB-S6-3Cp" firstAttribute="top" secondItem="eXx-EZ-qlO" secondAttribute="top" constant="60" id="Qvd-7E-KJI">
                             <variation key="heightClass=compact" constant="8"/>
                         </constraint>
                         <constraint firstItem="Zxj-8i-ZOp" firstAttribute="top" secondItem="NgB-S6-3Cp" secondAttribute="bottom" constant="8" id="Ryu-kt-AaI"/>
-                        <constraint firstItem="Om8-k2-tHk" firstAttribute="centerX" secondItem="eXx-EZ-qlO" secondAttribute="centerX" id="Trv-Pp-F65"/>
                         <constraint firstItem="NgB-S6-3Cp" firstAttribute="centerX" secondItem="eXx-EZ-qlO" secondAttribute="centerX" id="gUz-Nd-Ogo"/>
-                        <constraint firstItem="FfA-1J-1vc" firstAttribute="top" secondItem="twJ-n3-mgv" secondAttribute="bottom" constant="16" id="lwW-jL-d54"/>
-                        <constraint firstItem="Om8-k2-tHk" firstAttribute="top" relation="greaterThanOrEqual" secondItem="FfA-1J-1vc" secondAttribute="bottom" constant="8" id="qhI-hY-G2p"/>
                         <constraint firstAttribute="trailing" secondItem="NgB-S6-3Cp" secondAttribute="trailing" constant="8" id="ruS-K1-w3R"/>
                     </constraints>
                 </view>
@@ -106,9 +78,7 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outlet property="backgroundView" destination="eXx-EZ-qlO" id="IFL-aL-yiu"/>
-                <outlet property="buttonHost" destination="Om8-k2-tHk" id="Cg2-s2-qFe"/>
                 <outlet property="buttonLogin" destination="twJ-n3-mgv" id="SH1-qa-92p"/>
-                <outlet property="buttonSignUp" destination="FfA-1J-1vc" id="nfS-MO-U6Z"/>
                 <outlet property="introCollectionView" destination="NgB-S6-3Cp" id="x8f-W0-LmU"/>
                 <outlet property="pageControl" destination="Zxj-8i-ZOp" id="D4w-Yb-Rm3"/>
             </connections>

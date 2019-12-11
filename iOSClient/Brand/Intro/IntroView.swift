@@ -26,8 +26,6 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
 
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var buttonLogin: UIButton!
-    @IBOutlet weak var buttonSignUp: UIButton!
-    @IBOutlet weak var buttonHost: UIButton!
     @IBOutlet weak var introCollectionView: UICollectionView!
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -98,17 +96,6 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
         view.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customer
         view.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
 
-        view.buttonSignUp.layer.cornerRadius = 20
-        view.buttonSignUp.setTitleColor(.white, for: .normal)
-        view.buttonSignUp.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
-        view.buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
-        view.buttonSignUp.isHidden = true
-
-        view.buttonHost.layer.cornerRadius = 20
-        view.buttonHost.setTitle(NSLocalizedString("_host_your_own_server", comment: ""), for: .normal)
-        view.buttonHost.setTitleColor(UIColor(red: 1, green: 1, blue: 1, alpha: 0.7), for: .normal)
-        view.buttonHost.isHidden = true
-
         view.introCollectionView.register(UINib(nibName: "IntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
         view.introCollectionView.dataSource = view
         view.introCollectionView.delegate = view
@@ -124,25 +111,6 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
         delegate?.introFinishSelector(Int(k_intro_login))
         UIView.animate(withDuration: 1.7) {
             self.alpha = 0
-        }
-    }
-    
-    @IBAction func signup(_ sender: Any) {
-        delegate?.introFinishSelector(Int(k_intro_signup))
-        UIView.animate(withDuration: 1.7) {
-            self.alpha = 0
-        }
-    }
-    
-    @IBAction func host(_ sender: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        
-        let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb
-        
-        browserWebVC?.urlBase = NCBrandOptions.sharedInstance.linkLoginHost
-        
-        if let browserWebVC = browserWebVC {
-            appDelegate?.window.rootViewController?.present(browserWebVC, animated: true)
         }
     }
 
