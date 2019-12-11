@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,7 +13,7 @@
         <!--Login-->
         <scene sceneID="fVe-zF-WhZ">
             <objects>
-                <viewController storyboardIdentifier="CCLoginNextcloud" modalPresentationStyle="fullScreen" id="yj9-jo-WIn" customClass="CCLogin" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCLoginNextcloud" id="yj9-jo-WIn" customClass="CCLogin" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Bv6-g3-l0M">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -82,7 +84,7 @@
                                     <action selector="handlebaseUrlchange:" destination="yj9-jo-WIn" eventType="editingDidEnd" id="efj-33-NT5"/>
                                 </connections>
                             </textField>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
                                 <rect key="frame" x="87" y="44" width="240" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="E9d-5O-bto"/>
@@ -191,7 +193,7 @@
         <!--Login Web-->
         <scene sceneID="3Rv-vf-u17">
             <objects>
-                <viewController storyboardIdentifier="NCLoginWeb" id="yEb-Ky-35s" customClass="NCLoginWeb" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCLoginWeb" id="yEb-Ky-35s" customClass="NCLoginWeb" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UX5-cJ-bY6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -226,13 +228,13 @@
         <!--App Config View-->
         <scene sceneID="BeF-ke-GzC">
             <objects>
-                <viewController storyboardIdentifier="NCAppConfigView" id="Ak5-da-5qm" customClass="NCAppConfigView" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCAppConfigView" id="Ak5-da-5qm" customClass="NCAppConfigView" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lrn-aT-NFz">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="uEr-qx-rv2">
-                                <rect key="frame" x="95.5" y="374.5" width="223" height="157"/>
+                                <rect key="frame" x="57" y="303" width="300" height="300"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="898-PT-7ao">
                                 <rect key="frame" x="10" y="94" width="394" height="20.5"/>
@@ -266,7 +268,7 @@
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>
-        <image name="logo" width="223" height="157.5"/>
+        <image name="logo" width="300" height="300"/>
         <image name="visiblePassword" width="25" height="25"/>
     </resources>
 </document>

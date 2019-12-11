@@ -12,7 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="IntroView" customModule="Nextcloud" customModuleProvider="target">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="IntroView" customModule="kDrive" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -20,19 +20,19 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                     <subviews>
                         <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="twJ-n3-mgv">
-                            <rect key="frame" x="52.666666666666657" y="501" width="270" height="40"/>
+                            <rect key="frame" x="52.666666666666657" y="501" width="270" height="50"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="270" id="fg7-vj-OWg"/>
-                                <constraint firstAttribute="height" constant="40" id="nuu-SU-mRi"/>
+                                <constraint firstAttribute="height" constant="50" id="nuu-SU-mRi"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <state key="normal" title="Login"/>
                             <connections>
                                 <action selector="login:" destination="iN0-l3-epB" eventType="touchUpInside" id="neB-f8-gWJ"/>
                             </connections>
                         </button>
                         <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FfA-1J-1vc">
-                            <rect key="frame" x="52.666666666666657" y="557" width="270" height="40"/>
+                            <rect key="frame" x="52.666666666666657" y="567" width="270" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="270" id="XMy-Bo-AbU"/>
                                 <constraint firstAttribute="height" constant="40" id="pbU-Yz-Qz5"/>

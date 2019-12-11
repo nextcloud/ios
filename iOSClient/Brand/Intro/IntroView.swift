@@ -32,8 +32,8 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
     @IBOutlet weak var pageControl: UIPageControl!
     
     @objc var delegate: CCSplit?
-    private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: "")]
-    private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3")]
+    private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
+    private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
     private var timerAutoScroll: Timer?
 
     @objc func autoScroll() {
@@ -93,7 +93,7 @@ class IntroView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlo
         view.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.introText
         view.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft
         
-        view.buttonLogin.layer.cornerRadius = 20
+        view.buttonLogin.layer.cornerRadius = 5
         view.buttonLogin.setTitleColor(.white, for: .normal)
         view.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customer
         view.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
