@@ -55,7 +55,19 @@ class NCViewerDocumentWeb: NSObject {
         let preferences = WKPreferences()
         let configuration = WKWebViewConfiguration()
 
-        preferences.javaScriptEnabled = true
+        preferences.javaScriptEnabled = false
+
+        // Detect file xls, xlss for enable javascript
+        if fileNameExtension == "XLS" || fileNameExtension == "XLSX" {
+            if let fileHandle = FileHandle(forReadingAtPath: fileNamePath) {
+                let data = fileHandle.readData(ofLength: 4)
+                if data.starts(with: [0x50, 0x4b, 0x03, 0x04]) { // "PK\003\004"
+                    preferences.javaScriptEnabled = true
+                }
+                fileHandle.closeFile()
+            }
+        }
+        
         configuration.preferences = preferences
         
         let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: Int(detail.view.bounds.size.width), height: Int(detail.view.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1), configuration: configuration)

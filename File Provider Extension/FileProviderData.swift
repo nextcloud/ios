@@ -37,10 +37,7 @@ class fileProviderData: NSObject {
     var homeServerUrl = ""
         
     // Max item for page
-    let itemForPage = 20
-
-    // List of etag for serverUrl
-    var listServerUrlEtag = [String:String]()
+    let itemForPage = 100
     
     // Anchor
     var currentAnchor: UInt64 = 0

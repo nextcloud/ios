@@ -24,7 +24,7 @@
 import Foundation
 
 class IMCreate: NSObject {
-    init(fileName: String, directory: String) {
+    init(serverUrl: String) {
         super.init()
     }
 }

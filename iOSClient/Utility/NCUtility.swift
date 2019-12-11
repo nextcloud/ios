@@ -52,11 +52,14 @@ class NCUtility: NSObject {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
-                    
                     let characters = Array(name)
                     
                     if characters.count < 2 {
-                        resultFileName = name + " " + "1" + "." + ext
+                        if ext == "" {
+                            resultFileName = name + " " + "1"
+                        } else {
+                            resultFileName = name + " " + "1" + "." + ext
+                        }
                     } else {
                         let space = characters[characters.count-2]
                         let numChar = characters[characters.count-1]
@@ -64,9 +67,17 @@ class NCUtility: NSObject {
                         if (space == " " && num != nil) {
                             name = String(name.dropLast())
                             num = num! + 1
-                            resultFileName = name + "\(num!)" + "." + ext
+                            if ext == "" {
+                                resultFileName = name + "\(num!)"
+                            } else {
+                                resultFileName = name + "\(num!)" + "." + ext
+                            }
                         } else {
-                            resultFileName = name + " " + "1" + "." + ext
+                            if ext == "" {
+                                resultFileName = name + " " + "1"
+                            } else {
+                                resultFileName = name + " " + "1" + "." + ext
+                            }
                         }
                     }
                     
@@ -441,6 +452,68 @@ class NCUtility: NSObject {
         }
     }
     
+    func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: CGFloat(1.0)
+        )
+    }
+    
+    func RGBFromUIColor(uicolorValue: UIColor) -> UInt32 {
+        
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+
+        if uicolorValue.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+
+            var colorAsUInt : UInt32 = 0
+
+            colorAsUInt += UInt32(red * 255.0) << 16 +
+                           UInt32(green * 255.0) << 8 +
+                           UInt32(blue * 255.0)
+
+            return colorAsUInt
+        }
+        
+        return 0
+    }
+    
+    func IMUnzip(metadata: tableMetadata) -> Bool {
+        
+        // bak
+        let atPathBak = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
+        let toPathBak = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension + ".bak"
+        CCUtility.copyFile(atPath: atPathBak, toPath: toPathBak)
+        
+        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let destination = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+        let removeAtPath = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension
+        
+        try? FileManager.default.removeItem(atPath: removeAtPath)
+        try? FileManager().unzipItem(at: source, to: destination)
+        
+        let bundleDirectory = NCUtility.sharedInstance.IMGetBundleDirectory(metadata: metadata)
+        if bundleDirectory.error {
+            return false
+        }
+        
+        if let fileHandle = FileHandle(forReadingAtPath: bundleDirectory.immPath) {
+            //                        let dataFormat = fileHandle.readData(ofLength: 1)
+            //                        if dataFormat.starts(with: [0x01]) {
+            //                            appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            //                            return;
+            //                        }
+            let dataZip = fileHandle.readData(ofLength: 4)
+            if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
+                try? FileManager().unzipItem(at: NSURL(fileURLWithPath: bundleDirectory.immPath) as URL, to: NSURL(fileURLWithPath: bundleDirectory.bundleDirectory) as URL)
+            }
+            fileHandle.closeFile()
+        }
+        
+        return true
+    }
+    
     func IMGetBundleDirectory(metadata: tableMetadata) -> bundleDirectoryType {
         
         var error = true
@@ -461,6 +534,16 @@ class NCUtility: NSObject {
         }
         
         return bundleDirectoryType(error: error, bundleDirectory: bundleDirectory, immPath: immPath)
+    }
+    
+    @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
+        
+        for char in permissions {
+            if metadataPermissions.contains(char) == false {
+                return false
+            }
+        }
+        return true
     }
 }
 
