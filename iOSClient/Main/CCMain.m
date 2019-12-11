@@ -925,6 +925,9 @@
         viewController.imageFile = cell.file.image;
         viewController.showOpenIn = true;
         viewController.showShare = true;
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
+            viewController.showOpenInternalViewer = true;
+        }
         
         return viewController;
     }
@@ -2656,22 +2659,13 @@
 
 - (void)openinFile:(id)sender
 {
-    [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
+    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
 }
 
 /************************************ OPEN INTERNAL VIEWER ... ******************************/
 - (void)openInternalViewer:(id)sender
 {
-    self.metadata.session = k_download_session;
-    self.metadata.sessionError = @"";
-    self.metadata.sessionSelector = selectorLoadFileInternalView;
-    self.metadata.status = k_metadataStatusWaitDownload;
-    
-    // Add Metadata for Download
-    (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
-    
-    [appDelegate startLoadAutoDownloadUpload];
+    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileInternalView];
 }
 
 /************************************ PASTE ************************************/

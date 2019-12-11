@@ -544,6 +544,9 @@ extension NCOffline: UIViewControllerPreviewingDelegate {
         }
         
         viewController.showOpenIn = true
+        if metadata.typeFile == k_metadataTypeFile_document {
+            viewController.showOpenInternalViewer = true
+        }
         viewController.showShare = false
         
         return viewController

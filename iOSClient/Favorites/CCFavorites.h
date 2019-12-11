@@ -41,6 +41,7 @@
 
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) tableMetadata *metadataForPushDetail;
+@property (nonatomic, strong) NSString *selectorForPushDetail;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleViewControl;
 

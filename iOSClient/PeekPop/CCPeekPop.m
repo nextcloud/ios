@@ -72,17 +72,24 @@
     NSMutableArray *items = [NSMutableArray new];
  
     if (self.showOpenIn && !self.metadata.directory) {
-        UIPreviewAction *openIn = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
+        UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
+            [[NCMainCommon sharedInstance]  downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
         }];
-        [items addObject:openIn];
+        [items addObject:item];
+    }
+    
+    if (self.showOpenInternalViewer) {
+        UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_internal_view_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
+            [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileInternalView];
+        }];
+        [items addObject:item];
     }
     
     if (self.showShare) {
-        UIPreviewAction *share = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
+        UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
             [[NCMainCommon sharedInstance] openShareWithViewController:appDelegate.activeMain metadata:self.metadata indexPage:2];
         }];
-        [items addObject:share];
+        [items addObject:item];
     }
     
     return items;
