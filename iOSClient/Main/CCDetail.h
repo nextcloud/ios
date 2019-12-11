@@ -38,6 +38,8 @@
 @interface CCDetail : UIViewController <MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
+@property (nonatomic, strong) NSString *selectorDetail;
+
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 - (void)viewFile;

@@ -1309,7 +1309,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             }
             
             // open View File
-            if selector == selectorLoadFileView && UIApplication.shared.applicationState == UIApplication.State.active {
+            if (selector == selectorLoadFileView || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
             
                 var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
                 if uti == nil {
@@ -1347,10 +1347,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 } else {
                     
                     if appDelegate.activeMain.view.window != nil {
-                        appDelegate.activeMain.shouldPerformSegue(metadata)
+                        appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
                     }
                     if appDelegate.activeFavorites.view.window != nil {
-                        appDelegate.activeFavorites.shouldPerformSegue(metadata)
+                        appDelegate.activeFavorites.shouldPerformSegue(metadata, selector: selector)
                     }
                 }
             }

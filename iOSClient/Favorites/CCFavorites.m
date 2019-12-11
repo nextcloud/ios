@@ -747,7 +747,7 @@
                     
                 if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
                         
-                    [self shouldPerformSegue:self.metadata];
+                    [self shouldPerformSegue:self.metadata selector:@""];
                         
                 } else {
                         
@@ -786,7 +786,7 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)shouldPerformSegue:(tableMetadata *)metadata
+- (void)shouldPerformSegue:(tableMetadata *)metadata selector:(NSString *)selector
 {
     // if i am in background -> exit
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;

@@ -50,6 +50,8 @@
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) tableMetadata *metadataForPushDetail;
+@property (nonatomic, strong) NSString *selectorForPushDetail;
+
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleMain;
 @property (nonatomic, weak) CCDetail *detailViewController;
@@ -62,7 +64,7 @@
 
 @property BOOL isSelectedMode;
 
-- (void)shouldPerformSegue:(tableMetadata *)metadata;
+- (void)shouldPerformSegue:(tableMetadata *)metadata selector:(NSString *)selector;
 - (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata blinkFileNamePath:(NSString *)blinkFileNamePath;
 
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata;

@@ -192,6 +192,16 @@
         [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail detail:self];
     }
     
+    // DOCUMENT - INTERNAL VIEWER
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document] && [self.selectorDetail isEqualToString:selectorLoadFileInternalView]) {
+        
+        self.edgesForExtendedLayout = UIRectEdgeBottom;
+        [self createToolbar];
+        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
+        
+        return;
+    }
+    
     // DOCUMENT
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
                 
@@ -215,6 +225,18 @@
                 
                 NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
                 [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+                    
+                    if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                        
+                        
+                    } else {
+                        
+                        [[NCUtility sharedInstance] stopActivityIndicator];
+                        
+                        self.edgesForExtendedLayout = UIRectEdgeBottom;
+                        [self createToolbar];
+                        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
+                    }
                     
                 }];
                 

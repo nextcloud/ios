@@ -2449,6 +2449,7 @@
         
         CGPoint touchPoint = [recognizer locationInView:self.tableView];
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
+        NSMutableArray *items = [NSMutableArray new];
         
         if ([self indexPathIsValid:indexPath])
             self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
@@ -2459,21 +2460,18 @@
         
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         
-        UIMenuItem *copyFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_file_", nil) action:@selector(copyFile:)];
-        UIMenuItem *copyFilesItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_files_", nil) action:@selector(copyFiles:)];
-
-        UIMenuItem *openinFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinFile:)];
-        
-        UIMenuItem *pasteFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteFile:)];
-        
-        UIMenuItem *pasteFilesItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteFiles:)];
-        
-        if ([NCBrandOptions sharedInstance].disable_openin_file) {
-            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, pasteFileItem, pasteFilesItem, nil]];
-        } else {
-            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, nil]];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_file_", nil) action:@selector(copyFile:)]];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_files_", nil) action:@selector(copyFiles:)]];
+        if ([NCBrandOptions sharedInstance].disable_openin_file == false) {
+            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinFile:)]];
         }
-        
+        if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
+            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_internal_view_", nil) action:@selector(openInternalViewer:)]];
+        }
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteFile:)]];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteFiles:)]];
+
+        [menuController setMenuItems:items];
         [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:self.tableView];
         [menuController setMenuVisible:YES animated:YES];
     }
@@ -2493,7 +2491,7 @@
     // NO In Session mode (download/upload)
     // NO Template
     
-    if (@selector(copyFile:) == action || @selector(openinFile:) == action) {
+    if (@selector(copyFile:) == action || @selector(openinFile:) == action || @selector(openInternalViewer:) == action) {
         
         if (_isSelectedMode == NO && self.metadata && !self.metadata.directory && self.metadata.status == k_metadataStatusNormal) return YES;
         else return NO;
@@ -2659,6 +2657,21 @@
 - (void)openinFile:(id)sender
 {
     [[NCMainCommon sharedInstance] downloadOpenInMetadata:self.metadata];
+}
+
+/************************************ OPEN INTERNAL VIEWER ... ******************************/
+- (void)openInternalViewer:(id)sender
+{
+    self.metadata.session = k_download_session;
+    self.metadata.sessionError = @"";
+    self.metadata.sessionSelector = selectorLoadFileInternalView;
+    self.metadata.status = k_metadataStatusWaitDownload;
+    
+    // Add Metadata for Download
+    (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
+    
+    [appDelegate startLoadAutoDownloadUpload];
 }
 
 /************************************ PASTE ************************************/
@@ -3890,12 +3903,12 @@
             
                 if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && _metadataFolder.e2eEncrypted == NO) {
                     
-                    [self shouldPerformSegue:self.metadata];
+                    [self shouldPerformSegue:self.metadata selector:@""];
                     
                 } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isDirectEditing:self.metadata] != nil) {
                     
                     if (appDelegate.reachability.isReachable) {
-                        [self shouldPerformSegue:self.metadata];
+                        [self shouldPerformSegue:self.metadata selector:@""];
                     } else {
                         [appDelegate messageNotification:@"_info_" description:@"_go_online_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
                     }
@@ -3903,7 +3916,7 @@
                 } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
                     
                     if (appDelegate.reachability.isReachable) {
-                        [self shouldPerformSegue:self.metadata];
+                        [self shouldPerformSegue:self.metadata selector:@""];
                     } else {
                         [appDelegate messageNotification:@"_info_" description:@"_go_online_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
                     }
@@ -3978,7 +3991,7 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)shouldPerformSegue:(tableMetadata *)metadata
+- (void)shouldPerformSegue:(tableMetadata *)metadata selector:(NSString *)selector
 {
     // if background return
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;
@@ -3992,6 +4005,7 @@
     
     // Metadata for push detail
     self.metadataForPushDetail = metadata;
+    self.selectorForPushDetail = selector;
     
     [self performSegueWithIdentifier:@"segueDetail" sender:self];
 }
@@ -4030,6 +4044,7 @@
     }
     
     _detailViewController.metadataDetail = metadata;
+    _detailViewController.selectorDetail = self.selectorForPushDetail;
     _detailViewController.photoDataSource = photoDataSource;
     _detailViewController.dateFilterQuery = nil;
     
