@@ -52,7 +52,7 @@ class NCCreateMenuAdd: NSObject {
         }
         
         if isNextcloudTextAvailable {
-            items.append(MenuItem(title: NSLocalizedString("_upload_file_nextcloudtext_", comment: ""), value: 31, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(MenuItem(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), value: 31, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         } else {
             items.append(MenuItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 30, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         }
@@ -90,6 +90,19 @@ class NCCreateMenuAdd: NSObject {
                 controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                 self.appDelegate.activeMain.present(controller, animated: true, completion: nil)
             }
+            if item.value as? Int == 31 {
+                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
+                    return
+                }
+                navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                
+                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                viewController.typeTemplate = k_nextcloudtext_document
+                viewController.serverUrl = self.appDelegate.activeMain.serverUrl
+                viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
+                
+                self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+            }
             if item.value as? Int == 40 {
                 if #available(iOS 11.0, *) {
                     NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self.appDelegate.activeMain)
@@ -101,12 +114,12 @@ class NCCreateMenuAdd: NSObject {
             if item.value as? Int == 60 { self.appDelegate.activeMain.createFolder() }
             
             if item.value as? Int == 70 {
-                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
+                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                     return
                 }
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
-                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadRichdocuments
+                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
                 viewController.typeTemplate = k_richdocument_document
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
@@ -114,12 +127,12 @@ class NCCreateMenuAdd: NSObject {
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
             }
             if item.value as? Int == 80 {
-                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
+                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                     return
                 }
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
-                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadRichdocuments
+                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
                 viewController.typeTemplate = k_richdocument_spreadsheet
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
@@ -127,12 +140,12 @@ class NCCreateMenuAdd: NSObject {
                 self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
             }
             if item.value as? Int == 90 {
-                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadRichdocuments", bundle: nil).instantiateInitialViewController() else {
+                guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                     return
                 }
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
-                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadRichdocuments
+                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
                 viewController.typeTemplate = k_richdocument_presentation
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")

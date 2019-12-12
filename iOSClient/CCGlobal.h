@@ -280,6 +280,9 @@
 #define k_richdocument_spreadsheet                      @"spreadsheet"
 #define k_richdocument_presentation                     @"presentation"
 
+// Template Nextcloud Text
+#define k_nextcloudtext_document                        @"document"
+
 // Layout
 #define k_layout_list                                   @"typeLayoutList"
 #define k_layout_grid                                   @"typeLayoutGrid"
