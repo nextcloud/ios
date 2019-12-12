@@ -563,6 +563,7 @@
 "_upload_photos_videos_"            = "Upload photos or videos";
 "_upload_file_"                     = "Upload file";
 "_upload_file_text_"                = "Create text file";
+"_upload_file_nextcloudtext_"       = "Create text document";
 
 // Document Picker
 

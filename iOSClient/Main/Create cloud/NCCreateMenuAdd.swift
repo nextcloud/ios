@@ -27,12 +27,17 @@ import Sheeeeeeeeet
 class NCCreateMenuAdd: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var isNextcloudTextAvailable = false
     
     @objc init(viewController: UIViewController, view : UIView) {
         super.init()
-   
-        var items = [MenuItem]()
+
+        if self.appDelegate.reachability.isReachable() && NCManageDatabase.sharedInstance.getDirectEditingCreators(account: self.appDelegate.activeAccount) != nil {
+            isNextcloudTextAvailable = true
+        }
         
+        var items = [MenuItem]()
+
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
@@ -46,7 +51,11 @@ class NCCreateMenuAdd: NSObject {
             items.append(MenuItem(title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), value: 21, image: CCGraphics.scale(UIImage.init(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
         }
         
-        items.append(MenuItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 30, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        if isNextcloudTextAvailable {
+            items.append(MenuItem(title: NSLocalizedString("_upload_file_nextcloudtext_", comment: ""), value: 31, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        } else {
+            items.append(MenuItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 30, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        }
         
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {

@@ -216,7 +216,7 @@
             return;
         }
         
-        // Direct Editing
+        // Direct Editing NextcloudText
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
             NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
