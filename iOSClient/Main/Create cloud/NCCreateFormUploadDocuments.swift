@@ -37,9 +37,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
     var listOfTemplate = [NCEditorTemplates]()
     var selectTemplate: NCEditorTemplates?
     
-    
     @IBOutlet weak var indicator: UIActivityIndicatorView!
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
     
@@ -252,24 +250,20 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
     
     @objc func save() {
         
-        guard let selectTemplate = self.selectTemplate else {
-            return
-        }
         let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
         guard let fileNameForm = rowFileName.value else {
             return
         }
         if fileNameForm as! String == "" {
             return
-        } else {
+        }
             
+        if self.typeTemplate == k_nextcloudtext_document {
+                        
             fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        }
-        
-        if self.typeTemplate == k_nextcloudtext_document {
             
-            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editor: "text", templateId: nil, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editor: "text", templateId: selectTemplate?.identifier, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
@@ -290,6 +284,13 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             }
             
         } else {
+            
+            guard let selectTemplate = self.selectTemplate else {
+                return
+            }
+            
+            fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
+            fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
             
             OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: selectTemplate.identifier, completion: { (account, url, message, errorCode) in
                        
@@ -327,6 +328,9 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         
         if self.typeTemplate == k_nextcloudtext_document {
             
+            // default
+            fileNameExtension = "md"
+            
             NCCommunication.sharedInstance.NCTextGetListOfTemplates(urlString: appDelegate.activeUrl, account: appDelegate.activeAccount) { (account, templates, errorCode, errorMessage) in
                 
                 self.indicator.stopAnimating()
@@ -360,6 +364,8 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             }
             
         } else {
+            
+            // default
             
             OCNetworking.sharedManager().getTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, templates, message, errorCode) in
                 
