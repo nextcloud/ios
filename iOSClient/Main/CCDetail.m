@@ -218,6 +218,7 @@
         
         // Direct Editing
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
+            
             NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
             if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
                 
@@ -231,14 +232,18 @@
                         
                     } else {
                         
-                        [[NCUtility sharedInstance] stopActivityIndicator];
+                        if (errorCode != 0) {
+                            [appDelegate messageNotification:@"_error_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        } else {
+                            NSLog(@"[LOG] It has been changed user during networking process, error.");
+                        }
                         
-                        self.edgesForExtendedLayout = UIRectEdgeBottom;
-                        [self createToolbar];
-                        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
+                        [self.navigationController popViewControllerAnimated:YES];
                     }
-                    
                 }];
+                
+            } else {
+                
                 
             }
             return;
