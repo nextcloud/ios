@@ -221,31 +221,40 @@
             
             NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
             if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
-                
-                [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
-                
-                NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
-                [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+            
+                if([self.metadataDetail.url isEqualToString:@""]) {
                     
-                    if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                    [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
+                    
+                    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
+                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
                         
-                        
-                    } else {
-                        
-                        if (errorCode != 0) {
-                            [appDelegate messageNotification:@"_error_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                            
+                            self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                            [self.view addSubview:self.nextcloudText];
+                            [self.nextcloudText viewNextcloudTextAt:url detail:self metadata:self.metadataDetail];
+                            
                         } else {
-                            NSLog(@"[LOG] It has been changed user during networking process, error.");
+                            
+                            if (errorCode != 0) {
+                                [appDelegate messageNotification:@"_error_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                            } else {
+                                NSLog(@"[LOG] It has been changed user during networking process, error.");
+                            }
+                            
+                            [self.navigationController popViewControllerAnimated:YES];
                         }
-                        
-                        [self.navigationController popViewControllerAnimated:YES];
-                    }
-                }];
-                
-            } else {
-                
-                
+                    }];
+                    
+                } else {
+                    
+                    self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                    [self.view addSubview:self.nextcloudText];
+                    [self.nextcloudText viewNextcloudTextAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                }
             }
+            
             return;
         }
         
