@@ -269,6 +269,26 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         
         if self.typeTemplate == k_nextcloudtext_document {
             
+            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editor: "text", templateId: nil, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+                
+                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                    
+                    if url != nil && url!.count > 0 {
+                        
+                        self.dismiss(animated: true, completion: {
+                            let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url)
+                            
+                            self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+                        })
+                    }
+                    
+                } else if errorCode != 0 {
+                   self.appDelegate.messageNotification("_error_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                } else {
+                   print("[LOG] It has been changed user during networking process, error.")
+                }
+            }
+            
         } else {
             
             OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: selectTemplate.identifier, completion: { (account, url, message, errorCode) in
@@ -283,6 +303,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                            self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                        })
                    }
+                    
                 } else if errorCode != 0 {
                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 } else {
@@ -309,12 +330,32 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             NCCommunication.sharedInstance.NCTextGetListOfTemplates(urlString: appDelegate.activeUrl, account: appDelegate.activeAccount) { (account, templates, errorCode, errorMessage) in
                 
                 self.indicator.stopAnimating()
+                
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
                     for template in templates {
                         
+                        let temp = NCEditorTemplates()
+                                               
+                        temp.identifier = template.identifier
+                        temp.ext = template.ext
+                        temp.name = template.name
+                        temp.preview = template.preview
+                                               
+                        self.listOfTemplate.append(temp)
+                                               
+                        // default: template empty
+                        if temp.preview == "" {
+                            self.selectTemplate = temp
+                            self.fileNameExtension = template.ext
+                            self.navigationItem.rightBarButtonItem?.isEnabled = true
+                        }
                     }
-                    
+                                        
+                } else if errorCode != 0 {
+                    self.appDelegate.messageNotification("_error_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                } else {
+                    print("[LOG] It has been changed user during networking process, error.")
                 }
             }
             
