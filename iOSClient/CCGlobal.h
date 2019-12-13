@@ -281,7 +281,7 @@
 #define k_richdocument_presentation                     @"presentation"
 
 // Template Nextcloud Text
-#define k_nextcloudtext_document                        @"document"
+#define k_nextcloudtext_document                        @"textdocument"
 
 // Layout
 #define k_layout_list                                   @"typeLayoutList"

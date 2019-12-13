@@ -1425,11 +1425,12 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url contentType:(NSString *)contentType
 {
     tableMetadata *metadata = [tableMetadata new];
     
     metadata.account = account;
+    metadata.contentType = contentType;
     metadata.date = date;
     metadata.directory = directory;
     metadata.etag = etag;

@@ -34,7 +34,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         super.init(frame: frame, configuration: configuration)
 
         let contentController = configuration.userContentController
-        contentController.add(self, name: "RichDocumentsMobileInterface")
+        contentController.add(self, name: "DirectEditingMobileInterface")
         
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
         navigationDelegate = self
@@ -82,6 +82,32 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         
+        if (message.name == "DirectEditingMobileInterface") {
+            
+            if message.body as? String == "close" {
+                
+                removeFromSuperview()
+                
+                detail.navigationController?.popViewController(animated: true)
+                detail.navigationController?.navigationBar.topItem?.title = ""
+            }
+            
+            if message.body as? String == "share" {
+                NCMainCommon.sharedInstance.openShare(ViewController: detail, metadata: metadata, indexPage: 2)
+            }
+            
+            if message.body as? String == "loading" {
+                print("loading")
+            }
+            
+            if message.body as? String == "loaded" {
+                print("loaded")
+            }
+            
+            if message.body as? String == "paste" {
+                self.paste(self)
+            }
+        }
     }
         
     

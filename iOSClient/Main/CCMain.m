@@ -1777,7 +1777,7 @@
     NSString *ocIdTemp = [[NSUUID UUID] UUIDString];
     
     // Create Directory (temp) on metadata
-    tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES ocId:ocIdTemp serverUrl:serverUrl fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+    tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES ocId:ocIdTemp serverUrl:serverUrl fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];

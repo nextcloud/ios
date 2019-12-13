@@ -1628,7 +1628,7 @@ PKPushRegistry *pushRegistry;
                                             // Push
                                             NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                             NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
                                             
                                             [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
                                             
