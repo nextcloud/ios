@@ -90,9 +90,9 @@ PKPushRegistry *pushRegistry;
     self.listMainVC = [[NSMutableDictionary alloc] init];
     
     // Push Notification
-    pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-    pushRegistry.delegate = self;
-    pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+//    pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+//    pushRegistry.delegate = self;
+//    pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
     
     [application registerForRemoteNotifications];
     
