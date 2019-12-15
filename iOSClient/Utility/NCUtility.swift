@@ -388,7 +388,7 @@ class NCUtility: NSObject {
         
         /* BETA */
         //TODO: beta
-        return nil
+        //return nil
         
         guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: metadata.account) else {
             return nil
