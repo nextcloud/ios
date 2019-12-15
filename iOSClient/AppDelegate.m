@@ -157,6 +157,17 @@ PKPushRegistry *pushRegistry;
         [review showStoreReview];
     }
     
+    // Detect Dark mode
+    if (@available(iOS 13.0, *)) {
+        if ([CCUtility getDarkModeDetect]) {
+            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+                [CCUtility setDarkMode:YES];
+            } else {
+                [CCUtility setDarkMode:NO];
+            }
+        }
+    }
+    
     return YES;
 }
 
@@ -1367,13 +1378,24 @@ PKPushRegistry *pushRegistry;
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
         if (metadataForUpload) {
             
-            metadataForUpload.status = k_metadataStatusInUpload;
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+            BOOL isAleadyInUpload = false;
             
-            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+            for (tableMetadata *metadata in metadatasUpload) {
+                if ([metadataForUpload.account isEqualToString:metadata.account] && [metadataForUpload.serverUrl isEqualToString:metadata.serverUrl] && [metadataForUpload.fileName isEqualToString:metadata.fileName]) {
+                    isAleadyInUpload = true;
+                }
+            }
             
-            counterUpload++;
-            sizeUpload = sizeUpload + metadata.size;
+            if (isAleadyInUpload == false) {
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                
+                counterUpload++;
+                sizeUpload = sizeUpload + metadata.size;
+            }
+            
         } else {
             break;
         }
