@@ -284,6 +284,7 @@
                 [CCUtility setDarkMode:NO];
             }
         }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
     }
     
     prevRunningInFullScreen = isRunningInFullScreen;
