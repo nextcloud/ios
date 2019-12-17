@@ -693,10 +693,10 @@
 
 // Intro
 
-"_intro_1_title_"                   = "Secure Cloud for SMEs and individuals";
+"_intro_1_title_"                   = "A secure cloud for SMEs and private individuals";
 "_intro_2_title_"                   = "Access your files on all your devices";
 "_intro_3_title_"                   = "Share and work together in the same place";
-"_intro_4_title_"                   = "Save your photos automatically";
+"_intro_4_title_"                   = "Backup your photos automatically";
 
 "_log_in_"                          = "Log in";
 "_sign_up_"                         = "Sign up with provider";
