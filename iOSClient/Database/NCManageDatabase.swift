@@ -164,6 +164,8 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableActivitySubjectRich.self, account: account)
         self.clearTable(tableCapabilities.self, account: account)
         self.clearTable(tableComments.self, account: account)
+        self.clearTable(tableDirectEditingCreators.self, account: account)
+        self.clearTable(tableDirectEditingEditors.self, account: account)
         self.clearTable(tableDirectory.self, account: account)
         self.clearTable(tableE2eEncryption.self, account: account)
         self.clearTable(tableE2eEncryptionLock.self, account: account)
@@ -1037,6 +1039,83 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
         return Array(results.map { tableComments.init(value:$0) })
+    }
+    
+    //MARK: -
+    //MARK: Table Direct Editing
+    
+    @objc func addDirectEditing(account: String, editors: [NCEditorDetailsEditors], creators: [NCEditorDetailsCreators]) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+            
+                let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
+                realm.delete(resultsCreators)
+                
+                let resultsEditors = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
+                realm.delete(resultsEditors)
+                
+                for creator in creators {
+                    
+                    let addObject = tableDirectEditingCreators()
+                    
+                    addObject.account = account
+                    addObject.editor = creator.editor
+                    addObject.ext = creator.ext
+                    addObject.identifier = creator.identifier
+                    addObject.mimetype = creator.mimetype
+                    addObject.name = creator.name
+                    addObject.templates = creator.templates
+                    
+                    realm.add(addObject)
+                }
+                
+                for editor in editors {
+                    
+                    let addObject = tableDirectEditingEditors()
+                    
+                    addObject.account = account
+                    for mimeType in editor.mimetypes {
+                        addObject.mimetypes.append(mimeType)
+                    }
+                    addObject.name = editor.name
+                    for mimeType in editor.optionalMimetypes {
+                        addObject.optionalMimetypes.append(mimeType)
+                    }
+                    addObject.secure = editor.secure
+                    
+                    realm.add(addObject)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
+        
+        let realm = try! Realm()
+        let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
+        
+        if (results.count > 0) {
+            return Array(results.map { tableDirectEditingCreators.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
+    
+    @objc func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
+        
+        let realm = try! Realm()
+        let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
+        
+        if (results.count > 0) {
+            return Array(results.map { tableDirectEditingEditors.init(value:$0) })
+        } else {
+            return nil
+        }
     }
     
     //MARK: -

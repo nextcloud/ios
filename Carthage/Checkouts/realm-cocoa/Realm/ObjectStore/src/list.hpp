@@ -21,12 +21,12 @@
 
 #include "collection_notifications.hpp"
 #include "impl/collection_notifier.hpp"
+#include "object.hpp"
 #include "property.hpp"
 
 #include <realm/link_view_fwd.hpp>
 #include <realm/row.hpp>
 #include <realm/table_ref.hpp>
-#include <realm/util/any.hpp>
 
 #include <functional>
 #include <memory>
@@ -125,15 +125,15 @@ public:
     size_t find(Context&, T&& value) const;
 
     template<typename T, typename Context>
-    void add(Context&, T&& value, bool update=false);
+    void add(Context&, T&& value, CreatePolicy=CreatePolicy::ForceCreate);
     template<typename T, typename Context>
-    void insert(Context&, size_t list_ndx, T&& value, bool update=false);
+    void insert(Context&, size_t list_ndx, T&& value, CreatePolicy=CreatePolicy::ForceCreate);
     template<typename T, typename Context>
-    void set(Context&, size_t row_ndx, T&& value, bool update=false);
+    void set(Context&, size_t row_ndx, T&& value, CreatePolicy=CreatePolicy::ForceCreate);
 
     // Replace the values in this list with the values from an enumerable object
     template<typename T, typename Context>
-    void assign(Context&, T&& value, bool update=false, bool update_only_diff = false);
+    void assign(Context&, T&& value, CreatePolicy=CreatePolicy::ForceCreate);
 
     // The List object has been invalidated (due to the Realm being invalidated,
     // or the containing object being deleted)
@@ -165,7 +165,7 @@ private:
     auto dispatch(Fn&&) const;
 
     template<typename T, typename Context>
-    void set_if_different(Context&, size_t row_ndx, T&& value, bool update=false);
+    void set_if_different(Context&, size_t row_ndx, T&& value, CreatePolicy);
 
     size_t to_table_ndx(size_t row) const noexcept;
 
@@ -187,25 +187,25 @@ auto List::get(Context& ctx, size_t row_ndx) const
 template<typename T, typename Context>
 size_t List::find(Context& ctx, T&& value) const
 {
-    return dispatch([&](auto t) { return this->find(ctx.template unbox<std::decay_t<decltype(*t)>>(value)); });
+    return dispatch([&](auto t) { return this->find(ctx.template unbox<std::decay_t<decltype(*t)>>(value, CreatePolicy::Skip)); });
 }
 
 template<typename T, typename Context>
-void List::add(Context& ctx, T&& value, bool update)
+void List::add(Context& ctx, T&& value, CreatePolicy policy)
 {
-    dispatch([&](auto t) { this->add(ctx.template unbox<std::decay_t<decltype(*t)>>(value, true, update)); });
+    dispatch([&](auto t) { this->add(ctx.template unbox<std::decay_t<decltype(*t)>>(value, policy)); });
 }
 
 template<typename T, typename Context>
-void List::insert(Context& ctx, size_t list_ndx, T&& value, bool update)
+void List::insert(Context& ctx, size_t list_ndx, T&& value, CreatePolicy policy)
 {
-    dispatch([&](auto t) { this->insert(list_ndx, ctx.template unbox<std::decay_t<decltype(*t)>>(value, true, update)); });
+    dispatch([&](auto t) { this->insert(list_ndx, ctx.template unbox<std::decay_t<decltype(*t)>>(value, policy)); });
 }
 
 template<typename T, typename Context>
-void List::set(Context& ctx, size_t row_ndx, T&& value, bool update)
+void List::set(Context& ctx, size_t row_ndx, T&& value, CreatePolicy policy)
 {
-    dispatch([&](auto t) { this->set(row_ndx, ctx.template unbox<std::decay_t<decltype(*t)>>(value, true, update)); });
+    dispatch([&](auto t) { this->set(row_ndx, ctx.template unbox<std::decay_t<decltype(*t)>>(value, policy)); });
 }
 
 namespace _impl {
@@ -234,12 +234,12 @@ inline bool help_compare_values(const RowExpr& v1, const RowExpr& v2)
 }
 
 template<typename T, typename Context>
-void List::set_if_different(Context& ctx, size_t row_ndx, T&& value, bool update)
+void List::set_if_different(Context& ctx, size_t row_ndx, T&& value, CreatePolicy policy)
 {
     dispatch([&](auto t) {
         using U = std::decay_t<decltype(*t)>;
         auto old_value =  this->get<U>(row_ndx);
-        auto new_value = ctx.template unbox<U>(value, true, update, true, _impl::help_get_current_row(old_value));
+        auto new_value = ctx.template unbox<U>(value, policy, _impl::help_get_current_row(old_value));
         if (_impl::help_compare_values(old_value, new_value))
             this->set(row_ndx, new_value);
     });
@@ -247,7 +247,7 @@ void List::set_if_different(Context& ctx, size_t row_ndx, T&& value, bool update
 
 
 template<typename T, typename Context>
-void List::assign(Context& ctx, T&& values, bool update, bool update_only_diff)
+void List::assign(Context& ctx, T&& values, CreatePolicy policy)
 {
     if (ctx.is_same_list(*this, values))
         return;
@@ -257,15 +257,15 @@ void List::assign(Context& ctx, T&& values, bool update, bool update_only_diff)
         return;
     }
 
-    if (update_only_diff) {
+    if (policy == CreatePolicy::UpdateModified) {
         size_t sz = size();
         size_t index = 0;
         ctx.enumerate_list(values, [&](auto&& element) {
             if (index < sz) {
-                this->set_if_different(ctx, index, element, update);
+                this->set_if_different(ctx, index, element, policy);
             }
             else {
-                this->add(ctx, element, update);
+                this->add(ctx, element, policy);
             }
             index++;
         });
@@ -276,7 +276,7 @@ void List::assign(Context& ctx, T&& values, bool update, bool update_only_diff)
     else {
         remove_all();
         ctx.enumerate_list(values, [&](auto&& element) {
-            this->add(ctx, element, update);
+            this->add(ctx, element, policy);
         });
     }
 }

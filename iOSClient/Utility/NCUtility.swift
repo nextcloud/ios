@@ -384,6 +384,32 @@ class NCUtility: NSObject {
         return false
     }
     
+    @objc func isDirectEditing(_ metadata: tableMetadata) -> String? {
+        
+        /* BETA */
+        //TODO: beta
+        return nil
+        
+        guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: metadata.account) else {
+            return nil
+        }
+        
+        for result: tableDirectEditingEditors in results {
+            for mimetype in result.mimetypes {
+                if mimetype == metadata.contentType {
+                    return result.name
+                }
+            }
+            for mimetype in result.optionalMimetypes {
+                if mimetype == metadata.contentType {
+                    return result.name
+                }
+            }
+        }
+        
+        return nil
+    }
+    
     @objc func removeAllSettings() {
         
         URLCache.shared.memoryCapacity = 0
@@ -547,10 +573,3 @@ class NCUtility: NSObject {
     }
 }
 
-class ActionSheetDeleteItem: ActionSheetItem {
-    override open func cell(for tableView: UITableView) -> ActionSheetItemCell {
-        return ActionSheetDeleteItemCell(style: cellStyle, reuseIdentifier: cellReuseIdentifier)
-    }
-}
-
-class ActionSheetDeleteItemCell: ActionSheetItemCell {}

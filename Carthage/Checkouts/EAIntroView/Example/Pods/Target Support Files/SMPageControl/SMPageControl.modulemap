@@ -1,6 +1,0 @@
-framework module SMPageControl {
-  umbrella header "SMPageControl-umbrella.h"
-
-  export *
-  module * { export * }
-}

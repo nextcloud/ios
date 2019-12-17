@@ -138,20 +138,19 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     
     func tapMenu(with tableComments: tableComments?, sender: Any) {
      
-        var items = [ActionSheetItem]()
-        ActionSheetDeleteItemCell.appearance().titleColor = .red
-//        ActionSheet.applyAppearance(NCAppearance())
+        var items = [MenuItem]()
         
         ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
-        items.append(ActionSheetItem(title: NSLocalizedString("_edit_comment_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-        items.append(ActionSheetDeleteItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        items.append(MenuItem(title: NSLocalizedString("_edit_comment_", comment: ""), subtitle: nil, value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), isEnabled: true, tapBehavior: .none))
+        
+        items.append(MenuItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
+        items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
-        actionSheet = ActionSheet(items: items) { sheet, item in
+        actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
             
             if item.value as? Int == 0 {
                 
@@ -196,8 +195,8 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 })
                 
             }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-        }
+            if item is CancelButton { print("Cancel buttons has the value `true`") }
+        })
         
         actionSheet?.present(in: self, from: sender as! UIButton)
     }

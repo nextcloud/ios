@@ -192,6 +192,16 @@
         [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail detail:self];
     }
     
+    // DOCUMENT - INTERNAL VIEWER
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document] && [self.selectorDetail isEqualToString:selectorLoadFileInternalView]) {
+        
+        self.edgesForExtendedLayout = UIRectEdgeBottom;
+        [self createToolbar];
+        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
+        
+        return;
+    }
+    
     // DOCUMENT
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
                 
@@ -202,6 +212,48 @@
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self createToolbar];
             [self viewPDF:@""];
+            
+            return;
+        }
+        
+        // Direct Editing NextcloudText
+        if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
+            
+            NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
+            if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
+            
+                if([self.metadataDetail.url isEqualToString:@""]) {
+                    
+                    [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
+                    
+                    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
+                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+                        
+                        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                            
+                            self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                            [self.view addSubview:self.nextcloudText];
+                            [self.nextcloudText viewNextcloudTextAt:url detail:self metadata:self.metadataDetail];
+                            
+                        } else {
+                            
+                            if (errorCode != 0) {
+                                [appDelegate messageNotification:@"_error_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                            } else {
+                                NSLog(@"[LOG] It has been changed user during networking process, error.");
+                            }
+                            
+                            [self.navigationController popViewControllerAnimated:YES];
+                        }
+                    }];
+                    
+                } else {
+                    
+                    self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                    [self.view addSubview:self.nextcloudText];
+                    [self.nextcloudText viewNextcloudTextAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                }
+            }
             
             return;
         }

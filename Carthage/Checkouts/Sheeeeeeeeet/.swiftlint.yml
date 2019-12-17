@@ -1,26 +1,21 @@
 disabled_rules:
-  - cyclomatic_complexity
   - file_length
   - function_body_length
-  - identifier_name
   - line_length
-  - shorthand_operator
+  - todo
   - trailing_whitespace
   - type_body_length
   - type_name
   - vertical_whitespace
   - void_return
+  - weak_delegate
 
-excluded:
-  - Pods
-  - Carthage
+included:
+  - Sources
+  - Tests
 
-# This is a strange one, since it also includes init functions
-function_parameter_count:
-  warning: 8
-  error: 8
-
-variable_name:
+identifier_name:
   excluded:
+    - id
     - ok
     - vc

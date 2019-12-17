@@ -1,5 +1,36 @@
+<a id="top"></a>
+# Command line
+
+**Contents**<br>
+[Specifying which tests to run](#specifying-which-tests-to-run)<br>
+[Choosing a reporter to use](#choosing-a-reporter-to-use)<br>
+[Breaking into the debugger](#breaking-into-the-debugger)<br>
+[Showing results for successful tests](#showing-results-for-successful-tests)<br>
+[Aborting after a certain number of failures](#aborting-after-a-certain-number-of-failures)<br>
+[Listing available tests, tags or reporters](#listing-available-tests-tags-or-reporters)<br>
+[Sending output to a file](#sending-output-to-a-file)<br>
+[Naming a test run](#naming-a-test-run)<br>
+[Eliding assertions expected to throw](#eliding-assertions-expected-to-throw)<br>
+[Make whitespace visible](#make-whitespace-visible)<br>
+[Warnings](#warnings)<br>
+[Reporting timings](#reporting-timings)<br>
+[Load test names to run from a file](#load-test-names-to-run-from-a-file)<br>
+[Just test names](#just-test-names)<br>
+[Specify the order test cases are run](#specify-the-order-test-cases-are-run)<br>
+[Specify a seed for the Random Number Generator](#specify-a-seed-for-the-random-number-generator)<br>
+[Identify framework and version according to the libIdentify standard](#identify-framework-and-version-according-to-the-libidentify-standard)<br>
+[Wait for key before continuing](#wait-for-key-before-continuing)<br>
+[Specify the number of benchmark samples to collect](#specify-the-number-of-benchmark-samples-to-collect)<br>
+[Specify the number of resamples for bootstrapping](#specify-the-number-of-resamples-for-bootstrapping)<br>
+[Specify the confidence-interval for bootstrapping](#specify-the-confidence-interval-for-bootstrapping)<br>
+[Disable statistical analysis of collected benchmark samples](#disable-statistical-analysis-of-collected-benchmark-samples)<br>
+[Usage](#usage)<br>
+[Specify the section to run](#specify-the-section-to-run)<br>
+[Filenames as tags](#filenames-as-tags)<br>
+[Override output colouring](#override-output-colouring)<br>
+
 Catch works quite nicely without any command line options at all - but for those times when you want greater control the following options are available.
-Click one of the followings links to take you straight to that option - or scroll on to browse the available options.
+Click one of the following links to take you straight to that option - or scroll on to browse the available options.
 
 <a href="#specifying-which-tests-to-run">               `    <test-spec> ...`</a><br />
 <a href="#usage">                                       `    -h, -?, --help`</a><br />
@@ -29,6 +60,11 @@ Click one of the followings links to take you straight to that option - or scrol
 <a href="#rng-seed">                                    `    --rng-seed`</a><br />
 <a href="#libidentify">                                 `    --libidentify`</a><br />
 <a href="#wait-for-keypress">                           `    --wait-for-keypress`</a><br />
+<a href="#benchmark-samples">                           `    --benchmark-samples`</a><br />
+<a href="#benchmark-resamples">                         `    --benchmark-resamples`</a><br />
+<a href="#benchmark-confidence-interval">               `    --benchmark-confidence-interval`</a><br />
+<a href="#benchmark-no-analysis">                       `    --benchmark-no-analysis`</a><br />
+<a href="#use-colour">                                  `    --use-colour`</a><br />
 
 </br>
 
@@ -50,7 +86,7 @@ Wildcards consist of the `*` character at the beginning and/or end of test case 
 
 Test specs are case insensitive.
 
-If a spec is prefixed with `exclude:` or the `~` character then the pattern matches an exclusion. This means that tests matching the pattern are excluded from the set - even if a prior inclusion spec included them. Subsequent inclusion specs will take precendence, however.
+If a spec is prefixed with `exclude:` or the `~` character then the pattern matches an exclusion. This means that tests matching the pattern are excluded from the set - even if a prior inclusion spec included them. Subsequent inclusion specs will take precedence, however.
 Inclusions and exclusions are evaluated in left-to-right order.
 
 Test case examples:
@@ -66,7 +102,7 @@ a* ~ab* abc             Matches all tests that start with 'a', except those that
 </pre>
 
 Names within square brackets are interpreted as tags.
-A series of tags form an AND expression wheras a comma-separated sequence forms an OR expression. e.g.:
+A series of tags form an AND expression whereas a comma-separated sequence forms an OR expression. e.g.:
 
 <pre>[one][two],[three]</pre>
 This matches all tests tagged `[one]` and `[two]`, as well as all tests tagged `[three]`
@@ -94,7 +130,9 @@ The JUnit reporter is an xml format that follows the structure of the JUnit XML 
 ## Breaking into the debugger
 <pre>-b, --break</pre>
 
-In some IDEs (currently XCode and Visual Studio) it is possible for Catch to break into the debugger on a test failure. This can be very helpful during debug sessions - especially when there is more than one path through a particular test.
+Under most debuggers Catch2 is capable of automatically breaking on a test
+failure. This allows the user to see the current state of the test during
+failure.
 
 <a id="showing-results-for-successful-tests"></a>
 ## Showing results for successful tests
@@ -164,9 +202,16 @@ This option transforms tabs and newline characters into ```\t``` and ```\n``` re
 ## Warnings
 <pre>-w, --warn &lt;warning name></pre>
 
-Enables reporting of warnings (only one, at time of this writing). If a warning is issued it fails the test.
+Enables reporting of suspicious test states. There are currently two
+available warnings
 
-The ony available warning, presently, is ```NoAssertions```. This warning fails a test case, or (leaf) section if no assertions (```REQUIRE```/ ```CHECK``` etc) are encountered.
+```
+    NoAssertions   // Fail test case / leaf section if no assertions
+                   // (e.g. `REQUIRE`) is encountered.
+    NoTests        // Return non-zero exit code when no test cases were run
+                   // Also calls reporter's noMatchingTestCases method
+```
+
 
 <a id="reporting-timings"></a>
 ## Reporting timings
@@ -197,7 +242,7 @@ Test cases are ordered one of three ways:
 
 
 ### decl
-Declaration order. The order the tests were originally declared in. Note that ordering between files is not guaranteed and is implementation dependent.
+Declaration order (this is the default order if no --order argument is provided). The order the tests were originally declared in. Note that ordering between files is not guaranteed and is implementation dependent.
 
 ### lex
 Lexicographically sorted. Tests are sorted, alpha-numerically, by name.
@@ -211,7 +256,7 @@ Randomly sorted. Test names are sorted using ```std::random_shuffle()```. By def
 
 Sets a seed for the random number generator using ```std::srand()```. 
 If a number is provided this is used directly as the seed so the random pattern is repeatable.
-Alternatively if the keyword ```time``` is provided then the result of calling ```std::time(0)``` is used and so the pattern becomes unpredictable.
+Alternatively if the keyword ```time``` is provided then the result of calling ```std::time(0)``` is used and so the pattern becomes unpredictable. In some cases, you might need to pass the keyword ```time``` in double quotes instead of single quotes.
 
 In either case the actual value for the seed is printed as part of Catch's output so if an issue is discovered that is sensitive to test ordering the ordering can be reproduced - even if it was originally seeded from ```std::time(0)```.
 
@@ -228,6 +273,48 @@ See [The LibIdentify repo for more information and examples](https://github.com/
 Will cause the executable to print a message and wait until the return/ enter key is pressed before continuing -
 either before running any tests, after running all tests - or both, depending on the argument.
 
+<a id="benchmark-samples"></a>
+## Specify the number of benchmark samples to collect
+<pre>--benchmark-samples &lt;# of samples&gt;</pre>
+
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
+
+When running benchmarks a number of "samples" is collected. This is the base data for later statistical analysis.
+Per sample a clock resolution dependent number of iterations of the user code is run, which is independent of the number of samples. Defaults to 100.
+
+<a id="benchmark-resamples"></a>
+## Specify the number of resamples for bootstrapping
+<pre>--benchmark-resamples &lt;# of resamples&gt;</pre>
+
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
+
+After the measurements are performed, statistical [bootstrapping] is performed
+on the samples. The number of resamples for that bootstrapping is configurable
+but defaults to 100000. Due to the bootstrapping it is possible to give
+estimates for the mean and standard deviation. The estimates come with a lower
+bound and an upper bound, and the confidence interval (which is configurable but
+defaults to 95%).
+
+ [bootstrapping]: http://en.wikipedia.org/wiki/Bootstrapping_%28statistics%29
+
+<a id="benchmark-confidence-interval"></a>
+## Specify the confidence-interval for bootstrapping
+<pre>--benchmark-confidence-interval &lt;confidence-interval&gt;</pre>
+
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
+
+The confidence-interval is used for statistical bootstrapping on the samples to
+calculate the upper and lower bounds of mean and standard deviation.
+Must be between 0 and 1 and defaults to 0.95.
+
+<a id="benchmark-no-analysis"></a>
+## Disable statistical analysis of collected benchmark samples
+<pre>--benchmark-no-analysis</pre>
+
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
+
+When this flag is specified no bootstrapping or any other statistical analysis is performed.
+Instead the user code is only measured and the plain mean from the samples is reported.
 
 <a id="usage"></a>
 ## Usage
@@ -287,7 +374,17 @@ filename it is found in, with any extension stripped, prefixed with the `#` char
 
 So, for example,  tests within the file `~\Dev\MyProject\Ferrets.cpp` would be tagged `[#Ferrets]`.
 
+<a id="use-colour"></a>
+## Override output colouring
+<pre>--use-colour &lt;yes|no|auto&gt;</pre>
+
+Catch colours output for terminals, but omits colouring when it detects that
+output is being sent to a pipe. This is done to avoid interfering with automated
+processing of output.
+
+`--use-colour yes` forces coloured output, `--use-colour no` disables coloured
+output. The default behaviour is `--use-colour auto`.
 
 ---
 
-[Home](Readme.md)
+[Home](Readme.md#top)

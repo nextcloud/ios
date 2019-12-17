@@ -41,12 +41,13 @@
 
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) tableMetadata *metadataForPushDetail;
+@property (nonatomic, strong) NSString *selectorForPushDetail;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleViewControl;
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 
-- (void)shouldPerformSegue:(tableMetadata *)metadata;
+- (void)shouldPerformSegue:(tableMetadata *)metadata selector:(NSString *)selector;
 - (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action;
 - (void)listingFavorites;
 

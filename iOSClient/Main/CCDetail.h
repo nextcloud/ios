@@ -34,10 +34,13 @@
 @class tableMetadata;
 @class NCViewerImagemeter;
 @class NCViewerRichdocument;
+@class NCViewerNextcloudText;
 
 @interface CCDetail : UIViewController <MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
+@property (nonatomic, strong) NSString *selectorDetail;
+
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 - (void)viewFile;
@@ -63,6 +66,9 @@
 
 // RichDocument
 @property (nonatomic, strong) NCViewerRichdocument *richDocument;
+
+// NextcloudText
+@property (nonatomic, strong) NCViewerNextcloudText *nextcloudText;
 
 // IM
 @property (nonatomic, strong) NCViewerImagemeter *imagemeter;

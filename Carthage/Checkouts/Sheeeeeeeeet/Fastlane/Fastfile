@@ -1,8 +1,27 @@
-fastlane_version "2.30.2"
+fastlane_version "2.129.0"
 
 default_platform :ios
 
 platform :ios do
+
+
+  # Dependencies ***********************
+
+  desc "Resolve External Dependencies (the shell script makes Bitrise work)"
+  lane :resolve_dependencies do
+    sh("cd .. && xcodebuild -showBuildSettings -project Sheeeeeeeeet.xcodeproj -scheme Sheeeeeeeeet")
+    spm(command: "resolve")
+  end
+
+
+  # Test =======================
+  
+  desc "Run unit tests"
+  lane :test do
+    swiftlint(strict: true)
+    resolve_dependencies
+    run_tests(scheme: "Sheeeeeeeeet")
+  end
 
 
   # Version ================
@@ -12,15 +31,17 @@ platform :ios do
     ensure_git_status_clean
     ensure_git_branch(branch: 'master')
     test
-    version = version_bump_podspec(path: "Sheeeeeeeeet.podspec", version_number: options[:name])
+
+    bump_type = options[:type]
+    if bump_type == nil or bump_type.empty?
+      bump_type = "patch"
+    end
+    
+    version = version_bump_podspec(path: "Sheeeeeeeeet.podspec", bump_type: bump_type)
     increment_version_number(version_number: version)
 
     git_commit(
-      path: [
-        "Sheeeeeeeeet.podspec",
-        "*/Info.plist",
-        "*/*.pbxproj",
-        "Fastlane/"],
+      path: "*",
       message: "Bump to #{version}"
     )
 
@@ -28,16 +49,5 @@ platform :ios do
     push_git_tags()
     push_to_git_remote()
     pod_push()
-  end
-
-  
-  # Test =======================
-
-  desc "Run unit tests"
-  lane :test do
-    scan(
-      project: "Sheeeeeeeeet.xcodeproj",
-      scheme: "Sheeeeeeeeet"
-    )    
   end
 end

@@ -45,23 +45,6 @@
 //#if TARGET_OS_SIMULATOR
 //#endif
 
-// PERMISSION:
-//
-// Create file or folder or Full permission RGDNVW
-// Full permission for folder               RGDNVCK
-// Full permission for a file               SRGDNVW
-// Full permission                          SRMGDNVW
-// Update file                              SGDNVW
-// Update file                              RGD
-// Delete file                              RGNVW
-// Read file                                RDNVW
-// Create folder                            RGDNV
-// Read folder                              RDNVCK
-// Shared File read                         SGD
-// Sharing related                          SRGDNVCK
-// Reshare file, but not edit               SRGD
-
-
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 
 #endif
@@ -99,7 +82,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         80
+#define k_databaseSchemaVersion                         81
 
 // Intro selector
 #define k_intro_login                                   0
@@ -210,6 +193,7 @@
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorDownloadEditPhoto                       @"downloadEditPhoto"
 #define selectorLoadFileView                            @"loadFileView"
+#define selectorLoadFileInternalView                    @"loadFileInternalView"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"
@@ -296,6 +280,9 @@
 #define k_richdocument_spreadsheet                      @"spreadsheet"
 #define k_richdocument_presentation                     @"presentation"
 
+// Template Nextcloud Text
+#define k_nextcloudtext_document                        @"textdocument"
+
 // Layout
 #define k_layout_list                                   @"typeLayoutList"
 #define k_layout_grid                                   @"typeLayoutGrid"
@@ -315,6 +302,7 @@
 #define k_nextcloud_version_15_0                        15
 #define k_nextcloud_version_16_0                        16
 #define k_nextcloud_version_17_0                        17
+#define k_nextcloud_version_18_0                        18
 
 // -----------------------------------------------------------------------------------------------------------
 // INTERNAL

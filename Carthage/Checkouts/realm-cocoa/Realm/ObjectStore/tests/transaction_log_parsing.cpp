@@ -16,10 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "util/index_helpers.hpp"
 #include "util/test_file.hpp"
+#include "util/test_utils.hpp"
 
 #include "impl/collection_notifier.hpp"
 #include "impl/transact_log_handler.hpp"
@@ -1295,7 +1296,7 @@ TEST_CASE("Transaction log parsing: changeset calcuation") {
         auto observe = [&](std::initializer_list<Row> rows, auto&& fn) {
             auto realm2 = Realm::get_shared_realm(config);
             auto& group = realm2->read_group();
-
+            static_cast<void>(group); // silence unused warning
             KVOContext observer(rows);
             observer.realm = realm2;
             realm2->m_binding_context.reset(&observer);
@@ -2225,7 +2226,9 @@ TEST_CASE("DeepChangeChecker") {
     }
 
     SECTION("changes over links are tracked") {
+        bool did_run_section = false;
         SECTION("first link set") {
+            did_run_section = true;
             r->begin_transaction();
             table->set_link(1, 0, 1);
             table->set_link(1, 1, 2);
@@ -2233,6 +2236,7 @@ TEST_CASE("DeepChangeChecker") {
             r->commit_transaction();
         }
         SECTION("second link set") {
+            did_run_section = true;
             r->begin_transaction();
             table->set_link(2, 0, 1);
             table->set_link(2, 1, 2);
@@ -2240,6 +2244,7 @@ TEST_CASE("DeepChangeChecker") {
             r->commit_transaction();
         }
         SECTION("both set") {
+            did_run_section = true;
             r->begin_transaction();
             table->set_link(1, 0, 1);
             table->set_link(1, 1, 2);
@@ -2251,6 +2256,7 @@ TEST_CASE("DeepChangeChecker") {
             r->commit_transaction();
         }
         SECTION("circular link") {
+            did_run_section = true;
             r->begin_transaction();
             table->set_link(1, 0, 0);
             table->set_link(1, 1, 1);
@@ -2264,15 +2270,18 @@ TEST_CASE("DeepChangeChecker") {
             r->commit_transaction();
         }
 
-        auto info = track_changes([&] {
-            table->set_int(0, 4, 10);
-        });
+        catch2_ensure_section_run_workaround(did_run_section, "changes over links are tracked", [&]() {
+            auto info = track_changes([&] {
+                table->set_int(0, 4, 10);
+            });
 
-        // link chain should cascade to all but #3 being marked as modified
-        REQUIRE(_impl::DeepChangeChecker(info, *table, tables)(0));
-        REQUIRE(_impl::DeepChangeChecker(info, *table, tables)(1));
-        REQUIRE(_impl::DeepChangeChecker(info, *table, tables)(2));
-        REQUIRE_FALSE(_impl::DeepChangeChecker(info, *table, tables)(3));
+            // link chain should cascade to all but #3 being marked as modified
+            REQUIRE(_impl::DeepChangeChecker(info, *table, tables)(0));
+            REQUIRE(_impl::DeepChangeChecker(info, *table, tables)(1));
+            REQUIRE(_impl::DeepChangeChecker(info, *table, tables)(2));
+            REQUIRE_FALSE(_impl::DeepChangeChecker(info, *table, tables)(3));
+
+        });
     }
 
     SECTION("changes over linklists are tracked") {

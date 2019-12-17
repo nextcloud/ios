@@ -387,6 +387,9 @@
         viewController.imageFile = cell.file.image;
         viewController.showOpenIn = true;
         viewController.showShare = false;
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
+            viewController.showOpenInternalViewer = true;
+        }
         
         return viewController;
     }
@@ -540,7 +543,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:NCBrandColor.sharedInstance.icon] backgroundColor:NCBrandColor.sharedInstance.backgroundForm height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             [self.tableView setEditing:NO animated:YES];
             
-            [[NCMainCommon sharedInstance] downloadOpenInMetadata:metadata];
+            [[NCMainCommon sharedInstance] downloadOpenWithMetadata:metadata selector:selectorOpenIn];
         }];
     }
     
@@ -747,7 +750,7 @@
                     
                 if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
                         
-                    [self shouldPerformSegue:self.metadata];
+                    [self shouldPerformSegue:self.metadata selector:@""];
                         
                 } else {
                         
@@ -786,7 +789,7 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)shouldPerformSegue:(tableMetadata *)metadata
+- (void)shouldPerformSegue:(tableMetadata *)metadata selector:(NSString *)selector
 {
     // if i am in background -> exit
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;
@@ -801,6 +804,7 @@
     
     // Metadata for push detail
     self.metadataForPushDetail = metadata;
+    self.selectorForPushDetail = selector;
     
     [self performSegueWithIdentifier:@"segueDetail" sender:self];
 }
@@ -825,6 +829,7 @@
     }
     
     _detailViewController.metadataDetail = self.metadataForPushDetail;
+    _detailViewController.selectorDetail = self.selectorForPushDetail;
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.photoDataSource = photoDataSource;
     

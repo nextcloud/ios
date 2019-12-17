@@ -664,9 +664,13 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
                 let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
-                    cell.shared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
+                    if let avatar = UIImage(contentsOfFile: fileNameSourceAvatar) {
+                        cell.shared.image = avatar
+                    }
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                    if let avatar = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar) {
+                        cell.shared.image = avatar
+                    }
                 } else {
                     let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
@@ -964,8 +968,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         for metadata in metadatas {
             
             // verify permission
-            let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: "RGNVW")
-            if permission == false {
+            let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
+            if metadata.permissions != "" && permission == false {
                 completion(Int(k_CCErrorInternalError), "_no_permission_delete_file_")
                 return
             }
@@ -1090,19 +1094,19 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         print("Canceled")
     }
     
-    //MARK: - OpenIn
+    //MARK: - download Open Selector
     
-    @objc func downloadOpenIn(metadata: tableMetadata) {
+    @objc func downloadOpen(metadata: tableMetadata, selector: String) {
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
-            openIn(metadata: metadata)
-            
+            NCNetworkingMain.sharedInstance.downloadFileSuccessFailure(metadata.fileName, ocId: metadata.ocId, serverUrl: metadata.serverUrl, selector: selector, errorMessage: "", errorCode: 0)
+                        
         } else {
             
             metadata.session = k_download_session
             metadata.sessionError = ""
-            metadata.sessionSelector = selectorOpenIn
+            metadata.sessionSelector = selector //selectorOpenIn
             metadata.status = Int(k_metadataStatusWaitDownload)
             
             _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
@@ -1110,6 +1114,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
     }
 
+    //MARK: - OpenIn
+    
     func openIn(metadata: tableMetadata) {
         
         docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) as URL)
@@ -1305,7 +1311,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             }
             
             // open View File
-            if selector == selectorLoadFileView && UIApplication.shared.applicationState == UIApplication.State.active {
+            if (selector == selectorLoadFileView || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
             
                 var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
                 if uti == nil {
@@ -1343,10 +1349,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 } else {
                     
                     if appDelegate.activeMain.view.window != nil {
-                        appDelegate.activeMain.shouldPerformSegue(metadata)
+                        appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
                     }
                     if appDelegate.activeFavorites.view.window != nil {
-                        appDelegate.activeFavorites.shouldPerformSegue(metadata)
+                        appDelegate.activeFavorites.shouldPerformSegue(metadata, selector: selector)
                     }
                 }
             }

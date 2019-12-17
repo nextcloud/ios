@@ -141,6 +141,7 @@
         viewController.metadata = metadata;
         viewController.imageFile = cell.fileImageView.image;
         viewController.showOpenIn = false;
+        viewController.showOpenInternalViewer = false;
         viewController.showShare = false;
         
         return viewController;

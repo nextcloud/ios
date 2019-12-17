@@ -16,11 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "util/event_loop.hpp"
 #include "util/test_file.hpp"
-#include "util/templated_test_case.hpp"
 #include "util/test_utils.hpp"
 
 #include "binding_context.hpp"
@@ -477,16 +476,19 @@ TEST_CASE("Get Realm using Async Open", "[asyncOpen]") {
     config2.cache = false;
     config2.schema = config.schema;
 
+    std::mutex mutex;
     SECTION("can open synced Realms that don't already exist") {
         std::atomic<bool> called{false};
         auto task = Realm::get_synchronized_realm(config);
         task->start([&](auto ref, auto error) {
+            std::lock_guard<std::mutex> lock(mutex);
             REQUIRE(!error);
             called = true;
 
             REQUIRE(Realm::get_shared_realm(std::move(ref))->read_group().get_table("class_object"));
         });
         util::EventLoop::main().run_until([&]{ return called.load(); });
+        std::lock_guard<std::mutex> lock(mutex);
         REQUIRE(called);
     }
 
@@ -502,12 +504,14 @@ TEST_CASE("Get Realm using Async Open", "[asyncOpen]") {
         std::atomic<bool> called{false};
         auto task = Realm::get_synchronized_realm(config);
         task->start([&](auto ref, auto error) {
+            std::lock_guard<std::mutex> lock(mutex);
             REQUIRE(!error);
             called = true;
 
             REQUIRE(Realm::get_shared_realm(std::move(ref))->read_group().get_table("class_object"));
         });
         util::EventLoop::main().run_until([&]{ return called.load(); });
+        std::lock_guard<std::mutex> lock(mutex);
         REQUIRE(called);
     }
 
@@ -525,12 +529,14 @@ TEST_CASE("Get Realm using Async Open", "[asyncOpen]") {
         std::atomic<bool> called{false};
         auto task = Realm::get_synchronized_realm(config);
         task->start([&](auto ref, auto error) {
+            std::lock_guard<std::mutex> lock(mutex);
             REQUIRE(!error);
             called = true;
 
             REQUIRE(Realm::get_shared_realm(std::move(ref))->read_group().get_table("class_object")->size() == 1);
         });
         util::EventLoop::main().run_until([&]{ return called.load(); });
+        std::lock_guard<std::mutex> lock(mutex);
         REQUIRE(called);
     }
 
@@ -548,10 +554,12 @@ TEST_CASE("Get Realm using Async Open", "[asyncOpen]") {
         std::atomic<bool> called{false};
         auto task = Realm::get_synchronized_realm(config);
         task->start([&](auto, auto error) {
+            std::lock_guard<std::mutex> lock(mutex);
             REQUIRE(!error);
             called = true;
         });
         util::EventLoop::main().run_until([&]{ return called.load(); });
+        std::lock_guard<std::mutex> lock(mutex);
         REQUIRE(called);
 
         // No subscriptions, so no objects
@@ -1463,8 +1471,6 @@ TEST_CASE("SharedRealm: compact on launch") {
     }
 
     SECTION("compact function does not get invoked if realm is open on another thread") {
-        // Confirm expected sizes before and after opening the Realm
-        size_t size_before = size_t(File(config.path).get_size());
         r = Realm::get_shared_realm(config);
         REQUIRE(num_opens == 2);
         std::thread([&]{
@@ -1497,7 +1503,7 @@ struct ModeResetFile {
     static bool should_call_init_on_version_bump() { return true; }
 };
 
-TEMPLATE_TEST_CASE("SharedRealm: update_schema with initialization_function",
+TEMPLATE_TEST_CASE("SharedRealm: update_schema with initialization_function", "[init][update_schema]",
                    ModeAutomatic, ModeAdditive, ModeManual, ModeResetFile) {
     TestFile config;
     config.schema_mode = TestType::mode();

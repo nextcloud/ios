@@ -90,9 +90,9 @@ PKPushRegistry *pushRegistry;
     self.listMainVC = [[NSMutableDictionary alloc] init];
     
     // Push Notification
-    pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-    pushRegistry.delegate = self;
-    pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+//    pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+//    pushRegistry.delegate = self;
+//    pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
     
     [application registerForRemoteNotifications];
     
@@ -563,19 +563,13 @@ PKPushRegistry *pushRegistry;
                     
                     NSString *app = [json objectForKey:@"app"];
                     NSString *subject = [json objectForKey:@"subject"];
-                    NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
+                    //NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
                     BOOL delete = [[json objectForKey:@"delete"] boolValue];
                     BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
 
                     if (delete || deleteAll) {
                         
-                        if (deleteAll) {
-                            notificationId = 0;
-                        }
-                        
-                        [[OCNetworking sharedManager] deletingServerNotification:result.url notificationId:notificationId completion:^(NSString *message, NSInteger errorCode) {
-                            NSLog(@"Deleting Server Notification error: %ld", (long)errorCode);
-                        }];
+                        // TODO: Delete notifications locally
                         
                     } else {
                         
@@ -1634,7 +1628,7 @@ PKPushRegistry *pushRegistry;
                                             // Push
                                             NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                             NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@""];
+                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
                                             
                                             [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
                                             

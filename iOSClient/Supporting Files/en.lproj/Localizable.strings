@@ -421,6 +421,7 @@
 "_copy_files_"                  = "Copy files";
 "_paste_file_"                  = "Paste file";
 "_paste_files_"                 = "Paste files";
+"_open_internal_view_"          = "Open with internal viewer";
 
 "_search_this_folder_"          = "Search in this folder";
 "_search_all_folders_"          = "Search in all folders";
@@ -562,6 +563,7 @@
 "_upload_photos_videos_"            = "Upload photos or videos";
 "_upload_file_"                     = "Upload file";
 "_upload_file_text_"                = "Create text file";
+"_create_nextcloudtext_document_"   = "Create text document";
 
 // Document Picker
 

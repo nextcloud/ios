@@ -111,8 +111,8 @@
     [form addFormSection:section];
     
     // Dark Mode
-    /*
     if (@available(iOS 13.0, *)) {
+        
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkModeDetect" rowType:XLFormRowDescriptorTypeBooleanSwitch title:[NSString stringWithFormat:@"%@ (beta)", NSLocalizedString(@"_dark_mode_detect_", nil)]];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"darkModeDetect"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
@@ -121,20 +121,18 @@
         if ([CCUtility getDarkModeDetect]) row.value = @1;
         else row.value = @0;
         [section addFormRow:row];
+        
+    } else {
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkMode" rowType:XLFormRowDescriptorTypeBooleanSwitch title:[NSString stringWithFormat:@"%@ (beta)", NSLocalizedString(@"_dark_mode_", nil)]];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themeLightDark"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+        if ([CCUtility getDarkMode]) row.value = @1;
+        else row.value = @0;
+        [section addFormRow:row];
     }
-    */
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkMode" rowType:XLFormRowDescriptorTypeBooleanSwitch title:[NSString stringWithFormat:@"%@ (beta)", NSLocalizedString(@"_dark_mode_", nil)]];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"themeLightDark"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
-    
-    if (@available(iOS 13.0, *)) {
-        row.hidden = [NSString stringWithFormat:@"$%@==1", @"darkModeDetect"];
-    }
-    
-    [section addFormRow:row];
     
     // Section : E2EEncryption --------------------------------------------------------------
 
@@ -309,7 +307,6 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             [CCUtility setDarkModeDetect:true];
-            
             // detect Dark Mode
             if (@available(iOS 12.0, *)) {
                 appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
@@ -319,9 +316,9 @@
                     [CCUtility setDarkMode:NO];
                 }
             }
-            
         } else {
-            [CCUtility setDarkModeDetect:false];            
+            [CCUtility setDarkModeDetect:false];
+            [CCUtility setDarkMode:false];
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
@@ -491,61 +488,6 @@
         break;
     }
     return sectionName;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Mail ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void) mailComposeController:(MFMailComposeViewController *)vc didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
-{
-    switch (result)
-    {
-        case MFMailComposeResultCancelled:
-            [appDelegate messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
-            break;
-        case MFMailComposeResultSaved:
-            [appDelegate messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
-            break;
-        case MFMailComposeResultSent:
-            [appDelegate messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
-            break;
-        case MFMailComposeResultFailed: {
-            NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"_mail_failure_", nil), [error localizedDescription]];
-            [appDelegate messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-        }
-            break;
-        default:
-            break;
-    }
-    
-    // Close the Mail Interface
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
-
-- (void)sendMail:(XLFormRowDescriptor *)sender
-{
-    if ([MFMailComposeViewController canSendMail]) {
-
-        // Email Subject
-        NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
-        // Email Content
-        NSString *messageBody;
-        // Email Recipents
-        NSArray *toRecipents;
-    
-        messageBody = [NSString stringWithFormat:@"%@\n\n\n\n%@ Version %@ (%@) - iOS %@", NSLocalizedString(@"_write_in_english_", nil), [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"], [[UIDevice currentDevice] systemVersion]];
-        toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
-    
-        MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-        mc.mailComposeDelegate = self;
-        [mc setSubject:emailTitle];
-        [mc setMessageBody:messageBody isHTML:NO];
-        [mc setToRecipients:toRecipents];
-    
-        // Present mail view controller on screen
-    [self presentViewController:mc animated:YES completion:NULL];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -16,11 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "util/test_file.hpp"
 #include "util/index_helpers.hpp"
-#include "util/templated_test_case.hpp"
 
 #include "binding_context.hpp"
 #include "list.hpp"
@@ -148,6 +147,15 @@ TEST_CASE("list") {
             change = {};
             write([&] { target->add_empty_row(); });
             REQUIRE(change.empty());
+        }
+
+        SECTION("deleting list before first run of notifier reports deletions") {
+            auto token = lst.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
+                change = c;
+            });
+            advance_and_notify(*r);
+            write([&] { origin->move_last_over(0); });
+            REQUIRE_INDICES(change.deletions, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         }
 
         SECTION("modifying one of the target rows sends a change notification") {
