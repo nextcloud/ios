@@ -102,21 +102,42 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             if (page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
                 
-                readFileOrFolder(serverUrl: serverUrl) {
-                    let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: 1, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                if NCBrandBeta.sharedInstance.iOSHelper {
                     
-                    self.completeObserver(observer, numPage: 1, metadatas: metadatas)
+                    // Beta
+                    self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
+                        self.completeObserver(observer, numPage: 1, metadatas: metadatas)
+                    }
+                    
+                } else {
+                    
+                    readFileOrFolder(serverUrl: serverUrl) {
+                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: 1, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                        
+                        self.completeObserver(observer, numPage: 1, metadatas: metadatas)
+                    }
+                    
+                    // Update the WorkingSet -> Favorite
+                    fileProviderData.sharedInstance.updateFavoriteForWorkingSet()
                 }
-                
-                // Update the WorkingSet -> Favorite
-                fileProviderData.sharedInstance.updateFavoriteForWorkingSet()
                 
             } else {
                 
                 let numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
-                let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: numPage, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
-                
-                completeObserver(observer, numPage: numPage, metadatas: metadatas)
+
+                if NCBrandBeta.sharedInstance.iOSHelper {
+                         
+                    // Beta
+                    self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
+                        self.completeObserver(observer, numPage: 1, metadatas: metadatas)
+                    }
+                    
+                } else {
+            
+                    let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: numPage, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                    
+                    completeObserver(observer, numPage: numPage, metadatas: metadatas)
+                }
             }
         }
     }
@@ -245,6 +266,43 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 completionHandler()
             }
         })
+    }
+    
+    func readFolder(serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
+        
+        let offset = (page - 1) * limit
+        let serverUrl = fileProviderData.sharedInstance.accountUrl
+        var fileNamePath = "/"
+        
+        if serverUrl != fileProviderData.sharedInstance.accountUrl {
+            fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
+        }
+        
+        NCCommunication.sharedInstance.iosHelper(serverUrl: serverUrl, fileNamePath: fileNamePath, offset: offset, limit: limit, account: fileProviderData.sharedInstance.account) { (account, files, errorCode, errorDescription) in
+            
+             if errorCode == 0 && files != nil  && files!.count >= 1 {
+                
+                // Prepare DB
+                if offset == 0 {
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
+                    NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
+                    let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
+                    let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
+                    if metadatasInDownload != nil {
+                        _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                    }
+                    if metadatasInUpload != nil {
+                        _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
+                    }
+                }
+                
+                NCManageDatabase.sharedInstance.addMetadatas(files: files!, account: account, serverUrl: serverUrl, removeFirst: true)
+            }
+            
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+            
+            completionHandler(metadatas)
+        }
     }
     
 }
