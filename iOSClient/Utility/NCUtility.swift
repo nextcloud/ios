@@ -386,9 +386,9 @@ class NCUtility: NSObject {
     
     @objc func isDirectEditing(_ metadata: tableMetadata) -> String? {
         
-        /* BETA */
-        //TODO: beta
-        //return nil
+        if NCBrandBeta.shared.directEditing == false {
+            return nil
+        }
         
         guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: metadata.account) else {
             return nil

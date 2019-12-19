@@ -161,11 +161,12 @@ class NCBrandColor: NSObject {
 
 @objc class NCBrandBeta: NSObject {
     
-    @objc static let sharedInstance: NCBrandBeta = {
+    @objc static let shared: NCBrandBeta = {
         let instance = NCBrandBeta()
         return instance
     }()
 
+    @objc public let directEditing: Bool = true
     @objc public let iOSHelper: Bool = true
 }
 

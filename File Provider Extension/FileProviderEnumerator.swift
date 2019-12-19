@@ -102,7 +102,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             if (page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
                 
-                if NCBrandBeta.sharedInstance.iOSHelper {
+                if NCBrandBeta.shared.iOSHelper {
                     
                     // Beta
                     self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
@@ -125,7 +125,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 let numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
 
-                if NCBrandBeta.sharedInstance.iOSHelper {
+                if NCBrandBeta.shared.iOSHelper {
                          
                     // Beta
                     self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
