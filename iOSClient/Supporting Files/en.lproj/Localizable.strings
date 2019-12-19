@@ -463,7 +463,7 @@
 "_add_sharee_"                  = "Add users or groups";
 "_add_sharee_footer_"           = "You can share this resource by adding users or groups. To remove a share, remove all users and groups";
 "_find_sharee_title_"           = "Search";
-"_find_sharee_"                 = "Search for user or group…";
+"_find_sharee_"                 = "Type a name of user or gruoup and press Enter";
 "_find_sharee_footer_"          = "Enter part of the name of the user or group to search for (at least 2 characters) followed by 'Return', select the users that should be allowed to access the share followed by 'Done' to confirm";
 "_user_is_group_"               = " (group)";
 "_direct_sharee_title_"         = "Share";
