@@ -1394,6 +1394,12 @@ PKPushRegistry *pushRegistry;
                 
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
+                
+                // IMI -> MODIFY
+                if ([metadata .fileName.pathExtension.lowercaseString isEqualToString:@"imi"]) {
+                    break;
+                }
+                
             } else {
                 break;
             }
