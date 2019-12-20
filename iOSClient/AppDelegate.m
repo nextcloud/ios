@@ -1394,6 +1394,8 @@ PKPushRegistry *pushRegistry;
                 
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
+            } else {
+                break;
             }
             
         } else {
