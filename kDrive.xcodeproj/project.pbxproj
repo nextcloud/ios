@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		373AEEE223B2174E0042DAF8 /* InfomaniakUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373AEEE123B2174E0042DAF8 /* InfomaniakUtils.swift */; };
 		375CF03E238282B8000F2B53 /* IntroCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375CF03C238282B7000F2B53 /* IntroCollectionViewCell.swift */; };
 		375CF03F238282B8000F2B53 /* IntroCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 375CF03D238282B7000F2B53 /* IntroCollectionViewCell.xib */; };
 		379DC949237EF4DD008EC025 /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379DC948237EF4DD008EC025 /* IntroView.swift */; };
@@ -667,6 +668,7 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		373AEEE123B2174E0042DAF8 /* InfomaniakUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfomaniakUtils.swift; sourceTree = "<group>"; };
 		375CF03C238282B7000F2B53 /* IntroCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroCollectionViewCell.swift; sourceTree = "<group>"; };
 		375CF03D238282B7000F2B53 /* IntroCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IntroCollectionViewCell.xib; sourceTree = "<group>"; };
 		379DC948237EF4DD008EC025 /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
@@ -2485,6 +2487,7 @@
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
+				373AEEE123B2174E0042DAF8 /* InfomaniakUtils.swift */,
 			);
 			path = Brand;
 			sourceTree = "<group>";
@@ -3698,6 +3701,7 @@
 				F7233CEE23A24F990011D898 /* NCViewerNextcloudText.swift in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
+				373AEEE223B2174E0042DAF8 /* InfomaniakUtils.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
