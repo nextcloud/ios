@@ -680,7 +680,7 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         if results.doesUserPreferEnhancedScan {
             image = results.enhancedScan?.image
         } else {
-            image = results.originalScan.image
+            image = results.croppedScan.image
         }
         
         if image != nil {

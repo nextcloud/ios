@@ -276,18 +276,15 @@
     BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
     
     // detect Dark Mode
-    
     if (@available(iOS 13.0, *)) {
-        appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
         if ([CCUtility getDarkModeDetect]) {
-            if (appDelegate.preferredUserInterfaceStyle == UIUserInterfaceStyleDark) {
+            if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
                 [CCUtility setDarkMode:YES];
             } else {
                 [CCUtility setDarkMode:NO];
             }
-                
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
         }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
     }
     
     prevRunningInFullScreen = isRunningInFullScreen;
