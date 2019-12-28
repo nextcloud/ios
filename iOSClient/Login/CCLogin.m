@@ -52,12 +52,13 @@
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
     self.annulla.tintColor = [NCBrandColor sharedInstance].customerText;
     
+    NSDictionary *placeholderColorAttr = @{ NSForegroundColorAttributeName : [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] };
+    
     // Base URL
     _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
-    _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
-    [_baseUrl setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
+    _baseUrl.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"_login_url_", nil) attributes:placeholderColorAttr];
     [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
     [self.baseUrl setDelegate:self];
     
@@ -65,8 +66,7 @@
     _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
     _user.textColor = [NCBrandColor sharedInstance].customerText;
     _user.tintColor = [NCBrandColor sharedInstance].customerText;
-    _user.placeholder = NSLocalizedString(@"_username_", nil);
-    [_user setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
+    _user.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"_username_", nil) attributes:placeholderColorAttr];
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.user setDelegate:self];
 
@@ -74,8 +74,7 @@
     _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
     _password.textColor = [NCBrandColor sharedInstance].customerText;
     _password.tintColor = [NCBrandColor sharedInstance].customerText;
-    _password.placeholder = NSLocalizedString(@"_password_", nil);
-    [_password setValue:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forKeyPath:@"_placeholderLabel.textColor"];
+    _password.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"_password_", nil) attributes:placeholderColorAttr];
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
