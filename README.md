@@ -40,12 +40,13 @@ Easy starting points are also reviewing [pull requests](https://github.com/nextc
 
 #### Dependencies
 
-After forking the repository you have to build the dependecies. Dependencies are managed with Carthage. Run
+After forking the repository you have to build the dependecies. Dependencies are managed with Carthage. 
+Run
 
 ```
 carthage build --platform ios
 ```
-to fetch and comile the dependencies.
+to fetch and compile the dependencies.
 
 #### Fabric
 
