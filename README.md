@@ -31,9 +31,25 @@ Please read the [Code of Conduct](https://nextcloud.com/code-of-conduct/). This 
 More information how to contribute: [https://nextcloud.com/contribute/](https://nextcloud.com/contribute/)
 
 ## Start contributing
-Fork this repository and contribute back using pull requests to the master branch!
 
-Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls) and working on [starter issues](https://github.com/nextcloud/ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22starter+issue%22).
+You can start by forking this repository and creating pull requests on the master branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22starter+issue%22). 
+
+Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
+
+### Xcode Project Setup
+
+#### Dependencies
+
+After forking the repository you have to build the dependecies. Dependencies are managed with Carthage. Run
+
+```
+carthage build --platform ios
+```
+to fetch and comile the dependencies.
+
+#### Fabric
+
+Nextcloud for iOS uses Google Fabric. You can either create your own Fabric account and provide your configuration, or remove the GoogleService-Info.plist from the "Copy Bundle Resources" in "Nextcloud" project Targets to run the App without Fabric during development.
 
 ## Support
 
