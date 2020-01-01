@@ -48,6 +48,24 @@ carthage build --platform ios
 ```
 to fetch and compile the dependencies.
 
+### Creating Pull requests
+
+#### DCO Signoff
+
+Nextcloud enforces the [Developer Certificate of Origin (DCO)](https://developercertificate.org/) on Pull Requests. It requires your commit messages to contain a Signed-off-by line with an email address that matches your GitHub account.
+
+##### How to Signoff
+
+The DCO is a way for contributors to certify that they wrote or otherwise have the right to submit the code they are contributing by adding a Signed-off-by line to commit messages.
+
+```
+My Commit message
+
+Signed-off-by: Random Contributor <random@contributor.dev>
+```
+
+Git even has a `-s | --signoff` command line option to append this to your commit messages automatically.
+
 ## Support
 
 If you need assistance or want to ask a question about the iOS app, you are welcome to [ask for support](https://help.nextcloud.com/c/clients/ios) in our forums or the [IRC-Channel](https://webchat.freenode.net/?channels=nextcloud-mobile). If you have found a bug, feel free to [open a new Issue on GitHub](https://github.com/nextcloud/ios/issues). Keep in mind, that this repository only manages the iOS app. If you find bugs or have problems with the server/backend, you should ask the [Nextcloud server team](https://github.com/nextcloud/server) for help!
