@@ -2369,7 +2369,7 @@
                 } else {
                     
                     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                        [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
+                        [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %ld password re-entry is required", function, (long)errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
                         [CCUtility setPassword:account password:nil];
                     }
                 }
@@ -2380,7 +2380,7 @@
         } else if ([CCUtility getPassword:account] != nil) {
             
             if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %ld password re-entry is required", function, (long)errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
                 [CCUtility setPassword:account password:nil];
             }
         }
