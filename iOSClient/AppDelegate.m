@@ -167,6 +167,24 @@ PKPushRegistry *pushRegistry;
         }
     }
     
+    if ([NCBrandOptions sharedInstance].disable_intro) {
+        [CCUtility setIntro:YES];
+        
+        if (self.activeAccount.length == 0) {
+            [self openLoginView:nil selector:k_intro_login openLoginWeb:false];
+        }
+    } else {
+        if ([CCUtility getIntro] == NO) {
+            UIViewController *introViewController = [[UIStoryboard storyboardWithName:@"Intro" bundle:[NSBundle mainBundle]] instantiateInitialViewController];
+            
+            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController: introViewController];
+            self.window.rootViewController = navController;
+            [self.window makeKeyAndVisible];
+        }
+    }
+
+
+    
     return YES;
 }
 
@@ -306,18 +324,14 @@ PKPushRegistry *pushRegistry;
 
 - (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb
 {
-    @synchronized (self) {
-
         // use appConfig [MDM]
         if ([NCBrandOptions sharedInstance].use_configuration) {
             
             if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
             
                 self.appConfigView = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCAppConfigView"];
-                            
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.appConfigView animated:YES completion:nil];
-                });
+                
+                [self showViewController:self.appConfigView forContext:viewController];
             }
         
             return;
@@ -331,9 +345,7 @@ PKPushRegistry *pushRegistry;
                 self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-                });
+                [self showViewController:self.activeLoginWeb forContext:viewController];
             }
             
             return;
@@ -352,9 +364,7 @@ PKPushRegistry *pushRegistry;
                     self.activeLoginWeb.urlBase = self.activeUrl;
                 }
                 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-                });
+               [self showViewController:self.activeLoginWeb forContext:viewController];
             }
             
         } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
@@ -362,9 +372,7 @@ PKPushRegistry *pushRegistry;
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-            });
+            [self showViewController:self.activeLoginWeb forContext:viewController];
             
         } else if (openLoginWeb) {
             
@@ -372,9 +380,7 @@ PKPushRegistry *pushRegistry;
                 self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 self.activeLoginWeb.urlBase = self.activeUrl;
 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-                });
+                [self showViewController:self.activeLoginWeb forContext:viewController];
             }
             
         } else {
@@ -383,11 +389,30 @@ PKPushRegistry *pushRegistry;
                 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
                 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:_activeLogin animated:YES completion:nil];
-                });
+                [self showViewController:_activeLogin forContext:viewController];
             }
         }
+}
+
+-(void)showViewController:(UIViewController *)viewController forContext:(UIViewController *)contextViewController
+{
+    if (contextViewController == NULL) {
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
+        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        self.window.rootViewController = navController;
+        [self.window makeKeyAndVisible];
+        
+    } else if ([contextViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navController = ((UINavigationController *)contextViewController);
+        [navController pushViewController:viewController animated:true];
+        
+    } else {
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navController.modalPresentationStyle = UIModalPresentationFullScreen;
+        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
+        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [contextViewController presentViewController:navController animated:true completion:nil];
     }
 }
 
@@ -847,7 +872,7 @@ PKPushRegistry *pushRegistry;
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, self.activeMain.serverUrl]];
     
     if ([tableDirectory.permissions containsString:@"CK"]) {
-        (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
+        (void)[[NCCreateMenuAdd alloc] initWithViewController:self.activeMain view:[(UIButton *)sender superview]];
     } else {
         [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
     }
@@ -957,7 +982,7 @@ PKPushRegistry *pushRegistry;
         [viewController.tabBarController.tabBar setAlpha:1];
     }
     
-    //tabBar button Plus
+    //tabBar button t
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     UIButton *button = [tabBarController.view viewWithTag:99];
