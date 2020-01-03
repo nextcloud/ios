@@ -532,11 +532,7 @@
         // Check items > 0
         if ([items count] == 0) {
                 
-#ifndef EXTENSION
-            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                
-            [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-#endif
+            [[NCContentPresenter shared] messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
             completion(account, nil, nil, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
 
         } else {
@@ -672,11 +668,7 @@
         // BUG 1038 item == 0
         } else {
                 
-#ifndef EXTENSION
-            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                
-            [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-#endif
+            [[NCContentPresenter shared] messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
             completion(account, nil, NSLocalizedString(@"Read File WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
         }
         
@@ -2369,7 +2361,7 @@
                 if (wipe) {
                     
                     [appDelegate deleteAccount:account wipe:true];
-                    [appDelegate messageNotification:tableAccount.user description:@"_wipe_account_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorInternalError];
+                    [[NCContentPresenter shared] messageNotification:tableAccount.user description:@"_wipe_account_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
                     [[OCNetworking sharedManager] setRemoteWipeCompletitionWithUser:tableAccount.user userID:tableAccount.userID url:tableAccount.url token:token completion:^(NSString *message, NSInteger errorCode) {
                         NSLog(@"Wiped");
                     }];
@@ -2377,7 +2369,7 @@
                 } else {
                     
                     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                        [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] visible:YES delay:k_dismissAfterSecond*2 type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
                         [CCUtility setPassword:account password:nil];
                     }
                 }
@@ -2388,7 +2380,7 @@
         } else if ([CCUtility getPassword:account] != nil) {
             
             if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] visible:YES delay:k_dismissAfterSecond*2 type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %lu password re-entry is required", function, errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
                 [CCUtility setPassword:account password:nil];
             }
         }
@@ -2492,11 +2484,7 @@
         // Check items > 0
         if ([items count] == 0) {
                 
-#ifndef EXTENSION
-            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                
-            [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-#endif
+            [[NCContentPresenter shared] messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
             completion(account, nil, NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
                 
         } else {

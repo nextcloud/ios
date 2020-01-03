@@ -111,7 +111,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+               NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         })
         
@@ -131,7 +131,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 self.newCommentField.text = ""
                 self.reloadData()
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         })
     }
@@ -171,7 +171,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                                 if errorCode == 0 {
                                     self.reloadData()
                                 } else {
-                                    self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                                    NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }
                             })
                         }
@@ -190,7 +190,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                     if errorCode == 0 {
                         self.reloadData()
                     } else {
-                        self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 })
                 

@@ -238,7 +238,7 @@
                         } else {
                             
                             if (errorCode != 0) {
-                                [appDelegate messageNotification:@"_error_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                             } else {
                                 NSLog(@"[LOG] It has been changed user during networking process, error.");
                             }
@@ -277,7 +277,7 @@
                         [[NCUtility sharedInstance] stopActivityIndicator];
                         
                         if (errorCode != 0) {
-                            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                            [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         } else {
                             NSLog(@"[LOG] It has been changed user during networking process, error.");
                         }
@@ -624,10 +624,8 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
-    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
-        
-        [appDelegate messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
-        
+    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {        
+        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_file_not_found_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
         return;
     }
     
@@ -677,7 +675,7 @@
         [self.photoBrowser reloadData];
 
     } else {
-        [appDelegate messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        [[NCContentPresenter shared] messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         
         [self.navigationController popViewControllerAnimated:YES];
     }

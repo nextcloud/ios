@@ -1215,11 +1215,7 @@
                 
                 NSError *error = [[NCNetworkingEndToEnd sharedManager] unlockEndToEndFolderEncryptedOnServerUrl:serverUrl ocId:tableLock.ocId token:tableLock.token user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
                 if (error) {
-#ifndef EXTENSION
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                    });
-#endif
+                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                 }
             } else {
                 NSLog(@"Error unlock not found");

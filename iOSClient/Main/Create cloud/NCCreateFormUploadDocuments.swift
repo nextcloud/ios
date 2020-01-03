@@ -281,7 +281,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                     }
                     
                 } else if errorCode != 0 {
-                   self.appDelegate.messageNotification("_error_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type:NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                    print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -303,7 +303,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                    }
                     
                 } else if errorCode != 0 {
-                   self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                    print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -372,7 +372,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                     self.collectionView.reloadData()
                                         
                 } else if errorCode != 0 {
-                    self.appDelegate.messageNotification("_error_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -411,7 +411,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                     self.collectionView.reloadData()
                     
                 } else if errorCode != 0 {
-                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }

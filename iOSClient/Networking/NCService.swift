@@ -61,7 +61,7 @@ class NCService: NSObject {
                 
                 // Update User (+ userProfile.id) & active account & account network
                 guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!, HCProperties: false) else {
-                    self.appDelegate.messageNotification("Accopunt", description: "Internal error : account not found on DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification("Accopunt", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                     return
                 }
                 
@@ -116,9 +116,9 @@ class NCService: NSObject {
             if errorCode == 0 {
                 if extendedSupport == false {
                     if serverProductName == "owncloud" {
-                        self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                     } else if versionMajor <= k_nextcloud_unsupported {
-                        self.appDelegate.messageNotification("_warning_", description: "_warning_unsupported_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                     }
                 }
             }
@@ -275,7 +275,7 @@ class NCService: NSObject {
                             self.appDelegate.activeMain?.tableView?.reloadData()
                             self.appDelegate.activeFavorites?.tableView?.reloadData()
                         } else {
-                            self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     })
                 }

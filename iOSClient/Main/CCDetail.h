@@ -26,7 +26,6 @@
 #import <WebKit/WebKit.h>
 
 #import "UIImage+animatedGIF.h"
-#import "TWMessageBarManager.h"
 #import "MWPhotoBrowser.h"
 #import "ReaderViewController.h"
 #import "CCGraphics.h"

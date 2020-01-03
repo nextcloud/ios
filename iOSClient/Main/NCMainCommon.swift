@@ -945,7 +945,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     if error == nil {
                         self.delete(metadatas: copyMetadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
                     } else {
-                        self.appDelegate.messageNotification("_delete_", description: error?.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_delete_", description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                         return
                     }
                 }
@@ -953,7 +953,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         } else {
             delete(metadatas: copyMetadatas, serverUrl: serverUrl, e2ee: e2ee) { (errorCode, message) in
                 if errorCode != 0 {
-                    self.appDelegate.messageNotification("_delete_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_delete_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
@@ -1328,7 +1328,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     }
                     
                     if !NCUtility.sharedInstance.IMUnzip(metadata: metadata) {
-                        appDelegate.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                         return
                     }
                     
@@ -1437,13 +1437,17 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             return
         }
         
-        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
+        if metadata.typeFile == k_metadataTypeFile_imagemeter {
+            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: nil, action: Int32(k_action_NULL))
+        } else {
+            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
+        }
         
         if errorCode == 0 {
             appDelegate.startLoadAutoDownloadUpload()
         } else {
             if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorMessage != "" {
-                appDelegate.messageNotification("_upload_file_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_upload_file_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }

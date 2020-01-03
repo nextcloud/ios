@@ -21,8 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <JDStatusBarNotification/JDStatusBarNotification.h>
-
 #import "CCMain.h"
 #import "AppDelegate.h"
 #import "CCSynchronize.h"
@@ -751,13 +749,13 @@
                     }
                     
                 } else {
-                    
-                    [appDelegate messageNotification:@"_error_" description:error.description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                        
+                    [[NCContentPresenter shared] messageNotification:@"_error_" description:error.description delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                 }
                 
             } else {
                 
-                [appDelegate messageNotification:@"_error_" description:@"_read_file_error_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_read_file_error_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
             }
         }];
     }
@@ -820,7 +818,7 @@
         if (image)
             UIImageWriteToSavedPhotosAlbum(image, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
         else
-            [appDelegate messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
     }
     
     if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
@@ -829,7 +827,7 @@
             
             UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
         } else {
-            [appDelegate messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
         }
     }
     
@@ -846,9 +844,9 @@
 - (void)saveSelectedFilesSelector:(NSString *)path didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     if (error)
-        [appDelegate messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+        [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
     else
-        [appDelegate messageNotification:@"_save_selected_files_" description:@"_file_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
+        [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
 }
 
 - (void)saveSelectedFiles
@@ -1118,7 +1116,7 @@
             }
             
         } else if (errorCode != 0) {
-            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
@@ -1198,17 +1196,17 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (error) {
                         if (error.code != kOCErrorServerPathNotFound)
-                            [appDelegate messageNotification:@"_e2e_error_get_metadata_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                            [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                     } else {
                         if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:tableAccount.url] == false)
-                            [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                            [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                         else
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
                     }
                 });
             });
         } else {
-            [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
         }
     }
     
@@ -1245,7 +1243,7 @@
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
         } else if (errorCode != 0) {
-            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
@@ -1323,7 +1321,7 @@
         } else {
             
             if (errorCode != 0) {
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
             }
@@ -1452,7 +1450,7 @@
         
         // verify if exists the new fileName
         if ([[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.activeAccount, self.serverUrl, fileName]]) {
-            [appDelegate messageNotification:@"_error_e2ee_" description:@"_file_already_exists_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_file_already_exists_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
             return;
         }
         
@@ -1460,9 +1458,7 @@
             
             NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl fileNameRename:metadata.fileName fileNameNewRename:fileName account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
             if (error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_send_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                });
+                [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_send_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
             } else {
                 [[NCManageDatabase sharedInstance] setMetadataFileNameViewWithServerUrl:metadata.serverUrl fileName:metadata.fileName newFileNameView:fileName account:appDelegate.activeAccount];
                 
@@ -1479,9 +1475,7 @@
             if (tableLock != nil) {
                 NSError *error = [[NCNetworkingEndToEnd sharedManager] unlockEndToEndFolderEncryptedOnServerUrl:self.serverUrl ocId:_metadataFolder.ocId token:tableLock.token user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
                 if (error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                    });
+                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                 }
             }
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1494,7 +1488,7 @@
         // verify permission
         BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:k_permission_can_rename];
         if (![metadata.permissions isEqualToString:@""] && permission == false) {
-            [appDelegate messageNotification:@"_error_" description:@"_no_permission_modify_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_no_permission_modify_file_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
             return;
         }
         
@@ -1536,7 +1530,7 @@
                                 
                                 tableDirectory *directoryTable = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
                                 if (directoryTable == nil) {
-                                    [appDelegate messageNotification:@"_rename_" description:@"Internal error, ServerUrl not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+                                    [[NCContentPresenter shared] messageNotification:@"_rename_" description:@"Internal error, ServerUrl not found" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
                                     return;
                                 }
                                 
@@ -1562,13 +1556,13 @@
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
                             
                         } else if (errorCode != 0) {
-                            [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                            [[NCContentPresenter shared] messageNotification:@"_rename_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         } else {
                             NSLog(@"[LOG] It has been changed user during networking process, error.");
                         }
                     }];
                 } else {
-                    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                    [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                 }
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
@@ -1586,7 +1580,7 @@
     // verify permission
     BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:k_permission_can_move];
     if (![metadata.permissions isEqualToString:@""] && permission == false) {
-        [appDelegate messageNotification:@"_error_" description:@"_no_permission_modify_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_no_permission_modify_file_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
         return;
     }
     
@@ -1651,7 +1645,7 @@
                         
                     } else if (errorCode != 0) {
                         
-                        [appDelegate messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        [[NCContentPresenter shared] messageNotification:@"_move_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         
                         // End Select Table View
                         [self tableViewSelect:NO];
@@ -1668,7 +1662,7 @@
                 
                 [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
             } else {
-                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
             }
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
@@ -1686,7 +1680,7 @@
         // E2EE DENIED
         if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) {
             
-            [appDelegate messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+            [[NCContentPresenter shared] messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
             return;
         }
         
@@ -1798,7 +1792,7 @@
                     NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncryptedOnServerUrl:newDirectory ocId:ocId user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (error) {
-                            [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                            [[NCContentPresenter shared] messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                         }
                         [self readFolder:self.serverUrl];
                     });
@@ -1816,7 +1810,7 @@
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
             
             if (errorCode != 0) {
-                [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [[NCContentPresenter shared] messageNotification:@"_create_folder_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
             }
@@ -1966,7 +1960,7 @@
             }
             
         } else if (errorCode != 0) {
-            [appDelegate messageNotification:@"_error_" description:errorDecription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDecription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
@@ -2781,7 +2775,7 @@
                 
                 if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO account:appDelegate.activeAccount]) {
                 
-                    [appDelegate messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+                    [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_operation_canc_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
                 }
                 
                 [self tableViewReloadData];
@@ -2855,7 +2849,7 @@
         
     } else {
         
-        [appDelegate messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_operation_canc_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
     }
 }
 
@@ -2919,7 +2913,7 @@
     
     if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) {
         
-        [appDelegate messageNotification:@"_error_" description:@"_folder_blocked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_folder_blocked_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
         return;
     }
     
@@ -3141,7 +3135,7 @@
                                             NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncryptedOnServerUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] ocId:self.metadata.ocId user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 if (error) {
-                                                    [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                                                 } else {
                                                     [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName]]];
                                                     [self readFolder:self.serverUrl];
@@ -3164,7 +3158,7 @@
                                             NSError *error = [[NCNetworkingEndToEnd sharedManager] deletemarkEndToEndFolderEncryptedOnServerUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] ocId:self.metadata.ocId user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 if (error) {
-                                                    [appDelegate messageNotification:@"_e2e_error_delete_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_delete_mark_folder_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                                                 } else {
                                                     [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName]]];
                                                     [self readFolder:self.serverUrl];
@@ -3890,7 +3884,7 @@
             
             if (_metadataFolder.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
                 
-                [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
                 
             } else {
             
@@ -3903,7 +3897,7 @@
                     if (appDelegate.reachability.isReachable) {
                         [self shouldPerformSegue:self.metadata selector:@""];
                     } else {
-                        [appDelegate messageNotification:@"_info_" description:@"_go_online_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
                     }
                     
                 } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
@@ -3911,7 +3905,7 @@
                     if (appDelegate.reachability.isReachable) {
                         [self shouldPerformSegue:self.metadata selector:@""];
                     } else {
-                        [appDelegate messageNotification:@"_info_" description:@"_go_online_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
                     }
                     
                 } else {
@@ -4093,7 +4087,7 @@
         // E2EE Check enable
         if (metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
             
-            [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
             return;
         }
         

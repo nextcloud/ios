@@ -28,7 +28,6 @@
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"
 #import "Reachability.h"
-#import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "CCDetail.h"
@@ -43,7 +42,7 @@
 @class NCAppConfigView;
 @class IMImagemeterViewer;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, PKPushRegistryDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
@@ -154,8 +153,7 @@
 - (void)configDynamicShortcutItems;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
-// StatusBar & ApplicationIconBadgeNumber
-- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode;
+// ApplicationIconBadgeNumber
 - (void)updateApplicationIconBadgeNumber;
 
 // TabBarController

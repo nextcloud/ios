@@ -25,7 +25,6 @@
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 #import "CCDetail.h"
-#import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"

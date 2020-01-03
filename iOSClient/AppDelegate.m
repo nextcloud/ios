@@ -22,7 +22,6 @@
 //
 
 #import "AppDelegate.h"
-#import <JDStatusBarNotification/JDStatusBarNotification.h>
 #import "CCNetworking.h"
 #import "CCGraphics.h"
 #import "CCSynchronize.h"
@@ -693,111 +692,8 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== StatusBar & ApplicationIconBadgeNumber =====
+#pragma mark ===== ApplicationIconBadgeNumber =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode
-{
-    static NSInteger errorCodePrev = 0;
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        if (visible) {
-            
-            switch (errorcode) {
-                    
-                // JDStatusBarNotification
-                case kCFURLErrorNotConnectedToInternet:
-                    
-                    if (errorCodePrev != errorcode)
-                        [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
-                    
-                    errorCodePrev = errorcode;
-                    break;
-                    
-                case kOCErrorServerUnauthorized:
-                case kOCErrorServerForbidden:
-                    
-                    NSLog(@"Error kOCErrorServerUnauthorized - kOCErrorServerForbidden");
-                    break;
-                    
-                // TWMessageBarManager
-                default:
-                    
-                    if (description.length > 0) {
-                        
-                        [TWMessageBarManager sharedInstance].styleSheet = self;
-                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
-                    }
-                    break;
-            }
-                        
-        } else {
-            
-            [[TWMessageBarManager sharedInstance] hideAllAnimated:YES];
-        }
-    });
-}
-
-- (UIColor *)backgroundColorForMessageType:(TWMessageBarMessageType)type
-{
-    UIColor *backgroundColor = nil;
-    switch (type)
-    {
-        case TWMessageBarMessageTypeError:
-            backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.90];
-            break;
-        case TWMessageBarMessageTypeSuccess:
-            backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
-            break;
-        case TWMessageBarMessageTypeInfo:
-            backgroundColor = NCBrandColor.sharedInstance.brand;
-            break;
-        default:
-            break;
-    }
-    return backgroundColor;
-}
-
-- (UIColor *)strokeColorForMessageType:(TWMessageBarMessageType)type
-{
-    UIColor *strokeColor = nil;
-    switch (type)
-    {
-        case TWMessageBarMessageTypeError:
-            strokeColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
-            break;
-        case TWMessageBarMessageTypeSuccess:
-            strokeColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0];
-            break;
-        case TWMessageBarMessageTypeInfo:
-            strokeColor = [UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:1.0];
-            break;
-        default:
-            break;
-    }
-    return strokeColor;
-}
-
-- (UIImage *)iconImageForMessageType:(TWMessageBarMessageType)type
-{
-    UIImage *iconImage = nil;
-    switch (type)
-    {
-        case TWMessageBarMessageTypeError:
-            iconImage = [UIImage imageNamed:@"icon-error.png"];
-            break;
-        case TWMessageBarMessageTypeSuccess:
-            iconImage = [UIImage imageNamed:@"icon-success.png"];
-            break;
-        case TWMessageBarMessageTypeInfo:
-            iconImage = [UIImage imageNamed:@"icon-info.png"];
-            break;
-        default:
-            break;
-    }
-    return iconImage;
-}
 
 - (void)updateApplicationIconBadgeNumber
 {
@@ -953,7 +849,7 @@ PKPushRegistry *pushRegistry;
     if ([tableDirectory.permissions containsString:@"CK"]) {
         (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
     } else {
-        [self messageNotification:@"_warning_" description:@"_no_permission_add_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
     }
 }
 
@@ -1221,7 +1117,7 @@ PKPushRegistry *pushRegistry;
     } else {
         
         if (self.lastReachability == YES) {
-            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:kCFURLErrorNotConnectedToInternet];
+            [[NCContentPresenter shared] messageNotification:@"_network_not_available_" description:nil delay:k_dismissAfterSecond type:messageTypeInfo errorCode:kCFURLErrorNotConnectedToInternet];
         }
         
         NSLog(@"[LOG] Reachability Changed: NOT Reachable");
@@ -1303,6 +1199,7 @@ PKPushRegistry *pushRegistry;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     BOOL isE2EE = false;
+    NSMutableArray *uploaded = [NSMutableArray new];
     
     long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperation;
     
@@ -1352,7 +1249,7 @@ PKPushRegistry *pushRegistry;
     
     while (counterDownload < maxConcurrentOperationDownloadUpload) {
         
-        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusWaitDownload] sorted:@"session" ascending:YES];
+        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusWaitDownload] sorted:@"date" ascending:YES];
         if (metadataForDownload) {
             
             metadataForDownload.status = k_metadataStatusInDownload;
@@ -1375,11 +1272,17 @@ PKPushRegistry *pushRegistry;
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"date" ascending:YES];
+        
+        // Verify modify file
+        if ([uploaded containsObject:[NSString stringWithFormat:@"%@%@%@", metadataForUpload.account, metadataForUpload.serverUrl, metadataForUpload.fileName]]) {
+            break;
+        }
+        
         if (metadataForUpload) {
             
+            // Verify modify file
             BOOL isAleadyInUpload = false;
-            
             for (tableMetadata *metadata in metadatasUpload) {
                 if ([metadataForUpload.account isEqualToString:metadata.account] && [metadataForUpload.serverUrl isEqualToString:metadata.serverUrl] && [metadataForUpload.fileName isEqualToString:metadata.fileName]) {
                     isAleadyInUpload = true;
@@ -1395,10 +1298,8 @@ PKPushRegistry *pushRegistry;
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
                 
-                // IMI -> MODIFY
-                if ([metadata.fileName.pathExtension.lowercaseString isEqualToString:@"imi"]) {
-                    break;
-                }
+                // For verify modify file
+                [uploaded addObject:[NSString stringWithFormat:@"%@%@%@", metadata.account, metadata.serverUrl, metadata.fileName]];
                 
             } else {
                 break;
@@ -1417,7 +1318,7 @@ PKPushRegistry *pushRegistry;
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload] sorted:@"date" ascending:YES];
         if (metadataForUpload) {
             
             metadataForUpload.status = k_metadataStatusInUpload;
@@ -1435,12 +1336,12 @@ PKPushRegistry *pushRegistry;
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error k_maxErrorAutoUploadAll after STOP (100)
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %i", selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %i", selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:@"date" ascending:YES];
     NSInteger errorCount = [metadatas count];
     
     if (errorCount >= k_maxErrorAutoUploadAll) {
         
-        [self messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_too_errors_automatic_all_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
         
     } else {
         
