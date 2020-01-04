@@ -126,6 +126,30 @@
     NSLog(@"[LOG] bye bye, Nextcloud Share Extension!");
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    NSString *currentText = textField.text;
+    NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    
+    if ([string isEqualToString:@"\n"] && ![newText isEqualToString:@""]) {
+        [textField endEditing:true];
+        return false;
+    }
+    
+    NSInteger index = [self.filesName indexOfObject:currentText];
+    if (index != NSNotFound) {
+        self.filesName[index] = newText;
+        if (![newText isEqualToString:@""]) {
+            NSString *fileNameAtPath = [NSTemporaryDirectory() stringByAppendingString:currentText];
+            NSString *fileNameToPath = [NSTemporaryDirectory() stringByAppendingString:newText];
+            [CCUtility moveFileAtPath:fileNameAtPath toPath:fileNameToPath];
+        }
+    }
+    
+    return true;
+}
+
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == Action ==
 #pragma --------------------------------------------------------------------------------------------
@@ -432,13 +456,16 @@
     }
     else image = [UIImage imageNamed:@"file"];
     
-    
     NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] error:nil] fileSize];
     
-    cell.labelInformazioni.text = [NSString stringWithFormat:@"%@\r\r%@", fileName, [CCUtility transformedSize:fileSize]];
-    cell.labelInformazioni.textColor = NCBrandColor.sharedInstance.textView;
-
     cell.fileImageView.image = image;
+
+    cell.fileName.text = fileName;
+    cell.fileName.textColor = NCBrandColor.sharedInstance.textView;
+    cell.fileName.delegate = self;
+    
+    cell.info.text = [CCUtility transformedSize:fileSize];
+    cell.info.textColor = NCBrandColor.sharedInstance.textView;
     
     return cell;
 }
