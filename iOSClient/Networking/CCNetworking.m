@@ -1042,9 +1042,7 @@
     NSString *tempSession = metadata.session;
     NSString *errorMessage = @"";
     BOOL isE2EEDirectory = false;
-    BOOL isIMIFile = false;
-    if ([fileName.pathExtension.lowercaseString isEqualToString:@"imi"]) isIMIFile = true;
-    
+
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
@@ -1105,8 +1103,8 @@
         
     } else {
     
-        // remove tempocId and adjust the directory provider storage
-        if (isIMIFile) {
+        // Edited file, remove tempocId and adjust the directory provider storage
+        if (metadata.edited) {
             
             // Update metadata tempocId
             [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
@@ -1193,7 +1191,7 @@
  #endif
         
         // Add Local or Remove from cache
-        if ([CCUtility getDisableLocalCacheAfterUpload] && !isIMIFile) {
+        if ([CCUtility getDisableLocalCacheAfterUpload] && !metadata.edited) {
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
         } else {
             // Add Local

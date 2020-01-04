@@ -340,6 +340,7 @@ class tableMedia: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
@@ -382,6 +383,7 @@ class tableMetadata: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
