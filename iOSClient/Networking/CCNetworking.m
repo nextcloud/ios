@@ -1125,9 +1125,14 @@
             
             metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
+            // Copy new version on old version
             if (![tempocId isEqualToString:metadata.ocId]) {
                 [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
+                // IMI -> Unzip
+                if ([metadata.typeFile isEqualToString:k_metadataTypeFile_imagemeter] && NCBrandOptions.sharedInstance.use_imi_viewer) {
+                    (void)[[NCUtility sharedInstance] IMUnzipWithMetadata:metadata];
+                }
             }
             
         } else {

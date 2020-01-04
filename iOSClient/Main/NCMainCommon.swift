@@ -1437,11 +1437,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             return
         }
         
-        if metadata.edited {
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: nil, action: Int32(k_action_NULL))
-        } else {
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-        }
+        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
         
         if errorCode == 0 {
             appDelegate.startLoadAutoDownloadUpload()

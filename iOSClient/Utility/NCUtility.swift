@@ -505,7 +505,7 @@ class NCUtility: NSObject {
         return 0
     }
     
-    func IMUnzip(metadata: tableMetadata) -> Bool {
+    @objc func IMUnzip(metadata: tableMetadata) -> Bool {
         
         // bak
         let atPathBak = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
