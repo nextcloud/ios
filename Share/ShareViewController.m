@@ -37,6 +37,8 @@
     UIColor *tintColor;
     
     NSString *fileNameOriginal;
+    
+    UIBarButtonItem *rightButtonUpload, *leftButtonCancel;
 }
 @end
 
@@ -97,7 +99,6 @@
     [self loadDataSwift];
 }
 
-// Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -109,22 +110,13 @@
     self.shareTable.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)closeShareViewController
 {
     [self.extensionContext completeRequestReturningItems:self.extensionContext.inputItems completionHandler:nil];
 }
 
-//
-// L'applicazione terminerà
-//
 - (void)applicationWillTerminate:(UIApplication *)application
-{    
+{
     NSLog(@"[LOG] bye bye, Nextcloud Share Extension!");
 }
 
@@ -134,11 +126,13 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
+    rightButtonUpload.enabled = false;
     fileNameOriginal = textField.text;
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
+    rightButtonUpload.enabled = true;
     NSInteger index = [self.filesName indexOfObject:fileNameOriginal];
     if (index != NSNotFound) {
         self.filesName[index] = textField.text;
@@ -179,9 +173,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)navigationBarToolBar
-{    
-    UIBarButtonItem *rightButtonUpload, *leftButtonCancel;
-
+{
     // Theming
     if ([NCBrandOptions sharedInstance].use_themingColor) {
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];

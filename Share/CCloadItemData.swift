@@ -57,25 +57,36 @@ class CCloadItemData: NSObject {
                             
                             current.loadItem(forTypeIdentifier: kUTTypeItem as String, options: nil, completionHandler: {(item, error) -> Void in
                                 
+                                var fileNameOriginal: String?
+                                var fileName: String = ""
+                                
+                                let dateFormatter = DateFormatter()
+                                dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
+                                conuter += 1
+                                
+                                if let url = item as? NSURL {
+                                    fileNameOriginal = url.lastPathComponent!
+                                }
+                                
                                 if error == nil {
-                                    
-                                    let dateFormatter = DateFormatter()
-                                    dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
-                                    conuter += 1
-                                    
+                                                                        
                                     if let image = item as? UIImage {
                                         
                                         print("item as UIImage")
                                         
                                         if let pngImageData = image.pngData() {
                                         
-                                            let fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
+                                            if fileNameOriginal != nil {
+                                                fileName =  fileNameOriginal!
+                                            } else {
+                                                fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
+                                            }
+                                            
                                             let filenamePath = directory + fileName
-                                        
+                                            
                                             let result = (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
                                         
                                             if result {
-                                         
                                                 filesName.append(fileName)
                                             }
                                             
@@ -89,11 +100,15 @@ class CCloadItemData: NSObject {
                                         
                                         print("item as url: \(String(describing: item))")
                                         
-                                        let ext = url.pathExtension
-                                        let fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
-
-                                        let filenamePath = directory + fileName
+                                        if fileNameOriginal != nil {
+                                            fileName =  fileNameOriginal!
+                                        } else {
+                                            let ext = url.pathExtension
+                                            fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
+                                        }
                                         
+                                        let filenamePath = directory + fileName
+                                      
                                         do {
                                             try FileManager.default.removeItem(atPath: filenamePath)
                                         }
@@ -130,15 +145,18 @@ class CCloadItemData: NSObject {
                                         
                                             print("item as NSdata")
                                         
-                                            let description = current.description
-                                        
-                                            let fullNameArr = description.components(separatedBy: "\"")
-                                            let fileExtArr = fullNameArr[1].components(separatedBy: ".")
-                                            let pathExtention = (fileExtArr[fileExtArr.count-1]).uppercased()
-                                        
-                                            let fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
+                                            if fileNameOriginal != nil {
+                                                fileName =  fileNameOriginal!
+                                            } else {
+                                                let description = current.description
+                                                let fullNameArr = description.components(separatedBy: "\"")
+                                                let fileExtArr = fullNameArr[1].components(separatedBy: ".")
+                                                let pathExtention = (fileExtArr[fileExtArr.count-1]).uppercased()
+                                                fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
+                                            }
+                                            
                                             let filenamePath = directory + fileName
-
+                                            
                                             FileManager.default.createFile(atPath: filenamePath, contents:data, attributes:nil)
                                                                                 
                                             filesName.append(fileName)

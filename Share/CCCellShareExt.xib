@@ -16,7 +16,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="597" height="80"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
                         <rect key="frame" x="10" y="5" width="70" height="70"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="70" id="2Z3-9a-dWb"/>
@@ -24,7 +24,7 @@
                         </constraints>
                     </imageView>
                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VsB-d4-Sow">
-                        <rect key="frame" x="90" y="10" width="497" height="20"/>
+                        <rect key="frame" x="90" y="30" width="497" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="Dk0-na-bfK"/>
                         </constraints>
@@ -32,11 +32,11 @@
                         <textInputTraits key="textInputTraits"/>
                     </textField>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Ow-Hb-LiN">
-                        <rect key="frame" x="90" y="50" width="497" height="20"/>
+                        <rect key="frame" x="90" y="55" width="497" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="9pk-f4-eS9"/>
                         </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -45,11 +45,11 @@
                     <constraint firstItem="5" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="3LF-0l-IUQ"/>
                     <constraint firstItem="VsB-d4-Sow" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="CrK-6o-Z32"/>
                     <constraint firstAttribute="trailing" secondItem="0Ow-Hb-LiN" secondAttribute="trailing" constant="10" id="DiV-IR-cy6"/>
-                    <constraint firstAttribute="bottom" secondItem="0Ow-Hb-LiN" secondAttribute="bottom" constant="10" id="ObO-OF-tvn"/>
+                    <constraint firstAttribute="bottom" secondItem="0Ow-Hb-LiN" secondAttribute="bottom" constant="5" id="ObO-OF-tvn"/>
                     <constraint firstItem="0Ow-Hb-LiN" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="PFo-Au-ORj"/>
                     <constraint firstAttribute="trailing" secondItem="VsB-d4-Sow" secondAttribute="trailing" constant="10" id="Q94-2Q-wue"/>
+                    <constraint firstItem="VsB-d4-Sow" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="Vrf-0g-BdO"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leading" constant="10" id="fuA-E4-YoA"/>
-                    <constraint firstItem="VsB-d4-Sow" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="10" id="i4S-x6-rac"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
