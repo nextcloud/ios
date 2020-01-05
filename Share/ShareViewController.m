@@ -35,6 +35,8 @@
     
     UIColor *barTintColor;
     UIColor *tintColor;
+    
+    NSString *fileNameOriginal;
 }
 @end
 
@@ -126,29 +128,51 @@
     NSLog(@"[LOG] bye bye, Nextcloud Share Extension!");
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark == TextField Delegate ==
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    fileNameOriginal = textField.text;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    NSInteger index = [self.filesName indexOfObject:fileNameOriginal];
+    if (index != NSNotFound) {
+        self.filesName[index] = textField.text;
+    }
+}
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    NSString *currentText = textField.text;
-    NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    NSError *error;
     
-    if ([string isEqualToString:@"\n"] && ![newText isEqualToString:@""]) {
+    if ([string isEqualToString:@"\n"]) {
+        
+        //NSString *fileName = [textField.text stringByDeletingPathExtension];
+        NSString *ext = [textField.text pathExtension];
+
+        if (![ext isEqualToString:@""]) {
+            NSString *fileNameAtPath = [NSTemporaryDirectory() stringByAppendingString:fileNameOriginal];
+            NSString *fileNameToPath = [NSTemporaryDirectory() stringByAppendingString:textField.text];
+            
+            [[NSFileManager defaultManager] moveItemAtPath:fileNameAtPath toPath:fileNameToPath error:&error];
+            
+            if (error != nil) {
+                textField.text = fileNameOriginal;
+            }
+        } else {
+            textField.text = fileNameOriginal;
+        }
+        
         [textField endEditing:true];
         return false;
     }
     
-    NSInteger index = [self.filesName indexOfObject:currentText];
-    if (index != NSNotFound) {
-        self.filesName[index] = newText;
-        if (![newText isEqualToString:@""]) {
-            NSString *fileNameAtPath = [NSTemporaryDirectory() stringByAppendingString:currentText];
-            NSString *fileNameToPath = [NSTemporaryDirectory() stringByAppendingString:newText];
-            [CCUtility moveFileAtPath:fileNameAtPath toPath:fileNameToPath];
-        }
-    }
-    
     return true;
 }
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == Action ==
