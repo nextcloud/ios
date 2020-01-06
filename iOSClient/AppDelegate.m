@@ -749,9 +749,7 @@ PKPushRegistry *pushRegistry;
             safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
         }
     }
-    
-    //[self aspectTabBar:tabBarController.tabBar];
-    
+        
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
