@@ -737,12 +737,7 @@ PKPushRegistry *pushRegistry;
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
-    CGFloat safeAreaBottom = 0;
-
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
-    }
-    
+   
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
