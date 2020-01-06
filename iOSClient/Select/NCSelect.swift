@@ -181,7 +181,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
         toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
-        toolbar.tintColor = NCBrandColor.sharedInstance.brandText
+        toolbar.tintColor = .gray
     }
     
     // MARK: DZNEmpty
