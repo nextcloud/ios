@@ -737,51 +737,44 @@ PKPushRegistry *pushRegistry;
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
-    CGFloat multiplier = 0;
     CGFloat safeAreaBottom = 0;
-    
+
     if (@available(iOS 11, *)) {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-        if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
-            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.right/2;
-            if (safeAreaBottom > 0) safeAreaBottom -= 5;
-        } else {
-            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
-        }
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
     }
-        
+    
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
-    // (PLUS)
+    // (PLUS INVISIBLE)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
     item.title = @"";
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[UIColor clearColor]];
+    item.image = nil;
     item.enabled = false;
     
     // Media
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
     [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:NCBrandColor.sharedInstance.brandElement];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -791,24 +784,20 @@ PKPushRegistry *pushRegistry;
     [buttonPlus setTranslatesAutoresizingMaskIntoConstraints:NO];
     [tabBarController.tabBar addSubview:buttonPlus];
     
-    multiplier = 1.0;
     // X
-    constraint =[NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:multiplier constant:0];
-    [tabBarController.view addConstraint:constraint];
-    // Y
-    if (safeAreaBottom == 0) {
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:multiplier constant:0];
-    } else {
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:5];
-    }
+    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
     [tabBarController.view addConstraint:constraint];
     
-    multiplier = 0.8 * (tabBarController.tabBar.frame.size.height - safeAreaBottom) / tabBarController.tabBar.frame.size.height;
-    // Width
-    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
+    // Y
+    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeTop multiplier:1.0 constant:5];
     [tabBarController.view addConstraint:constraint];
+
+    // Width
+    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:40];
+    [tabBarController.view addConstraint:constraint];
+    
     // Height
-    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
+    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:40];
     [tabBarController.view addConstraint:constraint];
 }
 
