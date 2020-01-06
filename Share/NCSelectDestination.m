@@ -89,14 +89,11 @@
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor =  NCBrandColor.sharedInstance.separator;
-    self.tableView.emptyDataSetDelegate = self;
-    self.tableView.emptyDataSetSource = self;
 
     // get auto upload folder
     _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
     
-    // read file->folder
     [self readFolder];
 }
 
@@ -123,43 +120,6 @@
     
     self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== DZNEmptyDataSetSource ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
-{
-    if (_loadingFolder)
-        return YES;
-    else
-        return NO;
-}
-
-- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
-{
-    return NO;
-}
-
-- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
-{
-    return NCBrandColor.sharedInstance.backgroundView;
-}
-
-- (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
-{
-    if (_loadingFolder) {
-        
-        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
-        activityView.color = NCBrandColor.sharedInstance.brandElement;
-        [activityView startAnimating];
-        
-        return activityView;
-    }
-    
-    return nil;
 }
 
 // MARK: - IBAction

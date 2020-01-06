@@ -30,7 +30,6 @@ class CCloadItemData: NSObject {
         
         var filesName: [String] = []
         var conuter = 0
-        let hud = CCHud(view: vc.view)!
         
         CCUtility.clearTmpDirectory()
                 
@@ -51,11 +50,13 @@ class CCloadItemData: NSObject {
                     
                     for (index, current) in (attachments.enumerated()) {
                         
-                        if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) {
+                        if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || current.hasItemConformingToTypeIdentifier("public.url") {
                             
-                            hud.visibleIndeterminateHud()
+                            var typeIdentifier = ""
+                            if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) { typeIdentifier = kUTTypeItem as String }
+                            if current.hasItemConformingToTypeIdentifier("public.url") { typeIdentifier = "public.url" }
                             
-                            current.loadItem(forTypeIdentifier: kUTTypeItem as String, options: nil, completionHandler: {(item, error) -> Void in
+                            current.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
                                 
                                 var fileNameOriginal: String?
                                 var fileName: String = ""
@@ -181,12 +182,8 @@ class CCloadItemData: NSObject {
                                     if index + 1 == attachments.count {
                                         
                                         vc.performSelector(onMainThread: #selector(vc.reloadData), with:filesName, waitUntilDone: false)
-                                        hud.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
                                     }
                                     
-                                } else {
-                                    
-                                    hud.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
                                 }
                             })
                             
