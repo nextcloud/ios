@@ -183,7 +183,7 @@
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.toolBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    self.toolBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+    self.toolBar.tintColor = [UIColor grayColor];
     
     // Upload
     rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];

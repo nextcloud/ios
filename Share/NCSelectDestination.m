@@ -106,7 +106,7 @@
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
+    self.navigationController.toolbar.tintColor = [UIColor grayColor];
     
     if (self.hideCreateFolder) {
         [self.create setEnabled:NO];
