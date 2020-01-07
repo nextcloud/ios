@@ -31,6 +31,4 @@
 @property (nonatomic, strong) NSString *version;
 @property (nonatomic, strong) NSString *build;
 
-- (void)introFinishSelector:(NSInteger)selector;
-
 @end

@@ -67,14 +67,6 @@
     [self inizialize];    
 }
 
-// Apparirà
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    [self showIntro];
-}
-
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -117,58 +109,6 @@
     
     // init home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Intro =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)showIntro
-{
-    if ([NCBrandOptions sharedInstance].disable_intro) {
-        
-        [CCUtility setIntro:YES];
-        
-        if (appDelegate.activeAccount.length == 0) {
-            [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-        }
-        
-    } else {
-    
-        if ([CCUtility getIntro] == NO) {
-            IntroView *intro = [IntroView instanceFromNib];
-            intro.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-            intro.delegate = self;
-            [self.view addSubview:intro];
-        } else {
-            
-            if (appDelegate.activeAccount.length == 0) {
-                [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-            }
-        }
-    }
-}
-
-- (void)introFinishSelector:(NSInteger)selector
-{
-    switch (selector) {
-            
-        case k_intro_login:
-            {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    if (appDelegate.activeAccount.length == 0) {
-                        [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-                    }
-                });
-            }
-            break;
-            
-        case k_intro_signup:
-            {
-                [appDelegate openLoginView:self selector:k_intro_signup openLoginWeb:false];
-            }
-            break;
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
