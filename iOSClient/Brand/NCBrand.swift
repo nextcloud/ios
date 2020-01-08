@@ -71,7 +71,7 @@ import UIKit
     @objc public var userAgent:                         String = "kDrive-iOS"                                    // Don't touch me !!
     
     // Options
-    @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
+    @objc public var use_login_web_personalized:        Bool = true
     @objc public var use_default_auto_upload:           Bool = false
     @objc public var use_themingColor:                  Bool = true
     @objc public var use_themingBackground:             Bool = true
@@ -111,8 +111,13 @@ class NCBrandColor: NSObject {
     @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 152.0/255.0, blue: 255.0/255.0, alpha: 1.0)    // BLU NC : #0098FF
     @objc public var customerText:          UIColor = .white
     
-    @objc public let introText:             UIColor = UIColor(red: 0.0/255.0, green: 152.0/255.0, blue: 255.0/255.0, alpha: 1.0)    // BLU NC : #0098FF
-    @objc public var introBackground:       UIColor = .white
+    @objc public var introBackground: UIColor {
+        if #available(iOS 13.0, *) {
+            return .systemBackground
+        } else {
+            return .white
+        }
+    }
     
     @objc public var brand:                 UIColor                                                                                 // don't touch me
     @objc public var brandElement:          UIColor                                                                                 // don't touch me
