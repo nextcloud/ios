@@ -1618,4 +1618,14 @@ class NCFunctionMain: NSObject {
     }
 }
 
-
+extension tableAccount : XLFormOptionObject{
+    
+    func formDisplayText() -> String {
+        return self.displayName
+    }
+    
+    func formValue() -> Any {
+        return self.account
+    }
+    
+}

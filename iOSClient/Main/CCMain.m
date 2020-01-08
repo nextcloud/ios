@@ -1988,18 +1988,18 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAllAccount];
     
     NSMutableArray *menuArray = [NSMutableArray new];
     
-    for (NSString *account in listAccount) {
+    for (tableAccount *account in listAccount) {
     
         CCMenuItem *item = [[CCMenuItem alloc] init];
         
-        item.title = [account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
-        item.argument = account;
+        item.title = account.displayText;
+        item.argument = account.account;
         
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", account]];
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", account.account]];
         
         NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
         UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
@@ -2022,7 +2022,7 @@
         item.image = avatar;
         item.target = self;
         
-        if ([account isEqualToString:appDelegate.activeAccount]) {
+        if ([account.account isEqualToString:appDelegate.activeAccount]) {
             
             item.action = nil;
             [menuArray insertObject:item atIndex:0];

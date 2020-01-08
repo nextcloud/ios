@@ -53,14 +53,24 @@
     [form addFormSection:section];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
-    row.height = 100;
-    if (listAccount.count > 0) {
-        row.selectorOptions = listAccount;
-        row.value = tableAccount.account;
+    //infomaniak only
+    NSArray *listAccounts = [[NCManageDatabase sharedInstance] getAllAccount];
+    if (listAccount.count == 1) {
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_accounts_", nil)];
+        row.value = tableAccount;
     } else {
-        row.selectorOptions = [[NSArray alloc] initWithObjects:@"", nil];
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypeSelectorPush];
+        [row setTitle:NSLocalizedString(@"_accounts_", nil)];
+        if (listAccount.count > 0) {
+            row.selectorOptions = listAccounts;
+            row.value = tableAccount;
+        } else {
+            row.selectorOptions = [[NSArray alloc] initWithObjects:@"", nil];
+        }
     }
+    row.height = 70;
+    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     
     // Avatar
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl], appDelegate.activeUser];
@@ -356,11 +366,11 @@
     
     if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue) {
         
-        if (![newValue isEqualToString:oldValue] && ![newValue isEqualToString:@""] && ![newValue isEqualToString:appDelegate.activeAccount]) {
-            [self ChangeDefaultAccount:newValue];
+        if (![[newValue formValue] isEqualToString:[oldValue formValue]] && ![[newValue formValue] isEqualToString:@""] && ![[newValue formValue] isEqualToString:appDelegate.activeAccount]) {
+            [self ChangeDefaultAccount:[newValue formValue]];
         }
         
-        if ([newValue isEqualToString:@""]) {
+        if ([[newValue formValue] isEqualToString:@""]) {
             NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
             if ([listAccount count] > 0) {
                 [self ChangeDefaultAccount:listAccount[0]];
@@ -405,7 +415,7 @@
         
         XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
         
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", pickerAccount.rowDescriptor.value]];
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", [pickerAccount.rowDescriptor.value formValue]]];
         NSString *account = tableAccount.account;
         
         if (account) {
