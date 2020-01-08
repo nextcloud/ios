@@ -32,7 +32,9 @@ extension FileProviderExtension: NCNetworkingDelegate {
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
         
         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
-        outstandingSessionTasks.removeValue(forKey: url)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.outstandingSessionTasks.removeValue(forKey: url)
+        }
         outstandingOcIdTemp[ocIdTemp] = ocId
         
         if error == nil && statusCode >= 200 && statusCode < 300 {

@@ -181,14 +181,12 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    [[NCCommunication sharedInstance] listingFavoritesWithUrlString:appDelegate.activeUrl account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+    [[OCNetworking sharedManager] listingFavoritesWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             NSString *father = @"";
             NSMutableArray *filesOcId = [NSMutableArray new];
-            
-            NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files urlString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] serverUrl:nil user:appDelegate.activeUserID];
             
             for (tableMetadata *metadata in metadatas) {
                 
@@ -222,59 +220,8 @@
             // Verify remove favorite
             NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
             
-            for (tableMetadata *metadata in allRecordFavorite) {
-                if (![filesOcId containsObject:metadata.ocId])
-                    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
-            }
-            
-        } else if (errorCode != 0) {
-//            [appDelegate messageNotification:@"_error_" description:errorDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
-        }
-    }];
-    
-    [[OCNetworking sharedManager] listingFavoritesWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
-        
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-            NSString *father = @"";
-            NSMutableArray *filesEtag = [NSMutableArray new];
-            
-            for (tableMetadata *metadata in metadatas) {
-                
-                // insert for test NOT favorite
-                [filesEtag addObject:metadata.ocId];
-                
-                NSString *serverUrl = metadata.serverUrl;
-                NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-                
-                if (![serverUrlSon containsString:father]) {
-                    
-                    if (metadata.directory) {
-                        
-                        if ([CCUtility getFavoriteOffline])
-                            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload account:account];
-                        else
-                            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder account:account];
-                        
-                    } else {
-                        
-                        if ([CCUtility getFavoriteOffline])
-                            [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload account:account];
-                        else
-                            [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile account:account];
-                    }
-                    
-                    father = serverUrlSon;
-                }
-            }
-            
-            // Verify remove favorite
-            NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
-            
             for (tableMetadata *metadata in allRecordFavorite)
-                if (![filesEtag containsObject:metadata.ocId])
+                if (![filesOcId containsObject:metadata.ocId])
                     [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
             
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];

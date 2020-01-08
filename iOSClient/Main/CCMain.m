@@ -1162,13 +1162,12 @@
         (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
     }
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-        // File is changed ??
-        if (!self.searchController.isActive && metadatasToInsertInDB)
+    // File is changed ??
+    if (!self.searchController.isActive && metadatasToInsertInDB) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:serverUrl account:account withDownload:NO];
-    });
-    
+        });
+    }
     // Search Mode
     if (self.searchController.isActive) {
         

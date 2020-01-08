@@ -159,3 +159,17 @@ class NCBrandColor: NSObject {
         }
     }
 }
+
+//MARK: - Beta
+
+@objc class NCBrandBeta: NSObject {
+    
+    @objc static let shared: NCBrandBeta = {
+        let instance = NCBrandBeta()
+        return instance
+    }()
+
+    @objc public let directEditing: Bool = false
+    @objc public let iOSHelper: Bool = false
+}
+
