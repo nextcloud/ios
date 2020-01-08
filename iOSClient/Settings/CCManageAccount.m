@@ -113,7 +113,7 @@
 
         row.action.formSelector = @selector(changePassword:);
         if (listAccount.count == 0) row.disabled = @YES;
-        [section addFormRow:row];
+        //[section addFormRow:row];
         
         // Brand
         if ([NCBrandOptions sharedInstance].disable_multiaccount == NO) {
@@ -146,6 +146,30 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_personal_information_", nil)];
     [form addFormSection:section];
     
+    // ID
+    if ([tableAccount.url length] > 0) {
+        NSError *error = NULL;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@".+?(\\d+)\\.connect\\.drive\\.infomaniak\\.com.*"
+                                                                               options:NSRegularExpressionCaseInsensitive error:&error];
+
+        NSArray *matches = [regex matchesInString:tableAccount.url
+                                          options:0
+                                            range:NSMakeRange(0, [tableAccount.url length])];
+        NSString *driveID = @"";
+        for (NSTextCheckingResult *match in matches) {
+            driveID = [tableAccount.url substringWithRange:[match rangeAtIndex:1]];
+        }
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:@"ID"];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"user"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
+        row.value = driveID;
+        [section addFormRow:row];
+    }
+    
     // Full Name
     if ([tableAccount.displayName length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_full_name_", nil)];
@@ -155,7 +179,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"user"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         row.value = tableAccount.displayName;
-        [section addFormRow:row];
+        //[section addFormRow:row];
     }
     
     // Address
