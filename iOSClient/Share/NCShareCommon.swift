@@ -148,7 +148,13 @@ class NCShareCommon: NSObject {
         
         let calendar = FSCalendar(frame: CGRect(x: globalPoint!.x + 10, y: globalPoint!.y + 10, width: width - 20, height: 300))
         
-        calendar.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            calendar.backgroundColor = .systemBackground
+            calendar.appearance.headerTitleColor = .label
+        } else {
+            calendar.backgroundColor = .white
+            calendar.appearance.headerTitleColor = .black
+        }
         calendar.placeholderType = .none
         calendar.appearance.headerMinimumDissolvedAlpha = 0.0
         
@@ -160,7 +166,6 @@ class NCShareCommon: NSObject {
         calendar.layer.shadowOffset = CGSize(width: 2, height: 2)
         calendar.layer.shadowOpacity = 0.2
         
-        calendar.appearance.headerTitleColor = .black
         calendar.appearance.headerTitleFont = UIFont.systemFont(ofSize: 13)
         
         calendar.appearance.weekdayTextColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1)
