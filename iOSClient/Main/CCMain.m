@@ -2199,6 +2199,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
     
+    /*
     // ITEM GROUP ALPHABETIC -----------------------------------------------------------------------------------------------------
     
     if ([groupBy isEqualToString:@"alphabetic"])  { title = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
@@ -2231,6 +2232,7 @@
         else [CCUtility setGroupBySettings:@"date"];
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
+    */
     
     // ITEM DIRECTORY ON TOP ------------------------------------------------------------------------------------------------
     
@@ -2245,7 +2247,9 @@
     
     // REMENU --------------------------------------------------------------------------------------------------------------
 
-    appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem,appDelegate.alphabeticItem, appDelegate.typefileItem, appDelegate.dateItem, appDelegate.directoryOnTopItem]];
+    //appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem,appDelegate.alphabeticItem, appDelegate.typefileItem, appDelegate.dateItem, appDelegate.directoryOnTopItem]];
+    
+    appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem, appDelegate.directoryOnTopItem]];
     
     appDelegate.reMainMenu.itemHeight = 40;
     
@@ -3380,7 +3384,8 @@
             }
         }
         
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterocId:appDelegate.filterocId filterTypeFileImage:NO filterTypeFileVideo:NO sorted:@"fileName" ascending:NO activeAccount:appDelegate.activeAccount];
+        // [CCUtility getGroupBySettings]
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:nil filterocId:appDelegate.filterocId filterTypeFileImage:NO filterTypeFileVideo:NO sorted:@"fileName" ascending:NO activeAccount:appDelegate.activeAccount];
 
         [self tableViewReloadData];
         
@@ -3490,7 +3495,8 @@
 
     NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND status != %i", appDelegate.activeAccount, serverUrl, k_metadataStatusHide] sorted:nil ascending:NO];
     
-    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterocId:appDelegate.filterocId filterTypeFileImage:NO filterTypeFileVideo:NO sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
+    // [CCUtility getGroupBySettings]
+    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterocId:appDelegate.filterocId filterTypeFileImage:NO filterTypeFileVideo:NO sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
     
     if (withReloadData) {
         sectionDataSource = sectionDataSourceTemp;
