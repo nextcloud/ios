@@ -95,6 +95,8 @@
             if (ascending) return (obj1.sessionTaskIdentifier > obj2.sessionTaskIdentifier);
             else return (obj2.sessionTaskIdentifier < obj1.sessionTaskIdentifier);
         } else {
+            NSComparisonResult comparisonResult = [InfomaniakUtils sortInfomaniakFolderWithAscending:ascending obj1:obj1 obj2:obj2];
+            if (comparisonResult != NSOrderedSame) return comparisonResult;
             if (ascending) return [obj1.fileName compare:obj2.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1.fileName length]) locale:[NSLocale currentLocale]];
             else return [obj2.fileName compare:obj1.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj2.fileName length]) locale:[NSLocale currentLocale]];
         }

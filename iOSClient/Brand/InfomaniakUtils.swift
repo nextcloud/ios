@@ -10,6 +10,9 @@ import Foundation
 
 @objcMembers
 class InfomaniakUtils: NSObject {
+    
+    static let commonDocuments = "Common documents"
+    static let shared = "Shared"
 
     static func downloadProfilePictureWith(account: tableAccount, url: String, completion: @escaping (_ data: Data?, _ message: String?, _ errorCode: Int) -> Void) {
         var request: URLRequest!
@@ -121,5 +124,33 @@ class InfomaniakUtils: NSObject {
                 || mimeType?.hasPrefix("application/vnd.oasis.opendocument.presentation") ?? false
     }
 
+    static func sortInfomaniakFolder(ascending: Bool, obj1: tableMetadata, obj2: tableMetadata) -> ComparisonResult {
+        if (obj1.fileName == commonDocuments) {
+            if ascending {
+                return ComparisonResult.orderedAscending
+            } else {
+                return ComparisonResult.orderedDescending
+            }
+        } else if (obj2.fileName == commonDocuments) {
+            if ascending {
+                return ComparisonResult.orderedDescending
+            } else {
+                return ComparisonResult.orderedAscending
+            }
+        } else if (obj1.fileName == shared) {
+            if ascending {
+                return ComparisonResult.orderedAscending
+            } else {
+                return ComparisonResult.orderedDescending
+            }
+        } else if (obj2.fileName == shared) {
+            if ascending {
+                return ComparisonResult.orderedDescending
+            } else {
+                return ComparisonResult.orderedAscending
+            }
+        }
+        return ComparisonResult.orderedSame
+    }
 
 }
