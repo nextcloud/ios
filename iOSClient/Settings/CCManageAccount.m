@@ -148,18 +148,8 @@
     
     // ID
     if ([tableAccount.url length] > 0) {
-        NSError *error = NULL;
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@".+?(\\d+)\\.connect\\.drive\\.infomaniak\\.com.*"
-                                                                               options:NSRegularExpressionCaseInsensitive error:&error];
+        NSString *driveID = [InfomaniakUtils getServerIdWithUrl:tableAccount.url];
 
-        NSArray *matches = [regex matchesInString:tableAccount.url
-                                          options:0
-                                            range:NSMakeRange(0, [tableAccount.url length])];
-        NSString *driveID = @"";
-        for (NSTextCheckingResult *match in matches) {
-            driveID = [tableAccount.url substringWithRange:[match rangeAtIndex:1]];
-        }
-        
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:@"ID"];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];

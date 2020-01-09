@@ -8,13 +8,10 @@
 
 import Foundation
 
-class InfomaniakUtils {
+@objcMembers
+class InfomaniakUtils: NSObject {
 
-    static let shared = InfomaniakUtils()
-
-    private init() { }
-
-    func downloadProfilePictureWith(account: tableAccount, url: String, completion: @escaping (_ data: Data?, _ message: String?, _ errorCode: Int) -> Void) {
+    static func downloadProfilePictureWith(account: tableAccount, url: String, completion: @escaping (_ data: Data?, _ message: String?, _ errorCode: Int) -> Void) {
         var request: URLRequest!
         if let url = URL(string: url), let policy = NSURLRequest.CachePolicy(rawValue: 0) {
             request = URLRequest(url: url, cachePolicy: policy, timeoutInterval: 20.0)
@@ -28,11 +25,11 @@ class InfomaniakUtils {
 
         let session = URLSession(configuration: URLSessionConfiguration.default)
         let task: URLSessionDataTask = session.dataTask(with: request) { (data, response, error) in
-            if(error != nil) {
+            if (error != nil) {
                 var message = ""
                 var errorCode = 0
-                
-                if let httpResponse = (response as? HTTPURLResponse){
+
+                if let httpResponse = (response as? HTTPURLResponse) {
                     errorCode = httpResponse.statusCode
                 }
 
@@ -42,19 +39,31 @@ class InfomaniakUtils {
 
                 if (errorCode == 503) {
                     message = NSLocalizedString("_server_error_retry_", comment: "");
-                }
-                else {
+                } else {
                     message = error!.localizedDescription
                 }
 
                 completion(data, message, errorCode)
-            }
-            else {
+            } else {
                 completion(data, nil, 0)
             }
         }
 
         task.resume()
+    }
+
+    static func getServerId(url: String) -> String {
+        var driveID = ""
+        let pattern = ".+?(\\d+)\\.connect\\.drive\\.infomaniak\\.com.*"
+        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+
+        if let match = regex?.firstMatch(in: url, options: [], range: NSRange(location: 0, length: url.utf16.count)) {
+            if let driveIDRange = Range(match.range(at: 1), in: url) {
+                driveID = String(url[driveIDRange])
+            }
+        }
+
+        return driveID
     }
 
 }

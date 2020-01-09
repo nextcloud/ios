@@ -1009,19 +1009,9 @@
     } else {
         return false;
     }
-
-    NSString *serveurURL = metadata.serverUrl;
+    
     NSError *error = NULL;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@".+?(\\d+)\\.connect\\.drive\\.infomaniak\\.com.*"
-                                                                           options:NSRegularExpressionCaseInsensitive error:&error];
-
-    NSArray *matches = [regex matchesInString:serveurURL
-                                      options:0
-                                        range:NSMakeRange(0, [serveurURL length])];
-    NSString *driveID = @"";
-    for (NSTextCheckingResult *match in matches) {
-        driveID = [serveurURL substringWithRange:[match rangeAtIndex:1]];
-    }
+    NSString *driveID = [InfomaniakUtils getServerIdWithUrl:metadata.serverUrl];
 
     NSString *stringFileId = metadata.fileId;
     NSRegularExpression *regexFileID = [NSRegularExpression regularExpressionWithPattern:@"^0*" options:NSRegularExpressionCaseInsensitive error:&error];

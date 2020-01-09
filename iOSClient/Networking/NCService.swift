@@ -80,7 +80,7 @@ class NCService: NSObject {
                     let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(tableAccount.userID)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
-                    InfomaniakUtils.shared.downloadProfilePictureWith(account: tableAccount, url: avatarUrl) { (data, message, errorCode) in
+                    InfomaniakUtils.downloadProfilePictureWith(account: tableAccount, url: avatarUrl) { (data, message, errorCode) in
                         if errorCode == 0 {
                             if let image = UIImage(data: data!) {
                                 try? FileManager.default.removeItem(atPath: fileNamePath)
