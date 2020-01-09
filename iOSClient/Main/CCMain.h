@@ -43,10 +43,16 @@
 #import <MGSwipeTableCell/MGSwipeTableCell.h>
 
 @class tableMetadata;
+@class NCMainChangeHeightWebView;
 
 @interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *viewSectionWebViewHeight;
+@property (nonatomic, weak) IBOutlet UIView *viewSectionWebView;
+@property (nonatomic, weak) IBOutlet WKWebView *webView;
+@property (nonatomic, weak) IBOutlet NCMainChangeHeightWebView *mainChangeHeightWebView;
+
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) tableMetadata *metadataForPushDetail;
 @property (nonatomic, strong) NSString *selectorForPushDetail;

@@ -2,7 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
+        <deployment version="4352" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -424,26 +424,78 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="dC6-NQ-0Td">
-                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
+                                <rect key="frame" x="0.0" y="188" width="414" height="625"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="Qyv-Eo-LeA" id="8v3-Et-JVZ"/>
                                     <outlet property="delegate" destination="Qyv-Eo-LeA" id="CeL-Eu-Cur"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xus-GQ-KT4">
+                                <rect key="frame" x="0.0" y="88" width="414" height="100"/>
+                                <subviews>
+                                    <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5wM-L2-281">
+                                        <rect key="frame" x="1" y="0.0" width="412" height="90"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <wkWebViewConfiguration key="configuration">
+                                            <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                            <wkPreferences key="preferences"/>
+                                        </wkWebViewConfiguration>
+                                    </wkWebView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ucy-1e-ZKf" customClass="NCMainChangeHeightWebView" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="90" width="414" height="10"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dragHorizontal" translatesAutoresizingMaskIntoConstraints="NO" id="6qg-mV-HhN">
+                                                <rect key="frame" x="202" y="0.0" width="10" height="10"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="10" id="ohA-ud-f6c"/>
+                                                    <constraint firstAttribute="height" constant="10" id="sYM-Wo-ZA4"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="10" id="5nD-75-8Rl"/>
+                                            <constraint firstItem="6qg-mV-HhN" firstAttribute="centerY" secondItem="ucy-1e-ZKf" secondAttribute="centerY" id="bwH-hl-4Vr"/>
+                                            <constraint firstItem="6qg-mV-HhN" firstAttribute="centerX" secondItem="ucy-1e-ZKf" secondAttribute="centerX" id="y0w-r2-6fH"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="imageDrag" destination="6qg-mV-HhN" id="lpB-Ca-jAF"/>
+                                        </connections>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="5wM-L2-281" secondAttribute="bottom" constant="10" id="0ZU-GR-hru"/>
+                                    <constraint firstAttribute="height" constant="100" id="H0o-EG-cxN"/>
+                                    <constraint firstItem="5wM-L2-281" firstAttribute="leading" secondItem="xus-GQ-KT4" secondAttribute="leading" constant="1" id="K5c-Ur-4ht"/>
+                                    <constraint firstAttribute="trailing" secondItem="ucy-1e-ZKf" secondAttribute="trailing" id="R7Q-XH-Xan"/>
+                                    <constraint firstItem="ucy-1e-ZKf" firstAttribute="top" secondItem="5wM-L2-281" secondAttribute="bottom" id="Y8u-eZ-VOP"/>
+                                    <constraint firstItem="5wM-L2-281" firstAttribute="top" secondItem="xus-GQ-KT4" secondAttribute="top" id="ZcF-yZ-qQS"/>
+                                    <constraint firstItem="ucy-1e-ZKf" firstAttribute="leading" secondItem="xus-GQ-KT4" secondAttribute="leading" id="kUK-qj-2fI"/>
+                                    <constraint firstAttribute="trailing" secondItem="5wM-L2-281" secondAttribute="trailing" constant="1" id="o3c-EB-zVd"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="xus-GQ-KT4" firstAttribute="top" secondItem="Sqy-z1-MI5" secondAttribute="top" id="58V-Ab-HzA"/>
+                            <constraint firstItem="Sqy-z1-MI5" firstAttribute="trailing" secondItem="xus-GQ-KT4" secondAttribute="trailing" id="A0T-28-XOE"/>
                             <constraint firstItem="dC6-NQ-0Td" firstAttribute="leading" secondItem="Sqy-z1-MI5" secondAttribute="leading" id="AAp-Xf-P1c"/>
                             <constraint firstItem="Sqy-z1-MI5" firstAttribute="trailing" secondItem="dC6-NQ-0Td" secondAttribute="trailing" id="DBL-Bo-AUz"/>
-                            <constraint firstItem="dC6-NQ-0Td" firstAttribute="top" secondItem="Sqy-z1-MI5" secondAttribute="top" id="Y4F-vb-WVb"/>
+                            <constraint firstItem="xus-GQ-KT4" firstAttribute="leading" secondItem="Sqy-z1-MI5" secondAttribute="leading" id="YFb-tE-vb3"/>
                             <constraint firstItem="Sqy-z1-MI5" firstAttribute="bottom" secondItem="dC6-NQ-0Td" secondAttribute="bottom" id="d6p-eB-e8X"/>
+                            <constraint firstItem="dC6-NQ-0Td" firstAttribute="top" secondItem="xus-GQ-KT4" secondAttribute="bottom" id="rRF-Uk-ejG"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Sqy-z1-MI5"/>
                     </view>
                     <navigationItem key="navigationItem" id="2BC-Vb-dXh"/>
                     <connections>
+                        <outlet property="mainChangeHeightWebView" destination="ucy-1e-ZKf" id="PbN-bX-rQa"/>
                         <outlet property="tableView" destination="dC6-NQ-0Td" id="hew-Gn-bWh"/>
+                        <outlet property="viewSectionWebView" destination="xus-GQ-KT4" id="TMC-zb-IA9"/>
+                        <outlet property="viewSectionWebViewHeight" destination="H0o-EG-cxN" id="M8o-g3-Agn"/>
+                        <outlet property="webView" destination="5wM-L2-281" id="7dJ-Fc-Ltm"/>
                         <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="2Qm-A6-CfB"/>
                     </connections>
                 </viewController>
@@ -622,10 +674,11 @@
     <resources>
         <image name="avatar" width="25" height="25"/>
         <image name="disclosureIndicator" width="26" height="28"/>
+        <image name="dragHorizontal" width="312" height="312"/>
         <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="W5b-lw-8O1"/>
+        <segue reference="2Qm-A6-CfB"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -174,6 +174,9 @@
 + (BOOL)getDarkModeDetect;
 + (void)setDarkModeDetect:(BOOL)disable;
 
++ (NSInteger)getViewSectionWebViewHeight;
++ (void)setViewSectionWebViewHeight:(NSInteger)height;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

@@ -692,6 +692,23 @@
     [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:k_serviceShareKeyChain];
 }
 
++ (NSInteger)getViewSectionWebViewHeight
+{
+    NSString *height = [UICKeyChainStore stringForKey:@"viewSectionWebViewHeight" service:k_serviceShareKeyChain];
+    
+    if (height == nil) {
+        return UIScreen.mainScreen.bounds.size.height/4;
+    } else {
+        return [height integerValue];
+    }
+}
+
++ (void)setViewSectionWebViewHeight:(NSInteger)height
+{
+    NSString *heightString = [@(height) stringValue];
+    [UICKeyChainStore setString:heightString forKey:@"viewSectionWebViewHeight" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

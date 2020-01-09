@@ -281,6 +281,9 @@
     // createImagesThemingColor
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
+    // viewSectionWebView
+    self.viewSectionWebView.backgroundColor = NCBrandColor.sharedInstance.brand;
+    
     // Refresh control
     refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
     refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand;
@@ -345,6 +348,17 @@
         
         // Setting Theming
         [appDelegate settingThemingColorBrand];
+        
+        // Nextcloud 18
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+        if (capabilities.versionMajor >= k_nextcloud_version_18_0) {
+            self.viewSectionWebViewHeight.constant = CCUtility.getViewSectionWebViewHeight;
+            [self.mainChangeHeightWebView setHidden:false];
+        } else {
+            [CCUtility setViewSectionWebViewHeight:10];
+            self.viewSectionWebViewHeight.constant = 10;
+            [self.mainChangeHeightWebView setHidden:true];
+        }
         
         // Detail
         // If AVPlayer in play -> Stop
