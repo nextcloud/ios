@@ -21,12 +21,10 @@ class NCMainChangeHeightWebView: UIView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        self.backgroundColor = NCBrandColor.sharedInstance.brand
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
     }
     
     @objc func changeTheming() {
-        self.backgroundColor = NCBrandColor.sharedInstance.brand
         imageDrag.image = CCGraphics.changeThemingColorImage(UIImage(named: "dragHorizontal"), width: 20, height: 10, color: NCBrandColor.sharedInstance.brandText)
     }
     
@@ -40,8 +38,7 @@ class NCMainChangeHeightWebView: UIView {
         let touch = touches.first
         let endPosition = touch?.location(in: self)
         let difference = endPosition!.y - startPosition!.y
-        let currentviewSectionWebViewHeight = appDelegate.activeMain.viewSectionWebViewHeight.constant
-        let differenceSectionWebViewHeight = currentviewSectionWebViewHeight + difference
+        let differenceSectionWebViewHeight = appDelegate.activeMain.viewSectionWebViewHeight.constant + difference
         
         if differenceSectionWebViewHeight <= minHeight {
             appDelegate.activeMain.viewSectionWebViewHeight.constant = minHeight
@@ -52,6 +49,10 @@ class NCMainChangeHeightWebView: UIView {
         else {
             appDelegate.activeMain.viewSectionWebViewHeight.constant = differenceSectionWebViewHeight
         }
+        
+        // save position
+        let currentviewSectionWebViewHeight = Int(appDelegate.activeMain.viewSectionWebViewHeight.constant)
+        CCUtility.setViewSectionWebViewHeight(currentviewSectionWebViewHeight)
     }
 
     

@@ -190,6 +190,9 @@
     if (self.searchController.isActive == false) {
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
     }
+    
+    // Section Web View
+    [self settingsSectionWebView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -310,6 +313,19 @@
     [self tableViewReloadData];
 }
 
+- (void)settingsSectionWebView
+{
+    // Nextcloud 18
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    if (capabilities.versionMajor >= k_nextcloud_version_18_0) {
+        self.viewSectionWebViewHeight.constant = CCUtility.getViewSectionWebViewHeight;
+        [self.mainChangeHeightWebView setHidden:false];
+    } else {
+        self.viewSectionWebViewHeight.constant = 10;
+        [self.mainChangeHeightWebView setHidden:true];
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Initialization =====
 #pragma --------------------------------------------------------------------------------------------
@@ -349,16 +365,8 @@
         // Setting Theming
         [appDelegate settingThemingColorBrand];
         
-        // Nextcloud 18
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-        if (capabilities.versionMajor >= k_nextcloud_version_18_0) {
-            self.viewSectionWebViewHeight.constant = CCUtility.getViewSectionWebViewHeight;
-            [self.mainChangeHeightWebView setHidden:false];
-        } else {
-            [CCUtility setViewSectionWebViewHeight:10];
-            self.viewSectionWebViewHeight.constant = 10;
-            [self.mainChangeHeightWebView setHidden:true];
-        }
+        // Section Web View
+        [self settingsSectionWebView];
         
         // Detail
         // If AVPlayer in play -> Stop
