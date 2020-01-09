@@ -66,4 +66,60 @@ class InfomaniakUtils: NSObject {
         return driveID
     }
 
+    static func openOnlyOffice(metadata: tableMetadata?) -> Bool {
+        var type = ""
+        if self.isDoc(mimeType: metadata?.contentType) {
+            type = "text"
+        } else if self.isSpreadsheet(mimeType: metadata?.contentType) {
+            type = "spreadsheet"
+        } else if self.isPresentation(mimeType: metadata?.contentType) {
+            type = "presentation"
+        } else {
+            return false
+        }
+
+        let driveID = InfomaniakUtils.getServerId(url: metadata?.serverUrl ?? "")
+
+        let stringFileId = metadata?.fileId
+        let regexFileID = try? NSRegularExpression(pattern: "^0*", options: .caseInsensitive)
+        let fileID = regexFileID?.stringByReplacingMatches(in: stringFileId ?? "", options: [], range: NSRange(location: 0, length: stringFileId?.count ?? 0), withTemplate: "")
+
+        let url = "https://drive.infomaniak.com/app/drive/\(driveID)/preview/\(type)/\(fileID ?? "")"
+
+        if let url = URL(string: url) {
+            UIApplication.shared.open(url)
+        }
+
+        return true
+    }
+
+    static func isDocumentModifiableWithOnlyOffice(mimeType: String?) -> Bool {
+        self.isDoc(mimeType: mimeType) || self.isSpreadsheet(mimeType: mimeType) || self.isPresentation(mimeType: mimeType)
+    }
+
+    static func isDoc(mimeType: String?) -> Bool {
+        mimeType?.hasPrefix("application/msword") ?? false
+                || mimeType?.hasPrefix("application/vnd.ms-word") ?? false
+                || mimeType?.hasPrefix("application/vnd.oasis.opendocument.text") ?? false
+                || mimeType?.hasPrefix("application/vnd.openxmlformats-officedocument.wordprocessingml") ?? false
+    }
+
+    static func isSpreadsheet(mimeType: String?) -> Bool {
+        mimeType?.hasPrefix("application/vnd.ms-excel") ?? false
+                || mimeType?.hasPrefix("application/msexcel") ?? false
+                || mimeType?.hasPrefix("application/x-msexcel") ?? false
+                || mimeType?.hasPrefix("application/vnd.openxmlformats-officedocument.spreadsheetml") ?? false
+                || mimeType?.hasPrefix("application/vnd.oasis.opendocument.spreadsheet") ?? false
+    }
+
+    static func isPresentation(mimeType: String?) -> Bool {
+        mimeType?.hasPrefix("application/powerpoint") ?? false
+                || mimeType?.hasPrefix("application/mspowerpoint") ?? false
+                || mimeType?.hasPrefix("application/vnd.ms-powerpoint") ?? false
+                || mimeType?.hasPrefix("application/x-mspowerpoint") ?? false
+                || mimeType?.hasPrefix("application/vnd.openxmlformats-officedocument.presentationml") ?? false
+                || mimeType?.hasPrefix("application/vnd.oasis.opendocument.presentation") ?? false
+    }
+
+
 }
