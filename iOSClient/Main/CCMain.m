@@ -321,7 +321,7 @@
         self.viewSectionWebViewHeight.constant = CCUtility.getViewSectionWebViewHeight;
         [self.mainChangeHeightWebView setHidden:false];
     } else {
-        self.viewSectionWebViewHeight.constant = 10;
+        self.viewSectionWebViewHeight.constant = 0;
         [self.mainChangeHeightWebView setHidden:true];
     }
 }
