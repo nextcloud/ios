@@ -356,6 +356,7 @@ class tableMedia: Object {
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
+    @objc dynamic var richWorkspace = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -399,6 +400,7 @@ class tableMetadata: Object {
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
+    @objc dynamic var richWorkspace = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
