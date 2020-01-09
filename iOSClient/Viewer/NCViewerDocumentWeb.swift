@@ -73,11 +73,7 @@ class NCViewerDocumentWeb: NSObject {
         let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: Int(detail.view.bounds.size.width), height: Int(detail.view.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1), configuration: configuration)
         webView.navigationDelegate = self
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        if CCUtility.getDarkMode() {
-            webView.backgroundColor = .lightGray
-        } else {
-            webView.backgroundColor = .white
-        }
+        webView.backgroundColor = .white
         
         webView.isOpaque = false
         
