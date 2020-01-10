@@ -56,7 +56,6 @@
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
-                <outlet property="viewTouch" destination="C1O-Se-sSW" id="atg-iz-CXm"/>
                 <outlet property="webView" destination="XXz-cr-h4j" id="Sx0-bC-A3Q"/>
             </connections>
             <point key="canvasLocation" x="136" y="135"/>

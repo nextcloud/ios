@@ -692,18 +692,18 @@
     [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:k_serviceShareKeyChain];
 }
 
-+ (NSInteger)getRichWorkspaceHeight
++ (CGFloat)getRichWorkspaceHeight
 {
     NSString *height = [UICKeyChainStore stringForKey:@"richWorkspaceHeight" service:k_serviceShareKeyChain];
     
     if (height == nil) {
         return UIScreen.mainScreen.bounds.size.height/5;
     } else {
-        return [height integerValue];
+        return [height floatValue];
     }
 }
 
-+ (void)setRichWorkspaceHeight:(NSInteger)height
++ (void)setRichWorkspaceHeight:(CGFloat)height
 {
     NSString *heightString = [@(height) stringValue];
     [UICKeyChainStore setString:heightString forKey:@"richWorkspaceHeight" service:k_serviceShareKeyChain];

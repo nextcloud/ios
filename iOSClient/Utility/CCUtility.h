@@ -174,8 +174,8 @@
 + (BOOL)getDarkModeDetect;
 + (void)setDarkModeDetect:(BOOL)disable;
 
-+ (NSInteger)getRichWorkspaceHeight;
-+ (void)setRichWorkspaceHeight:(NSInteger)height;
++ (CGFloat)getRichWorkspaceHeight;
++ (void)setRichWorkspaceHeight:(CGFloat)height;
 
 // ===== Varius =====
 

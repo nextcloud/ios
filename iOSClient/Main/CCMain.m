@@ -242,12 +242,6 @@
     [self closeAllMenu];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.    
-}
-
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -3872,8 +3866,6 @@
 
 - (void)setTableViewHeader
 {
-    NSString *htmlString;
-    
     // Nextcloud 18
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
     if (capabilities.versionMajor < k_nextcloud_version_18_0) {
@@ -3882,37 +3874,11 @@
     }
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace];
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
-    
-    if (directory.richWorkspace != nil && directory.richWorkspace.length > 0) {
-        htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #000000;\">%@</span></h2>", directory.richWorkspace];
-    } else {
-        htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #999999;\">%@</span></h2>", NSLocalizedString(@"_add_notes_readme_md_", nil)];
-    }
-    
-    [self.viewRichWorkspace.webView loadHTMLString:htmlString baseURL:NSBundle.mainBundle.bundleURL];
-    
     [self.tableView setTableHeaderView:self.viewRichWorkspace];
-
-    
-    /*
-    if (capabilities.versionMajor >= k_nextcloud_version_18_0) {
-        NSString *htmlString;
-        
-        if (richWorkspace != nil && richWorkspace.length > 0) {
-            htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #000000;\">%@</span></h2>", richWorkspace];
-        } else {
-            htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #999999;\">%@</span></h2>", NSLocalizedString(@"_add_notes_readme_md_", nil)];
-        }
-        [self.webViewRichWorkspace loadHTMLString:htmlString baseURL:NSBundle.mainBundle.bundleURL];
-        self.constraintHeightRichWorkspace.constant = CCUtility.getRichWorkspaceHeight;
-        [self.mainViewHeightRichWorkspace setHidden:false];
-    } else {
-        self.constraintHeightRichWorkspace.constant = 0;
-        [self.mainViewHeightRichWorkspace setHidden:true];
-    }
-    */
 }
+
 - (void)setTableViewFooter
 {
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 40)];

@@ -11,7 +11,7 @@ import Foundation
 @objc class NCViewRichWorkspace: UIView {
     
     @IBOutlet weak var webView: WKWebView!
-    @IBOutlet weak var viewTouch: NCRichWorkspaceViewTouch!
+    var richWorkspace: String?
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -22,6 +22,20 @@ import Foundation
     
     @objc func changeTheming() {
         self.backgroundColor = NCBrandColor.sharedInstance.brand;
+    }
+    
+    @objc func setRichWorkspaceText(_ richWorkspace: String?) {
+        
+        var html = ""
+        
+        if richWorkspace == self.richWorkspace { return }
+        if richWorkspace != nil || richWorkspace!.count > 0 {
+            html = "<h2><span style=\"color: #000000;\">" + richWorkspace! + "</span></h2>"
+        } else {
+            html = "<h2><span style=\"color: #000000;\">" + NSLocalizedString("_add_notes_readme_md_", comment: "") + "</span></h2>"
+        }
+        self.richWorkspace = richWorkspace
+        webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
     }
 }
 
@@ -62,11 +76,11 @@ import Foundation
         if let viewRichWorkspace = appDelegate.activeMain.tableView.tableHeaderView {
             let differenceHeight = viewRichWorkspace.frame.height + difference
             if differenceHeight <= minHeight {
-                CCUtility.setRichWorkspaceHeight(Int(minHeight))
+                CCUtility.setRichWorkspaceHeight(minHeight)
             } else if differenceHeight >= maxHeight {
-                CCUtility.setRichWorkspaceHeight(Int(maxHeight))
+                CCUtility.setRichWorkspaceHeight(maxHeight)
             } else {
-                CCUtility.setRichWorkspaceHeight(Int(differenceHeight))
+                CCUtility.setRichWorkspaceHeight(differenceHeight)
             }
             appDelegate.activeMain.setTableViewHeader()
         }
