@@ -244,7 +244,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         
                         // Update directory etag
                         let directory = files![0]
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: directory.etag, ocId: directory.ocId, encrypted: directory.e2eEncrypted, account: account)
+                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: directory.etag, ocId: directory.ocId, encrypted: directory.e2eEncrypted, richWorkspace: nil, account: account)
                                                 
                         // Update DB
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, serverUrl, k_metadataStatusNormal, k_metadataStatusHide))

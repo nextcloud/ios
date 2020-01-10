@@ -563,7 +563,7 @@
                 }
                 
                 // Add metadata folder
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite ocId:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl account:account];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite ocId:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:serverUrl richWorkspace:nil account:account];
 
                 NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
                     
@@ -586,7 +586,7 @@
                     }
                     
                     if (itemDto.isDirectory) {
-                        (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] account:account];
+                        (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] richWorkspace: nil account:account];
                     }
                     
                     [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
@@ -936,7 +936,7 @@
                 serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
                 
                 if (itemDto.isDirectory) {
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] richWorkspace:nil account:account];
                 }
                 
                 isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
@@ -1268,7 +1268,7 @@
                 serverUrl = [CCUtility stringAppendServerUrl:[url stringByAppendingString:k_webDAV] addFileName:serverPath];
                 
                 if (itemDto.isDirectory) {
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] account:account];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] richWorkspace:nil account:account];
                 }
                 
                 isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];

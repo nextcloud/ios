@@ -197,8 +197,8 @@
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
     }
     
-    // Section Web View
-    [self settingsSectionWebView];
+    // Rich Workspace
+    [self settingsRichWorkspace];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -319,14 +319,15 @@
     [self tableViewReloadData];
 }
 
-- (void)settingsSectionWebView
+- (void)settingsRichWorkspace
 {
     // Nextcloud 18
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    
     if (capabilities.versionMajor >= k_nextcloud_version_18_0) {
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, @"readme.md"]];
-        if (metadata && [[NCUtility sharedInstance] isDirectEditing:metadata]) {
-            NSString *htmlString = metadata.richWorkspace;
+        if (directory.richWorkspace.length > 0) {
+            NSString *htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #000000;\">%@</span></h2>", directory.richWorkspace];
             [self.webView loadHTMLString:htmlString baseURL:NSBundle.mainBundle.bundleURL];
             self.viewSectionWebViewHeight.constant = CCUtility.getViewSectionWebViewHeight;
         } else {
@@ -380,8 +381,8 @@
         // Setting Theming
         [appDelegate settingThemingColorBrand];
         
-        // Section Web View
-        [self settingsSectionWebView];
+        // Section Rich Workspace
+        [self settingsRichWorkspace];
         
         // Detail
         // If AVPlayer in play -> Stop
@@ -1141,6 +1142,34 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     });
     
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
+          
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            tableMetadata *metadataFolder;
+            (void)[[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:self.serverUrl user:appDelegate.activeUser metadataFolder:&metadataFolder];
+            
+            // Rich Workspace
+            if (metadataFolder != nil) {
+                [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadataFolder.ocId serverUrl:self.serverUrl richWorkspace:metadataFolder.richWorkspace account:account];
+                [self settingsRichWorkspace];
+            }
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadataFolder.serverUrl]];
+            
+            // Read folder: No record, Change etag or BLINK
+            if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadataFolder.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
+                [self readFolder:self.serverUrl];
+            }
+            
+        } else if (errorCode != 0) {
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
+        }
+    }];
+    
+    /*
     [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
@@ -1158,6 +1187,7 @@
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
+    */
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1179,7 +1209,7 @@
     
     if (self.searchController.isActive == NO) {
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted account:account];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:account];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:serverUrl account:account];
     }
@@ -1571,7 +1601,7 @@
                                     return;
                                 }
                                 
-                                [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:@"" ocId:nil encrypted:directoryTable.e2eEncrypted account:appDelegate.activeAccount];
+                                [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:@"" ocId:nil encrypted:directoryTable.e2eEncrypted richWorkspace:nil account:appDelegate.activeAccount];
                                 
                             } else {
                                 
@@ -2203,7 +2233,7 @@
 - (void)createReMainMenu
 {
     NSString *title;
-    NSString *groupBy = [CCUtility getGroupBySettings];
+    //NSString *groupBy = [CCUtility getGroupBySettings];
     NSString *sorted = [CCUtility getOrderSettings];
     BOOL ascending = [CCUtility getAscendingSettings];
     
