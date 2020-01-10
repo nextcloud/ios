@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -131,7 +131,7 @@
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" customClass="CCMainTabBarController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" customClass="CCMainTabBarController" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="ozb-fg-0GE">
                         <barButtonItem key="backBarButtonItem" title="Back" id="oUu-2v-gUF"/>
@@ -162,7 +162,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="95.5" y="369.5" width="223" height="157.5"/>
+                                <rect key="frame" x="57" y="298" width="300" height="300"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -205,7 +205,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="cj6-rT-wnB">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="cj6-rT-wnB">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -224,7 +224,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Favorites" id="o09-67-hwf"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="MJw-Bn-5le">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="MJw-Bn-5le">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -279,7 +279,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" userLabel="Media" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ixg-Pw-TNO">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="ixg-Pw-TNO">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -298,7 +298,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" enabled="NO" title="" image="tabBarPlus" id="vIy-cM-ojV"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="jCU-so-Np6">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="jCU-so-Np6">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -314,7 +314,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="1Z8-Bx-Dqo" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="More" id="U4f-qS-cgh"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="yVo-p8-ApS">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="yVo-p8-ApS">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -454,7 +454,7 @@
         <!--More-->
         <scene sceneID="50a-pn-1yx">
             <objects>
-                <viewController id="Frr-j9-xav" customClass="CCMore" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Frr-j9-xav" customClass="CCMore" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hLP-ql-OiA">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -476,7 +476,7 @@
                                 <rect key="frame" x="0.0" y="188" width="414" height="573"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="V1G-2M-Q0I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="V1G-2M-Q0I" customClass="CCCellMore" customModule="kDrive" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="55.5" width="414" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" multipleTouchEnabled="YES" contentMode="center" tableViewCell="V1G-2M-Q0I" id="mMB-QG-hoe">
@@ -516,7 +516,7 @@
                                     <outlet property="delegate" destination="Frr-j9-xav" id="46E-kI-GUB"/>
                                 </connections>
                             </tableView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="NCAvatar" customModule="kDrive" customModuleProvider="target">
                                 <rect key="frame" x="15" y="103" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="moA-ZW-N2y"/>
@@ -622,10 +622,10 @@
     <resources>
         <image name="avatar" width="25" height="25"/>
         <image name="disclosureIndicator" width="26" height="28"/>
-        <image name="logo" width="223" height="157.5"/>
+        <image name="logo" width="300" height="300"/>
         <image name="tabBarPlus" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="45n-bF-9RO"/>
+        <segue reference="W5b-lw-8O1"/>
     </inferredMetricsTieBreakers>
 </document>
