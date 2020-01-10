@@ -174,8 +174,8 @@
 + (BOOL)getDarkModeDetect;
 + (void)setDarkModeDetect:(BOOL)disable;
 
-+ (NSInteger)getViewSectionWebViewHeight;
-+ (void)setViewSectionWebViewHeight:(NSInteger)height;
++ (NSInteger)getRichWorkspaceHeight;
++ (void)setRichWorkspaceHeight:(NSInteger)height;
 
 // ===== Varius =====
 

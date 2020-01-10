@@ -1,5 +1,5 @@
 //
-//  NCMainChangeHeightWebView.swift
+//  NCMainViewHeightRichWorkspace.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/01/2020.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NCMainChangeHeightWebView: UIView {
+class NCMainViewHeightRichWorkspace: UIView {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var startPosition: CGPoint?
@@ -38,21 +38,21 @@ class NCMainChangeHeightWebView: UIView {
         let touch = touches.first
         let endPosition = touch?.location(in: self)
         let difference = endPosition!.y - startPosition!.y
-        let differenceSectionWebViewHeight = appDelegate.activeMain.viewSectionWebViewHeight.constant + difference
+        let differenceSectionWebViewHeight = appDelegate.activeMain.constraintHeightRichWorkspace.constant + difference
         
         if differenceSectionWebViewHeight <= minHeight {
-            appDelegate.activeMain.viewSectionWebViewHeight.constant = minHeight
+            appDelegate.activeMain.constraintHeightRichWorkspace.constant = minHeight
         }
         else if differenceSectionWebViewHeight >= maxHeight {
-            appDelegate.activeMain.viewSectionWebViewHeight.constant = maxHeight
+            appDelegate.activeMain.constraintHeightRichWorkspace.constant = maxHeight
         }
         else {
-            appDelegate.activeMain.viewSectionWebViewHeight.constant = differenceSectionWebViewHeight
+            appDelegate.activeMain.constraintHeightRichWorkspace.constant = differenceSectionWebViewHeight
         }
         
         // save position
-        let currentviewSectionWebViewHeight = Int(appDelegate.activeMain.viewSectionWebViewHeight.constant)
-        CCUtility.setViewSectionWebViewHeight(currentviewSectionWebViewHeight)
+        let currentviewSectionWebViewHeight = Int(appDelegate.activeMain.constraintHeightRichWorkspace.constant)
+        CCUtility.setRichWorkspaceHeight(currentviewSectionWebViewHeight)
     }
 
     

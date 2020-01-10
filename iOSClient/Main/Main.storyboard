@@ -442,7 +442,7 @@
                                             <wkPreferences key="preferences"/>
                                         </wkWebViewConfiguration>
                                     </wkWebView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ucy-1e-ZKf" customClass="NCMainChangeHeightWebView" customModule="Nextcloud" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ucy-1e-ZKf" customClass="NCMainViewHeightRichWorkspace" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="90" width="414" height="10"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dragHorizontal" translatesAutoresizingMaskIntoConstraints="NO" id="6qg-mV-HhN">
@@ -491,11 +491,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="2BC-Vb-dXh"/>
                     <connections>
-                        <outlet property="mainChangeHeightWebView" destination="ucy-1e-ZKf" id="PbN-bX-rQa"/>
+                        <outlet property="constraintHeightRichWorkspace" destination="H0o-EG-cxN" id="bIE-De-8W7"/>
+                        <outlet property="mainViewHeightRichWorkspace" destination="ucy-1e-ZKf" id="qjc-0b-oTD"/>
                         <outlet property="tableView" destination="dC6-NQ-0Td" id="hew-Gn-bWh"/>
-                        <outlet property="viewSectionWebView" destination="xus-GQ-KT4" id="TMC-zb-IA9"/>
-                        <outlet property="viewSectionWebViewHeight" destination="H0o-EG-cxN" id="M8o-g3-Agn"/>
-                        <outlet property="webView" destination="5wM-L2-281" id="7dJ-Fc-Ltm"/>
+                        <outlet property="viewSectionRichWorkspace" destination="xus-GQ-KT4" id="DVt-Rt-OnV"/>
+                        <outlet property="webViewRichWorkspace" destination="5wM-L2-281" id="pYS-iQ-e7M"/>
                         <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="2Qm-A6-CfB"/>
                     </connections>
                 </viewController>
