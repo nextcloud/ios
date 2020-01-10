@@ -71,6 +71,8 @@
     // Folder
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
+    
+    NSString *richWorkspace;
 }
 @end
 
@@ -133,11 +135,15 @@
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
-    // vewView Tap Action
+    // Load Rich Workspace
+    self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
+    
+    /*
     UITapGestureRecognizer *webViewTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(webViewTapAction:)];
     webViewTapped.numberOfTapsRequired = 1;
     webViewTapped.delegate = self;
-    [self.webViewRichWorkspace addGestureRecognizer:webViewTapped];
+    [self.viewRichWorkspace addGestureRecognizer:webViewTapped];
+    */
     
     // Pull-to-Refresh
     [self createRefreshControl];
@@ -191,10 +197,6 @@
     
     // Get Shares
     appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
-    
-    // Settings Rich Workspace
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    [self settingsRichWorkspace:directory.richWorkspace];
     
     // Query data source
     if (self.searchController.isActive == false) {
@@ -291,9 +293,6 @@
     // createImagesThemingColor
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
-    // viewSectionWebView
-    self.viewSectionRichWorkspace.backgroundColor = NCBrandColor.sharedInstance.brand;
-    
     // Refresh control
     refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
     refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand;
@@ -318,28 +317,6 @@
     
     // Reload Table View
     [self tableViewReloadData];
-}
-
-- (void)settingsRichWorkspace:(NSString *)richWorkspace
-{
-    // Nextcloud 18
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-    
-    if (capabilities.versionMajor >= k_nextcloud_version_18_0) {
-        NSString *htmlString;
-        
-        if (richWorkspace != nil && richWorkspace.length > 0) {
-            htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #000000;\">%@</span></h2>", richWorkspace];
-        } else {
-            htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #999999;\">%@</span></h2>", NSLocalizedString(@"_add_notes_readme_md_", nil)];
-        }
-        [self.webViewRichWorkspace loadHTMLString:htmlString baseURL:NSBundle.mainBundle.bundleURL];
-        self.constraintHeightRichWorkspace.constant = CCUtility.getRichWorkspaceHeight;
-        [self.mainViewHeightRichWorkspace setHidden:false];
-    } else {
-        self.constraintHeightRichWorkspace.constant = 0;
-        [self.mainViewHeightRichWorkspace setHidden:true];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1149,7 +1126,7 @@
             // Rich Workspace
             if (metadataFolder != nil) {
                 [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadataFolder.ocId serverUrl:self.serverUrl richWorkspace:metadataFolder.richWorkspace account:account];
-                [self settingsRichWorkspace:metadataFolder.richWorkspace];
+                [self setTableViewHeader];
             }
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadataFolder.serverUrl]];
@@ -1161,10 +1138,6 @@
             
         } else if (errorCode != 0) {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-            
-            // Rich Workspace
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-            [self settingsRichWorkspace:directory.richWorkspace];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
@@ -3674,6 +3647,7 @@
     for (NSIndexPath *path in indexPaths)
         [self.tableView selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
     
+    [self setTableViewHeader];
     [self setTableViewFooter];
     
     if (self.tableView.editing)
@@ -3904,6 +3878,53 @@
     
 }
 
+- (void)setTableViewHeader
+{
+    NSString *htmlString;
+    
+    // Nextcloud 18
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    if (capabilities.versionMajor < k_nextcloud_version_18_0) {
+        [self.tableView setTableHeaderView:nil];
+        return;
+    }
+    
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    if ([richWorkspace isEqualToString:directory.richWorkspace]) {
+        return;
+    }
+
+    [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
+    
+    if (directory.richWorkspace != nil && directory.richWorkspace.length > 0) {
+        htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #000000;\">%@</span></h2>", directory.richWorkspace];
+    } else {
+        htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #999999;\">%@</span></h2>", NSLocalizedString(@"_add_notes_readme_md_", nil)];
+    }
+    
+    [self.viewRichWorkspace.webView loadHTMLString:htmlString baseURL:NSBundle.mainBundle.bundleURL];
+    
+    [self.tableView setTableHeaderView:self.viewRichWorkspace];
+
+    
+    /*
+    if (capabilities.versionMajor >= k_nextcloud_version_18_0) {
+        NSString *htmlString;
+        
+        if (richWorkspace != nil && richWorkspace.length > 0) {
+            htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #000000;\">%@</span></h2>", richWorkspace];
+        } else {
+            htmlString = [NSString stringWithFormat:@"<h2><span style=\"color: #999999;\">%@</span></h2>", NSLocalizedString(@"_add_notes_readme_md_", nil)];
+        }
+        [self.webViewRichWorkspace loadHTMLString:htmlString baseURL:NSBundle.mainBundle.bundleURL];
+        self.constraintHeightRichWorkspace.constant = CCUtility.getRichWorkspaceHeight;
+        [self.mainViewHeightRichWorkspace setHidden:false];
+    } else {
+        self.constraintHeightRichWorkspace.constant = 0;
+        [self.mainViewHeightRichWorkspace setHidden:true];
+    }
+    */
+}
 - (void)setTableViewFooter
 {
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 40)];

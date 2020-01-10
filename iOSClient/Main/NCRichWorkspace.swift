@@ -1,5 +1,5 @@
 //
-//  NCMainViewHeightRichWorkspace.swift
+//  NCRichWorkspace.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/01/2020.
@@ -8,7 +8,24 @@
 
 import Foundation
 
-class NCMainViewHeightRichWorkspace: UIView {
+@objc class NCViewRichWorkspace: UIView {
+    
+    @IBOutlet weak var webView: WKWebView!
+    @IBOutlet weak var viewTouch: NCRichWorkspaceViewTouch!
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        self.backgroundColor = NCBrandColor.sharedInstance.brand;
+    }
+    
+    @objc func changeTheming() {
+        self.backgroundColor = NCBrandColor.sharedInstance.brand;
+    }
+}
+
+@objc class NCRichWorkspaceViewTouch: UIView {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var startPosition: CGPoint?
@@ -38,6 +55,8 @@ class NCMainViewHeightRichWorkspace: UIView {
         let touch = touches.first
         let endPosition = touch?.location(in: self)
         let difference = endPosition!.y - startPosition!.y
+        
+        /*
         let differenceSectionWebViewHeight = appDelegate.activeMain.constraintHeightRichWorkspace.constant + difference
         
         if differenceSectionWebViewHeight <= minHeight {
@@ -53,6 +72,7 @@ class NCMainViewHeightRichWorkspace: UIView {
         // save position
         let currentviewSectionWebViewHeight = Int(appDelegate.activeMain.constraintHeightRichWorkspace.constant)
         CCUtility.setRichWorkspaceHeight(currentviewSectionWebViewHeight)
+        */
     }
 
     
