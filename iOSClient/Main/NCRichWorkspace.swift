@@ -45,7 +45,11 @@ import Foundation
         imageDrag.image = CCGraphics.changeThemingColorImage(UIImage(named: "dragHorizontal"), width: 20, height: 10, color: NCBrandColor.sharedInstance.brandText)
     }
     
-    override func  touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
         startPosition = touch?.location(in: self)
         originalHeight = self.frame.height
@@ -55,25 +59,16 @@ import Foundation
         let touch = touches.first
         let endPosition = touch?.location(in: self)
         let difference = endPosition!.y - startPosition!.y
-        
-        /*
-        let differenceSectionWebViewHeight = appDelegate.activeMain.constraintHeightRichWorkspace.constant + difference
-        
-        if differenceSectionWebViewHeight <= minHeight {
-            appDelegate.activeMain.constraintHeightRichWorkspace.constant = minHeight
+        if let viewRichWorkspace = appDelegate.activeMain.tableView.tableHeaderView {
+            let differenceHeight = viewRichWorkspace.frame.height + difference
+            if differenceHeight <= minHeight {
+                CCUtility.setRichWorkspaceHeight(Int(minHeight))
+            } else if differenceHeight >= maxHeight {
+                CCUtility.setRichWorkspaceHeight(Int(maxHeight))
+            } else {
+                CCUtility.setRichWorkspaceHeight(Int(differenceHeight))
+            }
+            appDelegate.activeMain.setTableViewHeader()
         }
-        else if differenceSectionWebViewHeight >= maxHeight {
-            appDelegate.activeMain.constraintHeightRichWorkspace.constant = maxHeight
-        }
-        else {
-            appDelegate.activeMain.constraintHeightRichWorkspace.constant = differenceSectionWebViewHeight
-        }
-        
-        // save position
-        let currentviewSectionWebViewHeight = Int(appDelegate.activeMain.constraintHeightRichWorkspace.constant)
-        CCUtility.setRichWorkspaceHeight(currentviewSectionWebViewHeight)
-        */
     }
-
-    
 }

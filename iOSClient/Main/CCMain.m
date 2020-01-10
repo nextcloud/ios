@@ -137,13 +137,10 @@
     
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
-    
-    /*
-    UITapGestureRecognizer *webViewTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(webViewTapAction:)];
+    UITapGestureRecognizer *webViewTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
     webViewTapped.numberOfTapsRequired = 1;
     webViewTapped.delegate = self;
     [self.viewRichWorkspace addGestureRecognizer:webViewTapped];
-    */
     
     // Pull-to-Refresh
     [self createRefreshControl];
@@ -1954,15 +1951,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Web view (NC 18) =====
+#pragma mark ===== Rich WorkspaceTap Action =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    return YES;
-}
-
-- (void)webViewTapAction:(UITapGestureRecognizer *)tapGesture
+- (void)viewRichWorkspaceTapAction:(UITapGestureRecognizer *)tapGesture
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, @"readme.md"]];
     if (metadata && [[NCUtility sharedInstance] isDirectEditing:metadata]) {
@@ -3890,10 +3882,6 @@
     }
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    if ([richWorkspace isEqualToString:directory.richWorkspace]) {
-        return;
-    }
-
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
     
     if (directory.richWorkspace != nil && directory.richWorkspace.length > 0) {
