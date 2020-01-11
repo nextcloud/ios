@@ -44,7 +44,7 @@ import Foundation
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var startPosition: CGPoint?
     var originalHeight: CGFloat = 0
-    let minHeight: CGFloat = 10
+    let minHeight: CGFloat = 0
     let maxHeight: CGFloat = UIScreen.main.bounds.size.height/3
     
     @IBOutlet weak var imageDrag: UIImageView!
