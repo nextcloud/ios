@@ -87,6 +87,6 @@ import Foundation
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        appDelegate.activeMain.tableView.reloadData()
+//        appDelegate.activeMain.tableView.reloadData()
     }
 }
