@@ -31,7 +31,7 @@ import Foundation
         if richWorkspace != nil && richWorkspace!.count > 0 {
             html = "<h2><span style=\"color: #000000;\">" + richWorkspace! + "</span></h2>"
         } else {
-            html = "<h2><span style=\"color: #000000;\">" + NSLocalizedString("_add_notes_readme_md_", comment: "") + "</span></h2>"
+            html = "<h2><span style=\"color: #808080;\">" + NSLocalizedString("_add_notes_readme_md_", comment: "") + "</span></h2>"
         }
         self.richWorkspace = richWorkspace
         webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
