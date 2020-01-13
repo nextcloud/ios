@@ -301,6 +301,7 @@
     // color searchbar
     self.searchController.searchBar.barTintColor = NCBrandColor.sharedInstance.brand;
     self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.brand;
+    self.view.backgroundColor = NCBrandColor.sharedInstance.brand;
     // color searchbbar button text (cancel)
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
