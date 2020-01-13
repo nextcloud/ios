@@ -3881,9 +3881,17 @@
     } else {
     
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-        [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace];
-        [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
-        [self.tableView setTableHeaderView:self.viewRichWorkspace];
+        
+        if (directory.richWorkspace.length == 0) {
+            
+            [self.tableView setTableHeaderView:nil];
+            
+        } else {
+            
+            [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace];
+            [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
+            [self.tableView setTableHeaderView:self.viewRichWorkspace];
+        }
     }
     
     [self.tableView reloadData];

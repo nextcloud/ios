@@ -11,7 +11,6 @@ import Foundation
 @objc class NCViewRichWorkspace: UIView {
     
     @IBOutlet weak var webView: WKWebView!
-    var richWorkspace: String?
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -26,14 +25,8 @@ import Foundation
     
     @objc func setRichWorkspaceText(_ richWorkspace: String?) {
         
-        var html = ""
+        let html = "<h2><span style=\"color: #000000;\">" + richWorkspace! + "</span></h2>"
         
-        if richWorkspace != nil && richWorkspace!.count > 0 {
-            html = "<h2><span style=\"color: #000000;\">" + richWorkspace! + "</span></h2>"
-        } else {
-            html = "<h2><span style=\"color: #808080;\">" + NSLocalizedString("_add_notes_readme_md_", comment: "") + "</span></h2>"
-        }
-        self.richWorkspace = richWorkspace
         webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
         webView.isUserInteractionEnabled = false
     }

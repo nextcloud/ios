@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XXz-cr-h4j">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="478"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <wkWebViewConfiguration key="configuration">
                         <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -23,10 +23,10 @@
                     </wkWebViewConfiguration>
                 </wkWebView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C1O-Se-sSW" customClass="NCRichWorkspaceViewTouch" customModule="Nextcloud" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="478" width="320" height="2"/>
+                    <rect key="frame" x="0.0" y="480" width="320" height="0.0"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="2" id="xy3-eG-rRi"/>
+                        <constraint firstAttribute="height" id="xy3-eG-rRi"/>
                     </constraints>
                 </view>
             </subviews>
