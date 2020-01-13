@@ -1951,10 +1951,34 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Rich WorkspaceTap Action =====
+#pragma mark ===== Rich Workspace =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)viewRichWorkspaceTapAction:(UITapGestureRecognizer *)tapGesture
+{
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, @"readme.md"]];
+    if (metadata && [[NCUtility sharedInstance] isDirectEditing:metadata]) {
+        if (appDelegate.reachability.isReachable) {
+            [self shouldPerformSegue:metadata selector:@""];
+        } else {
+            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+        }
+    } else if (metadata == nil) {
+        NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:@"Readme.md" serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
+        [[NCCommunication sharedInstance] NCTextCreateFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor:@"text" templateId:@"" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:false ocId:[CCUtility createRandomString:12] serverUrl:self.serverUrl fileName:@"Readme.md" etag:@"" size:0 status:k_metadataStatusNormal url:url contentType:@"text/markdown"];
+                [self shouldPerformSegue:metadata selector:@""];
+            } else if (errorCode != 0) {
+                [NCContentPresenter.shared  messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+            } else {
+                NSLog(@"[LOG] It has been changed user during networking process, error.");
+            }
+        }];
+    }
+}
+
+- (void)createRichWorkspace
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, @"readme.md"]];
     if (metadata && [[NCUtility sharedInstance] isDirectEditing:metadata]) {
@@ -2318,7 +2342,7 @@
     // ITEM ADD FOLDER INFO -----------------------------------------------------------------------------------------------
     
     appDelegate.addFolderInfo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_add_folder_info_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"addFolderInfo"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        
+        [self createRichWorkspace];
     }];
                                  
     // REMENU --------------------------------------------------------------------------------------------------------------
