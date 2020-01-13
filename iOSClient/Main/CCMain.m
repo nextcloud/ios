@@ -137,10 +137,10 @@
     
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
-    UITapGestureRecognizer *webViewTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
-    webViewTapped.numberOfTapsRequired = 1;
-    webViewTapped.delegate = self;
-    [self.viewRichWorkspace addGestureRecognizer:webViewTapped];
+    UITapGestureRecognizer *viewRichWorkspaceTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
+    viewRichWorkspaceTapped.numberOfTapsRequired = 1;
+    viewRichWorkspaceTapped.delegate = self;
+    [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
     
     // Pull-to-Refresh
     [self createRefreshControl];
@@ -3875,14 +3875,16 @@
     // Nextcloud 18
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
     if (capabilities.versionMajor < k_nextcloud_version_18_0) {
+        
         [self.tableView setTableHeaderView:nil];
-        return;
-    }
+        
+    } else {
     
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace];
-    [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
-    [self.tableView setTableHeaderView:self.viewRichWorkspace];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+        [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace];
+        [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
+        [self.tableView setTableHeaderView:self.viewRichWorkspace];
+    }
     
     [self.tableView reloadData];
 }

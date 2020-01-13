@@ -28,14 +28,14 @@ import Foundation
         
         var html = ""
         
-        if richWorkspace == self.richWorkspace { return }
-        if richWorkspace != nil || richWorkspace!.count > 0 {
+        if richWorkspace != nil && richWorkspace!.count > 0 {
             html = "<h2><span style=\"color: #000000;\">" + richWorkspace! + "</span></h2>"
         } else {
             html = "<h2><span style=\"color: #000000;\">" + NSLocalizedString("_add_notes_readme_md_", comment: "") + "</span></h2>"
         }
         self.richWorkspace = richWorkspace
         webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
+        webView.isUserInteractionEnabled = false
     }
 }
 
@@ -46,19 +46,14 @@ import Foundation
     var originalHeight: CGFloat = 0
     let minHeight: CGFloat = 0
     let maxHeight: CGFloat = UIScreen.main.bounds.size.height/3
-    
-    @IBOutlet weak var imageDrag: UIImageView!
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        self.backgroundColor = NCBrandColor.sharedInstance.separator
     }
     
-    @objc func changeTheming() {
-        imageDrag.image = CCGraphics.changeThemingColorImage(UIImage(named: "dragHorizontal"), width: 20, height: 10, color: NCBrandColor.sharedInstance.brandText)
-    }
-    
+    /*
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
@@ -89,4 +84,5 @@ import Foundation
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
 //        appDelegate.activeMain.tableView.reloadData()
     }
+    */
 }

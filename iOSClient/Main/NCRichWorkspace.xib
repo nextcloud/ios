@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XXz-cr-h4j">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="470"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="478"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <wkWebViewConfiguration key="configuration">
                         <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -23,34 +23,20 @@
                     </wkWebViewConfiguration>
                 </wkWebView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C1O-Se-sSW" customClass="NCRichWorkspaceViewTouch" customModule="Nextcloud" customModuleProvider="target">
-                    <rect key="frame" x="3" y="470" width="315" height="10"/>
-                    <subviews>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dragHorizontal" translatesAutoresizingMaskIntoConstraints="NO" id="Kbb-up-Kk7">
-                            <rect key="frame" x="152.5" y="0.0" width="10" height="10"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="10" id="BwK-Ih-xVq"/>
-                                <constraint firstAttribute="width" constant="10" id="Xec-7i-2RT"/>
-                            </constraints>
-                        </imageView>
-                    </subviews>
+                    <rect key="frame" x="0.0" y="478" width="320" height="2"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="Kbb-up-Kk7" firstAttribute="centerY" secondItem="C1O-Se-sSW" secondAttribute="centerY" id="fbh-Mv-JiO"/>
-                        <constraint firstItem="Kbb-up-Kk7" firstAttribute="centerX" secondItem="C1O-Se-sSW" secondAttribute="centerX" id="v7j-DL-Weg"/>
-                        <constraint firstAttribute="height" constant="10" id="xy3-eG-rRi"/>
+                        <constraint firstAttribute="height" constant="2" id="xy3-eG-rRi"/>
                     </constraints>
-                    <connections>
-                        <outlet property="imageDrag" destination="Kbb-up-Kk7" id="Wsc-VP-jpa"/>
-                    </connections>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="C1O-Se-sSW" secondAttribute="trailing" constant="2" id="CHl-hJ-Qnx"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="C1O-Se-sSW" secondAttribute="trailing" id="CHl-hJ-Qnx"/>
                 <constraint firstItem="XXz-cr-h4j" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="DCK-aY-jxF"/>
                 <constraint firstItem="XXz-cr-h4j" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="FBk-U6-oyG"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="C1O-Se-sSW" secondAttribute="bottom" id="Zk1-rb-wAc"/>
-                <constraint firstItem="C1O-Se-sSW" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="3" id="fLO-Ez-t2Z"/>
+                <constraint firstItem="C1O-Se-sSW" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="fLO-Ez-t2Z"/>
                 <constraint firstItem="C1O-Se-sSW" firstAttribute="top" secondItem="XXz-cr-h4j" secondAttribute="bottom" id="oxW-bj-bTB"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XXz-cr-h4j" secondAttribute="trailing" id="sSB-Ux-4JO"/>
             </constraints>
@@ -61,7 +47,4 @@
             <point key="canvasLocation" x="136" y="135"/>
         </view>
     </objects>
-    <resources>
-        <image name="dragHorizontal" width="312" height="312"/>
-    </resources>
 </document>
