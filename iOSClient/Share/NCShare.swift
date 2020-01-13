@@ -52,6 +52,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        searchField.isHidden = true
+        
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 10
         
