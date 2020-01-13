@@ -96,6 +96,7 @@
 @property (nonatomic, strong) REMenuItem *typefileItem;
 @property (nonatomic, strong) REMenuItem *dateItem;
 @property (nonatomic, strong) REMenuItem *directoryOnTopItem;
+@property (nonatomic, strong) REMenuItem *addFolderInfo;
 
 @property (nonatomic, strong) REMenu *reSelectMenu;
 @property (nonatomic, strong) REMenuItem *selectAllItem;
