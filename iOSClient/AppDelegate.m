@@ -401,6 +401,7 @@ PKPushRegistry *pushRegistry;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
         navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
         navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        navController.navigationBar.barStyle = UIBarStyleBlack;
         self.window.rootViewController = navController;
         [self.window makeKeyAndVisible];
         
@@ -413,6 +414,7 @@ PKPushRegistry *pushRegistry;
         navController.modalPresentationStyle = UIModalPresentationFullScreen;
         navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
         navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        navController.navigationBar.barStyle = UIBarStyleBlack;
         [contextViewController presentViewController:navController animated:true completion:nil];
     }
 }

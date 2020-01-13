@@ -228,6 +228,11 @@
     }
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Slide Over - Split View =====
 #pragma --------------------------------------------------------------------------------------------
