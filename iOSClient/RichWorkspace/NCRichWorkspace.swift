@@ -11,7 +11,7 @@ import SwiftRichString
 
 @objc class NCViewRichWorkspace: UIView {
     
-    @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak var textView: UITextView!
     var richWorkspace: String = ""
 
     required init?(coder: NSCoder) {
@@ -29,31 +29,31 @@ import SwiftRichString
     @objc func setRichWorkspaceText(_ richWorkspace: String) {
         
         let h1 = Style {
-            $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+            $0.font = UIFont.systemFont(ofSize: 25, weight: .bold)
             $0.color = NCBrandColor.sharedInstance.textView
         }
         let h2 = Style {
-            $0.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+            $0.font = UIFont.systemFont(ofSize: 23, weight: .bold)
             $0.color = NCBrandColor.sharedInstance.textView
         }
         let h3 = Style {
-            $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+            $0.font = UIFont.systemFont(ofSize: 21, weight: .bold)
             $0.color = NCBrandColor.sharedInstance.textView
         }
         let h4 = Style {
-            $0.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+            $0.font = UIFont.systemFont(ofSize: 19, weight: .bold)
             $0.color = NCBrandColor.sharedInstance.textView
         }
         let h5 = Style {
-            $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+            $0.font = UIFont.systemFont(ofSize: 17, weight: .bold)
             $0.color = NCBrandColor.sharedInstance.textView
         }
         let h6 = Style {
-            $0.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+            $0.font = UIFont.systemFont(ofSize: 15, weight: .bold)
             $0.color = NCBrandColor.sharedInstance.textView
         }
         let normal = Style {
-            $0.font = UIFont.systemFont(ofSize: 10)
+            $0.font = UIFont.systemFont(ofSize: 15)
             $0.color = NCBrandColor.sharedInstance.textView
         }
        
@@ -79,8 +79,9 @@ import SwiftRichString
             }
         }
         
-        textLabel.attributedText = richWorkspaceStyling.set(style: StyleGroup(base: normal, ["h1": h1, "h2": h2, "h3": h3, "h4": h4, "h5": h5, "h6": h6]))
-        textLabel.isUserInteractionEnabled = false
+        textView.attributedText = richWorkspaceStyling.set(style: StyleGroup(base: normal, ["h1": h1, "h2": h2, "h3": h3, "h4": h4, "h5": h5, "h6": h6]))
+        textView.isUserInteractionEnabled = false
+        textView.sizeToFit()
     }
 }
 
