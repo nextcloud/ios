@@ -1001,6 +1001,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                             NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
                         }
                         
+                        // Rich Workspace
+                        if metadata.fileNameView.lowercased() == "readme.md" {
+                            self.appDelegate.activeMain.readFileReloadFolder()
+                        }
+                        
                         self.appDelegate.filterocId.remove(metadata.ocId)
                         
                     } else {
