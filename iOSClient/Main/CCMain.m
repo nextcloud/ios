@@ -1139,26 +1139,6 @@
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
-    
-    /*
-    [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
-       
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-        
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
-            
-            // Read folder: No record, Change etag or BLINK
-            if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
-                [self readFolder:metadata.serverUrl];
-            }
-            
-        } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
-        }
-    }];
-    */
 }
 
 #pragma --------------------------------------------------------------------------------------------
