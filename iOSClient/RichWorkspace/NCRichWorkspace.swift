@@ -46,6 +46,8 @@ import Foundation
             richWorkspaceHtml = richWorkspaceHtml + "<br>"
         }
         
+        richWorkspaceHtml = "<!DOCTYPE html><html><body>" + richWorkspaceHtml + "</body></html>"
+        
         webView.loadHTMLString(richWorkspaceHtml, baseURL: Bundle.main.bundleURL)
         webView.isUserInteractionEnabled = false
     }
