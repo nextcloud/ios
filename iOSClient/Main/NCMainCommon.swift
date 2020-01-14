@@ -955,6 +955,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_delete_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
+                completion(errorCode, message)
             }
         }
     }
