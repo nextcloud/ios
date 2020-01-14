@@ -216,14 +216,14 @@
             return;
         }
         
-        // Direct Editing NextcloudText
+        // Nextcloud Text - RichWorkspace
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
             if ([self.selectorDetail isEqualToString:selectorViewerRichWorkspace]) {
                 
                 self.edgesForExtendedLayout = UIRectEdgeBottom;
                 [self createToolbar];
-                [[NCViewerRichWorkspace shared] viewerRichWorkspaceAt:self.metadataDetail detail:self];
+                [[NCViewerRichWorkspace shared] viewerAt:self.metadataDetail detail:self];
                 return;
                 
             } else {
@@ -242,7 +242,7 @@
                                 
                                 self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                                 [self.view addSubview:self.nextcloudText];
-                                [self.nextcloudText viewNextcloudTextAt:url detail:self metadata:self.metadataDetail];
+                                [self.nextcloudText viewerAt:url detail:self metadata:self.metadataDetail];
                                 
                             } else {
                                 
@@ -260,7 +260,7 @@
                         
                         self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                         [self.view addSubview:self.nextcloudText];
-                        [self.nextcloudText viewNextcloudTextAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                        [self.nextcloudText viewerAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
                     }
                 }
                 
@@ -993,7 +993,16 @@
     // Rich Workspace
     if ([appDelegate.reachability isReachable] && metadata && [self.selectorDetail isEqualToString:selectorViewerRichWorkspace]) {
       
+        // Remove all subview except Image
+        for (UIView *view in self.view.subviews) {
+            NSInteger tag = view.tag;
+            if (tag != 999) {
+                [view removeFromSuperview];
+            }
+        }
         
+        self.selectorDetail = @"";
+        [self viewFile];
     }
     
     // Text

@@ -44,7 +44,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         super.init(coder: coder)
     }
     
-    @objc func viewNextcloudTextAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
+    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
         
         self.detail = detail
         self.metadata = metadata
@@ -63,7 +63,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         
         let userAgent : String = CCUtility.getUserAgent()
         customUserAgent = userAgent
-        load(request)        
+        load(request)
     }
     
     @objc func keyboardDidShow(notification: Notification) {
