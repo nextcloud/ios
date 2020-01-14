@@ -39,7 +39,7 @@
     
     UIDocumentInteractionController *docController;
     
-    UIBarButtonItem *buttonModifyTxt;
+    UIBarButtonItem *buttonModifyFile;
     UIBarButtonItem *buttonShare;
     UIBarButtonItem *buttonDelete;
     
@@ -330,7 +330,7 @@
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceMini.width = 25;
     
-    buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
+    buttonModifyFile = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyFileButtonPressed:)];
     if (![NCBrandOptions sharedInstance].disable_openin_file) {
         self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     }
@@ -339,9 +339,9 @@
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyFile, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyFile, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
     } else {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
             [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
@@ -986,10 +986,18 @@
     }
 }
 
-- (void)modifyTxtButtonPressed:(UIBarButtonItem *)sender
+- (void)modifyFileButtonPressed:(UIBarButtonItem *)sender
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", self.metadataDetail.ocId]];
-    if (metadata) {
+    
+    // Rich Workspace
+    if ([appDelegate.reachability isReachable] && metadata && [self.selectorDetail isEqualToString:selectorViewerRichWorkspace]) {
+      
+        
+    }
+    
+    // Text
+    else if (metadata && [self.selectorDetail isEqualToString:selectorLoadFileInternalView]) {
         
         UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
         
