@@ -15,36 +15,26 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XXz-cr-h4j">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                    <rect key="frame" x="5" y="5" width="310" height="470"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <wkWebViewConfiguration key="configuration">
                         <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                         <wkPreferences key="preferences"/>
                     </wkWebViewConfiguration>
                 </wkWebView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C1O-Se-sSW" customClass="NCRichWorkspaceViewTouch" customModule="Nextcloud" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="480" width="320" height="0.0"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="height" id="xy3-eG-rRi"/>
-                    </constraints>
-                </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="C1O-Se-sSW" secondAttribute="trailing" id="CHl-hJ-Qnx"/>
-                <constraint firstItem="XXz-cr-h4j" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="DCK-aY-jxF"/>
-                <constraint firstItem="XXz-cr-h4j" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="FBk-U6-oyG"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="C1O-Se-sSW" secondAttribute="bottom" id="Zk1-rb-wAc"/>
-                <constraint firstItem="C1O-Se-sSW" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="fLO-Ez-t2Z"/>
-                <constraint firstItem="C1O-Se-sSW" firstAttribute="top" secondItem="XXz-cr-h4j" secondAttribute="bottom" id="oxW-bj-bTB"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XXz-cr-h4j" secondAttribute="trailing" id="sSB-Ux-4JO"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="XXz-cr-h4j" secondAttribute="bottom" constant="5" id="0tw-2O-jd5"/>
+                <constraint firstItem="XXz-cr-h4j" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="5" id="DCK-aY-jxF"/>
+                <constraint firstItem="XXz-cr-h4j" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="5" id="FBk-U6-oyG"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XXz-cr-h4j" secondAttribute="trailing" constant="5" id="sSB-Ux-4JO"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outlet property="webView" destination="XXz-cr-h4j" id="Sx0-bC-A3Q"/>
             </connections>
-            <point key="canvasLocation" x="136" y="135"/>
+            <point key="canvasLocation" x="136.875" y="88.75"/>
         </view>
     </objects>
 </document>

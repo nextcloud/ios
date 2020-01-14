@@ -692,23 +692,6 @@
     [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:k_serviceShareKeyChain];
 }
 
-+ (CGFloat)getRichWorkspaceHeight
-{
-    NSString *height = [UICKeyChainStore stringForKey:@"richWorkspaceHeight" service:k_serviceShareKeyChain];
-    
-    if (height == nil) {
-        return UIScreen.mainScreen.bounds.size.height/5;
-    } else {
-        return [height floatValue];
-    }
-}
-
-+ (void)setRichWorkspaceHeight:(CGFloat)height
-{
-    NSString *heightString = [@(height) stringValue];
-    [UICKeyChainStore setString:heightString forKey:@"richWorkspaceHeight" service:k_serviceShareKeyChain];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

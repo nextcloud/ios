@@ -3889,6 +3889,8 @@
 
 - (void)setTableViewHeader
 {
+    CGFloat height = UIScreen.mainScreen.bounds.size.height/5;
+    
     // Nextcloud 18
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
     if (capabilities.versionMajor < k_nextcloud_version_18_0) {
@@ -3906,7 +3908,7 @@
         } else {
             
             [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace];
-            [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, CCUtility.getRichWorkspaceHeight)];
+            [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, height)];
             [self.tableView setTableHeaderView:self.viewRichWorkspace];
         }
     }

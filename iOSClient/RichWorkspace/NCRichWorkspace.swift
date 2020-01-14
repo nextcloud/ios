@@ -16,66 +16,36 @@ import Foundation
         super.init(coder: coder)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        self.backgroundColor = NCBrandColor.sharedInstance.brand;
+        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     }
     
     @objc func changeTheming() {
-        self.backgroundColor = NCBrandColor.sharedInstance.brand;
+        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     }
     
-    @objc func setRichWorkspaceText(_ richWorkspace: String?) {
+    @objc func setRichWorkspaceText(_ richWorkspace: String) {
         
-        let html = "<h2><span style=\"color: #000000;\">" + richWorkspace! + "</span></h2>"
-        
-        webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
-        webView.isUserInteractionEnabled = false
-    }
-}
-
-@objc class NCRichWorkspaceViewTouch: UIView {
-
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var startPosition: CGPoint?
-    var originalHeight: CGFloat = 0
-    let minHeight: CGFloat = 0
-    let maxHeight: CGFloat = UIScreen.main.bounds.size.height/3
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        self.backgroundColor = NCBrandColor.sharedInstance.separator
-    }
-    
-    /*
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first
-        startPosition = touch?.location(in: self)
-        originalHeight = self.frame.height
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first
-        let endPosition = touch?.location(in: self)
-        let difference = endPosition!.y - startPosition!.y
-        if let viewRichWorkspace = appDelegate.activeMain.tableView.tableHeaderView {
-            let differenceHeight = viewRichWorkspace.frame.height + difference
-            if differenceHeight <= minHeight {
-                CCUtility.setRichWorkspaceHeight(minHeight)
-            } else if differenceHeight >= maxHeight {
-                CCUtility.setRichWorkspaceHeight(maxHeight)
+        var richWorkspaceHtml = ""
+        let richWorkspaceArray = richWorkspace.components(separatedBy: "\n")
+        for string in richWorkspaceArray {
+            if string.hasPrefix("# ") {
+                richWorkspaceHtml = richWorkspaceHtml + "<h1><span style=\"color: #000000;\">" + string.replacingOccurrences(of: "# ", with: "") + "</span></h1>"
+            } else if string.hasPrefix("## ") {
+                richWorkspaceHtml = richWorkspaceHtml + "<h2><span style=\"color: #000000;\">" + string.replacingOccurrences(of: "## ", with: "") + "</span></h2>"
+            } else if string.hasPrefix("### ") {
+                richWorkspaceHtml = richWorkspaceHtml + "<h3><span style=\"color: #000000;\">" + string.replacingOccurrences(of: "### ", with: "") + "</span></h3>"
+            } else if string.hasPrefix("#### ") {
+                richWorkspaceHtml = richWorkspaceHtml + "<h4><span style=\"color: #000000;\">" + string.replacingOccurrences(of: "#### ", with: "") + "</span></h4>"
+            } else if string.hasPrefix("##### ") {
+                richWorkspaceHtml = richWorkspaceHtml + "<h5><span style=\"color: #000000;\">" + string.replacingOccurrences(of: "##### ", with: "") + "</span></h5>"
+            } else if string.hasPrefix("###### ") {
+                richWorkspaceHtml = richWorkspaceHtml + "<h6><span style=\"color: #000000;\">" + string.replacingOccurrences(of: "###### ", with: "") + "</span></h6>"
             } else {
-                CCUtility.setRichWorkspaceHeight(differenceHeight)
+                richWorkspaceHtml = richWorkspaceHtml + "<span style=\"color: #000000;\">" + string + "</span>"
             }
-            appDelegate.activeMain.setTableViewHeader()
+            richWorkspaceHtml = richWorkspaceHtml + "<br>"
         }
+        
+        webView.loadHTMLString(richWorkspaceHtml, baseURL: Bundle.main.bundleURL)
     }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        appDelegate.activeMain.tableView.reloadData()
-    }
-    */
 }

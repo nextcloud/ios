@@ -174,9 +174,6 @@
 + (BOOL)getDarkModeDetect;
 + (void)setDarkModeDetect:(BOOL)disable;
 
-+ (CGFloat)getRichWorkspaceHeight;
-+ (void)setRichWorkspaceHeight:(CGFloat)height;
-
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
