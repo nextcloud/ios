@@ -1002,7 +1002,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         }
                         
                         // Rich Workspace
-                        if metadata.fileNameView.lowercased() == "readme.md" {
+                        if metadata.fileNameView.lowercased() == k_fileNameRichWorkspace.lowercased() {
                             self.appDelegate.activeMain.readFileReloadFolder()
                         }
                         

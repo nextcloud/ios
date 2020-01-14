@@ -293,6 +293,9 @@
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
 
+// Rich Workspace
+#define k_fileNameRichWorkspace                         @"Readme.md"
+
 // Nextcloud unsupported
 #define k_nextcloud_unsupported                         13
 
