@@ -50,3 +50,25 @@ import Foundation
         webView.isUserInteractionEnabled = false
     }
 }
+
+@objc class NCViewerRichWorkspace: NSObject {
+
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var safeAreaBottom: Int = 0
+    var mimeType: String?
+    
+    @objc static let shared: NCViewerRichWorkspace = {
+        let instance = NCViewerRichWorkspace()
+        return instance
+    }()
+    
+    @objc func viewerRichWorkspaceAt(_ metadata: tableMetadata, detail: CCDetail) {
+        
+        let viewRichWorkspace = Bundle.main.loadNibNamed("NCRichWorkspace", owner: self, options: nil)?.first as! UIView
+        
+        
+       
+        
+        detail.view.addSubview(viewRichWorkspace)
+    }
+}

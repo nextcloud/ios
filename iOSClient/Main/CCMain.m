@@ -1958,7 +1958,7 @@
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, @"readme.md"]];
     if (metadata) {
-        [self shouldPerformSegue:metadata selector:@""];
+        [self shouldPerformSegue:metadata selector:selectorViewerRichWorkspace];
     }
 }
 

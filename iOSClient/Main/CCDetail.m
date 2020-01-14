@@ -219,43 +219,53 @@
         // Direct Editing NextcloudText
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
-            NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
-            if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
-            
-                if([self.metadataDetail.url isEqualToString:@""]) {
-                    
-                    [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
-                    
-                    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
-                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+            if ([self.selectorDetail isEqualToString:selectorViewerRichWorkspace]) {
+                
+                self.edgesForExtendedLayout = UIRectEdgeBottom;
+                [self createToolbar];
+                [[NCViewerRichWorkspace shared] viewerRichWorkspaceAt:self.metadataDetail detail:self];
+                return;
+                
+            } else {
+                
+                NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
+                if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
+                
+                    if([self.metadataDetail.url isEqualToString:@""]) {
                         
-                        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                        [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
+                        
+                        NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
+                        [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
                             
-                            self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
-                            [self.view addSubview:self.nextcloudText];
-                            [self.nextcloudText viewNextcloudTextAt:url detail:self metadata:self.metadataDetail];
-                            
-                        } else {
-                            
-                            if (errorCode != 0) {
-                                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+                                
+                                self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                                [self.view addSubview:self.nextcloudText];
+                                [self.nextcloudText viewNextcloudTextAt:url detail:self metadata:self.metadataDetail];
+                                
                             } else {
-                                NSLog(@"[LOG] It has been changed user during networking process, error.");
+                                
+                                if (errorCode != 0) {
+                                    [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                                } else {
+                                    NSLog(@"[LOG] It has been changed user during networking process, error.");
+                                }
+                                
+                                [self.navigationController popViewControllerAnimated:YES];
                             }
-                            
-                            [self.navigationController popViewControllerAnimated:YES];
-                        }
-                    }];
-                    
-                } else {
-                    
-                    self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
-                    [self.view addSubview:self.nextcloudText];
-                    [self.nextcloudText viewNextcloudTextAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                        }];
+                        
+                    } else {
+                        
+                        self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
+                        [self.view addSubview:self.nextcloudText];
+                        [self.nextcloudText viewNextcloudTextAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                    }
                 }
+                
+                return;
             }
-            
-            return;
         }
         
         // RichDocument
