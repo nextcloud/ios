@@ -1956,7 +1956,10 @@
 
 - (void)viewRichWorkspaceTapAction:(UITapGestureRecognizer *)tapGesture
 {
-    
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, @"readme.md"]];
+    if (metadata) {
+        [self shouldPerformSegue:metadata selector:@""];
+    }
 }
 
 - (void)createRichWorkspace

@@ -47,5 +47,6 @@ import Foundation
         }
         
         webView.loadHTMLString(richWorkspaceHtml, baseURL: Bundle.main.bundleURL)
+        webView.isUserInteractionEnabled = false
     }
 }
