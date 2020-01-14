@@ -223,7 +223,8 @@
                 
                 self.edgesForExtendedLayout = UIRectEdgeBottom;
                 [self createToolbar];
-                [[NCViewerRichWorkspace shared] viewerAt:self.metadataDetail detail:self];
+                NCViewerRichWorkspace *viewerRichWorkspace = [NCViewerRichWorkspace new];
+                [viewerRichWorkspace viewerAt:self.metadataDetail detail:self];
                 return;
                 
             } else {

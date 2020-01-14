@@ -28,11 +28,6 @@ import Foundation
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var safeAreaBottom: CGFloat = 0
     
-    @objc static let shared: NCViewerRichWorkspace = {
-        let instance = NCViewerRichWorkspace()
-        return instance
-    }()
-    
     @objc func viewerAt(_ metadata: tableMetadata, detail: CCDetail) {
         
         if #available(iOS 11.0, *) {
