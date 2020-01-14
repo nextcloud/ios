@@ -7,59 +7,80 @@
 //
 
 import Foundation
+import SwiftRichString
 
 @objc class NCViewRichWorkspace: UIView {
     
-    @IBOutlet weak var webView: WKWebView!
+    @IBOutlet weak var textLabel: UILabel!
     var richWorkspace: String = ""
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
     @objc func changeTheming() {
-        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         setRichWorkspaceText(richWorkspace)
     }
     
     @objc func setRichWorkspaceText(_ richWorkspace: String) {
         
-        var color =  "#000000"
-        if CCUtility.getDarkMode() {
-            color =  "#FFFFFF"
+        let h1 = Style {
+            $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+            $0.color = NCBrandColor.sharedInstance.textView
         }
-    
+        let h2 = Style {
+            $0.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+            $0.color = NCBrandColor.sharedInstance.textView
+        }
+        let h3 = Style {
+            $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+            $0.color = NCBrandColor.sharedInstance.textView
+        }
+        let h4 = Style {
+            $0.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+            $0.color = NCBrandColor.sharedInstance.textView
+        }
+        let h5 = Style {
+            $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+            $0.color = NCBrandColor.sharedInstance.textView
+        }
+        let h6 = Style {
+            $0.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+            $0.color = NCBrandColor.sharedInstance.textView
+        }
+        let normal = Style {
+            $0.font = UIFont.systemFont(ofSize: 10)
+            $0.color = NCBrandColor.sharedInstance.textView
+        }
+       
         self.richWorkspace = richWorkspace
-        var richWorkspaceHtml = ""
-        let richWorkspaceArray = richWorkspace.components(separatedBy: "\n")
+        var richWorkspaceStyling = ""
         
+        let richWorkspaceArray = richWorkspace.components(separatedBy: "\n")
         for string in richWorkspaceArray {
             if string.hasPrefix("# ") {
-                richWorkspaceHtml = richWorkspaceHtml + "<h1><span style=\"color: \(color);\">" + string.replacingOccurrences(of: "# ", with: "") + "</span></h1>"
+                richWorkspaceStyling = richWorkspaceStyling + "<h1>" + string.replacingOccurrences(of: "# ", with: "") + "</h1>\r\n"
             } else if string.hasPrefix("## ") {
-                richWorkspaceHtml = richWorkspaceHtml + "<h2><span style=\"color: \(color);\">" + string.replacingOccurrences(of: "## ", with: "") + "</span></h2>"
+                richWorkspaceStyling = richWorkspaceStyling + "<h2>" + string.replacingOccurrences(of: "## ", with: "") + "</h2>\r\n"
             } else if string.hasPrefix("### ") {
-                richWorkspaceHtml = richWorkspaceHtml + "<h3><span style=\"color: \(color);\">" + string.replacingOccurrences(of: "### ", with: "") + "</span></h3>"
+                richWorkspaceStyling = richWorkspaceStyling + "<h3>" + string.replacingOccurrences(of: "### ", with: "") + "</h3>\r\n"
             } else if string.hasPrefix("#### ") {
-                richWorkspaceHtml = richWorkspaceHtml + "<h4><span style=\"color: \(color);\">" + string.replacingOccurrences(of: "#### ", with: "") + "</span></h4>"
+                richWorkspaceStyling = richWorkspaceStyling + "<h4>" + string.replacingOccurrences(of: "#### ", with: "") + "</h4>\r\n"
             } else if string.hasPrefix("##### ") {
-                richWorkspaceHtml = richWorkspaceHtml + "<h5><span style=\"color: \(color);\">" + string.replacingOccurrences(of: "##### ", with: "") + "</span></h5>"
+                richWorkspaceStyling = richWorkspaceStyling + "<h5>" + string.replacingOccurrences(of: "##### ", with: "") + "</h5>\r\n"
             } else if string.hasPrefix("###### ") {
-                richWorkspaceHtml = richWorkspaceHtml + "<h6><span style=\"color: \(color);\">" + string.replacingOccurrences(of: "###### ", with: "") + "</span></h6>"
+                richWorkspaceStyling = richWorkspaceStyling + "<h6>" + string.replacingOccurrences(of: "###### ", with: "") + "</h6>\r\n"
             } else {
-                richWorkspaceHtml = richWorkspaceHtml + "<span style=\"color: \(color);\">" + string + "</span>"
+                richWorkspaceStyling = richWorkspaceStyling + string + "\r\n"
             }
-            richWorkspaceHtml = richWorkspaceHtml + "<br>"
         }
         
-        richWorkspaceHtml = "<!DOCTYPE html><html><body>" + richWorkspaceHtml + "</body></html>"
-        
-        webView.loadHTMLString(richWorkspaceHtml, baseURL: Bundle.main.bundleURL)
-        webView.isUserInteractionEnabled = false
-        webView.isOpaque = false
+        textLabel.attributedText = richWorkspaceStyling.set(style: StyleGroup(base: normal, ["h1": h1, "h2": h2, "h3": h3, "h4": h4, "h5": h5, "h6": h6]))
+        textLabel.isUserInteractionEnabled = false
     }
 }
 

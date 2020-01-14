@@ -14,25 +14,23 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XXz-cr-h4j">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="TopLeft" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dZp-91-Nnq">
                     <rect key="frame" x="15" y="5" width="295" height="470"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <wkWebViewConfiguration key="configuration">
-                        <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                        <wkPreferences key="preferences"/>
-                    </wkWebViewConfiguration>
-                </wkWebView>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="XXz-cr-h4j" secondAttribute="bottom" constant="5" id="0tw-2O-jd5"/>
-                <constraint firstItem="XXz-cr-h4j" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="DCK-aY-jxF"/>
-                <constraint firstItem="XXz-cr-h4j" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="5" id="FBk-U6-oyG"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XXz-cr-h4j" secondAttribute="trailing" constant="10" id="sSB-Ux-4JO"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="dZp-91-Nnq" secondAttribute="bottom" constant="5" id="Fmt-BL-zWO"/>
+                <constraint firstItem="dZp-91-Nnq" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="5" id="Tpz-Mh-Qkc"/>
+                <constraint firstItem="dZp-91-Nnq" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="aQH-58-OaN"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="dZp-91-Nnq" secondAttribute="trailing" constant="10" id="rz6-hD-xTs"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
-                <outlet property="webView" destination="XXz-cr-h4j" id="Sx0-bC-A3Q"/>
+                <outlet property="textLabel" destination="dZp-91-Nnq" id="fly-de-eVa"/>
             </connections>
             <point key="canvasLocation" x="136.875" y="88.75"/>
         </view>
