@@ -40,7 +40,7 @@ import Foundation
         self.navigationItem.leftBarButtonItem = closeItem
         editItem.image = UIImage(named: "actionSheetModify")
 
-        viewRichWorkspace.setRichWorkspaceText(richWorkspace)
+        viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()

@@ -29,6 +29,8 @@ import SwiftRichString
     
     @IBOutlet weak var textView: UITextView!
     var richWorkspace: String = ""
+    var gradient: Bool = false
+    let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -39,10 +41,13 @@ import SwiftRichString
     
     @objc func changeTheming() {
         self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        setRichWorkspaceText(richWorkspace)
+        setRichWorkspaceText(richWorkspace, gradient: gradient)
     }
     
-    @objc func setRichWorkspaceText(_ richWorkspace: String) {
+    @objc func setRichWorkspaceText(_ richWorkspace: String, gradient: Bool) {
+        
+        self.richWorkspace = richWorkspace
+        self.gradient = gradient
         
         let h1 = Style {
             $0.font = UIFont.systemFont(ofSize: 25, weight: .bold)
@@ -73,9 +78,7 @@ import SwiftRichString
             $0.color = NCBrandColor.sharedInstance.textView
         }
        
-        self.richWorkspace = richWorkspace
         var richWorkspaceStyling = ""
-        
         let richWorkspaceArray = richWorkspace.components(separatedBy: "\n")
         for string in richWorkspaceArray {
             if string.hasPrefix("# ") {
@@ -98,5 +101,15 @@ import SwiftRichString
         textView.attributedText = richWorkspaceStyling.set(style: StyleGroup(base: normal, ["h1": h1, "h2": h2, "h3": h3, "h4": h4, "h5": h5, "h6": h6]))
         textView.isUserInteractionEnabled = false
         textView.sizeToFit()
+        
+        if gradient {
+            
+            gradientLayer.removeFromSuperlayer()
+            gradientLayer.frame = CGRect(x: 0.0, y: 0.0, width: self.frame.width, height: self.frame.height)
+            gradientLayer.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            gradientLayer.startPoint = CGPoint(x: 0, y: 0.60)
+            gradientLayer.endPoint = CGPoint(x: 0, y: 1)
+            textView.layer.addSublayer(gradientLayer)
+        }
     }
 }

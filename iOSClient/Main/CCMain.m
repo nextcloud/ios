@@ -3897,7 +3897,7 @@
             
         } else {
             
-            [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace];
+            [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace gradient:true];
             [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, height)];
             [self.tableView setTableHeaderView:self.viewRichWorkspace];
         }
