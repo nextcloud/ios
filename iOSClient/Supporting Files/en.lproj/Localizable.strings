@@ -101,7 +101,7 @@
 "_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 "_start_"                   = "Start";
 "_purchase_"                = "Purchase";
-"_account_not_available_"   = "The account %@ of %@ do not exists, please add it to be able to read the file %@";
+"_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@";
 "_error_parameter_schema_"  = "Wrong parameters, impossible to continue";
 "_comments_"                = "Comments";
 "_sharing_"                 = "Sharing";
