@@ -206,7 +206,6 @@
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
-#define selectorViewerRichWorkspace                     @"viewerRichWorkspace"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
