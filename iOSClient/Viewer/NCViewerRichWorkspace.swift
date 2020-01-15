@@ -40,10 +40,6 @@ import Foundation
         self.navigationItem.leftBarButtonItem = closeItem
         editItem.image = UIImage(named: "actionSheetModify")
 
-        let viewRichWorkspaceTapped = UITapGestureRecognizer(target: self, action: #selector(closeItemTapped(_:)))
-        viewRichWorkspaceTapped.numberOfTouchesRequired = 1
-        viewRichWorkspace.addGestureRecognizer(viewRichWorkspaceTapped)
-        
         viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
