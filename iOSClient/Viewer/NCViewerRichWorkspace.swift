@@ -27,14 +27,13 @@ import Foundation
 
     @IBOutlet weak var viewRichWorkspace: NCViewRichWorkspace!
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    public var metadata: tableMetadata?
-    
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    @objc public var richWorkspace: String = ""
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        viewRichWorkspace.setRichWorkspaceText(richWorkspace)
     }
     
 }

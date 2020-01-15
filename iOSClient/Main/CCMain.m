@@ -1936,10 +1936,15 @@
 
 - (void)viewRichWorkspaceTapAction:(UITapGestureRecognizer *)tapGesture
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, k_fileNameRichWorkspace.lowercaseString]];
-    if (metadata) {
-        //[self shouldPerformSegue:metadata selector:selectorViewerRichWorkspace];
-    }
+   tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    
+    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
+    NCViewerRichWorkspace *ViewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
+    ViewerRichWorkspace.richWorkspace = directory.richWorkspace;
+    
+    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+    
+    [self presentViewController:navigationController animated:NO completion:NULL];
 }
 
 - (void)createRichWorkspace
