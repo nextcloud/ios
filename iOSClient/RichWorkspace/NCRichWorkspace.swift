@@ -99,4 +99,14 @@ import SwiftRichString
         textView.isUserInteractionEnabled = false
         textView.sizeToFit()
     }
+    
+    func makeGradientLayer(`for` object : UIView, startPoint : CGPoint, endPoint : CGPoint, gradientColors : [Any]) -> CAGradientLayer {
+        let gradient: CAGradientLayer = CAGradientLayer()
+        gradient.colors = gradientColors
+        gradient.locations = [0.0 , 1.0]
+        gradient.startPoint = startPoint
+        gradient.endPoint = endPoint
+        gradient.frame = CGRect(x: 0, y: 0, width: object.frame.size.width, height: object.frame.size.height)
+        return gradient
+    }
 }
