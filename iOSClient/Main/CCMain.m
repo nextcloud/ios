@@ -1941,6 +1941,7 @@
     UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
     NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
     viewerRichWorkspace.richWorkspace = directory.richWorkspace;
+    viewerRichWorkspace.serverUrl = self.serverUrl;
     viewerRichWorkspace.titleCloseItem = NSLocalizedString(@"_back_", nil);
     
     navigationController.modalPresentationStyle = UIModalPresentationFullScreen;

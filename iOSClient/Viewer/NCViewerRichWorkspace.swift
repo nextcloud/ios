@@ -30,6 +30,7 @@ import Foundation
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc public var richWorkspace: String = ""
+    @objc public var serverUrl: String = ""
     @objc public var titleCloseItem: String = ""
    
     override func viewDidLoad() {
@@ -37,7 +38,8 @@ import Foundation
         
         let closeItem = UIBarButtonItem(title: titleCloseItem, style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
-        
+        editItem.image = UIImage(named: "actionSheetModify")
+
         viewRichWorkspace.setRichWorkspaceText(richWorkspace)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
@@ -54,5 +56,11 @@ import Foundation
     
     @IBAction func editItemAction(_ sender: Any) {
         
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, serverUrl, k_fileNameRichWorkspace.lowercased())) {
+            
+            dismiss(animated: false) {
+                self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+            }
+        }
     }
 }
