@@ -26,6 +26,7 @@ import Foundation
 @objc class NCViewerRichWorkspace: UIViewController {
 
     @IBOutlet weak var viewRichWorkspace: NCViewRichWorkspace!
+    @IBOutlet weak var editItem: UIBarButtonItem!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc public var richWorkspace: String = ""
@@ -49,5 +50,9 @@ import Foundation
     
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {
         self.dismiss(animated: false, completion: nil)
+    }
+    
+    @IBAction func editItemAction(_ sender: Any) {
+        
     }
 }

@@ -19,7 +19,12 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PhD-q3-64a">
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
                                 <items>
-                                    <barButtonItem title="Item" id="Hvx-vk-mTM"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="mbx-my-iUr"/>
+                                    <barButtonItem title="Item" id="Hvx-vk-mTM">
+                                        <connections>
+                                            <action selector="editItemAction:" destination="6oU-Ar-6R2" id="Y6f-gQ-0vW"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZTH-4c-how" customClass="NCViewRichWorkspace" customModule="Nextcloud" customModuleProvider="target">
@@ -59,6 +64,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="YSS-NL-35O"/>
                     <connections>
+                        <outlet property="editItem" destination="Hvx-vk-mTM" id="KTx-5P-tI0"/>
                         <outlet property="viewRichWorkspace" destination="ZTH-4c-how" id="Tj4-ng-4pc"/>
                     </connections>
                 </viewController>
