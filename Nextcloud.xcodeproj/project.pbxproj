@@ -1586,6 +1586,7 @@
 				F78ACD3E21903BA20088454D /* Cell */,
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F78ACD4D219043E70088454D /* Layout */,
+				F78ACD50219046AC0088454D /* Section */,
 				F7D0E65E1BC5042E008D989A /* CCDetail.h */,
 				F7D0E65F1BC5042E008D989A /* CCDetail.m */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
@@ -1599,7 +1600,6 @@
 				F7D6650620FF341600BFBA9E /* NCMainCommon.swift */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
 				F77444F7222816D5000D5EB0 /* NCPhotosPickerViewController.swift */,
-				F78ACD50219046AC0088454D /* Section */,
 			);
 			path = Main;
 			sourceTree = "<group>";

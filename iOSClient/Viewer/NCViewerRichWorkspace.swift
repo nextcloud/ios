@@ -33,6 +33,9 @@ import Foundation
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let editItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(editButtonTapped(_:)))
+        self.navigationItem.leftBarButtonItem = editItem
+        
         viewRichWorkspace.setRichWorkspaceText(richWorkspace)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
@@ -41,5 +44,10 @@ import Foundation
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+    }
+    
+    @objc func editButtonTapped(_ sender: UIBarButtonItem)
+    {
+        self.dismiss(animated: false, completion: nil)
     }
 }
