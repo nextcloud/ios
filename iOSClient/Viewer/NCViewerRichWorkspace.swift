@@ -34,6 +34,12 @@ import Foundation
         super.viewDidLoad()
         
         viewRichWorkspace.setRichWorkspaceText(richWorkspace)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
     
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+    }
 }
