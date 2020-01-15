@@ -1939,8 +1939,9 @@
    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
     
     UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
-    NCViewerRichWorkspace *ViewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
-    ViewerRichWorkspace.richWorkspace = directory.richWorkspace;
+    NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
+    viewerRichWorkspace.richWorkspace = directory.richWorkspace;
+    viewerRichWorkspace.titleCloseItem = NSLocalizedString(@"_back_", nil);
     
     navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
     

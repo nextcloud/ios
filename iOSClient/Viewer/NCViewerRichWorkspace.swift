@@ -29,12 +29,13 @@ import Foundation
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc public var richWorkspace: String = ""
+    @objc public var titleCloseItem: String = ""
    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let editItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(editButtonTapped(_:)))
-        self.navigationItem.leftBarButtonItem = editItem
+        let closeItem = UIBarButtonItem(title: titleCloseItem, style: .plain, target: self, action: #selector(closeItemTapped(_:)))
+        self.navigationItem.leftBarButtonItem = closeItem
         
         viewRichWorkspace.setRichWorkspaceText(richWorkspace)
         
@@ -46,8 +47,7 @@ import Foundation
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
     }
     
-    @objc func editButtonTapped(_ sender: UIBarButtonItem)
-    {
+    @objc func closeItemTapped(_ sender: UIBarButtonItem) {
         self.dismiss(animated: false, completion: nil)
     }
 }
