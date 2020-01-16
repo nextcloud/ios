@@ -59,7 +59,7 @@ import Foundation
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, serverUrl, k_fileNameRichWorkspace.lowercased())) {
             
             dismiss(animated: false) {
-                self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+                //self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
             }
         }
     }

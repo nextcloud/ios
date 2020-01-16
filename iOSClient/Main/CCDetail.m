@@ -216,6 +216,7 @@
             return;
         }
         
+        /*
         // Nextcloud Text - RichWorkspace
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
@@ -257,6 +258,8 @@
             
             return;
         }
+        */
+        
         
         // RichDocument
         if ([[NCUtility sharedInstance] isRichDocument:self.metadataDetail] && appDelegate.reachability.isReachable) {
