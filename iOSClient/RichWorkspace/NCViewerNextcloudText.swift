@@ -29,7 +29,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc var metadata: tableMetadata!
-    @objc var link: String = ""
+    @objc var url: String = ""
 
    
     override func viewDidLoad() {
@@ -37,16 +37,15 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        
-        var request = URLRequest(url: URL(string: link)!)
+                
+        var request = URLRequest(url: URL(string: url)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
         let userAgent : String = CCUtility.getUserAgent()
-        self.webView.customUserAgent = userAgent
-        self.webView.load(request)
+        webView.customUserAgent = userAgent
+        webView.load(request)
     }
     
     @objc func keyboardDidShow(notification: Notification) {

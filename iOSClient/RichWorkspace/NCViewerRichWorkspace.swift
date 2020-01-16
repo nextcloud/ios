@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 @objc class NCViewerRichWorkspace: UIViewController {
 
@@ -58,8 +59,37 @@ import Foundation
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, serverUrl, k_fileNameRichWorkspace.lowercased())) {
             
-            dismiss(animated: false) {
-                //self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+            if metadata.url == "" {
+                NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
+                NCCommunication.sharedInstance.NCTextOpenFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: "text", account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+                    
+                    NCUtility.sharedInstance.stopActivityIndicator()
+                    
+                    if errorCode == 0 && account == self.appDelegate.activeAccount {
+                        
+                        if let viewerNextcloudText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerNextcloudText") as? NCViewerNextcloudText {
+                            
+                            viewerNextcloudText.url = url!
+                            viewerNextcloudText.metadata = metadata
+                            
+                            self.present(viewerNextcloudText, animated: true, completion: nil)
+                        }
+                        
+                    } else if errorCode != 0 {
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: errorCode)
+                    }
+                }
+                
+            } else {
+                
+                if let viewerNextcloudText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerNextcloudText") as? NCViewerNextcloudText {
+                    
+                    viewerNextcloudText.url = metadata.url
+                    viewerNextcloudText.metadata = metadata
+                    
+                    self.present(viewerNextcloudText, animated: true, completion: nil)
+                }
             }
         }
     }

@@ -75,7 +75,7 @@
         <!--Viewer Nextcloud Text-->
         <scene sceneID="FAF-zB-yaq">
             <objects>
-                <viewController id="Ces-GG-tAv" customClass="NCViewerNextcloudText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCViewerNextcloudText" id="Ces-GG-tAv" customClass="NCViewerNextcloudText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="T4r-I1-FJU">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
