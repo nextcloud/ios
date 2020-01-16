@@ -31,9 +31,10 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     @objc var metadata: tableMetadata!
     @objc var url: String = ""
 
-   
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let userAgent : String = CCUtility.getUserAgent()
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -42,8 +43,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
-        
-        let userAgent : String = CCUtility.getUserAgent()
+                
+        webView.configuration.userContentController.add(self, name: "DirectEditingMobileInterface")
+        webView.navigationDelegate = self
         webView.customUserAgent = userAgent
         webView.load(request)
     }
@@ -70,7 +72,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             
             if message.body as? String == "close" {
                 
-                appDelegate.activeMain.readFileReloadFolder()
+                dismiss(animated: true, completion: nil)
             }
             
             if message.body as? String == "share" {
@@ -111,6 +113,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NCUtility.sharedInstance.stopActivityIndicator()
+        print("didFinish");
     }
 }
