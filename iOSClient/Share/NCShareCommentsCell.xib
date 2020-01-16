@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -60,10 +60,9 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QXZ-ax-nlQ">
-                        <rect key="frame" x="55" y="49" width="120" height="18"/>
+                        <rect key="frame" x="55" y="49" width="522" height="18"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="18" id="WZK-ND-Vl1"/>
-                            <constraint firstAttribute="width" constant="120" id="guh-u2-aXB"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -81,6 +80,7 @@
                     <constraint firstItem="mNK-Zq-pFW" firstAttribute="top" secondItem="QXZ-ax-nlQ" secondAttribute="bottom" constant="4" id="KDw-qu-iO6"/>
                     <constraint firstItem="otH-mT-7Z4" firstAttribute="centerY" secondItem="qDs-UG-Mn7" secondAttribute="centerY" id="KO4-0R-wdL" userLabel="labelTitle.centerY = ImageItem.centerY"/>
                     <constraint firstItem="qDs-UG-Mn7" firstAttribute="leading" secondItem="3Oe-gU-3Nk" secondAttribute="leading" constant="5" id="KOm-wo-CBa"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="QXZ-ax-nlQ" secondAttribute="trailing" constant="8" id="Pku-hg-qKn"/>
                     <constraint firstAttribute="trailingMargin" secondItem="J1z-RG-U4A" secondAttribute="trailing" constant="8" id="SgR-6b-z2c"/>
                     <constraint firstItem="QXZ-ax-nlQ" firstAttribute="top" secondItem="J1z-RG-U4A" secondAttribute="bottom" constant="4" id="qj4-34-HW3"/>
                     <constraint firstItem="J1z-RG-U4A" firstAttribute="centerY" secondItem="qDs-UG-Mn7" secondAttribute="centerY" id="tIg-bm-Clb"/>
