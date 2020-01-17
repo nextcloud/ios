@@ -45,7 +45,7 @@ import NCCommunication
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceText") as? NCViewerRichWorkSpaceText {
+                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceNextcloudText") as? NCViewerRichWorkSpaceNextcloudText {
                     
                     viewerRichWorkSpaceText.url = url!
                     viewerRichWorkSpaceText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
@@ -80,7 +80,7 @@ import NCCommunication
                     
                     if errorCode == 0 && account == self.appDelegate.activeAccount {
                         
-                        if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceText") as? NCViewerRichWorkSpaceText {
+                        if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceNextcloudText") as? NCViewerRichWorkSpaceNextcloudText {
                             
                             viewerRichWorkSpaceText.url = url!
                             viewerRichWorkSpaceText.metadata = metadata
@@ -96,7 +96,7 @@ import NCCommunication
                 
             } else {
                 
-                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceText") as? NCViewerRichWorkSpaceText {
+                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceNextcloudText") as? NCViewerRichWorkSpaceNextcloudText {
                     
                     viewerRichWorkSpaceText.url = metadata.url
                     viewerRichWorkSpaceText.metadata = metadata

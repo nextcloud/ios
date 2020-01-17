@@ -395,7 +395,7 @@
 		F781996B22636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
-		F78A18B623CDD07D00F681F3 /* NCViewerRichWorkSpaceText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B523CDD07D00F681F3 /* NCViewerRichWorkSpaceText.swift */; };
+		F78A18B623CDD07D00F681F3 /* NCViewerRichWorkSpaceNextcloudText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B523CDD07D00F681F3 /* NCViewerRichWorkSpaceNextcloudText.swift */; };
 		F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */; };
 		F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F78AA20521F783E900D0F205 /* SwiftRichString.framework */; };
 		F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD3F21903CC20088454D /* NCGridCell.swift */; };
@@ -1113,7 +1113,7 @@
 		F781996722636BFA00EBDF6A /* HCFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCFeatures.h; sourceTree = "<group>"; };
 		F781996822636BFA00EBDF6A /* HCFeatures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCFeatures.m; sourceTree = "<group>"; };
 		F787704E22E7019900F287A9 /* NCShareLinkCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkCell.xib; sourceTree = "<group>"; };
-		F78A18B523CDD07D00F681F3 /* NCViewerRichWorkSpaceText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichWorkSpaceText.swift; sourceTree = "<group>"; };
+		F78A18B523CDD07D00F681F3 /* NCViewerRichWorkSpaceNextcloudText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichWorkSpaceNextcloudText.swift; sourceTree = "<group>"; };
 		F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichWorkspace.swift; sourceTree = "<group>"; };
 		F78AA20521F783E900D0F205 /* SwiftRichString.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftRichString.framework; path = Carthage/Build/iOS/SwiftRichString.framework; sourceTree = "<group>"; };
 		F78ACD3F21903CC20088454D /* NCGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCGridCell.swift; sourceTree = "<group>"; };
@@ -2511,7 +2511,7 @@
 				F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */,
 				F722814223C8C34500C41898 /* NCRichWorkspace.xib */,
 				F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */,
-				F78A18B523CDD07D00F681F3 /* NCViewerRichWorkSpaceText.swift */,
+				F78A18B523CDD07D00F681F3 /* NCViewerRichWorkSpaceNextcloudText.swift */,
 				F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */,
 				F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */,
 			);
@@ -3530,7 +3530,7 @@
 				F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
-				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkSpaceText.swift in Sources */,
+				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkSpaceNextcloudText.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F760F79D21F21F61006B1A73 /* CropRectView.swift in Sources */,
 				F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */,
