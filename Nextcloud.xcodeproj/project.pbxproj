@@ -2503,11 +2503,11 @@
 		F7CADB3D23CCDDA1000EEC78 /* RichWorkspace */ = {
 			isa = PBXGroup;
 			children = (
-				F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */,
-				F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */,
-				F78A18B523CDD07D00F681F3 /* NCViewerNextcloudText.swift */,
 				F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */,
 				F722814223C8C34500C41898 /* NCRichWorkspace.xib */,
+				F78A18B523CDD07D00F681F3 /* NCViewerNextcloudText.swift */,
+				F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */,
+				F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */,
 			);
 			path = RichWorkspace;
 			sourceTree = "<group>";

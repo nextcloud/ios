@@ -267,6 +267,7 @@
             // Landscape
         }
         
+        [self setTableViewHeader];
         [self.tableView reloadData];
     }];
 }
@@ -1304,8 +1305,8 @@
             searchTextView.textColor = NCBrandColor.sharedInstance.textView;
         }
         
-        self.tableView.tableHeaderView = self.searchController.searchBar;
-        [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
+        //self.tableView.tableHeaderView = self.searchController.searchBar;
+        //[self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
         
     } else {
         
