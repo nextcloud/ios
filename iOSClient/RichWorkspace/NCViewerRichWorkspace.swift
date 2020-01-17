@@ -27,20 +27,21 @@ import NCCommunication
 @objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
 
     @IBOutlet weak var viewRichWorkspace: NCViewRichWorkspace!
-    @IBOutlet weak var editItem: UIBarButtonItem!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc public var richWorkspace: String = ""
     @objc public var serverUrl: String = ""
-    @objc public var titleCloseItem: String = ""
    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         presentationController?.delegate = self
-        let closeItem = UIBarButtonItem(title: titleCloseItem, style: .plain, target: self, action: #selector(closeItemTapped(_:)))
+        
+        let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
-        editItem.image = UIImage(named: "actionSheetModify")
+                
+        let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
+        self.navigationItem.rightBarButtonItem = editItem
 
         viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false)
         

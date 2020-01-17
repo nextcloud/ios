@@ -1941,7 +1941,6 @@
     NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
     viewerRichWorkspace.richWorkspace = self.richWorkspace;
     viewerRichWorkspace.serverUrl = self.serverUrl;
-    viewerRichWorkspace.titleCloseItem = NSLocalizedString(@"_back_", nil);
     
     navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
     
