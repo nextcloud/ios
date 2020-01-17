@@ -59,6 +59,7 @@ import NCCommunication
                 _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
                 self.richWorkspace = metadataFolder.richWorkspace
+                self.appDelegate.activeMain.richWorkspace = self.richWorkspace
                 self.viewRichWorkspace.setRichWorkspaceText(self.richWorkspace, gradient: false)
             }
         }

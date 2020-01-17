@@ -92,7 +92,5 @@
 - (void)openImportDocumentPicker;
 - (void)createFolder;
 
-- (void)setTableViewHeader;
-
 @end
 
