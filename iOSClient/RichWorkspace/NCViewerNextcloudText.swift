@@ -28,7 +28,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     @IBOutlet weak var webView: WKWebView!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    @objc var metadata: tableMetadata!
+    @objc var metadata: tableMetadata?
     @objc var url: String = ""
 
     override func viewDidLoad() {
@@ -79,7 +79,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             }
             
             if message.body as? String == "share" {
-                NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 2)
+                if (metadata != nil) {
+                     NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata!, indexPage: 2)
+                }
             }
             
             if message.body as? String == "loading" {

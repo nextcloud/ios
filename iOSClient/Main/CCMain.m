@@ -34,7 +34,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -270,6 +270,11 @@
         [self setTableViewHeader];
         [self.tableView reloadData];
     }];
+}
+
+- (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController
+{
+    [self viewDidAppear:true];
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -1950,25 +1955,13 @@
 
 - (void)createRichWorkspace
 {
+    NCRichWorkspaceTextCommon *richWorkspaceTextCommon = [NCRichWorkspaceTextCommon new];
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, k_fileNameRichWorkspace.lowercaseString]];
-    if (metadata && [[NCUtility sharedInstance] isDirectEditing:metadata]) {
-        if (appDelegate.reachability.isReachable) {
-            [self shouldPerformSegue:metadata selector:@""];
-        } else {
-            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
-        }
-    } else if (metadata == nil) {
-        NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:k_fileNameRichWorkspace serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
-        [[NCCommunication sharedInstance] NCTextCreateFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor:@"text" templateId:@"" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
-            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-                tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:false ocId:[CCUtility createRandomString:12] serverUrl:self.serverUrl fileName:k_fileNameRichWorkspace etag:@"" size:0 status:k_metadataStatusNormal url:url contentType:@"text/markdown"];
-                [self shouldPerformSegue:metadata selector:@""];
-            } else if (errorCode != 0) {
-                [NCContentPresenter.shared  messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-            } else {
-                NSLog(@"[LOG] It has been changed user during networking process, error.");
-            }
-        }];
+    
+    if (metadata) {
+        [richWorkspaceTextCommon openViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
+    } else {
+        [richWorkspaceTextCommon createViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
     }
 }
 

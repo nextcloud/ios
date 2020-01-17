@@ -234,6 +234,7 @@
 		F75A9EE823796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
+		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
 		F760F77B21F21F61006B1A73 /* icomoon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F760F75721F21F61006B1A73 /* icomoon.ttf */; };
@@ -913,6 +914,7 @@
 		F75B91E21ECAE17800199C96 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F75B91F71ECAE26300199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F75B923D1ECAE55E00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRichWorkspaceCommon.swift; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
@@ -2505,6 +2507,7 @@
 			children = (
 				F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */,
 				F722814223C8C34500C41898 /* NCRichWorkspace.xib */,
+				F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */,
 				F78A18B523CDD07D00F681F3 /* NCViewerNextcloudText.swift */,
 				F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */,
 				F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */,
@@ -3587,6 +3590,7 @@
 				F760F77D21F21F61006B1A73 /* ColorsCollectionViewDelegate.swift in Sources */,
 				F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
+				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
 				F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */,
 				F760F78721F21F61006B1A73 /* PhotoEditor+Font.swift in Sources */,
