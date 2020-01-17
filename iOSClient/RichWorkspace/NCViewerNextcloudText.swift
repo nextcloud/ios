@@ -72,7 +72,10 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             
             if message.body as? String == "close" {
                 
-                dismiss(animated: true, completion: nil)
+                if #available(iOS 13.0, *) {
+                    self.presentationController?.delegate?.presentationControllerWillDismiss?(self.presentationController!)
+                }
+                dismiss(animated: true)
             }
             
             if message.body as? String == "share" {
@@ -93,7 +96,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
     }
         
-    
     //MARK: -
 
     public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {

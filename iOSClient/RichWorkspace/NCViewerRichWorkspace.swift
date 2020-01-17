@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-@objc class NCViewerRichWorkspace: UIViewController {
+@objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
 
     @IBOutlet weak var viewRichWorkspace: NCViewRichWorkspace!
     @IBOutlet weak var editItem: UIBarButtonItem!
@@ -37,6 +37,7 @@ import NCCommunication
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        presentationController?.delegate = self
         let closeItem = UIBarButtonItem(title: titleCloseItem, style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
         editItem.image = UIImage(named: "actionSheetModify")
@@ -45,6 +46,26 @@ import NCCommunication
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                var metadataFolder = tableMetadata()
+                _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
+                NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+                self.richWorkspace = metadataFolder.richWorkspace
+                self.viewRichWorkspace.setRichWorkspaceText(self.richWorkspace, gradient: false)
+            }
+        }
+    }
+    
+    public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
+        self.viewWillAppear(true)
     }
     
     @objc func changeTheming() {
@@ -72,6 +93,7 @@ import NCCommunication
                             
                             viewerNextcloudText.url = url!
                             viewerNextcloudText.metadata = metadata
+                            viewerNextcloudText.presentationController?.delegate = self
                             
                             self.present(viewerNextcloudText, animated: true, completion: nil)
                         }
@@ -87,6 +109,7 @@ import NCCommunication
                     
                     viewerNextcloudText.url = metadata.url
                     viewerNextcloudText.metadata = metadata
+                    viewerNextcloudText.presentationController?.delegate = self
                     
                     self.present(viewerNextcloudText, animated: true, completion: nil)
                 }

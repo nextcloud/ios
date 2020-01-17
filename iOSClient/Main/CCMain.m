@@ -70,9 +70,7 @@
     
     // Folder
     BOOL _loadingFolder;
-    tableMetadata *_metadataFolder;
-    
-    NSString *richWorkspace;
+    tableMetadata *_metadataFolder;    
 }
 @end
 
@@ -194,6 +192,10 @@
     
     // Get Shares
     appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
+    
+    // Get RichWorkspace
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    self.richWorkspace = directory.richWorkspace;
     
     // Query data source
     if (self.searchController.isActive == false) {
@@ -1117,14 +1119,13 @@
           
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            tableMetadata *metadataFolder;
+            tableMetadata *metadataFolder = [tableMetadata new];
             (void)[[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:self.serverUrl user:appDelegate.activeUser metadataFolder:&metadataFolder];
             
             // Rich Workspace
-            if (metadataFolder != nil) {
-                [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadataFolder.ocId serverUrl:self.serverUrl richWorkspace:metadataFolder.richWorkspace account:account];
-                [self setTableViewHeader];
-            }
+            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadataFolder.ocId serverUrl:self.serverUrl richWorkspace:metadataFolder.richWorkspace account:account];
+            self.richWorkspace = metadataFolder.richWorkspace;
+            [self setTableViewHeader];
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadataFolder.serverUrl]];
             
@@ -1936,11 +1937,9 @@
 
 - (void)viewRichWorkspaceTapAction:(UITapGestureRecognizer *)tapGesture
 {
-   tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    
     UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
     NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
-    viewerRichWorkspace.richWorkspace = directory.richWorkspace;
+    viewerRichWorkspace.richWorkspace = self.richWorkspace;
     viewerRichWorkspace.serverUrl = self.serverUrl;
     viewerRichWorkspace.titleCloseItem = NSLocalizedString(@"_back_", nil);
     
@@ -2197,7 +2196,6 @@
     //NSString *groupBy = [CCUtility getGroupBySettings];
     NSString *sorted = [CCUtility getOrderSettings];
     BOOL ascending = [CCUtility getAscendingSettings];
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
     
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
@@ -2318,7 +2316,7 @@
                                  
     // REMENU --------------------------------------------------------------------------------------------------------------
 
-    if (capabilities.versionMajor >= k_nextcloud_version_18_0 && directory.richWorkspace.length == 0) {
+    if (capabilities.versionMajor >= k_nextcloud_version_18_0 && self.richWorkspace.length == 0) {
         appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem, appDelegate.directoryOnTopItem, appDelegate.addFolderInfo]];
     } else {
         appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem, appDelegate.directoryOnTopItem]];
@@ -3889,15 +3887,13 @@
         
     } else {
     
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-        
-        if (directory.richWorkspace.length == 0) {
+        if (self.richWorkspace.length == 0) {
             
             [self.tableView setTableHeaderView:nil];
             
         } else {
             
-            [self.viewRichWorkspace setRichWorkspaceText:directory.richWorkspace gradient:true];
+            [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true];
             [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, height)];
             [self.tableView setTableHeaderView:self.viewRichWorkspace];
         }
