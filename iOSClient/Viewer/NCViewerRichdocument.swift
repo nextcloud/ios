@@ -90,6 +90,8 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 
                 detail.navigationController?.popViewController(animated: true)
                 detail.navigationController?.navigationBar.topItem?.title = ""
+                
+                appDelegate.activeMain.readFileReloadFolder()
             }
             
             if message.body as? String == "insertGraphic" {
