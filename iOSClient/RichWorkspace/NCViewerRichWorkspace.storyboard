@@ -57,10 +57,10 @@
             </objects>
             <point key="canvasLocation" x="1013.0434782608696" y="23.4375"/>
         </scene>
-        <!--Viewer Nextcloud Text-->
+        <!--Viewer Rich Work Space Text-->
         <scene sceneID="FAF-zB-yaq">
             <objects>
-                <viewController storyboardIdentifier="NCViewerNextcloudText" id="Ces-GG-tAv" customClass="NCViewerNextcloudText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCViewerRichWorkSpaceText" id="Ces-GG-tAv" customClass="NCViewerRichWorkSpaceText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="T4r-I1-FJU">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

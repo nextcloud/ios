@@ -45,12 +45,12 @@ import NCCommunication
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                if let viewerNextcloudText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerNextcloudText") as? NCViewerNextcloudText {
+                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceText") as? NCViewerRichWorkSpaceText {
                     
-                    viewerNextcloudText.url = url!
-                    viewerNextcloudText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                    viewerRichWorkSpaceText.url = url!
+                    viewerRichWorkSpaceText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     
-                    viewController.present(viewerNextcloudText, animated: true, completion: nil)
+                    viewController.present(viewerRichWorkSpaceText, animated: true, completion: nil)
                 }
                 
             } else if errorCode != 0 {
@@ -80,13 +80,13 @@ import NCCommunication
                     
                     if errorCode == 0 && account == self.appDelegate.activeAccount {
                         
-                        if let viewerNextcloudText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerNextcloudText") as? NCViewerNextcloudText {
+                        if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceText") as? NCViewerRichWorkSpaceText {
                             
-                            viewerNextcloudText.url = url!
-                            viewerNextcloudText.metadata = metadata
-                            viewerNextcloudText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                            viewerRichWorkSpaceText.url = url!
+                            viewerRichWorkSpaceText.metadata = metadata
+                            viewerRichWorkSpaceText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                             
-                            viewController.present(viewerNextcloudText, animated: true, completion: nil)
+                            viewController.present(viewerRichWorkSpaceText, animated: true, completion: nil)
                         }
                         
                     } else if errorCode != 0 {
@@ -96,13 +96,13 @@ import NCCommunication
                 
             } else {
                 
-                if let viewerNextcloudText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerNextcloudText") as? NCViewerNextcloudText {
+                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceText") as? NCViewerRichWorkSpaceText {
                     
-                    viewerNextcloudText.url = metadata.url
-                    viewerNextcloudText.metadata = metadata
-                    viewerNextcloudText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                    viewerRichWorkSpaceText.url = metadata.url
+                    viewerRichWorkSpaceText.metadata = metadata
+                    viewerRichWorkSpaceText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     
-                    viewController.present(viewerNextcloudText, animated: true, completion: nil)
+                    viewController.present(viewerRichWorkSpaceText, animated: true, completion: nil)
                 }
             }
         }

@@ -23,45 +23,59 @@
 
 import Foundation
 
-class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
+class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHandler {
     
-    @IBOutlet weak var webView: WKWebView!
-
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    @objc var metadata: tableMetadata?
-    @objc var url: String = ""
+    var detail: CCDetail!
+    @objc var metadata: tableMetadata!
+    var documentInteractionController: UIDocumentInteractionController!
+   
+    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+        super.init(frame: frame, configuration: configuration)
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        let contentController = configuration.userContentController
+        contentController.add(self, name: "DirectEditingMobileInterface")
         
-        let userAgent : String = CCUtility.getUserAgent()
+        autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        navigationDelegate = self
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
+        
+        self.detail = detail
+        self.metadata = metadata
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-                
-        var request = URLRequest(url: URL(string: url)!)
+        
+        if (UIDevice.current.userInterfaceIdiom == .phone) {
+            detail.navigationController?.setNavigationBarHidden(true, animated: false)
+        }
+        
+        var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
-                
-        webView.configuration.userContentController.add(self, name: "DirectEditingMobileInterface")
-        webView.navigationDelegate = self
-        webView.customUserAgent = userAgent
-        webView.load(request)
+        
+        let userAgent : String = CCUtility.getUserAgent()
+        customUserAgent = userAgent
+        load(request)        
     }
     
     @objc func keyboardDidShow(notification: Notification) {
-        /*
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
         //print("keyboardFrame: \(keyboardFrame)")
         frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
-        */
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        //frame = detail.view.bounds
+        frame = detail.view.bounds
     }
     
     //MARK: -
@@ -72,16 +86,14 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             
             if message.body as? String == "close" {
                 
-                if #available(iOS 13.0, *) {
-                    self.presentationController?.delegate?.presentationControllerWillDismiss?(self.presentationController!)
-                }
-                dismiss(animated: true)
+                removeFromSuperview()
+                
+                detail.navigationController?.popViewController(animated: true)
+                detail.navigationController?.navigationBar.topItem?.title = ""
             }
             
             if message.body as? String == "share" {
-                if (metadata != nil) {
-                     NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata!, indexPage: 2)
-                }
+                NCMainCommon.sharedInstance.openShare(ViewController: detail, metadata: metadata, indexPage: 2)
             }
             
             if message.body as? String == "loading" {
@@ -98,6 +110,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
     }
         
+    
     //MARK: -
 
     public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -117,6 +130,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("didFinish");
+        NCUtility.sharedInstance.stopActivityIndicator()
     }
 }
