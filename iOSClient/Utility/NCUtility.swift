@@ -433,7 +433,7 @@ class NCUtility: NSObject {
     @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String) -> UIImage? {
         
         guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
-        let size = Int(k_avatar_size) ?? 128
+        let size = Int(k_avatar_size)
         
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
         imageSource.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
