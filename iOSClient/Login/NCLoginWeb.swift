@@ -34,14 +34,6 @@ class NCLoginWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (NCBrandOptions.sharedInstance.use_login_web_personalized) {
-            if let accountCount = NCManageDatabase.sharedInstance.getAccounts()?.count {
-                if(accountCount > 0) {
-                    self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
-                }
-            }
-        }
-        
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
 
@@ -55,7 +47,7 @@ class NCLoginWeb: UIViewController {
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
         // ADD k_flowEndpoint for Web Flow
-        if urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
+        if NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
             urlBase =  urlBase + k_flowEndpoint
         }
         
@@ -91,10 +83,6 @@ class NCLoginWeb: UIViewController {
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
         webView.load(request)
-    }
-    
-    @objc func closeView(sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
     }
     
 }
@@ -141,6 +129,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                 // NO account found, clear
                 if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
                 
+                
                 // Add new account
                 NCManageDatabase.sharedInstance.deleteAccount(account)
                 NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
@@ -162,7 +151,12 @@ extension NCLoginWeb: WKNavigationDelegate {
                         let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
                         splitController?.modalPresentationStyle = .fullScreen
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-                        self.navigationController?.present(splitController!, animated: true)
+                        splitController!.view.alpha = 0
+                        appDelegate.window.rootViewController = splitController!
+                        appDelegate.window.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            splitController!.view.alpha = 1
+                        }
                     } else {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
                         self.dismiss(animated: true)
