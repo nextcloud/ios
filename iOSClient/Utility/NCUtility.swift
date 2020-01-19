@@ -26,6 +26,7 @@ import SVGKit
 import KTVHTTPCache
 import ZIPFoundation
 import Sheeeeeeeeet
+import NCCommunication
 
 class NCUtility: NSObject {
     @objc static let sharedInstance: NCUtility = {
@@ -177,7 +178,7 @@ class NCUtility: NSObject {
     }
     
     
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, closure: @escaping (String?) -> ()) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
         
         var fileNamePNG = ""
         
@@ -198,8 +199,8 @@ class NCUtility: NSObject {
         
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
-            OCNetworking.sharedManager()?.downloadContents(ofUrl: iconURL.absoluteString, completion: { (data, message, errorCode) in
-                
+            NCCommunication.sharedInstance.downloadContent(urlString: iconURL.absoluteString, account: account) { (account, data, errorCode, errorMessage) in
+               
                 if errorCode == 0 && data != nil {
                 
                     if let image = UIImage.init(data: data!) {
@@ -253,7 +254,7 @@ class NCUtility: NSObject {
                 } else {
                     return closure(nil)
                 }
-            })
+            }
             
         } else {
             return closure(imageNamePath)

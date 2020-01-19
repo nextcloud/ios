@@ -24,6 +24,7 @@
 import Foundation
 import Parchment
 import DropDown
+import NCCommunication
 
 class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
    
@@ -81,6 +82,16 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { sharedWithYouByImage.image = image }
             } else {
+                NCCommunication.sharedInstance.downloadAvatar(urlString: appDelegate.activeUrl, userID: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                    if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            self.sharedWithYouByImage.image = image
+                        }
+                    } else {
+                        self.sharedWithYouByImage.image = UIImage(named: "avatar")
+                    }
+                }
+                /*
                 let url = appDelegate.activeUrl + k_avatar + metadata!.ownerId + "/" + k_avatar_size
                 let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                 OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
@@ -93,6 +104,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         self.sharedWithYouByImage.image = UIImage(named: "avatar")
                     }
                 })
+                */
             }
         } 
         
@@ -288,18 +300,15 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
-                    let url = self.appDelegate.activeUrl + k_avatar + item.name + "/" + k_avatar_size
-                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                        if errorCode == 0 && UIImage(data: data!) != nil {
-                            do {
-                                try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
-                            } catch { return }
+                    NCCommunication.sharedInstance.downloadAvatar(urlString: self.appDelegate.activeUrl, userID: item.name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                cell.imageItem.image = image
+                            }
                         } else {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }
-                    })
+                    }
                 }
             }
 
@@ -383,18 +392,15 @@ extension NCShare: UITableViewDataSource {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
                 } else {
                     DispatchQueue.global().async {
-                        let url = self.appDelegate.activeUrl + k_avatar + tableShare.shareWith + "/" + k_avatar_size
-                        let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                        OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                            if errorCode == 0 && UIImage(data: data!) != nil {
-                                do {
-                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
-                                } catch { return }
+                        NCCommunication.sharedInstance.downloadAvatar(urlString: self.appDelegate.activeUrl, userID: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                            if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                    cell.imageItem.image = image
+                                }
                             } else {
                                 cell.imageItem.image = UIImage(named: "avatar")
                             }
-                        })
+                        }
                     }
                 }
                 

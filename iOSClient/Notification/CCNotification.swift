@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NCCommunication
 
 class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     
@@ -109,6 +110,17 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                         }
                     } else {
                         DispatchQueue.global().async {
+                            
+                            NCCommunication.sharedInstance.downloadAvatar(urlString: self.appDelegate.activeUrl, userID: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                                if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                        cell.avatar.isHidden = false
+                                        cell.avatarLeadingMargin.constant = 50
+                                        cell.avatar.image = image
+                                    }
+                                }
+                            }
+                            /*
                             let url = self.appDelegate.activeUrl + k_avatar + name + "/" + k_avatar_size
                             let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                             OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
@@ -123,6 +135,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                                     } catch { return }
                                 }
                             })
+                            */
                         }
                     }
                 }
