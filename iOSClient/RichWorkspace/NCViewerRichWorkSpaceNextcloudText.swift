@@ -26,6 +26,7 @@ import Foundation
 class NCViewerRichWorkSpaceNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     
     @IBOutlet weak var webView: WKWebView!
+    @IBOutlet weak var webViewBottomConstraint: NSLayoutConstraint!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc var metadata: tableMetadata?
@@ -51,17 +52,18 @@ class NCViewerRichWorkSpaceNextcloudText: UIViewController, WKNavigationDelegate
     }
     
     @objc func keyboardDidShow(notification: Notification) {
-        /*
+        var safeAreaInsetsBottom: CGFloat = 0
+        if #available(iOS 11.0, *) {
+            safeAreaInsetsBottom = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+        }
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
-        //print("keyboardFrame: \(keyboardFrame)")
-        frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
-        */
+        webViewBottomConstraint.constant = keyboardFrame.size.height - safeAreaInsetsBottom
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        //frame = detail.view.bounds
+        webViewBottomConstraint.constant = 0
     }
     
     //MARK: -
