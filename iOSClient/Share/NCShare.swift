@@ -91,20 +91,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         self.sharedWithYouByImage.image = UIImage(named: "avatar")
                     }
                 }
-                /*
-                let url = appDelegate.activeUrl + k_avatar + metadata!.ownerId + "/" + k_avatar_size
-                let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                    if errorCode == 0 && UIImage(data: data!) != nil {
-                        do {
-                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                            if let image = UIImage(contentsOfFile: fileNameLocalPath) { self.sharedWithYouByImage.image = image }
-                        } catch { return }
-                    } else {
-                        self.sharedWithYouByImage.image = UIImage(named: "avatar")
-                    }
-                })
-                */
             }
         } 
         

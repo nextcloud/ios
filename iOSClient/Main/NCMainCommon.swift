@@ -353,18 +353,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                             cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
                     }
-                    /*
-                    let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
-                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                        if errorCode == 0 {
-                            do {
-                                try data!.write(to: NSURL(fileURLWithPath: fileNameSource) as URL, options: .atomic)
-                                cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
-                            } catch {  }
-                        }
-                    })
-                    */
                 }
             }
             
