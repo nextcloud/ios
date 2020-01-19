@@ -1117,6 +1117,11 @@
     if (!_serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode)
         return;
     
+    // RichWorkspace
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    self.richWorkspace = directory.richWorkspace;
+    [self setTableViewHeader];
+    
     // Load Datasource
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
