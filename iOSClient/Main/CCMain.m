@@ -219,9 +219,6 @@
     if (self.searchController.isActive == false) {
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
     }
-    
-    // Searchbar resize: don't touch me
-    self.searchController.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, self.searchController.searchBar.frame.size.height);
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -289,7 +286,6 @@
         }
         
         [self setTableViewHeader];
-        self.searchController.searchBar.frame = CGRectMake(0, 0, self.tableView.frame.size.width, self.searchController.searchBar.frame.size.height);
     }];
 }
 
@@ -1415,7 +1411,9 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     }
     
-    //[self setNeedsStatusBarAppearanceUpdate];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [self setTableViewHeader];
+    });
 }
 
 #pragma mark -
@@ -3867,14 +3865,15 @@
     if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspace.length == 0 || self.searchController.isActive) {
         
         [self.viewRichWorkspace setRichWorkspaceText:@"" gradient:false];
-        [self.tableView.tableHeaderView setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightSearchBar)];
+        [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         
     } else {
         
         [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true];
-        [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace + heightSearchBar)];
+        [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace + heightSearchBar)];
     }
     
+    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.tableView.frame.size.width, self.searchController.searchBar.frame.size.height);
     [self.tableView reloadData];
 }
 
