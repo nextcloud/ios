@@ -125,13 +125,25 @@
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
-    // Register cell
-    [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
-    
-    // long press recognizer TableView
-    UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
-    [self.tableView addGestureRecognizer:longPressRecognizer];
+    // Search
+    self.definesPresentationContext = YES;
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    self.searchController.searchBar.translucent = NO;
+    [self.searchController.searchBar sizeToFit];
+    self.searchController.searchBar.delegate = self;
+    self.searchController.searchBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.brand;
+    self.searchController.searchBar.backgroundImage = [UIImage new];
+    UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
+    if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
+        [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
+    }
+    UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
+    if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
+        searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        searchTextView.textColor = NCBrandColor.sharedInstance.textView;
+    }
     
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
@@ -139,6 +151,19 @@
     viewRichWorkspaceTapped.numberOfTapsRequired = 1;
     viewRichWorkspaceTapped.delegate = self;
     [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
+    [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width,self.searchController.searchBar.frame.size.height)];
+    
+    // Table Header View
+    [self.tableView setTableHeaderView:self.viewRichWorkspace];
+    [self.tableView.tableHeaderView addSubview:self.searchController.searchBar];
+    
+    // Register cell
+    [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
+    
+    // long press recognizer TableView
+    UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
+    [self.tableView addGestureRecognizer:longPressRecognizer];
     
     // Pull-to-Refresh
     [self createRefreshControl];
@@ -182,14 +207,7 @@
     // If not editing mode remove _selectedocIds
     if (!self.tableView.editing)
         [_selectedocIdsMetadatas removeAllObjects];
-    
-    // Search Bar
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
-        [self searchEnabled:NO];
-    } else {
-        [self searchEnabled:YES];
-    }
-    
+
     // Get Shares
     appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
     
@@ -201,6 +219,9 @@
     if (self.searchController.isActive == false) {
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
     }
+    
+    // Searchbar resize: don't touch me
+    self.searchController.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, self.searchController.searchBar.frame.size.height);
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -1287,43 +1308,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Search =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)searchEnabled:(BOOL)enabled
-{
-    if (enabled) {
-    
-        if (self.tableView.tableHeaderView != nil)
-            return;
-        
-        self.definesPresentationContext = YES;
-        self.searchController.searchResultsUpdater = self;
-        self.searchController.dimsBackgroundDuringPresentation = NO;
-        self.searchController.searchBar.translucent = NO;
-        [self.searchController.searchBar sizeToFit];
-        self.searchController.searchBar.delegate = self;
-        self.searchController.searchBar.barTintColor = NCBrandColor.sharedInstance.brand;
-        self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.brand;
-        self.searchController.searchBar.backgroundImage = [UIImage new];
-        // color searchbbar button text (cancel)
-        UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
-        if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
-            [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
-        }
-        // color textview searchbbar
-        UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
-        if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
-            searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-            searchTextView.textColor = NCBrandColor.sharedInstance.textView;
-        }
-        
-        //self.tableView.tableHeaderView = self.searchController.searchBar;
-        //[self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
-        
-    } else {
-        
-        self.tableView.tableHeaderView = nil;
-    }
-}
 
 - (void)searchStartTimer
 {
@@ -3876,26 +3860,19 @@
 
 - (void)setTableViewHeader
 {
-    CGFloat height = UIScreen.mainScreen.bounds.size.height/5;
-    
-    // Nextcloud 18
+    CGFloat heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/5;
+    CGFloat heightSearchBar = self.searchController.searchBar.frame.size.height;
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-    if (capabilities.versionMajor < k_nextcloud_version_18_0) {
+  
+    if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspace.length == 0 || self.searchController.isActive) {
         
-        [self.tableView setTableHeaderView:nil];
+        [self.viewRichWorkspace setRichWorkspaceText:@"" gradient:false];
+        [self.tableView.tableHeaderView setFrame:CGRectMake(0, 0, self.view.frame.size.width, heightSearchBar)];
         
     } else {
-    
-        if (self.richWorkspace.length == 0) {
-            
-            [self.tableView setTableHeaderView:nil];
-            
-        } else {
-            
-            [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true];
-            [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, height)];
-            [self.tableView setTableHeaderView:self.viewRichWorkspace];
-        }
+        
+        [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true];
+        [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.view.frame.size.width, heightRichWorkspace + heightSearchBar)];
     }
     
     [self.tableView reloadData];
