@@ -49,7 +49,7 @@
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
 
-    UIRefreshControl *refreshControl;
+    NCMainRefreshControl *refreshControl;
 
     CCHud *_hud;
     
@@ -289,7 +289,7 @@
         }
         
         [self setTableViewHeader];
-        [self.tableView reloadData];
+        self.searchController.searchBar.frame = CGRectMake(0, 0, self.tableView.frame.size.width, self.searchController.searchBar.frame.size.height);
     }];
 }
 
@@ -542,7 +542,7 @@
 
 - (void)createRefreshControl
 {
-    refreshControl = [UIRefreshControl new];
+    refreshControl = [NCMainRefreshControl new];
     
     self.tableView.refreshControl = refreshControl;
     
@@ -3867,12 +3867,12 @@
     if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspace.length == 0 || self.searchController.isActive) {
         
         [self.viewRichWorkspace setRichWorkspaceText:@"" gradient:false];
-        [self.tableView.tableHeaderView setFrame:CGRectMake(0, 0, self.view.frame.size.width, heightSearchBar)];
+        [self.tableView.tableHeaderView setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightSearchBar)];
         
     } else {
         
         [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true];
-        [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.view.frame.size.width, heightRichWorkspace + heightSearchBar)];
+        [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace + heightSearchBar)];
     }
     
     [self.tableView reloadData];
