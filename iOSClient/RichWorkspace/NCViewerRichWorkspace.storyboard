@@ -20,7 +20,7 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="tWU-uH-OcN">
-                                        <rect key="frame" x="15" y="5" width="389" height="769"/>
+                                        <rect key="frame" x="15" y="0.0" width="389" height="774"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -32,7 +32,7 @@
                                     <constraint firstAttribute="bottom" secondItem="tWU-uH-OcN" secondAttribute="bottom" id="0JY-Sv-nGd"/>
                                     <constraint firstItem="tWU-uH-OcN" firstAttribute="leading" secondItem="ZTH-4c-how" secondAttribute="leading" constant="15" id="Etf-Ey-64j"/>
                                     <constraint firstAttribute="trailing" secondItem="tWU-uH-OcN" secondAttribute="trailing" constant="10" id="b6f-DP-hJI"/>
-                                    <constraint firstItem="tWU-uH-OcN" firstAttribute="top" secondItem="ZTH-4c-how" secondAttribute="top" constant="5" id="d81-lI-ub5"/>
+                                    <constraint firstItem="tWU-uH-OcN" firstAttribute="top" secondItem="ZTH-4c-how" secondAttribute="top" id="d81-lI-ub5"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="textView" destination="tWU-uH-OcN" id="kaU-Ye-UzC"/>
