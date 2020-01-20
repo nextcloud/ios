@@ -328,7 +328,6 @@
     // color searchbar
     self.searchController.searchBar.barTintColor = NCBrandColor.sharedInstance.brand;
     self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.brand;
-    self.view.backgroundColor = NCBrandColor.sharedInstance.brand;
     // color searchbbar button text (cancel)
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
@@ -1937,14 +1936,21 @@
 
 - (void)viewRichWorkspaceTapAction:(UITapGestureRecognizer *)tapGesture
 {
-    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
-    NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
-    viewerRichWorkspace.richWorkspace = self.richWorkspace;
-    viewerRichWorkspace.serverUrl = self.serverUrl;
-    
-    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-    
-    [self presentViewController:navigationController animated:NO completion:NULL];
+    [UIView animateWithDuration:0.5 animations:^{
+       
+        [self.tableView setContentOffset:CGPointMake(0, heightSearchBar)];
+        
+    } completion:^(BOOL finished) {
+        
+        UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
+        NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
+        viewerRichWorkspace.richWorkspace = self.richWorkspace;
+        viewerRichWorkspace.serverUrl = self.serverUrl;
+        
+        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+        
+        [self presentViewController:navigationController animated:NO completion:NULL];
+    }];
 }
 
 - (void)createRichWorkspace
