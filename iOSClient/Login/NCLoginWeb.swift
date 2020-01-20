@@ -34,6 +34,14 @@ class NCLoginWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if (NCBrandOptions.sharedInstance.use_login_web_personalized) {
+            if let accountCount = NCManageDatabase.sharedInstance.getAccounts()?.count {
+                if(accountCount > 0) {
+                    self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
+                }
+            }
+        }
+        
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
 
@@ -47,7 +55,7 @@ class NCLoginWeb: UIViewController {
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
         // ADD k_flowEndpoint for Web Flow
-        if NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
+        if urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
             urlBase =  urlBase + k_flowEndpoint
         }
         
@@ -83,6 +91,10 @@ class NCLoginWeb: UIViewController {
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
         webView.load(request)
+    }
+    
+    @objc func closeView(sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
     
 }
