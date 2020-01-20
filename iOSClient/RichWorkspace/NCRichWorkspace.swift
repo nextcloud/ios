@@ -30,6 +30,7 @@ import SwiftRichString
     @IBOutlet weak var textView: UITextView!
     var richWorkspace: String = ""
     var gradient: Bool = false
+    var _userInteractionEnabled: Bool = false
     let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
@@ -41,13 +42,10 @@ import SwiftRichString
     
     @objc func changeTheming() {
         self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        setRichWorkspaceText(richWorkspace, gradient: gradient)
+        setRichWorkspaceText(richWorkspace, gradient: gradient, userInteractionEnabled: _userInteractionEnabled)
     }
     
-    @objc func setRichWorkspaceText(_ richWorkspace: String, gradient: Bool) {
-        
-        self.richWorkspace = richWorkspace
-        self.gradient = gradient
+    @objc func setRichWorkspaceText(_ richWorkspace: String, gradient: Bool, userInteractionEnabled: Bool) {
         
         let h1 = Style {
             $0.font = UIFont.systemFont(ofSize: 25, weight: .bold)
@@ -99,7 +97,7 @@ import SwiftRichString
         }
         
         textView.attributedText = richWorkspaceStyling.set(style: StyleGroup(base: normal, ["h1": h1, "h2": h2, "h3": h3, "h4": h4, "h5": h5, "h6": h6]))
-        textView.isUserInteractionEnabled = false
+        textView.isUserInteractionEnabled = userInteractionEnabled
         textView.sizeToFit()
         
         if gradient {
@@ -115,5 +113,9 @@ import SwiftRichString
             gradientLayer.endPoint = CGPoint(x: 0, y: 1)
             textView.layer.addSublayer(gradientLayer)
         }
+        
+        self.richWorkspace = richWorkspace
+        self.gradient = gradient
+        self._userInteractionEnabled = userInteractionEnabled
     }
 }

@@ -43,7 +43,7 @@ import NCCommunication
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false)
+        viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false, userInteractionEnabled: true)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
@@ -61,7 +61,7 @@ import NCCommunication
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
                 self.richWorkspace = metadataFolder.richWorkspace
                 self.appDelegate.activeMain.richWorkspace = self.richWorkspace
-                self.viewRichWorkspace.setRichWorkspaceText(self.richWorkspace, gradient: false)
+                self.viewRichWorkspace.setRichWorkspaceText(self.richWorkspace, gradient: false, userInteractionEnabled: true)
             }
         }
     }

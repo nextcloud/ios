@@ -3864,12 +3864,12 @@
   
     if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspace.length == 0 || self.searchController.isActive) {
         
-        [self.viewRichWorkspace setRichWorkspaceText:@"" gradient:false];
+        [self.viewRichWorkspace setRichWorkspaceText:@"" gradient:false userInteractionEnabled:false];
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         
     } else {
         
-        [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true];
+        [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true userInteractionEnabled:false];
         [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace + heightSearchBar)];
     }
     
