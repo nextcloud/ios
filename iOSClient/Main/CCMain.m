@@ -70,7 +70,10 @@
     
     // Folder
     BOOL _loadingFolder;
-    tableMetadata *_metadataFolder;    
+    tableMetadata *_metadataFolder;
+    
+    CGFloat heightRichWorkspace;
+    CGFloat heightSearchBar;
 }
 @end
 
@@ -144,6 +147,7 @@
         searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
         searchTextView.textColor = NCBrandColor.sharedInstance.textView;
     }
+    heightSearchBar = self.searchController.searchBar.frame.size.height;
     
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
@@ -151,7 +155,9 @@
     viewRichWorkspaceTapped.numberOfTapsRequired = 1;
     viewRichWorkspaceTapped.delegate = self;
     [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
-    [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width,self.searchController.searchBar.frame.size.height)];
+    heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/5 + heightSearchBar;
+    [self.viewRichWorkspace setHeightSearch:heightSearchBar];
+    [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
     
     // Table Header View
     [self.tableView setTableHeaderView:self.viewRichWorkspace];
@@ -3858,8 +3864,6 @@
 
 - (void)setTableViewHeader
 {
-    CGFloat heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/5;
-    CGFloat heightSearchBar = self.searchController.searchBar.frame.size.height;
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
   
     if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspace.length == 0 || self.searchController.isActive) {
@@ -3870,10 +3874,10 @@
     } else {
         
         [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true userInteractionEnabled:false];
-        [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace + heightSearchBar)];
+        [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace)];
     }
     
-    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.tableView.frame.size.width, self.searchController.searchBar.frame.size.height);
+    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.tableView.frame.size.width, heightSearchBar);
     [self.tableView reloadData];
 }
 

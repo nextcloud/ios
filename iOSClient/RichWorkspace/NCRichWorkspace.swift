@@ -28,6 +28,8 @@ import SwiftRichString
 @objc class NCViewRichWorkspace: UIView {
     
     @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
+
     var richWorkspace: String = ""
     var gradient: Bool = false
     var _userInteractionEnabled: Bool = false
@@ -43,6 +45,10 @@ import SwiftRichString
     @objc func changeTheming() {
         self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         setRichWorkspaceText(richWorkspace, gradient: gradient, userInteractionEnabled: _userInteractionEnabled)
+    }
+    
+    @objc func setHeightSearch(_ height: CGFloat) {
+        textViewTopConstraint.constant = height
     }
     
     @objc func setRichWorkspaceText(_ richWorkspace: String, gradient: Bool, userInteractionEnabled: Bool) {
@@ -109,7 +115,7 @@ import SwiftRichString
             } else {
                 gradientLayer.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
             }
-            gradientLayer.startPoint = CGPoint(x: 0, y: 0.60)
+            gradientLayer.startPoint = CGPoint(x: 0, y: 0.50)
             gradientLayer.endPoint = CGPoint(x: 0, y: 1)
             textView.layer.addSublayer(gradientLayer)
         }
