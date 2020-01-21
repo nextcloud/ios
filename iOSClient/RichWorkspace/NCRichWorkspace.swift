@@ -41,6 +41,7 @@ import SwiftRichString
     @objc func load(richWorkspaceText: String) {
         let richWorkspaceCommon = NCRichWorkspaceCommon()
         
+        backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
         setGradient()
     }
