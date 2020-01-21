@@ -33,15 +33,12 @@ import SwiftRichString
     let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+        super.init(coder: coder)        
     }
 
     @objc func load(richWorkspaceText: String) {
         let richWorkspaceCommon = NCRichWorkspaceCommon()
         
-        backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
         setGradient()
     }

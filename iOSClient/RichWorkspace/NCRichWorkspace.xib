@@ -22,7 +22,7 @@
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="wri-16-tQY" secondAttribute="bottom" constant="10" id="Ei6-vr-4dN"/>
                 <constraint firstItem="wri-16-tQY" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="50" id="O2Y-0W-v0n"/>
