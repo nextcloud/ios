@@ -27,30 +27,12 @@ import SwiftRichString
 
 @objc class NCViewRichWorkspace: UIView {
     
-    @IBOutlet weak var textView: UITextView!
-    @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
+    @objc @IBOutlet weak var textView: UITextView!
+    @objc @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
 
-    var richWorkspace: String = ""
-    var gradient: Bool = false
-    var _userInteractionEnabled: Bool = false
     let gradientLayer: CAGradientLayer = CAGradientLayer()
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    @objc func changeTheming() {
-        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        setRichWorkspaceText(richWorkspace, gradient: gradient, userInteractionEnabled: _userInteractionEnabled)
-    }
-    
-    @objc func setHeightSearch(_ height: CGFloat) {
-        textViewTopConstraint.constant = height
-    }
-    
+    /*
     @objc func setRichWorkspaceText(_ richWorkspace: String, gradient: Bool, userInteractionEnabled: Bool) {
         
         let h1 = Style {
@@ -124,4 +106,5 @@ import SwiftRichString
         self.gradient = gradient
         self._userInteractionEnabled = userInteractionEnabled
     }
+    */
 }

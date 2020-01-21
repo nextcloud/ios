@@ -156,7 +156,7 @@
     viewRichWorkspaceTapped.delegate = self;
     [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/5 + heightSearchBar;
-    [self.viewRichWorkspace setHeightSearch:heightSearchBar];
+    self.viewRichWorkspace.textViewTopConstraint.constant = heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
     
     // Table Header View
@@ -1955,13 +1955,13 @@
 
 - (void)createRichWorkspace
 {
-    NCRichWorkspaceTextCommon *richWorkspaceTextCommon = [NCRichWorkspaceTextCommon new];
+    NCRichWorkspaceCommon *richWorkspaceCommon = [NCRichWorkspaceCommon new];
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, k_fileNameRichWorkspace.lowercaseString]];
     
     if (metadata) {
-        [richWorkspaceTextCommon openViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
+        [richWorkspaceCommon openViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
     } else {
-        [richWorkspaceTextCommon createViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
+        [richWorkspaceCommon createViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
     }
 }
 
@@ -3871,15 +3871,16 @@
 - (void)setTableViewHeader
 {
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    NCRichWorkspaceCommon *richWorkspaceCommon = [NCRichWorkspaceCommon new];
   
     if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspace.length == 0 || self.searchController.isActive) {
-        
-        [self.viewRichWorkspace setRichWorkspaceText:@"" gradient:false userInteractionEnabled:false];
+                
+        [richWorkspaceCommon setRichWorkspaceText:@"" userInteractionEnabled:false textView:self.viewRichWorkspace.textView];
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         
     } else {
         
-        [self.viewRichWorkspace setRichWorkspaceText:self.richWorkspace gradient:true userInteractionEnabled:false];
+        [richWorkspaceCommon setRichWorkspaceText:self.richWorkspace userInteractionEnabled:false textView:self.viewRichWorkspace.textView];
         [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace)];
     }
     

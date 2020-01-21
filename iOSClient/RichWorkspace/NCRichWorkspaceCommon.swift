@@ -23,8 +23,9 @@
 
 import Foundation
 import NCCommunication
+import SwiftRichString
 
-@objc class NCRichWorkspaceTextCommon: NSObject {
+@objc class NCRichWorkspaceCommon: NSObject {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -45,12 +46,12 @@ import NCCommunication
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceNextcloudText") as? NCViewerRichWorkSpaceNextcloudText {
+                if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                     
-                    viewerRichWorkSpaceText.url = url!
-                    viewerRichWorkSpaceText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                    viewerRichWorkspaceWebView.url = url!
+                    viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     
-                    viewController.present(viewerRichWorkSpaceText, animated: true, completion: nil)
+                    viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
                 
             } else if errorCode != 0 {
@@ -80,13 +81,13 @@ import NCCommunication
                     
                     if errorCode == 0 && account == self.appDelegate.activeAccount {
                         
-                        if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceNextcloudText") as? NCViewerRichWorkSpaceNextcloudText {
+                        if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                             
-                            viewerRichWorkSpaceText.url = url!
-                            viewerRichWorkSpaceText.metadata = metadata
-                            viewerRichWorkSpaceText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                            viewerRichWorkspaceWebView.url = url!
+                            viewerRichWorkspaceWebView.metadata = metadata
+                            viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                             
-                            viewController.present(viewerRichWorkSpaceText, animated: true, completion: nil)
+                            viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                         }
                         
                     } else if errorCode != 0 {
@@ -96,15 +97,70 @@ import NCCommunication
                 
             } else {
                 
-                if let viewerRichWorkSpaceText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkSpaceNextcloudText") as? NCViewerRichWorkSpaceNextcloudText {
+                if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                     
-                    viewerRichWorkSpaceText.url = metadata.url
-                    viewerRichWorkSpaceText.metadata = metadata
-                    viewerRichWorkSpaceText.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                    viewerRichWorkspaceWebView.url = metadata.url
+                    viewerRichWorkspaceWebView.metadata = metadata
+                    viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     
-                    viewController.present(viewerRichWorkSpaceText, animated: true, completion: nil)
+                    viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
             }
         }
     }
+    
+    @objc func setRichWorkspaceText(_ richWorkspace: String, userInteractionEnabled: Bool, textView: UITextView) {
+           
+           let h1 = Style {
+               $0.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+               $0.color = NCBrandColor.sharedInstance.textView
+           }
+           let h2 = Style {
+               $0.font = UIFont.systemFont(ofSize: 23, weight: .bold)
+               $0.color = NCBrandColor.sharedInstance.textView
+           }
+           let h3 = Style {
+               $0.font = UIFont.systemFont(ofSize: 21, weight: .bold)
+               $0.color = NCBrandColor.sharedInstance.textView
+           }
+           let h4 = Style {
+               $0.font = UIFont.systemFont(ofSize: 19, weight: .bold)
+               $0.color = NCBrandColor.sharedInstance.textView
+           }
+           let h5 = Style {
+               $0.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+               $0.color = NCBrandColor.sharedInstance.textView
+           }
+           let h6 = Style {
+               $0.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+               $0.color = NCBrandColor.sharedInstance.textView
+           }
+           let normal = Style {
+               $0.font = UIFont.systemFont(ofSize: 15)
+               $0.color = NCBrandColor.sharedInstance.textView
+           }
+          
+           var richWorkspaceStyling = ""
+           let richWorkspaceArray = richWorkspace.components(separatedBy: "\n")
+           for string in richWorkspaceArray {
+               if string.hasPrefix("# ") {
+                   richWorkspaceStyling = richWorkspaceStyling + "<h1>" + string.replacingOccurrences(of: "# ", with: "") + "</h1>\r\n"
+               } else if string.hasPrefix("## ") {
+                   richWorkspaceStyling = richWorkspaceStyling + "<h2>" + string.replacingOccurrences(of: "## ", with: "") + "</h2>\r\n"
+               } else if string.hasPrefix("### ") {
+                   richWorkspaceStyling = richWorkspaceStyling + "<h3>" + string.replacingOccurrences(of: "### ", with: "") + "</h3>\r\n"
+               } else if string.hasPrefix("#### ") {
+                   richWorkspaceStyling = richWorkspaceStyling + "<h4>" + string.replacingOccurrences(of: "#### ", with: "") + "</h4>\r\n"
+               } else if string.hasPrefix("##### ") {
+                   richWorkspaceStyling = richWorkspaceStyling + "<h5>" + string.replacingOccurrences(of: "##### ", with: "") + "</h5>\r\n"
+               } else if string.hasPrefix("###### ") {
+                   richWorkspaceStyling = richWorkspaceStyling + "<h6>" + string.replacingOccurrences(of: "###### ", with: "") + "</h6>\r\n"
+               } else {
+                   richWorkspaceStyling = richWorkspaceStyling + string + "\r\n"
+               }
+           }
+           
+           textView.attributedText = richWorkspaceStyling.set(style: StyleGroup(base: normal, ["h1": h1, "h2": h2, "h3": h3, "h4": h4, "h5": h5, "h6": h6]))
+           textView.isUserInteractionEnabled = userInteractionEnabled
+       }
 }

@@ -26,9 +26,10 @@ import NCCommunication
 
 @objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
 
-    @IBOutlet weak var viewRichWorkspace: NCViewRichWorkspace!
+    @IBOutlet weak var textView: UITextView!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let richWorkspaceCommon = NCRichWorkspaceCommon()
     @objc public var richWorkspace: String = ""
     @objc public var serverUrl: String = ""
    
@@ -43,7 +44,7 @@ import NCCommunication
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false, userInteractionEnabled: true)
+        richWorkspaceCommon.setRichWorkspaceText(richWorkspace, userInteractionEnabled: true, textView: textView)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
@@ -61,7 +62,7 @@ import NCCommunication
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
                 self.richWorkspace = metadataFolder.richWorkspace
                 self.appDelegate.activeMain.richWorkspace = self.richWorkspace
-                self.viewRichWorkspace.setRichWorkspaceText(self.richWorkspace, gradient: false, userInteractionEnabled: true)
+                self.richWorkspaceCommon.setRichWorkspaceText(self.richWorkspace, userInteractionEnabled: true, textView: self.textView)
             }
         }
     }
@@ -80,7 +81,6 @@ import NCCommunication
     
     @IBAction func editItemAction(_ sender: Any) {
         
-        let richWorkspaceTextCommon = NCRichWorkspaceTextCommon()
-        richWorkspaceTextCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
+        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
     }
 }
