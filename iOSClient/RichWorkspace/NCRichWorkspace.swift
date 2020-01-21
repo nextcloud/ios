@@ -33,7 +33,7 @@ import SwiftRichString
     let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)        
+        super.init(coder: coder)
     }
 
     @objc func load(richWorkspaceText: String) {
