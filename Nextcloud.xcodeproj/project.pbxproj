@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3704EB2A23D5A58400455C5B /* Menu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3704EB2923D5A58400455C5B /* Menu.storyboard */; };
 		371B5A2E23D0B04500FAFAE9 /* MainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */; };
 		371B5A3123D0B71B00FAFAE9 /* MainMenuManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */; };
 		371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */; };
@@ -664,6 +665,7 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		3704EB2923D5A58400455C5B /* Menu.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Menu.storyboard; sourceTree = "<group>"; };
 		371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuTableViewController.swift; sourceTree = "<group>"; };
 		371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuManager.swift; sourceTree = "<group>"; };
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
@@ -1507,6 +1509,7 @@
 				371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */,
 				371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */,
 				37ECC83A23D0C7400082EFA2 /* MenuAction.swift */,
+				3704EB2923D5A58400455C5B /* Menu.storyboard */,
 			);
 			path = MainMenu;
 			sourceTree = "<group>";
@@ -3186,6 +3189,7 @@
 				F7D4233E1F0596AC009C9782 /* Reader-Email.png in Resources */,
 				F7D423361F0596AC009C9782 /* AppIcon-167.png in Resources */,
 				F7F54CF71E5B14C700E19C62 /* PlayButtonOverlayLargeTap.png in Resources */,
+				3704EB2A23D5A58400455C5B /* Menu.storyboard in Resources */,
 				F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */,
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F7F54D021E5B14C700E19C62 /* UIBarButtonItemGrid@3x.png in Resources */,

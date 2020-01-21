@@ -9,14 +9,31 @@
 import Foundation
 
 class MenuAction {
-    
+
     let title: String
     let icon: UIImage
-    let value: Int
-    
-    init(title: String, value: Int, icon: UIImage) {
+    let selectable: Bool
+    var onTitle: String?
+    var onIcon: UIImage?
+    var selected: Bool = false
+    var isOn: Bool = false
+    var action: ((_ menuAction: MenuAction) -> Void)?
+
+    init(title: String, icon: UIImage, action: ((_ menuAction: MenuAction) -> Void)?) {
         self.title = title
         self.icon = icon
-        self.value = value
+        self.action = action
+        self.selectable = false
+    }
+
+    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: MenuAction) -> Void)?) {
+        self.title = title
+        self.icon = icon
+        self.onTitle = onTitle ?? title
+        self.onIcon = onIcon ?? icon
+        self.action = action
+        self.selected = selected
+        self.isOn = on
+        self.selectable = true
     }
 }
