@@ -30,7 +30,7 @@ import NCCommunication
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
-    @objc public var richWorkspace: String = ""
+    @objc public var richWorkspaceText: String = ""
     @objc public var serverUrl: String = ""
    
     override func viewDidLoad() {
@@ -44,7 +44,7 @@ import NCCommunication
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        richWorkspaceCommon.setRichWorkspaceText(richWorkspace, userInteractionEnabled: true, textView: textView)
+        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
@@ -60,9 +60,9 @@ import NCCommunication
                 var metadataFolder = tableMetadata()
                 _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                self.richWorkspace = metadataFolder.richWorkspace
-                self.appDelegate.activeMain.richWorkspace = self.richWorkspace
-                self.richWorkspaceCommon.setRichWorkspaceText(self.richWorkspace, userInteractionEnabled: true, textView: self.textView)
+                self.richWorkspaceText = metadataFolder.richWorkspace
+                self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
+                self.richWorkspaceCommon.setRichWorkspaceText(self.richWorkspaceText, textView: self.textView)
             }
         }
     }

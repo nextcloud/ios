@@ -109,7 +109,7 @@ import SwiftRichString
         }
     }
     
-    @objc func setRichWorkspaceText(_ richWorkspace: String, userInteractionEnabled: Bool, textView: UITextView) {
+    @objc func setRichWorkspaceText(_ richWorkspaceText: String, textView: UITextView) {
            
            let h1 = Style {
                $0.font = UIFont.systemFont(ofSize: 25, weight: .bold)
@@ -141,7 +141,7 @@ import SwiftRichString
            }
           
            var richWorkspaceStyling = ""
-           let richWorkspaceArray = richWorkspace.components(separatedBy: "\n")
+           let richWorkspaceArray = richWorkspaceText.components(separatedBy: "\n")
            for string in richWorkspaceArray {
                if string.hasPrefix("# ") {
                    richWorkspaceStyling = richWorkspaceStyling + "<h1>" + string.replacingOccurrences(of: "# ", with: "") + "</h1>\r\n"
@@ -161,6 +161,5 @@ import SwiftRichString
            }
            
            textView.attributedText = richWorkspaceStyling.set(style: StyleGroup(base: normal, ["h1": h1, "h2": h2, "h3": h3, "h4": h4, "h5": h5, "h6": h6]))
-           textView.isUserInteractionEnabled = userInteractionEnabled
        }
 }

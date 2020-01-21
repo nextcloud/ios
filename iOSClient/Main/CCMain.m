@@ -219,7 +219,7 @@
     
     // Get RichWorkspace
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    self.richWorkspace = directory.richWorkspace;
+    self.richWorkspaceText = directory.richWorkspace;
     
     // Query data source
     if (self.searchController.isActive == false) {
@@ -339,6 +339,9 @@
         searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
         searchTextView.textColor = NCBrandColor.sharedInstance.textView;
     }
+    
+    // Rich Workspace
+    [self.viewRichWorkspace loadWithRichWorkspaceText:self.richWorkspaceText];
     
     // Title
     [self setTitle];
@@ -1141,7 +1144,7 @@
     
     // RichWorkspace
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    self.richWorkspace = directory.richWorkspace;
+    self.richWorkspaceText = directory.richWorkspace;
     [self setTableViewHeader];
     
     // Load Datasource
@@ -1158,7 +1161,7 @@
             
             // Rich Workspace
             [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadataFolder.ocId serverUrl:self.serverUrl richWorkspace:metadataFolder.richWorkspace account:account];
-            self.richWorkspace = metadataFolder.richWorkspace;
+            self.richWorkspaceText = metadataFolder.richWorkspace;
             [self setTableViewHeader];
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadataFolder.serverUrl]];
@@ -1944,7 +1947,7 @@
         
         UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
         NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
-        viewerRichWorkspace.richWorkspace = self.richWorkspace;
+        viewerRichWorkspace.richWorkspaceText = self.richWorkspaceText;
         viewerRichWorkspace.serverUrl = self.serverUrl;
         
         navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
@@ -2309,7 +2312,7 @@
                                  
     // REMENU --------------------------------------------------------------------------------------------------------------
 
-    if (capabilities.versionMajor >= k_nextcloud_version_18_0 && self.richWorkspace.length == 0) {
+    if (capabilities.versionMajor >= k_nextcloud_version_18_0 && self.richWorkspaceText.length == 0) {
         appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem, appDelegate.directoryOnTopItem, appDelegate.addFolderInfo]];
     } else {
         appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem, appDelegate.directoryOnTopItem]];
@@ -3871,19 +3874,17 @@
 - (void)setTableViewHeader
 {
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-    NCRichWorkspaceCommon *richWorkspaceCommon = [NCRichWorkspaceCommon new];
   
-    if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspace.length == 0 || self.searchController.isActive) {
+    if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspaceText.length == 0 || self.searchController.isActive) {
                 
-        [richWorkspaceCommon setRichWorkspaceText:@"" userInteractionEnabled:false textView:self.viewRichWorkspace.textView];
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         
     } else {
         
-        [richWorkspaceCommon setRichWorkspaceText:self.richWorkspace userInteractionEnabled:false textView:self.viewRichWorkspace.textView];
         [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace)];
     }
     
+    [self.viewRichWorkspace loadWithRichWorkspaceText:self.richWorkspaceText];
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.tableView.frame.size.width, heightSearchBar);
     [self.tableView reloadData];
 }
