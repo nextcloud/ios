@@ -155,7 +155,7 @@
     viewRichWorkspaceTapped.numberOfTapsRequired = 1;
     viewRichWorkspaceTapped.delegate = self;
     [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
-    heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/5 + heightSearchBar;
+    heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/4 + heightSearchBar;
     self.viewRichWorkspace.textViewTopConstraint.constant = heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
     

@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="wri-16-tQY">
-                    <rect key="frame" x="15" y="50" width="295" height="425"/>
+                    <rect key="frame" x="15" y="50" width="295" height="420"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -24,7 +24,7 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="wri-16-tQY" secondAttribute="bottom" constant="5" id="Ei6-vr-4dN"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="wri-16-tQY" secondAttribute="bottom" constant="10" id="Ei6-vr-4dN"/>
                 <constraint firstItem="wri-16-tQY" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="50" id="O2Y-0W-v0n"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="wri-16-tQY" secondAttribute="trailing" constant="10" id="Rg0-g6-cT4"/>
                 <constraint firstItem="wri-16-tQY" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="o8o-lo-wZd"/>
