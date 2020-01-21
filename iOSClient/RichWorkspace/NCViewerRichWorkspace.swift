@@ -73,6 +73,7 @@ import NCCommunication
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
     }
     
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {
