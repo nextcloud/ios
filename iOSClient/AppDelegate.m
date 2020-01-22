@@ -194,9 +194,7 @@ PKPushRegistry *pushRegistry;
     // Test Maintenance
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
-    
-    [_activeMain closeAllMenu];
-    
+        
     [self updateApplicationIconBadgeNumber];
 }
 
@@ -873,7 +871,8 @@ PKPushRegistry *pushRegistry;
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, self.activeMain.serverUrl]];
     
     if ([tableDirectory.permissions containsString:@"CK"]) {
-        [self showMenuInViewController:[UIViewController topViewControllerWithRootViewController:self.window.rootViewController]];
+        UIViewController *vc = _activeMain.splitViewController.viewControllers[0];
+        [self showMenuInViewController: vc];
     } else {
         [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
     }

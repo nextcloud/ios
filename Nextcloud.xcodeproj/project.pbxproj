@@ -1507,7 +1507,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		371B5A2F23D0B04B00FAFAE9 /* MainMenu */ = {
+		371B5A2F23D0B04B00FAFAE9 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
 				371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */,
@@ -1515,7 +1515,7 @@
 				37ECC83A23D0C7400082EFA2 /* MenuAction.swift */,
 				3704EB2923D5A58400455C5B /* Menu.storyboard */,
 			);
-			path = MainMenu;
+			path = Menu;
 			sourceTree = "<group>";
 		};
 		F70022561EC4C9100080073F /* OCCommunicationLib */ = {
@@ -1612,7 +1612,7 @@
 				F78ACD3E21903BA20088454D /* Cell */,
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F78ACD4D219043E70088454D /* Layout */,
-				371B5A2F23D0B04B00FAFAE9 /* MainMenu */,
+				371B5A2F23D0B04B00FAFAE9 /* Menu */,
 				F78ACD50219046AC0088454D /* Section */,
 				F7D0E65E1BC5042E008D989A /* CCDetail.h */,
 				F7D0E65F1BC5042E008D989A /* CCDetail.m */,

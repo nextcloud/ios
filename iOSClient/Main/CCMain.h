@@ -74,8 +74,6 @@
 
 - (void)copyFileToPasteboard:(tableMetadata *)metadata;
 
-- (void)closeAllMenu;
-
 - (void)setUINavigationBarDefault;
 
 - (void)readFolder:(NSString *)serverUrl;
