@@ -217,7 +217,7 @@ extension CCMain {
         return actions
     }
 
-    @objc public func toggleMenu(viewController: UIViewController) {
+    @objc func toggleMenu(viewController: UIViewController) {
         let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
 
@@ -236,7 +236,7 @@ extension CCMain {
         viewController.present(fpc, animated: true, completion: nil)
     }
 
-    @objc public func toggleSelectMenu(viewController: UIViewController) {
+    @objc func toggleSelectMenu(viewController: UIViewController) {
         let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
         mainMenuViewController.actions = self.initSelectMenu()
 
@@ -281,8 +281,261 @@ extension CCMain {
 
         return actions
     }
+
+    private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) -> [MenuAction] {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+        let autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
+
+        var actions = [MenuAction]()
+
+        if (metadata.directory) {
+            var lockDirectory = false
+            var isOffline = false
+            let isFolderEncrypted = CCUtility.isFolderEncrypted("\(self.serverUrl ?? "")/\(metadata.fileName)", account: appDelegate.activeAccount)
+            var passcodeTitle = NSLocalizedString("_protect_passcode_", comment: "")
+
+
+            let dirServerUrl = CCUtility.stringAppendServerUrl(self.metadata.serverUrl, addFileName: metadata.fileName)!
+
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl)) {
+                if (CCUtility.getBlockCode() != nil && appDelegate.sessionePasscodeLock == nil) {
+                    lockDirectory = true
+                }
+                if (directory.lock) {
+                    passcodeTitle = NSLocalizedString("_protect_passcode_", comment: "")
+                }
+
+                isOffline = directory.offline
+            }
+
+
+
+            actions.append(MenuAction(title: metadata.fileNameView, icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement), action: { menuAction in
+                }))
+
+            actions.append(MenuAction(title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite), action: { menuAction in
+                    self.settingFavorite(metadata, favorite: !metadata.favorite)
+                }))
+
+            if (!lockDirectory && !isFolderEncrypted) {
+                actions.append(MenuAction(title: NSLocalizedString("_details_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    }))
+            }
+
+            if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !metadata.e2eEncrypted) {
+                actions.append(MenuAction(title: NSLocalizedString("_rename_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+
+                        alertController.addTextField { (textField) in
+                            textField.text = metadata.fileNameView
+                            textField.delegate = self as? UITextFieldDelegate
+                            textField.addTarget(self, action: #selector(self.minCharTextFieldDidChange(_:)
+                                ), for: UIControl.Event.editingChanged)
+                        }
+
+                        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+
+                        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                                let fileName = alertController.textFields![0].text
+                                self.perform(#selector(self.renameFile(_:)), on: .main, with: [metadata, fileName!], waitUntilDone: false)
+
+                            })
+                        okAction.isEnabled = false
+                        alertController.addAction(cancelAction)
+                        alertController.addAction(okAction)
+
+                        self.present(alertController, animated: true, completion: nil)
+                    }))
+
+
+            }
+
+            if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !isFolderEncrypted) {
+                actions.append(MenuAction(title: NSLocalizedString("_move_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        self.moveOpenWindow([indexPath])
+                    }))
+            }
+
+            if (!isFolderEncrypted) {
+                actions.append(MenuAction(title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: dirServerUrl, offline: !isOffline, account: appDelegate.activeAccount)
+                        if(isOffline) {
+                            CCSynchronize.shared()?.readFolder(dirServerUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
+                        }
+                        DispatchQueue.main.async {
+                            self.tableView.reloadRows(at: [indexPath], with: .none)
+                        }
+                    }))
+            }
+
+            actions.append(MenuAction(title: passcodeTitle, icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "settingsPasscodeYES"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                    self.perform(#selector(self.comandoLockPassword))
+                }))
+
+            if (!metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
+                actions.append(MenuAction(title: NSLocalizedString("_remove_available_offline_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        DispatchQueue.global(qos: .userInitiated).async {
+                            let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: "\(self.serverUrl ?? "")/\(metadata.fileName)", ocId: metadata.ocId, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
+                            DispatchQueue.main.async {
+                                if(error != nil) {
+                                    NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: (error! as NSError).code)
+                                } else {
+                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
+                                    self.readFolder(self.serverUrl)
+                                }
+                            }
+                        }
+                    }))
+            }
+
+            if (metadata.e2eEncrypted && !metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
+                actions.append(MenuAction(title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        DispatchQueue.global(qos: .userInitiated).async {
+                            let error = NCNetworkingEndToEnd.sharedManager()?.deletemarkEndToEndFolderEncrypted(onServerUrl: "\(self.serverUrl ?? "")/\(metadata.fileName)", ocId: metadata.ocId, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
+                            DispatchQueue.main.async {
+                                if(error != nil) {
+                                    NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: (error! as NSError).code)
+                                } else {
+                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
+                                    self.readFolder(self.serverUrl)
+                                }
+                            }
+                        }
+                    }))
+            }
+
+
+        } else {
+            var iconHeader: UIImage!
+            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+                iconHeader = icon
+            } else {
+                iconHeader = UIImage(named: metadata.iconName)
+            }
+
+            actions.append(MenuAction(title: metadata.fileNameView, icon: iconHeader, action: { menuAction in
+
+            }))
+
+            actions.append(MenuAction(title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite), action: { menuAction in
+                    self.settingFavorite(metadata, favorite: !metadata.favorite)
+                }))
+
+            if (!metadataFolder.e2eEncrypted) {
+                actions.append(MenuAction(title: NSLocalizedString("_details_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    }))
+            }
+
+            if(!NCBrandOptions.sharedInstance.disable_openin_file) {
+                actions.append(MenuAction(title: NSLocalizedString("_open_in_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        self.perform(#selector(self.openinFile(_:)))
+                    }))
+            }
+
+            actions.append(MenuAction(title: NSLocalizedString("_rename_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                    let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+
+                    alertController.addTextField { (textField) in
+                        textField.text = metadata.fileNameView
+                        textField.delegate = self as? UITextFieldDelegate
+                        textField.addTarget(self, action: #selector(self.minCharTextFieldDidChange(_:)
+                            ), for: UIControl.Event.editingChanged)
+                    }
+
+                    let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+
+                    let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                            let fileName = alertController.textFields![0].text
+                            self.perform(#selector(self.renameFile(_:)), on: .main, with: [metadata, fileName!], waitUntilDone: false)
+
+                        })
+                    okAction.isEnabled = false
+                    alertController.addAction(cancelAction)
+                    alertController.addAction(okAction)
+
+                    self.present(alertController, animated: true, completion: nil)
+                }))
+
+            if (!metadataFolder.e2eEncrypted) {
+                actions.append(MenuAction(title: NSLocalizedString("_move_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        self.moveOpenWindow([indexPath])
+                    }))
+            }
+
+            if(NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) != nil && !metadataFolder.e2eEncrypted && metadata.status == k_metadataStatusNormal) {
+                actions.append(MenuAction(title: NSLocalizedString("_modify_photo_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "modifyPhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        metadata.session = k_download_session
+                        metadata.sessionError = ""
+                        metadata.sessionSelector = selectorDownloadEditPhoto
+                        metadata.status = Int(k_metadataStatusWaitDownload)
+
+                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        appDelegate.startLoadAutoDownloadUpload()
+                    }))
+            }
+
+            if (!metadataFolder.e2eEncrypted) {
+                let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                var title: String!
+                if (localFile == nil || localFile!.offline == false) {
+                    title = NSLocalizedString("_set_available_offline_", comment: "")
+                } else {
+                    title = NSLocalizedString("_remove_available_offline_", comment: "");
+                }
+
+                actions.append(MenuAction(title: title, icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
+                            metadata.session = k_download_session
+                            metadata.sessionError = ""
+                            metadata.sessionSelector = selectorLoadOffline
+                            metadata.status = Int(k_metadataStatusWaitDownload)
+
+                            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
+                            appDelegate.startLoadAutoDownloadUpload()
+                        } else {
+                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
+                            DispatchQueue.main.async {
+                                self.tableView.reloadRows(at: [indexPath], with: .none)
+                            }
+                        }
+
+                    }))
+            }
+        }
+
+        actions.append(MenuAction(title: NSLocalizedString("_delete_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red), action: { menuAction in
+                self.actionDelete(indexPath)
+            }))
+
+        return actions
+    }
+
+    @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) {
+        let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
+        mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
+
+        let fpc = FloatingPanelController()
+        fpc.surfaceView.grabberHandle.isHidden = true
+        fpc.delegate = mainMenuViewController
+        fpc.set(contentViewController: mainMenuViewController)
+        fpc.track(scrollView: mainMenuViewController.tableView)
+        fpc.isRemovalInteractionEnabled = true
+        if #available(iOS 11, *) {
+            fpc.surfaceView.cornerRadius = 16
+        } else {
+            fpc.surfaceView.cornerRadius = 0
+        }
+
+        viewController.present(fpc, animated: true, completion: nil)
+    }
+
 }
 
+//helper to find the current top view controller
 extension UIViewController {
     @objc class func topViewController(rootViewController: UIViewController?) -> UIViewController? {
         guard let rootViewController = rootViewController else {

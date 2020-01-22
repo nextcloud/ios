@@ -2999,6 +2999,9 @@
     
     self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
+    [self toggleMoreMenuWithViewController:self.tabBarController indexPath:indexPath metadata:self.metadata metadataFolder:_metadataFolder];
+    return;
+
     NSString *titoloLock, *titleFavorite;
     
     if (self.metadata.favorite) {
