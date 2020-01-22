@@ -431,6 +431,9 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
+    [self toggleMoreMenuWithViewController:self.tabBarController indexPath:indexPath metadata:metadata];
+    return;
+    
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.tabBarController.view title:nil];
     
     actionSheet.animationDuration = 0.2;
