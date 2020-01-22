@@ -24,27 +24,50 @@
 import Foundation
 import NCCommunication
 
-@objc class NCViewerRichWorkspace: UIViewController {
+@objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
 
     @IBOutlet weak var viewRichWorkspace: NCViewRichWorkspace!
-    @IBOutlet weak var editItem: UIBarButtonItem!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc public var richWorkspace: String = ""
     @objc public var serverUrl: String = ""
-    @objc public var titleCloseItem: String = ""
    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let closeItem = UIBarButtonItem(title: titleCloseItem, style: .plain, target: self, action: #selector(closeItemTapped(_:)))
+        presentationController?.delegate = self
+        
+        let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
-        editItem.image = UIImage(named: "actionSheetModify")
+                
+        let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
+        self.navigationItem.rightBarButtonItem = editItem
 
         viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                var metadataFolder = tableMetadata()
+                _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
+                NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+                self.richWorkspace = metadataFolder.richWorkspace
+                self.appDelegate.activeMain.richWorkspace = self.richWorkspace
+                self.viewRichWorkspace.setRichWorkspaceText(self.richWorkspace, gradient: false)
+            }
+        }
+    }
+    
+    public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
+        self.viewWillAppear(true)
     }
     
     @objc func changeTheming() {
@@ -57,40 +80,7 @@ import NCCommunication
     
     @IBAction func editItemAction(_ sender: Any) {
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, serverUrl, k_fileNameRichWorkspace.lowercased())) {
-            
-            if metadata.url == "" {
-                NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-                NCCommunication.sharedInstance.NCTextOpenFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: "text", account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
-                    
-                    NCUtility.sharedInstance.stopActivityIndicator()
-                    
-                    if errorCode == 0 && account == self.appDelegate.activeAccount {
-                        
-                        if let viewerNextcloudText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerNextcloudText") as? NCViewerNextcloudText {
-                            
-                            viewerNextcloudText.url = url!
-                            viewerNextcloudText.metadata = metadata
-                            
-                            self.present(viewerNextcloudText, animated: true, completion: nil)
-                        }
-                        
-                    } else if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: errorCode)
-                    }
-                }
-                
-            } else {
-                
-                if let viewerNextcloudText = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerNextcloudText") as? NCViewerNextcloudText {
-                    
-                    viewerNextcloudText.url = metadata.url
-                    viewerNextcloudText.metadata = metadata
-                    
-                    self.present(viewerNextcloudText, animated: true, completion: nil)
-                }
-            }
-        }
+        let richWorkspaceTextCommon = NCRichWorkspaceTextCommon()
+        richWorkspaceTextCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
     }
 }

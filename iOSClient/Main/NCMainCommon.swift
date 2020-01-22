@@ -24,6 +24,7 @@
 import Foundation
 import TLPhotoPicker
 import ZIPFoundation
+import NCCommunication
 
 //MARK: - Main Common
 
@@ -347,16 +348,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
                     cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
-                    let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
-                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                        if errorCode == 0 {
-                            do {
-                                try data!.write(to: NSURL(fileURLWithPath: fileNameSource) as URL, options: .atomic)
-                                cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
-                            } catch {  }
+                    NCCommunication.sharedInstance.downloadAvatar(urlString: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
-                    })
+                    }
                 }
             }
             
@@ -672,16 +668,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         cell.shared.image = avatar
                     }
                 } else {
-                    let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
-                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                        if errorCode == 0 {
-                            do {
-                                try data!.write(to: NSURL(fileURLWithPath: fileNameSource) as URL, options: .atomic)
-                                 cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
-                            } catch {  }
+                    NCCommunication.sharedInstance.downloadAvatar(urlString: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
-                    })
+                    }
                 }
             }
             

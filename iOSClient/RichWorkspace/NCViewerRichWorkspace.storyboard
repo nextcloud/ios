@@ -16,22 +16,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PhD-q3-64a">
-                                <rect key="frame" x="0.0" y="813" width="414" height="49"/>
-                                <items>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="mbx-my-iUr"/>
-                                    <barButtonItem title="Item" id="Hvx-vk-mTM">
-                                        <connections>
-                                            <action selector="editItemAction:" destination="6oU-Ar-6R2" id="Y6f-gQ-0vW"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZTH-4c-how" customClass="NCViewRichWorkspace" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="tWU-uH-OcN">
-                                        <rect key="frame" x="15" y="5" width="389" height="720"/>
+                                        <rect key="frame" x="15" y="5" width="389" height="769"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -40,10 +29,10 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="tWU-uH-OcN" secondAttribute="bottom" id="0JY-Sv-nGd"/>
                                     <constraint firstItem="tWU-uH-OcN" firstAttribute="leading" secondItem="ZTH-4c-how" secondAttribute="leading" constant="15" id="Etf-Ey-64j"/>
                                     <constraint firstAttribute="trailing" secondItem="tWU-uH-OcN" secondAttribute="trailing" constant="10" id="b6f-DP-hJI"/>
                                     <constraint firstItem="tWU-uH-OcN" firstAttribute="top" secondItem="ZTH-4c-how" secondAttribute="top" constant="5" id="d81-lI-ub5"/>
-                                    <constraint firstAttribute="bottom" secondItem="tWU-uH-OcN" secondAttribute="bottom" id="v0G-Wp-3yv"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="textView" destination="tWU-uH-OcN" id="kaU-Ye-UzC"/>
@@ -54,17 +43,13 @@
                         <constraints>
                             <constraint firstItem="ZTH-4c-how" firstAttribute="leading" secondItem="Isy-ab-db7" secondAttribute="leading" id="GN8-UG-8rE"/>
                             <constraint firstItem="ZTH-4c-how" firstAttribute="top" secondItem="Isy-ab-db7" secondAttribute="top" id="KgT-gT-3KV"/>
-                            <constraint firstItem="Isy-ab-db7" firstAttribute="bottom" secondItem="PhD-q3-64a" secondAttribute="bottom" id="Wg0-V3-osp"/>
-                            <constraint firstItem="PhD-q3-64a" firstAttribute="leading" secondItem="Isy-ab-db7" secondAttribute="leading" id="ZCg-As-Mj2"/>
-                            <constraint firstItem="Isy-ab-db7" firstAttribute="trailing" secondItem="PhD-q3-64a" secondAttribute="trailing" id="hlV-u7-OaC"/>
+                            <constraint firstItem="Isy-ab-db7" firstAttribute="bottom" secondItem="ZTH-4c-how" secondAttribute="bottom" id="qnK-fT-kwF"/>
                             <constraint firstItem="Isy-ab-db7" firstAttribute="trailing" secondItem="ZTH-4c-how" secondAttribute="trailing" id="xKM-8k-2Bn"/>
-                            <constraint firstItem="PhD-q3-64a" firstAttribute="top" secondItem="ZTH-4c-how" secondAttribute="bottom" id="xPd-wR-Fvh"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Isy-ab-db7"/>
                     </view>
                     <navigationItem key="navigationItem" id="YSS-NL-35O"/>
                     <connections>
-                        <outlet property="editItem" destination="Hvx-vk-mTM" id="KTx-5P-tI0"/>
                         <outlet property="viewRichWorkspace" destination="ZTH-4c-how" id="Tj4-ng-4pc"/>
                     </connections>
                 </viewController>
@@ -72,10 +57,10 @@
             </objects>
             <point key="canvasLocation" x="1013.0434782608696" y="23.4375"/>
         </scene>
-        <!--Viewer Nextcloud Text-->
+        <!--Viewer Rich Work Space Nextcloud Text-->
         <scene sceneID="FAF-zB-yaq">
             <objects>
-                <viewController storyboardIdentifier="NCViewerNextcloudText" id="Ces-GG-tAv" customClass="NCViewerNextcloudText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCViewerRichWorkSpaceNextcloudText" id="Ces-GG-tAv" customClass="NCViewerRichWorkSpaceNextcloudText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="T4r-I1-FJU">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -100,6 +85,7 @@
                     </view>
                     <connections>
                         <outlet property="webView" destination="hsc-I0-5ib" id="xu8-Ll-srm"/>
+                        <outlet property="webViewBottomConstraint" destination="Hsc-5E-1br" id="Xpx-v3-vZA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o3L-2f-s1m" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -162,7 +162,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="95.5" y="369.5" width="223" height="157.5"/>
+                                <rect key="frame" x="-16" y="290.5" width="446" height="315"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -466,7 +466,7 @@
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="Lgd-72-bTD">
-                                <rect key="frame" x="381" y="115" width="24" height="26"/>
+                                <rect key="frame" x="381" y="125" width="24" height="26"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="26" id="9SQ-KV-aJa"/>
                                     <constraint firstAttribute="width" constant="24" id="KBe-Dy-an6"/>
@@ -517,7 +517,7 @@
                                 </connections>
                             </tableView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="15" y="103" width="50" height="50"/>
+                                <rect key="frame" x="15" y="113" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="moA-ZW-N2y"/>
                                     <constraint firstAttribute="height" constant="50" id="nQ1-8m-5h7"/>
@@ -532,7 +532,7 @@
                                 </userDefinedRuntimeAttributes>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aqE-Wq-B1A">
-                                <rect key="frame" x="78" y="118" width="78" height="20"/>
+                                <rect key="frame" x="78" y="128" width="78" height="20"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
@@ -584,8 +584,8 @@
                         <constraints>
                             <constraint firstItem="aKC-5k-tLM" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="09d-e0-Lbe"/>
                             <constraint firstItem="Lgd-72-bTD" firstAttribute="centerY" secondItem="oJg-wO-2iv" secondAttribute="centerY" id="Aiq-NC-J8Z"/>
+                            <constraint firstItem="oJg-wO-2iv" firstAttribute="centerY" secondItem="qW6-AL-KO3" secondAttribute="centerY" id="HRF-rA-WKN"/>
                             <constraint firstItem="qW6-AL-KO3" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="IHF-zg-7RG"/>
-                            <constraint firstItem="aKC-5k-tLM" firstAttribute="top" secondItem="oJg-wO-2iv" secondAttribute="bottom" constant="35" id="Nxn-t4-ybx"/>
                             <constraint firstItem="qW6-AL-KO3" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="Nyf-TZ-gLf"/>
                             <constraint firstItem="aKC-5k-tLM" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="VDo-ak-TEq"/>
                             <constraint firstItem="2rd-9k-q51" firstAttribute="bottom" secondItem="J2k-UZ-XQQ" secondAttribute="bottom" id="bRS-IM-13l"/>

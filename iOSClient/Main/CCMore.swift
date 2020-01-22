@@ -58,7 +58,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         
-        themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
         // create tap gesture recognizer
@@ -193,18 +192,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.view.backgroundColor = NCBrandColor.sharedInstance.brand
         viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
+        themingBackground.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+            
+        labelUsername.textColor = NCBrandColor.sharedInstance.textView
         
-        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-themingBackground.png"
-        
-        if let theminBackgroundFile = UIImage.init(contentsOfFile: fileNamePath) {
-            themingBackground.image = theminBackgroundFile
-        } else {
-            themingBackground.image = #imageLiteral(resourceName: "themingBackground")
-        }
-        
-        labelUsername.textColor = NCBrandColor.sharedInstance.brandText
-        
-        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.brandText)        
+        disclosureIndicator.image = CCGraphics.changeThemingColorImage(disclosureIndicator.image, width: 48, height: 52, color: NCBrandColor.sharedInstance.textView)
     }
     
     @objc func changeUserProfile() {

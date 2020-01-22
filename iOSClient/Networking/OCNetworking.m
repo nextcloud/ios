@@ -231,7 +231,7 @@
     [task resume];
 }
 */
-
+/*
 - (void)downloadContentsOfUrl:(NSString *)serverUrl completion:(void(^)(NSData *data, NSString *message, NSInteger errorCode))completion
 {
     // Remove stored cookies
@@ -276,6 +276,7 @@
     
     [task resume];
 }
+*/
 
 - (void)getAppPassword:(NSString *)serverUrl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *token, NSString *message, NSInteger errorCode))completion
 {

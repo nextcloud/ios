@@ -106,7 +106,11 @@ import SwiftRichString
             
             gradientLayer.removeFromSuperlayer()
             gradientLayer.frame = CGRect(x: 0.0, y: 0.0, width: self.frame.width, height: self.frame.height)
-            gradientLayer.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            if CCUtility.getDarkMode() {
+                gradientLayer.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            } else {
+                gradientLayer.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            }
             gradientLayer.startPoint = CGPoint(x: 0, y: 0.60)
             gradientLayer.endPoint = CGPoint(x: 0, y: 1)
             textView.layer.addSublayer(gradientLayer)

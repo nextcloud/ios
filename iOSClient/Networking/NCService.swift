@@ -80,6 +80,17 @@ class NCService: NSObject {
                     let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
+                    NCCommunication.sharedInstance.downloadContent(urlString: avatarUrl, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 {
+                            if let image = UIImage(data: data!) {
+                                try? FileManager.default.removeItem(atPath: fileNamePath)
+                                if let data = image.pngData() {
+                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                                }
+                            }
+                        }
+                    }
+                    /*
                     OCNetworking.sharedManager()?.downloadContents(ofUrl: avatarUrl, completion: { (data, message, errorCode) in
                         if errorCode == 0 {
                             if let image = UIImage(data: data!) {
@@ -90,6 +101,7 @@ class NCService: NSObject {
                             }
                         }
                     })
+                    */
                     
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
@@ -148,14 +160,14 @@ class NCService: NSObject {
                         // Download Logo
                         if NCBrandOptions.sharedInstance.use_themingLogo {
                             let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-                            NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, closure: { (imageNamePath) in })
+                            NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })
                         }
                         
                         let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
                         
-                        OCNetworking.sharedManager()?.downloadContents(ofUrl: backgroundURL, completion: { (data, message, errorCode) in
-                            if errorCode == 0 {
+                        NCCommunication.sharedInstance.downloadContent(urlString: backgroundURL, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                            if errorCode == 0 && account == self.appDelegate.activeAccount {
                                 if let image = UIImage(data: data!) {
                                     try? FileManager.default.removeItem(atPath: fileNamePath)
                                     if let data = image.pngData() {
@@ -163,8 +175,7 @@ class NCService: NSObject {
                                     }
                                 }
                             }
-                        })
-                        
+                        }
                         DispatchQueue.main.async {
                             self.appDelegate.settingThemingColorBrand()
                         }
@@ -204,7 +215,7 @@ class NCService: NSObject {
                                     let id = (notification as! OCNotifications).idNotification
                                     if let icon = (notification as! OCNotifications).icon {
                                         
-                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, closure: { (imageNamePath) in })                                        
+                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })                                        
                                     }
                                     new = new + String(describing: id)
                                 }

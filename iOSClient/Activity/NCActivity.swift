@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import SwiftRichString
+import NCCommunication
 
 class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
@@ -210,15 +211,14 @@ extension NCActivity: UITableViewDataSource {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                 } else {
                     DispatchQueue.global().async {
-                        let encodedString = activity.icon.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                        OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                        NCCommunication.sharedInstance.downloadContent(urlString: activity.icon, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 {
                                 do {
                                     try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                                 } catch { return }
                             }
-                        })
+                        }
                     }
                 }
             }
@@ -236,16 +236,11 @@ extension NCActivity: UITableViewDataSource {
                     }
                 } else {
                     DispatchQueue.global().async {
-                        let url = self.appDelegate.activeUrl + k_avatar + activity.user + "/" + k_avatar_size
-                        let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                        OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                            if errorCode == 0 && UIImage(data: data!) != nil {
-                                do {
-                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                                } catch { return }
+                        NCCommunication.sharedInstance.downloadAvatar(urlString: self.appDelegate.activeUrl, userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                            if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
                                 cell.avatar.image = UIImage(data: data!)
                             }
-                        })
+                        }
                     }
                 }
             }
@@ -458,7 +453,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                 
                 let source = activityPreview.source
                 
-                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
+                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.activeAccount) { (imageNamePath) in
                     if imageNamePath != nil {
                         if let image = UIImage(contentsOfFile: imageNamePath!) {
                             cell.imageView.image = image
@@ -472,7 +467,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                     
                     let source = activityPreview.source
                     
-                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false) { (imageNamePath) in
+                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.activeAccount) { (imageNamePath) in
                         if imageNamePath != nil {
                             if let image = UIImage(contentsOfFile: imageNamePath!) {
                                 cell.imageView.image = image
