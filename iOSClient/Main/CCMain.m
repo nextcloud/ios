@@ -615,11 +615,14 @@
 
 - (void)setUINavigationBarDefault
 {
-    UIBarButtonItem *buttonMore, *buttonNotification;
+    UIBarButtonItem *buttonMore, *buttonNotification, *buttonSelect;
     
     // =
     buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationControllerMenu"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
     buttonMore.enabled = true;
+    
+    buttonSelect = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] width:50 height:50 color:NCBrandColor.sharedInstance.textView] style:UIBarButtonItemStylePlain target:self action:@selector(tableViewSelect)];
+    buttonSelect.enabled = true;
     
     // <
     self.navigationController.navigationBar.hidden = NO;
@@ -633,10 +636,10 @@
     }
     
     if (buttonNotification)
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonNotification, nil];
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonSelect, buttonNotification, nil];
     else
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
-
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonSelect, nil];
+    
     self.navigationItem.leftBarButtonItem = nil;
 }
 
@@ -653,7 +656,7 @@
 
 - (void)cancelSelect
 {
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
     [appDelegate.reSelectMenu close];
 }
 
@@ -892,7 +895,7 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     });
     
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -981,7 +984,7 @@
         [_hud hideHud];
     });
     
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1451,7 +1454,7 @@
     }];
     
     // End Select Table View
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1613,7 +1616,7 @@
             [self presentViewController:alert animated:YES completion:nil];
             
             // End Select Table View
-            [self tableViewSelect:NO];
+            [self tableViewSelect];
             
             // reload Datasource
             [self readFileReloadFolder];
@@ -1652,7 +1655,7 @@
                         } else {
                             
                             // End Select Table View
-                            [self tableViewSelect:NO];
+                            [self tableViewSelect];
                             
                             // reload Datasource
                             if (self.searchController.isActive)
@@ -1666,7 +1669,7 @@
                         [[NCContentPresenter shared] messageNotification:@"_move_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         
                         // End Select Table View
-                        [self tableViewSelect:NO];
+                        [self tableViewSelect];
                         
                         // reload Datasource
                         if (self.searchController.isActive)
@@ -2203,7 +2206,7 @@
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
     
     appDelegate.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectLight"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        if ([sectionDataSource.allRecordsDataSource count] > 0) [self tableViewSelect:YES];
+        if ([sectionDataSource.allRecordsDataSource count] > 0) [self tableViewSelect];
     }];
     
     // ITEM ORDER ----------------------------------------------------------------------------------------------------
@@ -2378,21 +2381,7 @@
 
 - (void)toggleReMainMenu
 {
-    if (appDelegate.reMainMenu.isOpen) {
-        
-        [appDelegate.reMainMenu close];
-        
-    } else {
-        
-        [self createReMainMenu];
-        [appDelegate.reMainMenu showFromNavigationController:self.navigationController];
-        
-        // Backgroun reMenu & (Gesture)
-        [self createReMenuBackgroundView:appDelegate.reMainMenu];
-        
-        _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReMainMenu)];
-        [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
-    }
+    [self toggleMenuWithViewController:self.navigationController];
 }
 
 - (void)createReSelectMenu
@@ -2495,21 +2484,7 @@
 
 - (void)toggleReSelectMenu
 {
-    if (appDelegate.reSelectMenu.isOpen) {
-        
-        [appDelegate.reSelectMenu close];
-        
-    } else {
-        
-        [self createReSelectMenu];
-        [appDelegate.reSelectMenu showFromNavigationController:self.navigationController];
-        
-        // Backgroun reMenu & (Gesture)
-        [self createReMenuBackgroundView:appDelegate.reSelectMenu];
-        
-        _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReSelectMenu)];
-        [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
-    }
+    [self toggleSelectMenuWithViewController:self.navigationController];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2709,7 +2684,7 @@
         }
     }
     
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 - (void)copyFileToPasteboard:(tableMetadata *)metadata
@@ -3614,17 +3589,17 @@
 #pragma mark - ==== Table ==== 
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)tableViewSelect:(BOOL)edit
+- (void)tableViewSelect
 {
+    _isSelectedMode = !_isSelectedMode;
     // chiudiamo eventuali swipe aperti
-    if (edit)
+    if (_isSelectedMode)
         [self.tableView setEditing:NO animated:NO];
     
-    [self.tableView setAllowsMultipleSelectionDuringEditing:edit];
-    [self.tableView setEditing:edit animated:YES];
-    _isSelectedMode = edit;
+    [self.tableView setAllowsMultipleSelectionDuringEditing:_isSelectedMode];
+    [self.tableView setEditing:_isSelectedMode animated:YES];
     
-    if (edit)
+    if (_isSelectedMode)
         [self setUINavigationBarSelected];
     else
         [self setUINavigationBarDefault];

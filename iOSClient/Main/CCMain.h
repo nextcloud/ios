@@ -93,5 +93,11 @@
 
 - (void)setTableViewHeader;
 
+- (void)didSelectAll;
+- (void)deleteFile;
+- (void)saveSelectedFiles;
+- (void)downloadSelectedFilesFolders;
+- (void)moveOpenWindow:(NSArray *)indexPaths;
+
 @end
 
