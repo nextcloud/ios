@@ -872,7 +872,7 @@ PKPushRegistry *pushRegistry;
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, self.activeMain.serverUrl]];
     
     if ([tableDirectory.permissions containsString:@"CK"]) {
-        [self showMenuInViewController:self.window.rootViewController];
+        [self showMenuInViewController:[UIViewController topViewControllerWithRootViewController:self.window.rootViewController]];
     } else {
         [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
     }
