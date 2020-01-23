@@ -50,7 +50,6 @@ class MainMenuTableViewController: UITableViewController {
 
         cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
 
-
         return cell
     }
 
@@ -58,7 +57,7 @@ class MainMenuTableViewController: UITableViewController {
 extension MainMenuTableViewController: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        return MainMenuFloatingPanelLayout(height: self.actions.count * 60)
+        return MainMenuFloatingPanelLayout(height: min(self.actions.count * 60, Int(self.view.frame.height) - 48))
     }
 
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
@@ -80,20 +79,18 @@ class MainMenuFloatingPanelLayout: FloatingPanelLayout {
     }
 
     var supportedPositions: Set<FloatingPanelPosition> {
-        return [.half]
+        return [.tip]
     }
 
     func insetFor(position: FloatingPanelPosition) -> CGFloat? {
         switch position {
-        case .half: return height
         case .tip: return height
         default: return nil
         }
     }
 
-
     func backdropAlphaFor(position: FloatingPanelPosition) -> CGFloat {
-        return 0.5
+        return 0.2
     }
 }
 

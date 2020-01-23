@@ -129,19 +129,13 @@ extension AppDelegate {
         let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
         mainMenuViewController.actions = self.initMenu()
 
-        let fpc = FloatingPanelController()
-        fpc.surfaceView.grabberHandle.isHidden = true
-        fpc.delegate = mainMenuViewController
-        fpc.set(contentViewController: mainMenuViewController)
-        fpc.track(scrollView: mainMenuViewController.tableView)
-        fpc.isRemovalInteractionEnabled = true
-        if #available(iOS 11, *) {
-            fpc.surfaceView.cornerRadius = 16
-        } else {
-            fpc.surfaceView.cornerRadius = 0
-        }
-
-        viewController.present(fpc, animated: true, completion: nil)
+        let menuPanelController = MenuPanelController()
+        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 }
 
@@ -221,38 +215,26 @@ extension CCMain {
         let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
 
-        let fpc = FloatingPanelController()
-        fpc.surfaceView.grabberHandle.isHidden = true
-        fpc.delegate = mainMenuViewController
-        fpc.set(contentViewController: mainMenuViewController)
-        fpc.track(scrollView: mainMenuViewController.tableView)
-        fpc.isRemovalInteractionEnabled = true
-        if #available(iOS 11, *) {
-            fpc.surfaceView.cornerRadius = 16
-        } else {
-            fpc.surfaceView.cornerRadius = 0
-        }
-
-        viewController.present(fpc, animated: true, completion: nil)
+        let menuPanelController = MenuPanelController()
+        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 
     @objc func toggleSelectMenu(viewController: UIViewController) {
         let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
         mainMenuViewController.actions = self.initSelectMenu()
 
-        let fpc = FloatingPanelController()
-        fpc.surfaceView.grabberHandle.isHidden = true
-        fpc.delegate = mainMenuViewController
-        fpc.set(contentViewController: mainMenuViewController)
-        fpc.track(scrollView: mainMenuViewController.tableView)
-        fpc.isRemovalInteractionEnabled = true
-        if #available(iOS 11, *) {
-            fpc.surfaceView.cornerRadius = 16
-        } else {
-            fpc.surfaceView.cornerRadius = 0
-        }
-
-        viewController.present(fpc, animated: true, completion: nil)
+        let menuPanelController = MenuPanelController()
+        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 
 
@@ -518,19 +500,13 @@ extension CCMain {
         let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
         mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
 
-        let fpc = FloatingPanelController()
-        fpc.surfaceView.grabberHandle.isHidden = true
-        fpc.delegate = mainMenuViewController
-        fpc.set(contentViewController: mainMenuViewController)
-        fpc.track(scrollView: mainMenuViewController.tableView)
-        fpc.isRemovalInteractionEnabled = true
-        if #available(iOS 11, *) {
-            fpc.surfaceView.cornerRadius = 16
-        } else {
-            fpc.surfaceView.cornerRadius = 0
-        }
-
-        viewController.present(fpc, animated: true, completion: nil)
+        let menuPanelController = MenuPanelController()
+        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 
 }
@@ -582,42 +558,12 @@ extension CCFavorites {
         let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
         mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata)
 
-        let fpc = FloatingPanelController()
-        fpc.surfaceView.grabberHandle.isHidden = true
-        fpc.delegate = mainMenuViewController
-        fpc.set(contentViewController: mainMenuViewController)
-        fpc.track(scrollView: mainMenuViewController.tableView)
-        fpc.isRemovalInteractionEnabled = true
-        if #available(iOS 11, *) {
-            fpc.surfaceView.cornerRadius = 16
-        } else {
-            fpc.surfaceView.cornerRadius = 0
-        }
-
-        viewController.present(fpc, animated: true, completion: nil)
-    }
-}
-
-//helper to find the current top view controller
-extension UIViewController {
-    @objc class func topViewController(rootViewController: UIViewController?) -> UIViewController? {
-        guard let rootViewController = rootViewController else {
-            return nil
-        }
-
-        guard let presented = rootViewController.presentedViewController else {
-            return rootViewController
-        }
-
-        switch presented {
-        case let navigationController as UINavigationController:
-            return topViewController(rootViewController: navigationController.viewControllers.last)
-
-        case let tabBarController as UITabBarController:
-            return topViewController(rootViewController: tabBarController.selectedViewController)
-
-        default:
-            return topViewController(rootViewController: presented)
-        }
+        let menuPanelController = MenuPanelController()
+        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 }

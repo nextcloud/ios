@@ -11,6 +11,7 @@
 		371B5A2E23D0B04500FAFAE9 /* MainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */; };
 		371B5A3123D0B71B00FAFAE9 /* MainMenuManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */; };
 		371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */; };
+		3757A35523D9D76300EC369E /* MenuPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3757A35423D9D76300EC369E /* MenuPanelController.swift */; };
 		37ECC83B23D0C7410082EFA2 /* MenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECC83A23D0C7400082EFA2 /* MenuAction.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -671,6 +672,7 @@
 		371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuTableViewController.swift; sourceTree = "<group>"; };
 		371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuManager.swift; sourceTree = "<group>"; };
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
+		3757A35423D9D76300EC369E /* MenuPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPanelController.swift; sourceTree = "<group>"; };
 		37ECC83A23D0C7400082EFA2 /* MenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAction.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F70022661EC4C9100080073F /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
@@ -1512,6 +1514,7 @@
 			children = (
 				371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */,
 				371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */,
+				3757A35423D9D76300EC369E /* MenuPanelController.swift */,
 				37ECC83A23D0C7400082EFA2 /* MenuAction.swift */,
 				3704EB2923D5A58400455C5B /* Menu.storyboard */,
 			);
@@ -3569,6 +3572,7 @@
 				F749C10C23C4A5340027D966 /* IntroViewController.swift in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */,
+				3757A35523D9D76300EC369E /* MenuPanelController.swift in Sources */,
 				F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */,
 				F762CB111EACB66200B38484 /* NSString+XLFormAdditions.m in Sources */,
 				F7D423871F0596C6009C9782 /* ReaderThumbsView.m in Sources */,
