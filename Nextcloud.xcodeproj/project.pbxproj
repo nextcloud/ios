@@ -9,9 +9,11 @@
 /* Begin PBXBuildFile section */
 		3704EB2A23D5A58400455C5B /* Menu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3704EB2923D5A58400455C5B /* Menu.storyboard */; };
 		371B5A2E23D0B04500FAFAE9 /* MainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */; };
-		371B5A3123D0B71B00FAFAE9 /* MainMenuManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */; };
 		371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */; };
 		3757A35523D9D76300EC369E /* MenuPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3757A35423D9D76300EC369E /* MenuPanelController.swift */; };
+		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
+		3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */; };
+		3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */; };
 		37ECC83B23D0C7410082EFA2 /* MenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECC83A23D0C7400082EFA2 /* MenuAction.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -670,9 +672,11 @@
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
 		3704EB2923D5A58400455C5B /* Menu.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Menu.storyboard; sourceTree = "<group>"; };
 		371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuTableViewController.swift; sourceTree = "<group>"; };
-		371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuManager.swift; sourceTree = "<group>"; };
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3757A35423D9D76300EC369E /* MenuPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPanelController.swift; sourceTree = "<group>"; };
+		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
+		3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCMain+Menu.swift"; sourceTree = "<group>"; };
+		3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCFavorites+Menu.swift"; sourceTree = "<group>"; };
 		37ECC83A23D0C7400082EFA2 /* MenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAction.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F70022661EC4C9100080073F /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
@@ -1513,7 +1517,9 @@
 			isa = PBXGroup;
 			children = (
 				371B5A2D23D0B04500FAFAE9 /* MainMenuTableViewController.swift */,
-				371B5A3023D0B71A00FAFAE9 /* MainMenuManager.swift */,
+				3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */,
+				3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */,
+				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				3757A35423D9D76300EC369E /* MenuPanelController.swift */,
 				37ECC83A23D0C7400082EFA2 /* MenuAction.swift */,
 				3704EB2923D5A58400455C5B /* Menu.storyboard */,
@@ -3522,7 +3528,6 @@
 				F7D423881F0596C6009C9782 /* ReaderThumbView.m in Sources */,
 				37ECC83B23D0C7410082EFA2 /* MenuAction.swift in Sources */,
 				F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */,
-				371B5A3123D0B71B00FAFAE9 /* MainMenuManager.swift in Sources */,
 				F7D4238A1F0596C6009C9782 /* ThumbsMainToolbar.m in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F760F79921F21F61006B1A73 /* CropViewController.swift in Sources */,
@@ -3649,6 +3654,7 @@
 				F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
+				3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
@@ -3656,6 +3662,7 @@
 				F762CB141EACB66200B38484 /* XLFormRightImageButton.m in Sources */,
 				F73D71621F2673C200E233EB /* NCText.swift in Sources */,
 				F73B4EF81F470D9100BBEE4B /* LangDanishModel.cpp in Sources */,
+				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
 				F73B4F051F470D9100BBEE4B /* nsCharSetProber.cpp in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
@@ -3721,6 +3728,7 @@
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
+				3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
