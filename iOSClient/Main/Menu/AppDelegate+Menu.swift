@@ -74,6 +74,14 @@ extension AppDelegate {
         actions.append(MenuAction(title: NSLocalizedString("_create_folder_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
                 appDelegate.activeMain.createFolder()
             }))
+        
+        if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
+            if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) {
+                actions.append(MenuAction(title: NSLocalizedString("_add_folder_info_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        self.activeMain.createRichWorkspace()
+                    }))
+            }
+        }
 
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {

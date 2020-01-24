@@ -105,6 +105,7 @@
 - (void)comandoLockPassword;
 - (void)actionDelete:(NSIndexPath *)indexPath;
 - (void)openinFile:(id)sender;
+- (void)createRichWorkspace;
 
 @end
 
