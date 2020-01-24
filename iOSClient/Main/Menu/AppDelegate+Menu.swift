@@ -59,11 +59,9 @@ extension AppDelegate {
 
         #if !targetEnvironment(simulator)
             if #available(iOS 11.0, *) {
-                actions.append(MenuAction(title: NSLocalizedString("_scans_document_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)), action: { menuAction in
-                        if #available(iOS 11.0, *) {
+                actions.append(MenuAction(title: NSLocalizedString("_scans_document_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
                             NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
-                        }
-                    })
+                    }))
             }
         #endif
 
