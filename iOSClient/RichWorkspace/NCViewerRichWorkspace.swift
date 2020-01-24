@@ -26,10 +26,11 @@ import NCCommunication
 
 @objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
 
-    @IBOutlet weak var viewRichWorkspace: NCViewRichWorkspace!
+    @IBOutlet weak var textView: UITextView!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    @objc public var richWorkspace: String = ""
+    private let richWorkspaceCommon = NCRichWorkspaceCommon()
+    @objc public var richWorkspaceText: String = ""
     @objc public var serverUrl: String = ""
    
     override func viewDidLoad() {
@@ -43,7 +44,7 @@ import NCCommunication
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        viewRichWorkspace.setRichWorkspaceText(richWorkspace, gradient: false)
+        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
@@ -59,9 +60,9 @@ import NCCommunication
                 var metadataFolder = tableMetadata()
                 _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                self.richWorkspace = metadataFolder.richWorkspace
-                self.appDelegate.activeMain.richWorkspace = self.richWorkspace
-                self.viewRichWorkspace.setRichWorkspaceText(self.richWorkspace, gradient: false)
+                self.richWorkspaceText = metadataFolder.richWorkspace
+                self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
+                self.richWorkspaceCommon.setRichWorkspaceText(self.richWorkspaceText, textView: self.textView)
             }
         }
     }
@@ -72,6 +73,7 @@ import NCCommunication
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
     }
     
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {
@@ -80,7 +82,6 @@ import NCCommunication
     
     @IBAction func editItemAction(_ sender: Any) {
         
-        let richWorkspaceTextCommon = NCRichWorkspaceTextCommon()
-        richWorkspaceTextCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
+        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  NCViewerRichWorkSpaceNextcloudText.swift
+//  NCViewerRichWorkspaceWebView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 12/12/19.
@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCViewerRichWorkSpaceNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
+class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var webViewBottomConstraint: NSLayoutConstraint!
