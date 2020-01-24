@@ -39,7 +39,7 @@
     
     UIDocumentInteractionController *docController;
     
-    UIBarButtonItem *buttonModifyTxt;
+    UIBarButtonItem *buttonModifyFile;
     UIBarButtonItem *buttonShare;
     UIBarButtonItem *buttonDelete;
     
@@ -216,7 +216,7 @@
             return;
         }
         
-        // Direct Editing NextcloudText
+        // Nextcloud Text - RichWorkspace
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
             NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
@@ -233,12 +233,12 @@
                             
                             self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                             [self.view addSubview:self.nextcloudText];
-                            [self.nextcloudText viewNextcloudTextAt:url detail:self metadata:self.metadataDetail];
+                            [self.nextcloudText viewerAt:url detail:self metadata:self.metadataDetail];
                             
                         } else {
                             
                             if (errorCode != 0) {
-                                [appDelegate messageNotification:@"_error_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                             } else {
                                 NSLog(@"[LOG] It has been changed user during networking process, error.");
                             }
@@ -251,12 +251,12 @@
                     
                     self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                     [self.view addSubview:self.nextcloudText];
-                    [self.nextcloudText viewNextcloudTextAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                    [self.nextcloudText viewerAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
                 }
             }
             
             return;
-        }
+        }        
         
         // RichDocument
         if ([[NCUtility sharedInstance] isRichDocument:self.metadataDetail] && appDelegate.reachability.isReachable) {
@@ -277,7 +277,7 @@
                         [[NCUtility sharedInstance] stopActivityIndicator];
                         
                         if (errorCode != 0) {
-                            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                            [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         } else {
                             NSLog(@"[LOG] It has been changed user during networking process, error.");
                         }
@@ -320,7 +320,7 @@
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceMini.width = 25;
     
-    buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
+    buttonModifyFile = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyFileButtonPressed:)];
     if (![NCBrandOptions sharedInstance].disable_openin_file) {
         self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     }
@@ -329,9 +329,9 @@
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyFile, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyFile, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
     } else {
         if ([CCUtility isFolderEncrypted:_metadataDetail.serverUrl account:appDelegate.activeAccount]) // E2EE
             [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
@@ -624,10 +624,8 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
-    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
-        
-        [appDelegate messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
-        
+    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {        
+        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_file_not_found_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
         return;
     }
     
@@ -677,7 +675,7 @@
         [self.photoBrowser reloadData];
 
     } else {
-        [appDelegate messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        [[NCContentPresenter shared] messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         
         [self.navigationController popViewControllerAnimated:YES];
     }
@@ -978,10 +976,11 @@
     }
 }
 
-- (void)modifyTxtButtonPressed:(UIBarButtonItem *)sender
+- (void)modifyFileButtonPressed:(UIBarButtonItem *)sender
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", self.metadataDetail.ocId]];
-    if (metadata) {
+    
+    if (metadata && [self.selectorDetail isEqualToString:selectorLoadFileInternalView]) {
         
         UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
         

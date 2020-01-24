@@ -26,7 +26,8 @@
 @interface CCCellShareExt : UITableViewCell
 
 @property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
-@property(nonatomic, weak) IBOutlet UILabel *labelInformazioni;
+@property(nonatomic, weak) IBOutlet UITextField *fileName;
+@property(nonatomic, weak) IBOutlet UILabel *info;
 
 //Last position of the scroll of the swipe
 @property (nonatomic, assign) CGFloat lastContentOffset;

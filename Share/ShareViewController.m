@@ -35,6 +35,10 @@
     
     UIColor *barTintColor;
     UIColor *tintColor;
+    
+    NSString *fileNameOriginal;
+    
+    UIBarButtonItem *rightButtonUpload, *leftButtonCancel;
 }
 @end
 
@@ -57,8 +61,10 @@
         
     } else {
         
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:tableAccount.account];
+
         // Networking
-        [[NCCommunicationCommon sharedInstance] setupWithUsername:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups delegate:[NCNetworking sharedInstance]];
+        [[NCCommunicationCommon sharedInstance] setupWithUsername:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
        
         _activeAccount = tableAccount.account;
         
@@ -95,7 +101,6 @@
     [self loadDataSwift];
 }
 
-// Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -107,23 +112,62 @@
     self.shareTable.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)closeShareViewController
 {
     [self.extensionContext completeRequestReturningItems:self.extensionContext.inputItems completionHandler:nil];
 }
 
-//
-// L'applicazione terminerà
-//
 - (void)applicationWillTerminate:(UIApplication *)application
-{    
+{
     NSLog(@"[LOG] bye bye, Nextcloud Share Extension!");
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark == TextField Delegate ==
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    rightButtonUpload.enabled = false;
+    fileNameOriginal = textField.text;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    rightButtonUpload.enabled = true;
+    NSInteger index = [self.filesName indexOfObject:fileNameOriginal];
+    if (index != NSNotFound) {
+        self.filesName[index] = textField.text;
+    }
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    NSError *error;
+    
+    if ([string isEqualToString:@"\n"]) {
+        
+        //NSString *fileName = [textField.text stringByDeletingPathExtension];
+        NSString *ext = [textField.text pathExtension];
+
+        if (![ext isEqualToString:@""]) {
+            NSString *fileNameAtPath = [NSTemporaryDirectory() stringByAppendingString:fileNameOriginal];
+            NSString *fileNameToPath = [NSTemporaryDirectory() stringByAppendingString:textField.text];
+            
+            [[NSFileManager defaultManager] moveItemAtPath:fileNameAtPath toPath:fileNameToPath error:&error];
+            
+            if (error != nil) {
+                textField.text = fileNameOriginal;
+            }
+        } else {
+            textField.text = fileNameOriginal;
+        }
+        
+        [textField endEditing:true];
+        return false;
+    }
+    
+    return true;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -131,9 +175,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)navigationBarToolBar
-{    
-    UIBarButtonItem *rightButtonUpload, *leftButtonCancel;
-
+{
     // Theming
     if ([NCBrandOptions sharedInstance].use_themingColor) {
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
@@ -143,7 +185,7 @@
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.toolBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    self.toolBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+    self.toolBar.tintColor = [UIColor grayColor];
     
     // Upload
     rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
@@ -432,13 +474,16 @@
     }
     else image = [UIImage imageNamed:@"file"];
     
-    
     NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] error:nil] fileSize];
     
-    cell.labelInformazioni.text = [NSString stringWithFormat:@"%@\r\r%@", fileName, [CCUtility transformedSize:fileSize]];
-    cell.labelInformazioni.textColor = NCBrandColor.sharedInstance.textView;
-
     cell.fileImageView.image = image;
+
+    cell.fileName.text = fileName;
+    cell.fileName.textColor = NCBrandColor.sharedInstance.textView;
+    cell.fileName.delegate = self;
+    
+    cell.info.text = [CCUtility transformedSize:fileSize];
+    cell.info.textColor = NCBrandColor.sharedInstance.textView;
     
     return cell;
 }

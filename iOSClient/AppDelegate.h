@@ -28,7 +28,6 @@
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"
 #import "Reachability.h"
-#import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "CCDetail.h"
@@ -43,7 +42,7 @@
 @class NCAppConfigView;
 @class IMImagemeterViewer;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate, PKPushRegistryDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, PKPushRegistryDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
@@ -97,6 +96,7 @@
 @property (nonatomic, strong) REMenuItem *typefileItem;
 @property (nonatomic, strong) REMenuItem *dateItem;
 @property (nonatomic, strong) REMenuItem *directoryOnTopItem;
+@property (nonatomic, strong) REMenuItem *addFolderInfo;
 
 @property (nonatomic, strong) REMenu *reSelectMenu;
 @property (nonatomic, strong) REMenuItem *selectAllItem;
@@ -154,8 +154,7 @@
 - (void)configDynamicShortcutItems;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
-// StatusBar & ApplicationIconBadgeNumber
-- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode;
+// ApplicationIconBadgeNumber
 - (void)updateApplicationIconBadgeNumber;
 
 // TabBarController

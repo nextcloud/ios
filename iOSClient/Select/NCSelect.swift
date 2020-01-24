@@ -181,7 +181,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
         toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
-        toolbar.tintColor = NCBrandColor.sharedInstance.brandText
+        toolbar.tintColor = .gray
     }
     
     // MARK: DZNEmpty
@@ -749,7 +749,7 @@ extension NCSelect {
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.loadDatasource(withLoadFolder: true)
             } else if errorCode != 0 {
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
@@ -768,7 +768,7 @@ extension NCSelect {
                 self.metadataFolder = metadataFolder
                 
                 // Update directory etag
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, ocId: metadataFolder?.ocId, encrypted: metadataFolder!.e2eEncrypted, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, ocId: metadataFolder?.ocId, encrypted: metadataFolder!.e2eEncrypted, richWorkspace: nil, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
                 NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
                 
@@ -780,7 +780,7 @@ extension NCSelect {
                 }
                 
             } else if errorCode != 0 {
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }

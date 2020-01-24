@@ -44,7 +44,6 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissCCLogin) name:@"dismissCCLogin" object:nil];
     }
     
     return self;
@@ -185,10 +184,10 @@
             // Login Flow
             if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
                 
-                appDelegate.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
+                NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+                activeLoginWeb.urlBase = self.baseUrl.text;
                 
-                [self presentViewController:appDelegate.activeLoginWeb animated:YES completion:nil];
+                [self.navigationController pushViewController:activeLoginWeb animated:true];
             }
             
             // NO Login Flow available
@@ -340,11 +339,6 @@
             }];
         }
     }
-}
-
-- (void)dismissCCLogin
-{
-    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

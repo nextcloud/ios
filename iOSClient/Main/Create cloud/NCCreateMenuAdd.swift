@@ -32,7 +32,7 @@ class NCCreateMenuAdd: NSObject {
     @objc init(viewController: UIViewController, view : UIView) {
         super.init()
 
-        if self.appDelegate.reachability.isReachable() && NCManageDatabase.sharedInstance.getDirectEditingCreators(account: self.appDelegate.activeAccount) != nil {
+        if self.appDelegate.reachability.isReachable() && NCBrandBeta.shared.directEditing && NCManageDatabase.sharedInstance.getDirectEditingCreators(account: self.appDelegate.activeAccount) != nil {
             isNextcloudTextAvailable = true
         }
         

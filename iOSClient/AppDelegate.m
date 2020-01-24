@@ -22,7 +22,6 @@
 //
 
 #import "AppDelegate.h"
-#import <JDStatusBarNotification/JDStatusBarNotification.h>
 #import "CCNetworking.h"
 #import "CCGraphics.h"
 #import "CCSynchronize.h"
@@ -168,6 +167,22 @@ PKPushRegistry *pushRegistry;
         }
     }
     
+    if ([NCBrandOptions sharedInstance].disable_intro) {
+        [CCUtility setIntro:YES];
+        
+        if (self.activeAccount.length == 0) {
+            [self openLoginView:nil selector:k_intro_login openLoginWeb:false];
+        }
+    } else {
+        if ([CCUtility getIntro] == NO) {
+            UIViewController *introViewController = [[UIStoryboard storyboardWithName:@"Intro" bundle:[NSBundle mainBundle]] instantiateInitialViewController];
+            
+            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController: introViewController];
+            self.window.rootViewController = navController;
+            [self.window makeKeyAndVisible];
+        }
+    }
+
     return YES;
 }
 
@@ -307,18 +322,14 @@ PKPushRegistry *pushRegistry;
 
 - (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb
 {
-    @synchronized (self) {
-
         // use appConfig [MDM]
         if ([NCBrandOptions sharedInstance].use_configuration) {
             
             if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
             
                 self.appConfigView = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCAppConfigView"];
-                            
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.appConfigView animated:YES completion:nil];
-                });
+                
+                [self showLoginViewController:self.appConfigView forContext:viewController];
             }
         
             return;
@@ -332,9 +343,7 @@ PKPushRegistry *pushRegistry;
                 self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-                });
+                [self showLoginViewController:self.activeLoginWeb forContext:viewController];
             }
             
             return;
@@ -353,9 +362,7 @@ PKPushRegistry *pushRegistry;
                     self.activeLoginWeb.urlBase = self.activeUrl;
                 }
                 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-                });
+               [self showLoginViewController:self.activeLoginWeb forContext:viewController];
             }
             
         } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
@@ -363,9 +370,7 @@ PKPushRegistry *pushRegistry;
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-            });
+            [self showLoginViewController:self.activeLoginWeb forContext:viewController];
             
         } else if (openLoginWeb) {
             
@@ -373,9 +378,7 @@ PKPushRegistry *pushRegistry;
                 self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                 self.activeLoginWeb.urlBase = self.activeUrl;
 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:self.activeLoginWeb animated:YES completion:nil];
-                });
+                [self showLoginViewController:self.activeLoginWeb forContext:viewController];
             }
             
         } else {
@@ -384,11 +387,30 @@ PKPushRegistry *pushRegistry;
                 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
                 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    [viewController presentViewController:_activeLogin animated:YES completion:nil];
-                });
+                [self showLoginViewController:_activeLogin forContext:viewController];
             }
         }
+}
+
+-(void)showLoginViewController:(UIViewController *)viewController forContext:(UIViewController *)contextViewController
+{
+    if (contextViewController == NULL) {
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
+        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        self.window.rootViewController = navController;
+        [self.window makeKeyAndVisible];
+        
+    } else if ([contextViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navController = ((UINavigationController *)contextViewController);
+        [navController pushViewController:viewController animated:true];
+        
+    } else {
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navController.modalPresentationStyle = UIModalPresentationFullScreen;
+        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
+        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [contextViewController presentViewController:navController animated:true completion:nil];
     }
 }
 
@@ -408,12 +430,13 @@ PKPushRegistry *pushRegistry;
     self.activeUser = activeUser;
     self.activeUserID = activeUserID;
     self.activePassword = activePassword;
-    
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:activeAccount];
+
     // Setting Account to Networking
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
     
     [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
-    [[NCCommunicationCommon sharedInstance] setupWithUsername:activeUser userID:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups delegate:[NCNetworking sharedInstance]];
+    [[NCCommunicationCommon sharedInstance] setupWithUsername:activeUser userID:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -693,111 +716,8 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== StatusBar & ApplicationIconBadgeNumber =====
+#pragma mark ===== ApplicationIconBadgeNumber =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode
-{
-    static NSInteger errorCodePrev = 0;
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        if (visible) {
-            
-            switch (errorcode) {
-                    
-                // JDStatusBarNotification
-                case kCFURLErrorNotConnectedToInternet:
-                    
-                    if (errorCodePrev != errorcode)
-                        [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
-                    
-                    errorCodePrev = errorcode;
-                    break;
-                    
-                case kOCErrorServerUnauthorized:
-                case kOCErrorServerForbidden:
-                    
-                    NSLog(@"Error kOCErrorServerUnauthorized - kOCErrorServerForbidden");
-                    break;
-                    
-                // TWMessageBarManager
-                default:
-                    
-                    if (description.length > 0) {
-                        
-                        [TWMessageBarManager sharedInstance].styleSheet = self;
-                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
-                    }
-                    break;
-            }
-                        
-        } else {
-            
-            [[TWMessageBarManager sharedInstance] hideAllAnimated:YES];
-        }
-    });
-}
-
-- (UIColor *)backgroundColorForMessageType:(TWMessageBarMessageType)type
-{
-    UIColor *backgroundColor = nil;
-    switch (type)
-    {
-        case TWMessageBarMessageTypeError:
-            backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.90];
-            break;
-        case TWMessageBarMessageTypeSuccess:
-            backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
-            break;
-        case TWMessageBarMessageTypeInfo:
-            backgroundColor = NCBrandColor.sharedInstance.brand;
-            break;
-        default:
-            break;
-    }
-    return backgroundColor;
-}
-
-- (UIColor *)strokeColorForMessageType:(TWMessageBarMessageType)type
-{
-    UIColor *strokeColor = nil;
-    switch (type)
-    {
-        case TWMessageBarMessageTypeError:
-            strokeColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
-            break;
-        case TWMessageBarMessageTypeSuccess:
-            strokeColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0];
-            break;
-        case TWMessageBarMessageTypeInfo:
-            strokeColor = [UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:1.0];
-            break;
-        default:
-            break;
-    }
-    return strokeColor;
-}
-
-- (UIImage *)iconImageForMessageType:(TWMessageBarMessageType)type
-{
-    UIImage *iconImage = nil;
-    switch (type)
-    {
-        case TWMessageBarMessageTypeError:
-            iconImage = [UIImage imageNamed:@"icon-error.png"];
-            break;
-        case TWMessageBarMessageTypeSuccess:
-            iconImage = [UIImage imageNamed:@"icon-success.png"];
-            break;
-        case TWMessageBarMessageTypeInfo:
-            iconImage = [UIImage imageNamed:@"icon-info.png"];
-            break;
-        default:
-            break;
-    }
-    return iconImage;
-}
 
 - (void)updateApplicationIconBadgeNumber
 {
@@ -841,53 +761,44 @@ PKPushRegistry *pushRegistry;
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
-    CGFloat multiplier = 0;
     CGFloat safeAreaBottom = 0;
     
     if (@available(iOS 11, *)) {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-        if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
-            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.right/2;
-            if (safeAreaBottom > 0) safeAreaBottom -= 5;
-        } else {
-            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
-        }
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
-    
-    //[self aspectTabBar:tabBarController.tabBar];
-    
+   
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
-    // (PLUS)
+    // (PLUS INVISIBLE)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
     item.title = @"";
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[UIColor clearColor]];
+    item.image = nil;
     item.enabled = false;
     
     // Media
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
     [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
+    item.selectedImage = item.image;
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:NCBrandColor.sharedInstance.brandElement];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -897,25 +808,36 @@ PKPushRegistry *pushRegistry;
     [buttonPlus setTranslatesAutoresizingMaskIntoConstraints:NO];
     [tabBarController.tabBar addSubview:buttonPlus];
     
-    multiplier = 1.0;
-    // X
-    constraint =[NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:multiplier constant:0];
-    [tabBarController.view addConstraint:constraint];
-    // Y
-    if (safeAreaBottom == 0) {
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:multiplier constant:0];
+    if (safeAreaBottom > 0) {
+        
+        // X
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
+        [tabBarController.view addConstraint:constraint];
+        // Y
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeTop multiplier:1.0 constant:5];
+        [tabBarController.view addConstraint:constraint];
+        // Width
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:40];
+        [tabBarController.view addConstraint:constraint];
+        // Height
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:40];
+        [tabBarController.view addConstraint:constraint];
+        
     } else {
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:5];
+        
+        // X
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
+        [tabBarController.view addConstraint:constraint];
+        // Y
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
+        [tabBarController.view addConstraint:constraint];
+        // Width
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:33];
+        [tabBarController.view addConstraint:constraint];
+        // Height
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:33];
+        [tabBarController.view addConstraint:constraint];
     }
-    [tabBarController.view addConstraint:constraint];
-    
-    multiplier = 0.8 * (tabBarController.tabBar.frame.size.height - safeAreaBottom) / tabBarController.tabBar.frame.size.height;
-    // Width
-    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
-    [tabBarController.view addConstraint:constraint];
-    // Height
-    constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
-    [tabBarController.view addConstraint:constraint];
 }
 
 - (void)plusButtonVisibile:(BOOL)visible
@@ -953,7 +875,7 @@ PKPushRegistry *pushRegistry;
     if ([tableDirectory.permissions containsString:@"CK"]) {
         (void)[[NCCreateMenuAdd alloc] initWithViewController:self.window.rootViewController view:[(UIButton *)sender superview]];
     } else {
-        [self messageNotification:@"_warning_" description:@"_no_permission_add_file_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
     }
 }
 
@@ -1221,7 +1143,7 @@ PKPushRegistry *pushRegistry;
     } else {
         
         if (self.lastReachability == YES) {
-            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:kCFURLErrorNotConnectedToInternet];
+            [[NCContentPresenter shared] messageNotification:@"_network_not_available_" description:nil delay:k_dismissAfterSecond type:messageTypeInfo errorCode:kCFURLErrorNotConnectedToInternet];
         }
         
         NSLog(@"[LOG] Reachability Changed: NOT Reachable");
@@ -1303,6 +1225,7 @@ PKPushRegistry *pushRegistry;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     BOOL isE2EE = false;
+    NSMutableArray *uploaded = [NSMutableArray new];
     
     long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperation;
     
@@ -1352,7 +1275,7 @@ PKPushRegistry *pushRegistry;
     
     while (counterDownload < maxConcurrentOperationDownloadUpload) {
         
-        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusWaitDownload] sorted:@"session" ascending:YES];
+        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusWaitDownload] sorted:@"date" ascending:YES];
         if (metadataForDownload) {
             
             metadataForDownload.status = k_metadataStatusInDownload;
@@ -1375,11 +1298,17 @@ PKPushRegistry *pushRegistry;
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"date" ascending:YES];
+        
+        // Verify modify file
+        if ([uploaded containsObject:[NSString stringWithFormat:@"%@%@%@", metadataForUpload.account, metadataForUpload.serverUrl, metadataForUpload.fileName]]) {
+            break;
+        }
+        
         if (metadataForUpload) {
             
+            // Verify modify file
             BOOL isAleadyInUpload = false;
-            
             for (tableMetadata *metadata in metadatasUpload) {
                 if ([metadataForUpload.account isEqualToString:metadata.account] && [metadataForUpload.serverUrl isEqualToString:metadata.serverUrl] && [metadataForUpload.fileName isEqualToString:metadata.fileName]) {
                     isAleadyInUpload = true;
@@ -1395,10 +1324,8 @@ PKPushRegistry *pushRegistry;
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
                 
-                // IMI -> MODIFY
-                if ([metadata.fileName.pathExtension.lowercaseString isEqualToString:@"imi"]) {
-                    break;
-                }
+                // For verify modify file
+                [uploaded addObject:[NSString stringWithFormat:@"%@%@%@", metadata.account, metadata.serverUrl, metadata.fileName]];
                 
             } else {
                 break;
@@ -1417,7 +1344,7 @@ PKPushRegistry *pushRegistry;
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload] sorted:@"date" ascending:YES];
         if (metadataForUpload) {
             
             metadataForUpload.status = k_metadataStatusInUpload;
@@ -1435,12 +1362,12 @@ PKPushRegistry *pushRegistry;
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error k_maxErrorAutoUploadAll after STOP (100)
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %i", selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %i", selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:@"date" ascending:YES];
     NSInteger errorCount = [metadatas count];
     
     if (errorCount >= k_maxErrorAutoUploadAll) {
         
-        [self messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_too_errors_automatic_all_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
         
     } else {
         

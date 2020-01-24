@@ -1042,9 +1042,7 @@
     NSString *tempSession = metadata.session;
     NSString *errorMessage = @"";
     BOOL isE2EEDirectory = false;
-    BOOL isIMIFile = false;
-    if ([fileName.pathExtension.lowercaseString isEqualToString:@"imi"]) isIMIFile = true;
-    
+
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
@@ -1105,8 +1103,8 @@
         
     } else {
     
-        // remove tempocId and adjust the directory provider storage
-        if (isIMIFile) {
+        // Edited file, remove tempocId and adjust the directory provider storage
+        if (metadata.edited) {
             
             // Update metadata tempocId
             [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
@@ -1127,9 +1125,14 @@
             
             metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
+            // Copy new version on old version
             if (![tempocId isEqualToString:metadata.ocId]) {
                 [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
+                // IMI -> Unzip
+                if ([metadata.typeFile isEqualToString:k_metadataTypeFile_imagemeter] && NCBrandOptions.sharedInstance.use_imi_viewer) {
+                    (void)[[NCUtility sharedInstance] IMUnzipWithMetadata:metadata];
+                }
             }
             
         } else {
@@ -1193,7 +1196,7 @@
  #endif
         
         // Add Local or Remove from cache
-        if ([CCUtility getDisableLocalCacheAfterUpload] && !isIMIFile) {
+        if ([CCUtility getDisableLocalCacheAfterUpload] && !metadata.edited) {
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
         } else {
             // Add Local
@@ -1215,11 +1218,7 @@
                 
                 NSError *error = [[NCNetworkingEndToEnd sharedManager] unlockEndToEndFolderEncryptedOnServerUrl:serverUrl ocId:tableLock.ocId token:tableLock.token user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
                 if (error) {
-#ifndef EXTENSION
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                    });
-#endif
+                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                 }
             } else {
                 NSLog(@"Error unlock not found");

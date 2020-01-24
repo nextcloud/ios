@@ -65,15 +65,15 @@ class NCPhotosPickerViewController: NSObject {
         }, didCancel: nil)
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
-            self.appDelegate.messageNotification("_info_", description: "_limited_dimension_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
         }
         
         viewController.handleNoAlbumPermissions = { (picker) in
-            self.appDelegate.messageNotification("_info_", description: "_denied_album_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
         }
         
         viewController.handleNoCameraPermissions = { (picker) in
-            self.appDelegate.messageNotification("_info_", description: "_denied_camera_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
         }
         
         viewController.configure = configure

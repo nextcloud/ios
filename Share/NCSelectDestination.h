@@ -22,7 +22,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
@@ -32,7 +31,7 @@
 
 @protocol NCSelectDestinationDelegate;
 
-@interface NCSelectDestination : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface NCSelectDestination : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate>
 
 @property (nonatomic, weak) id <NCSelectDestinationDelegate> delegate;
 

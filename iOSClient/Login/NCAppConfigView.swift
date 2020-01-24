@@ -55,15 +55,15 @@ class NCAppConfigView: UIViewController {
         appDelegate.timerErrorNetworking.invalidate()
         
         guard let serverUrl = self.serverUrl else {
-            appDelegate.messageNotification("_error_", description: "User Default, serverUrl not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             return
         }
         guard let username = self.username else {
-            appDelegate.messageNotification("_error_", description: "User Default, username not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, username not found", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             return
         }
         guard let password = self.password else {
-            appDelegate.messageNotification("_error_", description: "User Default, password not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, password not found", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             return
         }
         
@@ -80,7 +80,7 @@ class NCAppConfigView: UIViewController {
                     NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token!)
                     
                     guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
-                        self.appDelegate.messageNotification("_error_", description: "setAccountActive error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                         self.dismiss(animated: true, completion: nil)
                         return
                     }
@@ -90,7 +90,7 @@ class NCAppConfigView: UIViewController {
                     
                     self.dismiss(animated: true) {}
                 } else {
-                    self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         })

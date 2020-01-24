@@ -23,6 +23,7 @@
 
 import Foundation
 import Sheeeeeeeeet
+import NCCommunication
 
 class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
    
@@ -111,7 +112,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+               NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         })
         
@@ -131,7 +132,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 self.newCommentField.text = ""
                 self.reloadData()
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         })
     }
@@ -171,7 +172,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                                 if errorCode == 0 {
                                     self.reloadData()
                                 } else {
-                                    self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                                    NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }
                             })
                         }
@@ -190,7 +191,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                     if errorCode == 0 {
                         self.reloadData()
                     } else {
-                        self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 })
                 
@@ -242,6 +243,12 @@ extension NCShareComments: UITableViewDataSource {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
+                    NCCommunication.sharedInstance.downloadAvatar(urlString: self.appDelegate.activeUrl, userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && UIImage(data: data!) != nil {
+                            cell.imageItem.image = UIImage(named: "avatar")
+                        }
+                    }
+                    /*
                     let url = self.appDelegate.activeUrl + k_avatar + tableComments.actorId + "/" + k_avatar_size
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                     OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
@@ -254,6 +261,7 @@ extension NCShareComments: UITableViewDataSource {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }
                     })
+                    */
                 }
             }
             // Username

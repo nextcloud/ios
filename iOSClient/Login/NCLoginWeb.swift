@@ -25,15 +25,22 @@ import Foundation
 
 class NCLoginWeb: UIViewController {
     
+    var activityIndicator: UIActivityIndicatorView!
     var webView: WKWebView?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
 
-    @IBOutlet weak var buttonExit: UIButton!
-
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if (NCBrandOptions.sharedInstance.use_login_web_personalized) {
+            if let accountCount = NCManageDatabase.sharedInstance.getAccounts()?.count {
+                if(accountCount > 0) {
+                    self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
+                }
+            }
+        }
         
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
@@ -48,12 +55,14 @@ class NCLoginWeb: UIViewController {
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
         // ADD k_flowEndpoint for Web Flow
-        if NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
+        if urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
             urlBase =  urlBase + k_flowEndpoint
         }
         
-        // buttonExitVisible
-        self.view.bringSubviewToFront(buttonExit)
+        activityIndicator = UIActivityIndicatorView(style: .gray)
+        activityIndicator.center = self.view.center
+        activityIndicator.startAnimating()
+        self.view.addSubview(activityIndicator)
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
     }
@@ -84,12 +93,10 @@ class NCLoginWeb: UIViewController {
         webView.load(request)
     }
     
-    @IBAction func touchUpInsideButtonExit(_ sender: UIButton) {
-        
-        self.dismiss(animated: true) {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
-        }
+    @objc func closeView(sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
+    
 }
 
 extension NCLoginWeb: WKNavigationDelegate {
@@ -134,8 +141,6 @@ extension NCLoginWeb: WKNavigationDelegate {
                 // NO account found, clear
                 if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
                 
-                // STOP Intro
-                CCUtility.setIntro(true)
                 
                 // Add new account
                 NCManageDatabase.sharedInstance.deleteAccount(account)
@@ -148,10 +153,26 @@ extension NCLoginWeb: WKNavigationDelegate {
                 
                 appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
                 
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-                
-                self.dismiss(animated: true) {
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dismissCCLogin"), object: nil, userInfo: nil)
+                if (CCUtility.getIntro()) {
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
+                    self.dismiss(animated: true)
+                    
+                } else {
+                    CCUtility.setIntro(true)
+                    if (self.presentingViewController == nil) {
+                        let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+                        splitController?.modalPresentationStyle = .fullScreen
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
+                        splitController!.view.alpha = 0
+                        appDelegate.window.rootViewController = splitController!
+                        appDelegate.window.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            splitController!.view.alpha = 1
+                        }
+                    } else {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
+                        self.dismiss(animated: true)
+                    }
                 }
             }
         }
@@ -201,6 +222,7 @@ extension NCLoginWeb: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        activityIndicator.stopAnimating()
         print("didFinishProvisionalNavigation");
     }
 }

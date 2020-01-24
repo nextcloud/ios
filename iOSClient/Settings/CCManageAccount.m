@@ -93,18 +93,6 @@
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_manage_account_", nil)];
         [form addFormSection:section];
         
-        // Modify Account
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
-
-        row.action.formSelector = @selector(changePassword:);
-        if (listAccount.count == 0) row.disabled = @YES;
-        [section addFormRow:row];
-        
         // Brand
         if ([NCBrandOptions sharedInstance].disable_multiaccount == NO) {
             
@@ -378,17 +366,6 @@
     [self deselectFormRow:sender];
     
     [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Modify Account ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)changePassword:(XLFormRowDescriptor *)sender
-{    
-    [self deselectFormRow:sender];
-    
-    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:true];
 }
 
 #pragma --------------------------------------------------------------------------------------------

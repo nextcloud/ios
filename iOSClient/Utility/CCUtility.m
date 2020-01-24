@@ -659,6 +659,11 @@
 
 + (BOOL)getDarkMode
 {
+    if ([self getDarkModeDetect]) {
+        if (@available(iOS 12.0, *)) {
+            return [UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+        }
+    }
     return [[UICKeyChainStore stringForKey:@"darkMode" service:k_serviceShareKeyChain] boolValue];
 }
 
@@ -1188,6 +1193,14 @@
 + (void)emptyTemporaryDirectory
 {
     [[NSFileManager defaultManager] removeItemAtPath:NSTemporaryDirectory() error:nil];
+}
+
++ (void)clearTmpDirectory
+{
+    NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
+    for (NSString *file in tmpDirectory) {
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
+    }
 }
 
 + (NSString *)getTitleSectionDate:(NSDate *)date
