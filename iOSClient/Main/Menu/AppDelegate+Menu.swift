@@ -13,6 +13,7 @@ extension AppDelegate {
     private func initMenu() -> [MenuAction] {
         var actions = [MenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
         var isNextcloudTextAvailable = false
 
         if appDelegate.reachability.isReachable() && NCBrandBeta.shared.directEditing && NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount) != nil {
@@ -75,6 +76,14 @@ extension AppDelegate {
                 appDelegate.activeMain.createFolder()
             }))
 
+        if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
+            if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) {
+                actions.append(MenuAction(title: NSLocalizedString("_add_folder_info_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage.init(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                        self.activeMain.createRichWorkspace()
+                    }))
+            }
+        }
+
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
                 actions.append(MenuAction(title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage.init(named: "create_file_document")!,
@@ -134,7 +143,7 @@ extension AppDelegate {
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
-        
+
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
 }
