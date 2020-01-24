@@ -17,6 +17,7 @@ github "WenchaoD/FSCalendar" "2.8.0"
 github "AssistoLab/DropDown" "v2.3.13"
 github "krzyzanowskim/OpenSSL" "1.0.218"
 github "huri000/SwiftEntryKit" "1.2.3"
+github "scenee/FloatingPanel"
 
 github "https://github.com/marinofaggiana/FastScroll" "master"
 github "https://github.com/marinofaggiana/AFNetworking" "master"

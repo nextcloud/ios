@@ -264,8 +264,6 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    [self closeAllMenu];
 }
 
 - (void) viewDidLayoutSubviews
@@ -277,8 +275,6 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-    [self closeAllMenu];
 
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
@@ -649,11 +645,14 @@
 
 - (void)setUINavigationBarDefault
 {
-    UIBarButtonItem *buttonMore, *buttonNotification;
+    UIBarButtonItem *buttonMore, *buttonNotification, *buttonSelect;
     
     // =
-    buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationControllerMenu"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
+    buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationSort"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
     buttonMore.enabled = true;
+    
+    buttonSelect = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] width:50 height:50 color:NCBrandColor.sharedInstance.textView] style:UIBarButtonItemStylePlain target:self action:@selector(tableViewSelect)];
+    buttonSelect.enabled = true;
     
     // <
     self.navigationController.navigationBar.hidden = NO;
@@ -667,16 +666,16 @@
     }
     
     if (buttonNotification)
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonNotification, nil];
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonSelect, buttonNotification, nil];
     else
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
-
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonSelect, nil];
+    
     self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)setUINavigationBarSelected
 {    
-    UIImage *icon = [UIImage imageNamed:@"navigationControllerMenu"];
+    UIImage *icon = [UIImage imageNamed:@"navigationMore"];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
 
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelSelect)];
@@ -687,18 +686,7 @@
 
 - (void)cancelSelect
 {
-    [self tableViewSelect:NO];
-    [appDelegate.reSelectMenu close];
-}
-
-- (void)closeAllMenu
-{
-    // close Menu
-    [appDelegate.reSelectMenu close];
-    [appDelegate.reMainMenu close];
-    
-    // Close Menu Logo
-    [CCMenuAccount dismissMenu];
+    [self tableViewSelect];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -926,7 +914,7 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     });
     
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1015,7 +1003,7 @@
         [_hud hideHud];
     });
     
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1454,7 +1442,7 @@
     }];
     
     // End Select Table View
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1616,7 +1604,7 @@
             [self presentViewController:alert animated:YES completion:nil];
             
             // End Select Table View
-            [self tableViewSelect:NO];
+            [self tableViewSelect];
             
             // reload Datasource
             [self readFileReloadFolder];
@@ -1655,7 +1643,7 @@
                         } else {
                             
                             // End Select Table View
-                            [self tableViewSelect:NO];
+                            [self tableViewSelect];
                             
                             // reload Datasource
                             if (self.searchController.isActive)
@@ -1669,7 +1657,7 @@
                         [[NCContentPresenter shared] messageNotification:@"_move_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         
                         // End Select Table View
-                        [self tableViewSelect:NO];
+                        [self tableViewSelect];
                         
                         // reload Datasource
                         if (self.searchController.isActive)
@@ -2030,8 +2018,6 @@
 
 - (void)menuLogo:(UIGestureRecognizer *)theGestureRecognizer
 {
-    if (appDelegate.reSelectMenu.isOpen || appDelegate.reMainMenu.isOpen)
-        return;
     
     // Brand
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
@@ -2149,361 +2135,14 @@
     [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== ReMenu ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)createReMenuBackgroundView:(REMenu *)menu
-{
-    CGFloat safeAreaBottom = 0;
-    CGFloat safeAreaTop = 0;
-    CGFloat statusBar = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    if ([UIApplication sharedApplication].isStatusBarHidden) {
-        statusBar = 13;
-    }
-    
-    CGFloat computeNavigationBarOffset = [menu computeNavigationBarOffset];
-    UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
-    CGRect globalPositionMenu = [menu.menuView convertRect:menu.menuView.bounds toView:rootController.view];
-
-    _reMenuBackgroundView.frame = CGRectMake(0, computeNavigationBarOffset, globalPositionMenu.size.width,  rootController.view.frame.size.height);
-
-    [UIView animateWithDuration:0.2 animations:^{
-
-        CGFloat minimum = safeAreaBottom + self.tabBarController.tabBar.frame.size.height;
-        CGFloat y =  rootController.view.frame.size.height - menu.menuView.frame.size.height - globalPositionMenu.origin.y + statusBar;
-        
-        if (y>minimum) {
-            
-            _reMenuBackgroundView.frame = CGRectMake(0, rootController.view.frame.size.height, globalPositionMenu.size.width, - y);
-            [self.tabBarController.view addSubview:_reMenuBackgroundView];
-        }
-    }];
-}
-
-- (void)createReMainMenu
-{
-    NSString *title;
-    //NSString *groupBy = [CCUtility getGroupBySettings];
-    NSString *sorted = [CCUtility getOrderSettings];
-    BOOL ascending = [CCUtility getAscendingSettings];
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-    
-    // ITEM SELECT ----------------------------------------------------------------------------------------------------
-    
-    appDelegate.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectLight"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        if ([sectionDataSource.allRecordsDataSource count] > 0) [self tableViewSelect:YES];
-    }];
-    
-    // ITEM ORDER ----------------------------------------------------------------------------------------------------
-
-    if ([sorted isEqualToString:@"fileName"] && ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_name_a_z_", nil)]; }
-    else title = NSLocalizedString(@"_order_by_name_a_z_", nil);
-    
-    appDelegate.sortFileNameAZItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortFileNameAZ"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [CCUtility setOrderSettings:@"fileName"];
-        [CCUtility setAscendingSettings:true];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-
-    if ([sorted isEqualToString:@"fileName"] && !ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_name_z_a_", nil)]; }
-    else title = NSLocalizedString(@"_order_by_name_z_a_", nil);
-    
-    appDelegate.sortFileNameZAItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortFileNameZA"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [CCUtility setOrderSettings:@"fileName"];
-        [CCUtility setAscendingSettings:false];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    
-    if ([sorted isEqualToString:@"date"] && !ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_date_more_recent_", nil)]; }
-    else title = NSLocalizedString(@"_order_by_date_more_recent_", nil);
-    
-    appDelegate.sortDateMoreRecentItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortDateMoreRecent"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [CCUtility setOrderSettings:@"date"];
-        [CCUtility setAscendingSettings:false];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    
-    if ([sorted isEqualToString:@"date"] && ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_date_less_recent_", nil)]; }
-    else title = NSLocalizedString(@"_order_by_date_less_recent_", nil);
-    
-    appDelegate.sortDateLessRecentItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortDateLessRecent"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [CCUtility setOrderSettings:@"date"];
-        [CCUtility setAscendingSettings:true];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    
-    if ([sorted isEqualToString:@"size"] && ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_size_smallest_", nil)]; }
-    else title = NSLocalizedString(@"_order_by_size_smallest_", nil);
-    
-    appDelegate.sortSmallestItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortSmallest"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [CCUtility setOrderSettings:@"size"];
-        [CCUtility setAscendingSettings:true];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    
-    if ([sorted isEqualToString:@"size"] && !ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_size_largest_", nil)]; }
-    else title = NSLocalizedString(@"_order_by_size_largest_", nil);
-    
-    appDelegate.sortLargestItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortLargest"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [CCUtility setOrderSettings:@"size"];
-        [CCUtility setAscendingSettings:false];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    
-    
-    
-    /*
-    // ITEM GROUP ALPHABETIC -----------------------------------------------------------------------------------------------------
-    
-    if ([groupBy isEqualToString:@"alphabetic"])  { title = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
-    else { title = NSLocalizedString(@"_group_alphabetic_no_", nil); }
-    
-    appDelegate.alphabeticItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByAlphabetic"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        if ([groupBy isEqualToString:@"alphabetic"]) [CCUtility setGroupBySettings:@"none"];
-        else [CCUtility setGroupBySettings:@"alphabetic"];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    
-    // ITEM GROUP TYPEFILE -------------------------------------------------------------------------------------------------------
-    
-    if ([groupBy isEqualToString:@"typefile"])  { title = NSLocalizedString(@"_group_typefile_yes_", nil); }
-    else { title = NSLocalizedString(@"_group_typefile_no_", nil); }
-    
-    appDelegate.typefileItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByFile"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        if ([groupBy isEqualToString:@"typefile"]) [CCUtility setGroupBySettings:@"none"];
-        else [CCUtility setGroupBySettings:@"typefile"];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-   
-    // ITEM GROUP DATE -------------------------------------------------------------------------------------------------------
-    
-    if ([groupBy isEqualToString:@"date"])  { title = NSLocalizedString(@"_group_date_yes_", nil); }
-    else { title = NSLocalizedString(@"_group_date_no_", nil); }
-    
-    appDelegate.dateItem = [[REMenuItem alloc] initWithTitle:title   subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByDate"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        if ([groupBy isEqualToString:@"date"]) [CCUtility setGroupBySettings:@"none"];
-        else [CCUtility setGroupBySettings:@"date"];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    */
-    
-    // ITEM DIRECTORY ON TOP ------------------------------------------------------------------------------------------------
-    
-    if ([CCUtility getDirectoryOnTop])  { title = NSLocalizedString(@"_directory_on_top_yes_", nil); }
-    else { title = NSLocalizedString(@"_directory_on_top_no_", nil); }
-    
-    appDelegate.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"foldersOnTop"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        if ([CCUtility getDirectoryOnTop]) [CCUtility setDirectoryOnTop:NO];
-        else [CCUtility setDirectoryOnTop:YES];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    }];
-    
-    // ITEM ADD FOLDER INFO -----------------------------------------------------------------------------------------------
-    
-    appDelegate.addFolderInfo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_add_folder_info_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"addFolderInfo"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [self createRichWorkspace];
-    }];
-                                 
-    // REMENU --------------------------------------------------------------------------------------------------------------
-
-    if (capabilities.versionMajor >= k_nextcloud_version_18_0 && self.richWorkspaceText.length == 0) {
-        appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem, appDelegate.directoryOnTopItem, appDelegate.addFolderInfo]];
-    } else {
-        appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem, appDelegate.directoryOnTopItem]];
-    }
-        
-    appDelegate.reMainMenu.itemHeight = 40;
-    
-    appDelegate.reMainMenu.imageOffset = CGSizeMake(5, -1);
-    
-    appDelegate.reMainMenu.separatorOffset = CGSizeMake(50.0, 0.0);
-    appDelegate.reMainMenu.imageOffset = CGSizeMake(0, 0);
-    appDelegate.reMainMenu.waitUntilAnimationIsComplete = NO;
-    
-    appDelegate.reMainMenu.separatorHeight = 0.5;
-    appDelegate.reMainMenu.separatorColor = NCBrandColor.sharedInstance.separator;
-    
-    appDelegate.reMainMenu.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-    appDelegate.reMainMenu.textColor =  NCBrandColor.sharedInstance.textView;
-    appDelegate.reMainMenu.textAlignment = NSTextAlignmentLeft;
-    appDelegate.reMainMenu.textShadowColor = nil;
-    appDelegate.reMainMenu.textOffset = CGSizeMake(50, 0.0);
-    appDelegate.reMainMenu.font = [UIFont systemFontOfSize:14.0];
-    
-    appDelegate.reMainMenu.highlightedBackgroundColor =  NCBrandColor.sharedInstance.select;
-    appDelegate.reMainMenu.highlightedSeparatorColor = nil;
-    appDelegate.reMainMenu.highlightedTextColor = [UIColor blackColor];
-    appDelegate.reMainMenu.highlightedTextShadowColor = nil;
-    appDelegate.reMainMenu.highlightedTextShadowOffset = CGSizeMake(0, 0);
-    
-    appDelegate.reMainMenu.subtitleTextColor = [UIColor colorWithWhite:0.425 alpha:1];
-    appDelegate.reMainMenu.subtitleTextAlignment = NSTextAlignmentLeft;
-    appDelegate.reMainMenu.subtitleTextShadowColor = nil;
-    appDelegate.reMainMenu.subtitleTextShadowOffset = CGSizeMake(0, 0.0);
-    appDelegate.reMainMenu.subtitleTextOffset = CGSizeMake(50, 0.0);
-    appDelegate.reMainMenu.subtitleFont = [UIFont systemFontOfSize:12.0];
-    
-    appDelegate.reMainMenu.subtitleHighlightedTextColor = [UIColor lightGrayColor];
-    appDelegate.reMainMenu.subtitleHighlightedTextShadowColor = nil;
-    appDelegate.reMainMenu.subtitleHighlightedTextShadowOffset = CGSizeMake(0, 0);
-    
-    appDelegate.reMainMenu.borderWidth = 0;
-    appDelegate.reMainMenu.borderColor = NCBrandColor.sharedInstance.backgroundForm;
-    
-    appDelegate.reMainMenu.animationDuration = 0.2;
-    appDelegate.reMainMenu.closeAnimationDuration = 0.2;
-    
-    appDelegate.reMainMenu.bounce = NO;
-    
-    __weak typeof(self) weakSelf = self;
-    [appDelegate.reMainMenu setClosePreparationBlock:^{
-        
-        // Backgroun reMenu (Gesture)
-        [weakSelf.reMenuBackgroundView removeFromSuperview];
-        [weakSelf.reMenuBackgroundView removeGestureRecognizer:weakSelf.singleFingerTap];
-    }];
-}
-
 - (void)toggleReMainMenu
 {
-    if (appDelegate.reMainMenu.isOpen) {
-        
-        [appDelegate.reMainMenu close];
-        
-    } else {
-        
-        [self createReMainMenu];
-        [appDelegate.reMainMenu showFromNavigationController:self.navigationController];
-        
-        // Backgroun reMenu & (Gesture)
-        [self createReMenuBackgroundView:appDelegate.reMainMenu];
-        
-        _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReMainMenu)];
-        [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
-    }
-}
-
-- (void)createReSelectMenu
-{
-    // ITEM SELECT ALL --------------------------------------------------------------------------------------------------
-    
-    appDelegate.selectAllItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_all_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectFull"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [self didSelectAll];
-    }];
-    
-    // ITEM MOVE --------------------------------------------------------------------------------------------------------
-    
-    appDelegate.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-            [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
-    }];
-    
-    // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
-    
-    appDelegate.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_folders_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"downloadSelectedFiles"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-            [self downloadSelectedFilesFolders];
-    }];
-    
-    // ITEM SAVE IMAGE & VIDEO -------------------------------------------------------------------------------------------
-    
-    appDelegate.saveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_save_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"saveSelectedFiles"] multiplier:2 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-            [self saveSelectedFiles];
-    }];
-    
-    // ITEM DELETE ------------------------------------------------------------------------------------------------------
-    appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [self deleteFile];
-    }];
-    
-    // E2EE
-    if (_metadataFolder.e2eEncrypted) {
-        if ([NCBrandOptions sharedInstance].disable_openin_file) {
-            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.downloadItem, appDelegate.deleteItem]];
-        } else {
-            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
-        }
-    } else {
-        if ([NCBrandOptions sharedInstance].disable_openin_file) {
-            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.deleteItem]];
-        } else {
-            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
-        }
-    }
-    
-    appDelegate.reSelectMenu.itemHeight = 50;
-
-    appDelegate.reSelectMenu.imageOffset = CGSizeMake(5, -1);
-    
-    appDelegate.reSelectMenu.separatorOffset = CGSizeMake(50.0, 0.0);
-    appDelegate.reSelectMenu.imageOffset = CGSizeMake(0, 0);
-    appDelegate.reSelectMenu.waitUntilAnimationIsComplete = NO;
-    
-    appDelegate.reSelectMenu.separatorHeight = 0.5;
-    appDelegate.reSelectMenu.separatorColor = NCBrandColor.sharedInstance.separator;
-    
-    appDelegate.reSelectMenu.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-    appDelegate.reSelectMenu.textColor = NCBrandColor.sharedInstance.textView;
-    appDelegate.reSelectMenu.textAlignment = NSTextAlignmentLeft;
-    appDelegate.reSelectMenu.textShadowColor = nil;
-    appDelegate.reSelectMenu.textOffset = CGSizeMake(50, 0.0);
-    appDelegate.reSelectMenu.font = [UIFont systemFontOfSize:14.0];
-    
-    appDelegate.reSelectMenu.highlightedBackgroundColor = NCBrandColor.sharedInstance.select;
-    appDelegate.reSelectMenu.highlightedSeparatorColor = nil;
-    appDelegate.reSelectMenu.highlightedTextColor = [UIColor blackColor];
-    appDelegate.reSelectMenu.highlightedTextShadowColor = nil;
-    appDelegate.reSelectMenu.highlightedTextShadowOffset = CGSizeMake(0, 0);
-    
-    appDelegate.reSelectMenu.subtitleTextColor = [UIColor colorWithWhite:0.425 alpha:1.000];
-    appDelegate.reSelectMenu.subtitleTextAlignment = NSTextAlignmentLeft;
-    appDelegate.reSelectMenu.subtitleTextShadowColor = nil;
-    appDelegate.reSelectMenu.subtitleTextShadowOffset = CGSizeMake(0, 0.0);
-    appDelegate.reSelectMenu.subtitleTextOffset = CGSizeMake(50, 0.0);
-    appDelegate.reSelectMenu.subtitleFont = [UIFont systemFontOfSize:12.0];
-    
-    appDelegate.reSelectMenu.subtitleHighlightedTextColor = [UIColor lightGrayColor];
-    appDelegate.reSelectMenu.subtitleHighlightedTextShadowColor = nil;
-    appDelegate.reSelectMenu.subtitleHighlightedTextShadowOffset = CGSizeMake(0, 0);
-    
-    appDelegate.reMainMenu.borderWidth = 0;
-    appDelegate.reMainMenu.borderColor = NCBrandColor.sharedInstance.backgroundForm;
-    
-    appDelegate.reSelectMenu.closeAnimationDuration = 0.2;
-    appDelegate.reSelectMenu.animationDuration = 0.2;
-
-    appDelegate.reSelectMenu.bounce = NO;
-    
-    __weak typeof(self) weakSelf = self;
-    [appDelegate.reSelectMenu setClosePreparationBlock:^{
-        
-        // Backgroun reMenu (Gesture)
-        [weakSelf.reMenuBackgroundView removeFromSuperview];
-        [weakSelf.reMenuBackgroundView removeGestureRecognizer:weakSelf.singleFingerTap];
-    }];
+    [self toggleMenuWithViewController:self.navigationController];
 }
 
 - (void)toggleReSelectMenu
 {
-    if (appDelegate.reSelectMenu.isOpen) {
-        
-        [appDelegate.reSelectMenu close];
-        
-    } else {
-        
-        [self createReSelectMenu];
-        [appDelegate.reSelectMenu showFromNavigationController:self.navigationController];
-        
-        // Backgroun reMenu & (Gesture)
-        [self createReMenuBackgroundView:appDelegate.reSelectMenu];
-        
-        _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReSelectMenu)];
-        [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
-    }
+    [self toggleSelectMenuWithViewController:self.navigationController];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2703,7 +2342,7 @@
         }
     }
     
-    [self tableViewSelect:NO];
+    [self tableViewSelect];
 }
 
 - (void)copyFileToPasteboard:(tableMetadata *)metadata
@@ -3021,405 +2660,7 @@
     
     self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    NSString *titoloLock, *titleFavorite;
-    
-    if (self.metadata.favorite) {
-        titleFavorite = NSLocalizedString(@"_remove_favorites_", nil);
-    } else {
-        titleFavorite = NSLocalizedString(@"_add_favorites_", nil);
-    }
-    
-    if (self.metadata.directory) {
-        
-        // calcolo lockServerUrl
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
-        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
-        
-        if (directory.lock)
-            titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_remove_passcode_", nil)];
-        else
-            titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_protect_passcode_", nil)];
-    }
-    
-    // ******************************************* AHKActionSheet *******************************************
-    
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.tabBarController.view title:nil];
-    
-    actionSheet.animationDuration = 0.2;
-        
-    actionSheet.buttonHeight = 50.0;
-    actionSheet.cancelButtonHeight = 50.0f;
-    actionSheet.separatorHeight = 5.0f;
-    
-    actionSheet.automaticallyTintButtonImages = @(NO);
-    
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.encrypted };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.textView };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont boldSystemFontOfSize:17], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.textView };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.textView };
-    
-    actionSheet.separatorColor = NCBrandColor.sharedInstance.separator;
-    actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-    actionSheet.cancelButtonBackgroudColor = NCBrandColor.sharedInstance.backgroundForm;
-    
-    // ******************************************* DIRECTORY *******************************************
-    
-    if (self.metadata.directory) {
-        
-        BOOL lockDirectory = NO;
-        BOOL isOffline = NO;
-        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] account:appDelegate.activeAccount];
-        
-        // Directory bloccata ?
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl]];
-        if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) lockDirectory = YES;
-        if (directory.offline) isOffline = YES;
-            
-        [actionSheet addButtonWithTitle:self.metadata.fileNameView
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement]
-                        backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                 height:50.0
-                                   type:AHKActionSheetButtonTypeDisabled
-                                handler:nil
-        ];
-        
-        [actionSheet addButtonWithTitle: titleFavorite
-                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:NCBrandColor.sharedInstance.yellowFavorite]
-                        backgroundColor: NCBrandColor.sharedInstance.backgroundForm
-                                 height: 50.0
-                                   type: AHKActionSheetButtonTypeDefault
-                                handler: ^(AHKActionSheet *as) {
-                                    if (self.metadata.favorite) [self settingFavorite:self.metadata favorite:NO];
-                                    else [self settingFavorite:self.metadata favorite:YES];
-                                }];
-        
-        if (!lockDirectory && !isFolderEncrypted) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_details_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"details"] width:50 height:50 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:self.metadata indexPage:0];
-                                    }];
-        }
-        
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [self.metadata.serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !self.metadata.e2eEncrypted) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        __weak __typeof(UIAlertController) *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-                                        
-                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.text = self.metadata.fileNameView;
-                                            textField.delegate = self;
-                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                        }];
-                                        
-                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                            NSLog(@"[LOG] Cancel action");
-                                        }];
-                                        
-                                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                            
-                                            UITextField *fileName = alertController.textFields.firstObject;
-                                            
-                                            [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:self.metadata,fileName.text, nil] waitUntilDone:NO];
-                                        }];
-                                        
-                                        okAction.enabled = NO;
-                                        
-                                        [alertController addAction:cancelAction];
-                                        [alertController addAction:okAction];
-                                        
-                                        [self presentViewController:alertController animated:YES completion:nil];
-                                    }];
-        }
-        
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [self.metadata.serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !isFolderEncrypted) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-                                    }];
-        }
-        
-        if (!isFolderEncrypted) {
-            
-            NSString *title;
-            
-            if (isOffline) {
-                title = NSLocalizedString(@"_remove_available_offline_", nil);
-            } else {
-                title = NSLocalizedString(@"_set_available_offline_", nil);
-            }
-            
-            [actionSheet addButtonWithTitle:title
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"offline"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        if (isOffline) {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:false account:appDelegate.activeAccount];
-                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                                        } else {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:true account:appDelegate.activeAccount];
-                                            [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload account:appDelegate.activeAccount];
-                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                                        }
-                                    }];
-        }
-        
-    
-        [actionSheet addButtonWithTitle:titoloLock
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                        backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                 height:50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    [self performSelector:@selector(comandoLockPassword) withObject:nil];
-                                }];
-        
-        if (!self.metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
-
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncryptedOnServerUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] ocId:self.metadata.ocId user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-                                            dispatch_async(dispatch_get_main_queue(), ^{
-                                                if (error) {
-                                                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
-                                                } else {
-                                                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName]]];
-                                                    [self readFolder:self.serverUrl];
-                                                }
-                                            });
-                                        });
-                                    }];
-        }
-        
-        if (self.metadata.e2eEncrypted && !_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                            NSError *error = [[NCNetworkingEndToEnd sharedManager] deletemarkEndToEndFolderEncryptedOnServerUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] ocId:self.metadata.ocId user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-                                            dispatch_async(dispatch_get_main_queue(), ^{
-                                                if (error) {
-                                                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_delete_mark_folder_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
-                                                } else {
-                                                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName]]];
-                                                    [self readFolder:self.serverUrl];
-                                                }
-                                            });
-                                        });
-                                    }];
-        }
-        
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
-                        backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                 height:50.0
-                                   type:AHKActionSheetButtonTypeDestructive
-                                handler:^(AHKActionSheet *as) {
-                                        [self actionDelete:indexPath];
-        }];
-        
-        [actionSheet show];
-    }
-    
-    // ******************************************* FILE *******************************************
-    
-    if (!self.metadata.directory) {
-        
-        UIImage *iconHeader;
-
-        // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView]])
-            iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
-        else
-            iconHeader = [UIImage imageNamed:self.metadata.iconName];
-        
-        [actionSheet addButtonWithTitle: self.metadata.fileNameView
-                                  image: iconHeader
-                        backgroundColor: NCBrandColor.sharedInstance.backgroundForm
-                                 height: 50.0
-                                   type: AHKActionSheetButtonTypeDisabled
-                                handler: nil
-        ];
-        
-        
-        [actionSheet addButtonWithTitle: titleFavorite
-                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:NCBrandColor.sharedInstance.yellowFavorite]
-                        backgroundColor: NCBrandColor.sharedInstance.backgroundForm
-                                 height: 50.0
-                                   type: AHKActionSheetButtonTypeDefault
-                                handler: ^(AHKActionSheet *as) {
-                                    if (self.metadata.favorite) [self settingFavorite:self.metadata favorite:NO];
-                                    else [self settingFavorite:self.metadata favorite:YES];
-                                }];
-        
-        if (!_metadataFolder.e2eEncrypted) {
-
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_details_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"details"] width:50 height:50 color:NCBrandColor.sharedInstance.icon]
-                                backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                        height: 50.0
-                                        type:AHKActionSheetButtonTypeDefault
-                                        handler:^(AHKActionSheet *as) {
-                                            [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:self.metadata indexPage:0];
-                                        }];
-        }
-        
-        if (![NCBrandOptions sharedInstance].disable_openin_file) {
-        
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        [self performSelector:@selector(openinFile:) withObject:nil];
-                                    }];
-        }
-        
-        
-            
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                        backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    
-                                    __weak __typeof(UIAlertController) *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-                                    
-                                    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                        textField.text = self.metadata.fileNameView;
-                                        textField.delegate = self;
-                                        [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                    }];
-                                    
-                                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                        NSLog(@"[LOG] Cancel action");
-                                    }];
-                                    
-                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                        UITextField *fileName = alertController.textFields.firstObject;
-                                        [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:self.metadata,fileName.text, nil] waitUntilDone:NO];
-                                    }];
-                                    
-                                    okAction.enabled = NO;
-                                    
-                                    [alertController addAction:cancelAction];
-                                    [alertController addAction:okAction];
-                                    
-                                    [self presentViewController:alertController animated:YES completion:nil];
-                                }];
-        
-        
-        if (!_metadataFolder.e2eEncrypted) {
-
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-                                    }];
-        }
-        
-        if ([NCUtility.sharedInstance isEditImage:self.metadata.fileNameView] != nil && !_metadataFolder.e2eEncrypted && self.metadata.status == k_metadataStatusNormal) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_modify_photo_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"modifyPhoto"] width:50 height:50 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        self.metadata.session = k_download_session;
-                                        self.metadata.sessionError = @"";
-                                        self.metadata.sessionSelector = selectorDownloadEditPhoto;
-                                        self.metadata.status = k_metadataStatusWaitDownload;
-                                        
-                                        (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                                        
-                                        [appDelegate startLoadAutoDownloadUpload];
-                                    }];
-        }
-        
-        if (!_metadataFolder.e2eEncrypted) {
-            
-            NSString *title;
-            tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", self.metadata.ocId]];
-
-            if (localFile == nil || localFile.offline == false) { title = NSLocalizedString(@"_set_available_offline_", nil); }
-            else { title = NSLocalizedString(@"_remove_available_offline_", nil); }
-            
-            [actionSheet addButtonWithTitle:title
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"offline"] multiplier:2 color:NCBrandColor.sharedInstance.icon]
-                            backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        if (localFile == nil || ![CCUtility fileProviderStorageExists:self.metadata.ocId fileNameView:self.metadata.fileNameView]) {
-                                            self.metadata.session = k_download_session;
-                                            self.metadata.sessionError = @"";
-                                            self.metadata.sessionSelector = selectorLoadOffline;
-                                            self.metadata.status = k_metadataStatusWaitDownload;
-                                            
-                                            // Add Metadata for Download
-                                            (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
-                                            
-                                            [appDelegate startLoadAutoDownloadUpload];
-                                        } else if (localFile.offline == false) {
-                                            [[NCManageDatabase sharedInstance] setLocalFileWithOcId:self.metadata.ocId offline:true];
-                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                                        } else {
-                                            [[NCManageDatabase sharedInstance] setLocalFileWithOcId:self.metadata.ocId offline:false];
-                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                                        }
-                                    }];
-        }
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
-                        backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                                 height:50.0
-                                   type:AHKActionSheetButtonTypeDestructive
-                                handler:^(AHKActionSheet *as) {
-                                    [self actionDelete:indexPath];
-                                }];
-        
-        [actionSheet show];
-    }
+    [self toggleMoreMenuWithViewController:self.tabBarController indexPath:indexPath metadata:self.metadata metadataFolder:_metadataFolder];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3608,17 +2849,17 @@
 #pragma mark - ==== Table ==== 
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)tableViewSelect:(BOOL)edit
+- (void)tableViewSelect
 {
+    _isSelectedMode = !_isSelectedMode;
     // chiudiamo eventuali swipe aperti
-    if (edit)
+    if (_isSelectedMode)
         [self.tableView setEditing:NO animated:NO];
     
-    [self.tableView setAllowsMultipleSelectionDuringEditing:edit];
-    [self.tableView setEditing:edit animated:YES];
-    _isSelectedMode = edit;
+    [self.tableView setAllowsMultipleSelectionDuringEditing:_isSelectedMode];
+    [self.tableView setEditing:_isSelectedMode animated:YES];
     
-    if (edit)
+    if (_isSelectedMode)
         [self setUINavigationBarSelected];
     else
         [self setUINavigationBarDefault];

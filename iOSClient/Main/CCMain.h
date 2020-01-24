@@ -74,8 +74,6 @@
 
 - (void)copyFileToPasteboard:(tableMetadata *)metadata;
 
-- (void)closeAllMenu;
-
 - (void)setUINavigationBarDefault;
 
 - (void)readFolder:(NSString *)serverUrl;
@@ -91,6 +89,22 @@
 - (void)openAssetsPickerController;
 - (void)openImportDocumentPicker;
 - (void)createFolder;
+
+- (void)setTableViewHeader;
+
+//expose methods for swift
+- (void)didSelectAll;
+- (void)deleteFile;
+- (void)saveSelectedFiles;
+- (void)downloadSelectedFilesFolders;
+- (void)moveOpenWindow:(NSArray *)indexPaths;
+
+- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite;
+- (void)minCharTextFieldDidChange:(UITextField *)sender;
+- (void)renameFile:(NSArray *)arguments;
+- (void)comandoLockPassword;
+- (void)actionDelete:(NSIndexPath *)indexPath;
+- (void)openinFile:(id)sender;
 
 @end
 

@@ -426,85 +426,10 @@
 - (void)actionMore:(UITapGestureRecognizer *)gestureRecognizer
 {
     CGPoint touch = [gestureRecognizer locationInView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
-    UIImage *iconHeader;
-    
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];    
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.tabBarController.view title:nil];
-    
-    actionSheet.animationDuration = 0.2;
-    
-    actionSheet.buttonHeight = 50.0;
-    actionSheet.cancelButtonHeight = 50.0f;
-    actionSheet.separatorHeight = 5.0f;
-    
-    actionSheet.automaticallyTintButtonImages = @(NO);
-    
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.encrypted };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.textView };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont boldSystemFontOfSize:17], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.textView };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:NCBrandColor.sharedInstance.textView };
-    
-    actionSheet.separatorColor = NCBrandColor.sharedInstance.separator;
-    actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-    actionSheet.cancelButtonBackgroudColor = NCBrandColor.sharedInstance.backgroundForm;
-    
-    // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]]) {
-        
-        iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
-        
-    } else {
-        
-        if (metadata.directory)
-            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.sharedInstance.icon];
-        else
-            iconHeader = [UIImage imageNamed:metadata.iconName];
-    }
-    
-    [actionSheet addButtonWithTitle: metadata.fileNameView image: iconHeader backgroundColor: NCBrandColor.sharedInstance.backgroundForm height: 50.0 type: AHKActionSheetButtonTypeDisabled handler: nil
-     ];
-    
-    // Favorite : ONLY root
-    if (_serverUrl == nil) {
-        [actionSheet addButtonWithTitle: NSLocalizedString(@"_remove_favorites_", nil)
-                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:NCBrandColor.sharedInstance.yellowFavorite]
-                        backgroundColor: NCBrandColor.sharedInstance.backgroundForm
-                                 height: 50.0
-                                   type: AHKActionSheetButtonTypeDefault
-                                handler: ^(AHKActionSheet *as) {
-                                    [self settingFavorite:metadata favorite:NO];
-                                }];
-    }
-    
-    // Share
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_details_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"details"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] backgroundColor:NCBrandColor.sharedInstance.backgroundForm height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-        
-        [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:0];
-    }];
-    
-    // NO Directory
-    if (metadata.directory == NO && [NCBrandOptions sharedInstance].disable_openin_file == NO) {
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:NCBrandColor.sharedInstance.icon] backgroundColor:NCBrandColor.sharedInstance.backgroundForm height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-            [self.tableView setEditing:NO animated:YES];
-            
-            [[NCMainCommon sharedInstance] downloadOpenWithMetadata:metadata selector:selectorOpenIn];
-        }];
-    }
-    
-    // Delete
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                              image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor redColor]]
-                    backgroundColor:NCBrandColor.sharedInstance.backgroundForm
-                             height:50.0
-                               type:AHKActionSheetButtonTypeDestructive
-                            handler:^(AHKActionSheet *as) {
-                                [self actionDelete:indexPath];
-                            }];
-    
-    [actionSheet show];
+    [self toggleMoreMenuWithViewController:self.tabBarController indexPath:indexPath metadata:metadata];
 }
 
 #pragma --------------------------------------------------------------------------------------------
