@@ -171,7 +171,7 @@
             [self reloadDatasource];
             
         } else if (errorCode != 0) {
-            [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"_share_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }

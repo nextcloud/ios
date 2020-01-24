@@ -44,7 +44,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         super.init(coder: coder)
     }
     
-    @objc func viewNextcloudTextAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
+    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
         
         self.detail = detail
         self.metadata = metadata
@@ -90,6 +90,8 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
                 
                 detail.navigationController?.popViewController(animated: true)
                 detail.navigationController?.navigationBar.topItem?.title = ""
+                
+                appDelegate.activeMain.readFileReloadFolder()
             }
             
             if message.body as? String == "share" {

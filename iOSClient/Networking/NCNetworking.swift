@@ -153,20 +153,20 @@ import NCCommunication
         return result
     }
     
-    @objc func convertFiles(_ files: [NCFile], urlString: String, serverUrl : String?, user: String) -> [tableMetadata] {
+    @objc func convertFiles(_ files: [NCFile], urlString: String, serverUrl : String?, user: String, metadataFolder: UnsafeMutablePointer<tableMetadata>) -> [tableMetadata] {
         
         var metadatas = [tableMetadata]()
         
         for file in files {
             
             if !CCUtility.getShowHiddenFiles() && file.fileName.first == "." { continue }
-            if file.fileName.count == 0 { continue }
             
             let metadata = tableMetadata()
             
             metadata.account = account
             metadata.commentsUnread = file.commentsUnread
             metadata.contentType = file.contentType
+            metadata.creationDate = file.creationDate
             metadata.date = file.date
             metadata.directory = file.directory
             metadata.e2eEncrypted = file.e2eEncrypted
@@ -183,6 +183,7 @@ import NCCommunication
             metadata.permissions = file.permissions
             metadata.quotaUsedBytes = file.quotaUsedBytes
             metadata.quotaAvailableBytes = file.quotaAvailableBytes
+            metadata.richWorkspace = file.richWorkspace
             metadata.resourceType = file.resourceType
             if serverUrl == nil {
                 metadata.serverUrl = urlString + file.path.replacingOccurrences(of: "/remote.php/dav/files/"+user, with: "").dropLast()
@@ -193,7 +194,12 @@ import NCCommunication
                         
             CCUtility.insertTypeFileIconName(file.fileName, metadata: metadata)
             
-            metadatas.append(metadata)
+            // Folder
+            if file.fileName.count == 0 {
+                metadataFolder.initialize(to: metadata)
+            } else {
+                metadatas.append(metadata)
+            }
         }
         
         return metadatas

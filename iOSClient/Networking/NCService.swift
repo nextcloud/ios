@@ -61,7 +61,7 @@ class NCService: NSObject {
                 
                 // Update User (+ userProfile.id) & active account & account network
                 guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!, HCProperties: false) else {
-                    self.appDelegate.messageNotification("Accopunt", description: "Internal error : account not found on DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification("Accopunt", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                     return
                 }
                 
@@ -77,10 +77,10 @@ class NCService: NSObject {
                 
                 DispatchQueue.global().async {
                     
-                    let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(tableAccount.userID)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
-                    InfomaniakUtils.downloadProfilePictureWith(account: tableAccount, url: avatarUrl) { (data, message, errorCode) in
+                    NCCommunication.sharedInstance.downloadContent(urlString: avatarUrl, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 {
                             if let image = UIImage(data: data!) {
                                 try? FileManager.default.removeItem(atPath: fileNamePath)
@@ -90,6 +90,18 @@ class NCService: NSObject {
                             }
                         }
                     }
+                    /*
+                    OCNetworking.sharedManager()?.downloadContents(ofUrl: avatarUrl, completion: { (data, message, errorCode) in
+                        if errorCode == 0 {
+                            if let image = UIImage(data: data!) {
+                                try? FileManager.default.removeItem(atPath: fileNamePath)
+                                if let data = image.pngData() {
+                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                                }
+                            }
+                        }
+                    })
+                    */
                     
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
@@ -116,9 +128,9 @@ class NCService: NSObject {
             if errorCode == 0 {
                 if extendedSupport == false {
                     if serverProductName == "owncloud" {
-                        self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                     } else if versionMajor <= k_nextcloud_unsupported {
-                        self.appDelegate.messageNotification("_warning_", description: "_warning_unsupported_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                     }
                 }
             }
@@ -148,14 +160,14 @@ class NCService: NSObject {
                         // Download Logo
                         if NCBrandOptions.sharedInstance.use_themingLogo {
                             let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-                            NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, closure: { (imageNamePath) in })
+                            NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })
                         }
                         
                         let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
                         
-                        OCNetworking.sharedManager()?.downloadContents(ofUrl: backgroundURL, completion: { (data, message, errorCode) in
-                            if errorCode == 0 {
+                        NCCommunication.sharedInstance.downloadContent(urlString: backgroundURL, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                            if errorCode == 0 && account == self.appDelegate.activeAccount {
                                 if let image = UIImage(data: data!) {
                                     try? FileManager.default.removeItem(atPath: fileNamePath)
                                     if let data = image.pngData() {
@@ -163,8 +175,7 @@ class NCService: NSObject {
                                     }
                                 }
                             }
-                        })
-                        
+                        }
                         DispatchQueue.main.async {
                             self.appDelegate.settingThemingColorBrand()
                         }
@@ -204,7 +215,7 @@ class NCService: NSObject {
                                     let id = (notification as! OCNotifications).idNotification
                                     if let icon = (notification as! OCNotifications).icon {
                                         
-                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, closure: { (imageNamePath) in })                                        
+                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })                                        
                                     }
                                     new = new + String(describing: id)
                                 }
@@ -275,7 +286,7 @@ class NCService: NSObject {
                             self.appDelegate.activeMain?.tableView?.reloadData()
                             self.appDelegate.activeFavorites?.tableView?.reloadData()
                         } else {
-                            self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     })
                 }

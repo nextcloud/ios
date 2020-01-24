@@ -111,28 +111,6 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
-- (void)introFinishSelector:(NSInteger)selector
-{
-    switch (selector) {
-            
-        case k_intro_login:
-            {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                    if (appDelegate.activeAccount.length == 0) {
-                        [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-                    }
-                });
-            }
-            break;
-            
-        case k_intro_signup:
-            {
-                [appDelegate openLoginView:self selector:k_intro_signup openLoginWeb:false];
-            }
-            break;
-    }
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Split View Controller =====
 #pragma --------------------------------------------------------------------------------------------

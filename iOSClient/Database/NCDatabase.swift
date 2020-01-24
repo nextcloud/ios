@@ -249,6 +249,7 @@ class tableDirectory: Object {
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
+    @objc dynamic var richWorkspace = ""
     @objc dynamic var serverUrl = ""
     
     override static func primaryKey() -> String {
@@ -337,9 +338,11 @@ class tableMedia: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
+    @objc dynamic var creationDate = NSDate()
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
@@ -355,6 +358,7 @@ class tableMedia: Object {
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
+    @objc dynamic var richWorkspace = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -379,9 +383,11 @@ class tableMetadata: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
+    @objc dynamic var creationDate = NSDate()
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
@@ -397,6 +403,7 @@ class tableMetadata: Object {
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
+    @objc dynamic var richWorkspace = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""

@@ -1121,7 +1121,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, permissions: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -1139,6 +1139,9 @@ class NCManageDatabase: NSObject {
         addObject.favorite = favorite
         if let permissions = permissions {
             addObject.permissions = permissions
+        }
+        if let richWorkspace = richWorkspace {
+            addObject.richWorkspace = richWorkspace
         }
         addObject.serverUrl = serverUrl
         
@@ -1178,7 +1181,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, ocId: String?, encrypted: Bool, account: String) {
+    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, ocId: String?, encrypted: Bool, richWorkspace: String?, account: String) {
         
         let realm = try! Realm()
 
@@ -1202,6 +1205,9 @@ class NCManageDatabase: NSObject {
                 }
                 if let serverUrlTo = serverUrlTo {
                     directory.serverUrl = serverUrlTo
+                }
+                if let richWorkspace = richWorkspace {
+                    directory.richWorkspace = richWorkspace
                 }
                 
                 realm.add(directory, update: .all)
@@ -1377,6 +1383,32 @@ class NCManageDatabase: NSObject {
                 
                 result.offline = offline
             }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func setDirectory(ocId: String, serverUrl: String, richWorkspace: String, account: String) {
+        
+        let realm = try! Realm()
+        realm.beginWrite()
+        
+        var addObject = tableDirectory()
+        
+        let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
+        if result != nil {
+            addObject = result!
+        } else {
+            addObject.ocId = ocId
+        }
+        addObject.account = account
+        addObject.richWorkspace = richWorkspace
+        addObject.serverUrl = serverUrl
+        
+        realm.add(addObject, update: .all)
+        
+        do {
+            try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }

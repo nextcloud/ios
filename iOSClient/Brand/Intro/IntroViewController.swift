@@ -1,9 +1,22 @@
 //
 //  IntroViewController.swift
-//  kDrive
+//  Nextcloud
 //
 //  Created by Philippe Weidmann on 24.12.19.
-//  Copyright © 2019 TWS. All rights reserved.
+//  Copyright © 2019 Philippe Weidmann. All rights reserved.
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 import UIKit
@@ -23,36 +36,32 @@ class IntroViewController: UIViewController, UICollectionViewDataSource, UIColle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.customer
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.introBackground
-                
-        if #available(iOS 13.0, *) {
-            self.pageControl.currentPageIndicatorTintColor = .systemGray
-        } else {
-            self.pageControl.currentPageIndicatorTintColor = .darkGray
-        }
-        
-        if #available(iOS 13.0, *) {
-            self.pageControl.pageIndicatorTintColor = .systemGray2
-        } else {
-            self.pageControl.pageIndicatorTintColor = .gray
-        }
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer
+        self.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.customerText
+        self.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft
 
-        self.buttonLogin.layer.cornerRadius = 5
-        self.buttonLogin.setTitleColor(.white, for: .normal)
-        self.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customer
+
+        self.buttonLogin.layer.cornerRadius = 20
+        self.buttonLogin.setTitleColor(.black, for: .normal)
+        self.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customerText
         self.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
 
-        self.buttonSignUp.isHidden = true
+        self.buttonSignUp.layer.cornerRadius = 20
+        self.buttonSignUp.setTitleColor(.white, for: .normal)
+        self.buttonSignUp.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
+        self.buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
 
-        self.buttonHost.isHidden = true
+        self.buttonHost.layer.cornerRadius = 20
+        self.buttonHost.setTitle(NSLocalizedString("_host_your_own_server", comment: ""), for: .normal)
+        self.buttonHost.setTitleColor(UIColor(red: 1, green: 1, blue: 1, alpha: 0.7), for: .normal)
 
         self.introCollectionView.register(UINib(nibName: "IntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
         self.introCollectionView.dataSource = self
         self.introCollectionView.delegate = self
-        self.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.introBackground
+        self.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.customer
         self.pageControl.numberOfPages = self.titles.count
-        self.view.backgroundColor = NCBrandColor.sharedInstance.introBackground
+        self.view.backgroundColor = NCBrandColor.sharedInstance.customer
         self.timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(IntroViewController.autoScroll)), userInfo: nil, repeats: true)
     }
 
@@ -86,13 +95,9 @@ class IntroViewController: UIViewController, UICollectionViewDataSource, UIColle
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "introCell", for: indexPath) as! IntroCollectionViewCell
-        cell.backgroundColor = .clear
-        
-        if #available(iOS 13.0, *) {
-            cell.titleLabel.textColor = .label
-        } else {
-            cell.titleLabel.textColor = .black
-        }
+        cell.backgroundColor = NCBrandColor.sharedInstance.customer
+
+        cell.titleLabel.textColor = NCBrandColor.sharedInstance.customerText
         cell.titleLabel.text = titles[indexPath.row]
         cell.imageView.image = images[indexPath.row]
         return cell
@@ -130,6 +135,4 @@ class IntroViewController: UIViewController, UICollectionViewDataSource, UIColle
             appDelegate?.window.rootViewController?.present(browserWebVC, animated: true)
         }
     }
-    
-
 }

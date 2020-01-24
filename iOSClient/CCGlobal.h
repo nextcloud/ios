@@ -68,8 +68,7 @@
 #define k_flowEndpoint                                  @"/index.php/login/flow"
 
 // Avatar
-#define k_avatar                                        @"/index.php/avatar/"
-#define k_avatar_size                                   "128"
+#define k_avatar_size                                   128
 
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
@@ -82,7 +81,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         81
+#define k_databaseSchemaVersion                         85
 
 // Intro selector
 #define k_intro_login                                   0
@@ -291,6 +290,9 @@
 #define k_layout_view_richdocument                      @"LayoutRichdocument"
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
+
+// Rich Workspace
+#define k_fileNameRichWorkspace                         @"Readme.md"
 
 // Nextcloud unsupported
 #define k_nextcloud_unsupported                         13

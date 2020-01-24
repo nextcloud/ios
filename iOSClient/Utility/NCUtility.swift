@@ -26,6 +26,7 @@ import SVGKit
 import KTVHTTPCache
 import ZIPFoundation
 import Sheeeeeeeeet
+import NCCommunication
 
 class NCUtility: NSObject {
     @objc static let sharedInstance: NCUtility = {
@@ -177,7 +178,7 @@ class NCUtility: NSObject {
     }
     
     
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, closure: @escaping (String?) -> ()) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
         
         var fileNamePNG = ""
         
@@ -198,8 +199,8 @@ class NCUtility: NSObject {
         
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
-            OCNetworking.sharedManager()?.downloadContents(ofUrl: iconURL.absoluteString, completion: { (data, message, errorCode) in
-                
+            NCCommunication.sharedInstance.downloadContent(urlString: iconURL.absoluteString, account: account) { (account, data, errorCode, errorMessage) in
+               
                 if errorCode == 0 && data != nil {
                 
                     if let image = UIImage.init(data: data!) {
@@ -253,7 +254,7 @@ class NCUtility: NSObject {
                 } else {
                     return closure(nil)
                 }
-            })
+            }
             
         } else {
             return closure(imageNamePath)
@@ -432,7 +433,7 @@ class NCUtility: NSObject {
     @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String) -> UIImage? {
         
         guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
-        let size = Int(k_avatar_size) ?? 128
+        let size = Int(k_avatar_size)
         
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
         imageSource.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
@@ -505,7 +506,7 @@ class NCUtility: NSObject {
         return 0
     }
     
-    func IMUnzip(metadata: tableMetadata) -> Bool {
+    @objc func IMUnzip(metadata: tableMetadata) -> Bool {
         
         // bak
         let atPathBak = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView

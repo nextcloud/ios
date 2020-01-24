@@ -27,7 +27,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-#import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
 #import "BKPasscodeViewController.h"
 #import "NSString+TruncateToWidth.h"
@@ -44,16 +43,20 @@
 #import <MGSwipeTableCell/MGSwipeTableCell.h>
 
 @class tableMetadata;
+@class NCViewRichWorkspace;
 
 @interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) NCViewRichWorkspace *viewRichWorkspace;
+
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) tableMetadata *metadataForPushDetail;
 @property (nonatomic, strong) NSString *selectorForPushDetail;
 
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleMain;
+@property (nonatomic, strong) NSString *richWorkspaceText;
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) UIView *reMenuBackgroundView;

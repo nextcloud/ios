@@ -101,7 +101,7 @@
 "_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 "_start_"                   = "Start";
 "_purchase_"                = "Purchase";
-"_account_not_available_"   = "The account %@ of %@ do not exists, please add it to be able to read the file %@";
+"_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@";
 "_error_parameter_schema_"  = "Wrong parameters, impossible to continue";
 "_comments_"                = "Comments";
 "_sharing_"                 = "Sharing";
@@ -115,6 +115,8 @@
 "_no_permission_delete_file_" = "You don't have permission to delete files";
 "_no_permission_modify_file_" = "You don't have permission to modify files";
 "_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version ?";
+"_add_folder_info_"         = "Add folder info";
+"_back_"                    = "Back";
 
 // App
 

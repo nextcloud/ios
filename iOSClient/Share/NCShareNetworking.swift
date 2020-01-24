@@ -50,7 +50,7 @@ class NCShareNetworking: NSObject {
                 self.appDelegate.activeMain?.tableView?.reloadData()
                 self.appDelegate.activeFavorites?.tableView?.reloadData()
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
             self.delegate?.readShareCompleted()
         })
@@ -69,13 +69,13 @@ class NCShareNetworking: NSObject {
                         self.appDelegate.activeMain?.tableView?.reloadData()
                         self.appDelegate.activeFavorites?.tableView?.reloadData()
                     } else {
-                        self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                     }
                     self.delegate?.shareCompleted()
                 })
             } else {
                 NCUtility.sharedInstance.stopActivityIndicator()
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
         })
     }
@@ -88,7 +88,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.sharedInstance.deleteTableShare(account: account!, idRemoteShared: idRemoteShared)
                 self.delegate?.unShareCompleted()
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
         })
     }
@@ -100,7 +100,7 @@ class NCShareNetworking: NSObject {
             if errorCode == 0 {
                 self.readShare()
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                 self.delegate?.updateShareWithError(idRemoteShared: idRemoteShared)
             }
         })
@@ -114,7 +114,7 @@ class NCShareNetworking: NSObject {
                 let itemsOCShareUser = items as! [OCShareUser]
                 self.delegate?.getUserAndGroup(items: itemsOCShareUser)
             } else {
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                 self.delegate?.getUserAndGroup(items: nil)
             }
         })
@@ -135,13 +135,13 @@ class NCShareNetworking: NSObject {
                         self.appDelegate.activeMain?.tableView?.reloadData()
                         self.appDelegate.activeFavorites?.tableView?.reloadData()
                     } else {
-                        self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                     }
                     self.delegate?.shareCompleted()
                 })
             } else {
                 NCUtility.sharedInstance.stopActivityIndicator()
-                self.appDelegate.messageNotification("_share_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
         })
     }

@@ -313,9 +313,9 @@
     [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPublicKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            [appDelegate messageNotification:@"E2E delete publicKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:0];
         } else {
-            [appDelegate messageNotification:@"E2E delete publicKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:message  delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
         }
     }];
 }
@@ -327,9 +327,9 @@
     [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPrivateKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            [appDelegate messageNotification:@"E2E delete privateKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:0];
         } else {
-            [appDelegate messageNotification:@"E2E delete privateKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
         }
     }];
 }

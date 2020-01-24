@@ -24,6 +24,7 @@
 import Foundation
 import TLPhotoPicker
 import ZIPFoundation
+import NCCommunication
 
 //MARK: - Main Common
 
@@ -347,16 +348,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
                     cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
-                    let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
-                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                        if errorCode == 0 {
-                            do {
-                                try data!.write(to: NSURL(fileURLWithPath: fileNameSource) as URL, options: .atomic)
-                                cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
-                            } catch {  }
+                    NCCommunication.sharedInstance.downloadAvatar(urlString: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
-                    })
+                    }
                 }
             }
             
@@ -672,16 +668,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         cell.shared.image = avatar
                     }
                 } else {
-                    let url = appDelegate.activeUrl + k_avatar + metadata.ownerId + "/" + k_avatar_size
-                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                        if errorCode == 0 {
-                            do {
-                                try data!.write(to: NSURL(fileURLWithPath: fileNameSource) as URL, options: .atomic)
-                                 cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
-                            } catch {  }
+                    NCCommunication.sharedInstance.downloadAvatar(urlString: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
-                    })
+                    }
                 }
             }
             
@@ -945,7 +936,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     if error == nil {
                         self.delete(metadatas: copyMetadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
                     } else {
-                        self.appDelegate.messageNotification("_delete_", description: error?.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_delete_", description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                         return
                     }
                 }
@@ -953,8 +944,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         } else {
             delete(metadatas: copyMetadatas, serverUrl: serverUrl, e2ee: e2ee) { (errorCode, message) in
                 if errorCode != 0 {
-                    self.appDelegate.messageNotification("_delete_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_delete_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
+                completion(errorCode, message)
             }
         }
     }
@@ -999,6 +991,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         
                         if (e2ee) {
                             NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
+                        }
+                        
+                        // Rich Workspace
+                        if metadata.fileNameView.lowercased() == k_fileNameRichWorkspace.lowercased() {
+                            self.appDelegate.activeMain.readFileReloadFolder()
                         }
                         
                         self.appDelegate.filterocId.remove(metadata.ocId)
@@ -1328,7 +1325,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     }
                     
                     if !NCUtility.sharedInstance.IMUnzip(metadata: metadata) {
-                        appDelegate.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                         return
                     }
                     
@@ -1443,7 +1440,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             appDelegate.startLoadAutoDownloadUpload()
         } else {
             if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorMessage != "" {
-                appDelegate.messageNotification("_upload_file_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_upload_file_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }

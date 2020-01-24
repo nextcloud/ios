@@ -216,6 +216,7 @@
 + (void)emptyGroupDirectoryProviderStorage;
 + (void)emptyDocumentsDirectory;
 + (void)emptyTemporaryDirectory;
++ (void)clearTmpDirectory;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

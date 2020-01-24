@@ -163,7 +163,12 @@ extension NCLoginWeb: WKNavigationDelegate {
                         let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
                         splitController?.modalPresentationStyle = .fullScreen
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
-                        self.navigationController?.present(splitController!, animated: true)
+                        splitController!.view.alpha = 0
+                        appDelegate.window.rootViewController = splitController!
+                        appDelegate.window.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            splitController!.view.alpha = 1
+                        }
                     } else {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
                         self.dismiss(animated: true)

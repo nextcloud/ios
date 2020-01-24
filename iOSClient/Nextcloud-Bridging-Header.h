@@ -5,7 +5,6 @@
 #import "AHKActionSheet.h"
 #import "AppDelegate.h"
 #import "OCNetworking.h"
-#import "TWMessageBarManager.h"
 #import "CCManageAccount.h"
 #import "CCGraphics.h"
 #import "NCAutoUpload.h"
