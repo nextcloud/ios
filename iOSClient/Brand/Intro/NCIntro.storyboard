@@ -11,7 +11,7 @@
         <!--Intro View Controller-->
         <scene sceneID="f2b-bc-1G0">
             <objects>
-                <viewController id="QS9-pa-PcE" customClass="IntroViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="QS9-pa-PcE" customClass="NCIntroViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Xnz-EW-9gg">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
