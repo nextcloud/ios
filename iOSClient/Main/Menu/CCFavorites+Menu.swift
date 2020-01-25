@@ -27,8 +27,8 @@ import FloatingPanel
 
 extension CCFavorites {
 
-    private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata) -> [MenuAction] {
-        var actions = [MenuAction]()
+    private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata) -> [NCMenuAction] {
+        var actions = [NCMenuAction]()
 
         var iconHeader: UIImage!
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
@@ -41,12 +41,12 @@ extension CCFavorites {
             }
         }
 
-        actions.append(MenuAction(title: metadata.fileNameView, icon: iconHeader, action: { menuAction in
+        actions.append(NCMenuAction(title: metadata.fileNameView, icon: iconHeader, action: { menuAction in
         }))
 
         if(self.serverUrl == nil) {
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: NSLocalizedString("_remove_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
@@ -57,7 +57,7 @@ extension CCFavorites {
         }
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -68,7 +68,7 @@ extension CCFavorites {
 
         if(!metadata.directory && !NCBrandOptions.sharedInstance.disable_openin_file) {
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
@@ -80,7 +80,7 @@ extension CCFavorites {
         }
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -93,10 +93,10 @@ extension CCFavorites {
     }
 
     @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata) {
-        let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata)
 
-        let menuPanelController = MenuPanelController()
+        let menuPanelController = NCMenuPanelController()
         menuPanelController.panelWidth = Int(viewController.view.frame.width)
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)

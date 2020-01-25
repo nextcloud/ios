@@ -1,5 +1,5 @@
 //
-//  MenuPanelController.swift
+//  NCMenuPanelController.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 23.01.20.
@@ -25,7 +25,7 @@
 
 import FloatingPanel
 
-class MenuPanelController: FloatingPanelController {
+class NCMenuPanelController: FloatingPanelController {
 
     var panelWidth: Int? = 0
     

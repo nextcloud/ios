@@ -1,5 +1,5 @@
 //
-//  MainMenuTableViewController.swift
+//  NCMainMenuTableViewController.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 16.01.20.
@@ -27,9 +27,9 @@
 import UIKit
 import FloatingPanel
 
-class MainMenuTableViewController: UITableViewController {
+class NCMainMenuTableViewController: UITableViewController {
 
-    var actions = [MenuAction]()
+    var actions = [NCMenuAction]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,19 +72,19 @@ class MainMenuTableViewController: UITableViewController {
     }
 
 }
-extension MainMenuTableViewController: FloatingPanelControllerDelegate {
+extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        return MainMenuFloatingPanelLayout(height: min(self.actions.count * 60, Int(self.view.frame.height) - 48))
+        return NCMainMenuFloatingPanelLayout(height: min(self.actions.count * 60, Int(self.view.frame.height) - 48))
     }
 
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
-        return MainMenuFloatingPanelBehavior()
+        return NCMainMenuFloatingPanelBehavior()
     }
 
 }
 
-class MainMenuFloatingPanelLayout: FloatingPanelLayout {
+class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let height: CGFloat
 
@@ -112,7 +112,7 @@ class MainMenuFloatingPanelLayout: FloatingPanelLayout {
     }
 }
 
-public class MainMenuFloatingPanelBehavior: FloatingPanelBehavior {
+public class NCMainMenuFloatingPanelBehavior: FloatingPanelBehavior {
 
     public func addAnimator(_ fpc: FloatingPanelController, to: FloatingPanelPosition) -> UIViewPropertyAnimator {
         return UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut)

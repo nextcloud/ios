@@ -27,8 +27,8 @@ import FloatingPanel
 
 extension AppDelegate {
 
-    private func initMenu() -> [MenuAction] {
-        var actions = [MenuAction]()
+    private func initMenu() -> [NCMenuAction] {
+        var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         var isNextcloudTextAvailable = false
 
@@ -37,7 +37,7 @@ extension AppDelegate {
         }
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -47,7 +47,7 @@ extension AppDelegate {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_upload_file_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -58,7 +58,7 @@ extension AppDelegate {
 
         if NCBrandOptions.sharedInstance.use_imi_viewer {
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""),
                     icon: CCGraphics.scale(UIImage(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true),
                     action: { menuAction in
@@ -70,7 +70,7 @@ extension AppDelegate {
 
         if isNextcloudTextAvailable {
             actions.append(
-                MenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
+                NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
@@ -89,7 +89,7 @@ extension AppDelegate {
             )
         } else {
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: NSLocalizedString("_upload_file_text_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
@@ -117,7 +117,7 @@ extension AppDelegate {
         #endif
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -127,7 +127,7 @@ extension AppDelegate {
         )
 
         actions.append(
-            MenuAction(title: NSLocalizedString("_create_folder_", comment: ""),
+            NCMenuAction(title: NSLocalizedString("_create_folder_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     appDelegate.activeMain.createFolder()
@@ -138,7 +138,7 @@ extension AppDelegate {
         if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
             if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_add_folder_info_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -152,7 +152,7 @@ extension AppDelegate {
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""),
                         icon: UIImage(named: "create_file_document")!,
                         action: { menuAction in
@@ -172,7 +172,7 @@ extension AppDelegate {
                 )
 
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
                         icon: UIImage(named: "create_file_xls")!,
                         action: { menuAction in
@@ -192,7 +192,7 @@ extension AppDelegate {
                 )
                 
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_create_new_presentation_", comment: ""),
                         icon: UIImage(named: "create_file_ppt")!,
                         action: { menuAction in
@@ -217,10 +217,10 @@ extension AppDelegate {
     }
 
     @objc public func showMenuIn(viewController: UIViewController) {
-        let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initMenu()
 
-        let menuPanelController = MenuPanelController()
+        let menuPanelController = NCMenuPanelController()
         menuPanelController.panelWidth = Int(viewController.view.frame.width)
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
