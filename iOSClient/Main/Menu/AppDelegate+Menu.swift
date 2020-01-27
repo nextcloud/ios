@@ -105,7 +105,7 @@ extension AppDelegate {
         #if !targetEnvironment(simulator)
             if #available(iOS 11.0, *) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_scans_document_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
