@@ -14,7 +14,7 @@
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */; };
 		3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */; };
-		37ECC83B23D0C7410082EFA2 /* MenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECC83A23D0C7400082EFA2 /* MenuAction.swift */; };
+		37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F70022B31EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
@@ -673,7 +673,7 @@
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCMain+Menu.swift"; sourceTree = "<group>"; };
 		3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCFavorites+Menu.swift"; sourceTree = "<group>"; };
-		37ECC83A23D0C7400082EFA2 /* MenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAction.swift; sourceTree = "<group>"; };
+		37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenuAction.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F70022661EC4C9100080073F /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
 		F70022671EC4C9100080073F /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
@@ -1508,7 +1508,7 @@
 				3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */,
 				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				3757A35423D9D76300EC369E /* NCMenuPanelController.swift */,
-				37ECC83A23D0C7400082EFA2 /* MenuAction.swift */,
+				37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */,
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
 			);
 			path = Menu;
@@ -3496,7 +3496,7 @@
 				F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */,
 				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
 				F7D423881F0596C6009C9782 /* ReaderThumbView.m in Sources */,
-				37ECC83B23D0C7410082EFA2 /* MenuAction.swift in Sources */,
+				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */,
 				F7D4238A1F0596C6009C9782 /* ThumbsMainToolbar.m in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,

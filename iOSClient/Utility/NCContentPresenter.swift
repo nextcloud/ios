@@ -54,8 +54,8 @@ class NCContentPresenter: NSObject {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = CCGraphics.changeThemingColorImage(UIImage(named: "networkInProgress")!, width: 40, height: 40, color: .white)
                 self.noteTop(text:  NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, name: "\(errorCode)")
-            case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
-                break
+            //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
+            //    break
             default:
                 var description = description
                 if description == nil { description = "" }
