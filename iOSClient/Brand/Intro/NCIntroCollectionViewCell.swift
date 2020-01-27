@@ -1,5 +1,5 @@
 //
-//  IntroCollectionViewCell.swift
+//  NCIntroCollectionViewCell.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 18.11.19.
@@ -22,7 +22,7 @@
 
 import UIKit
 
-class IntroCollectionViewCell: UICollectionViewCell {
+class NCIntroCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!

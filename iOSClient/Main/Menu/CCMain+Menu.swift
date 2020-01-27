@@ -10,11 +10,11 @@ import FloatingPanel
 
 extension CCMain {
 
-    private func initSortMenu() -> [MenuAction] {
-        var actions = [MenuAction]()
+    private func initSortMenu() -> [NCMenuAction] {
+        var actions = [NCMenuAction]()
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_order_by_name_a_z_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameAZ"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 onTitle: NSLocalizedString("_order_by_name_z_a_", comment: ""),
@@ -35,7 +35,7 @@ extension CCMain {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_order_by_date_more_recent_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateMoreRecent"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 onTitle: NSLocalizedString("_order_by_date_less_recent_", comment: ""),
@@ -56,7 +56,7 @@ extension CCMain {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_order_by_size_smallest_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortSmallest"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 onTitle: NSLocalizedString("_order_by_size_largest_", comment: ""),
@@ -77,7 +77,7 @@ extension CCMain {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_directory_on_top_no_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "foldersOnTop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 selected: CCUtility.getDirectoryOnTop(),
@@ -93,10 +93,10 @@ extension CCMain {
     }
 
     @objc func toggleMenu(viewController: UIViewController) {
-        let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
 
-        let menuPanelController = MenuPanelController()
+        let menuPanelController = NCMenuPanelController()
         menuPanelController.panelWidth = Int(viewController.view.frame.width)
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
@@ -106,10 +106,10 @@ extension CCMain {
     }
 
     @objc func toggleSelectMenu(viewController: UIViewController) {
-        let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSelectMenu()
 
-        let menuPanelController = MenuPanelController()
+        let menuPanelController = NCMenuPanelController()
         menuPanelController.panelWidth = Int(viewController.view.frame.width)
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
@@ -119,11 +119,11 @@ extension CCMain {
     }
 
 
-    private func initSelectMenu() -> [MenuAction] {
-        var actions = [MenuAction]()
+    private func initSelectMenu() -> [NCMenuAction] {
+        var actions = [NCMenuAction]()
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_select_all_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -133,7 +133,7 @@ extension CCMain {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_move_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -143,7 +143,7 @@ extension CCMain {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_download_selected_files_folders_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadSelectedFiles"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -153,7 +153,7 @@ extension CCMain {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_save_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "saveSelectedFiles"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -163,7 +163,7 @@ extension CCMain {
         )
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
@@ -175,12 +175,12 @@ extension CCMain {
         return actions
     }
 
-    private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) -> [MenuAction] {
+    private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) -> [NCMenuAction] {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         let autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
 
-        var actions = [MenuAction]()
+        var actions = [NCMenuAction]()
 
         if (metadata.directory) {
             var lockDirectory = false
@@ -203,7 +203,7 @@ extension CCMain {
             }
 
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: metadata.fileNameView,
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement),
                     action: { menuAction in
@@ -212,7 +212,7 @@ extension CCMain {
             )
 
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
@@ -223,7 +223,7 @@ extension CCMain {
 
             if (!lockDirectory && !isFolderEncrypted) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_details_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -235,7 +235,7 @@ extension CCMain {
 
             if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !metadata.e2eEncrypted) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_rename_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -267,7 +267,7 @@ extension CCMain {
 
             if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !isFolderEncrypted) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_move_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -279,7 +279,7 @@ extension CCMain {
 
             if (!isFolderEncrypted) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -296,7 +296,7 @@ extension CCMain {
             }
 
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: passcodeTitle,
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "settingsPasscodeYES"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
@@ -307,7 +307,7 @@ extension CCMain {
 
             if (!metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_remove_available_offline_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -329,7 +329,7 @@ extension CCMain {
 
             if (metadata.e2eEncrypted && !metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -357,7 +357,7 @@ extension CCMain {
             }
 
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: metadata.fileNameView,
                     icon: iconHeader, action: { menuAction in
 
@@ -366,7 +366,7 @@ extension CCMain {
             )
 
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
@@ -377,7 +377,7 @@ extension CCMain {
 
             if (!metadataFolder.e2eEncrypted) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_details_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -389,7 +389,7 @@ extension CCMain {
 
             if(!NCBrandOptions.sharedInstance.disable_openin_file) {
                 actions.append(
-                    MenuAction(title: NSLocalizedString("_open_in_", comment: ""),
+                    NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             self.perform(#selector(self.openinFile(_:)))
@@ -399,7 +399,7 @@ extension CCMain {
             }
 
             actions.append(
-                MenuAction(
+                NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
@@ -430,7 +430,7 @@ extension CCMain {
 
             if (!metadataFolder.e2eEncrypted) {
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: NSLocalizedString("_move_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -442,7 +442,7 @@ extension CCMain {
 
             if(NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) != nil && !metadataFolder.e2eEncrypted && metadata.status == k_metadataStatusNormal) {
                 actions.append(
-                    MenuAction(title: NSLocalizedString("_modify_photo_", comment: ""),
+                    NCMenuAction(title: NSLocalizedString("_modify_photo_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "modifyPhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             metadata.session = k_download_session
@@ -467,7 +467,7 @@ extension CCMain {
                 }
 
                 actions.append(
-                    MenuAction(
+                    NCMenuAction(
                         title: title,
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
@@ -493,7 +493,7 @@ extension CCMain {
         }
 
         actions.append(
-            MenuAction(
+            NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
@@ -506,10 +506,10 @@ extension CCMain {
     }
 
     @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) {
-        let mainMenuViewController = UIStoryboard.init(name: "Menu", bundle: nil).instantiateViewController(withIdentifier: "MainMenuTableViewController") as! MainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
 
-        let menuPanelController = MenuPanelController()
+        let menuPanelController = NCMenuPanelController()
         menuPanelController.panelWidth = Int(viewController.view.frame.width)
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)

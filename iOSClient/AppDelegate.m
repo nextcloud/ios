@@ -175,7 +175,7 @@ PKPushRegistry *pushRegistry;
         }
     } else {
         if ([CCUtility getIntro] == NO) {
-            UIViewController *introViewController = [[UIStoryboard storyboardWithName:@"Intro" bundle:[NSBundle mainBundle]] instantiateInitialViewController];
+            UIViewController *introViewController = [[UIStoryboard storyboardWithName:@"NCIntro" bundle:[NSBundle mainBundle]] instantiateInitialViewController];
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController: introViewController];
             self.window.rootViewController = navController;

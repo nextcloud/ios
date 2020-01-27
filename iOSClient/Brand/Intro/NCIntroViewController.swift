@@ -1,5 +1,5 @@
 //
-//  IntroViewController.swift
+//  NCIntroViewController.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 24.12.19.
@@ -21,7 +21,7 @@
 
 import UIKit
 
-class IntroViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var buttonLogin: UIButton!
     @IBOutlet weak var buttonSignUp: UIButton!
@@ -29,7 +29,7 @@ class IntroViewController: UIViewController, UICollectionViewDataSource, UIColle
     @IBOutlet weak var introCollectionView: UICollectionView!
     @IBOutlet weak var pageControl: UIPageControl!
 
-    @objc var delegate: IntroViewController?
+    @objc var delegate: NCIntroViewController?
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
     private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
     private var timerAutoScroll: Timer?
@@ -56,13 +56,13 @@ class IntroViewController: UIViewController, UICollectionViewDataSource, UIColle
         self.buttonHost.setTitle(NSLocalizedString("_host_your_own_server", comment: ""), for: .normal)
         self.buttonHost.setTitleColor(UIColor(red: 1, green: 1, blue: 1, alpha: 0.7), for: .normal)
 
-        self.introCollectionView.register(UINib(nibName: "IntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
+        self.introCollectionView.register(UINib(nibName: "NCIntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
         self.introCollectionView.dataSource = self
         self.introCollectionView.delegate = self
         self.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.customer
         self.pageControl.numberOfPages = self.titles.count
         self.view.backgroundColor = NCBrandColor.sharedInstance.customer
-        self.timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(IntroViewController.autoScroll)), userInfo: nil, repeats: true)
+        self.timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -94,7 +94,7 @@ class IntroViewController: UIViewController, UICollectionViewDataSource, UIColle
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "introCell", for: indexPath) as! IntroCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "introCell", for: indexPath) as! NCIntroCollectionViewCell
         cell.backgroundColor = NCBrandColor.sharedInstance.customer
 
         cell.titleLabel.textColor = NCBrandColor.sharedInstance.customerText
@@ -108,7 +108,7 @@ class IntroViewController: UIViewController, UICollectionViewDataSource, UIColle
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(IntroViewController.autoScroll)), userInfo: nil, repeats: true)
+        timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
         pageControl.currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
     }
 

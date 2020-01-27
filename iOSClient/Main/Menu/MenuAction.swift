@@ -1,5 +1,5 @@
 //
-//  MainMenuAction.swift
+//  NCMenuAction.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 16.01.20.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MenuAction {
+class NCMenuAction {
 
     let title: String
     let icon: UIImage
@@ -17,16 +17,16 @@ class MenuAction {
     var onIcon: UIImage?
     var selected: Bool = false
     var isOn: Bool = false
-    var action: ((_ menuAction: MenuAction) -> Void)?
+    var action: ((_ menuAction: NCMenuAction) -> Void)?
 
-    init(title: String, icon: UIImage, action: ((_ menuAction: MenuAction) -> Void)?) {
+    init(title: String, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
         self.icon = icon
         self.action = action
         self.selectable = false
     }
 
-    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: MenuAction) -> Void)?) {
+    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
         self.icon = icon
         self.onTitle = onTitle ?? title
