@@ -114,7 +114,7 @@ extension CCMain {
         mainMenuViewController.actions = self.initSortMenu()
 
         let menuPanelController = NCMenuPanelController()
-        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.parentPresenter = viewController
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
@@ -127,7 +127,7 @@ extension CCMain {
         mainMenuViewController.actions = self.initSelectMenu()
 
         let menuPanelController = NCMenuPanelController()
-        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.parentPresenter = viewController
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
@@ -527,7 +527,7 @@ extension CCMain {
         mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
 
         let menuPanelController = NCMenuPanelController()
-        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.parentPresenter = viewController
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
