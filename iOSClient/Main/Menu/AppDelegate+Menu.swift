@@ -30,11 +30,7 @@ extension AppDelegate {
     private func initMenu() -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        var isNextcloudTextAvailable = false
-
-        if appDelegate.reachability.isReachable() && NCBrandBeta.shared.directEditing && NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount) != nil {
-            isNextcloudTextAvailable = true
-        }
+        let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
 
         actions.append(
             NCMenuAction(
@@ -67,41 +63,35 @@ extension AppDelegate {
                 )
             )
         }
-
-        if isNextcloudTextAvailable {
+        
+        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_text}) {
             actions.append(
-                NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
-                            return
-                        }
-                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-
-                        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                        viewController.typeTemplate = k_nextcloudtext_document
-                        viewController.serverUrl = appDelegate.activeMain.serverUrl
-                        viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
-
-                        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
+                        return
                     }
-                )
+                    navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+
+                    let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                    viewController.typeEditor = k_editor_text
+                    viewController.typeTemplate = k_template_document
+                    viewController.serverUrl = appDelegate.activeMain.serverUrl
+                    viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
+
+                    appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                })
             )
         } else {
             actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_upload_file_text_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        let storyboard = UIStoryboard(name: "NCText", bundle: nil)
-                        let controller = storyboard.instantiateViewController(withIdentifier: "NCText")
-                        controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-                        appDelegate.activeMain.present(controller, animated: true, completion: nil)
-                    }
-                )
+                NCMenuAction(title: NSLocalizedString("_upload_file_text_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
+                    let storyboard = UIStoryboard(name: "NCText", bundle: nil)
+                    let controller = storyboard.instantiateViewController(withIdentifier: "NCText")
+                    controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                    appDelegate.activeMain.present(controller, animated: true, completion: nil)
+                })
             )
         }
-
+        
         #if !targetEnvironment(simulator)
             if #available(iOS 11.0, *) {
                 actions.append(
@@ -148,7 +138,76 @@ extension AppDelegate {
                 )
             }
         }
+        
+        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice}) && directEditingCreators!.contains(where: { $0.identifier == k_onlyoffice_docx}) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_create_new_document_", comment: ""),
+                    icon: UIImage(named: "create_file_document")!,
+                    action: { menuAction in
+                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
+                            return
+                        }
+                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
+                        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                        viewController.typeEditor = k_editor_onlyoffice
+                        viewController.typeTemplate = k_template_document
+                        viewController.serverUrl = appDelegate.activeMain.serverUrl
+                        viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
+
+                        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                    }
+                )
+            )
+        }
+        
+        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice}) && directEditingCreators!.contains(where: { $0.identifier == k_onlyoffice_xlsx}) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
+                    icon: UIImage(named: "create_file_xls")!,
+                    action: { menuAction in
+                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
+                            return
+                        }
+                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+
+                        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                        viewController.typeEditor = k_editor_onlyoffice
+                        viewController.typeTemplate = k_template_spreadsheet
+                        viewController.serverUrl = appDelegate.activeMain.serverUrl
+                        viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
+
+                        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                    }
+                )
+            )
+        }
+        
+        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice}) && directEditingCreators!.contains(where: { $0.identifier == k_onlyoffice_pptx}) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_create_new_presentation_", comment: ""),
+                    icon: UIImage(named: "create_file_ppt")!,
+                    action: { menuAction in
+                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
+                            return
+                        }
+                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+
+                        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                        viewController.typeEditor = k_editor_onlyoffice
+                        viewController.typeTemplate = k_template_presentation
+                        viewController.serverUrl = appDelegate.activeMain.serverUrl
+                        viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
+
+                        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                    }
+                )
+            )
+        }
+        
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
                 actions.append(
@@ -162,9 +221,10 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                            viewController.typeTemplate = k_richdocument_document
+                            viewController.typeEditor = k_editor_collabora
+                            viewController.typeTemplate = k_template_document
                             viewController.serverUrl = appDelegate.activeMain.serverUrl
-                            viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
+                            viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
                             appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
                         }
@@ -182,7 +242,8 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                            viewController.typeTemplate = k_richdocument_spreadsheet
+                            viewController.typeEditor = k_editor_collabora
+                            viewController.typeTemplate = k_template_spreadsheet
                             viewController.serverUrl = appDelegate.activeMain.serverUrl
                             viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
@@ -202,7 +263,8 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                            viewController.typeTemplate = k_richdocument_presentation
+                            viewController.typeEditor = k_editor_collabora
+                            viewController.typeTemplate = k_template_presentation
                             viewController.serverUrl = appDelegate.activeMain.serverUrl
                             viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
