@@ -28,10 +28,10 @@ import FloatingPanel
 class NCMenuPanelController: FloatingPanelController {
 
     var parentPresenter: UIViewController?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.surfaceView.grabberHandle.isHidden = true
         self.isRemovalInteractionEnabled = true
         if #available(iOS 11, *) {
@@ -40,15 +40,14 @@ class NCMenuPanelController: FloatingPanelController {
             self.surfaceView.cornerRadius = 0
         }
     }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         if let presenter = parentPresenter {
-            self.view.frame = CGRect(x: 0, y: 0, width: Int(presenter.view.frame.size.width), height: Int(presenter.view.frame.height))
+            self.view.frame = presenter.view.frame
         }
     }
-    
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         self.dismiss(animated: true, completion: nil)
     }
