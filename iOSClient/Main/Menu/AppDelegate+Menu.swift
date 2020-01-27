@@ -217,7 +217,7 @@ extension AppDelegate {
         }
         
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
-            if richdocumentsMimetypes.count > 0 {
+            if richdocumentsMimetypes.count > 0 && appDelegate.reachability.isReachable() {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""),
