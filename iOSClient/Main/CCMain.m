@@ -181,10 +181,6 @@
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
     }
 
-    // reMenu Background
-    _reMenuBackgroundView = [UIView new];
-    _reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-    
     // if this is not Main (the Main uses inizializeMain)
     if (_isRoot == NO && appDelegate.activeAccount.length > 0) {
         // Read (File) Folder
