@@ -49,7 +49,7 @@ import UIKit
     
     @objc public var brand:                             String = "kDrive"
     @objc public var mailMe:                            String = "support@infomaniak.com"
-    @objc public var textCopyrightNextcloudiOS:         String = "kDrive for iOS %@ © 2019"
+    @objc public var textCopyrightNextcloudiOS:         String = "kDrive for iOS %@ © 2020"
     @objc public var textCopyrightNextcloudServer:      String = "kDrive Server %@"
     @objc public var loginBaseUrl:                      String = "https://connect.drive.infomaniak.com"
     @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
