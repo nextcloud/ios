@@ -320,11 +320,6 @@
 		F762CB191EACB66200B38484 /* XLFormValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAF11EACB66200B38484 /* XLFormValidator.m */; };
 		F762CB1A1EACB66200B38484 /* XLForm.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAF41EACB66200B38484 /* XLForm.m */; };
 		F762CB1B1EACB66200B38484 /* XLForm.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F762CAF51EACB66200B38484 /* XLForm.bundle */; };
-		F762CB861EACB81000B38484 /* RECommonFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB7D1EACB81000B38484 /* RECommonFunctions.m */; };
-		F762CB871EACB81000B38484 /* REMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB7F1EACB81000B38484 /* REMenu.m */; };
-		F762CB881EACB81000B38484 /* REMenuContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB811EACB81000B38484 /* REMenuContainerView.m */; };
-		F762CB891EACB81000B38484 /* REMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB831EACB81000B38484 /* REMenuItem.m */; };
-		F762CB8A1EACB81000B38484 /* REMenuItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB851EACB81000B38484 /* REMenuItemView.m */; };
 		F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FBE21832F8700721B71 /* NCTrashSectionHeaderMenu.xib */; };
 		F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */; };
 		F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */; };
@@ -1054,16 +1049,6 @@
 		F762CAF31EACB66200B38484 /* XLForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLForm.h; sourceTree = "<group>"; };
 		F762CAF41EACB66200B38484 /* XLForm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLForm.m; sourceTree = "<group>"; };
 		F762CAF51EACB66200B38484 /* XLForm.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = XLForm.bundle; sourceTree = "<group>"; };
-		F762CB7C1EACB81000B38484 /* RECommonFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RECommonFunctions.h; sourceTree = "<group>"; };
-		F762CB7D1EACB81000B38484 /* RECommonFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RECommonFunctions.m; sourceTree = "<group>"; };
-		F762CB7E1EACB81000B38484 /* REMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REMenu.h; sourceTree = "<group>"; };
-		F762CB7F1EACB81000B38484 /* REMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REMenu.m; sourceTree = "<group>"; };
-		F762CB801EACB81000B38484 /* REMenuContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REMenuContainerView.h; sourceTree = "<group>"; };
-		F762CB811EACB81000B38484 /* REMenuContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REMenuContainerView.m; sourceTree = "<group>"; };
-		F762CB821EACB81000B38484 /* REMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REMenuItem.h; sourceTree = "<group>"; };
-		F762CB831EACB81000B38484 /* REMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REMenuItem.m; sourceTree = "<group>"; };
-		F762CB841EACB81000B38484 /* REMenuItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REMenuItemView.h; sourceTree = "<group>"; };
-		F762CB851EACB81000B38484 /* REMenuItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REMenuItemView.m; sourceTree = "<group>"; };
 		F7632FBE21832F8700721B71 /* NCTrashSectionHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashSectionHeaderMenu.xib; sourceTree = "<group>"; };
 		F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashSectionFooter.xib; sourceTree = "<group>"; };
 		F76344751BF259A800188725 /* synchronized.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronized.gif; sourceTree = "<group>"; };
@@ -2160,23 +2145,6 @@
 			path = "VFR Pdf Reader";
 			sourceTree = "<group>";
 		};
-		F762CB7B1EACB81000B38484 /* REMenu */ = {
-			isa = PBXGroup;
-			children = (
-				F762CB7C1EACB81000B38484 /* RECommonFunctions.h */,
-				F762CB7D1EACB81000B38484 /* RECommonFunctions.m */,
-				F762CB7E1EACB81000B38484 /* REMenu.h */,
-				F762CB7F1EACB81000B38484 /* REMenu.m */,
-				F762CB801EACB81000B38484 /* REMenuContainerView.h */,
-				F762CB811EACB81000B38484 /* REMenuContainerView.m */,
-				F762CB821EACB81000B38484 /* REMenuItem.h */,
-				F762CB831EACB81000B38484 /* REMenuItem.m */,
-				F762CB841EACB81000B38484 /* REMenuItemView.h */,
-				F762CB851EACB81000B38484 /* REMenuItemView.m */,
-			);
-			path = REMenu;
-			sourceTree = "<group>";
-		};
 		F7632FC32183667400721B71 /* Section */ = {
 			isa = PBXGroup;
 			children = (
@@ -2733,7 +2701,6 @@
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
 				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
 				F760F75621F21F61006B1A73 /* PhotoEditor */,
-				F762CB7B1EACB81000B38484 /* REMenu */,
 				F762CB1C1EACB7D400B38484 /* VFR Pdf Reader */,
 				F762CA9F1EACB66200B38484 /* XLForm */,
 			);
@@ -3550,7 +3517,6 @@
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
 				F760F79C21F21F61006B1A73 /* GradientView.swift in Sources */,
-				F762CB881EACB81000B38484 /* REMenuContainerView.m in Sources */,
 				F7D4237F1F0596C6009C9782 /* ReaderDocumentOutline.m in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
 				F73B4EF71F470D9100BBEE4B /* LangBulgarianModel.cpp in Sources */,
@@ -3562,7 +3528,6 @@
 				F760F79421F21F61006B1A73 /* ResizeControl.swift in Sources */,
 				F7DFB7F2219C5C0000680748 /* NCCreateFormUploadFileText.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */,
-				F762CB861EACB81000B38484 /* RECommonFunctions.m in Sources */,
 				F76C6F8E21943C8C0063591B /* NCActionSheetHeader.swift in Sources */,
 				F760F79121F21F61006B1A73 /* EmojiCollectionViewCell.swift in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
@@ -3690,7 +3655,6 @@
 				F73B4EF51F470D9100BBEE4B /* JpCntx.cpp in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
-				F762CB8A1EACB81000B38484 /* REMenuItemView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F760F79821F21F61006B1A73 /* StickerCollectionViewCell.swift in Sources */,
 				F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */,
@@ -3747,7 +3711,6 @@
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
-				F762CB891EACB81000B38484 /* REMenuItem.m in Sources */,
 				F7D423791F0596C6009C9782 /* CGPDFDocument.m in Sources */,
 				F73B4EFF1F470D9100BBEE4B /* LangRussianModel.cpp in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
@@ -3778,7 +3741,6 @@
 				F7D4237B1F0596C6009C9782 /* ReaderContentPage.m in Sources */,
 				F73B4F0A1F470D9100BBEE4B /* nsEUCTWProber.cpp in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
-				F762CB871EACB81000B38484 /* REMenu.m in Sources */,
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
 				F760F79621F21F61006B1A73 /* PhotoEditorViewController.swift in Sources */,
 				F762CB161EACB66200B38484 /* XLFormTextView.m in Sources */,
