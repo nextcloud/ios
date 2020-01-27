@@ -28,7 +28,8 @@ import NCCommunication
 
 class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    var typeEditor = ""
+    var editorId = ""
+    var creatorId = ""
     var typeTemplate = ""
     var serverUrl = ""
     var fileNameFolder = ""
@@ -266,9 +267,9 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         }
             
-        if self.typeEditor == k_editor_text || self.typeEditor == k_editor_onlyoffice {
+        if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
                                     
-            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editor: typeEditor, templateId: selectTemplate.identifier, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editorId: editorId, creatorId: creatorId, templateId: selectTemplate.identifier, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
@@ -290,7 +291,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             
         }
         
-        if self.typeEditor == k_editor_collabora {
+        if self.editorId == k_editor_collabora {
             
             OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: selectTemplate.identifier, completion: { (account, url, message, errorCode) in
                        
@@ -326,7 +327,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         indicator.color = NCBrandColor.sharedInstance.brand
         indicator.startAnimating()
         
-        if self.typeEditor == k_editor_text || self.typeEditor == k_editor_onlyoffice {
+        if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
             
             // default
             fileNameExtension = "md"
@@ -361,13 +362,13 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                         let temp = NCEditorTemplates()
                         
                         temp.identifier = ""
-                        if self.typeEditor == k_editor_text {
+                        if self.editorId == k_editor_text {
                             temp.ext = "md"
-                        } else if self.typeEditor == k_editor_onlyoffice && self.typeTemplate == k_template_document {
+                        } else if self.editorId == k_editor_onlyoffice && self.typeTemplate == k_template_document {
                             temp.ext = "docx"
-                        } else if self.typeEditor == k_editor_onlyoffice && self.typeTemplate == k_template_spreadsheet {
+                        } else if self.editorId == k_editor_onlyoffice && self.typeTemplate == k_template_spreadsheet {
                             temp.ext = "xlsx"
-                        } else if self.typeEditor == k_editor_onlyoffice && self.typeTemplate == k_template_presentation {
+                        } else if self.editorId == k_editor_onlyoffice && self.typeTemplate == k_template_presentation {
                             temp.ext = "pptx"
                         }
                         temp.name = "Empty"
@@ -391,10 +392,8 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             
         }
         
-        if self.typeEditor == k_editor_collabora  {
-            
-            // default
-            
+        if self.editorId == k_editor_collabora  {
+                        
             OCNetworking.sharedManager().getTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, templates, message, errorCode) in
                 
                 self.indicator.stopAnimating()

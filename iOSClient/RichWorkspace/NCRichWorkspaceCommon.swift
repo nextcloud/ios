@@ -40,7 +40,7 @@ import SwiftRichString
         NCUtility.sharedInstance.startActivityIndicator(view: viewController.view, bottom: 0)
         
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
-        NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: "text", templateId: "", account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+        NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: "text", creatorId: "" ,templateId: "", account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
             
             NCUtility.sharedInstance.stopActivityIndicator()
             
