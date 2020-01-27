@@ -181,10 +181,6 @@
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
     }
 
-    // reMenu Background
-    _reMenuBackgroundView = [UIView new];
-    _reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-    
     // if this is not Main (the Main uses inizializeMain)
     if (_isRoot == NO && appDelegate.activeAccount.length > 0) {
         // Read (File) Folder
@@ -653,7 +649,7 @@
     buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationSort"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
     buttonMore.enabled = true;
     
-    buttonSelect = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] width:50 height:50 color:NCBrandColor.sharedInstance.textView] style:UIBarButtonItemStylePlain target:self action:@selector(tableViewSelect)];
+    buttonSelect = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] width:50 height:50 color:NCBrandColor.sharedInstance.textView] style:UIBarButtonItemStylePlain target:self action:@selector(tableViewToggle)];
     buttonSelect.enabled = true;
     
     // <
@@ -688,7 +684,7 @@
 
 - (void)cancelSelect
 {
-    [self tableViewSelect];
+    [self tableViewSelect:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -916,7 +912,7 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     });
     
-    [self tableViewSelect];
+    [self tableViewSelect:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1005,7 +1001,7 @@
         [_hud hideHud];
     });
     
-    [self tableViewSelect];
+    [self tableViewSelect:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1444,7 +1440,7 @@
     }];
     
     // End Select Table View
-    [self tableViewSelect];
+    [self tableViewSelect:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1606,8 +1602,8 @@
             [self presentViewController:alert animated:YES completion:nil];
             
             // End Select Table View
-            [self tableViewSelect];
-            
+            [self tableViewSelect:false];
+
             // reload Datasource
             [self readFileReloadFolder];
             
@@ -1645,8 +1641,8 @@
                         } else {
                             
                             // End Select Table View
-                            [self tableViewSelect];
-                            
+                            [self tableViewSelect:false];
+
                             // reload Datasource
                             if (self.searchController.isActive)
                                 [self readFolder:metadata.serverUrl];
@@ -1659,8 +1655,8 @@
                         [[NCContentPresenter shared] messageNotification:@"_move_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         
                         // End Select Table View
-                        [self tableViewSelect];
-                        
+                        [self tableViewSelect:false];
+
                         // reload Datasource
                         if (self.searchController.isActive)
                             [self readFolder:metadata.serverUrl];
@@ -2344,7 +2340,7 @@
         }
     }
     
-    [self tableViewSelect];
+    [self tableViewSelect:false];
 }
 
 - (void)copyFileToPasteboard:(tableMetadata *)metadata
@@ -2851,9 +2847,14 @@
 #pragma mark - ==== Table ==== 
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)tableViewSelect
+- (void)tableViewToggle
 {
-    _isSelectedMode = !_isSelectedMode;
+    [self tableViewSelect:!_isSelectedMode];
+}
+
+- (void)tableViewSelect:(BOOL)toggle
+{
+    _isSelectedMode = toggle;
     // chiudiamo eventuali swipe aperti
     if (_isSelectedMode)
         [self.tableView setEditing:NO animated:NO];

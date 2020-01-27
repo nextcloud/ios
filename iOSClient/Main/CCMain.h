@@ -59,7 +59,6 @@
 @property (nonatomic, strong) NSString *richWorkspaceText;
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UISearchController *searchController;
-@property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) NSString *blinkFileNamePath;
 @property (nonatomic, readonly, strong) UIImage *cellFavouriteImage;

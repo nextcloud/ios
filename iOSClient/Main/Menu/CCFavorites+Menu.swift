@@ -97,7 +97,7 @@ extension CCFavorites {
         mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata)
 
         let menuPanelController = NCMenuPanelController()
-        menuPanelController.panelWidth = Int(viewController.view.frame.width)
+        menuPanelController.parentPresenter = viewController
         menuPanelController.delegate = mainMenuViewController
         menuPanelController.set(contentViewController: mainMenuViewController)
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
