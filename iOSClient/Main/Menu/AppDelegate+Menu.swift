@@ -6,7 +6,7 @@
 //  Copyright © 2020 Philippe Weidmann. All rights reserved.
 //  Copyright © 2020 Marino Faggiana All rights reserved.
 //
-//  Author Philippe Weidmann
+//  Author Philippe Weidmann <philippe.weidmann@infomaniak.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
