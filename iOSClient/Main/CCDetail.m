@@ -216,18 +216,18 @@
             return;
         }
         
-        // Nextcloud Text - RichWorkspace
+        // DirectEditinf: Nextcloud Text - OnlyOffice
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
             NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
-            if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
+            if ([editor.lowercaseString isEqualToString:k_editor_text] || [editor.lowercaseString isEqualToString:k_editor_onlyoffice]) {
             
                 if([self.metadataDetail.url isEqualToString:@""]) {
                     
                     [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
                     
                     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
-                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor:editor account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
                         
                         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                             

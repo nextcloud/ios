@@ -398,12 +398,12 @@ class NCUtility: NSObject {
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
                 if mimetype == metadata.contentType {
-                    return result.name
+                    return result.editor
                 }
             }
             for mimetype in result.optionalMimetypes {
                 if mimetype == metadata.contentType {
-                    return result.name
+                    return result.editor
                 }
             }
         }
