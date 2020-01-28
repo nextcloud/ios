@@ -40,15 +40,5 @@ class NCMenuPanelController: FloatingPanelController {
             self.surfaceView.cornerRadius = 0
         }
     }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let presenter = parentPresenter {
-            self.view.frame = presenter.view.frame
-        }
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        self.dismiss(animated: true, completion: nil)
-    }
+    
 }
