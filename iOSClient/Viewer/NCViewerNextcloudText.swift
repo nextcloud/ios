@@ -61,9 +61,14 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
-        let userAgent : String = CCUtility.getUserAgent()
-        customUserAgent = userAgent
-        load(request)        
+        let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            customUserAgent = "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
+        }else{
+            customUserAgent = "Mozilla/5.0 (iOS) Mobile Nextcloud-iOS/\(appVersion)"
+        }
+                
+        load(request)
     }
     
     @objc func keyboardDidShow(notification: Notification) {
