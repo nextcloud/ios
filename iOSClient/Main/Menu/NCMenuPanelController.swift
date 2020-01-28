@@ -32,7 +32,6 @@ class NCMenuPanelController: FloatingPanelController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.surfaceView.grabberHandle.isHidden = true
         self.isRemovalInteractionEnabled = true
         if #available(iOS 11, *) {
             self.surfaceView.cornerRadius = 16

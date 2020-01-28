@@ -106,6 +106,13 @@ class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
         default: return nil
         }
     }
+    
+    public func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
+        return [
+            surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+        ]
+    }
 
     func backdropAlphaFor(position: FloatingPanelPosition) -> CGFloat {
         return 0.2
