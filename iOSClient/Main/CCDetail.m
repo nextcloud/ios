@@ -220,7 +220,7 @@
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
             NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
-            if ([editor.lowercaseString isEqualToString:k_editor_text] || [editor.lowercaseString isEqualToString:k_editor_onlyoffice]) {
+            if ([editor isEqualToString:k_editor_text] || [editor isEqualToString:k_editor_onlyoffice]) {
             
                 if([self.metadataDetail.url isEqualToString:@""]) {
                     
