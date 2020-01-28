@@ -980,7 +980,7 @@
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", self.metadataDetail.ocId]];
     
-    if (metadata && [self.selectorDetail isEqualToString:selectorLoadFileInternalView]) {
+    if (metadata) {
         
         UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
         
