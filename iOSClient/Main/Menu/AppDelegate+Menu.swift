@@ -127,17 +127,19 @@ extension AppDelegate {
             )
         )
 
-        if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
-            if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_add_folder_info_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            self.activeMain.createRichWorkspace()
-                        }
+        if #available(iOS 11.0, *) {
+            if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
+                if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) {
+                    actions.append(
+                        NCMenuAction(
+                            title: NSLocalizedString("_add_folder_info_", comment: ""),
+                            icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                            action: { menuAction in
+                                self.activeMain.createRichWorkspace()
+                            }
+                        )
                     )
-                )
+                }
             }
         }
         
