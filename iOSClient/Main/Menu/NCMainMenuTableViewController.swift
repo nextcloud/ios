@@ -85,7 +85,12 @@ extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
         return NCMainMenuFloatingPanelBehavior()
     }
-
+    
+    func floatingPanelDidEndDecelerating(_ vc: FloatingPanelController) {
+        if vc.position == .hidden {
+            vc.dismiss(animated: false, completion: nil)
+        }
+    }
 }
 
 class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
@@ -101,7 +106,7 @@ class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
     }
 
     var supportedPositions: Set<FloatingPanelPosition> {
-        return [.full]
+        return [.full, .hidden]
     }
 
     func insetFor(position: FloatingPanelPosition) -> CGFloat? {
