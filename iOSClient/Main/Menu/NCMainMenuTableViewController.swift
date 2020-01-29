@@ -75,7 +75,11 @@ class NCMainMenuTableViewController: UITableViewController {
 extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60, vertical: newCollection.verticalSizeClass == .compact)
+        if #available(iOS 11.0, *) {
+            return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60 + Int((UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom)!))
+        } else {
+            return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60)
+        }
     }
 
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
@@ -87,29 +91,29 @@ extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let height: CGFloat
-    let isVertical: Bool
-
-    init(height: Int, vertical: Bool) {
+    
+    init(height: Int) {
         self.height = CGFloat(height)
-        self.isVertical = vertical
     }
 
     var initialPosition: FloatingPanelPosition {
-        return isVertical ? .full : .half
+        return .full
     }
 
     var supportedPositions: Set<FloatingPanelPosition> {
-        return isVertical ? [.full] : [.half]
+        return [.full]
     }
 
     func insetFor(position: FloatingPanelPosition) -> CGFloat? {
-        if (isVertical && position == .full) {
+        if (position == .full) {
             return max(48, UIScreen.main.bounds.size.height - height)
-        } else if (!isVertical && position == .half) {
-            return min(height, UIScreen.main.bounds.size.height - 48)
         } else {
             return nil
         }
+    }
+    
+    var positionReference: FloatingPanelLayoutReference {
+        return .fromSuperview
     }
 
     public func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
