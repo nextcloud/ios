@@ -57,7 +57,7 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
+    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -68,7 +68,6 @@
 {
     if (section == 0) return NSLocalizedString(@"_file_to_upload_", nil);
     else if (section == 2) return NSLocalizedString(@"_destination_", nil);
-    else if (section == 4) return NSLocalizedString(@"_upload_file_", nil);
     
     return @"";
 }
