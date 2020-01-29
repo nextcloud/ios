@@ -233,7 +233,7 @@
                             
                             self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                             [self.view addSubview:self.nextcloudText];
-                            [self.nextcloudText viewerAt:url detail:self metadata:self.metadataDetail];
+                            [self.nextcloudText viewerAt:url detail:self metadata:self.metadataDetail editor:editor];
                             
                         } else {
                             
@@ -251,7 +251,7 @@
                     
                     self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                     [self.view addSubview:self.nextcloudText];
-                    [self.nextcloudText viewerAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                    [self.nextcloudText viewerAt:self.metadataDetail.url detail:self metadata:self.metadataDetail editor:editor];
                 }
             }
             

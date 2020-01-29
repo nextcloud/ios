@@ -27,7 +27,8 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var detail: CCDetail!
-    @objc var metadata: tableMetadata!
+    var editor: String!
+    var metadata: tableMetadata!
     var documentInteractionController: UIDocumentInteractionController!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
@@ -44,15 +45,16 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         super.init(coder: coder)
     }
     
-    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
+    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata, editor: String) {
         
         self.detail = detail
         self.metadata = metadata
+        self.editor = editor;
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        if (UIDevice.current.userInterfaceIdiom == .phone) {
+        if (UIDevice.current.userInterfaceIdiom == .phone && editor == k_editor_text) {
             detail.navigationController?.setNavigationBarHidden(true, animated: false)
         }
         
