@@ -75,7 +75,7 @@ class NCMainMenuTableViewController: UITableViewController {
 extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        return NCMainMenuFloatingPanelLayout(height: min(self.actions.count * 60, Int(self.view.frame.height) - 48))
+        return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60, vertical: newCollection.verticalSizeClass == .compact)
     }
 
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
@@ -87,24 +87,36 @@ extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let height: CGFloat
+    let isVertical: Bool
 
-    init(height: Int) {
+    init(height: Int, vertical: Bool) {
         self.height = CGFloat(height)
+        self.isVertical = vertical
     }
 
     var initialPosition: FloatingPanelPosition {
-        return .tip
+        return isVertical ? .full : .half
     }
 
     var supportedPositions: Set<FloatingPanelPosition> {
-        return [.tip]
+        return isVertical ? [.full] : [.half]
     }
 
     func insetFor(position: FloatingPanelPosition) -> CGFloat? {
-        switch position {
-        case .tip: return height
-        default: return nil
+        if (isVertical && position == .full) {
+            return max(48, UIScreen.main.bounds.size.height - height)
+        } else if (!isVertical && position == .half) {
+            return min(height, UIScreen.main.bounds.size.height - 48)
+        } else {
+            return nil
         }
+    }
+
+    public func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
+        return [
+            surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+        ]
     }
 
     func backdropAlphaFor(position: FloatingPanelPosition) -> CGFloat {
