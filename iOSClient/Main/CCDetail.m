@@ -29,8 +29,6 @@
 
 #import "NCBridgeSwift.h"
 
-#define TOOLBAR_HEIGHT 49.0f
-
 #define alertRequestPasswordPDF 1
 
 @interface CCDetail () <NCTextDelegate, UIDocumentInteractionControllerDelegate>
@@ -308,13 +306,8 @@
 
 - (void)createToolbar
 {
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    
-    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
+    CGFloat masterToolBarHeight = appDelegate.activeMain.tabBarController.tabBar.bounds.size.height;
+    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - masterToolBarHeight, self.view.bounds.size.width, masterToolBarHeight)];
     
     UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
@@ -852,17 +845,13 @@
 - (void)readerPDF:(NSString *)fileName password:(NSString *)password
 {
     ReaderDocument *documentPDF = [ReaderDocument withDocumentFilePath:fileName password:password];
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
+    CGFloat masterToolBarHeight = appDelegate.activeMain.tabBarController.tabBar.bounds.size.height;
     
     if (documentPDF != nil) {
         
         self.readerPDFViewController = [[ReaderViewController alloc] initWithReaderDocument:documentPDF];
         self.readerPDFViewController.delegate = self;
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - masterToolBarHeight);
         [self.readerPDFViewController updateContentViews];
 
         [self addChildViewController:self.readerPDFViewController];
@@ -884,6 +873,7 @@
     UILayoutGuide *layoutGuide;
     CGFloat safeAreaTop = 0;
     CGFloat safeAreaBottom = 0;
+    CGFloat masterToolBarHeight = appDelegate.activeMain.tabBarController.tabBar.bounds.size.height;
     
     if (@available(iOS 11, *)) {
         layoutGuide = [UIApplication sharedApplication].delegate.window.safeAreaLayoutGuide;
@@ -897,7 +887,7 @@
     if (self.toolbar.isHidden) {
         self.readerPDFViewController.view.frame = CGRectMake(0, safeAreaTop, self.view.bounds.size.width, self.view.bounds.size.height - safeAreaTop - safeAreaBottom);
     } else {
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - masterToolBarHeight);
     }
     [self.readerPDFViewController updateContentViews];
 }
