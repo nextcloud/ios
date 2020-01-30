@@ -34,6 +34,18 @@ class NCMasterNavigationController: UINavigationController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
     }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        if self.splitViewController?.isCollapsed == false {
+            if (self.splitViewController != nil) {
+                if let navigationController = self.splitViewController!.viewControllers[self.splitViewController!.viewControllers.count-1] as? UINavigationController {
+                    navigationController.topViewController!.navigationItem.leftBarButtonItem = self.splitViewController!.displayModeButtonItem
+                }
+            }
+        }
+    }
 
     @objc func changeTheming() {
         navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
