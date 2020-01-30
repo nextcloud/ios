@@ -163,6 +163,7 @@
     
     // Title
     self.navigationController.navigationBar.topItem.title = _metadataDetail.fileNameView;
+    self.navigationController.topViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
 
     // verifico se esiste l'icona e se la posso creare
     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView]] == NO) {
