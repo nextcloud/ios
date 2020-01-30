@@ -65,9 +65,9 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         
         let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         if UIDevice.current.userInterfaceIdiom == .pad {
-            customUserAgent = "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
+            customUserAgent = "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
         }else{
-            customUserAgent = "Mozilla/5.0 (iOS) Mobile Nextcloud-iOS/\(appVersion)"
+            customUserAgent = "Mozilla/5.0 (iPhone) Nextcloud-iOS/\(appVersion)"
         }
                 
         load(request)
