@@ -64,12 +64,17 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
         let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            customUserAgent = "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
-        }else{
-            customUserAgent = "Mozilla/5.0 (iOS) Mobile Nextcloud-iOS/\(appVersion)"
+        
+        if editor == k_editor_onlyoffice {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                customUserAgent = "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
+            }else{
+                customUserAgent = "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
+            }
+        } else {
+            customUserAgent = CCUtility.getUserAgent()
         }
-                
+        
         load(request)
     }
     
