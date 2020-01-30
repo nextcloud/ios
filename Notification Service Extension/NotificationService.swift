@@ -31,8 +31,29 @@ class NotificationService: UNNotificationServiceExtension {
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
         if let bestAttemptContent = bestAttemptContent {
-            // Modify the notification content here...
-            bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
+            bestAttemptContent.title = ""
+            bestAttemptContent.body = "Nextcloud notification"
+            do {
+                let message = bestAttemptContent.userInfo["subject"] as! String
+                let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
+                for tableAccount in tableAccounts {
+                    guard let privateKey = CCUtility.getPushNotificationPrivateKey(tableAccount.account) else {
+                        continue
+                    }
+                    guard let decryptedMessage = NCPushNotificationEncryption.sharedInstance().decryptPushNotification(message, withDevicePrivateKey: privateKey) else {
+                        continue
+                    }
+                    guard let data = decryptedMessage.data(using: .utf8) else {
+                        continue
+                    }
+                    let json = try JSONSerialization.jsonObject(with: data) as! [String:AnyObject]
+                    if let subject = json["subject"] as? String {
+                        bestAttemptContent.body = subject
+                    }
+                }
+            } catch let error as NSError {
+                print("Failed : \(error.localizedDescription)")
+            }
             
             contentHandler(bestAttemptContent)
         }
@@ -42,6 +63,8 @@ class NotificationService: UNNotificationServiceExtension {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+            bestAttemptContent.title = ""
+            bestAttemptContent.body = "Nextcloud notification"
             contentHandler(bestAttemptContent)
         }
     }
