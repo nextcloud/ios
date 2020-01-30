@@ -183,6 +183,9 @@ PKPushRegistry *pushRegistry;
         }
     }
 
+    // init home
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+    
     return YES;
 }
 
