@@ -35,11 +35,6 @@
 
 @class NCViewerRichdocument;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate>
-{
-PKPushRegistry *pushRegistry;
-}
-@end
 
 @implementation AppDelegate
 
@@ -89,10 +84,6 @@ PKPushRegistry *pushRegistry;
     self.listMainVC = [[NSMutableDictionary alloc] init];
     
     // Push Notification
-//    pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-//    pushRegistry.delegate = self;
-//    pushRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-    
     [application registerForRemoteNotifications];
     
     // Display notification (sent via APNS)
@@ -472,7 +463,7 @@ PKPushRegistry *pushRegistry;
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== PushNotification & PushKit Delegate =====
+#pragma mark ===== Push Notifications =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)pushNotification
@@ -573,72 +564,77 @@ PKPushRegistry *pushRegistry;
     completionHandler();
 }
 
-- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    self.pushKitToken = [self stringWithDeviceToken:credentials.token];
+    self.pushKitToken = [self stringWithDeviceToken:deviceToken];
 
     [self pushNotification];
 }
 
-- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    NSString *message = [payload.dictionaryPayload objectForKey:@"subject"];
-    
+    NSString *message = [userInfo objectForKey:@"subject"];
     if (message) {
         NSArray *results = [[NCManageDatabase sharedInstance] getAllAccount];
         for (tableAccount *result in results) {
             if ([CCUtility getPushNotificationPrivateKey:result.account]) {
-                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey: [CCUtility getPushNotificationPrivateKey:result.account]];
+                NSData *decryptionKey = [CCUtility getPushNotificationPrivateKey:result.account];
+                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:decryptionKey];
                 if (decryptedMessage) {
-                    
-                    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-                    
                     NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
                     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                    
-                    NSString *app = [json objectForKey:@"app"];
-                    NSString *subject = [json objectForKey:@"subject"];
-                    //NSInteger notificationId = [[json objectForKey:@"nid"] integerValue];
+                    NSInteger nid = [[json objectForKey:@"nid"] integerValue];
                     BOOL delete = [[json objectForKey:@"delete"] boolValue];
                     BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
-
-                    if (delete || deleteAll) {
-                        
-                        // TODO: Delete notifications locally
-                        
-                    } else {
-                        
-                        NSURL *url = [NSURL URLWithString:result.url];
-                        NSString *domain = [url host];
-                    
-                        if ([app isEqualToString:@"spreed"]) {
-                            content.title = @"Nextcloud Talk";
-                            if (results.count > 1) { content.subtitle = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
-                            if (subject) { content.body = subject; }
-                        } else {
-                            if (results.count > 1) { content.title = [NSString stringWithFormat:@"%@ (%@)", result.displayName, domain]; }
-                            if (subject) { content.body = subject; }
-                        }
-                    
-                        content.sound = [UNNotificationSound defaultSound];
-
-                        /*
-                        [[OCNetworking sharedManager] getServerNotification:result.url notificationId:notificationId completion:^(NSDictionary *json, NSString *message, NSInteger errorCode) {
-                            //
-                        }];
-                        */
-                    
-                        NSString *identifier = [NSString stringWithFormat:@"Notification-%@", [NSDate new]];
-                    
-                        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
-                        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-                    
-                        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                    if (delete) {
+                        [self removeNotificationWithNotificationId:nid usingDecryptionKey:decryptionKey];
+                    } else if (deleteAll) {
+                        [self cleanAllNotifications];
                     }
                 }
             }
         }
     }
+    completionHandler(UIBackgroundFetchResultNoData);
+}
+
+- (void)cleanAllNotifications
+{
+    [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+}
+
+- (void)removeNotificationWithNotificationId:(NSInteger)notificationId usingDecryptionKey:(NSData *)key
+{
+    // Check in pending notifications
+    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+        for (UNNotificationRequest *notificationRequest in requests) {
+            NSString *message = [notificationRequest.content.userInfo objectForKey:@"subject"];
+            NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:key];
+            if (decryptedMessage) {
+                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
+                if (nid == notificationId) {
+                    [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationRequest.identifier]];
+                }
+            }
+        }
+    }];
+    // Check in delivered notifications
+    [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+        for (UNNotification *notification in notifications) {
+            NSString *message = [notification.request.content.userInfo objectForKey:@"subject"];
+            NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:key];
+            if (decryptedMessage) {
+                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
+                if (nid == notificationId) {
+                    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notification.request.identifier]];
+                }
+            }
+        }
+    }];
 }
 
 - (NSString *)stringWithDeviceToken:(NSData *)deviceToken

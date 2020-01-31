@@ -15,6 +15,22 @@
 		3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */; };
 		3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */; };
 		37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */; };
+		2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
+		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
+		2C1D5D7723E2DE5F00334ABB /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		2C1D5D7823E2DE6A00334ABB /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		2C1D5D7A23E2DEBF00334ABB /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
+		2C1D5D7B23E2DED200334ABB /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
+		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
+		2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2C59AC5823E2DFEE00733BE8 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
+		2C59AC5923E2E00F00733BE8 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
+		2C59AC5A23E2E01A00733BE8 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
+		2C59AC5B23E2E02700733BE8 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
+		2C59AC5C23E2E03400733BE8 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
+		2CB7D1C923E2E40B00376EF9 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F70022B31EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
@@ -611,6 +627,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2C33C48423E2C475005F963B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C33C47E23E2C475005F963B;
+			remoteInfo = "Notification Service Extension";
+		};
 		F7145A311D12E65F00CAFEEC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
@@ -656,6 +679,7 @@
 			files = (
 				F771E3EB20E2392E00AFB62D /* File Provider Extension.appex in Embed App Extensions */,
 				F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */,
+				2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -676,6 +700,11 @@
 		3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCMain+Menu.swift"; sourceTree = "<group>"; };
 		3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCFavorites+Menu.swift"; sourceTree = "<group>"; };
 		37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenuAction.swift; sourceTree = "<group>"; };
+		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		2C33C48323E2C475005F963B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
+		2CB7D1CB23E2F35400376EF9 /* Notification Service Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Notification Service Extension.entitlements"; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F70022661EC4C9100080073F /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
 		F70022671EC4C9100080073F /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
@@ -1430,6 +1459,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2C33C47C23E2C475005F963B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F7145A141D12E3B700CAFEEC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1515,6 +1551,17 @@
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
 			);
 			path = Menu;
+			sourceTree = "<group>";
+		};
+		2C33C48023E2C475005F963B /* Notification Service Extension */ = {
+			isa = PBXGroup;
+			children = (
+				2CB7D1CB23E2F35400376EF9 /* Notification Service Extension.entitlements */,
+				2C33C48123E2C475005F963B /* NotificationService.swift */,
+				2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */,
+				2C33C48323E2C475005F963B /* Info.plist */,
+			);
+			path = "Notification Service Extension";
 			sourceTree = "<group>";
 		};
 		F70022561EC4C9100080073F /* OCCommunicationLib */ = {
@@ -2777,9 +2824,11 @@
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F771E3D120E2392D00AFB62D /* File Provider Extension */,
 				F7C0F46D1C8880540059EC54 /* Share */,
+				2C33C48023E2C475005F963B /* Notification Service Extension */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
+				2C33C47F23E2C475005F963B /* Notification Service Extension.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2933,6 +2982,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2C33C47E23E2C475005F963B /* Notification Service Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C33C48923E2C475005F963B /* Build configuration list for PBXNativeTarget "Notification Service Extension" */;
+			buildPhases = (
+				2C33C47B23E2C475005F963B /* Sources */,
+				2C33C47C23E2C475005F963B /* Frameworks */,
+				2C33C47D23E2C475005F963B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Notification Service Extension";
+			productName = "Notification Service Extension";
+			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F71459B41D12E3B700CAFEEC /* Share */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share" */;
@@ -2986,6 +3052,7 @@
 			dependencies = (
 				F7145A321D12E65F00CAFEEC /* PBXTargetDependency */,
 				F771E3EA20E2392E00AFB62D /* PBXTargetDependency */,
+				2C33C48523E2C475005F963B /* PBXTargetDependency */,
 			);
 			name = Nextcloud;
 			productName = "Crypto Cloud";
@@ -2998,10 +3065,15 @@
 		F7F67BA01A24D27800EE80DA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1010;
+				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Marino Faggiana";
 				TargetAttributes = {
+					2C33C47E23E2C475005F963B = {
+						CreatedOnToolsVersion = 11.3.1;
+						DevelopmentTeam = 6JLRKY9ZV7;
+						ProvisioningStyle = Automatic;
+					};
 					F71459B41D12E3B700CAFEEC = {
 						DevelopmentTeam = 6JLRKY9ZV7;
 						LastSwiftMigration = 1020;
@@ -3093,11 +3165,19 @@
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
 				F71459B41D12E3B700CAFEEC /* Share */,
 				F771E3CF20E2392D00AFB62D /* File Provider Extension */,
+				2C33C47E23E2C475005F963B /* Notification Service Extension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2C33C47D23E2C475005F963B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F7145A181D12E3B700CAFEEC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3339,6 +3419,28 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2C33C47B23E2C475005F963B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
+				2CB7D1C923E2E40B00376EF9 /* NCUtility.swift in Sources */,
+				2C59AC5A23E2E01A00733BE8 /* OCCapabilities.m in Sources */,
+				2C1D5D7723E2DE5F00334ABB /* CCUtility.m in Sources */,
+				2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */,
+				2C1D5D7823E2DE6A00334ABB /* CCGraphics.m in Sources */,
+				2C59AC5B23E2E02700733BE8 /* OCExternalSites.m in Sources */,
+				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
+				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
+				2C59AC5C23E2E03400733BE8 /* OCSharedDto.m in Sources */,
+				2C59AC5923E2E00F00733BE8 /* OCActivity.m in Sources */,
+				2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */,
+				2C1D5D7B23E2DED200334ABB /* NCComments.m in Sources */,
+				2C59AC5823E2DFEE00733BE8 /* OCUserProfile.m in Sources */,
+				2C1D5D7A23E2DEBF00334ABB /* HCFeatures.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F71459B51D12E3B700CAFEEC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3768,6 +3870,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2C33C48523E2C475005F963B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C33C47E23E2C475005F963B /* Notification Service Extension */;
+			targetProxy = 2C33C48423E2C475005F963B /* PBXContainerItemProxy */;
+		};
 		F7145A321D12E65F00CAFEEC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F71459B41D12E3B700CAFEEC /* Share */;
@@ -3843,6 +3950,93 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2C33C48723E2C475005F963B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "Notification Service Extension/Notification Service Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					EXTENSION_NOTIFICATION_SERVICE,
+					EXTENSION,
+				);
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
+				INFOPLIST_FILE = "Notification Service Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "Notification Service Extension/Notification_Service_Extension-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2C33C48823E2C475005F963B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "Notification Service Extension/Notification Service Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					NC,
+					EXTENSION_NOTIFICATION_SERVICE,
+					EXTENSION,
+				);
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
+				INFOPLIST_FILE = "Notification Service Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Notification Service Extension/Notification_Service_Extension-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		F7145A261D12E3B700CAFEEC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4245,6 +4439,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2C33C48923E2C475005F963B /* Build configuration list for PBXNativeTarget "Notification Service Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C33C48723E2C475005F963B /* Debug */,
+				2C33C48823E2C475005F963B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
