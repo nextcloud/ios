@@ -684,25 +684,21 @@
         dispatch_async(dispatch_get_main_queue(), ^{
 
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-
+            UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
+            UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
+            
             if (splitViewController.isCollapsed) {
-            
-                UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                for (UINavigationController *nvc in tbc.viewControllers) {
+                            
+                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
+                } 
                 
-                    if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                        [nvc popToRootViewControllerAnimated:NO];
-                }
-            
-                [tbc setSelectedIndex: k_tabBarApplicationIndexMedia];
-
             } else {
             
-                UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-                [nvcDetail popToRootViewControllerAnimated:NO];
+                UINavigationController *navgigationControllerDetail = splitViewController.viewControllers.lastObject;
+                [navgigationControllerDetail popToRootViewControllerAnimated:NO];
             
-                UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                [tbc setSelectedIndex: k_tabBarApplicationIndexMedia];
+                [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
             }
         });
         
@@ -733,17 +729,17 @@
             [UIApplication sharedApplication].applicationIconBadgeNumber = total;
             
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            
-            if ([[splitViewController.viewControllers firstObject] isKindOfClass:[UITabBarController class]]) {
+            UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
+            UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
+
+            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
                 
-                UITabBarController *tbc = [splitViewController.viewControllers firstObject];
-                
-                UITabBarItem *tbItem = [tbc.tabBar.items objectAtIndex:0];
-                
+                UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
+                    
                 if (total > 0) {
-                    [tbItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
+                    [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
                 } else {
-                    [tbItem setBadgeValue:nil];
+                    [tabBarItem setBadgeValue:nil];
                 }
             }
         });
@@ -853,31 +849,6 @@
     }
 }
 
-- (void)selectedTabBarController:(NSInteger)index
-{
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    
-    if (splitViewController.isCollapsed) {
-        
-        UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-        for (UINavigationController *nvc in tbc.viewControllers) {
-            
-            if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                [nvc popToRootViewControllerAnimated:NO];
-        }
-        
-        [tbc setSelectedIndex: index];
-        
-    } else {
-        
-        UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-        [nvcDetail popToRootViewControllerAnimated:NO];
-        
-        UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-        [tbc setSelectedIndex: index];
-    }
-}
-
 - (NSString *)getTabBarControllerActiveServerUrl
 {
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
@@ -960,7 +931,8 @@
     
     //tabBar button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
+    UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
     UIButton *button = [tabBarController.view viewWithTag:99];
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
