@@ -30,25 +30,34 @@ import MarkdownKit
     @objc @IBOutlet weak var textView: UITextView!
     @objc @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
 
-    let markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15))
-    var richWorkspaceText: String = ""
+    var markdownParser = MarkdownParser()
+    var richWorkspaceText: String?
     let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
     }
 
+    @objc func changeTheming() {
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+        if let richWorkspaceText = richWorkspaceText {
+            textView.attributedText = markdownParser.parse(richWorkspaceText)
+        }
+    }
+    
     @objc func load(richWorkspaceText: String) {
         
         if richWorkspaceText != self.richWorkspaceText {
             textView.attributedText = markdownParser.parse(richWorkspaceText)
             self.richWorkspaceText = richWorkspaceText
         }
-        setGradient()
     }
     
+    /*
     @objc func setGradient() {
         
         gradientLayer.removeFromSuperlayer()
@@ -62,4 +71,5 @@ import MarkdownKit
         gradientLayer.endPoint = CGPoint(x: 0, y: 1)
         textView.layer.addSublayer(gradientLayer)
     }
+    */
 }

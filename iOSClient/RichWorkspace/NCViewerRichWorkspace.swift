@@ -31,7 +31,7 @@ import MarkdownKit
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
-    private let markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15))
+    private var markdownParser = MarkdownParser()
     @objc public var richWorkspaceText: String = ""
     @objc public var serverUrl: String = ""
    
@@ -76,6 +76,8 @@ import MarkdownKit
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         textView.attributedText = markdownParser.parse(richWorkspaceText)
     }
     
