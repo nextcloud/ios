@@ -689,16 +689,19 @@
             
             if (splitViewController.isCollapsed) {
                             
+                [navigationControllerMaster popToRootViewControllerAnimated:false];
+                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
+                UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
+                
                 if ([tabBarController isKindOfClass:[UITabBarController class]]) {
                     [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
                 } 
                 
             } else {
             
-                UINavigationController *navgigationControllerDetail = splitViewController.viewControllers.lastObject;
-                [navgigationControllerDetail popToRootViewControllerAnimated:NO];
-            
-                [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
+                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
+                }
             }
         });
         
