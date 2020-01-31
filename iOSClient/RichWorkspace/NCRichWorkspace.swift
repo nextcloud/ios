@@ -23,23 +23,29 @@
 
 
 import Foundation
-import SwiftRichString
+import MarkdownKit
 
 @objc class NCViewRichWorkspace: UIView {
     
     @objc @IBOutlet weak var textView: UITextView!
     @objc @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
 
+    let markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15))
+    var richWorkspaceText: String = ""
     let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
     }
 
     @objc func load(richWorkspaceText: String) {
-        let richWorkspaceCommon = NCRichWorkspaceCommon()
         
-        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
+        if richWorkspaceText != self.richWorkspaceText {
+            textView.attributedText = markdownParser.parse(richWorkspaceText)
+            self.richWorkspaceText = richWorkspaceText
+        }
         setGradient()
     }
     

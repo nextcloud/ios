@@ -23,6 +23,7 @@
 
 import Foundation
 import NCCommunication
+import MarkdownKit
 
 @objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
 
@@ -30,6 +31,7 @@ import NCCommunication
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
+    private let markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15))
     @objc public var richWorkspaceText: String = ""
     @objc public var serverUrl: String = ""
    
@@ -37,6 +39,7 @@ import NCCommunication
         super.viewDidLoad()
         
         presentationController?.delegate = self
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
@@ -44,7 +47,7 @@ import NCCommunication
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
+        textView.attributedText = markdownParser.parse(richWorkspaceText)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
@@ -62,7 +65,7 @@ import NCCommunication
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
                 self.richWorkspaceText = metadataFolder.richWorkspace
                 self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                self.richWorkspaceCommon.setRichWorkspaceText(self.richWorkspaceText, textView: self.textView)
+                self.textView.attributedText = self.markdownParser.parse(self.richWorkspaceText)
             }
         }
     }
@@ -73,7 +76,7 @@ import NCCommunication
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
-        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
+        textView.attributedText = markdownParser.parse(richWorkspaceText)
     }
     
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {
