@@ -84,7 +84,7 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("size")
                     }
-                    
+
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
                 }
             )
@@ -406,7 +406,8 @@ extension CCMain {
                     NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            self.perform(#selector(self.openinFile(_:)))
+                            self.tableView.setEditing(false, animated: true)
+                            NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenIn)
                         }
                     )
                 )
