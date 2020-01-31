@@ -837,30 +837,6 @@
     }
 }
 
-- (void)plusButtonVisibile:(BOOL)visible
-{
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
-    
-    UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
-    
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
-    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
-    
-    if (buttonPlus) {
-
-        if (visible) {
-            
-            buttonPlus.hidden = false;
-        
-        } else {
-            
-            buttonPlus.hidden = true;
-        }
-    }
-}
-
 - (void)handleTouchTabbarCenter:(id)sender
 {
     // Test Maintenance
