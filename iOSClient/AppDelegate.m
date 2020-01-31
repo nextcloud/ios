@@ -571,6 +571,72 @@
     [self pushNotification];
 }
 
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    NSString *message = [userInfo objectForKey:@"subject"];
+    if (message) {
+        NSArray *results = [[NCManageDatabase sharedInstance] getAllAccount];
+        for (tableAccount *result in results) {
+            if ([CCUtility getPushNotificationPrivateKey:result.account]) {
+                NSData *decryptionKey = [CCUtility getPushNotificationPrivateKey:result.account];
+                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:decryptionKey];
+                if (decryptedMessage) {
+                    NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                    NSInteger nid = [[json objectForKey:@"nid"] integerValue];
+                    BOOL delete = [[json objectForKey:@"delete"] boolValue];
+                    BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
+                    if (delete) {
+                        [self removeNotificationWithNotificationId:nid usingDecryptionKey:decryptionKey];
+                    } else if (deleteAll) {
+                        [self cleanAllNotifications];
+                    }
+                }
+            }
+        }
+    }
+    completionHandler(UIBackgroundFetchResultNoData);
+}
+
+- (void)cleanAllNotifications
+{
+    [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+}
+
+- (void)removeNotificationWithNotificationId:(NSInteger)notificationId usingDecryptionKey:(NSData *)key
+{
+    // Check in pending notifications
+    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+        for (UNNotificationRequest *notificationRequest in requests) {
+            NSString *message = [notificationRequest.content.userInfo objectForKey:@"subject"];
+            NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:key];
+            if (decryptedMessage) {
+                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
+                if (nid == notificationId) {
+                    [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationRequest.identifier]];
+                }
+            }
+        }
+    }];
+    // Check in delivered notifications
+    [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+        for (UNNotification *notification in notifications) {
+            NSString *message = [notification.request.content.userInfo objectForKey:@"subject"];
+            NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:key];
+            if (decryptedMessage) {
+                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
+                if (nid == notificationId) {
+                    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notification.request.identifier]];
+                }
+            }
+        }
+    }];
+}
+
 - (NSString *)stringWithDeviceToken:(NSData *)deviceToken
 {
     const char *data = [deviceToken bytes];
