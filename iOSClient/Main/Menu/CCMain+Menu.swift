@@ -39,11 +39,10 @@ extension CCMain {
                 selected: CCUtility.getOrderSettings() == "fileName",
                 on: CCUtility.getAscendingSettings(),
                 action: { menuAction in
-                    if (CCUtility.getOrderSettings() == "fileName" && CCUtility.getAscendingSettings()) {
+                    if(CCUtility.getOrderSettings() == "fileName") {
                         CCUtility.setAscendingSettings(!CCUtility.getAscendingSettings())
                     } else {
                         CCUtility.setOrderSettings("fileName")
-                        CCUtility.setAscendingSettings(true)
                     }
 
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
@@ -60,11 +59,10 @@ extension CCMain {
                 selected: CCUtility.getOrderSettings() == "date",
                 on: CCUtility.getAscendingSettings(),
                 action: { menuAction in
-                    if(CCUtility.getOrderSettings() == "date" && CCUtility.getAscendingSettings()) {
+                    if(CCUtility.getOrderSettings() == "date") {
                         CCUtility.setAscendingSettings(!CCUtility.getAscendingSettings())
                     } else {
                         CCUtility.setOrderSettings("date")
-                        CCUtility.setAscendingSettings(true)
                     }
 
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
@@ -81,13 +79,12 @@ extension CCMain {
                 selected: CCUtility.getOrderSettings() == "size",
                 on: CCUtility.getAscendingSettings(),
                 action: { menuAction in
-                    if(CCUtility.getOrderSettings() == "size" && CCUtility.getAscendingSettings()) {
+                    if(CCUtility.getOrderSettings() == "size") {
                         CCUtility.setAscendingSettings(!CCUtility.getAscendingSettings())
                     } else {
                         CCUtility.setOrderSettings("size")
-                        CCUtility.setAscendingSettings(true)
                     }
-
+                    
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
                 }
             )
