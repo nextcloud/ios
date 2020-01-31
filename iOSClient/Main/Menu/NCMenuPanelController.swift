@@ -32,6 +32,9 @@ class NCMenuPanelController: FloatingPanelController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if #available(iOS 13.0, *) {
+            self.surfaceView.backgroundColor = .systemBackground
+        }
         self.isRemovalInteractionEnabled = true
         if #available(iOS 11, *) {
             self.surfaceView.cornerRadius = 16
@@ -39,5 +42,5 @@ class NCMenuPanelController: FloatingPanelController {
             self.surfaceView.cornerRadius = 0
         }
     }
-    
+
 }
