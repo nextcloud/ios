@@ -1498,56 +1498,53 @@
                         }
                         
                         if (matchedAccount) {
+                            
                             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-                            UITabBarController *tbc;
+                            UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
+                            UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
                             
                             if (splitViewController.isCollapsed) {
-                                
-                                tbc = splitViewController.viewControllers.firstObject;
-                                for (UINavigationController *nvc in tbc.viewControllers) {
-                                    
-                                    if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                                        [nvc popToRootViewControllerAnimated:NO];
+                                           
+                                [navigationControllerMaster popToRootViewControllerAnimated:false];
+                                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
+                                UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
+                               
+                                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
                                 }
-                                
+                               
                             } else {
-                                
-                                UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-                                [nvcDetail popToRootViewControllerAnimated:NO];
-                                
-                                tbc = splitViewController.viewControllers.firstObject;
+                           
+                                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
+                                }
                             }
                             
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                                 
-                                [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
+                                [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
                                 
                                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                                     
-                                    [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
+                                    NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
                                     
-                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                    if ([path containsString:@"/"]) {
                                         
-                                        NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
+                                        // Push
+                                        NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                                        NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
+                                        tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
                                         
-                                        if ([path containsString:@"/"]) {
-                                            
-                                            // Push
-                                            NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                                            NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                            tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
-                                            
-                                            [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
-                                            
-                                        } else {
-                                            
-                                            // Reload folder
-                                            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.url, k_webDAV];
-                                            
-                                            self.activeMain.blinkFileNamePath = fileNamePath;
-                                            [self.activeMain readFolder:serverUrl];
-                                        }
-                                    });
+                                        [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
+                                        
+                                    } else {
+                                        
+                                        // Reload folder
+                                        NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.url, k_webDAV];
+                                        
+                                        self.activeMain.blinkFileNamePath = fileNamePath;
+                                        [self.activeMain readFolder:serverUrl];
+                                    }
                                 });
                             });
               
@@ -1585,12 +1582,12 @@
         if (error == nil) {
             
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            UINavigationController *splitNavigationController = [splitViewController.viewControllers firstObject];
+            UINavigationController *navigationController = (UINavigationController *)splitViewController.viewControllers.firstObject;
             
-            UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
+            UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [splitNavigationController presentViewController:navigationController animated:YES completion:nil];
+                [navigationController presentViewController:uploadNavigationViewController animated:YES completion:nil];
             });
         }
     }
