@@ -84,7 +84,7 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("size")
                     }
-
+                    
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
                 }
             )
