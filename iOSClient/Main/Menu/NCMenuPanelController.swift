@@ -32,7 +32,9 @@ class NCMenuPanelController: FloatingPanelController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.surfaceView.grabberHandle.isHidden = true
+        if #available(iOS 13.0, *) {
+            self.surfaceView.backgroundColor = .systemBackground
+        }
         self.isRemovalInteractionEnabled = true
         if #available(iOS 11, *) {
             self.surfaceView.cornerRadius = 16
@@ -41,14 +43,4 @@ class NCMenuPanelController: FloatingPanelController {
         }
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let presenter = parentPresenter {
-            self.view.frame = presenter.view.frame
-        }
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        self.dismiss(animated: true, completion: nil)
-    }
 }
