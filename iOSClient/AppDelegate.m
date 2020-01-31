@@ -909,7 +909,8 @@ PKPushRegistry *pushRegistry;
 - (NSString *)getTabBarControllerActiveServerUrl
 {
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
+    UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
 
     NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl];
     NSInteger index = tabBarController.selectedIndex;
