@@ -31,6 +31,7 @@ import MarkdownKit
 
     var markdownParser = MarkdownParser()
     var richWorkspaceText: String?
+    var textViewColor: UIColor?
     //let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
@@ -41,10 +42,13 @@ import MarkdownKit
     }
 
     @objc func changeTheming() {
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
-        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-        if let richWorkspaceText = richWorkspaceText {
-            textView.attributedText = markdownParser.parse(richWorkspaceText)
+        if NCBrandColor.sharedInstance.textView != self.textViewColor {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+            if let richWorkspaceText = richWorkspaceText {
+                textView.attributedText = markdownParser.parse(richWorkspaceText)
+            }
+            self.textViewColor = NCBrandColor.sharedInstance.textView
         }
     }
     
