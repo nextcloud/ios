@@ -21,7 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import Foundation
 import MarkdownKit
 
@@ -32,7 +31,7 @@ import MarkdownKit
 
     var markdownParser = MarkdownParser()
     var richWorkspaceText: String?
-    let gradientLayer: CAGradientLayer = CAGradientLayer()
+    //let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -50,7 +49,6 @@ import MarkdownKit
     }
     
     @objc func load(richWorkspaceText: String) {
-        
         if richWorkspaceText != self.richWorkspaceText {
             textView.attributedText = markdownParser.parse(richWorkspaceText)
             self.richWorkspaceText = richWorkspaceText
