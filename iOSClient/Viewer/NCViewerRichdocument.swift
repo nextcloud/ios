@@ -52,9 +52,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        if (UIDevice.current.userInterfaceIdiom == .phone) {
-            detail.navigationController?.setNavigationBarHidden(true, animated: false)
-        }
+        detail.navigationController?.setNavigationBarHidden(true, animated: false)
         
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
@@ -91,6 +89,12 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 detail.navigationController?.popViewController(animated: true)
                 detail.navigationController?.navigationBar.topItem?.title = ""
                 
+                let splitViewController = appDelegate.window.rootViewController as! UISplitViewController
+                if splitViewController.isCollapsed {
+                    let masterNavigationController = splitViewController.viewControllers.first as! UINavigationController
+                    masterNavigationController.popViewController(animated: true)
+                }
+                                
                 appDelegate.activeMain.readFileReloadFolder()
             }
             
