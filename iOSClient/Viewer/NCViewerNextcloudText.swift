@@ -103,6 +103,12 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
                 detail.navigationController?.popViewController(animated: true)
                 detail.navigationController?.navigationBar.topItem?.title = ""
                 
+                let splitViewController = appDelegate.window.rootViewController as! UISplitViewController
+                if splitViewController.isCollapsed {
+                    let masterNavigationController = splitViewController.viewControllers.first as! UINavigationController
+                    masterNavigationController.popViewController(animated: true)
+                }
+                                
                 appDelegate.activeMain.readFileReloadFolder()
             }
             
