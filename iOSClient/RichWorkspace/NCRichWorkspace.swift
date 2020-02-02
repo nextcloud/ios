@@ -42,7 +42,18 @@ import MarkdownKit
     }
 
     @objc func changeTheming() {
-        if NCBrandColor.sharedInstance.textView != self.textViewColor {
+        var textColor = NCBrandColor.sharedInstance.textView
+        if #available(iOS 13.0, *) {
+            if CCUtility.getDarkModeDetect() {
+                if traitCollection.userInterfaceStyle == .dark {
+                    textColor = .white
+                } else {
+                    textColor = .black
+                }
+            }
+        }
+                
+        if textColor != self.textViewColor {
             markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
             if let richWorkspaceText = richWorkspaceText {
