@@ -31,35 +31,23 @@ import MarkdownKit
 
     var markdownParser = MarkdownParser()
     var richWorkspaceText: String?
-    var textViewColor: UIColor?
+    //var textViewColor: UIColor?
     //let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "applicationWillEnterForeground"), object: nil)
         changeTheming()
     }
 
     @objc func changeTheming() {
-        var textColor = NCBrandColor.sharedInstance.textView
-        if #available(iOS 13.0, *) {
-            if CCUtility.getDarkModeDetect() {
-                if traitCollection.userInterfaceStyle == .dark {
-                    textColor = .white
-                } else {
-                    textColor = .black
-                }
-            }
-        }
-                
-        if textColor != self.textViewColor {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
-            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-            if let richWorkspaceText = richWorkspaceText {
-                textView.attributedText = markdownParser.parse(richWorkspaceText)
-            }
-            self.textViewColor = NCBrandColor.sharedInstance.textView
+        
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+        if let richWorkspaceText = richWorkspaceText {
+            textView.attributedText = markdownParser.parse(richWorkspaceText)
         }
     }
     

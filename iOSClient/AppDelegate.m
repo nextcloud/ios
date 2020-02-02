@@ -217,6 +217,8 @@
     if (self.activeDetail.richDocument) {
         [self.activeDetail.richDocument grabFocus];
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"applicationWillEnterForeground" object:nil];
 }
 
 //
