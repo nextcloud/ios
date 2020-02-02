@@ -50,6 +50,7 @@ import MarkdownKit
         textView.attributedText = markdownParser.parse(richWorkspaceText)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "applicationWillEnterForeground"), object: nil)
         changeTheming()
     }
     
