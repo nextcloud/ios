@@ -51,9 +51,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        detail.navigationController?.setNavigationBarHidden(true, animated: false)
-        
+                
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
