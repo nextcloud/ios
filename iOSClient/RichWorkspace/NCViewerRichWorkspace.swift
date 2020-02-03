@@ -32,6 +32,8 @@ import MarkdownKit
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
     private var markdownParser = MarkdownParser()
+    private var textViewColor: UIColor?
+
     @objc public var richWorkspaceText: String = ""
     @objc public var serverUrl: String = ""
    
@@ -39,7 +41,6 @@ import MarkdownKit
         super.viewDidLoad()
         
         presentationController?.delegate = self
-        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
@@ -47,10 +48,7 @@ import MarkdownKit
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        textView.attributedText = markdownParser.parse(richWorkspaceText)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "applicationWillEnterForeground"), object: nil)
         changeTheming()
     }
     
@@ -64,9 +62,11 @@ import MarkdownKit
                 var metadataFolder = tableMetadata()
                 _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                self.richWorkspaceText = metadataFolder.richWorkspace
-                self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                self.textView.attributedText = self.markdownParser.parse(self.richWorkspaceText)
+                if self.richWorkspaceText != metadataFolder.richWorkspace {
+                    self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
+                    self.richWorkspaceText = metadataFolder.richWorkspace
+                    self.textView.attributedText = self.markdownParser.parse(metadataFolder.richWorkspace)
+                }
             }
         }
     }
@@ -82,10 +82,14 @@ import MarkdownKit
     }
     
     @objc func changeTheming() {
+        
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
-        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-        textView.attributedText = markdownParser.parse(richWorkspaceText)
+        if textViewColor != NCBrandColor.sharedInstance.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+            textView.attributedText = markdownParser.parse(richWorkspaceText)
+            textViewColor = NCBrandColor.sharedInstance.textView
+        }
     }
     
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {

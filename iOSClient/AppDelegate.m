@@ -217,10 +217,6 @@
     if (self.activeDetail.richDocument) {
         [self.activeDetail.richDocument grabFocus];
     }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"applicationWillEnterForeground" object:nil];
-    });
 }
 
 //

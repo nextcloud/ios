@@ -31,23 +31,25 @@ import MarkdownKit
 
     var markdownParser = MarkdownParser()
     var richWorkspaceText: String?
-    //var textViewColor: UIColor?
+    var textViewColor: UIColor?
     //let gradientLayer: CAGradientLayer = CAGradientLayer()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "applicationWillEnterForeground"), object: nil)
         changeTheming()
     }
 
     @objc func changeTheming() {
         
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
-        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-        if let richWorkspaceText = richWorkspaceText {
-            textView.attributedText = markdownParser.parse(richWorkspaceText)
+        if textViewColor != NCBrandColor.sharedInstance.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+            if let richWorkspaceText = richWorkspaceText {
+                textView.attributedText = markdownParser.parse(richWorkspaceText)
+            }
+            textViewColor = NCBrandColor.sharedInstance.textView
         }
     }
     

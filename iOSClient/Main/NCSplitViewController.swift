@@ -26,7 +26,8 @@ import UIKit
 class NCSplitViewController: UISplitViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
+    var timer: Timer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,9 +48,16 @@ class NCSplitViewController: UISplitViewController {
                 } else {
                     CCUtility.setDarkMode(false)
                 }
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeTheming"), object: nil)
+                // Use a timer for fix the twice call of traitCollectionDidChange for detect the Dark mode
+                if !(timer?.isValid ?? false) {
+                    timer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(timerHandlerChangeTheming(_:)), userInfo: nil, repeats: false)
+                }
             }
         }
+    }
+    
+    @objc func timerHandlerChangeTheming(_ timer: Timer) {
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeTheming"), object: nil)
     }
 }
 
