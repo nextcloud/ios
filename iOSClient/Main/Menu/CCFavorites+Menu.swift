@@ -24,8 +24,13 @@ extension CCFavorites {
             }
         }
 
-        actions.append(NCMenuAction(title: metadata.fileNameView, icon: iconHeader, action: { menuAction in
-        }))
+        actions.append(
+            NCMenuAction(
+                title: metadata.fileNameView,
+                icon: iconHeader,
+                action: nil
+            )
+        )
 
         if(self.serverUrl == nil) {
             actions.append(
