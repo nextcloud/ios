@@ -220,8 +220,7 @@ extension CCMain {
                 NCMenuAction(
                     title: metadata.fileNameView,
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement),
-                    action: { menuAction in
-                    }
+                    action: nil
                 )
             )
 
@@ -373,9 +372,8 @@ extension CCMain {
             actions.append(
                 NCMenuAction(
                     title: metadata.fileNameView,
-                    icon: iconHeader, action: { menuAction in
-
-                    }
+                    icon: iconHeader,
+                    action: nil
                 )
             )
 
