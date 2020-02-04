@@ -151,6 +151,7 @@ class NCService: NSObject {
                 NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: account!)
                 
                 // ------ THEMING -----------------------------------------------------------------------
+                self.appDelegate.settingThemingColorBrand()
                 
                 /*
                 if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {

@@ -479,7 +479,7 @@ class NCUtility: NSObject {
         }
     }
     
-    func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
+    @objc func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
         return UIColor(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -488,7 +488,7 @@ class NCUtility: NSObject {
         )
     }
     
-    func RGBFromUIColor(uicolorValue: UIColor) -> UInt32 {
+    @objc func RGBFromUIColor(uicolorValue: UIColor) -> UInt32 {
         
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
 

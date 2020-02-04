@@ -896,6 +896,12 @@
         NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
     }
     
+    //
+    NSInteger brandColor = [[NCUtility sharedInstance] RGBFromUIColorWithUicolorValue:NCBrandColor.sharedInstance.brand];
+    if (brandColor = 0) {
+        brandColor = [UIColor 
+    }
+    
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
