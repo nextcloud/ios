@@ -85,6 +85,10 @@
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
+		F70CEF5723E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
+		F70CEF5823E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
+		F70CEF5923E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
 		F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
@@ -769,6 +773,7 @@
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
+		F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+adjust.swift"; sourceTree = "<group>"; };
 		F70F02B31C889183008DAB36 /* AFViewShaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFViewShaker.h; sourceTree = "<group>"; };
 		F70F02B41C889183008DAB36 /* AFViewShaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFViewShaker.m; sourceTree = "<group>"; };
 		F70F05251C889184008DAB36 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -2471,6 +2476,7 @@
 				F765608E23BF813500765969 /* NCContentPresenter.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
+				F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
 				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
@@ -3429,6 +3435,7 @@
 			files = (
 				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
 				2CB7D1C923E2E40B00376EF9 /* NCUtility.swift in Sources */,
+				F70CEF5923E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				2C59AC5A23E2E01A00733BE8 /* OCCapabilities.m in Sources */,
 				2C1D5D7723E2DE5F00334ABB /* CCUtility.m in Sources */,
 				2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */,
@@ -3504,6 +3511,7 @@
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F70CEF5723E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
@@ -3550,6 +3558,7 @@
 				F7DBC38123325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */,
 				F7434B5E20E241EC00417916 /* CCGraphics.m in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
+				F70CEF5823E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F7434B5B20E241D100417916 /* NCEndToEndMetadata.swift in Sources */,
 				F7B6ACDD22FC2D15008AB646 /* NCComments.m in Sources */,
 				F7434B5D20E241E800417916 /* CCUtility.m in Sources */,
@@ -3847,6 +3856,7 @@
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
 				F760F79621F21F61006B1A73 /* PhotoEditorViewController.swift in Sources */,
 				F762CB161EACB66200B38484 /* XLFormTextView.m in Sources */,
+				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */,
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,

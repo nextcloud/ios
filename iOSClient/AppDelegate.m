@@ -895,12 +895,18 @@
         NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
         NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
     }
+        
+    UIColor *color = NCBrandColor.sharedInstance.brand;
+    BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
+    BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
     
-    //
-    NSInteger brandColor = [[NCUtility sharedInstance] RGBFromUIColorWithUicolorValue:NCBrandColor.sharedInstance.brand];
-    if (brandColor = 0) {
-        brandColor = [UIColor 
+    if (isTooLight) {
+        color = [NCBrandColor.sharedInstance.brand darkerBy:10];
+    } else if (isTooDark) {
+        color = [NCBrandColor.sharedInstance.brand lighterBy:10];
     }
+    
+    NCBrandColor.sharedInstance.brand = color;
     
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
