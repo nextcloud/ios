@@ -152,6 +152,7 @@ class NCService: NSObject {
                 
                 // ------ THEMING -----------------------------------------------------------------------
                 
+                /*
                 if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
                     
                     // Download Theming Background
@@ -185,6 +186,7 @@ class NCService: NSObject {
                     
                     self.appDelegate.settingThemingColorBrand()
                 }
+                */
                 
                 // ------ SEARCH ------------------------------------------------------------------------
                 
