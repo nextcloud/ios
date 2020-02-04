@@ -1,7 +1,7 @@
 github "Alamofire/Alamofire" "5.0.0-rc.2"
 github "AssistoLab/DropDown" "v2.3.13"
 github "ChangbaDevs/KTVHTTPCache" "2.0.1"
-github "CocoaLumberjack/CocoaLumberjack" "3.6.0"
+github "CocoaLumberjack/CocoaLumberjack" "3.6.1"
 github "MortimerGoro/MGSwipeTableCell" "1.6.8"
 github "SVGKit/SVGKit" "8560ef56bd61e34d5cd8d9739954f9765e3ac794"
 github "SwiftyJSON/SwiftyJSON" "5.0.0"

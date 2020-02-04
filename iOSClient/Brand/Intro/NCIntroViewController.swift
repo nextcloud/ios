@@ -36,32 +36,36 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer
-        self.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.customerText
-        self.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.customer
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.introBackground
+                
+        if #available(iOS 13.0, *) {
+            self.pageControl.currentPageIndicatorTintColor = .systemGray
+        } else {
+            self.pageControl.currentPageIndicatorTintColor = .darkGray
+        }
+        
+        if #available(iOS 13.0, *) {
+            self.pageControl.pageIndicatorTintColor = .systemGray2
+        } else {
+            self.pageControl.pageIndicatorTintColor = .gray
+        }
 
-
-        self.buttonLogin.layer.cornerRadius = 20
-        self.buttonLogin.setTitleColor(.black, for: .normal)
-        self.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customerText
+        self.buttonLogin.layer.cornerRadius = 5
+        self.buttonLogin.setTitleColor(.white, for: .normal)
+        self.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customer
         self.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
 
-        self.buttonSignUp.layer.cornerRadius = 20
-        self.buttonSignUp.setTitleColor(.white, for: .normal)
-        self.buttonSignUp.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
-        self.buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
+        self.buttonSignUp.isHidden = true
 
-        self.buttonHost.layer.cornerRadius = 20
-        self.buttonHost.setTitle(NSLocalizedString("_host_your_own_server", comment: ""), for: .normal)
-        self.buttonHost.setTitleColor(UIColor(red: 1, green: 1, blue: 1, alpha: 0.7), for: .normal)
+        self.buttonHost.isHidden = true
 
         self.introCollectionView.register(UINib(nibName: "NCIntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
         self.introCollectionView.dataSource = self
         self.introCollectionView.delegate = self
-        self.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.customer
+        self.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.introBackground
         self.pageControl.numberOfPages = self.titles.count
-        self.view.backgroundColor = NCBrandColor.sharedInstance.customer
+        self.view.backgroundColor = NCBrandColor.sharedInstance.introBackground
         self.timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
     }
 
@@ -95,9 +99,13 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "introCell", for: indexPath) as! NCIntroCollectionViewCell
-        cell.backgroundColor = NCBrandColor.sharedInstance.customer
-
-        cell.titleLabel.textColor = NCBrandColor.sharedInstance.customerText
+        cell.backgroundColor = .clear
+        
+        if #available(iOS 13.0, *) {
+            cell.titleLabel.textColor = .label
+        } else {
+            cell.titleLabel.textColor = .black
+        }
         cell.titleLabel.text = titles[indexPath.row]
         cell.imageView.image = images[indexPath.row]
         return cell
