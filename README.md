@@ -32,7 +32,8 @@ More information how to contribute: [https://nextcloud.com/contribute/](https://
 
 ## Start contributing
 
-You can start by forking this repository and creating pull requests on the master branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22starter+issue%22). 
+You can start by forking this repository and creating pull requests on the develop
+branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22starter+issue%22). 
 
 Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
 
