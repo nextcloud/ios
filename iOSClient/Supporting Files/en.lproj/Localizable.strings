@@ -352,6 +352,7 @@
 "_download_selected_files_folders_" = "Download files and folders";
 "_error_operation_canc_"        = "Error: Operation canceled.";
 "_only_lock_passcode_"          = "Available only with Lock password activated. Activate it in the \"Settings\".";
+"_go_to_app_settings_"          = "Go to app settings";
 "_passcode_protection_"         = "Password protection";
 "_remove_favorites_"            = "Remove from favorites";
 "_remove_offline_"              = "Remove from offline";

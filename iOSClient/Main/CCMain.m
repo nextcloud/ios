@@ -2503,8 +2503,17 @@
     if ([[CCUtility getBlockCode] length] == 0) {
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_warning_", nil) message:NSLocalizedString(@"_only_lock_passcode_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *goToSettingsAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_go_to_app_settings_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [self.tabBarController setSelectedIndex:4];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                NSIndexPath *selectedIndex = [NSIndexPath indexPathForRow:0 inSection:1];
+                [appDelegate.activeMore.tableView selectRowAtIndexPath:selectedIndex animated:true scrollPosition: UITableViewScrollPositionNone];
+                [appDelegate.activeMore tableView:appDelegate.activeMore.tableView didSelectRowAtIndexPath:selectedIndex];
+            });
+        }];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
 
+        [alertController addAction:goToSettingsAction];
         [alertController addAction:okAction];
         [self presentViewController:alertController animated:YES completion:nil];
         return;
