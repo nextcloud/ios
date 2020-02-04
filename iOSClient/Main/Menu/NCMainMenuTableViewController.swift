@@ -37,8 +37,10 @@ class NCMainMenuTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let menuAction = actions[indexPath.row]
-        self.dismiss(animated: true, completion: nil)
-        menuAction.action?(menuAction)
+        if let action = menuAction.action {
+            self.dismiss(animated: true, completion: nil)
+            action(menuAction)
+        }
     }
 
     // MARK: - Table view data source
@@ -57,6 +59,10 @@ class NCMainMenuTableViewController: UITableViewController {
         let action = actions[indexPath.row]
         let actionIconView = cell.viewWithTag(1) as! UIImageView
         let actionNameLabel = cell.viewWithTag(2) as! UILabel
+
+        if action.action == nil {
+            cell.selectionStyle = .none
+        }
 
         if (action.isOn) {
             actionIconView.image = action.onIcon
