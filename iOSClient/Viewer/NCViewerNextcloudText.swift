@@ -49,7 +49,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         
         self.detail = detail
         self.metadata = metadata
-        self.editor = editor;
+        self.editor = editor
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -58,15 +58,9 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
-        
-        let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
-        
+                
         if editor == k_editor_onlyoffice {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                customUserAgent = "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
-            }else{
-                customUserAgent = "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
-            }
+            customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
         } else {
             customUserAgent = CCUtility.getUserAgent()
         }

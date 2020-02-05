@@ -572,5 +572,15 @@ class NCUtility: NSObject {
         }
         return true
     }
+    
+    @objc func getCustomUserAgentOnlyOffice() -> String {
+        
+        let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
+        }else{
+            return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
+        }
+    }
 }
 

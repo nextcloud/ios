@@ -268,15 +268,30 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         }
             
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
-                                    
-            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editorId: editorId, creatorId: creatorId, templateId: selectTemplate.identifier, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+             
+            var customUserAgent: String?
+            
+            if self.editorId == k_editor_onlyoffice {
+                customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
+            }
+            
+            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editorId: editorId, creatorId: creatorId, templateId: selectTemplate.identifier, customUserAgent: customUserAgent, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
                     if url != nil && url!.count > 0 {
                         
+                        var contentType = "text/markdown"
+                        if let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: self.appDelegate.activeAccount) {
+                            for directEditingCreator in directEditingCreators {
+                                if directEditingCreator.ext == self.fileNameExtension {
+                                    contentType = directEditingCreator.mimetype
+                                }
+                            }
+                        }
+                        
                         self.dismiss(animated: true, completion: {
-                            let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: "text/markdown")
+                            let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: contentType)
                             
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                         })
@@ -329,10 +344,14 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
             
-            // default
-            fileNameExtension = "md"
+            fileNameExtension = "md"            
+            var customUserAgent: String?
+                       
+            if self.editorId == k_editor_onlyoffice {
+                customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
+            }
             
-            NCCommunication.sharedInstance.NCTextGetListOfTemplates(urlString: appDelegate.activeUrl, account: appDelegate.activeAccount) { (account, templates, errorCode, errorMessage) in
+            NCCommunication.sharedInstance.NCTextGetListOfTemplates(urlString: appDelegate.activeUrl, customUserAgent: customUserAgent, account: appDelegate.activeAccount) { (account, templates, errorCode, errorMessage) in
                 
                 self.indicator.stopAnimating()
                 

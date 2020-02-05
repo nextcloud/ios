@@ -684,23 +684,30 @@
         dispatch_async(dispatch_get_main_queue(), ^{
 
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-            UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-            
-            if (splitViewController.isCollapsed) {
-                            
-                [navigationControllerMaster popToRootViewControllerAnimated:false];
+            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
                 UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                
-                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
-                } 
-                
-            } else {
-            
-                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
+                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
+                    UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
+                     if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                         
+                         if (splitViewController.isCollapsed) {
+                                         
+                             [navigationControllerMaster popToRootViewControllerAnimated:false];
+                             UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
+                             if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
+                                 UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
+                                 if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                     [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
+                                 }
+                             }
+                        
+                         } else {
+                         
+                             if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                 [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
+                             }
+                         }
+                     }
                 }
             }
         });
@@ -732,17 +739,19 @@
             [UIApplication sharedApplication].applicationIconBadgeNumber = total;
             
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
-            UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
-
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                
-                UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
-                    
-                if (total > 0) {
-                    [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-                } else {
-                    [tabBarItem setBadgeValue:nil];
+            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
+                UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
+                if ([navigationController isKindOfClass:[UINavigationController class]]) {
+                    UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
+                    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                        UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
+                            
+                        if (total > 0) {
+                            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
+                        } else {
+                            [tabBarItem setBadgeValue:nil];
+                        }
+                    }
                 }
             }
         });
@@ -854,21 +863,27 @@
 
 - (NSString *)getTabBarControllerActiveServerUrl
 {
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
-    UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
-
     NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl];
-    NSInteger index = tabBarController.selectedIndex;
-    
-    // select active serverUrl
-    if (index == k_tabBarApplicationIndexFile) {
-        serverUrl = self.activeMain.serverUrl;
-    } else if (index == k_tabBarApplicationIndexFavorite) {
-        if (self.activeFavorites.serverUrl)
-            serverUrl = self.activeFavorites.serverUrl;
-    } else if (index == k_tabBarApplicationIndexMedia) {
-        serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
+
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
+        UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
+        if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
+            UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
+            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                NSInteger index = tabBarController.selectedIndex;
+                   
+                // select active serverUrl
+                if (index == k_tabBarApplicationIndexFile) {
+                    serverUrl = self.activeMain.serverUrl;
+                } else if (index == k_tabBarApplicationIndexFavorite) {
+                    if (self.activeFavorites.serverUrl)
+                        serverUrl = self.activeFavorites.serverUrl;
+                } else if (index == k_tabBarApplicationIndexMedia) {
+                    serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
+                }
+            }
+        }
     }
     
     return serverUrl;
@@ -946,12 +961,18 @@
     
     //tabBar button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
-    UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
-    UIButton *button = [tabBarController.view viewWithTag:99];
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
-    [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
+        UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
+        if ([navigationController isKindOfClass:[UINavigationController class]]) {
+            UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
+            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                UIButton *button = [tabBarController.view viewWithTag:99];
+                UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
+                [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+                [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+            }
+        }
+    }
                 
     // TableView
     if (tableView) {
@@ -1512,54 +1533,66 @@
                         if (matchedAccount) {
                             
                             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-                            UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                            UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                            
-                            if (splitViewController.isCollapsed) {
-                                           
-                                [navigationControllerMaster popToRootViewControllerAnimated:false];
+                            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
                                 UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                                UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                               
-                                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
-                                }
-                               
-                            } else {
-                           
-                                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
+                                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
+                                    UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
+                                    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                        
+                                        if (splitViewController.isCollapsed) {
+                                                        
+                                            [navigationControllerMaster popToRootViewControllerAnimated:false];
+                                            UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
+                                            if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
+                                                UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
+                                                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                                    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                                        [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
+                                                    }
+                                                }
+                                            }
+                                            
+                                        } else {
+                                        
+                                            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                                                [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
+                                            }
+                                        }
+                                        
+                                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                            
+                                            [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
+                                            
+                                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                                                
+                                                NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
+                                                
+                                                if ([path containsString:@"/"]) {
+                                                    
+                                                    // Push
+                                                    NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                                                    NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
+                                                    tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
+                                                    
+                                                    [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
+                                                    
+                                                } else {
+                                                    
+                                                    // Reload folder
+                                                    NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.url, k_webDAV];
+                                                    
+                                                    self.activeMain.blinkFileNamePath = fileNamePath;
+                                                    [self.activeMain readFolder:serverUrl];
+                                                }
+                                            });
+                                        });
+                                        
+                                        
+                                        
+                                    }
                                 }
                             }
-                            
-                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                                
-                                [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
-                                
-                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                                    
-                                    NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, path];
-                                    
-                                    if ([path containsString:@"/"]) {
-                                        
-                                        // Push
-                                        NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                                        NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                        tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
-                                        
-                                        [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
-                                        
-                                    } else {
-                                        
-                                        // Reload folder
-                                        NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.url, k_webDAV];
-                                        
-                                        self.activeMain.blinkFileNamePath = fileNamePath;
-                                        [self.activeMain readFolder:serverUrl];
-                                    }
-                                });
-                            });
-              
+                       
                         } else {
                             
                             NSString *domain = [[NSURL URLWithString:link] host];
@@ -1594,13 +1627,16 @@
         if (error == nil) {
             
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            UINavigationController *navigationController = (UINavigationController *)splitViewController.viewControllers.firstObject;
-            
-            UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [navigationController presentViewController:uploadNavigationViewController animated:YES completion:nil];
-            });
+            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
+                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
+                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
+                    UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                        [navigationControllerMaster presentViewController:uploadNavigationViewController animated:YES completion:nil];
+                    });
+                }
+            }
         }
     }
     

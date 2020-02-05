@@ -52,6 +52,12 @@ endif()
 add_executable(tests ${SOURCES} ${HEADERS})
 target_compile_definitions(tests PRIVATE ${PLATFORM_DEFINES})
 
+if(VSCODE_TEST_RUNNER)
+    # Increase the Catch2 virtual console width so that the Visual Studio Code
+    # Test Explorer extension can parse long test names
+    target_compile_definitions(tests PRIVATE -DCATCH_CONFIG_CONSOLE_WIDTH=300)
+endif()
+
 if(REALM_ENABLE_SYNC)
     # It's necessary to explicitly link to realm-sync here to control the order in which libraries are
     # linked to avoid link errors when using GNU ld.

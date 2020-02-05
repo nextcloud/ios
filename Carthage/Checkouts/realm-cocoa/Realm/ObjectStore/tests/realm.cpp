@@ -461,8 +461,7 @@ TEST_CASE("Get Realm using Async Open", "[asyncOpen]") {
     if (!util::EventLoop::has_implementation())
         return;
 
-    auto cleanup = util::make_scope_exit([=]() noexcept { SyncManager::shared().reset_for_testing(); });
-    SyncManager::shared().configure(tmp_dir(), SyncManager::MetadataMode::NoEncryption);
+    TestSyncManager init_sync_manager;
 
     SyncServer server;
     SyncTestFile config(server, "default");

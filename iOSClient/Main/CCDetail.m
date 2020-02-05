@@ -227,8 +227,14 @@
                     
                     [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
                     
+                    NSString *customUserAgent = nil;
                     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
-                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor:editor account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+
+                    if ([editor isEqualToString:k_editor_onlyoffice]) {
+                        customUserAgent = [[NCUtility sharedInstance] getCustomUserAgentOnlyOffice];
+                    }
+                    
+                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor:editor customUserAgent:customUserAgent account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
                         
                         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                             

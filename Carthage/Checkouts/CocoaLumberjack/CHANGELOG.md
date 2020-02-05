@@ -1,3 +1,17 @@
+## [3.6.1 - Xcode 11.3.1 on Jan 25th, 2020](https://github.com/CocoaLumberjack/CocoaLumberjack/releases/tag/3.6.1)
+
+### Public
+- Improve error handling during log file creation in DDFileLogger & DDLogFileManager (#1103 / #1111)
+- Improve nullability annotations in public headers (#1111 / #1112 / #1119)
+- Added support for thread QOS in DDLogMessage class (#1124)
+
+### Internal
+- Fix rolling timer being rescheduled rapidly due to leeway (#1106 / #1107)
+- Fix -didArchiveLogFile: returning the file name instead of the file path (#1078)
+- Fix setxattr() function usage (#1118)
+- Fix NSDateFormatter thread safety (#1121)
+- Fix -lt_dataForMessage: duplicated code (#1122)
+
 ## [3.6.0 - Xcode 11 on October 2nd, 2019](https://github.com/CocoaLumberjack/CocoaLumberjack/releases/tag/3.6.0)
 
 ### Public
