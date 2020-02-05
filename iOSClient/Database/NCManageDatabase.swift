@@ -105,6 +105,23 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
                     
+                    if oldSchemaVersion < 87 {
+                        migration.deleteData(forType: tableActivity.className())
+                        migration.deleteData(forType: tableActivityPreview.className())
+                        migration.deleteData(forType: tableActivitySubjectRich.className())
+                        migration.deleteData(forType: tableCapabilities.className())
+                        migration.deleteData(forType: tableComments.className())
+                        migration.deleteData(forType: tableDirectEditingCreators.className())
+                        migration.deleteData(forType: tableDirectEditingEditors.className())
+                        migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableE2eEncryptionLock.className())
+                        migration.deleteData(forType: tableExternalSites.className())
+                        migration.deleteData(forType: tableGPS.className())
+                        migration.deleteData(forType: tableShare.className())
+                        migration.deleteData(forType: tableTag.className())
+                        migration.deleteData(forType: tableTrash.className())
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
