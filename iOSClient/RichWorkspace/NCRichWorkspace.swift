@@ -29,9 +29,9 @@ import MarkdownKit
     @objc @IBOutlet weak var textView: UITextView!
     @objc @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
 
-    var markdownParser = MarkdownParser()
-    var richWorkspaceText: String?
-    var textViewColor: UIColor?
+    private var markdownParser = MarkdownParser()
+    private var richWorkspaceText: String?
+    private var textViewColor: UIColor?
     private let gradient : CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
@@ -46,7 +46,6 @@ import MarkdownKit
     }
 
     @objc func changeTheming() {
-        
         if textViewColor != NCBrandColor.sharedInstance.textView {
             markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
