@@ -37,7 +37,7 @@
 
 @interface CCDetail : UIViewController <MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
-@property(nonatomic, weak) IBOutlet UIImageView *imageBackground;
+@property(nonatomic, weak) IBOutlet UIImageView *viewBackground;
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
 @property (nonatomic, strong) NSString *selectorDetail;

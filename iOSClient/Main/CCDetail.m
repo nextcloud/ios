@@ -133,7 +133,7 @@
     }
     
     // Logo
-    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
+    self.viewBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
 
     // reload image
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image]) {
