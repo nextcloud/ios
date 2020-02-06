@@ -32,13 +32,17 @@ import MarkdownKit
     var markdownParser = MarkdownParser()
     var richWorkspaceText: String?
     var textViewColor: UIColor?
-    //let gradientLayer: CAGradientLayer = CAGradientLayer()
+    private let gradient : CAGradientLayer = CAGradientLayer()
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
+    override func awakeFromNib() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
+        layer.addSublayer(gradient)
+    }
+    
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        gradient.frame = self.bounds
     }
 
     @objc func changeTheming() {
@@ -50,6 +54,15 @@ import MarkdownKit
                 textView.attributedText = markdownParser.parse(richWorkspaceText)
             }
             textViewColor = NCBrandColor.sharedInstance.textView
+            
+            // Gradient
+            if CCUtility.getDarkMode() {
+                gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            } else {
+                gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            }
+            gradient.startPoint = CGPoint(x: 0, y: 0.60)
+            gradient.endPoint = CGPoint(x: 0, y: 1)
         }
     }
     
@@ -59,20 +72,4 @@ import MarkdownKit
             self.richWorkspaceText = richWorkspaceText
         }
     }
-    
-    /*
-    @objc func setGradient() {
-        
-        gradientLayer.removeFromSuperlayer()
-        gradientLayer.frame = CGRect(x: 0.0, y: 0.0, width: textView.frame.width, height: textView.frame.height)
-        if CCUtility.getDarkMode() {
-            gradientLayer.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-        } else {
-            gradientLayer.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
-        }
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0.60)
-        gradientLayer.endPoint = CGPoint(x: 0, y: 1)
-        textView.layer.addSublayer(gradientLayer)
-    }
-    */
 }
