@@ -37,6 +37,10 @@ import MarkdownKit
     override func awakeFromNib() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
+        
+        // Gradient
+        gradient.startPoint = CGPoint(x: 0, y: 0.60)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
         layer.addSublayer(gradient)
     }
     
@@ -54,14 +58,12 @@ import MarkdownKit
             }
             textViewColor = NCBrandColor.sharedInstance.textView
             
-            // Gradient
             if CCUtility.getDarkMode() {
                 gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
             } else {
                 gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
             }
-            gradient.startPoint = CGPoint(x: 0, y: 0.60)
-            gradient.endPoint = CGPoint(x: 0, y: 1)
+            
         }
     }
     
