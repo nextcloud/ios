@@ -161,14 +161,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="95.5" y="369.5" width="223" height="157.5"/>
+                            <imageView userInteractionEnabled="NO" tag="999" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="centerY" secondItem="cUA-lB-tGG" secondAttribute="centerY" id="NqJ-e6-LfV"/>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="centerX" secondItem="3ph-Od-2hO" secondAttribute="centerX" id="VG7-UF-Zrf"/>
+                            <constraint firstItem="3ph-Od-2hO" firstAttribute="trailing" secondItem="zlU-MP-ZVs" secondAttribute="trailing" id="GuY-bH-GIn"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="top" secondItem="3ph-Od-2hO" secondAttribute="top" id="HSh-HF-TAJ"/>
+                            <constraint firstItem="3ph-Od-2hO" firstAttribute="bottom" secondItem="zlU-MP-ZVs" secondAttribute="bottom" id="hvN-HY-D9V"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="leading" secondItem="3ph-Od-2hO" secondAttribute="leading" id="sVy-C6-hu1"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
                     </view>
