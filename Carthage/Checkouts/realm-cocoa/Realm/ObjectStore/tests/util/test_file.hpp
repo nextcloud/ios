@@ -133,6 +133,12 @@ struct SyncTestFile : TestFile {
                  std::string user_name="test");
 };
 
+struct TestSyncManager {
+    TestSyncManager(std::string const& base_path="", realm::SyncManager::MetadataMode = realm::SyncManager::MetadataMode::NoEncryption);
+    ~TestSyncManager();
+    static void configure(std::string const& base_path, realm::SyncManager::MetadataMode);
+};
+
 void wait_for_upload(realm::Realm& realm);
 void wait_for_download(realm::Realm& realm);
 

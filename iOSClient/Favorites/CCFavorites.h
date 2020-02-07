@@ -50,4 +50,7 @@
 - (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action;
 - (void)listingFavorites;
 
+- (void)actionDelete:(NSIndexPath *)indexPath;
+- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite;
+
 @end

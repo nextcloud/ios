@@ -26,7 +26,6 @@
 #import <PushKit/PushKit.h>
 
 #import "BKPasscodeLockScreenManager.h"
-#import "REMenu.h"
 #import "Reachability.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
@@ -42,7 +41,7 @@
 @class NCAppConfigView;
 @class IMImagemeterViewer;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, PKPushRegistryDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, UNUserNotificationCenterDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
@@ -82,30 +81,6 @@
 
 // Push Norification Token
 @property (nonatomic, strong) NSString *pushKitToken;
-
-// Remenu
-@property (nonatomic, strong) REMenu *reMainMenu;
-@property (nonatomic, strong) REMenuItem *selezionaItem;
-@property (nonatomic, strong) REMenuItem *sortFileNameAZItem;
-@property (nonatomic, strong) REMenuItem *sortFileNameZAItem;
-@property (nonatomic, strong) REMenuItem *sortDateMoreRecentItem;
-@property (nonatomic, strong) REMenuItem *sortDateLessRecentItem;
-@property (nonatomic, strong) REMenuItem *sortSmallestItem;
-@property (nonatomic, strong) REMenuItem *sortLargestItem;
-@property (nonatomic, strong) REMenuItem *alphabeticItem;
-@property (nonatomic, strong) REMenuItem *typefileItem;
-@property (nonatomic, strong) REMenuItem *dateItem;
-@property (nonatomic, strong) REMenuItem *directoryOnTopItem;
-@property (nonatomic, strong) REMenuItem *addFolderInfo;
-
-@property (nonatomic, strong) REMenu *reSelectMenu;
-@property (nonatomic, strong) REMenuItem *selectAllItem;
-@property (nonatomic, strong) REMenuItem *deleteItem;
-@property (nonatomic, strong) REMenuItem *moveItem;
-@property (nonatomic, strong) REMenuItem *encryptItem;
-@property (nonatomic, strong) REMenuItem *decryptItem;
-@property (nonatomic, strong) REMenuItem *downloadItem;
-@property (nonatomic, strong) REMenuItem *saveItem;
 
 // Reachability
 @property (nonatomic, strong) Reachability *reachability;
@@ -159,8 +134,6 @@
 
 // TabBarController
 - (void)createTabBarController:(UITabBarController *)tabBarController;
-- (void)plusButtonVisibile:(BOOL)visible;
-- (void)selectedTabBarController:(NSInteger)index;
 - (NSString *)getTabBarControllerActiveServerUrl;
 
 // Push Notification

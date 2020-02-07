@@ -42,10 +42,15 @@ class NCAppConfigView: UIViewController {
         
         titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")
         
-        let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.sharedInstance.configuration_bundleId)
-        serverUrl = serverConfig?[NCBrandConfiguration.sharedInstance.configuration_serverUrl] as? String
-        username = serverConfig?[NCBrandConfiguration.sharedInstance.configuration_username] as? String
-        password = serverConfig?[NCBrandConfiguration.sharedInstance.configuration_password] as? String
+        if let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.sharedInstance.configuration_bundleId) {
+            serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.configuration_serverUrl] as? String
+            username = serverConfig[NCBrandConfiguration.sharedInstance.configuration_username] as? String
+            password = serverConfig[NCBrandConfiguration.sharedInstance.configuration_password] as? String
+        } else {
+            serverUrl = UserDefaults.standard.string(forKey: NCBrandConfiguration.sharedInstance.configuration_serverUrl)
+            username = UserDefaults.standard.string(forKey: NCBrandConfiguration.sharedInstance.configuration_username)
+            password = UserDefaults.standard.string(forKey: NCBrandConfiguration.sharedInstance.configuration_password)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

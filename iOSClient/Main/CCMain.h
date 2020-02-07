@@ -59,7 +59,6 @@
 @property (nonatomic, strong) NSString *richWorkspaceText;
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UISearchController *searchController;
-@property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) NSString *blinkFileNamePath;
 @property (nonatomic, readonly, strong) UIImage *cellFavouriteImage;
@@ -73,8 +72,6 @@
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata;
 
 - (void)copyFileToPasteboard:(tableMetadata *)metadata;
-
-- (void)closeAllMenu;
 
 - (void)setUINavigationBarDefault;
 
@@ -91,6 +88,23 @@
 - (void)openAssetsPickerController;
 - (void)openImportDocumentPicker;
 - (void)createFolder;
+
+- (void)setTableViewHeader;
+
+//expose methods for swift
+- (void)didSelectAll;
+- (void)deleteFile;
+- (void)saveSelectedFiles;
+- (void)downloadSelectedFilesFolders;
+- (void)moveOpenWindow:(NSArray *)indexPaths;
+
+- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite;
+- (void)minCharTextFieldDidChange:(UITextField *)sender;
+- (void)renameFile:(NSArray *)arguments;
+- (void)comandoLockPassword;
+- (void)actionDelete:(NSIndexPath *)indexPath;
+- (void)openinFile:(id)sender;
+- (void)createRichWorkspace;
 
 @end
 

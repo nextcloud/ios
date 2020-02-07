@@ -398,12 +398,12 @@ class NCUtility: NSObject {
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
                 if mimetype == metadata.contentType {
-                    return result.name
+                    return result.editor
                 }
             }
             for mimetype in result.optionalMimetypes {
                 if mimetype == metadata.contentType {
-                    return result.name
+                    return result.editor
                 }
             }
         }
@@ -479,7 +479,7 @@ class NCUtility: NSObject {
         }
     }
     
-    func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
+    @objc func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
         return UIColor(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -488,7 +488,7 @@ class NCUtility: NSObject {
         )
     }
     
-    func RGBFromUIColor(uicolorValue: UIColor) -> UInt32 {
+    @objc func RGBFromUIColor(uicolorValue: UIColor) -> UInt32 {
         
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
 
@@ -571,6 +571,16 @@ class NCUtility: NSObject {
             }
         }
         return true
+    }
+    
+    @objc func getCustomUserAgentOnlyOffice() -> String {
+        
+        let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
+        }else{
+            return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
+        }
     }
 }
 

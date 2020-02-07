@@ -659,11 +659,6 @@
 
 + (BOOL)getDarkMode
 {
-    if ([self getDarkModeDetect]) {
-        if (@available(iOS 12.0, *)) {
-            return [UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-        }
-    }
     return [[UICKeyChainStore stringForKey:@"darkMode" service:k_serviceShareKeyChain] boolValue];
 }
 

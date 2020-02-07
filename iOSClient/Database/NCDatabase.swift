@@ -232,6 +232,7 @@ class tableDirectEditingCreators: Object {
 class tableDirectEditingEditors: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var editor = ""
     let mimetypes = List<String>()
     @objc dynamic var name = ""
     let optionalMimetypes = List<String>()

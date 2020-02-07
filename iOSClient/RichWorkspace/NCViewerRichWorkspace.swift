@@ -23,6 +23,7 @@
 
 import Foundation
 import NCCommunication
+import MarkdownKit
 
 @objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
 
@@ -30,6 +31,9 @@ import NCCommunication
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
+    private var markdownParser = MarkdownParser()
+    private var textViewColor: UIColor?
+
     @objc public var richWorkspaceText: String = ""
     @objc public var serverUrl: String = ""
    
@@ -44,8 +48,6 @@ import NCCommunication
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         changeTheming()
     }
@@ -60,10 +62,18 @@ import NCCommunication
                 var metadataFolder = tableMetadata()
                 _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                self.richWorkspaceText = metadataFolder.richWorkspace
-                self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                self.richWorkspaceCommon.setRichWorkspaceText(self.richWorkspaceText, textView: self.textView)
+                if self.richWorkspaceText != metadataFolder.richWorkspace {
+                    self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
+                    self.richWorkspaceText = metadataFolder.richWorkspace
+                    self.textView.attributedText = self.markdownParser.parse(metadataFolder.richWorkspace)
+                }
             }
+        }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if let splitViewController = appDelegate.window.rootViewController as? NCSplitViewController {
+            splitViewController.traitCollectionDidChange(previousTraitCollection)
         }
     }
     
@@ -72,8 +82,14 @@ import NCCommunication
     }
     
     @objc func changeTheming() {
+        
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
-        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
+        if textViewColor != NCBrandColor.sharedInstance.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+            textView.attributedText = markdownParser.parse(richWorkspaceText)
+            textViewColor = NCBrandColor.sharedInstance.textView
+        }
     }
     
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {

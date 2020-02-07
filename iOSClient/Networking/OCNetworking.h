@@ -64,11 +64,6 @@
 - (void)downloadPreviewWithAccount:(NSString *)account serverPath:(NSString *)serverPath fileNamePath:(NSString *)fileNamePath completion:(void (^)(NSString *account, UIImage *image, NSString *message, NSInteger errorCode))completion;
 - (void)downloadPreviewTrashWithAccount:(NSString *)account fileId:(NSString *)fileId size:(NSString *)size fileName:(NSString *)fileName completion:(void (^)(NSString *account, UIImage *image, NSString *message, NSInteger errorCode))completion;
 
-#pragma mark ===== Favorite =====
-
-- (void)listingFavoritesWithAccount:(NSString *)account completion:(void(^)(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode))completion;
-
-
 #pragma mark ===== Share =====
 
 - (void)readShareWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;

@@ -1,9 +1,13 @@
 //
-//  IntroCollectionViewCell.swift
+//  NCIntroCollectionViewCell.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 18.11.19.
 //  Copyright © 2019 Philippe Weidmann. All rights reserved.
+//  Copyright © 2019 Marino Faggiana All rights reserved.
+//
+//  Author Philippe Weidmann
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -22,7 +26,7 @@
 
 import UIKit
 
-class IntroCollectionViewCell: UICollectionViewCell {
+class NCIntroCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!

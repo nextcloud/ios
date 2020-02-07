@@ -29,6 +29,10 @@
 
 #import "shared_realm.hpp"
 
+#if REALM_ENABLE_SYNC
+#import "RLMSyncUtil.h"
+#endif
+
 #import <realm/mixed.hpp>
 #import <realm/table_view.hpp>
 
@@ -328,12 +332,23 @@ NSError *RLMMakeError(RLMError code, const realm::RealmFileException& exception)
 }
 
 NSError *RLMMakeError(std::system_error const& exception) {
+    int code = exception.code().value();
     BOOL isGenericCategoryError = (exception.code().category() == std::generic_category());
     NSString *category = @(exception.code().category().name());
     NSString *errorDomain = isGenericCategoryError ? NSPOSIXErrorDomain : RLMUnknownSystemErrorDomain;
+#if REALM_ENABLE_SYNC
+    if (exception.code().category() == realm::sync::client_error_category()) {
+        if (exception.code().value() == static_cast<int>(realm::sync::Client::Error::connect_timeout)) {
+            errorDomain = NSPOSIXErrorDomain;
+            code = ETIMEDOUT;
+        }
+        else {
+            errorDomain = RLMSyncErrorDomain;
+        }
+    }
+#endif
 
-    return [NSError errorWithDomain:errorDomain
-                               code:exception.code().value()
+    return [NSError errorWithDomain:errorDomain code:code
                            userInfo:@{NSLocalizedDescriptionKey: @(exception.what()),
                                       @"Error Code": @(exception.code().value()),
                                       @"Category": category}];
@@ -403,7 +418,7 @@ NSString *RLMDefaultDirectoryForBundleIdentifier(NSString *bundleIdentifier) {
     (void)bundleIdentifier;
     // tvOS prohibits writing to the Documents directory, so we use the Library/Caches directory instead.
     return NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
-#elif TARGET_OS_IPHONE
+#elif TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
     (void)bundleIdentifier;
     // On iOS the Documents directory isn't user-visible, so put files there
     return NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];

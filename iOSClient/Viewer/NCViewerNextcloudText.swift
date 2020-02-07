@@ -27,7 +27,8 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var detail: CCDetail!
-    @objc var metadata: tableMetadata!
+    var editor: String!
+    var metadata: tableMetadata!
     var documentInteractionController: UIDocumentInteractionController!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
@@ -44,26 +45,27 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         super.init(coder: coder)
     }
     
-    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
+    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata, editor: String) {
         
         self.detail = detail
         self.metadata = metadata
+        self.editor = editor
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        if (UIDevice.current.userInterfaceIdiom == .phone) {
-            detail.navigationController?.setNavigationBarHidden(true, animated: false)
-        }
         
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
+                
+        if editor == k_editor_onlyoffice {
+            customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
+        } else {
+            customUserAgent = CCUtility.getUserAgent()
+        }
         
-        let userAgent : String = CCUtility.getUserAgent()
-        customUserAgent = userAgent
-        load(request)        
+        load(request)
     }
     
     @objc func keyboardDidShow(notification: Notification) {
@@ -91,6 +93,12 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
                 detail.navigationController?.popViewController(animated: true)
                 detail.navigationController?.navigationBar.topItem?.title = ""
                 
+                let splitViewController = appDelegate.window.rootViewController as! UISplitViewController
+                if splitViewController.isCollapsed {
+                    let masterNavigationController = splitViewController.viewControllers.first as! UINavigationController
+                    masterNavigationController.popViewController(animated: true)
+                }
+                                
                 appDelegate.activeMain.readFileReloadFolder()
             }
             

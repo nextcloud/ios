@@ -49,7 +49,7 @@ import UIKit
     
     @objc public var brand:                             String = "Nextcloud"
     @objc public var mailMe:                            String = "ios@nextcloud.com"
-    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2019"
+    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2020"
     @objc public var textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
     @objc public var loginBaseUrl:                      String = "https://cloud.nextcloud.com"
     @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
@@ -74,7 +74,7 @@ import UIKit
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public var use_default_auto_upload:           Bool = false
     @objc public var use_themingColor:                  Bool = true
-    @objc public var use_themingBackground:             Bool = true
+    //@objc public var use_themingBackground:             Bool = true                                               // Deprecated
     @objc public var use_themingLogo:                   Bool = false
     @objc public var use_middlewarePing:                Bool = false
     @objc public var use_storeLocalAutoUploadAll:       Bool = false
