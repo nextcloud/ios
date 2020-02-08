@@ -117,6 +117,7 @@
 "_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version ?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
+"_internal_modify_"         = "Edit with internal editor";
 
 // App
 
