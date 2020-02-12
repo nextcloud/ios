@@ -284,6 +284,7 @@
 "_account_already_exists_"      = "The account %@ already exists";
 "_traditional_login_"           = "Revert to old login method";
 "_web_login_"                   = "Revert to web login method";
+"_login_url_error_"             = "Url error, please verify your server url";
 
 // Favorite
 

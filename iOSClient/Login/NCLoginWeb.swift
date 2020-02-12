@@ -64,7 +64,11 @@ class NCLoginWeb: UIViewController {
         activityIndicator.startAnimating()
         self.view.addSubview(activityIndicator)
         
-        loadWebPage(webView: webView!, url: URL(string: urlBase)!)
+        if let url = URL(string: urlBase) {
+            loadWebPage(webView: webView!, url: url)
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
