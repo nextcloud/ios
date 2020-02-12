@@ -50,10 +50,10 @@ class NCBrowserWeb: UIViewController {
         let language = NSLocale.preferredLanguages[0] as String
         var request = URLRequest(url: url)
         
-        request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        request.addValue(language, forHTTPHeaderField: "Accept-Language")
-        
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")        
+        webView.customUserAgent = CCUtility.getUserAgent()
+
         webView.load(request)
     }
     
