@@ -958,11 +958,11 @@
             errorCode = error.code;
         
         // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"search" errorCode:errorCode];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
+        //if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
+        //    [[OCNetworking sharedManager] checkRemoteUser:account function:@"search" errorCode:errorCode];
+        //} else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+        //    [CCUtility setCertificateError:account error:YES];
+        //}
         
         // Error
         if (errorCode == 503) {
@@ -1014,11 +1014,11 @@
             errorCode = error.code;
         
         // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"search" errorCode:errorCode];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
+        //if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
+        //    [[OCNetworking sharedManager] checkRemoteUser:account function:@"search" errorCode:errorCode];
+        //} else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+        //    [CCUtility setCertificateError:account error:YES];
+        //}
         
         // Error
         if (errorCode == 503) {

@@ -27,6 +27,7 @@ import KTVHTTPCache
 import ZIPFoundation
 import Sheeeeeeeeet
 import NCCommunication
+import CommonCrypto
 
 class NCUtility: NSObject {
     @objc static let sharedInstance: NCUtility = {
@@ -563,6 +564,23 @@ class NCUtility: NSObject {
         return bundleDirectoryType(error: error, bundleDirectory: bundleDirectory, immPath: immPath)
     }
     
+    func IMIsChange(metadata: tableMetadata, fileNameZipUrl: URL) -> Bool {
+        
+        let backFile = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension + ".bak"
+        
+        if let md5imiFile = self.md5File(url: fileNameZipUrl) {
+            if let md5backfile = self.md5File(url: URL(fileURLWithPath: backFile)) {
+                if md5imiFile == md5backfile {
+                    return false
+                } else {
+                    return true
+                }
+            }
+        }
+        
+        return true
+    }
+    
     @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
         
         for char in permissions {
@@ -580,6 +598,46 @@ class NCUtility: NSObject {
             return "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
         }else{
             return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
+        }
+    }
+    
+    func md5File(url: URL) -> Data? {
+
+        let bufferSize = 1024 * 1024
+
+        do {
+            // Open file for reading:
+            let file = try FileHandle(forReadingFrom: url)
+            defer {
+                file.closeFile()
+            }
+
+            // Create and initialize MD5 context:
+            var context = CC_MD5_CTX()
+            CC_MD5_Init(&context)
+
+            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
+            while autoreleasepool(invoking: {
+                let data = file.readData(ofLength: bufferSize)
+                if data.count > 0 {
+                    data.withUnsafeBytes {
+                        _ = CC_MD5_Update(&context, $0.baseAddress, numericCast(data.count))
+                    }
+                    return true // Continue
+                } else {
+                    return false // End of file
+                }
+            }) { }
+
+            // Compute the MD5 digest:
+            var digest: [UInt8] = Array(repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
+            _ = CC_MD5_Final(&digest, &context)
+
+            return Data(digest)
+
+        } catch {
+            print("Cannot open file:", error.localizedDescription)
+            return nil
         }
     }
 }
