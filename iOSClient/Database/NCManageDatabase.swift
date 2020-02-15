@@ -135,7 +135,13 @@ class NCManageDatabase: NSObject {
             
             do {
                 _ = try Realm(configuration: configCompact)
-            } catch { }
+            } catch {
+                if let databaseFilePath = databaseFilePath {
+                    do {
+                        try FileManager.default.removeItem(at: databaseFilePath)
+                    } catch {}
+                }
+            }
                         
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
@@ -145,6 +151,18 @@ class NCManageDatabase: NSObject {
             Realm.Configuration.defaultConfiguration = config
         }
         
+        // Verify Database, if corrupr remove it
+        do {
+            let _ = try Realm()
+        } catch {
+            if let databaseFilePath = databaseFilePath {
+                do {
+                    try FileManager.default.removeItem(at: databaseFilePath)
+                } catch {}
+            }
+        }
+        
+        // Open Real
         _ = try! Realm()
     }
     
