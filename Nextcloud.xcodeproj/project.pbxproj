@@ -449,6 +449,7 @@
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
 		F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377141EB2364A002856D3 /* Crashlytics.framework */; };
 		F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377151EB2364A002856D3 /* Fabric.framework */; };
+		F7A7D08523F85ABE0074E71D /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
@@ -3442,6 +3443,7 @@
 				2C1D5D7823E2DE6A00334ABB /* CCGraphics.m in Sources */,
 				2C59AC5B23E2E02700733BE8 /* OCExternalSites.m in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
+				F7A7D08523F85ABE0074E71D /* NCContentPresenter.swift in Sources */,
 				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
 				2C59AC5C23E2E03400733BE8 /* OCSharedDto.m in Sources */,
 				2C59AC5923E2E00F00733BE8 /* OCActivity.m in Sources */,

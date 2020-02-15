@@ -118,6 +118,7 @@
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
 "_internal_modify_"         = "Edit with internal editor";
+"_database_corrupt_"        = "The database is corrupt, sorry but data re-entry is required";
 
 // App
 
