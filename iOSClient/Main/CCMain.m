@@ -212,6 +212,11 @@
     if (!self.tableView.editing)
         [_selectedocIdsMetadatas removeAllObjects];
 
+    // Check server URL "/"
+    if (self.navigationController.viewControllers.firstObject == self && self.serverUrl == nil) {
+        self.serverUrl = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
+    }
+    
     // Query data source
     if (self.searchController.isActive == false) {
         [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
