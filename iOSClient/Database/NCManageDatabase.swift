@@ -1739,14 +1739,13 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table LocalFile
     
-    @objc func addLocalFile(metadata: tableMetadata) {
+    @objc func addLocalFile(metadata: tableMetadata) -> tableLocalFile? {
         
         let realm = try! Realm()
+        let addObject = tableLocalFile()
 
         do {
             try realm.write {
-            
-                let addObject = tableLocalFile()
             
                 addObject.account = metadata.account
                 addObject.date = metadata.date
@@ -1762,7 +1761,10 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
+        
+        return tableLocalFile.init(value: addObject)
     }
     
     @objc func deleteLocalFile(predicate: NSPredicate) {

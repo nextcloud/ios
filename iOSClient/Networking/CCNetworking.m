@@ -565,7 +565,7 @@
         metadata.status = k_metadataStatusNormal;
             
         metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
-        [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+        (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         
         // E2EE Decrypted
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier == %@ AND serverUrl == %@", fileName, serverUrl]];
@@ -1200,7 +1200,7 @@
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
         } else {
             // Add Local
-            [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+            (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         }
     }
     

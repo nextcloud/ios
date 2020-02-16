@@ -276,7 +276,7 @@
                 (void)[CCUtility insertTypeFileIconName:fileNameForUpload metadata:metadata];
                
                 metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+                (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
                
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
                 [self performSelector:@selector(selectPost) withObject:nil];
