@@ -74,6 +74,7 @@
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
 
 #define k_dismissAfterSecond                            4
+#define k_dismissAfterSecondLong                        10
 
 #define k_daysOfActivity                                7
 
