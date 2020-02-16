@@ -317,9 +317,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + ", " + CCUtility.transformedSize(metadata.size)
                 
                 //  image local
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+                if size > 0 {
                     var tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    if tableLocalFile == nil {
+                     if tableLocalFile == nil && size == metadata.size {
                         tableLocalFile = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
@@ -626,9 +627,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 }
                 
                 // Local Image - Offline
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+                if size > 0 {
                     var tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    if tableLocalFile == nil {
+                    if tableLocalFile == nil && size == metadata.size {
                         tableLocalFile = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile != nil && tableLocalFile!.offline { cell.local.image = UIImage.init(named: "offlineFlag") }
