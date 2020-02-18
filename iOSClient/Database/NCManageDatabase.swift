@@ -135,7 +135,14 @@ class NCManageDatabase: NSObject {
             
             do {
                 _ = try Realm(configuration: configCompact)
-            } catch { }
+            } catch {
+                if let databaseFilePath = databaseFilePath {
+                    do {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                        try FileManager.default.removeItem(at: databaseFilePath)
+                    } catch {}
+                }
+            }
                         
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
@@ -145,6 +152,19 @@ class NCManageDatabase: NSObject {
             Realm.Configuration.defaultConfiguration = config
         }
         
+        // Verify Database, if corrupr remove it
+        do {
+            let _ = try Realm()
+        } catch {
+            if let databaseFilePath = databaseFilePath {
+                do {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                    try FileManager.default.removeItem(at: databaseFilePath)
+                } catch {}
+            }
+        }
+        
+        // Open Real
         _ = try! Realm()
     }
     
@@ -1719,14 +1739,13 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table LocalFile
     
-    @objc func addLocalFile(metadata: tableMetadata) {
+    @objc func addLocalFile(metadata: tableMetadata) -> tableLocalFile? {
         
         let realm = try! Realm()
+        let addObject = tableLocalFile()
 
         do {
             try realm.write {
-            
-                let addObject = tableLocalFile()
             
                 addObject.account = metadata.account
                 addObject.date = metadata.date
@@ -1742,7 +1761,10 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
+        
+        return tableLocalFile.init(value: addObject)
     }
     
     @objc func deleteLocalFile(predicate: NSPredicate) {

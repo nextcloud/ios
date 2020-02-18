@@ -118,7 +118,7 @@ class NCViewerMedia: NSObject {
                 }
                 
                 CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
+                _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
                 KTVHTTPCache.cacheDelete(with: self.videoURL)
                 
                 // reload Data Source
