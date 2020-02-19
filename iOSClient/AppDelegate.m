@@ -45,6 +45,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // Fabric
+    if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
+        [Fabric with:@[[Crashlytics class]]];
+    }
+    
     [CCUtility createDirectoryStandard];
     
     // Networking
@@ -135,11 +140,6 @@
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
 
-    // Fabric
-    if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
-        [Fabric with:@[[Crashlytics class]]];
-    }
-    
     // Store review
     if ([[NCUtility sharedInstance] isSimulatorOrTestFlight] == false) {
         NCStoreReview *review = [NCStoreReview new];
