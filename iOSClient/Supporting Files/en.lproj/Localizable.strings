@@ -812,4 +812,4 @@
 "_create_audio_error_"      = "Create file audio error";
 "_create_image_error_"      = "Create image error";
 "_error_open_file_"         = "Error on open a file";
-"_new_background_im_"       = "Select an image or take a photo or do not select anything for a canvas background"
+"_new_background_im_"       = "Select an image or take a photo or do not select anything for a canvas background";
