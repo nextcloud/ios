@@ -98,7 +98,7 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
     }
    
-    @objc func flatBottom(title: String, description: String, delay: TimeInterval, image: UIImage, type: messageType, name: String?) {
+    @objc func flatBottom(title: String, description: String, delay: TimeInterval, image: UIImage, type: messageType, name: String?, verticalOffset: CGFloat) {
         
         if name != nil && SwiftEntryKit.isCurrentlyDisplaying(entryNamed: name) { return }
            
@@ -111,7 +111,7 @@ class NCContentPresenter: NSObject {
         attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
-        attributes.positionConstraints.verticalOffset = 60
+        attributes.positionConstraints.verticalOffset = verticalOffset
         
         let title = EKProperty.LabelContent(text: title, style: .init(font:  MainFont.bold.with(size: 16), color: .white))
         let description = EKProperty.LabelContent(text: description, style: .init(font:  MainFont.medium.with(size: 13), color: .white))
