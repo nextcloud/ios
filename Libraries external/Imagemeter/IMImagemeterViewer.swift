@@ -21,13 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
 import Foundation
-import GLKit
 
 protocol IMImagemeterViewerDelegate {
 }
 
-class IMImagemeterViewer: GLKViewController, UITabBarDelegate {
+class IMImagemeterViewer: NSObject {
     var metadata: tableMetadata?
 }

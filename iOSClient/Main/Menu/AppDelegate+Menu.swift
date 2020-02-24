@@ -58,7 +58,7 @@ extension AppDelegate {
                 title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""),
                 icon: CCGraphics.scale(UIImage(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true),
                 action: { menuAction in
-                    _ = IMCreate.init(serverUrl: appDelegate.activeMain.serverUrl)
+                    _ = IMCreate.init(serverUrl: appDelegate.activeMain.serverUrl, imagemeterViewerDelegate: NCNetworkingMain.sharedInstance)
                 }
             )
         )
