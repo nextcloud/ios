@@ -37,7 +37,7 @@ class NCPhotosPickerViewController: NSObject {
         self.singleSelectedMode = singleSelectedMode
     }
     
-    @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]) -> ()) {
+    @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]?) -> ()) {
         
         var selectedPhAssets = [PHAsset]()
         var configure = TLPhotosPickerConfigure()
@@ -61,7 +61,10 @@ class NCPhotosPickerViewController: NSObject {
             
             phAssets(selectedPhAssets)
             
-        }, didCancel: nil)
+        }) {
+            
+            phAssets(nil)
+        }
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
             NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
