@@ -873,7 +873,7 @@
     if (error)
         [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
     else
-        [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
+        [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
 }
 
 - (void)saveSelectedFiles
