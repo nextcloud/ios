@@ -24,10 +24,8 @@
 import Foundation
 import SVGKit
 import KTVHTTPCache
-import ZIPFoundation
 import Sheeeeeeeeet
 import NCCommunication
-import CommonCrypto
 
 class NCUtility: NSObject {
     @objc static let sharedInstance: NCUtility = {
@@ -37,11 +35,7 @@ class NCUtility: NSObject {
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     let cache = NSCache<NSString, UIImage>()
-    struct bundleDirectoryType {
-        var error: Bool = false
-        var bundleDirectory: String = ""
-        var immPath: String = ""
-    }
+   
     
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
@@ -507,80 +501,6 @@ class NCUtility: NSObject {
         return 0
     }
     
-    @objc func IMUnzip(metadata: tableMetadata) -> Bool {
-        
-        // bak
-        let atPathBak = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
-        let toPathBak = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension + ".bak"
-        CCUtility.copyFile(atPath: atPathBak, toPath: toPathBak)
-        
-        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        let destination = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-        let removeAtPath = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension
-        
-        try? FileManager.default.removeItem(atPath: removeAtPath)
-        try? FileManager().unzipItem(at: source, to: destination)
-        
-        let bundleDirectory = NCUtility.sharedInstance.IMGetBundleDirectory(metadata: metadata)
-        if bundleDirectory.error {
-            return false
-        }
-        
-        if let fileHandle = FileHandle(forReadingAtPath: bundleDirectory.immPath) {
-            //                        let dataFormat = fileHandle.readData(ofLength: 1)
-            //                        if dataFormat.starts(with: [0x01]) {
-            //                            appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            //                            return;
-            //                        }
-            let dataZip = fileHandle.readData(ofLength: 4)
-            if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                try? FileManager().unzipItem(at: NSURL(fileURLWithPath: bundleDirectory.immPath) as URL, to: NSURL(fileURLWithPath: bundleDirectory.bundleDirectory) as URL)
-            }
-            fileHandle.closeFile()
-        }
-        
-        return true
-    }
-    
-    func IMGetBundleDirectory(metadata: tableMetadata) -> bundleDirectoryType {
-        
-        var error = true
-        var bundleDirectory = ""
-        var immPath = ""
-        
-        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        
-        if let archive = Archive(url: source, accessMode: .read) {
-            archive.forEach({ (entry) in
-                let pathComponents = (entry.path as NSString).pathComponents
-                if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
-                    error = false
-                    bundleDirectory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + pathComponents.first!
-                    immPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + entry.path
-                }
-            })
-        }
-        
-        return bundleDirectoryType(error: error, bundleDirectory: bundleDirectory, immPath: immPath)
-    }
-    
-    func IMIsChange(metadata: tableMetadata, fileNameZipUrl: URL) -> Bool {
-        
-        let backFile = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension + ".bak"
-        
-        if let md5imiFile = self.md5File(url: fileNameZipUrl) {
-            if let md5backfile = self.md5File(url: URL(fileURLWithPath: backFile)) {
-                if md5imiFile == md5backfile {
-                    return false
-                } else {
-                    return true
-                }
-            }
-        }
-        
-        return true
-    }
-    
     @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
         
         for char in permissions {
@@ -598,46 +518,6 @@ class NCUtility: NSObject {
             return "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
         }else{
             return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
-        }
-    }
-    
-    func md5File(url: URL) -> Data? {
-
-        let bufferSize = 1024 * 1024
-
-        do {
-            // Open file for reading:
-            let file = try FileHandle(forReadingFrom: url)
-            defer {
-                file.closeFile()
-            }
-
-            // Create and initialize MD5 context:
-            var context = CC_MD5_CTX()
-            CC_MD5_Init(&context)
-
-            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
-            while autoreleasepool(invoking: {
-                let data = file.readData(ofLength: bufferSize)
-                if data.count > 0 {
-                    data.withUnsafeBytes {
-                        _ = CC_MD5_Update(&context, $0.baseAddress, numericCast(data.count))
-                    }
-                    return true // Continue
-                } else {
-                    return false // End of file
-                }
-            }) { }
-
-            // Compute the MD5 digest:
-            var digest: [UInt8] = Array(repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-            _ = CC_MD5_Final(&digest, &context)
-
-            return Data(digest)
-
-        } catch {
-            print("Cannot open file:", error.localizedDescription)
-            return nil
         }
     }
 }

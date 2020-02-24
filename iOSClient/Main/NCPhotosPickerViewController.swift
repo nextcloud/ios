@@ -29,10 +29,12 @@ class NCPhotosPickerViewController: NSObject {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var sourceViewController: UIViewController
     var maxSelectedAssets = 1
+    var singleSelectedMode = false
 
-    @objc init (_ viewController: UIViewController, maxSelectedAssets: Int) {
+    @objc init (_ viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
         sourceViewController = viewController
         self.maxSelectedAssets = maxSelectedAssets
+        self.singleSelectedMode = singleSelectedMode
     }
     
     @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]) -> ()) {
@@ -47,10 +49,7 @@ class NCPhotosPickerViewController: NSObject {
         
         configure.maxSelectedAssets = self.maxSelectedAssets
         configure.selectedColor = NCBrandColor.sharedInstance.brand
-        
-        if maxSelectedAssets == 1 {
-            configure.singleSelectedMode = true
-        }
+        configure.singleSelectedMode = singleSelectedMode
         
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
             

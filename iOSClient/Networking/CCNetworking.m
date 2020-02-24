@@ -1130,9 +1130,11 @@
                 [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
                 // IMI -> Unzip
+#if HC
                 if ([metadata.typeFile isEqualToString:k_metadataTypeFile_imagemeter] && NCBrandOptions.sharedInstance.use_imi_viewer) {
-                    (void)[[NCUtility sharedInstance] IMUnzipWithMetadata:metadata];
+                    (void)[[IMUtility shared] IMUnzipWithMetadata:metadata];
                 }
+#endif
             }
             
         } else {

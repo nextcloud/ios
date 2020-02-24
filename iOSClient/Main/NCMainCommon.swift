@@ -1266,8 +1266,7 @@ extension UITabBar {
 
 //MARK: - Networking Main
 
-class NCNetworkingMain: NSObject, CCNetworkingDelegate {
-
+class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelegate {
     @objc static let sharedInstance: NCNetworkingMain = {
         let instance = NCNetworkingMain()
         return instance
@@ -1326,6 +1325,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     metadata.typeFile = k_metadataTypeFile_unknown
                 }
                 
+#if HC
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
                     if NCBrandOptions.sharedInstance.use_imi_viewer == false {
@@ -1333,20 +1333,22 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                         return
                     }
                     
-                    if !NCUtility.sharedInstance.IMUnzip(metadata: metadata) {
+                    if !IMUtility.shared.IMUnzip(metadata: metadata) {
                         NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                         return
                     }
                     
                     let storyboard = UIStoryboard(name: "IMImagemeter", bundle: nil)
-                    let imiVC = storyboard.instantiateInitialViewController() as! IMImagemeterViewer
-                    imiVC.metadata = metadata
-                    imiVC.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+                    let imagemeterViewer = storyboard.instantiateInitialViewController() as! IMImagemeterViewer
+                    imagemeterViewer.metadata = metadata
+                    imagemeterViewer.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+                    imagemeterViewer.imagemeterViewerDelegate = self
                     
-                    self.appDelegate.window.rootViewController?.present(imiVC, animated: true, completion: nil)
+                    self.appDelegate.window.rootViewController?.present(imagemeterViewer, animated: true, completion: nil)
                     
                     return
                 }
+#endif
                 
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
@@ -1424,6 +1426,36 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         
         appDelegate.startLoadAutoDownloadUpload()
     }
+    
+#if HC
+    // IMImagemeterViewerDelegate
+    func closeImagemeterViewer(metadata: tableMetadata?, bundleDirectory: String) {
+        guard let metadata = metadata else { return }
+        
+        let ocIdTemp = NSUUID().uuidString.lowercased()
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: metadata.fileName)!
+        let bundleDirectoryURL = URL(fileURLWithPath: bundleDirectory)
+        let fileNameZipUrl = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: metadata.fileName))
+        
+        // Create IMI
+        try? FileManager.default.removeItem(at: fileNameZipUrl)
+        do {
+            try FileManager().zipItem(at: bundleDirectoryURL, to:fileNameZipUrl)
+        } catch {
+            NCContentPresenter.shared.messageNotification("_error_", description: "Creation of IMI archive failed with error", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            return
+        }
+        
+        // Verify if is changed
+        if IMUtility.shared.IMIsChange(metadata: metadata, fileNameZipUrl: fileNameZipUrl) {
+            let com = IMCommunication.init()
+            _ = com.uploadFileIMI(serverUrl: metadata.serverUrl, fileName: metadata.fileName, fileNameLocalPath: fileNameLocalPath, ocId: ocIdTemp)
+        }
+        
+        // Remove bundle directory
+        try? FileManager.default.removeItem(atPath: bundleDirectory)
+    }
+#endif
     
     // UPLOAD
     

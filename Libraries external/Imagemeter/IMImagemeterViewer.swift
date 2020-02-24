@@ -25,6 +25,9 @@ import UIKit
 import Foundation
 import GLKit
 
+protocol IMImagemeterViewerDelegate {
+}
+
 class IMImagemeterViewer: GLKViewController, UITabBarDelegate {
     var metadata: tableMetadata?
 }
