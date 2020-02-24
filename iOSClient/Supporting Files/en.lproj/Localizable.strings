@@ -801,5 +801,14 @@
 "_voice_memo_filename_"     = "voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
 
+// IM
 
-
+"_textnote_"                = "Text note";
+"_audionote_"               = "Audio note";
+"_removeaudionote_"         = "Do you want remove the audio note?";
+"_detailpicture_"           = "Detail picture";
+"_creation_archive_error_"  = "Creation archive failed with error";
+"_read_audio_error_"        = "Read file audio error";
+"_create_audio_error_"      = "Create file audio error";
+"_create_image_error_"      = "Create image error";
+"_error_open_file_"         = "Error on open a file";
