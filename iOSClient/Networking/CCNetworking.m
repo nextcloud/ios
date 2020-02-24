@@ -1131,7 +1131,7 @@
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
                 // IMI -> Unzip
 #if HC
-                if ([metadata.typeFile isEqualToString:k_metadataTypeFile_imagemeter] && NCBrandOptions.sharedInstance.use_imi_viewer) {
+                if ([metadata.typeFile isEqualToString:k_metadataTypeFile_imagemeter]) {
                     (void)[[IMUtility shared] IMUnzipWithMetadata:metadata];
                 }
 #endif

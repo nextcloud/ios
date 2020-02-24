@@ -47,9 +47,9 @@ class NCCreateMenuAdd: NSObject {
         
         items.append(MenuItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 20, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         
-        if NCBrandOptions.sharedInstance.use_imi_viewer {
-            items.append(MenuItem(title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), value: 21, image: CCGraphics.scale(UIImage.init(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
-        }
+#if HC
+        items.append(MenuItem(title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), value: 21, image: CCGraphics.scale(UIImage.init(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
+#endif
         
         if isNextcloudTextAvailable {
             items.append(MenuItem(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), value: 31, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))

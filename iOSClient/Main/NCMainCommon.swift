@@ -1328,11 +1328,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
 #if HC
                 if metadata.typeFile == k_metadataTypeFile_imagemeter {
                     
-                    if NCBrandOptions.sharedInstance.use_imi_viewer == false {
-                        NCMainCommon.sharedInstance.openIn(metadata: metadata)
-                        return
-                    }
-                    
                     if !IMUtility.shared.IMUnzip(metadata: metadata) {
                         NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
                         return
