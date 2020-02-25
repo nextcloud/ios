@@ -56,7 +56,7 @@ class NCDetailNavigationController: UINavigationController {
     
     @objc func openMenuMore() {
         if let metadata = appDelegate.activeDetail?.metadata {
-            //self.toggleMoreMenu(viewController: self, metadata: metadata)
+            self.toggleMoreMenu(viewController: self, metadata: metadata)
         }
     }
 }
