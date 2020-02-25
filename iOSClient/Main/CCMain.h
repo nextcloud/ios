@@ -33,7 +33,6 @@
 #import "CCLogin.h"
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
-#import "CCDetail.h"
 #import "CCGraphics.h"
 #import "CCSection.h"
 #import "CCUtility.h"
@@ -57,7 +56,6 @@
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleMain;
 @property (nonatomic, strong) NSString *richWorkspaceText;
-@property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) NSString *blinkFileNamePath;

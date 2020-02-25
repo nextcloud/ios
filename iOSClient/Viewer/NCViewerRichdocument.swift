@@ -22,13 +22,15 @@
 //
 
 import Foundation
+import WebKit
 
 class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var detail: CCDetail!
     @objc var metadata: tableMetadata!
     var documentInteractionController: UIDocumentInteractionController!
+    var view: UIView!
+    var viewController: UIViewController!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         super.init(frame: frame, configuration: configuration)
@@ -38,16 +40,19 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
         navigationDelegate = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: "ViewerRichdocumentGrabFocus"), object: nil)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
-    @objc func viewRichDocumentAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
+    @objc func viewRichDocumentAt(_ link: String, metadata: tableMetadata, view: UIView, viewController: UIViewController) {
         
-        self.detail = detail
         self.metadata = metadata
+        self.view = view
+        self.viewController = viewController
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -59,7 +64,10 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         let userAgent : String = CCUtility.getUserAgent()
         customUserAgent = userAgent
-        load(request)        
+        
+        load(request)
+        
+        self.view.addSubview(self)
     }
     
     @objc func keyboardDidShow(notification: Notification) {
@@ -67,11 +75,11 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
         //print("keyboardFrame: \(keyboardFrame)")
-        frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
+        frame.size.height = view.frame.height - keyboardFrame.size.height
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        frame = detail.view.bounds
+        frame = view.frame
     }
     
     //MARK: -
@@ -82,17 +90,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             
             if message.body as? String == "close" {
                 
-                removeFromSuperview()
-                
-                detail.navigationController?.popViewController(animated: true)
-                detail.navigationController?.navigationBar.topItem?.title = ""
-                
-                let splitViewController = appDelegate.window.rootViewController as! UISplitViewController
-                if splitViewController.isCollapsed {
-                    let masterNavigationController = splitViewController.viewControllers.first as! UINavigationController
-                    masterNavigationController.popViewController(animated: true)
-                }
-                                
+                appDelegate.activeDetail.viewUnload()                                
                 appDelegate.activeMain.readFileReloadFolder()
             }
             
@@ -111,11 +109,11 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 viewController.layoutViewSelect = k_layout_view_richdocument
                 
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                self.detail.present(navigationController, animated: true, completion: nil)
+                viewController.present(navigationController, animated: true, completion: nil)
             }
             
             if message.body as? String == "share" {
-                NCMainCommon.sharedInstance.openShare(ViewController: detail, metadata: metadata, indexPage: 2)
+                NCMainCommon.sharedInstance.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
             }
             
             if let param = message.body as? Dictionary<AnyHashable,Any> {
@@ -227,7 +225,6 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             }
         })
     }
-    
     
     //MARK: -
 

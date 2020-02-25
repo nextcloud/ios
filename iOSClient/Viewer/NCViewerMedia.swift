@@ -26,7 +26,6 @@ import KTVHTTPCache
 
 class NCViewerMedia: NSObject {
 
-    var detail: CCDetail!
     var metadata: tableMetadata!
     var videoURL: URL!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -38,11 +37,10 @@ class NCViewerMedia: NSObject {
         return viewMedia
     }()
 
-    @objc func viewMedia(_ metadata: tableMetadata, detail: CCDetail) {
+    @objc func viewMedia(_ metadata: tableMetadata, view: UIView) {
         
         var videoURLProxy: URL!
 
-        self.detail = detail
         self.metadata = metadata
         
         guard let rootView = UIApplication.shared.keyWindow else {
@@ -73,20 +71,16 @@ class NCViewerMedia: NSObject {
             
             let authValue = "Basic " + authData.base64EncodedString(options: [])
             KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
-            
-            // Disable Button Action (the file is in download via Proxy Server)
-            detail.buttonAction.isEnabled = false
         }
         
         appDelegate.player = AVPlayer(url: videoURLProxy)
         appDelegate.playerController = AVPlayerViewController()
         
         appDelegate.playerController.player = appDelegate.player
-        appDelegate.playerController.view.frame = CGRect(x: 0, y: 0, width: Int(rootView.bounds.size.width), height: Int(rootView.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1)
+        appDelegate.playerController.view.frame = view.frame
         appDelegate.playerController.allowsPictureInPicturePlayback = false
-        detail.addChild(appDelegate.playerController)
-        detail.view.addSubview(appDelegate.playerController.view)
-        appDelegate.playerController.didMove(toParent: detail)
+        
+        view.addSubview(appDelegate.playerController.view)
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
             let player = notification.object as! AVPlayerItem
@@ -94,9 +88,7 @@ class NCViewerMedia: NSObject {
         }
         
         appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-        
-        detail.isMediaObserver = true
-        
+        appDelegate.isMediaObserver = true
         appDelegate.player.play()
     }
     
@@ -118,14 +110,11 @@ class NCViewerMedia: NSObject {
                 }
                 
                 CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
                 KTVHTTPCache.cacheDelete(with: self.videoURL)
                 
                 // reload Data Source
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl:self.metadata.serverUrl, ocId: self.metadata.ocId, action: k_action_MOD)
-                
-                // Enabled Button Action (the file is in local)
-                self.detail.buttonAction.isEnabled = true
             }
         }
     }

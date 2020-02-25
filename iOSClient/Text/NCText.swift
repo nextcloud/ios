@@ -23,6 +23,7 @@
 
 
 import Foundation
+import WebKit
 
 @objc protocol NCTextDelegate {
     func dismissTextView()
@@ -107,7 +108,15 @@ class NCText: UIViewController, UITextViewDelegate {
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        appDelegate.activeDetail?.viewFile()
+        super.viewDidDisappear(animated)
+        
+        if appDelegate.activeDetail != nil {
+            if let view = appDelegate.activeDetail.subViewActive() {
+                if view is WKWebView {
+                    appDelegate.activeDetail.viewFile(metadata: metadata!, selector: nil)
+                }
+            }
+        }
     }
     
     @objc func keyboardWillHideHandle() {

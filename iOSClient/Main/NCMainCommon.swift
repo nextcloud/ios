@@ -1387,9 +1387,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
             //selectorLoadViewImage
             if selector == selectorLoadViewImage {
                 
-                if appDelegate.activeDetail != nil {
-                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
-                }
+//                if appDelegate.activeDetail != nil {
+//                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
+//                }
             }
             
             appDelegate.startLoadAutoDownloadUpload()
@@ -1411,9 +1411,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
             
             if selector == selectorLoadViewImage {
                 
-                if appDelegate.activeDetail.view.window != nil {
-                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
-                }
+//                if appDelegate.activeDetail.view.window != nil {
+//                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
+//                }
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
             }

@@ -334,12 +334,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         }
         
         if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? CCDetail {
+            if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
-                segueViewController.metadataDetail = metadataPush
-                segueViewController.dateFilterQuery = nil
-                segueViewController.photoDataSource = photoDataSource
-                segueViewController.title = metadataPush!.fileNameView
+                segueViewController.metadata = metadataPush
             }
         }
     }
@@ -620,8 +617,6 @@ extension NCMedia {
                 }
                 
             }  else {
-                
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 
                 self.loadingSearch = false
                 

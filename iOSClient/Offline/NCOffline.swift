@@ -460,12 +460,9 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         }
         
         if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? CCDetail {
+            if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
-                segueViewController.metadataDetail = metadataPush
-                segueViewController.dateFilterQuery = nil
-                segueViewController.photoDataSource = photoDataSource
-                segueViewController.title = metadataPush!.fileNameView
+                segueViewController.metadata = metadataPush
             }
         }
     }

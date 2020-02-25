@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import WebKit
 
 @objc protocol NCBrowserWebDelegate: class {
     @objc optional func browserWebDismiss()
@@ -51,7 +52,7 @@ class NCBrowserWeb: UIViewController {
         var request = URLRequest(url: url)
         
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        request.addValue(language, forHTTPHeaderField: "Accept-Language")        
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
         webView.customUserAgent = CCUtility.getUserAgent()
 
         webView.load(request)

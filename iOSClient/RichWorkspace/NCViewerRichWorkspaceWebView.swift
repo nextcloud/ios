@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import WebKit
 
 class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     

@@ -3329,8 +3329,9 @@
         return;
     
     // Collapsed ma siamo già in detail esci
-    if (self.splitViewController.isCollapsed)
-        if (_detailViewController.isViewLoaded && _detailViewController.view.window) return;
+    if (self.splitViewController.isCollapsed) {
+        if (appDelegate.activeDetail.isViewLoaded && appDelegate.activeDetail.view.window) return;
+    }
     
     // Metadata for push detail
     self.metadataForPushDetail = metadata;
@@ -3341,20 +3342,11 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    id viewController = segue.destinationViewController;
     tableMetadata *metadata;
-    
-    if ([viewController isKindOfClass:[UINavigationController class]]) {
-        
-        UINavigationController *nav = viewController;
-        _detailViewController = (CCDetail *)nav.topViewController;
-        
-    } else {
-        
-        _detailViewController = segue.destinationViewController;
-    }
-    
     NSMutableArray *photoDataSource = [NSMutableArray new];
+
+    UINavigationController *navigationController = segue.destinationViewController;
+    NCDetailViewController *detailViewController = (NCDetailViewController *)navigationController.topViewController;
     
     if ([sender isKindOfClass:[tableMetadata class]]) {
     
@@ -3372,12 +3364,10 @@
         }
     }
     
-    _detailViewController.metadataDetail = metadata;
-    _detailViewController.selectorDetail = self.selectorForPushDetail;
-    _detailViewController.photoDataSource = photoDataSource;
-    _detailViewController.dateFilterQuery = nil;
+    detailViewController.metadata = metadata;
+    detailViewController.selector = self.selectorForPushDetail;
     
-    [_detailViewController setTitle:metadata.fileNameView];
+    [detailViewController setTitle:metadata.fileNameView];
 }
 
 // can i go to next viewcontroller

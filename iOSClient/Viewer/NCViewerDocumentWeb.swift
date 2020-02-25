@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import WebKit
 
 class NCViewerDocumentWeb: NSObject {
     
@@ -34,7 +35,7 @@ class NCViewerDocumentWeb: NSObject {
         return instance
     }()
     
-    @objc func viewDocumentWebAt(_ metadata: tableMetadata, detail: CCDetail) {
+    @objc func viewDocumentWebAt(_ metadata: tableMetadata, view: UIView) {
         
         if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) { return }
         
@@ -67,7 +68,7 @@ class NCViewerDocumentWeb: NSObject {
         
         configuration.preferences = preferences
         
-        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: Int(detail.view.bounds.size.width), height: Int(detail.view.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1), configuration: configuration)
+        let webView = WKWebView(frame: view.frame)
         webView.navigationDelegate = self
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.backgroundColor = .white
@@ -121,7 +122,7 @@ class NCViewerDocumentWeb: NSObject {
             webView.load(URLRequest(url: url))
         }
         
-        detail.view.addSubview(webView)
+        view.addSubview(webView)
     }
 }
 

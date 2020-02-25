@@ -293,6 +293,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                         self.dismiss(animated: true, completion: {
                             let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: contentType)
                             
+                            self.appDelegate.activeMain.readFileReloadFolder()
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                         })
                     }

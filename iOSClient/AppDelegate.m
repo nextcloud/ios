@@ -26,7 +26,6 @@
 #import "CCGraphics.h"
 #import "CCSynchronize.h"
 #import "CCMain.h"
-#import "CCDetail.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import "NCBridgeSwift.h"
@@ -214,9 +213,7 @@
     [self pushNotification];
     
     NSLog(@"[LOG] RichDocument");
-    if (self.activeDetail.richDocument) {
-        [self.activeDetail.richDocument grabFocus];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ViewerRichdocumentGrabFocus" object:nil];
 }
 
 //

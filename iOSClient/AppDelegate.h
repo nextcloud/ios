@@ -24,12 +24,12 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 #import <PushKit/PushKit.h>
+#import <AVKit/AVKit.h>
 
 #import "BKPasscodeLockScreenManager.h"
 #import "Reachability.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
-#import "CCDetail.h"
 #import "CCMain.h"
 #import "CCSettings.h"
 #import "CCFavorites.h"
@@ -40,6 +40,7 @@
 @class NCOffline;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
+@class NCDetailViewController;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, UNUserNotificationCenterDelegate>
 
@@ -78,6 +79,7 @@
 // Audio Video
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerViewController *playerController;
+@property BOOL isMediaObserver;
 
 // Push Norification Token
 @property (nonatomic, strong) NSString *pushKitToken;
@@ -90,7 +92,7 @@
 @property (nonatomic, strong) CCMain *homeMain;
 @property (nonatomic, strong) CCFavorites *activeFavorites;
 @property (nonatomic, strong) NCMedia *activeMedia;
-@property (nonatomic, retain) CCDetail *activeDetail;
+@property (nonatomic, retain) NCDetailViewController *activeDetail;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
