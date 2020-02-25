@@ -796,20 +796,20 @@
 // Voice Memo
 
 "_create_voice_memo_"       = "Create voice memo";
-"_voice_memo_start_"        = "tap to start";
-"_voice_memo_stop_"         = "tap to stop";
-"_voice_memo_filename_"     = "voice memo";
+"_voice_memo_start_"        = "Tap to start";
+"_voice_memo_stop_"         = "Tap to stop";
+"_voice_memo_filename_"     = "Voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
 
 // IM
 
 "_textnote_"                = "Text note";
 "_audionote_"               = "Audio note";
-"_removeaudionote_"         = "Do you want remove the audio note?";
+"_removeaudionote_"         = "Do you want delete the audio note?";
 "_detailpicture_"           = "Detail picture";
-"_creation_archive_error_"  = "Creation archive failed with error";
-"_read_audio_error_"        = "Read file audio error";
-"_create_audio_error_"      = "Create file audio error";
-"_create_image_error_"      = "Create image error";
-"_error_open_file_"         = "Error on open a file";
-"_new_background_im_"       = "Select an image or take a photo or do not select anything for a canvas background followed by 'Done'";
+"_creation_archive_error_"  = "Error while creating archive";
+"_read_audio_error_"        = "Error while reading audio file";
+"_create_audio_error_"      = "Error while creating audio file";
+"_create_image_error_"      = "Error while creating image file";
+"_error_open_file_"         = "Error while opening a file";
+"_new_background_im_"       = "Select an image, take a picture or do not select anything for a canvas background. Press 'Done' to complete.";
