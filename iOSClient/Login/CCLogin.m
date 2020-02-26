@@ -301,48 +301,14 @@
                 [self.activity stopAnimating];
                 self.login.enabled = YES;
                 
-                if (errorCode == 0) {
-                    
-                    NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
-                    
-                    // NO account found, clear
-                    if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
-                    
-                    // STOP Intro
-                    [CCUtility setIntro:YES];
-                    
-                    [[NCManageDatabase sharedInstance] deleteAccount:account];
-                    [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
-                    
-                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-                    
-                    // Setting appDelegate active account
-                    [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-                    
-                    [self dismissViewControllerAnimated:YES completion:nil];
-                    
-                } else {
-                    
-                    if (errorCode != NSURLErrorServerCertificateUntrusted) {
-                        
-                        NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
-                        
-                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
-                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                        
-                        [alertController addAction:okAction];
-                        [self presentViewController:alertController animated:YES completion:nil];
-                    }
-                }
+                [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:message];
             }];
         }
     }
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark == Action ==
+#pragma mark == Login ==
 #pragma --------------------------------------------------------------------------------------------
 
 - (IBAction)handlebaseUrlchange:(id)sender
@@ -376,42 +342,52 @@
             [self.activity stopAnimating];
             self.login.enabled = YES;
 
-            if (errorCode == 0) {
-                
-                NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
-                
-                // NO account found, clear
-                if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
-                
-                // STOP Intro
-                [CCUtility setIntro:YES];
-                
-                [[NCManageDatabase sharedInstance] deleteAccount:account];
-                [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
-                
-                tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-                
-                // Setting appDelegate active account
-                [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
-                
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
-                
-                [self dismissViewControllerAnimated:YES completion:nil];
-                
-            } else {
-                
-                if (errorCode != NSURLErrorServerCertificateUntrusted) {
-                    
-                    NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
-                    
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                    
-                    [alertController addAction:okAction];
-                    [self presentViewController:alertController animated:YES completion:nil];
-                }
-            }
+            [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:message];
         }];
+    }
+}
+
+- (void)AfterLoginWithUrl:(NSString *)url user:(NSString *)user token:(NSString *)token errorCode:(NSInteger)errorCode message:(NSString *)message
+{
+    if (errorCode == 0) {
+        
+        NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
+        
+        // NO account found, clear
+        if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
+        
+        [[NCManageDatabase sharedInstance] deleteAccount:account];
+        [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
+        
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+        
+        // Setting appDelegate active account
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
+        
+        if ([CCUtility getIntro]) {
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+            [self dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [CCUtility setIntro:YES];
+            if (self.presentingViewController == nil) {
+                UISplitViewController *splitController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
+                splitController.modalPresentationStyle = UIModalPresentationFullScreen;
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+                appDelegate.window.rootViewController = splitController;
+                [appDelegate.window makeKeyWindow];
+            } else {
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
+        }
+    } else {
+        if (errorCode != NSURLErrorServerCertificateUntrusted) {
+            NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
     }
 }
 
