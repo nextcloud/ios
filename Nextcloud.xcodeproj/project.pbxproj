@@ -2471,9 +2471,9 @@
 			isa = PBXGroup;
 			children = (
 				F7CF2FF6240833EF005DE5F8 /* NCViewerImageView.xib */,
+				F7CF2FF9240833EF005DE5F8 /* NCViewerImageCollectionViewCell.xib */,
 				F7CF2FF7240833EF005DE5F8 /* NCViewerImageAsset.swift */,
 				F7CF2FF8240833EF005DE5F8 /* NCViewerImageView.swift */,
-				F7CF2FF9240833EF005DE5F8 /* NCViewerImageCollectionViewCell.xib */,
 				F7CF2FFA240833EF005DE5F8 /* NCViewerImageCollectionViewCell.swift */,
 				F7CF2FFB240833EF005DE5F8 /* NCViewerImageNibLoadingView.swift */,
 			);

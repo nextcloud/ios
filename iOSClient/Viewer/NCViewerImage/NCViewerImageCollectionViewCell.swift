@@ -25,6 +25,12 @@ class NCViewerImageCollectionViewCell: UICollectionViewCell {
     func withImageAsset(_ asset: NCViewerImageAsset?) {
         guard self.dataTask?.state != URLSessionDataTask.State.running else { return }
         guard let asset = asset else { return }
+        guard let metadata = asset.metadata else { return }
+        let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        if let image = UIImage(contentsOfFile: imagePath) {
+            self.apply(image: self.fitIntoFrame(image: image, type: asset.type))
+        }
+        /*
         if asset.image != nil {
             self.apply(image: self.fitIntoFrame(image: asset.image, type: asset.type))
         } else if asset.url != nil {
@@ -33,15 +39,16 @@ class NCViewerImageCollectionViewCell: UICollectionViewCell {
                 self.apply(image: self.fitIntoFrame(image: asset.image, type: asset.type))
             })
         }
+        */
     }
 
     func apply(image: UIImage?) {
         guard let image = image else { return }
-        self.galleryImageView.alpha = 0
+//        self.galleryImageView.alpha = 0
         self.galleryImageView.image = image
-        UIView.animate(withDuration: 0.1) {
-            self.galleryImageView.alpha = 1
-        }
+//        UIView.animate(withDuration: 0.1) {
+//            self.galleryImageView.alpha = 1
+//        }
     }
 
     override func draw(_ rect: CGRect) {

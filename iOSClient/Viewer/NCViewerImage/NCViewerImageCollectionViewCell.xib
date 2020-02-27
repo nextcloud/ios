@@ -19,7 +19,7 @@
                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fYl-gF-3Tc">
                         <rect key="frame" x="0.0" y="0.0" width="372" height="458"/>
                         <subviews>
-                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="3" translatesAutoresizingMaskIntoConstraints="NO" id="Y2R-g3-1to">
+                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="Y2R-g3-1to">
                                 <rect key="frame" x="0.0" y="0.0" width="372" height="375"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -63,6 +63,6 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="3" width="592.5" height="1555.5"/>
+        <image name="logo" width="223" height="157.5"/>
     </resources>
 </document>
