@@ -33,7 +33,6 @@ class NCDetailViewController: UIViewController {
     @objc var selector: String?
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var viewerPhotoView: NCViewerPhotoView?
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -67,11 +66,8 @@ class NCDetailViewController: UIViewController {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        
-        viewerPhotoView?.saveCurrentStatesForRotation()
-        
+                
         coordinator.animate(alongsideTransition: nil) { _ in
-            self.viewerPhotoView?.restoreStatesForRotation(in: size)
         }
     }
     
@@ -117,8 +113,6 @@ class NCDetailViewController: UIViewController {
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
-            viewerPhotoView = NCViewerPhotoView.init(frame: backgroundView.frame)
-            viewerPhotoView?.setup(metadata: metadata, view: backgroundView)
             return
         }
         
