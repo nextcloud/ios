@@ -138,6 +138,7 @@ class NCViewerImageCollectionViewCell: UICollectionViewCell {
 }
 
 extension NCViewerImageCollectionViewCell: UIScrollViewDelegate {
+    
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.galleryImageView
     }
