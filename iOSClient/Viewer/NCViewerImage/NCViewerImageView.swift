@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class NCViewerImageView: NCViewerImageNibLoadingView {
+class NCViewerImageView: NCViewerImageNibLoadingView {
     @IBOutlet weak var collectionView: UICollectionView!
 
     public var assets: [NCViewerImageAsset?]? {

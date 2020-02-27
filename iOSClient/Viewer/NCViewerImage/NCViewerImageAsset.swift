@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class NCViewerImageAsset: NSObject {
+class NCViewerImageAsset: NSObject {
 
     public enum ImageType {
         case jpg
@@ -17,7 +17,7 @@ public class NCViewerImageAsset: NSObject {
     public var url: URL?
     public var image: UIImage?
     public var type: ImageType?
-    public var caption: String?
+    public var metadata: tableMetadata?
 
     private override init() { }
 
@@ -27,16 +27,18 @@ public class NCViewerImageAsset: NSObject {
 
     public init(url: URL, caption: String?) {
         self.url = url
-        self.caption = caption
     }
 
     public init(image: UIImage) {
         self.image = image
     }
+    
+    public init(metadata: tableMetadata) {
+        self.metadata = metadata
+    }
 
     public init(image: UIImage, caption: String?) {
         self.image = image
-        self.caption = caption
     }
 
     func download(completion:@escaping(_ success: Bool?) -> Void) -> URLSessionDataTask? {
