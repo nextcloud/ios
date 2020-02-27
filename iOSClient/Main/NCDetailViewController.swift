@@ -27,7 +27,7 @@ import NCCommunication
 
 class NCDetailViewController: UIViewController {
     
-    @IBOutlet weak var backgroundView: UIImageView!
+    @IBOutlet weak var viewerImageView: NCViewerImageView!
     
     @objc var metadata: tableMetadata?
     @objc var selector: String?
@@ -71,7 +71,7 @@ class NCDetailViewController: UIViewController {
                     navigationController.popToRootViewController(animated: true)
                 }
             } else {
-                for view in backgroundView.subviews {
+                for view in viewerImageView.subviews {
                     view.removeFromSuperview()
                 }
                 self.navigationController?.navigationBar.topItem?.title = ""
@@ -80,12 +80,12 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func changeTheming() {
-        backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
+        //backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
     func subViewActive() -> UIView? {
-        return backgroundView.subviews.first
+        return viewerImageView.subviews.first
     }
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
@@ -106,22 +106,29 @@ class NCDetailViewController: UIViewController {
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
-            let viewerPhotoViewController = NCViewerPhotoViewController()
-            self.addChild(viewerPhotoViewController)
-            self.backgroundView.addSubview(viewerPhotoViewController.view)
-            viewerPhotoViewController.didMove(toParent: self)
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: "fileName", ascending: true) {
+                var assets: [NCViewerImageAsset?] = [NCViewerImageAsset]()
+                for metadata in metadatas {
+                    let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                    if let image = UIImage(contentsOfFile: imagePath) {
+                        let asset = NCViewerImageAsset(image: image)
+                        assets.append(asset)
+                    }
+                }
+                viewerImageView.assets = assets
+            }
             return
         }
         
         // AUDIO VIDEO
         if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
-            NCViewerMedia.sharedInstance.viewMedia(metadata, view: backgroundView)
+            NCViewerMedia.sharedInstance.viewMedia(metadata, view: viewerImageView)
             return
         }
         
         // DOCUMENT - INTERNAL VIEWER
         if metadata.typeFile == k_metadataTypeFile_document && selector != nil && selector == selectorLoadFileInternalView {
-            NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
+            NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: viewerImageView)
             return
         }
         
@@ -131,14 +138,14 @@ class NCDetailViewController: UIViewController {
             // PDF
             if metadata.contentType == "application/pdf" {
                 if #available(iOS 11.0, *) {
-                    let viewerPDF = NCViewerPDF.init(frame: backgroundView.frame)
+                    let viewerPDF = NCViewerPDF.init(frame: viewerImageView.frame)
                     
                     let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) == false {
                         return
                     }
                     
-                    viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
+                    viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: viewerImageView)
                 }
                 
                 return
@@ -150,7 +157,7 @@ class NCDetailViewController: UIViewController {
                 let editor = NCUtility.sharedInstance.isDirectEditing(metadata)!
                 if editor == k_editor_text || editor == k_editor_onlyoffice {
                     
-                    NCUtility.sharedInstance.startActivityIndicator(view: backgroundView, bottom: 0)
+                    NCUtility.sharedInstance.startActivityIndicator(view: viewerImageView, bottom: 0)
 
                     if metadata.url == "" {
                         
@@ -165,8 +172,8 @@ class NCDetailViewController: UIViewController {
                             
                             if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                                 
-                                let nextcloudText = NCViewerNextcloudText.init(frame: self.backgroundView.frame, configuration: WKWebViewConfiguration())
-                                nextcloudText.viewerAt(url!, metadata: metadata, editor: editor, view: self.backgroundView, viewController: self)
+                                let nextcloudText = NCViewerNextcloudText.init(frame: self.viewerImageView.frame, configuration: WKWebViewConfiguration())
+                                nextcloudText.viewerAt(url!, metadata: metadata, editor: editor, view: self.viewerImageView, viewController: self)
                                 if editor == k_editor_text && self.splitViewController!.isCollapsed {
                                     self.navigationController?.navigationItem.hidesBackButton = true
                                 }
@@ -184,8 +191,8 @@ class NCDetailViewController: UIViewController {
                         
                     } else {
                         
-                        let nextcloudText = NCViewerNextcloudText.init(frame: backgroundView.frame, configuration: WKWebViewConfiguration())
-                        nextcloudText.viewerAt(metadata.url, metadata: metadata, editor: editor, view: backgroundView, viewController: self)
+                        let nextcloudText = NCViewerNextcloudText.init(frame: viewerImageView.frame, configuration: WKWebViewConfiguration())
+                        nextcloudText.viewerAt(metadata.url, metadata: metadata, editor: editor, view: viewerImageView, viewController: self)
                         if editor == k_editor_text && self.splitViewController!.isCollapsed {
                             self.navigationController?.navigationItem.hidesBackButton = true
                         }
@@ -198,7 +205,7 @@ class NCDetailViewController: UIViewController {
             // RichDocument: Collabora
             if NCUtility.sharedInstance.isRichDocument(metadata) && appDelegate.reachability.isReachable() {
                 
-                NCUtility.sharedInstance.startActivityIndicator(view: backgroundView, bottom: 0)
+                NCUtility.sharedInstance.startActivityIndicator(view: viewerImageView, bottom: 0)
                 
                 if metadata.url == "" {
                     
@@ -206,8 +213,8 @@ class NCDetailViewController: UIViewController {
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                             
-                            let richDocument = NCViewerRichdocument.init(frame: self.backgroundView.frame, configuration: WKWebViewConfiguration())
-                            richDocument.viewRichDocumentAt(url!, metadata: metadata, view: self.backgroundView, viewController: self)
+                            let richDocument = NCViewerRichdocument.init(frame: self.viewerImageView.frame, configuration: WKWebViewConfiguration())
+                            richDocument.viewRichDocumentAt(url!, metadata: metadata, view: self.viewerImageView, viewController: self)
                             if self.splitViewController != nil && self.splitViewController!.isCollapsed {
                                 self.navigationController?.navigationItem.hidesBackButton = true
                             }
@@ -226,8 +233,8 @@ class NCDetailViewController: UIViewController {
                     
                 } else {
                     
-                    let richDocument = NCViewerRichdocument.init(frame: backgroundView.frame, configuration: WKWebViewConfiguration())
-                    richDocument.viewRichDocumentAt(metadata.url, metadata: metadata, view: backgroundView, viewController: self)
+                    let richDocument = NCViewerRichdocument.init(frame: viewerImageView.frame, configuration: WKWebViewConfiguration())
+                    richDocument.viewRichDocumentAt(metadata.url, metadata: metadata, view: viewerImageView, viewController: self)
                     if self.splitViewController != nil && self.splitViewController!.isCollapsed {
                         self.navigationController?.navigationItem.hidesBackButton = true
                     }
@@ -236,7 +243,7 @@ class NCDetailViewController: UIViewController {
         }
         
         // OTHER
-        NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
+        NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: viewerImageView)
     }
 
 }
