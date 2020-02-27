@@ -161,24 +161,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hbz-Fn-lvX" customClass="NCViewerImageView" customModule="Nextcloud" customModuleProvider="target">
+                            <imageView tag="999" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="774"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                            </view>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Hbz-Fn-lvX" firstAttribute="top" secondItem="3ph-Od-2hO" secondAttribute="top" id="3QY-40-Fyy"/>
-                            <constraint firstItem="3ph-Od-2hO" firstAttribute="bottom" secondItem="Hbz-Fn-lvX" secondAttribute="bottom" id="6eE-3t-YVt"/>
-                            <constraint firstItem="3ph-Od-2hO" firstAttribute="trailing" secondItem="Hbz-Fn-lvX" secondAttribute="trailing" id="R7K-EW-Hj6"/>
-                            <constraint firstItem="Hbz-Fn-lvX" firstAttribute="leading" secondItem="3ph-Od-2hO" secondAttribute="leading" id="z1o-rc-vf1"/>
+                            <constraint firstItem="3ph-Od-2hO" firstAttribute="trailing" secondItem="zlU-MP-ZVs" secondAttribute="trailing" id="GuY-bH-GIn"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="top" secondItem="3ph-Od-2hO" secondAttribute="top" id="HSh-HF-TAJ"/>
+                            <constraint firstItem="3ph-Od-2hO" firstAttribute="bottom" secondItem="zlU-MP-ZVs" secondAttribute="bottom" id="hvN-HY-D9V"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="leading" secondItem="3ph-Od-2hO" secondAttribute="leading" id="sVy-C6-hu1"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="cJm-UN-Dvj" userLabel="Detail"/>
                     <connections>
-                        <outlet property="viewerImageView" destination="Hbz-Fn-lvX" id="19q-nj-ROU"/>
+                        <outlet property="backgroundView" destination="zlU-MP-ZVs" id="yVd-Vz-gsJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IJ0-oL-QKv" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -650,6 +649,7 @@
     <resources>
         <image name="avatar" width="25" height="25"/>
         <image name="disclosureIndicator" width="26" height="28"/>
+        <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
