@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="NCViewerImageCollectionViewCell" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="372" height="458"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="372" height="458"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fYl-gF-3Tc">
+                        <rect key="frame" x="0.0" y="0.0" width="372" height="458"/>
+                        <subviews>
+                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="3" translatesAutoresizingMaskIntoConstraints="NO" id="Y2R-g3-1to">
+                                <rect key="frame" x="0.0" y="0.0" width="372" height="375"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="375" id="buA-yt-EU1"/>
+                                    <constraint firstAttribute="width" constant="372" id="dup-Ci-FrN"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Y2R-g3-1to" secondAttribute="trailing" priority="250" id="Q4y-Pe-Blg"/>
+                            <constraint firstItem="Y2R-g3-1to" firstAttribute="top" secondItem="fYl-gF-3Tc" secondAttribute="top" priority="250" id="S31-PI-s22"/>
+                            <constraint firstItem="Y2R-g3-1to" firstAttribute="leading" secondItem="fYl-gF-3Tc" secondAttribute="leading" priority="250" id="l8D-LP-ERM"/>
+                            <constraint firstAttribute="bottom" secondItem="Y2R-g3-1to" secondAttribute="bottom" priority="250" id="u4J-cI-jJ1"/>
+                        </constraints>
+                        <connections>
+                            <outlet property="delegate" destination="gTV-IL-0wX" id="4Eo-bw-Wov"/>
+                        </connections>
+                    </scrollView>
+                </subviews>
+            </view>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="fYl-gF-3Tc" secondAttribute="bottom" id="EGd-Qa-dtz"/>
+                <constraint firstItem="fYl-gF-3Tc" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="RSp-db-iCz"/>
+                <constraint firstItem="fYl-gF-3Tc" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="cgT-tQ-4MD"/>
+                <constraint firstAttribute="trailing" secondItem="fYl-gF-3Tc" secondAttribute="trailing" id="plj-M5-9uV"/>
+            </constraints>
+            <size key="customSize" width="372" height="458"/>
+            <connections>
+                <outlet property="bottomConstraint" destination="u4J-cI-jJ1" id="apG-eS-WzL"/>
+                <outlet property="galleryImageView" destination="Y2R-g3-1to" id="uWL-Dw-oXx"/>
+                <outlet property="imageHeightConstraint" destination="buA-yt-EU1" id="OGS-lC-INp"/>
+                <outlet property="imageWidthConstraint" destination="dup-Ci-FrN" id="8cX-Dl-FHP"/>
+                <outlet property="leadingConstraint" destination="l8D-LP-ERM" id="rQa-OZ-pFo"/>
+                <outlet property="scrollView" destination="fYl-gF-3Tc" id="veY-z3-1mI"/>
+                <outlet property="topConstraint" destination="S31-PI-s22" id="DO9-Zk-F38"/>
+                <outlet property="trailingConstraint" destination="Q4y-Pe-Blg" id="hrk-zy-L3s"/>
+            </connections>
+            <point key="canvasLocation" x="195" y="258"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="3" width="592.5" height="1555.5"/>
+    </resources>
+</document>
