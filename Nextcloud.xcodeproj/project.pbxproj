@@ -367,7 +367,7 @@
 		F76FA86D2406B9F90003D339 /* NCViewerPhotoTileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA8692406B9F90003D339 /* NCViewerPhotoTileManager.swift */; };
 		F76FA86E2406B9F90003D339 /* NCViewerPhotoTilingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA86A2406B9F90003D339 /* NCViewerPhotoTilingView.swift */; };
 		F76FA86F2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA86B2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift */; };
-		F76FA8712406BE910003D339 /* NCViewerPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA8702406BE910003D339 /* NCViewerPhotoViewController.swift */; };
+		F76FA8712406BE910003D339 /* NCViewerPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA8702406BE910003D339 /* NCViewerPhotoView.swift */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -1071,7 +1071,7 @@
 		F76FA8692406B9F90003D339 /* NCViewerPhotoTileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoTileManager.swift; sourceTree = "<group>"; };
 		F76FA86A2406B9F90003D339 /* NCViewerPhotoTilingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoTilingView.swift; sourceTree = "<group>"; };
 		F76FA86B2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoImageScrollView.swift; sourceTree = "<group>"; };
-		F76FA8702406BE910003D339 /* NCViewerPhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoViewController.swift; sourceTree = "<group>"; };
+		F76FA8702406BE910003D339 /* NCViewerPhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoView.swift; sourceTree = "<group>"; };
 		F771E3D020E2392D00AFB62D /* File Provider Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		F771E3D420E2392D00AFB62D /* FileProviderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
@@ -2100,7 +2100,7 @@
 		F76FA8672406B9F90003D339 /* NCViewerPhoto */ = {
 			isa = PBXGroup;
 			children = (
-				F76FA8702406BE910003D339 /* NCViewerPhotoViewController.swift */,
+				F76FA8702406BE910003D339 /* NCViewerPhotoView.swift */,
 				F76FA8692406B9F90003D339 /* NCViewerPhotoTileManager.swift */,
 				F76FA86A2406B9F90003D339 /* NCViewerPhotoTilingView.swift */,
 				F76FA86B2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift */,
@@ -3593,7 +3593,7 @@
 				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
-				F76FA8712406BE910003D339 /* NCViewerPhotoViewController.swift in Sources */,
+				F76FA8712406BE910003D339 /* NCViewerPhotoView.swift in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F73B4EFF1F470D9100BBEE4B /* LangRussianModel.cpp in Sources */,

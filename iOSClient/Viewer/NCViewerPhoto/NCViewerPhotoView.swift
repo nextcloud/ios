@@ -1,9 +1,8 @@
 import UIKit
 
-class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
+class NCViewerPhotoView: UIScrollView, UIScrollViewDelegate {
 	
 	let pagePadding: CGFloat = 10
-	var pagingScrollView: UIScrollView!
 	var recycledPages: Set<NCViewerPhotoImageScrollView> = []
 	var visiblePages: Set<NCViewerPhotoImageScrollView> = []
 	var firstVisiblePageIndexBeforeRotation: Int!
@@ -14,41 +13,45 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
     var metadata = tableMetadata()
     var metadatas = [tableMetadata]()
     
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		
-        // Get Metadatas
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+    }
+    
+    @objc func setup(metadata: tableMetadata, view: UIView) {
+        
+        self.metadata = metadata
         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: "fileName", ascending: true) {
             self.metadatas = metadatas
         }
         
-		// single tap to show or hide navigation bar
-		self.singleTap = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap))
-		self.view.addGestureRecognizer(self.singleTap)
-		
-		self.pagingScrollView = UIScrollView(frame: self.frameForPagingScrollView())
-		//self.updateBackgroundColor()
-		self.pagingScrollView.showsVerticalScrollIndicator = false
-		self.pagingScrollView.showsHorizontalScrollIndicator = false
-		self.pagingScrollView.isPagingEnabled = true
-		self.pagingScrollView.contentSize = self.contentSizeForPagingScrollView()
-		self.pagingScrollView.delegate = self
-        if #available(iOS 11.0, *) {
-            pagingScrollView.contentInsetAdjustmentBehavior = .never
-        } else {
-            automaticallyAdjustsScrollViewInsets = false
-        }
-		self.view.addSubview(self.pagingScrollView)
-		self.layoutPagingScrollView()
-		
-		self.tilePages()
-	}
-	
+        // single tap to show or hide navigation bar
+        singleTap = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap))
+        addGestureRecognizer(self.singleTap)
+        
+        showsVerticalScrollIndicator = false
+        showsHorizontalScrollIndicator = false
+        isPagingEnabled = true
+        contentSize = self.contentSizeForPagingScrollView()
+        delegate = self
+        view.addSubview(self)
+        
+        tilePages()
+    }
+   
+    @objc func changeTheming() {
+        backgroundColor = NCBrandColor.sharedInstance.backgroundView
+    }
+    
 	//MARK: - Tiling and page configuration
 	
 	func tilePages() {
 		// Calculate which pages should now be visible
-		let visibleBounds = pagingScrollView.bounds
+		let visibleBounds = self.bounds
 		
 		var firstNeededPageIndex: Int = Int(floor(visibleBounds.minX/visibleBounds.width))
 		var lastNeededPageIndex: Int = Int(floor((visibleBounds.maxX - 1)/visibleBounds.width))
@@ -70,7 +73,7 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
 				let page = self.dequeueRecycledPage() ?? NCViewerPhotoImageScrollView()
 				
 				self.configure(page, for: index)
-				self.pagingScrollView.addSubview(page)
+				self.addSubview(page)
 				self.visiblePages.insert(page)
 			}
 		}
@@ -95,7 +98,7 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
 	
 	func configure(_ page: NCViewerPhotoImageScrollView, for index: Int) {
 		self.singleTap.require(toFail: page.zoomingTap)
-		page.backgroundColor = self.view.backgroundColor
+		page.backgroundColor = self.backgroundColor
 
 		page.index = index
 		page.frame = self.frameForPage(at: index)
@@ -170,7 +173,7 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
 	//MARK: - Frame calculations
 	
 	func frameForPagingScrollView(in size: CGSize? = nil) -> CGRect {
-        var frame = self.view.bounds
+        var frame = self.bounds
 		
 		if size != nil {
 			frame.size = size!
@@ -182,13 +185,13 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
 	}
 	
 	func contentSizeForPagingScrollView() -> CGSize {
-		let bounds = self.pagingScrollView.bounds
+		let bounds = self.bounds
         return CGSize(width: bounds.size.width*CGFloat(metadatas.count), height: bounds.size.height)
 	}
 	
 	func frameForPage(at index: Int) -> CGRect {
 		
-		let bounds = self.pagingScrollView.bounds
+		let bounds = self.bounds
 		var pageFrame = bounds
 		pageFrame.size.width -= 2*pagePadding
 		pageFrame.origin.x = (bounds.size.width*CGFloat(index)) + pagePadding
@@ -196,32 +199,16 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
 		return pageFrame
 	}
 	
-	//MARK: - Rotation Configuration
-	
-	override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-		self.saveCurrentStatesForRotation()
-	}
-	
-	override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-		self.restoreStatesForRotation(in: size)
-	}
-	
-	/**
-	Save current page and zooming states for device rotation.
-	*/
 	func saveCurrentStatesForRotation() {
-		let visibleBounds = pagingScrollView.bounds
+        let visibleBounds = self.bounds
 		firstVisiblePageIndexBeforeRotation = Int(floor(visibleBounds.minX/visibleBounds.width))
 	}
 	
-	/**
-	Apply tracked informations for device rotation.
-	*/
 	func restoreStatesForRotation(in size: CGSize) {
 		// recalculate contentSize based on current orientation
 		let pagingScrollViewFrame = self.frameForPagingScrollView(in: size)
-		pagingScrollView?.frame = pagingScrollViewFrame
-		pagingScrollView?.contentSize = self.contentSizeForPagingScrollView()
+		self.frame = pagingScrollViewFrame
+		self.contentSize = self.contentSizeForPagingScrollView()
 		
 		// adjust frames and configuration of each visible page
 		for page in visiblePages {
@@ -235,10 +222,10 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
 		// adjust contentOffset to preserve page location based on values collected prior to location
 		var contentOffset = CGPoint.zero
 		
-		let pageWidth = pagingScrollView?.bounds.size.width ?? 1
+		let pageWidth = self.bounds.size.width
 		contentOffset.x = (CGFloat(firstVisiblePageIndexBeforeRotation) * pageWidth)
 		
-		pagingScrollView?.contentOffset = contentOffset
+		self.contentOffset = contentOffset
 		
 	}
 	
@@ -297,16 +284,4 @@ class NCViewerPhotoViewController: UIViewController, UIScrollViewDelegate {
 		}
 	}
 	*/
-    
-	func layoutPagingScrollView() {
-		self.pagingScrollView.translatesAutoresizingMaskIntoConstraints = false
-		
-		let top = NSLayoutConstraint(item: self.pagingScrollView!, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1.0, constant: 0.0)
-		let left = NSLayoutConstraint(item: self.pagingScrollView!, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1.0, constant: -10.0)
-		
-		let bottom = NSLayoutConstraint(item: self.pagingScrollView!, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1.0, constant: 0.0)
-		let right = NSLayoutConstraint(item: self.pagingScrollView!, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1.0, constant: 10.0)
-		
-		self.view.addConstraints([top, left, bottom, right])
-	}
 }
