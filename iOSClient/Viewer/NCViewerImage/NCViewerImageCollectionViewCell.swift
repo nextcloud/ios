@@ -44,11 +44,11 @@ class NCViewerImageCollectionViewCell: UICollectionViewCell {
 
     func apply(image: UIImage?) {
         guard let image = image else { return }
-//        self.galleryImageView.alpha = 0
+        self.galleryImageView.alpha = 0
         self.galleryImageView.image = image
-//        UIView.animate(withDuration: 0.1) {
-//            self.galleryImageView.alpha = 1
-//        }
+        UIView.animate(withDuration: 0.4) {
+            self.galleryImageView.alpha = 1
+        }
     }
 
     override func draw(_ rect: CGRect) {
