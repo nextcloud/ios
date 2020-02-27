@@ -46,7 +46,7 @@ class NCViewerImageCollectionViewCell: UICollectionViewCell {
         guard let image = image else { return }
         self.galleryImageView.alpha = 0
         self.galleryImageView.image = image
-        UIView.animate(withDuration: 0.4) {
+        UIView.animate(withDuration: 0.3) {
             self.galleryImageView.alpha = 1
         }
     }
