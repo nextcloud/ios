@@ -106,6 +106,11 @@ class NCDetailViewController: UIViewController {
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
+            let viewerPhotoViewController = NCViewerPhotoViewController()
+            viewerPhotoViewController.metadata = metadata
+            self.addChild(viewerPhotoViewController)
+            self.backgroundView.addSubview(viewerPhotoViewController.view)
+            viewerPhotoViewController.didMove(toParent: self)
             return
         }
         

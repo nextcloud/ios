@@ -364,7 +364,10 @@
 		F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769454722E9F20D000A798A /* NCShareNetworking.swift */; };
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
-		F76C2BE124058396002E8D73 /* CCViewerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C2BDF24058395002E8D73 /* CCViewerImage.m */; };
+		F76FA86D2406B9F90003D339 /* NCViewerPhotoTileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA8692406B9F90003D339 /* NCViewerPhotoTileManager.swift */; };
+		F76FA86E2406B9F90003D339 /* NCViewerPhotoTilingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA86A2406B9F90003D339 /* NCViewerPhotoTilingView.swift */; };
+		F76FA86F2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA86B2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift */; };
+		F76FA8712406BE910003D339 /* NCViewerPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76FA8702406BE910003D339 /* NCViewerPhotoViewController.swift */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -1059,14 +1062,16 @@
 		F769454522E9F1B0000A798A /* NCShareCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommon.swift; sourceTree = "<group>"; };
 		F769454722E9F20D000A798A /* NCShareNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareNetworking.swift; sourceTree = "<group>"; };
 		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
-		F76C2BDF24058395002E8D73 /* CCViewerImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCViewerImage.m; sourceTree = "<group>"; };
-		F76C2BE024058396002E8D73 /* CCViewerImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCViewerImage.h; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
 		F76E71E42244DF6900690001 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Zip.framework; path = Carthage/Build/iOS/Zip.framework; sourceTree = "<group>"; };
 		F76F23321ED4600700C40023 /* Share-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share-Bridging-Header.h"; sourceTree = "<group>"; };
+		F76FA8692406B9F90003D339 /* NCViewerPhotoTileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoTileManager.swift; sourceTree = "<group>"; };
+		F76FA86A2406B9F90003D339 /* NCViewerPhotoTilingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoTilingView.swift; sourceTree = "<group>"; };
+		F76FA86B2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoImageScrollView.swift; sourceTree = "<group>"; };
+		F76FA8702406BE910003D339 /* NCViewerPhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPhotoViewController.swift; sourceTree = "<group>"; };
 		F771E3D020E2392D00AFB62D /* File Provider Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		F771E3D420E2392D00AFB62D /* FileProviderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
@@ -2092,6 +2097,17 @@
 			path = Section;
 			sourceTree = "<group>";
 		};
+		F76FA8672406B9F90003D339 /* NCViewerPhoto */ = {
+			isa = PBXGroup;
+			children = (
+				F76FA8702406BE910003D339 /* NCViewerPhotoViewController.swift */,
+				F76FA8692406B9F90003D339 /* NCViewerPhotoTileManager.swift */,
+				F76FA86A2406B9F90003D339 /* NCViewerPhotoTilingView.swift */,
+				F76FA86B2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift */,
+			);
+			path = NCViewerPhoto;
+			sourceTree = "<group>";
+		};
 		F771E3D120E2392D00AFB62D /* File Provider Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2171,8 +2187,7 @@
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
-				F76C2BE024058396002E8D73 /* CCViewerImage.h */,
-				F76C2BDF24058395002E8D73 /* CCViewerImage.m */,
+				F76FA8672406B9F90003D339 /* NCViewerPhoto */,
 				F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */,
 				F710D1F42405770F00A6033D /* NCViewerPDF.swift */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
@@ -3366,7 +3381,6 @@
 				F762CB071EACB66200B38484 /* XLFormOptionsObject.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F7F54D0E1E5B14C800E19C62 /* UIImage+MWPhotoBrowser.m in Sources */,
-				F76C2BE124058396002E8D73 /* CCViewerImage.m in Sources */,
 				F7F54D091E5B14C800E19C62 /* MWPhoto.m in Sources */,
 				F73B4F041F470D9100BBEE4B /* nsBig5Prober.cpp in Sources */,
 				F760F78321F21F61006B1A73 /* UIImageView+Alpha.swift in Sources */,
@@ -3392,6 +3406,7 @@
 				F762CB001EACB66200B38484 /* XLFormSegmentedCell.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F762CB061EACB66200B38484 /* XLFormTextViewCell.m in Sources */,
+				F76FA86F2406B9F90003D339 /* NCViewerPhotoImageScrollView.swift in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
 				F760F79C21F21F61006B1A73 /* GradientView.swift in Sources */,
@@ -3546,6 +3561,7 @@
 				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
+				F76FA86D2406B9F90003D339 /* NCViewerPhotoTileManager.swift in Sources */,
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
 				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
 				F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
@@ -3577,6 +3593,7 @@
 				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
+				F76FA8712406BE910003D339 /* NCViewerPhotoViewController.swift in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F73B4EFF1F470D9100BBEE4B /* LangRussianModel.cpp in Sources */,
@@ -3606,6 +3623,7 @@
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
 				F760F79621F21F61006B1A73 /* PhotoEditorViewController.swift in Sources */,
 				F762CB161EACB66200B38484 /* XLFormTextView.m in Sources */,
+				F76FA86E2406B9F90003D339 /* NCViewerPhotoTilingView.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */,
