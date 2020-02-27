@@ -21,24 +21,8 @@ class NCViewerImageAsset: NSObject {
 
     private override init() { }
 
-    public init(url: URL) {
-        self.url = url
-    }
-
-    public init(url: URL, caption: String?) {
-        self.url = url
-    }
-
-    public init(image: UIImage) {
-        self.image = image
-    }
-    
     public init(metadata: tableMetadata) {
         self.metadata = metadata
-    }
-
-    public init(image: UIImage, caption: String?) {
-        self.image = image
     }
 
     func download(completion:@escaping(_ success: Bool?) -> Void) -> URLSessionDataTask? {
