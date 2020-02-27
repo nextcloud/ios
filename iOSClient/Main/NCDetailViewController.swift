@@ -123,7 +123,7 @@ class NCDetailViewController: UIViewController {
                     }
                 }
                 viewerImageView.assets = assets
-                //viewerImageView.preselectItem(at: 0)
+                //viewerImageView.preselectItem(at: 1)
             }
             return
         }
