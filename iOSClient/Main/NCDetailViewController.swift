@@ -115,15 +115,16 @@ class NCDetailViewController: UIViewController {
         if metadata.typeFile == k_metadataTypeFile_image {
             if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: "fileName", ascending: true) {
                 var assets: [NCViewerImageAsset?] = [NCViewerImageAsset]()
+                var index = 0
                 for metadata in metadatas {
-                    let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                    if let image = UIImage(contentsOfFile: imagePath) {
-                        let asset = NCViewerImageAsset(image: image)
-                        assets.append(asset)
+                    let asset = NCViewerImageAsset(metadata: metadata)
+                    assets.append(asset)
+                    if metadata.ocId == self.metadata?.ocId {
+                        viewerImageView.preselectItem(at: index)
                     }
+                    index += 1
                 }
                 viewerImageView.assets = assets
-                //viewerImageView.preselectItem(at: 1)
             }
             return
         }

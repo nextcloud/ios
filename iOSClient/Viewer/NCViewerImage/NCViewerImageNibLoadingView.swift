@@ -2,7 +2,7 @@
 import UIKit
 
 @IBDesignable
-public class NCViewerImageNibLoadingView: UIView {
+class NCViewerImageNibLoadingView: UIView {
 
     @IBOutlet weak var view: UIView!
 

@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class NCViewerImageAsset: NSObject {
+class NCViewerImageAsset: NSObject {
 
     public enum ImageType {
         case jpg
@@ -15,9 +15,10 @@ public class NCViewerImageAsset: NSObject {
     }
 
     public var url: URL?
-    public var image: UIImage?
+//    public var image: UIImage?
     public var type: ImageType?
     public var caption: String?
+    public var metadata: tableMetadata?
 
     private override init() { }
 
@@ -30,18 +31,16 @@ public class NCViewerImageAsset: NSObject {
         self.caption = caption
     }
 
-    public init(image: UIImage) {
-        self.image = image
-    }
-
-    public init(image: UIImage, caption: String?) {
-        self.image = image
-        self.caption = caption
+   
+    
+    public init(metadata: tableMetadata) {
+        self.metadata = metadata
+        self.caption = metadata.fileNameView
     }
 
     func download(completion:@escaping(_ success: Bool?) -> Void) -> URLSessionDataTask? {
         return NCViewerImageAsset.download(url: url) { (success, image, type)  in
-            self.image = image
+//            self.image = image
             if let type = type {
                 self.type = type
             }
@@ -64,11 +63,9 @@ public class NCViewerImageAsset: NSObject {
                     return
             }
             let type: NCViewerImageAsset.ImageType? = ImageType.from(mimeType: mimeType)
-            /*
             if type == .gif, let gif = UIImage.gif(data: data) {
                 image = gif
             }
-            */
             DispatchQueue.main.async { completion(true, image, type) }
         }
         dataTask.resume()

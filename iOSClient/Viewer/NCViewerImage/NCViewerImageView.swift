@@ -1,16 +1,16 @@
 
 import UIKit
 
-public class NCViewerImageView: NCViewerImageNibLoadingView {
+class NCViewerImageView: NCViewerImageNibLoadingView {
+    
     @IBOutlet weak var collectionView: UICollectionView!
 
+    private var preselectedIndex: Int = -1
     public var assets: [NCViewerImageAsset?]? {
         didSet {
             self.collectionView.reloadData()
         }
     }
-
-    private var preselectedIndex: Int = 0
 
     override public func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
@@ -33,7 +33,10 @@ public class NCViewerImageView: NCViewerImageNibLoadingView {
 
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
-        self.collectionView.scrollToItem(at: IndexPath(row: self.preselectedIndex, section: 0), at: .centeredHorizontally, animated: false)
+        if preselectedIndex != -1 {
+            self.collectionView.scrollToItem(at: IndexPath(row: self.preselectedIndex, section: 0), at: .centeredHorizontally, animated: false)
+            preselectedIndex = -1
+        }
     }
 }
 

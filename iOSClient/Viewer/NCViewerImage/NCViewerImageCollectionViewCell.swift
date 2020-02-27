@@ -25,12 +25,13 @@ class NCViewerImageCollectionViewCell: UICollectionViewCell {
     func withImageAsset(_ asset: NCViewerImageAsset?) {
         guard self.dataTask?.state != URLSessionDataTask.State.running else { return }
         guard let asset = asset else { return }
-        if asset.image != nil {
-            self.apply(image: self.fitIntoFrame(image: asset.image, type: asset.type))
+        let imagePath = CCUtility.getDirectoryProviderStorageOcId(asset.metadata!.ocId, fileNameView: asset.metadata!.fileNameView)!
+        if let image = UIImage(contentsOfFile: imagePath) {
+            self.apply(image: self.fitIntoFrame(image: image, type: asset.type))
         } else if asset.url != nil {
             self.galleryImageView.image = nil
             self.dataTask = asset.download(completion: { _ in
-                self.apply(image: self.fitIntoFrame(image: asset.image, type: asset.type))
+                //self.apply(image: self.fitIntoFrame(image: asset.image, type: asset.type))
             })
         }
     }
