@@ -34,6 +34,7 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
     @objc var selector: String?
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var mediaBrowser: MediaBrowserViewController?
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -45,6 +46,8 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: "changeDisplayMode"), object: nil)
+
         changeTheming()
         
         if metadata != nil  {
@@ -62,6 +65,13 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         if appDelegate.isMediaObserver {
             appDelegate.isMediaObserver = false
             NCViewerMedia.sharedInstance.removeObserver()
+        }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        coordinator.animate(alongsideTransition: nil) { _ in
         }
     }
     
@@ -83,6 +93,9 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
     @objc func changeTheming() {
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+    }
+   
+    @objc func changeDisplayMode() {
     }
     
     func subViewActive() -> UIView? {
@@ -107,14 +120,16 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
-            let mediaBrowser = MediaBrowserViewController(dataSource: self)
-            mediaBrowser.shouldShowPageControl = false
-            mediaBrowser.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+            mediaBrowser = MediaBrowserViewController(dataSource: self)
+            if mediaBrowser != nil {
+                mediaBrowser!.shouldShowPageControl = false
+                mediaBrowser!.enableInteractiveDismissal = false
+                mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
 
-            addChild(mediaBrowser)
-            backgroundView.addSubview(mediaBrowser.view)
-            mediaBrowser.didMove(toParent: self)
-            
+                addChild(mediaBrowser!)
+                backgroundView.addSubview(mediaBrowser!.view)
+                mediaBrowser!.didMove(toParent: self)
+            }
             return
         }
         
@@ -246,15 +261,28 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
 
-        // return number of images to be shown
-        return 10
+        guard let metadata = metadata else { return 0 }
+        
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: "fileName", ascending: true) {
+            return metadatas.count
+        }
+        
+        return 0
     }
 
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping MediaBrowserViewControllerDataSource.CompletionBlock) {
 
-        // Fetch the required image here. Pass it to the completion
-        // block along with the index, zoom scale, and error if any.
-        let image = UIImage.init(named: "logo")
-        completion(index, image, ZoomScale.default, nil)
+        guard let metadata = metadata else {
+            completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+            return
+        }
+        
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: "fileName", ascending: true) {
+            let metadata = metadatas[index]
+            
+            
+        } else {
+            completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+        }
     }
 }

@@ -68,9 +68,6 @@ extension NCSplitViewController: UISplitViewControllerDelegate {
     }
     
     func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
-        let navigationController = viewControllers.last as? UINavigationController
-        if let detailViewController = navigationController?.topViewController {
-            
-        }
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeDisplayMode"), object: nil)
     }
 }
