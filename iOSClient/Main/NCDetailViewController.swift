@@ -138,12 +138,16 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
                     
                     mediaBrowser = MediaBrowserViewController(dataSource: self)
                     if mediaBrowser != nil {
+                        
                         mediaBrowser!.shouldShowPageControl = false
                         mediaBrowser!.enableInteractiveDismissal = false
-                        mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
-
+                        
                         addChild(mediaBrowser!)
                         backgroundView.addSubview(mediaBrowser!.view)
+                        
+                        mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+                        mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                        
                         mediaBrowser!.didMove(toParent: self)
                     }
                 }
