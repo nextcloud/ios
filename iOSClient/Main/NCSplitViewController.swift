@@ -66,4 +66,11 @@ extension NCSplitViewController: UISplitViewControllerDelegate {
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
         return true
     }
+    
+    func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
+        let navigationController = viewControllers.last as? UINavigationController
+        if let detailViewController = navigationController?.topViewController {
+            
+        }
+    }
 }

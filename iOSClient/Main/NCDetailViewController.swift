@@ -24,8 +24,9 @@
 import Foundation
 import WebKit
 import NCCommunication
+import ATGMediaBrowser
 
-class NCDetailViewController: UIViewController {
+class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
     @IBOutlet weak var backgroundView: UIImageView!
     
@@ -106,10 +107,14 @@ class NCDetailViewController: UIViewController {
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
-//            let viewerPhotoViewController = NCViewerPhotoViewController()
-//            self.addChild(viewerPhotoViewController)
-//            self.backgroundView.addSubview(viewerPhotoViewController.view)
-//            viewerPhotoViewController.didMove(toParent: self)
+            let mediaBrowser = MediaBrowserViewController(dataSource: self)
+            mediaBrowser.shouldShowPageControl = false
+            mediaBrowser.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+
+            addChild(mediaBrowser)
+            backgroundView.addSubview(mediaBrowser.view)
+            mediaBrowser.didMove(toParent: self)
+            
             return
         }
         
@@ -237,5 +242,19 @@ class NCDetailViewController: UIViewController {
         
         // OTHER
         NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
+    }
+    
+    func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
+
+        // return number of images to be shown
+        return 10
+    }
+
+    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping MediaBrowserViewControllerDataSource.CompletionBlock) {
+
+        // Fetch the required image here. Pass it to the completion
+        // block along with the index, zoom scale, and error if any.
+        let image = UIImage.init(named: "logo")
+        completion(index, image, ZoomScale.default, nil)
     }
 }
