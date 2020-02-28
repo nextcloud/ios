@@ -34,11 +34,6 @@ class NCDetailViewController: UIViewController {
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    
-    let imageNames = ["image1", "image2", "image3"]
-    let imageTitles = ["Image 1", "Image 2", "Image 3"]
-    var index: Int = 0
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
@@ -244,29 +239,3 @@ class NCDetailViewController: UIViewController {
         NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
     }
 }
-
-// MARK: SwiftPhotoGalleryDataSource Methods
-extension NCDetailViewController: NCPhotoGalleryDataSource {
-
-    func numberOfImagesInGallery(gallery: NCPhotoGallery) -> Int {
-        let i = imageNames.count
-        return imageNames.count
-    }
-
-    func imageInGallery(gallery: NCPhotoGallery, forIndex: Int) -> UIImage? {
-        if forIndex < 0 { return nil }
-        let image = UIImage(named: imageNames[forIndex])
-        return image
-    }
-}
-
-
-// MARK: SwiftPhotoGalleryDelegate Methods
-extension NCDetailViewController: NCPhotoGalleryDelegate {
-
-    func galleryDidTapToClose(gallery: NCPhotoGallery) {
-        self.index = gallery.currentPage
-        dismiss(animated: true, completion: nil)
-    }
-}
-
