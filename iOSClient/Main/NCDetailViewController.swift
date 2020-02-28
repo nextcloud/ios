@@ -139,6 +139,8 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
                     mediaBrowser = MediaBrowserViewController(dataSource: self)
                     if mediaBrowser != nil {
                         
+                        mediaBrowser!.delegate = self
+                        
                         mediaBrowser!.shouldShowPageControl = false
                         mediaBrowser!.enableInteractiveDismissal = false
                         
@@ -304,5 +306,8 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         }
         
         completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+    }
+    
+    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
     }
 }
