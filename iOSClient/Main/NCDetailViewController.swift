@@ -145,8 +145,6 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
                         addChild(mediaBrowser!)
                         backgroundView.addSubview(mediaBrowser!.view)
                         mediaBrowser!.didMove(toParent: self)
-                        
-                        mediaBrowser!.changeInViewSize(to: backgroundView.frame.size)
                     }
                 }
             }
