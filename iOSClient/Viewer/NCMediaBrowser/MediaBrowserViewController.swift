@@ -403,6 +403,10 @@ public class MediaBrowserViewController: UIViewController {
 
         modalTransitionStyle = .crossDissolve
     }
+    
+    public func changeInViewSize(to size: CGSize) {
+        self.contentViews.forEach({ $0.handleChangeInViewSize(to: size) })
+    }
 }
 
 // MARK: - View Lifecycle and Events
@@ -445,7 +449,7 @@ extension MediaBrowserViewController {
             controlToggleTask.cancel()
         }
     }
-
+    
     public override func viewWillTransition(
         to size: CGSize,
         with coordinator: UIViewControllerTransitionCoordinator

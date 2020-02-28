@@ -68,6 +68,8 @@ extension NCSplitViewController: UISplitViewControllerDelegate {
     }
     
     func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeDisplayMode"), object: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeDisplayMode"), object: nil)
+        }
     }
 }
