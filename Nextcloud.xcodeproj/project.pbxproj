@@ -492,12 +492,6 @@
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
-		F7CF2FFC240833EF005DE5F8 /* NCViewerImageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CF2FF6240833EF005DE5F8 /* NCViewerImageView.xib */; };
-		F7CF2FFD240833EF005DE5F8 /* NCViewerImageAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF2FF7240833EF005DE5F8 /* NCViewerImageAsset.swift */; };
-		F7CF2FFE240833EF005DE5F8 /* NCViewerImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF2FF8240833EF005DE5F8 /* NCViewerImageView.swift */; };
-		F7CF2FFF240833EF005DE5F8 /* NCViewerImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CF2FF9240833EF005DE5F8 /* NCViewerImageCollectionViewCell.xib */; };
-		F7CF3000240833EF005DE5F8 /* NCViewerImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF2FFA240833EF005DE5F8 /* NCViewerImageCollectionViewCell.swift */; };
-		F7CF3001240833EF005DE5F8 /* NCViewerImageNibLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF2FFB240833EF005DE5F8 /* NCViewerImageNibLoadingView.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
@@ -1238,12 +1232,6 @@
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		F7CF2FF6240833EF005DE5F8 /* NCViewerImageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerImageView.xib; sourceTree = "<group>"; };
-		F7CF2FF7240833EF005DE5F8 /* NCViewerImageAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageAsset.swift; sourceTree = "<group>"; };
-		F7CF2FF8240833EF005DE5F8 /* NCViewerImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageView.swift; sourceTree = "<group>"; };
-		F7CF2FF9240833EF005DE5F8 /* NCViewerImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerImageCollectionViewCell.xib; sourceTree = "<group>"; };
-		F7CF2FFA240833EF005DE5F8 /* NCViewerImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageCollectionViewCell.swift; sourceTree = "<group>"; };
-		F7CF2FFB240833EF005DE5F8 /* NCViewerImageNibLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageNibLoadingView.swift; sourceTree = "<group>"; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichWorkspace.storyboard; sourceTree = "<group>"; };
 		F7D2D125230804DF00FD3ED7 /* NCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLListParser.h; sourceTree = "<group>"; };
@@ -2180,7 +2168,6 @@
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
-				F7CF2FF5240833EF005DE5F8 /* NCViewerImage */,
 				F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */,
 				F710D1F42405770F00A6033D /* NCViewerPDF.swift */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
@@ -2465,19 +2452,6 @@
 				F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */,
 			);
 			path = RichWorkspace;
-			sourceTree = "<group>";
-		};
-		F7CF2FF5240833EF005DE5F8 /* NCViewerImage */ = {
-			isa = PBXGroup;
-			children = (
-				F7CF2FF6240833EF005DE5F8 /* NCViewerImageView.xib */,
-				F7CF2FF9240833EF005DE5F8 /* NCViewerImageCollectionViewCell.xib */,
-				F7CF2FF7240833EF005DE5F8 /* NCViewerImageAsset.swift */,
-				F7CF2FF8240833EF005DE5F8 /* NCViewerImageView.swift */,
-				F7CF2FFA240833EF005DE5F8 /* NCViewerImageCollectionViewCell.swift */,
-				F7CF2FFB240833EF005DE5F8 /* NCViewerImageNibLoadingView.swift */,
-			);
-			path = NCViewerImage;
 			sourceTree = "<group>";
 		};
 		F7D4B67A22956610000C2C86 /* Firebase */ = {
@@ -3051,7 +3025,6 @@
 				F7F54CF31E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png in Resources */,
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
-				F7CF2FFF240833EF005DE5F8 /* NCViewerImageCollectionViewCell.xib in Resources */,
 				F7F54CF61E5B14C700E19C62 /* PlayButtonOverlayLarge@3x.png in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F760F78521F21F61006B1A73 /* EmojiCollectionViewCell.xib in Resources */,
@@ -3127,7 +3100,6 @@
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
 				F7F54CE91E5B14C700E19C62 /* ImageSelectedOff@2x.png in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
-				F7CF2FFC240833EF005DE5F8 /* NCViewerImageView.xib in Resources */,
 				F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
 				F73B4EF41F470D9100BBEE4B /* JISFreq.tab in Resources */,
@@ -3410,7 +3382,6 @@
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F760F79921F21F61006B1A73 /* CropViewController.swift in Sources */,
 				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
-				F7CF2FFD240833EF005DE5F8 /* NCViewerImageAsset.swift in Sources */,
 				F7F54D061E5B14C800E19C62 /* MWCaptionView.m in Sources */,
 				F762CB001EACB66200B38484 /* XLFormSegmentedCell.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
@@ -3470,7 +3441,6 @@
 				F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
-				F7CF3000240833EF005DE5F8 /* NCViewerImageCollectionViewCell.swift in Sources */,
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F762CAFC1EACB66200B38484 /* XLFormImageCell.m in Sources */,
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
@@ -3549,7 +3519,6 @@
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F760F79821F21F61006B1A73 /* StickerCollectionViewCell.swift in Sources */,
-				F7CF2FFE240833EF005DE5F8 /* NCViewerImageView.swift in Sources */,
 				F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
@@ -3601,7 +3570,6 @@
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
-				F7CF3001240833EF005DE5F8 /* NCViewerImageNibLoadingView.swift in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
