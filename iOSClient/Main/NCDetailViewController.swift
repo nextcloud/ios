@@ -124,27 +124,30 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         if metadata.typeFile == k_metadataTypeFile_image {
             
             if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
-            
-                self.metadatas.removeAll()
-                var index = 0
-                for metadata in metadatas {
-                    if metadata.ocId == self.metadata!.ocId {
-                        index = 0
+                if metadatas.count > 0 {
+                    // build data source
+                    self.metadatas.removeAll()
+                    var index = 0
+                    for metadata in metadatas {
+                        if metadata.ocId == self.metadata!.ocId {
+                            index = 0
+                        }
+                        self.metadatas.insert(metadata, at: index)
+                        index += 1
                     }
-                    self.metadatas.insert(metadata, at: index)
-                    index += 1
-                }
-                
-                
-                mediaBrowser = MediaBrowserViewController(dataSource: self)
-                if mediaBrowser != nil {
-                    mediaBrowser!.shouldShowPageControl = false
-                    mediaBrowser!.enableInteractiveDismissal = false
-                    mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+                    
+                    mediaBrowser = MediaBrowserViewController(dataSource: self)
+                    if mediaBrowser != nil {
+                        mediaBrowser!.shouldShowPageControl = false
+                        mediaBrowser!.enableInteractiveDismissal = false
+                        mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
 
-                    addChild(mediaBrowser!)
-                    backgroundView.addSubview(mediaBrowser!.view)
-                    mediaBrowser!.didMove(toParent: self)
+                        addChild(mediaBrowser!)
+                        backgroundView.addSubview(mediaBrowser!.view)
+                        mediaBrowser!.didMove(toParent: self)
+                        
+                        mediaBrowser!.changeInViewSize(to: backgroundView.frame.size)
+                    }
                 }
             }
             return
