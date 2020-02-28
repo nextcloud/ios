@@ -279,10 +279,20 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         
         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: "fileName", ascending: true) {
             let metadata = metadatas[index]
-            
-            
-        } else {
-            completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                if let image = UIImage.init(contentsOfFile: imagePath) {
+                    completion(index, image, ZoomScale.default, nil)
+                    return
+                }
+            } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                if let image = UIImage.init(contentsOfFile: imagePath) {
+                    completion(index, image, ZoomScale.default, nil)
+                    return
+                }
+            }
         }
+        completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
     }
 }
