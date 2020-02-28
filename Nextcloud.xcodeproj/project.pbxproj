@@ -440,7 +440,10 @@
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
-		F79018A524092EF4007C9B6D /* ATGMediaBrowser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79018A424092EF4007C9B6D /* ATGMediaBrowser.framework */; };
+		F79018B6240962C7007C9B6D /* DismissAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B2240962C7007C9B6D /* DismissAnimationController.swift */; };
+		F79018B7240962C7007C9B6D /* MediaContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B3240962C7007C9B6D /* MediaContentView.swift */; };
+		F79018B8240962C7007C9B6D /* MediaBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B4240962C7007C9B6D /* MediaBrowserViewController.swift */; };
+		F79018B9240962C7007C9B6D /* ContentTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B5240962C7007C9B6D /* ContentTransformers.swift */; };
 		F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerMedia.swift */; };
 		F79728D422F96F2E003CACA7 /* NCShareLinkFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */; };
 		F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */; };
@@ -1136,6 +1139,10 @@
 		F78F74352163781100C2ADAD /* NCTrash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrash.swift; sourceTree = "<group>"; };
 		F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichdocument.swift; sourceTree = "<group>"; };
 		F79018A424092EF4007C9B6D /* ATGMediaBrowser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ATGMediaBrowser.framework; path = Carthage/Build/iOS/ATGMediaBrowser.framework; sourceTree = "<group>"; };
+		F79018B2240962C7007C9B6D /* DismissAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissAnimationController.swift; sourceTree = "<group>"; };
+		F79018B3240962C7007C9B6D /* MediaContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaContentView.swift; sourceTree = "<group>"; };
+		F79018B4240962C7007C9B6D /* MediaBrowserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaBrowserViewController.swift; sourceTree = "<group>"; };
+		F79018B5240962C7007C9B6D /* ContentTransformers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentTransformers.swift; sourceTree = "<group>"; };
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
@@ -1375,7 +1382,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F79018A524092EF4007C9B6D /* ATGMediaBrowser.framework in Frameworks */,
 				F716FE7823795E5000FABE50 /* NCCommunication.framework in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
@@ -2168,9 +2174,21 @@
 			path = Trash;
 			sourceTree = "<group>";
 		};
+		F79018B1240962C7007C9B6D /* NCMediaBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				F79018B2240962C7007C9B6D /* DismissAnimationController.swift */,
+				F79018B3240962C7007C9B6D /* MediaContentView.swift */,
+				F79018B4240962C7007C9B6D /* MediaBrowserViewController.swift */,
+				F79018B5240962C7007C9B6D /* ContentTransformers.swift */,
+			);
+			path = NCMediaBrowser;
+			sourceTree = "<group>";
+		};
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
+				F79018B1240962C7007C9B6D /* NCMediaBrowser */,
 				F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */,
 				F710D1F42405770F00A6033D /* NCViewerPDF.swift */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
@@ -3170,7 +3188,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftEntryKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/FloatingPanel.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/ATGMediaBrowser.framework",
 			);
 			outputPaths = (
 			);
@@ -3384,6 +3401,7 @@
 				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */,
+				F79018B8240962C7007C9B6D /* MediaBrowserViewController.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F760F79921F21F61006B1A73 /* CropViewController.swift in Sources */,
 				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
@@ -3397,6 +3415,7 @@
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
 				F73B4EF71F470D9100BBEE4B /* LangBulgarianModel.cpp in Sources */,
 				F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */,
+				F79018B7240962C7007C9B6D /* MediaContentView.swift in Sources */,
 				F7FB1D3E215E191D00D669EA /* NCViewerDocumentWeb.swift in Sources */,
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
@@ -3564,6 +3583,7 @@
 				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
+				F79018B6240962C7007C9B6D /* DismissAnimationController.swift in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
 				F7F4B1D823C74B3E00D82A6E /* NCRichWorkspace.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
@@ -3580,6 +3600,7 @@
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F73B4EFF1F470D9100BBEE4B /* LangRussianModel.cpp in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
+				F79018B9240962C7007C9B6D /* ContentTransformers.swift in Sources */,
 				F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */,
 				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
 				F73B4F031F470D9100BBEE4B /* LangVietnameseModel.cpp in Sources */,
