@@ -35,6 +35,7 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var mediaBrowser: MediaBrowserViewController?
+    private var metadatas = [tableMetadata]()
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -121,15 +122,30 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
-            mediaBrowser = MediaBrowserViewController(dataSource: self)
-            if mediaBrowser != nil {
-                mediaBrowser!.shouldShowPageControl = false
-                mediaBrowser!.enableInteractiveDismissal = false
-                mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+            
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+            
+                self.metadatas.removeAll()
+                var index = 0
+                for metadata in metadatas {
+                    if metadata.ocId == self.metadata!.ocId {
+                        index = 0
+                    }
+                    self.metadatas.insert(metadata, at: index)
+                    index += 1
+                }
+                
+                
+                mediaBrowser = MediaBrowserViewController(dataSource: self)
+                if mediaBrowser != nil {
+                    mediaBrowser!.shouldShowPageControl = false
+                    mediaBrowser!.enableInteractiveDismissal = false
+                    mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
 
-                addChild(mediaBrowser!)
-                backgroundView.addSubview(mediaBrowser!.view)
-                mediaBrowser!.didMove(toParent: self)
+                    addChild(mediaBrowser!)
+                    backgroundView.addSubview(mediaBrowser!.view)
+                    mediaBrowser!.didMove(toParent: self)
+                }
             }
             return
         }
@@ -261,39 +277,27 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
     }
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
-
-        guard let metadata = metadata else { return 0 }
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
-            return metadatas.count
-        }
-        
-        return 0
+        return metadatas.count
     }
 
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping MediaBrowserViewControllerDataSource.CompletionBlock) {
 
-        guard let metadata = metadata else {
-            completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
-            return
-        }
-        
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
-            let metadata = metadatas[index]
-            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
-                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                if let image = UIImage.init(contentsOfFile: imagePath) {
-                    completion(index, image, ZoomScale.default, nil)
-                    return
-                }
-            } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                if let image = UIImage.init(contentsOfFile: imagePath) {
-                    completion(index, image, ZoomScale.default, nil)
-                    return
-                }
+        let metadata = metadatas[index]
+        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            if let image = UIImage.init(contentsOfFile: imagePath) {
+                completion(index, image, ZoomScale.default, nil)
+                return
+            }
+        } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            if let image = UIImage.init(contentsOfFile: imagePath) {
+                completion(index, image, ZoomScale.default, nil)
+                return
             }
         }
+        
         completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
     }
 }
