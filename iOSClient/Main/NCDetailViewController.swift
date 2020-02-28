@@ -124,6 +124,8 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
             if mediaBrowser != nil {
                 mediaBrowser!.shouldShowPageControl = false
                 mediaBrowser!.enableInteractiveDismissal = false
+                mediaBrowser!.hideCloseButton = true
+                mediaBrowser!.hideVisualEffectView = true
                 mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
 
                 addChild(mediaBrowser!)
