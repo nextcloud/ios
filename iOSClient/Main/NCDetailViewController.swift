@@ -139,7 +139,9 @@ class NCDetailViewController: UIViewController {
                     
                     mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
                     if mediaBrowser != nil {
-                                                
+                                    
+                        mediaBrowser!.view.isHidden = true
+                        
                         mediaBrowser!.shouldShowPageControl = false
                         mediaBrowser!.enableInteractiveDismissal = false
                         
@@ -150,6 +152,11 @@ class NCDetailViewController: UIViewController {
                         mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                         
                         mediaBrowser!.didMove(toParent: self)
+                        
+                        DispatchQueue.main.async {
+                            self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
+                            self.mediaBrowser!.view.isHidden = false
+                        }
                     }
                 }
             }
