@@ -137,7 +137,7 @@ class NCDetailViewController: UIViewController {
                     }
                     self.metadatas = metadatas
                     
-                    mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self, containerView: backgroundView)
+                    mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
                     if mediaBrowser != nil {
                                                 
                         mediaBrowser!.shouldShowPageControl = false
