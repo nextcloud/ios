@@ -116,7 +116,11 @@ class NCDetailViewController: UIViewController {
     
     @objc func deleteMetadata() {
         if mediaBrowser != nil {
-            
+            if getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) != nil {
+                mediaBrowser?.reloadContentViews()
+            } else {
+                viewUnload()
+            }
         } else {
             viewUnload()
         }
@@ -314,6 +318,7 @@ class NCDetailViewController: UIViewController {
 extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
+        
         if let metadatas = getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) {
             return metadatas.count
         }
