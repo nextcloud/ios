@@ -129,23 +129,18 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         if metadata.typeFile == k_metadataTypeFile_image {
             
             if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+                
                 if metadatas.count > 0 {
-                    // build data source
-                    self.metadatas.removeAll()
-                    var index = 0
+                    var index = 0, counter = 0
                     for metadata in metadatas {
-                        if metadata.ocId == self.metadata!.ocId {
-                            index = 0
-                        }
-                        self.metadatas.insert(metadata, at: index)
-                        index += 1
+                        if metadata.ocId == self.metadata!.ocId { index = counter }
+                        counter += 1
                     }
+                    self.metadatas = metadatas
                     
-                    mediaBrowser = MediaBrowserViewController(dataSource: self)
+                    mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
                     if mediaBrowser != nil {
-                        
-                        mediaBrowser!.delegate = self
-                        
+                                                
                         mediaBrowser!.shouldShowPageControl = false
                         mediaBrowser!.enableInteractiveDismissal = false
                         
