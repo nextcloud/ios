@@ -306,7 +306,23 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
             }
         }
         
-        completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+        // NO Icon
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            
+        NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: NCUtility.sharedInstance.getScreenWidthForPreview(), height: NCUtility.sharedInstance.getScreenHeightForPreview(), account: metadata.account) { (account, data, errorCode, errorMessage) in
+            if errorCode == 0 && data != nil {
+                do {
+                    let url = URL.init(fileURLWithPath: fileNameLocalPath)
+                    try data!.write(to: url, options: .atomic)
+                    completion(index, UIImage.init(data: data!), ZoomScale.default, nil)
+                } catch {
+                    completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+                }
+            } else {
+                completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+            }
+        }
     }
     
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
