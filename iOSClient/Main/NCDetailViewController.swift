@@ -100,7 +100,9 @@ class NCDetailViewController: UIViewController {
     }
    
     @objc func changeDisplayMode() {
-        mediaBrowser?.changeInViewSize(to: backgroundView.frame.size)
+        DispatchQueue.main.async {
+            self.mediaBrowser?.changeInViewSize(to: self.backgroundView.frame.size)
+        }
     }
     
     func subViewActive() -> UIView? {
