@@ -247,6 +247,8 @@ public class MediaBrowserViewController: UIViewController {
         return sanitizeIndex(index)
     }
     
+    public var containerView = UIView()
+    
     // MARK: - Private Enumerations
 
     private enum Constants {
@@ -376,12 +378,14 @@ public class MediaBrowserViewController: UIViewController {
     public init(
         index: Int = 0,
         dataSource: MediaBrowserViewControllerDataSource,
-        delegate: MediaBrowserViewControllerDelegate? = nil
+        delegate: MediaBrowserViewControllerDelegate? = nil,
+        containerView: UIView
         ) {
 
         self.index = index
         self.dataSource = dataSource
         self.delegate = delegate
+        self.containerView = containerView
 
         super.init(nibName: nil, bundle: nil)
 
