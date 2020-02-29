@@ -24,7 +24,6 @@
 import Foundation
 import WebKit
 import NCCommunication
-//import ATGMediaBrowser
 
 class NCDetailViewController: UIViewController {
     
@@ -265,7 +264,6 @@ class NCDetailViewController: UIViewController {
                             
                             self.navigationController?.popViewController(animated: true)
                         }
-                        
                     })
                     
                 } else {
