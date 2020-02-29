@@ -312,7 +312,7 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
         if index >= metadatas.count { return }
         
-        let metadata = metadatas[index]
-        self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
+        metadata = metadatas[index]
+        self.navigationController?.navigationBar.topItem?.title = metadata!.fileNameView
     }
 }
