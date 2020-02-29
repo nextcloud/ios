@@ -294,6 +294,7 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
     }
 
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping MediaBrowserViewControllerDataSource.CompletionBlock) {
+        if index >= metadatas.count { return }
 
         let metadata = metadatas[index]
         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
@@ -314,5 +315,9 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
     }
     
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
+        if index >= metadatas.count { return }
+        
+        let metadata = metadatas[index]
+        self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
     }
 }
