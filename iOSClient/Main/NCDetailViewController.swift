@@ -282,6 +282,7 @@ class NCDetailViewController: UIViewController {
     }
 }
 
+//MARK: - MediaBrowser Delegate/DataSource
 
 extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
