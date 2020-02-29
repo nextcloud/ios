@@ -317,10 +317,11 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
                     try data!.write(to: url, options: .atomic)
                     completion(index, UIImage.init(data: data!), ZoomScale.default, nil)
                 } catch {
-                    completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
                 }
             } else {
-                completion(index, UIImage.init(named: "logo"), ZoomScale.default, nil)
+                let size = self.backgroundView.frame.width
+                let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: size, height: size, color: NCBrandColor.sharedInstance.brand)
+                completion(index, image, ZoomScale.default, nil)
             }
         }
     }
