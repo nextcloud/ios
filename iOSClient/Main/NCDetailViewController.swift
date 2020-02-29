@@ -145,7 +145,7 @@ class NCDetailViewController: UIViewController {
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
             
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+            if let metadatas = getMetadatasImage(account: metadata.account, serverUrl: metadata.serverUrl) {
                 
                 if metadatas.count > 0 {
                     var index = 0, counter = 0
@@ -312,8 +312,10 @@ class NCDetailViewController: UIViewController {
 extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
-        
-        return metadatas.count
+        if let metadatas = getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) {
+            return metadatas.count
+        }
+        return 0
     }
 
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping MediaBrowserViewControllerDataSource.CompletionBlock) {
@@ -371,8 +373,10 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
         if index >= metadatas.count { return }
         
-        metadata = metadatas[index]
-        self.navigationController?.navigationBar.topItem?.title = metadata!.fileNameView
+        if let metadatas = getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) {
+            metadata = metadatas[index]
+            self.navigationController?.navigationBar.topItem?.title = metadata!.fileNameView
+        }
     }
     
     func getImageOffOutline() -> UIImage {
@@ -380,5 +384,11 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: self.view.frame.width, height: self.view.frame.width, color: NCBrandColor.sharedInstance.brand)
 
         return image!
+    }
+    
+    func getMetadatasImage(account: String?, serverUrl: String?) -> [tableMetadata]? {
+        if account == nil || serverUrl == nil { return nil }
+        
+        return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", account!, serverUrl!, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
     }
 }
