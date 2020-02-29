@@ -89,10 +89,14 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
                 self.navigationController?.navigationBar.topItem?.title = ""
             }
         }
+        
+        backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
     }
     
     @objc func changeTheming() {
-        backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
+        if backgroundView.image != nil {
+            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
+        }
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
    
@@ -108,6 +112,7 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
                 
         self.metadata = metadata
         self.selector = selector
+        self.backgroundView.image = nil
         
         self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
         
