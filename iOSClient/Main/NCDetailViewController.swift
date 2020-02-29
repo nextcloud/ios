@@ -35,7 +35,9 @@ class NCDetailViewController: UIViewController {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var mediaBrowser: MediaBrowserViewController?
     private var metadatas = [tableMetadata]()
-    
+        
+    //MARK: -
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
@@ -47,7 +49,7 @@ class NCDetailViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: "changeDisplayMode"), object: nil)
-
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteMetadata), name: NSNotification.Name(rawValue: "deleteMetadata"), object: nil)
         changeTheming()
         
         if metadata != nil  {
@@ -75,6 +77,12 @@ class NCDetailViewController: UIViewController {
         }
     }
     
+    //MARK: - Utility
+
+    func subViewActive() -> UIView? {
+        return backgroundView.subviews.first
+    }
+    
     func viewUnload() {
         if let splitViewController = self.splitViewController as? NCSplitViewController {
             if splitViewController.isCollapsed {
@@ -92,6 +100,8 @@ class NCDetailViewController: UIViewController {
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
     }
     
+    //MARK: - NotificationCenter
+
     @objc func changeTheming() {
         if backgroundView.image != nil {
             backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
@@ -105,9 +115,15 @@ class NCDetailViewController: UIViewController {
         }
     }
     
-    func subViewActive() -> UIView? {
-        return backgroundView.subviews.first
+    @objc func deleteMetadata() {
+        if mediaBrowser != nil {
+            
+        } else {
+            viewUnload()
+        }
     }
+    
+    //MARK: -
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
                 
@@ -128,40 +144,7 @@ class NCDetailViewController: UIViewController {
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
-            
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
-                
-                if metadatas.count > 0 {
-                    var index = 0, counter = 0
-                    for metadata in metadatas {
-                        if metadata.ocId == self.metadata!.ocId { index = counter }
-                        counter += 1
-                    }
-                    self.metadatas = metadatas
-                    
-                    mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
-                    if mediaBrowser != nil {
-                                    
-                        mediaBrowser!.view.isHidden = true
-                        
-                        mediaBrowser!.shouldShowPageControl = false
-                        mediaBrowser!.enableInteractiveDismissal = false
-                        
-                        addChild(mediaBrowser!)
-                        backgroundView.addSubview(mediaBrowser!.view)
-                        
-                        mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
-                        mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                        
-                        mediaBrowser!.didMove(toParent: self)
-                        
-                        DispatchQueue.main.async {
-                            self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
-                            self.mediaBrowser!.view.isHidden = false
-                        }
-                    }
-                }
-            }
+            viewImage(metadata: metadata)
             return
         }
         
@@ -288,6 +271,43 @@ class NCDetailViewController: UIViewController {
         
         // OTHER
         NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
+    }
+    
+    func viewImage(metadata: tableMetadata) {
+        
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+            
+            if metadatas.count > 0 {
+                var index = 0, counter = 0
+                for metadata in metadatas {
+                    if metadata.ocId == self.metadata!.ocId { index = counter }
+                    counter += 1
+                }
+                self.metadatas = metadatas
+                
+                mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
+                if mediaBrowser != nil {
+                                
+                    mediaBrowser!.view.isHidden = true
+                    
+                    mediaBrowser!.shouldShowPageControl = false
+                    mediaBrowser!.enableInteractiveDismissal = false
+                    
+                    addChild(mediaBrowser!)
+                    backgroundView.addSubview(mediaBrowser!.view)
+                    
+                    mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+                    mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    
+                    mediaBrowser!.didMove(toParent: self)
+                    
+                    DispatchQueue.main.async {
+                        self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
+                        self.mediaBrowser!.view.isHidden = false
+                    }
+                }
+            }
+        }
     }
 }
 
