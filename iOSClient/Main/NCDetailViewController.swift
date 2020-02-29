@@ -26,7 +26,7 @@ import WebKit
 import NCCommunication
 //import ATGMediaBrowser
 
-class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
+class NCDetailViewController: UIViewController {
     
     @IBOutlet weak var backgroundView: UIImageView!
     
@@ -282,6 +282,10 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         // OTHER
         NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
     }
+}
+
+
+extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
         
@@ -292,35 +296,45 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         if index >= metadatas.count { return }
 
         let metadata = metadatas[index]
+        
+        // Original
         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+            
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if let image = UIImage.init(contentsOfFile: imagePath) {
                 completion(index, image, ZoomScale.default, nil)
-                return
+            } else {
+                completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
             }
+            
+        // Preview
         } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
             let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if let image = UIImage.init(contentsOfFile: imagePath) {
                 completion(index, image, ZoomScale.default, nil)
-                return
-            }
-        }
-        
-        // NO Icon
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            
-        NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: NCUtility.sharedInstance.getScreenWidthForPreview(), height: NCUtility.sharedInstance.getScreenHeightForPreview(), account: metadata.account) { (account, data, errorCode, errorMessage) in
-            if errorCode == 0 && data != nil {
-                do {
-                    let url = URL.init(fileURLWithPath: fileNameLocalPath)
-                    try data!.write(to: url, options: .atomic)
-                    completion(index, UIImage.init(data: data!), ZoomScale.default, nil)
-                } catch {
-                    completion(index, CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: self.view.frame.width, height: self.view.frame.width, color: NCBrandColor.sharedInstance.brand), ZoomScale.default, nil)
-                }
             } else {
-                completion(index, CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: self.view.frame.width, height: self.view.frame.width, color: NCBrandColor.sharedInstance.brand), ZoomScale.default, nil)
+                completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+            }
+            
+        // NO Original/Preview
+        } else {
+            
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                
+            NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: NCUtility.sharedInstance.getScreenWidthForPreview(), height: NCUtility.sharedInstance.getScreenHeightForPreview(), account: metadata.account) { (account, data, errorCode, errorMessage) in
+                if errorCode == 0 && data != nil {
+                    do {
+                        let url = URL.init(fileURLWithPath: fileNameLocalPath)
+                        try data!.write(to: url, options: .atomic)
+                        completion(index, UIImage.init(data: data!), ZoomScale.default, nil)
+                    } catch {
+                        completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+                    }
+                } else {
+                    completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+                }
             }
         }
     }
@@ -330,5 +344,12 @@ class NCDetailViewController: UIViewController, MediaBrowserViewControllerDelega
         
         metadata = metadatas[index]
         self.navigationController?.navigationBar.topItem?.title = metadata!.fileNameView
+    }
+    
+    func getImageOffOutline() -> UIImage {
+        
+        let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: self.view.frame.width, height: self.view.frame.width, color: NCBrandColor.sharedInstance.brand)
+
+        return image!
     }
 }
