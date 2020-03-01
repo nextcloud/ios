@@ -169,7 +169,7 @@ class NCDetailViewController: UIViewController {
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
             
-            viewImage(to: self.metadata)
+            viewImage(to: metadata)
             return
         }
         
@@ -305,8 +305,7 @@ class NCDetailViewController: UIViewController {
 
 extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
-    func viewImage(to metadata: tableMetadata?) {
-        guard let metadata = metadata else { return }
+    func viewImage(to metadata: tableMetadata) {
         
         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
             
@@ -341,8 +340,6 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                     }
                 }
             }
-        } else {
-            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
         }
     }
     
