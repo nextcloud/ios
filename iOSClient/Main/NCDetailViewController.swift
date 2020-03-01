@@ -331,9 +331,8 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             if index >= metadatas.count { return }
             
             // Refresh self metadata && title
-            let indexNow = mediaBrowser.index
-            if indexNow < metadatas.count {
-                self.metadata = metadatas[indexNow]
+            if mediaBrowser.index < metadatas.count {
+                self.metadata = metadatas[mediaBrowser.index]
             } else {
                 self.metadata = metadatas[0]
             }
