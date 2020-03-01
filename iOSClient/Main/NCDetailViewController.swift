@@ -353,8 +353,10 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         let metadata = metadatas[index]
         
         // Refresh self metadata && title
-        self.metadata = metadatas[mediaBrowser.index]
-        self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
+        if mediaBrowser.index < metadatas.count {
+            self.metadata = metadatas[mediaBrowser.index]
+            self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
+        }
         
         // Original
         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
