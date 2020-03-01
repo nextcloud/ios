@@ -125,16 +125,19 @@ class NCDetailViewController: UIViewController {
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     
+                        var metadataStart: tableMetadata?
+
                         // remove all superview
                         for view in backgroundView.subviews {
                             view.removeFromSuperview()
                         }
                         
-                        var metadataStart: tableMetadata?
-                    
+                        // find re prev image
                         for metadataLoop in self.metadatas {
                             if metadataLoop.ocId != metadata.ocId {
-                                metadataStart = metadata
+                                metadataStart = metadataLoop
+                            } else {
+                                break
                             }
                         }
                         
