@@ -168,41 +168,7 @@ class NCDetailViewController: UIViewController {
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
             
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
-                
-                if metadatas.count > 0 {
-                    
-                    var index = 0, counter = 0
-                    for metadata in metadatas {
-                        if metadata.ocId == self.metadata!.ocId { index = counter }
-                        counter += 1
-                    }
-                    self.metadatas = metadatas
-                    
-                    mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
-                    if mediaBrowser != nil {
-                                    
-                        mediaBrowser!.view.isHidden = true
-                        
-                        mediaBrowser!.shouldShowPageControl = false
-                        mediaBrowser!.enableInteractiveDismissal = false
-                        
-                        addChild(mediaBrowser!)
-                        backgroundView.addSubview(mediaBrowser!.view)
-                        
-                        mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
-                        mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                        
-                        mediaBrowser!.didMove(toParent: self)
-                        
-                        DispatchQueue.main.async {
-                            self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
-                            self.mediaBrowser!.view.isHidden = false
-                        }
-                    }
-                }
-            }
-            
+            viewImage(to: self.metadata)
             return
         }
         
@@ -334,9 +300,48 @@ class NCDetailViewController: UIViewController {
     }
 }
 
-//MARK: - MediaBrowser Delegate/DataSource
+//MARK: - MediaBrowser - Delegate/DataSource
 
 extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
+    
+    func viewImage(to metadata: tableMetadata?) {
+        guard let metadata = metadata else { return }
+        
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+            
+            if metadatas.count > 0 {
+                
+                var index = 0, counter = 0
+                for metadata in metadatas {
+                    if metadata.ocId == self.metadata!.ocId { index = counter }
+                    counter += 1
+                }
+                self.metadatas = metadatas
+                
+                mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
+                if mediaBrowser != nil {
+                                
+                    mediaBrowser!.view.isHidden = true
+                    
+                    mediaBrowser!.shouldShowPageControl = false
+                    mediaBrowser!.enableInteractiveDismissal = false
+                    
+                    addChild(mediaBrowser!)
+                    backgroundView.addSubview(mediaBrowser!.view)
+                    
+                    mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+                    mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    
+                    mediaBrowser!.didMove(toParent: self)
+                    
+                    DispatchQueue.main.async {
+                        self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
+                        self.mediaBrowser!.view.isHidden = false
+                    }
+                }
+            }
+        }
+    }
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
         return metadatas.count
