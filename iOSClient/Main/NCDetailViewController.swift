@@ -125,26 +125,17 @@ class NCDetailViewController: UIViewController {
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     
-                        var metadataStart: tableMetadata?
+                        viewUnload()
 
-                        // remove all superview
-                        for view in backgroundView.subviews {
-                            view.removeFromSuperview()
-                        }
-                        
                         // find re prev image
                         for metadataLoop in self.metadatas {
                             if metadataLoop.ocId != metadata.ocId {
-                                metadataStart = metadataLoop
-                            } else {
-                                break
-                            }
+                                self.metadata = metadataLoop
+                            } 
                         }
                         
-                        if metadataStart != nil {
-                            viewImage(to: metadataStart!)
-                        } else {
-                            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
+                        if self.metadata != nil {
+                            viewImage()
                         }
                     }
                 } else {
@@ -178,7 +169,7 @@ class NCDetailViewController: UIViewController {
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
             
-            viewImage(to: metadata)
+            viewImage()
             return
         }
         
@@ -314,9 +305,9 @@ class NCDetailViewController: UIViewController {
 
 extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
-    func viewImage(to metadata: tableMetadata) {
+    func viewImage() {
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata!.account, metadata!.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
             
             if metadatas.count > 0 {
                 
@@ -329,7 +320,9 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                 
                 mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
                 if mediaBrowser != nil {
-                                
+                               
+                    self.backgroundView.image = nil
+
                     mediaBrowser!.view.isHidden = true
                     
                     mediaBrowser!.shouldShowPageControl = false
