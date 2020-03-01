@@ -953,6 +953,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             delete(metadatas: copyMetadatas, serverUrl: serverUrl, e2ee: e2ee) { (errorCode, message) in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_delete_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                } else {
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "deleteMetadata"), object: nil)
                 }
                 completion(errorCode, message)
             }

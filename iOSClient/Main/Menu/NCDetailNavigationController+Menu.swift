@@ -64,10 +64,6 @@ extension NCDetailNavigationController {
                                 
                                 if errorCode == 0 {
                                     NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: k_action_DEL)
-                                            NotificationCenter.default.post(name: Notification.Name.init(rawValue: "deleteMetadata"), object: nil)
-
-                                } else {
-                                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }
                             }
                         }
