@@ -128,15 +128,19 @@ class NCDetailViewController: UIViewController {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     
                         viewUnload()
-
-                        for metadataLoop in self.metadatas {
+                        
+                        for counter in 1...self.metadatas.count {
+                            let index = self.metadatas.count - counter
+                            let metadataLoop = self.metadatas[index]
                             if metadataLoop.ocId != metadata.ocId {
                                 self.metadata = metadataLoop
+                            } else {
+                                break
                             }
                         }
-                        if self.metadata != nil {
-                            viewImage()
-                        }
+                        if self.metadata == nil { self.metadata = metadata }
+                        
+                        viewImage()
                     }
                     
                 // OTHER FILE TYPE
