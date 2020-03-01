@@ -122,13 +122,13 @@ class NCDetailViewController: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if mediaBrowser != nil {
-                    /*
-                     if getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) != nil {
-                         mediaBrowser?.reloadContentViews()
-                     } else {
-                         viewUnload()
-                     }
-                     */
+                    if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                        if getMetadatasImage(account: metadata.account, serverUrl: metadata.serverUrl) != nil {
+                            mediaBrowser?.reloadContentViews()
+                        } else {
+                            viewUnload()
+                        }
+                    }
                 } else {
                     if metadata.ocId == self.metadata?.ocId {
                         viewUnload()
