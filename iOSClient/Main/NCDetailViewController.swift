@@ -345,15 +345,9 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                         self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
                         self.mediaBrowser!.view.isHidden = false
                     }
-                } else {
-                    viewUnload()
                 }
-            } else {
-                viewUnload()
             }
-        } else {
-            viewUnload()
-        }
+        } 
     }
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
