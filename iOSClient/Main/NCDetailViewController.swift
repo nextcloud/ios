@@ -341,6 +341,8 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                     }
                 }
             }
+        } else {
+            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
         }
     }
     
