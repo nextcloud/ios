@@ -125,6 +125,11 @@ class NCDetailViewController: UIViewController {
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     
+                        // remove all superview
+                        for view in backgroundView.subviews {
+                            view.removeFromSuperview()
+                        }
+                        
                         var metadataStart: tableMetadata?
                     
                         for metadataLoop in self.metadatas {
@@ -133,10 +138,11 @@ class NCDetailViewController: UIViewController {
                             }
                         }
                         
-                        for view in backgroundView.subviews {
-                            view.removeFromSuperview()
+                        if metadataStart != nil {
+                            viewImage(to: metadataStart!)
+                        } else {
+                            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
                         }
-                        viewImage(to: metadataStart!)
                     }
                 } else {
                     if metadata.ocId == self.metadata?.ocId {
