@@ -326,9 +326,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                 
                 mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
                 if mediaBrowser != nil {
-                        
-                    self.backgroundView.image = nil
-
+                                
                     mediaBrowser!.view.isHidden = true
                     
                     mediaBrowser!.shouldShowPageControl = false
