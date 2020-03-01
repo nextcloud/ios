@@ -143,7 +143,7 @@ class NCDetailViewController: UIViewController {
                         viewImage()
                     }
                     
-                // OTHER FILE TYPE
+                // OTHER SINGLE FILE TYPE
                 } else if metadata.ocId == self.metadata?.ocId {
                     
                     viewUnload()
@@ -347,7 +347,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                     }
                 }
             }
-        } 
+        }
     }
     
     func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
