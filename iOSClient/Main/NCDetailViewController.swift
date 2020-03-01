@@ -127,14 +127,13 @@ class NCDetailViewController: UIViewController {
                         
                         var metadatas = [tableMetadata]()
                         for metadataTemp in self.metadatas {
-                            if metadataTemp != metadata { metadatas.append(metadataTemp)}
+                            if metadataTemp.ocId != metadata.ocId { metadatas.append(metadataTemp)}
                         }
 
                         self.metadatas = metadatas
                         if metadatas.count == 0 {
                             viewUnload()
                         } else {
-                            self.metadatas = metadatas
                             mediaBrowser?.reloadContentViews()
                         }
                     }
