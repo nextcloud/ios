@@ -122,6 +122,8 @@ class NCDetailViewController: UIViewController {
     @objc func deleteMetadata(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
+                
+                // IMAGE
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     
@@ -136,6 +138,8 @@ class NCDetailViewController: UIViewController {
                             viewImage()
                         }
                     }
+                    
+                // OTHER FILE TYPE
                 } else {
                     if metadata.ocId == self.metadata?.ocId {
                         viewUnload()
