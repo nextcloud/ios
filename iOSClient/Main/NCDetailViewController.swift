@@ -124,18 +124,19 @@ class NCDetailViewController: UIViewController {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                    
+                        var metadataStart: tableMetadata?
+                    
+                        for metadataLoop in self.metadatas {
+                            if metadataLoop.ocId != metadata.ocId {
+                                metadataStart = metadata
+                            }
+                        }
                         
-                        var metadatas = [tableMetadata]()
-                        for metadataTemp in self.metadatas {
-                            if metadataTemp.ocId != metadata.ocId { metadatas.append(metadataTemp)}
+                        for view in backgroundView.subviews {
+                            view.removeFromSuperview()
                         }
-
-                        self.metadatas = metadatas
-                        if metadatas.count == 0 {
-                            viewUnload()
-                        } else {
-                            mediaBrowser?.reloadContentViews()
-                        }
+                        viewImage(to: metadataStart)
                     }
                 } else {
                     if metadata.ocId == self.metadata?.ocId {
