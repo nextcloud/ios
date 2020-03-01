@@ -48,7 +48,7 @@ class NCDetailViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: "changeDisplayMode"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteMetadata), name: NSNotification.Name(rawValue: "deleteMetadata"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteMetadata(_:)), name: NSNotification.Name(rawValue: "deleteMetadata"), object: nil)
         changeTheming()
         
         if metadata != nil  {
@@ -83,6 +83,10 @@ class NCDetailViewController: UIViewController {
     }
     
     func viewUnload() {
+        
+        metadata = nil
+        selector = nil
+        
         if let splitViewController = self.splitViewController as? NCSplitViewController {
             if splitViewController.isCollapsed {
                 if let navigationController = splitViewController.viewControllers.last as? UINavigationController {
@@ -114,15 +118,23 @@ class NCDetailViewController: UIViewController {
         }
     }
     
-    @objc func deleteMetadata() {
-        if mediaBrowser != nil {
-            if getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) != nil {
-                mediaBrowser?.reloadContentViews()
-            } else {
-                viewUnload()
+    @objc func deleteMetadata(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if mediaBrowser != nil {
+                    /*
+                     if getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) != nil {
+                         mediaBrowser?.reloadContentViews()
+                     } else {
+                         viewUnload()
+                     }
+                     */
+                } else {
+                    if metadata.ocId == self.metadata?.ocId {
+                        viewUnload()
+                    }
+                }
             }
-        } else {
-            viewUnload()
         }
     }
     
