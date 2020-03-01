@@ -140,10 +140,9 @@ class NCDetailViewController: UIViewController {
                     }
                     
                 // OTHER FILE TYPE
-                } else {
-                    if metadata.ocId == self.metadata?.ocId {
-                        viewUnload()
-                    }
+                } else if metadata.ocId == self.metadata?.ocId {
+                    
+                    viewUnload()
                 }
             }
         }
