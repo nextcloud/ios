@@ -136,7 +136,7 @@ class NCDetailViewController: UIViewController {
                         for view in backgroundView.subviews {
                             view.removeFromSuperview()
                         }
-                        viewImage(to: metadataStart)
+                        viewImage(to: metadataStart!)
                     }
                 } else {
                     if metadata.ocId == self.metadata?.ocId {

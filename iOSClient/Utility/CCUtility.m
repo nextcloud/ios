@@ -1529,13 +1529,24 @@
         metadata.typeFile = k_metadataTypeFile_directory;
         fileUTI = kUTTypeFolder;
         
+        // Add contentType
+        if ([metadata.contentType isEqualToString:@""]) {
+            metadata.contentType = @"application/directory";
+        }
+        
     } else {
         
         CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
         fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-
+        
+        // Add contentType
+        if ([metadata.contentType isEqualToString:@""]) {
+            CFStringRef mimeUTI = UTTypeCopyPreferredTagWithClass(fileUTI, kUTTagClassMIMEType);
+            metadata.contentType = (__bridge NSString *)mimeUTI;
+        }
+        
         // Type image
         if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
             metadata.typeFile = k_metadataTypeFile_image;
