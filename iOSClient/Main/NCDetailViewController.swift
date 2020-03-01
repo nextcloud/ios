@@ -126,7 +126,9 @@ class NCDetailViewController: UIViewController {
                 // IMAGE
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
-                                            
+                         
+                        viewUnload()
+                        
                         for counter in 1...self.metadatas.count {
                             let index = self.metadatas.count - counter
                             let metadataLoop = self.metadatas[index]
@@ -136,7 +138,8 @@ class NCDetailViewController: UIViewController {
                                 break
                             }
                         }
-                        
+                        if self.metadata == nil { self.metadata = metadata }
+                            
                         viewImage()
                     }
                     
