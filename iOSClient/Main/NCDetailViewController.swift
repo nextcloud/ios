@@ -127,13 +127,11 @@ class NCDetailViewController: UIViewController {
                     
                         viewUnload()
 
-                        // find re prev image
                         for metadataLoop in self.metadatas {
                             if metadataLoop.ocId != metadata.ocId {
                                 self.metadata = metadataLoop
-                            } 
+                            }
                         }
-                        
                         if self.metadata != nil {
                             viewImage()
                         }
