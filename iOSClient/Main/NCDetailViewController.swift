@@ -328,9 +328,18 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping MediaBrowserViewControllerDataSource.CompletionBlock) {
         
         if let metadatas = getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) {
-        
             if index >= metadatas.count { return }
+            
+            // Refresh self metadata && title
+            let indexNow = mediaBrowser.index
+            if indexNow < metadatas.count {
+                self.metadata = metadatas[indexNow]
+            } else {
+                self.metadata = metadatas[0]
+            }
+            self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
 
+            // --------------------------------------
             let metadata = metadatas[index]
             
             // Original
@@ -382,14 +391,6 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     }
     
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
-        
-        if let metadatas = getMetadatasImage(account: metadata?.account, serverUrl: metadata?.serverUrl) {
-            
-            if index >= metadatas.count { return }
-
-            metadata = metadatas[index]
-            self.navigationController?.navigationBar.topItem?.title = metadata!.fileNameView
-        }
     }
     
     func getImageOffOutline() -> UIImage {
