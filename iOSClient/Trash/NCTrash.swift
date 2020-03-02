@@ -728,19 +728,19 @@ extension NCTrash {
             return
         }
         
-        let fileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
+        let fileNameFrom = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
         
-        OCNetworking.sharedManager().moveFileOrFolder(withAccount: appDelegate.activeAccount, fileName: fileName, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account!)
+                NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
                 self.loadDatasource()
             }  else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
-        })
+        }
     }
     
     func emptyTrash() {

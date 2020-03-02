@@ -1521,8 +1521,8 @@
                     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                     NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, fileNameNew];
                     
-                    [[OCNetworking sharedManager] moveFileOrFolderWithAccount:appDelegate.activeAccount fileName:fileNamePath fileNameTo:fileNameToPath completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-                       
+                    [[NCCommunication sharedInstance] moveFileOrFolderWithServerUrlFileNameSource:fileNamePath serverUrlFileNameDestination:fileNameToPath account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
+                                               
                         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                             // Rename metadata
                             tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew ocId:metadata.ocId];
@@ -1621,7 +1621,8 @@
                 NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                 NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
             
-                [[OCNetworking sharedManager] moveFileOrFolderWithAccount:appDelegate.activeAccount fileName:fileNamePath fileNameTo:fileNameToPath completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+                
+                [[NCCommunication sharedInstance] moveFileOrFolderWithServerUrlFileNameSource:fileNamePath serverUrlFileNameDestination:fileNameToPath account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
                     
                     [_hud hideHud];
                     
