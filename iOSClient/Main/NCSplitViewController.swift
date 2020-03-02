@@ -57,7 +57,7 @@ class NCSplitViewController: UISplitViewController {
     }
     
     @objc func timerHandlerChangeTheming(_ timer: Timer) {
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_changeTheming), object: nil)
     }
 }
 
@@ -68,6 +68,6 @@ extension NCSplitViewController: UISplitViewControllerDelegate {
     }
     
     func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeDisplayMode"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
     }
 }

@@ -51,9 +51,9 @@ class NCDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: "changeDisplayMode"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteMetadata(_:)), name: NSNotification.Name(rawValue: "deleteMetadata"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteMetadata(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteMetadata), object: nil)
         changeTheming()
         
         if metadata != nil  {

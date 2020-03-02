@@ -1010,7 +1010,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         
                         // Message
                         let userInfo:[String: tableMetadata] = ["metadata": metadata]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "deleteMetadata"), object: nil, userInfo: userInfo)
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteMetadata), object: nil, userInfo: userInfo)
                         
                     } else {
                         

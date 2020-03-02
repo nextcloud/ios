@@ -36,7 +36,7 @@ import PDFKit
     
     override init(frame: CGRect) {
         super.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height - thumbnailViewHeight))
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
     }
     
     @objc func changeTheming() {

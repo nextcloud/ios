@@ -41,10 +41,10 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         self.tableView.allowsSelection = false
         
         // Register to receive notification reload data
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadDatasource), name: Notification.Name("notificationReloadData"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadDatasource), name: Notification.Name(rawValue: "notificationReloadData"), object: nil)
 
         // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
         
         reloadDatasource()

@@ -317,6 +317,13 @@
 #define k_nextcloud_version_17_0                        17
 #define k_nextcloud_version_18_0                        18
 
+// Notification Center
+
+#define k_notificationCenter_changeTheming              @"changeTheming"
+#define k_notificationCenter_deleteMetadata             @"deleteMetadata"
+#define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
+
+
 // -----------------------------------------------------------------------------------------------------------
 // INTERNAL
 // -----------------------------------------------------------------------------------------------------------
