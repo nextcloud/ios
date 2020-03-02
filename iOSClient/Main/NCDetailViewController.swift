@@ -53,7 +53,10 @@ class NCDetailViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.deleteMetadata(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteMetadata), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.uploadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFile), object: nil)
+
         changeTheming()
         
         if metadata != nil  {
@@ -151,7 +154,6 @@ class NCDetailViewController: UIViewController {
                                 }
                             }
                             
-                            for view in backgroundView.subviews { view.removeFromSuperview() }
                             viewImage()
                             
                         } else {
@@ -169,6 +171,20 @@ class NCDetailViewController: UIViewController {
         }
     }
     
+    @objc func uploadFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                    if getMetadatasMediaBrowser() != nil {
+                        viewImage()
+                    } else {
+                        viewUnload()
+                    }
+                }
+            }
+        }
+    }
+    
     //MARK: -
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
@@ -176,7 +192,8 @@ class NCDetailViewController: UIViewController {
         self.metadata = metadata
         self.selector = selector
         self.backgroundView.image = nil
-        
+        for view in backgroundView.subviews { view.removeFromSuperview() }
+
         self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
         
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) == false {
@@ -328,6 +345,8 @@ class NCDetailViewController: UIViewController {
 extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
     
     func viewImage() {
+        
+        for view in backgroundView.subviews { view.removeFromSuperview() }
         
         if let metadatas = getMetadatasMediaBrowser() {
                             
