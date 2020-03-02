@@ -214,7 +214,7 @@
 
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" account:account completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
                 
-        if (errorCode == 0 && [account isEqualToString:account]) {
+        if (errorCode == 0 && [account isEqualToString:account] && files.count > 0) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                 
@@ -224,13 +224,11 @@
                     withDownload = YES;
                 
                 //Add/Update Metadata
-                tableMetadata *metadataFolder = [tableMetadata new];
-                NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:nil user:appDelegate.activeUser metadataFolder:&metadataFolder];
-                if (metadatas.count == 1) {
-                    tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadatas[0]];
-                    if (addMetadata)
-                        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:account withDownload:withDownload];
-                }
+                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:nil fileName:fileName user:appDelegate.activeUser];
+                
+                tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                if (addMetadata)
+                    [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:account withDownload:withDownload];
             });
             
         } else if (errorCode == kOCErrorServerPathNotFound) {

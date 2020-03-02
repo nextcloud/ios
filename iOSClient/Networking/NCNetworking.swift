@@ -191,7 +191,7 @@ import NCCommunication
         return metadata
     }
     
-    @objc func convertFiles(_ files: [NCFile], urlString: String, serverUrl : String?, user: String, metadataFolder: UnsafeMutablePointer<tableMetadata>) -> [tableMetadata] {
+    @objc func convertFiles(_ files: [NCFile], urlString: String, serverUrl : String?, user: String, metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
         
         var metadatas = [tableMetadata]()
         
@@ -233,8 +233,8 @@ import NCCommunication
             CCUtility.insertTypeFileIconName(file.fileName, metadata: metadata)
             
             // Folder
-            if file.fileName.count == 0 {
-                metadataFolder.initialize(to: metadata)
+            if file.fileName.count == 0 && metadataFolder != nil {
+                metadataFolder!.initialize(to: metadata)
             } else {
                 metadatas.append(metadata)
             }
