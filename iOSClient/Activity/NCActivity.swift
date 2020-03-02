@@ -400,25 +400,30 @@ extension activityTableViewCell: UICollectionViewDelegate {
                     
                     let serverUrl = (url as NSString).deletingLastPathComponent
                     let fileName = (url as NSString).lastPathComponent
+                    let serverUrlFileName = serverUrl + "/" + fileName
                     
-                    OCNetworking.sharedManager()?.readFile(withAccount: activityPreview.account, serverUrl: serverUrl, fileName: fileName, completion: { (account, metadata, message, errorCode) in
+                    NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: activityPreview.account) { (account, files, errorCode, errorDescription) in
+                       
+                    //OCNetworking.sharedManager()?.readFile(withAccount: activityPreview.account, serverUrl: serverUrl, fileName: fileName, completion: { (account, metadata, message, errorCode) in
                         
                         NCUtility.sharedInstance.stopActivityIndicator()
                         
-                        if account == self.appDelegate.activeAccount && errorCode == 0 {
+                        if account == self.appDelegate.activeAccount && errorCode == 0 && files?.count ?? 0 > 0  {
+                            
+                            let metadata = NCNetworking.sharedInstance.convertFile(files![0], urlString: self.appDelegate.activeUrl, serverUrl: serverUrl, fileName: fileName, user: self.appDelegate.activeUser)
                             
                             // move from id to oc:id + instanceid (ocId)
                             
                             let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
+                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata.ocId
                             
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                             
-                            if let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata!) {
+                            if let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) {
                                 self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
                             }
                         }
-                    })
+                    }
                     
                 } else {
                     
