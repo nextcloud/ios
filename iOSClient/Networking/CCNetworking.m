@@ -1173,6 +1173,10 @@
         }
 #ifndef EXTENSION
         
+        // NSNotificationCenter
+        NSDictionary* userInfo = @{@"metadata": metadata};
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFile object:nil userInfo:userInfo];
+        
         // EXIF
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
@@ -1232,6 +1236,7 @@
                 }
             });
         });
+        
     } else {
         
         if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
