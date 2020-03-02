@@ -57,15 +57,14 @@ import MarkdownKit
         
         NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
                 
-                var metadataFolder = tableMetadata()
-                _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
-                NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                if self.richWorkspaceText != metadataFolder.richWorkspace {
+                let metadata = NCNetworking.sharedInstance.convertFile(files![0], urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, fileName: "", user: self.appDelegate.activeUser)
+                NCManageDatabase.sharedInstance.setDirectory(ocId: metadata.ocId, serverUrl: metadata.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                if self.richWorkspaceText != metadata.richWorkspace {
                     self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                    self.richWorkspaceText = metadataFolder.richWorkspace
-                    self.textView.attributedText = self.markdownParser.parse(metadataFolder.richWorkspace)
+                    self.richWorkspaceText = metadata.richWorkspace
+                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace)
                 }
             }
         }
