@@ -31,6 +31,7 @@ class NCDetailViewController: UIViewController {
     
     @objc var metadata: tableMetadata?
     @objc var selector: String?
+    @objc var favorite: Bool = false
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var mediaBrowser: MediaBrowserViewController?
@@ -132,10 +133,12 @@ class NCDetailViewController: UIViewController {
                 // IMAGE
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
-                         
-                        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+                        
+                        let metadatas = getMetadatasMediaBrowser()
+                        
+                        if metadatas != nil && favorite == false {
             
-                            self.metadata = metadatas[0]
+                            self.metadata = metadatas![0]
                             
                             for counter in 1...self.metadatas.count {
                                 let index = self.metadatas.count - counter
@@ -325,38 +328,35 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     
     func viewImage() {
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata!.account, metadata!.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+        if let metadatas = getMetadatasMediaBrowser() {
+                            
+            var index = 0, counter = 0
+            for metadata in metadatas {
+                if metadata.ocId == self.metadata!.ocId { index = counter }
+                counter += 1
+            }
+            self.metadatas = metadatas
             
-            if metadatas.count > 0 {
-                
-                var index = 0, counter = 0
-                for metadata in metadatas {
-                    if metadata.ocId == self.metadata!.ocId { index = counter }
-                    counter += 1
-                }
-                self.metadatas = metadatas
-                
-                mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
-                if mediaBrowser != nil {
-                               
-                    self.backgroundView.image = nil
+            mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
+            if mediaBrowser != nil {
+                           
+                self.backgroundView.image = nil
 
-                    mediaBrowser!.view.isHidden = true
-                    
-                    mediaBrowser!.enableInteractiveDismissal = true
-                    
-                    addChild(mediaBrowser!)
-                    backgroundView.addSubview(mediaBrowser!.view)
-                    
-                    mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
-                    mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                    
-                    mediaBrowser!.didMove(toParent: self)
-                    
-                    DispatchQueue.main.async {
-                        self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
-                        self.mediaBrowser!.view.isHidden = false
-                    }
+                mediaBrowser!.view.isHidden = true
+                
+                mediaBrowser!.enableInteractiveDismissal = true
+                
+                addChild(mediaBrowser!)
+                backgroundView.addSubview(mediaBrowser!.view)
+                
+                mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+                mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                
+                mediaBrowser!.didMove(toParent: self)
+                
+                DispatchQueue.main.async {
+                    self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
+                    self.mediaBrowser!.view.isHidden = false
                 }
             }
         }
@@ -442,6 +442,15 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     
     func mediaBrowserDismiss() {
         viewUnload()
+    }
+    
+    func getMetadatasMediaBrowser() -> [tableMetadata]? {
+        guard let metadata = self.metadata else { return nil }
+        if favorite {
+            return [metadata]
+        } else {
+            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+        }
     }
     
     func getImageOffOutline() -> UIImage {
