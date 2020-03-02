@@ -1525,7 +1525,10 @@
                        
                         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                             // Rename metadata
-                            (void) [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew ocId:metadata.ocId];
+                            tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew ocId:metadata.ocId];
+                            
+                            NSDictionary* userInfo = @{@"metadata": newMetadata};
+                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
                             
                             if (metadata.directory) {
                                 
@@ -1556,9 +1559,6 @@
                                 
                                 [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
                             }
-                            
-                            NSDictionary* userInfo = @{@"metadata": metadata};
-                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
                             
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
                             

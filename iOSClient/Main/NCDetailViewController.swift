@@ -139,29 +139,27 @@ class NCDetailViewController: UIViewController {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 
                 // IMAGE
-                if mediaBrowser != nil {
-                    if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                         
-                        if let metadatas = getMetadatasMediaBrowser() {
-                                    
-                            self.metadata = metadatas[0]
-                            
-                            for counter in 1...self.metadatas.count {
-                                let index = self.metadatas.count - counter
-                                let metadataLoop = self.metadatas[index]
-                                if metadataLoop.ocId != metadata.ocId {
-                                    self.metadata = metadataLoop
-                                } else {
-                                    break
-                                }
+                    if let metadatas = getMetadatasMediaBrowser() {
+                                
+                        self.metadata = metadatas[0]
+                        
+                        for counter in 1...self.metadatas.count {
+                            let index = self.metadatas.count - counter
+                            let metadataLoop = self.metadatas[index]
+                            if metadataLoop.ocId != metadata.ocId {
+                                self.metadata = metadataLoop
+                            } else {
+                                break
                             }
-                            
-                            viewImage()
-                            
-                        } else {
-                         
-                            viewUnload()
                         }
+                        
+                        viewImage()
+                        
+                    } else {
+                     
+                        viewUnload()
                     }
                     
                 // OTHER SINGLE FILE TYPE
@@ -176,6 +174,8 @@ class NCDetailViewController: UIViewController {
     @objc func uploadFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
+                
+                // IMAGE
                 if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     if getMetadatasMediaBrowser() != nil {
                         viewImage()
@@ -190,6 +190,20 @@ class NCDetailViewController: UIViewController {
     @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
+                
+                // IMAGE
+                if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                    if getMetadatasMediaBrowser() != nil {
+                        viewImage()
+                    } else {
+                        viewUnload()
+                    }
+                    
+                // OTHER SINGLE FILE TYPE
+                } else if metadata.ocId == self.metadata?.ocId {
+                    
+                    self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
+                }
             }
         }
     }
