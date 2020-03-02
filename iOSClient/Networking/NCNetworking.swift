@@ -186,7 +186,7 @@ import NCCommunication
             metadata.richWorkspace = file.richWorkspace
             metadata.resourceType = file.resourceType
             if serverUrl == nil {
-                metadata.serverUrl = urlString + file.path.replacingOccurrences(of: "/remote.php/dav/files/"+user, with: "").dropLast()
+                metadata.serverUrl = urlString + file.path.replacingOccurrences(of: "dav/files/"+user, with: "webdav").dropLast()
             } else {
                 metadata.serverUrl = serverUrl!
             }
