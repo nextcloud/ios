@@ -452,12 +452,15 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         } else if mediaFilterImage {
             return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: "date", ascending: false)
         } else if offlineFilterImage {
-            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true) {
+            var datasourceSorted = ""
+            var datasourceAscending = true
+            (_, datasourceSorted, datasourceAscending, _, _) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
+            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: datasourceSorted, ascending: datasourceAscending) {
                 var ocIds = [String]()
                 for file: tableLocalFile in files {
                     ocIds.append(file.ocId)
                 }
-                return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds), sorted: "fileName", ascending: true)
+                return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds), sorted: datasourceSorted, ascending: datasourceAscending)
             }
         } else {
             return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
