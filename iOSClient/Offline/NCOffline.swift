@@ -463,6 +463,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
                 segueViewController.metadata = metadataPush
+                segueViewController.offlineFilterImage = true
             }
         }
     }
