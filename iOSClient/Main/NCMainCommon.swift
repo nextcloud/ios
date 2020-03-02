@@ -1020,7 +1020,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                     }
                     
                     // Message
-                    let userInfo: [String : Any] = ["metadata": metadata, "errorCode": String(errorCode)]
+                    let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode)]
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
                     
                     if count == metadatas.count {

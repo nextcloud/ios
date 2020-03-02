@@ -136,16 +136,16 @@ class NCDetailViewController: UIViewController {
     
     @objc func moveFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? String {
-                if errorCode != "0" { return }
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode != 0 { return }
             }
         }
     }
     
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? String {
-                if errorCode != "0" { return }
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode != 0 { return }
                 
                 // IMAGE
                 if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
@@ -182,8 +182,8 @@ class NCDetailViewController: UIViewController {
     
     @objc func uploadFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? String {
-                if errorCode != "0" { return }
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode != 0 { return }
                 
                 // IMAGE
                 if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
@@ -199,8 +199,8 @@ class NCDetailViewController: UIViewController {
     
     @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? String {
-                if errorCode != "0" { return }
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode != 0 { return }
                 
                 // IMAGE
                 if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
