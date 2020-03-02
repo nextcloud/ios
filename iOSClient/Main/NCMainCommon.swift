@@ -1320,7 +1320,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
             }
             
             // open View File
-            if (selector == selectorLoadFileView || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
+            if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
             
                 var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
                 if uti == nil {
@@ -1387,15 +1387,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
                 
                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: true)
             }
-            
-            //selectorLoadViewImage
-            if selector == selectorLoadViewImage {
-                
-//                if appDelegate.activeDetail != nil {
-//                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
-//                }
-            }
-            
+                        
             appDelegate.startLoadAutoDownloadUpload()
             
         } else {
@@ -1411,15 +1403,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
                 NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_DEL))
-            }
-            
-            if selector == selectorLoadViewImage {
-                
-//                if appDelegate.activeDetail.view.window != nil {
-//                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
-//                }
-                
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
             }
         }
         

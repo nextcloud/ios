@@ -631,7 +631,7 @@
                         
                     self.metadata.session = k_download_session;
                     self.metadata.sessionError = @"";
-                    self.metadata.sessionSelector = selectorLoadFileView;
+                    self.metadata.sessionSelector = selectorLoadFileViewFavorite;
                     self.metadata.status = k_metadataStatusWaitDownload;
                         
                     // Add Metadata for Download
@@ -700,6 +700,7 @@
     
     detailViewController.metadata = self.metadataForPushDetail;
     detailViewController.selector = self.selectorForPushDetail;
+    detailViewController.favorite = true;
     
     [detailViewController setTitle:self.metadata.fileNameView];
 }
