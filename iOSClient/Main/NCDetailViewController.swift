@@ -134,11 +134,9 @@ class NCDetailViewController: UIViewController {
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                         
-                        let metadatas = getMetadatasMediaBrowser()
-                        
-                        if metadatas != nil && favorite == false {
-            
-                            self.metadata = metadatas![0]
+                        if let metadatas = getMetadatasMediaBrowser() {
+                                    
+                            self.metadata = metadatas[0]
                             
                             for counter in 1...self.metadatas.count {
                                 let index = self.metadatas.count - counter
@@ -447,7 +445,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     func getMetadatasMediaBrowser() -> [tableMetadata]? {
         guard let metadata = self.metadata else { return nil }
         if favorite {
-            return [metadata]
+            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
         } else {
             return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
         }
