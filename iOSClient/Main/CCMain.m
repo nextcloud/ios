@@ -1525,10 +1525,12 @@
                        
                         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                             // Rename metadata
-                            tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew ocId:metadata.ocId];
+                            tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew ocId:metadata.ocId];
                             
-                            NSDictionary* userInfo = @{@"metadata": newMetadata};
-                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
+                            if (metadataNew) {
+                                NSDictionary* userInfo = @{@"metadata": metadataNew, @"errorCode": @(errorCode)};
+                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
+                            }
                             
                             if (metadata.directory) {
                                 
@@ -1563,7 +1565,12 @@
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
                             
                         } else if (errorCode != 0) {
+                            
                             [[NCContentPresenter shared] messageNotification:@"_rename_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                            
+                            NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode)};
+                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
+                            
                         } else {
                             NSLog(@"[LOG] It has been changed user during networking process, error.");
                         }
@@ -1624,10 +1631,15 @@
                             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] account:account];
                         }
                         
-                        [[NCManageDatabase sharedInstance] moveMetadataWithOcId:metadata.ocId serverUrlTo:serverUrlTo];
+                        tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] moveMetadataWithOcId:metadata.ocId serverUrlTo:serverUrlTo];
                         
                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:account];
                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];
+                        
+                        if (metadataNew) {
+                            NSDictionary* userInfo = @{@"metadata": metadataNew, @"errorCode": @(errorCode)};
+                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_moveFile object:nil userInfo:userInfo];
+                        }
                         
                         // next
                         [_selectedocIdsMetadatas removeObjectForKey:metadata.ocId];
@@ -1650,9 +1662,6 @@
                                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
                         }
                         
-                        NSDictionary* userInfo = @{@"metadata": metadata};
-                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_moveFile object:nil userInfo:userInfo];
-                        
                     } else if (errorCode != 0) {
                         
                         [[NCContentPresenter shared] messageNotification:@"_move_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -1665,6 +1674,10 @@
                             [self readFolder:metadata.serverUrl];
                         else
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:nil action:k_action_NULL];
+                        
+                        NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode)};
+                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_moveFile object:nil userInfo:userInfo];
+                        
                     } else {
                         NSLog(@"[LOG] It has been changed user during networking process, error.");
                     }

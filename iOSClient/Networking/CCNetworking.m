@@ -523,6 +523,7 @@
     [appDelegate.listProgressMetadata removeObjectForKey:ocId];
 #endif
     
+    NSString *errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
     
     if (errorCode != 0) {
@@ -541,8 +542,9 @@
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
         }
         
+        
         if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate downloadFileSuccessFailure:fileName ocId:ocId serverUrl:serverUrl selector:selector errorMessage:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
+            [self.delegate downloadFileSuccessFailure:fileName ocId:ocId serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
         }
         
     } else {
@@ -581,10 +583,6 @@
             }
         }
         
-        // NSNotificationCenter
-        NSDictionary* userInfo = @{@"metadata": metadata};
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadFile object:nil userInfo:userInfo];
-        
         // Exif
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
@@ -598,6 +596,10 @@
             [self.delegate downloadFileSuccessFailure:fileName ocId:ocId serverUrl:serverUrl selector:selector errorMessage:@"" errorCode:0];
         }
     }
+    
+    // NSNotificationCenter
+    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode)};
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadFile object:nil userInfo:userInfo];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1177,10 +1179,6 @@
         }
 #ifndef EXTENSION
         
-        // NSNotificationCenter
-        NSDictionary* userInfo = @{@"metadata": metadata};
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFile object:nil userInfo:userInfo];
-        
         // EXIF
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
@@ -1247,6 +1245,10 @@
             [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
         }
     }
+    
+    // NSNotificationCenter
+    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode)};
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFile object:nil userInfo:userInfo];
 }
 
 #pragma --------------------------------------------------------------------------------------------

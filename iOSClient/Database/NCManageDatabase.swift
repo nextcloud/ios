@@ -2023,21 +2023,28 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func moveMetadata(ocId: String, serverUrlTo: String) {
+    @objc func moveMetadata(ocId: String, serverUrlTo: String) -> tableMetadata? {
         
+        var result: tableMetadata?
         let realm = try! Realm()
 
         do {
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter("ocId == %@", ocId)
-                for result in results {
-                    result.serverUrl = serverUrlTo
+                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                if result != nil {
+                    result!.serverUrl = serverUrlTo
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return
-        }        
+            return nil
+        }
+        
+        if result == nil {
+            return nil
+        }
+        
+        return tableMetadata.init(value: result!)
     }
     
     @objc func addMetadataServerUrl(ocId: String, serverUrl: String) {
@@ -2059,7 +2066,7 @@ class NCManageDatabase: NSObject {
     
     @objc func renameMetadata(fileNameTo: String, ocId: String) -> tableMetadata? {
         
-        var result :tableMetadata?
+        var result: tableMetadata?
         let realm = try! Realm()
         
         do {

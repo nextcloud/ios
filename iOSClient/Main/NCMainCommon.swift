@@ -1008,10 +1008,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         
                         self.appDelegate.filterocId.remove(metadata.ocId)
                         
-                        // Message
-                        let userInfo:[String: tableMetadata] = ["metadata": metadata]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
-                        
                     } else {
                         
                         completionErrorCode = errorCode
@@ -1022,6 +1018,10 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         
                         self.appDelegate.filterocId.remove(metadata.ocId)
                     }
+                    
+                    // Message
+                    let userInfo: [String : Any] = ["metadata": metadata, "errorCode": String(errorCode)]
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
                     
                     if count == metadatas.count {
                         if e2ee {

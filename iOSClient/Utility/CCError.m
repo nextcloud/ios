@@ -29,6 +29,9 @@
 {
     switch (errorCode) {
             
+        case 0:                                         // 0
+            return @"";
+            break;
         case kCFURLErrorCancelled:                      // -999
             return NSLocalizedString(@"_cancelled_by_user", nil);
             break;
