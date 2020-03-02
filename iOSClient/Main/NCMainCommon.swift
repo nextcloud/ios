@@ -976,9 +976,9 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             
             self.appDelegate.filterocId.add(metadata.ocId)
             
-            let path = metadata.serverUrl + "/" + metadata.fileName
-            
-            OCNetworking.sharedManager().deleteFileOrFolder(withAccount: appDelegate.activeAccount, path: path, completion: { (account, message, errorCode) in
+            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                   
+            NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
                 
                 if account == self.appDelegate.activeAccount {
                     
@@ -1016,8 +1016,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         
                         completionErrorCode = errorCode
                         completionMessage = ""
-                        if message != nil {
-                            completionMessage = message!
+                        if errorDescription != nil {
+                            completionMessage = errorDescription!
                         }
                         
                         self.appDelegate.filterocId.remove(metadata.ocId)
@@ -1036,7 +1036,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         }
                     }
                 }
-            })
+            }
         }
         
         self.reloadDatasource(ServerUrl: serverUrl, ocId: nil, action: k_action_NULL)
