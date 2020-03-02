@@ -153,17 +153,9 @@ class NCDetailViewController: UIViewController {
                         
                     if let metadatas = getMetadatasMediaBrowser() {
                                 
-                        self.metadata = metadatas[0]
-                        
-                        for counter in 1...self.metadatas.count {
-                            let index = self.metadatas.count - counter
-                            let metadataLoop = self.metadatas[index]
-                            if metadataLoop.ocId != metadata.ocId {
-                                self.metadata = metadataLoop
-                            } else {
-                                break
-                            }
-                        }
+                        var index = mediaBrowser!.index - 1
+                        if index < 0 { index = 0}
+                        self.metadata = metadatas[index]
                         
                         viewImage()
                         
