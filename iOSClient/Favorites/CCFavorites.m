@@ -623,7 +623,7 @@
                     
             } else {
                     
-                if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
+                if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) && self.metadata.e2eEncrypted == NO) {
                         
                     [self shouldPerformSegue:self.metadata selector:@""];
                         
