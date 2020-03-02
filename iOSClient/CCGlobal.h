@@ -324,7 +324,9 @@
 
 #define k_notificationCenter_uploadFile                 @"uploadFile"
 #define k_notificationCenter_downloadFile               @"downloadFile"
-#define k_notificationCenter_deleteMetadata             @"deleteMetadata"
+#define k_notificationCenter_deleteFile                 @"deleteFile"
+#define k_notificationCenter_renameFile                 @"renameFile"
+#define k_notificationCenter_moveFile                   @"moveFile"
 
 
 // -----------------------------------------------------------------------------------------------------------

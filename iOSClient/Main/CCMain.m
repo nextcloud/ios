@@ -1557,6 +1557,9 @@
                                 [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
                             }
                             
+                            NSDictionary* userInfo = @{@"metadata": metadata};
+                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
+                            
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
                             
                         } else if (errorCode != 0) {
@@ -1646,6 +1649,9 @@
                             else
                                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
                         }
+                        
+                        NSDictionary* userInfo = @{@"metadata": metadata};
+                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_moveFile object:nil userInfo:userInfo];
                         
                     } else if (errorCode != 0) {
                         

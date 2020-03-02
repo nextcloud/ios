@@ -54,9 +54,11 @@ class NCDetailViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteMetadata(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteMetadata), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.uploadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFile), object: nil)
-
+        NotificationCenter.default.addObserver(self, selector: #selector(self.renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        
         changeTheming()
         
         if metadata != nil  {
@@ -132,7 +134,7 @@ class NCDetailViewController: UIViewController {
         }
     }
     
-    @objc func deleteMetadata(_ notification: NSNotification) {
+    @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 
@@ -181,6 +183,20 @@ class NCDetailViewController: UIViewController {
                         viewUnload()
                     }
                 }
+            }
+        }
+    }
+    
+    @objc func renameFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+            }
+        }
+    }
+    
+    @objc func moveFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
             }
         }
     }
