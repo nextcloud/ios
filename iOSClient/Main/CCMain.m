@@ -1137,20 +1137,19 @@
     
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
           
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files.count > 0) {
             
-            tableMetadata *metadataFolder = [tableMetadata new];
-            (void)[[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:self.serverUrl user:appDelegate.activeUser metadataFolder:&metadataFolder];
+            tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:self.serverUrl fileName:@"" user:appDelegate.activeUser];
             
             // Rich Workspace
-            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadataFolder.ocId serverUrl:self.serverUrl richWorkspace:metadataFolder.richWorkspace account:account];
-            self.richWorkspaceText = metadataFolder.richWorkspace;
+            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadata.ocId serverUrl:self.serverUrl richWorkspace:metadata.richWorkspace account:account];
+            self.richWorkspaceText = metadata.richWorkspace;
             [self setTableViewHeader];
             
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadataFolder.serverUrl]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
             
             // Read folder: No record, Change etag or BLINK
-            if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadataFolder.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
+            if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
                 [self readFolder:self.serverUrl];
             }
             

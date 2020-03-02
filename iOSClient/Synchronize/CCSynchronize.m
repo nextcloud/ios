@@ -209,10 +209,11 @@
 
 - (void)readFile:(NSString *)ocId fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
 {
-    //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
 
-    [[OCNetworking sharedManager] readFileWithAccount:account serverUrl:serverUrl fileName:fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
-        
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" account:account completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
+                
         if (errorCode == 0 && [account isEqualToString:account]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
@@ -223,10 +224,13 @@
                     withDownload = YES;
                 
                 //Add/Update Metadata
-                tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                
-                if (addMetadata)
-                    [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:account withDownload:withDownload];
+                tableMetadata *metadataFolder = [tableMetadata new];
+                NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:nil user:appDelegate.activeUser metadataFolder:&metadataFolder];
+                if (metadatas.count == 1) {
+                    tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadatas[0]];
+                    if (addMetadata)
+                        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:account withDownload:withDownload];
+                }
             });
             
         } else if (errorCode == kOCErrorServerPathNotFound) {

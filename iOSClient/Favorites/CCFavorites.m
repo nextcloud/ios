@@ -181,7 +181,7 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    [[NCCommunication sharedInstance]listingFavoritesWithUrlString:appDelegate.activeUrl account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorMessage) {
+    [[NCCommunication sharedInstance] listingFavoritesWithUrlString:appDelegate.activeUrl account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorMessage) {
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
              

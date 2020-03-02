@@ -153,6 +153,44 @@ import NCCommunication
         return result
     }
     
+    @objc func convertFile(_ file: NCFile, urlString: String, serverUrl : String?, fileName: String, user: String) -> tableMetadata {
+        
+        let metadata = tableMetadata()
+        
+        metadata.account = account
+        metadata.commentsUnread = file.commentsUnread
+        metadata.contentType = file.contentType
+        metadata.creationDate = file.creationDate
+        metadata.date = file.date
+        metadata.directory = file.directory
+        metadata.e2eEncrypted = file.e2eEncrypted
+        metadata.etag = file.etag
+        metadata.favorite = file.favorite
+        metadata.fileId = file.fileId
+        metadata.fileName = fileName
+        metadata.fileNameView = fileName
+        metadata.hasPreview = file.hasPreview
+        metadata.mountType = file.mountType
+        metadata.ocId = file.ocId
+        metadata.ownerId = file.ownerId
+        metadata.ownerDisplayName = file.ownerDisplayName
+        metadata.permissions = file.permissions
+        metadata.quotaUsedBytes = file.quotaUsedBytes
+        metadata.quotaAvailableBytes = file.quotaAvailableBytes
+        metadata.richWorkspace = file.richWorkspace
+        metadata.resourceType = file.resourceType
+        if serverUrl == nil {
+            metadata.serverUrl = urlString + file.path.replacingOccurrences(of: "dav/files/"+user, with: "webdav").dropLast()
+        } else {
+            metadata.serverUrl = serverUrl!
+        }
+        metadata.size = file.size
+                   
+        CCUtility.insertTypeFileIconName(file.fileName, metadata: metadata)
+        
+        return metadata
+    }
+    
     @objc func convertFiles(_ files: [NCFile], urlString: String, serverUrl : String?, user: String, metadataFolder: UnsafeMutablePointer<tableMetadata>) -> [tableMetadata] {
         
         var metadatas = [tableMetadata]()
