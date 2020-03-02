@@ -523,7 +523,7 @@
     [appDelegate.listProgressMetadata removeObjectForKey:ocId];
 #endif
     
-     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
     
     if (errorCode != 0) {
         
@@ -580,6 +580,10 @@
                 return;
             }
         }
+        
+        // NSNotificationCenter
+        NSDictionary* userInfo = @{@"metadata": metadata};
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadFile object:nil userInfo:userInfo];
         
         // Exif
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
