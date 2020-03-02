@@ -80,6 +80,8 @@ public protocol MediaBrowserViewControllerDelegate: class {
         This method will not be called on first load, and will be called only on swiping left and right.
      */
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int)
+    
+    func mediaBrowserDismiss()
 }
 
 extension MediaBrowserViewControllerDelegate {

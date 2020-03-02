@@ -28,7 +28,7 @@ internal class DismissAnimationController: NSObject {
         static let minimumVelocity: CGFloat = 15.0
         static let minimumTranslation: CGFloat = 0.25
         static let transitionDuration = 0.3
-        static let updateFrameRate: CGFloat = 60.0
+        static let updateFrameRate: CGFloat = 2400.0
         static let transitionSpeedFactor: CGFloat = 0.15
         static let minimumZoomDuringInteraction: CGFloat = 0.9
     }
@@ -185,7 +185,9 @@ internal class DismissAnimationController: NSObject {
 
         let directionalPosition = (gestureDirection == .horizontal) ? relativePosition.y : relativePosition.x
         if directionalPosition != 0.0 {
-            viewController?.dismiss(animated: false, completion: nil)
+            viewController?.dismiss(animated: false, completion: {
+                self.viewController?.delegate?.mediaBrowserDismiss()
+            })
         } else {
             viewController?.mediaContainerView.isHidden = false
             viewController?.hideControls = false

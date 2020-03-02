@@ -101,6 +101,7 @@ class NCDetailViewController: UIViewController {
             }
         }
         
+        self.splitViewController?.preferredDisplayMode = .allVisible
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
     }
     
@@ -127,20 +128,27 @@ class NCDetailViewController: UIViewController {
                 if mediaBrowser != nil {
                     if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                          
-                        viewUnload()
-                        
-                        for counter in 1...self.metadatas.count {
-                            let index = self.metadatas.count - counter
-                            let metadataLoop = self.metadatas[index]
-                            if metadataLoop.ocId != metadata.ocId {
-                                self.metadata = metadataLoop
-                            } else {
-                                break
-                            }
-                        }
-                        if self.metadata == nil { self.metadata = metadata }
+                        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
+            
+                            self.metadata = metadatas[0]
                             
-                        viewImage()
+                            for counter in 1...self.metadatas.count {
+                                let index = self.metadatas.count - counter
+                                let metadataLoop = self.metadatas[index]
+                                if metadataLoop.ocId != metadata.ocId {
+                                    self.metadata = metadataLoop
+                                } else {
+                                    break
+                                }
+                            }
+                            
+                            for view in backgroundView.subviews { view.removeFromSuperview() }
+                            viewImage()
+                            
+                        } else {
+                         
+                            viewUnload()
+                        }
                     }
                     
                 // OTHER SINGLE FILE TYPE
@@ -331,7 +339,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                     mediaBrowser!.view.isHidden = true
                     
                     mediaBrowser!.shouldShowPageControl = false
-                    mediaBrowser!.enableInteractiveDismissal = false
+                    mediaBrowser!.enableInteractiveDismissal = true
                     
                     addChild(mediaBrowser!)
                     backgroundView.addSubview(mediaBrowser!.view)
@@ -413,6 +421,10 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     }
     
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
+    }
+    
+    func mediaBrowserDismiss() {
+        viewUnload()
     }
     
     func getImageOffOutline() -> UIImage {
