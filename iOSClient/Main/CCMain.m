@@ -1505,8 +1505,10 @@
         }
         
         // Verify if exists the fileName TO
-        [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:metadata.serverUrl fileName:fileNameNew completion:^(NSString *account, tableMetadata *metadataReadFile, NSString *message, NSInteger errorCode) {
-            
+        NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameNew];
+        
+        [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
+                    
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                 
                 UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -1566,7 +1568,7 @@
                             
                         } else if (errorCode != 0) {
                             
-                            [[NCContentPresenter shared] messageNotification:@"_rename_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                            [[NCContentPresenter shared] messageNotification:@"_rename_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                             
                             NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadata, @"errorCode": @(errorCode)};
                             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
@@ -1576,7 +1578,7 @@
                         }
                     }];
                 } else {
-                    [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                    [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                 }
             } else {
                 NSLog(@"[LOG] It has been changed user during networking process, error.");
@@ -1598,8 +1600,10 @@
         return;
     }
     
-    [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:serverUrlTo fileName:metadata.fileName completion:^(NSString *account, tableMetadata *metadataReadFile, NSString *message, NSInteger errorCode) {
-        
+    NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
+           
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorDescription) {
+                       
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -1665,7 +1669,7 @@
                         
                     } else if (errorCode != 0) {
                         
-                        [[NCContentPresenter shared] messageNotification:@"_move_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                        [[NCContentPresenter shared] messageNotification:@"_move_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         
                         // End Select Table View
                         [self tableViewSelect:false];
@@ -1686,7 +1690,7 @@
                 
                 [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
             } else {
-                [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
             }
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");

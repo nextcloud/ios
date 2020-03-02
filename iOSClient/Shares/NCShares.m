@@ -295,7 +295,9 @@
         
         cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
-        [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+        NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", table.serverUrl, table.fileName];
+               
+        [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorDescription) {        
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [self reloadDatasource];
