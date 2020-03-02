@@ -172,7 +172,6 @@ internal class DismissAnimationController: NSObject {
         createTransitionViews()
 
         viewController?.mediaContainerView.isHidden = true
-        viewController?.hideControls = true
     }
 
     private func finishTransition() {
@@ -190,7 +189,6 @@ internal class DismissAnimationController: NSObject {
             })
         } else {
             viewController?.mediaContainerView.isHidden = false
-            viewController?.hideControls = false
         }
     }
 

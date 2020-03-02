@@ -102,6 +102,8 @@ class NCDetailViewController: UIViewController {
         }
         
         self.splitViewController?.preferredDisplayMode = .allVisible
+        self.navigationController?.isNavigationBarHidden = false
+        
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
     }
     
@@ -111,7 +113,10 @@ class NCDetailViewController: UIViewController {
         if backgroundView.image != nil {
             backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
         }
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        
+        if navigationController?.isNavigationBarHidden == false {
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        }
     }
    
     @objc func changeDisplayMode() {
@@ -338,7 +343,6 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
 
                     mediaBrowser!.view.isHidden = true
                     
-                    mediaBrowser!.shouldShowPageControl = false
                     mediaBrowser!.enableInteractiveDismissal = true
                     
                     addChild(mediaBrowser!)
@@ -420,7 +424,20 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         }
     }
     
-    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {
+    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) { }
+    
+    func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController) {
+        guard let navigationController = self.navigationController else { return }
+        
+        if navigationController.isNavigationBarHidden {
+            navigationController.isNavigationBarHidden = false
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        } else {
+            navigationController.isNavigationBarHidden = true
+            view.backgroundColor = .black
+        }
+        
+        mediaBrowser.changeInViewSize(to: self.backgroundView.frame.size)
     }
     
     func mediaBrowserDismiss() {

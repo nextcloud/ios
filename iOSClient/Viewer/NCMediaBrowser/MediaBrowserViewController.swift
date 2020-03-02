@@ -81,6 +81,8 @@ public protocol MediaBrowserViewControllerDelegate: class {
      */
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int)
     
+    func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController)
+
     func mediaBrowserDismiss()
 }
 
@@ -144,22 +146,6 @@ public class MediaBrowserViewController: UIViewController {
         case nextToPrevious
     }
 
-    /**
-     Struct to hold support for customize title style
-
-     ```
-     font
-     textColor
-     ```
-    */
-    public struct TitleStyle {
-
-        /// Title style font
-        public var font: UIFont = UIFont.preferredFont(forTextStyle: .subheadline)
-        /// Title style text color.
-        public var textColor: UIColor = .white
-    }
-
     // MARK: - Exposed variables
 
     /// Data-source object to supply media browser contents.
@@ -194,53 +180,7 @@ public class MediaBrowserViewController: UIViewController {
             contentViews.forEach({ $0.updateTransform() })
         }
     }
-    /// Variable to set title style in media browser.
-    public var titleStyle: TitleStyle = TitleStyle() {
-        didSet {
-            configureTitleLabel()
-        }
-    }
-    /// Variable to set title in media browser
-    public override var title: String? {
-        didSet {
-            titleLabel.text = title
-        }
-    }
-    /// Variable to hide/show title control in media browser. Default is false.
-    public var shouldShowTitle: Bool = false {
-        didSet {
-            titleLabel.isHidden = !shouldShowTitle
-        }
-    }
-    /// Variable to hide/show page control in media browser.
-    public var shouldShowPageControl: Bool = true {
-        didSet {
-            pageControl.isHidden = !shouldShowPageControl
-        }
-    }
-    /// Variable to hide/show controls(close & page control). Default is false.
-    public var hideControls: Bool = false {
-        didSet {
-            hideControlViews(hideControls)
-        }
-    }
-    /**
-    Variable to schedule/cancel auto-hide controls(close & page control). Default is false.
-    Default delay is `3.0` seconds.
-    - todo: Update to accept auto-hide-delay.
-     */
-    public var autoHideControls: Bool = false {
-        didSet {
-            if autoHideControls {
-                DispatchQueue.main.asyncAfter(
-                    deadline: .now() + Constants.controlHideDelay,
-                    execute: controlToggleTask
-                )
-            } else {
-                controlToggleTask.cancel()
-            }
-        }
-    }
+    
     /// Enable or disable interactive dismissal. Default is enabled.
     public var enableInteractiveDismissal: Bool = true
     /// Item index of the current item. In range `0..<numMediaItems`
@@ -259,30 +199,12 @@ public class MediaBrowserViewController: UIViewController {
         static let animationDuration = 0.3
         static let updateFrameRate: CGFloat = 60.0
         static let bounceFactor: CGFloat = 0.1
-        static let controlHideDelay = 3.0
-
-        enum Close {
-
-            static let top: CGFloat = 8.0
-            static let trailing: CGFloat = -8.0
-            static let height: CGFloat = 30.0
-            static let minWidth: CGFloat = 30.0
-            static let contentInsets = UIEdgeInsets(top: 0.0, left: 8.0, bottom: 0.0, right: 8.0)
-            static let borderWidth: CGFloat = 2.0
-            static let borderColor: UIColor = .white
-            static let title = "Close"
-        }
 
         enum PageControl {
 
             static let bottom: CGFloat = -10.0
             static let tintColor: UIColor = .lightGray
             static let selectedTintColor: UIColor = .white
-        }
-
-        enum Title {
-            static let top: CGFloat = 16.0
-            static let rect: CGRect = CGRect(x: 0, y: 0, width: 30, height: 30)
         }
     }
 
@@ -295,14 +217,6 @@ public class MediaBrowserViewController: UIViewController {
 
     private var contentViews: [MediaContentView] = []
 
-    private var controlViews: [UIView] = []
-    lazy private var controlToggleTask: DispatchWorkItem = { [unowned self] in
-
-        let item = DispatchWorkItem {
-            self.hideControls = true
-        }
-        return item
-    }()
     lazy private var tapGestureRecognizer: UITapGestureRecognizer = { [unowned self] in
         let gesture = UITapGestureRecognizer()
         gesture.numberOfTapsRequired = 1
@@ -342,14 +256,6 @@ public class MediaBrowserViewController: UIViewController {
         return pageControl
     }()
 
-    lazy var titleLabel: UILabel = {
-        let label = UILabel(frame: Constants.Title.rect)
-        label.font = self.titleStyle.font
-        label.textColor = self.titleStyle.textColor
-        label.textAlignment = .center
-        return label
-    }()
-
     private var numMediaItems = 0
 
     private lazy var dismissController = DismissAnimationController(
@@ -363,10 +269,7 @@ public class MediaBrowserViewController: UIViewController {
     public func reloadContentViews() {
 
         numMediaItems = dataSource?.numberOfItems(in: self) ?? 0
-        if shouldShowPageControl {
-            pageControl.numberOfPages = numMediaItems
-        }
-
+       
         for contentView in contentViews {
 
             updateContents(of: contentView)
@@ -428,10 +331,6 @@ extension MediaBrowserViewController {
 
         populateContentViews()
 
-        addPageControl()
-
-        addTitleLabel()
-
         view.addGestureRecognizer(panGestureRecognizer)
         view.addGestureRecognizer(tapGestureRecognizer)
     }
@@ -446,10 +345,6 @@ extension MediaBrowserViewController {
     override public func viewWillDisappear(_ animated: Bool) {
 
         super.viewWillDisappear(animated)
-
-        if !controlToggleTask.isCancelled {
-            controlToggleTask.cancel()
-        }
     }
     
     public override func viewWillTransition(
@@ -504,75 +399,6 @@ extension MediaBrowserViewController {
         }
         if drawOrder == .nextToPrevious {
             mediaContainerView.exchangeSubview(at: 0, withSubviewAt: 2)
-        }
-    }
-
-    private func addPageControl() {
-
-        view.addSubview(pageControl)
-        pageControl.translatesAutoresizingMaskIntoConstraints = false
-        var bottomAnchor = view.bottomAnchor
-        if #available(iOS 11.0, *) {
-            if view.responds(to: #selector(getter: UIView.safeAreaLayoutGuide)) {
-                bottomAnchor = view.safeAreaLayoutGuide.bottomAnchor
-            }
-        }
-        NSLayoutConstraint.activate([
-            pageControl.bottomAnchor.constraint(equalTo: bottomAnchor, constant: Constants.PageControl.bottom),
-            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ])
-
-        controlViews.append(pageControl)
-    }
-
-    private func addTitleLabel() {
-
-        view.addSubview(titleLabel)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        var topAnchor = view.topAnchor
-        if #available(iOS 11.0, *) {
-            if view.responds(to: #selector(getter: UIView.safeAreaLayoutGuide)) {
-                topAnchor = view.safeAreaLayoutGuide.topAnchor
-            }
-        }
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: Constants.Title.top),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-            ])
-
-        controlViews.append(titleLabel)
-    }
-
-    private func configureTitleLabel() {
-
-        titleLabel.font = self.titleStyle.font
-        titleLabel.textColor = self.titleStyle.textColor
-    }
-
-    private func hideControlViews(_ hide: Bool) {
-
-        self.controlViews.forEach { $0.alpha = hide ? 0.0 : 1.0 }
-        /*
-        UIView.animate(
-            withDuration: Constants.animationDuration,
-            delay: 0.0,
-            options: .beginFromCurrentState,
-            animations: {
-                self.controlViews.forEach { $0.alpha = hide ? 0.0 : 1.0 }
-            },
-            completion: nil
-        )
-        */
-    }
-
-    @objc private func didTapOnClose(_ sender: UIButton) {
-
-        if let targetFrame = dataSource?.targetFrameForDismissal(self) {
-            dismissController.image = sourceImage()
-            dismissController.beginTransition()
-            dismissController.animateToTargetFrame(targetFrame)
-        } else {
-            dismiss(animated: true, completion: nil)
         }
     }
 }
@@ -662,10 +488,7 @@ extension MediaBrowserViewController {
             return
         }
 
-        if !controlToggleTask.isCancelled {
-            controlToggleTask.cancel()
-        }
-        hideControls = !hideControls
+        self.delegate?.mediaBrowserTap(self)
     }
 }
 
