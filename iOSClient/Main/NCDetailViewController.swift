@@ -31,7 +31,10 @@ class NCDetailViewController: UIViewController {
     
     @objc var metadata: tableMetadata?
     @objc var selector: String?
-    @objc var favorite: Bool = false
+    
+    @objc var favoriteFilterImage: Bool = false
+    @objc var mediaFilterImage: Bool = false
+    @objc var offlineFilterImage: Bool = false
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var mediaBrowser: MediaBrowserViewController?
@@ -444,8 +447,10 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     
     func getMetadatasMediaBrowser() -> [tableMetadata]? {
         guard let metadata = self.metadata else { return nil }
-        if favorite {
+        if favoriteFilterImage {
             return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+        } else if mediaFilterImage {
+            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: "date", ascending: false)
         } else {
             return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
         }
