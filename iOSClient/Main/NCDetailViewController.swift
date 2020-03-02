@@ -134,6 +134,13 @@ class NCDetailViewController: UIViewController {
         }
     }
     
+    @objc func moveFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+            }
+        }
+    }
+    
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
@@ -204,13 +211,6 @@ class NCDetailViewController: UIViewController {
                     
                     self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
                 }
-            }
-        }
-    }
-    
-    @objc func moveFile(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
             }
         }
     }
