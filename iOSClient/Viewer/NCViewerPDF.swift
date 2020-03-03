@@ -75,13 +75,10 @@ import PDFKit
         pdfThumbnailView!.trailingAnchor.constraint(equalTo: detailViewController.backgroundView.safeAreaLayoutGuide.trailingAnchor).isActive = true
         pdfThumbnailView!.bottomAnchor.constraint(equalTo: detailViewController.backgroundView.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
+        self.documentView?.gestureRecognizers?.removeAll()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
         tapGesture.numberOfTapsRequired = 1
-        
-        if var recognizer = self.gestureRecognizers {
-            recognizer.append(tapGesture)
-            self.gestureRecognizers = recognizer
-        }
+        detailViewController.backgroundView.addGestureRecognizer(tapGesture)
     }
     
     @objc func didTap(_ recognizer: UITapGestureRecognizer) {
