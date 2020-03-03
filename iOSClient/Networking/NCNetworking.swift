@@ -186,7 +186,7 @@ import NCCommunication
         }
         metadata.size = file.size
                    
-        CCUtility.insertTypeFileIconName(file.fileName, metadata: metadata)
+        CCUtility.insertTypeFileIconName(metadata.fileName, metadata: metadata)
         
         return metadata
     }
@@ -230,7 +230,7 @@ import NCCommunication
             }
             metadata.size = file.size
                         
-            CCUtility.insertTypeFileIconName(file.fileName, metadata: metadata)
+            CCUtility.insertTypeFileIconName(metadata.fileName, metadata: metadata)
             
             // Folder
             if file.fileName.count == 0 && metadataFolder != nil {
