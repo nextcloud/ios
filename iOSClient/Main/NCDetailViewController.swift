@@ -131,8 +131,21 @@ class NCDetailViewController: UIViewController {
     }
    
     @objc func changeDisplayMode() {
-        DispatchQueue.main.async {
+        guard let mediaBrowser = self.mediaBrowser else { return }
+        var image: UIImage?
+        var contentViewSaved : MediaContentView?
+        for contentView in mediaBrowser.contentViews {
+            if contentView.position == 0 && contentView.isLoading == false {
+                image = contentView.image
+                contentViewSaved = contentView
+                contentView.image = nil
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
             self.mediaBrowser?.changeInViewSize(to: self.backgroundView.frame.size)
+            if image != nil {
+                contentViewSaved?.image = image
+            }
         }
     }
     
@@ -487,7 +500,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                 else { image = UIImage.init(contentsOfFile: imagePath) }
                                           
                 if let image = image {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(140)) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
                         view.image = image
                     }
                 }

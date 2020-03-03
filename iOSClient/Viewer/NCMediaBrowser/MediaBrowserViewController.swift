@@ -215,7 +215,7 @@ public class MediaBrowserViewController: UIViewController {
         }
     }
 
-    private var contentViews: [MediaContentView] = []
+    public var contentViews: [MediaContentView] = []
 
     lazy private var tapGestureRecognizer: UITapGestureRecognizer = { [unowned self] in
         let gesture = UITapGestureRecognizer()
