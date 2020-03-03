@@ -79,7 +79,7 @@ public protocol MediaBrowserViewControllerDelegate: class {
      - note:
         This method will not be called on first load, and will be called only on swiping left and right.
      */
-    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int)
+    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int, view: MediaContentView)
     
     func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController)
 
@@ -88,7 +88,7 @@ public protocol MediaBrowserViewControllerDelegate: class {
 
 extension MediaBrowserViewControllerDelegate {
 
-    public func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) {}
+    public func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int, view: MediaContentView) {}
 }
 
 public class MediaBrowserViewController: UIViewController {
@@ -580,7 +580,7 @@ extension MediaBrowserViewController {
                 mediaContainerView.sendSubviewToBack(previousView)
             }
 
-            delegate?.mediaBrowser(self, didChangeFocusTo: index)
+            delegate?.mediaBrowser(self, didChangeFocusTo: index, view: nextView)
 
         } else if middleView.position > (1 + normalizedGap - normalizedCenter) {
 
@@ -601,7 +601,7 @@ extension MediaBrowserViewController {
                 mediaContainerView.bringSubviewToFront(nextView)
             }
 
-            delegate?.mediaBrowser(self, didChangeFocusTo: index)
+            delegate?.mediaBrowser(self, didChangeFocusTo: index, view: previousView)
         }
     }
 

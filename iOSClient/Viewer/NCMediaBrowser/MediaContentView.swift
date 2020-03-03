@@ -54,7 +54,7 @@ public struct ZoomScale {
     }
 }
 
-internal class MediaContentView: UIScrollView {
+public class MediaContentView: UIScrollView {
 
     // MARK: - Exposed variables
     internal static var interItemSpacing: CGFloat = 0.0
@@ -260,13 +260,13 @@ extension MediaContentView {
 
 extension MediaContentView: UIScrollViewDelegate {
 
-    internal func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 
         let shouldAllowZoom = (image != nil && position == 0.0)
         return shouldAllowZoom ? imageView : nil
     }
 
-    internal func scrollViewDidZoom(_ scrollView: UIScrollView) {
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
 
         centerImageView()
     }

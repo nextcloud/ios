@@ -424,23 +424,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
         }
         
-        // Original
-        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
-            var image: UIImage?
-                
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let ext = CCUtility.getExtension(metadata.fileNameView)
-            if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
-            else { image = UIImage.init(contentsOfFile: imagePath) }
-                               
-            if let image = image {
-                completion(index, image, ZoomScale.default, nil)
-            } else {
-                completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
-            }
-                
-        // Preview
-        } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
             let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if let image = UIImage.init(contentsOfFile: imagePath) {
@@ -448,8 +432,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             } else {
                 completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
             }
-                
-        // NO Original/Preview
+    
         } else {
                 
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
@@ -471,7 +454,28 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         }
     }
     
-    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int) { }
+    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int, view: MediaContentView) {
+        
+        if index >= metadatas.count { return }
+        let metadata = metadatas[index]
+        
+        DispatchQueue.global().async {
+            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+                var image: UIImage?
+                           
+                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let ext = CCUtility.getExtension(metadata.fileNameView)
+                if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
+                else { image = UIImage.init(contentsOfFile: imagePath) }
+                                          
+                if let image = image {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
+                        view.image = image
+                    }
+                }
+            }
+        }
+    }
     
     func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController) {
         guard let navigationController = self.navigationController else { return }
