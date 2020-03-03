@@ -496,7 +496,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         if favoriteFilterImage {
             return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
         } else if mediaFilterImage {
-            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: "date", ascending: false)
+            return NCManageDatabase.sharedInstance.getMedias(account: metadata.account, predicate: NSPredicate(format: "account == %@ AND typeFile == %@", metadata.account, k_metadataTypeFile_image))
         } else if offlineFilterImage {
             var datasourceSorted = ""
             var datasourceAscending = true
