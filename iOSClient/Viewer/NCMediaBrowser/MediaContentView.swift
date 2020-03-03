@@ -33,7 +33,7 @@ public struct ZoomScale {
     /// Default zoom scale. minimum is 1.0 and maximum is 3.0
     public static let `default` = ZoomScale(
         minimum: 1.0,
-        maximum: 3.0
+        maximum: 10.0
     )
 
     /// Identity zoom scale. Pass this to disable zoom.
@@ -236,7 +236,7 @@ extension MediaContentView {
 
         let isImageCoveringScreen = imageView.frame.size.width > bounds.size.width &&
             imageView.frame.size.height > bounds.size.height
-        let zoomTo = (isImageCoveringScreen || zoomScale == maximumZoomScale) ? minimumZoomScale : maximumZoomScale
+        let zoomTo = (isImageCoveringScreen || zoomScale == maximumZoomScale/2) ? minimumZoomScale : maximumZoomScale/2
 
         guard zoomTo != zoomScale else {
             return
