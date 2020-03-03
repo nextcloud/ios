@@ -266,7 +266,7 @@ class NCDetailViewController: UIViewController {
                         return
                     }
                     
-                    viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
+                    viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), detailViewController: self)
                 }
                 
                 return

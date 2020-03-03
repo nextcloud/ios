@@ -29,6 +29,8 @@ import PDFKit
 @objc class NCViewerPDF: PDFView {
     
     private var thumbnailViewHeight: CGFloat = 48
+    private var detailViewController: NCDetailViewController?
+    private var pdfThumbnailView: PDFThumbnailView?
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -43,9 +45,10 @@ import PDFKit
         backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
-    @objc func setupPdfView(filePath: URL, view: UIView) {
+    @objc func setupPdfView(filePath: URL, detailViewController: NCDetailViewController) {
+        self.detailViewController = detailViewController
         
-        guard let pdfDocument = PDFDocument(url: filePath) else {return}
+        guard let pdfDocument = PDFDocument(url: filePath) else { return }
         
         document = pdfDocument
         backgroundColor = NCBrandColor.sharedInstance.backgroundView
@@ -55,21 +58,49 @@ import PDFKit
         autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin]
         usePageViewController(true, withViewOptions: nil)
         
-        view.addSubview(self)
+        detailViewController.backgroundView.addSubview(self)
         
-        let pdfThumbnailView = PDFThumbnailView()
-        pdfThumbnailView.translatesAutoresizingMaskIntoConstraints = false
-        pdfThumbnailView.pdfView = self
-        pdfThumbnailView.layoutMode = .horizontal
-        pdfThumbnailView.thumbnailSize = CGSize(width: 40, height: thumbnailViewHeight - 2)
+        pdfThumbnailView = PDFThumbnailView()
+        pdfThumbnailView!.translatesAutoresizingMaskIntoConstraints = false
+        pdfThumbnailView!.pdfView = self
+        pdfThumbnailView!.layoutMode = .horizontal
+        pdfThumbnailView!.thumbnailSize = CGSize(width: 40, height: thumbnailViewHeight - 2)
         //pdfThumbnailView.layer.shadowOffset.height = -5
         //pdfThumbnailView.layer.shadowOpacity = 0.25
         
-        view.addSubview(pdfThumbnailView)
+        detailViewController.backgroundView.addSubview(pdfThumbnailView!)
         
-        pdfThumbnailView.heightAnchor.constraint(equalToConstant: thumbnailViewHeight).isActive = true
-        pdfThumbnailView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        pdfThumbnailView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        pdfThumbnailView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        pdfThumbnailView!.heightAnchor.constraint(equalToConstant: thumbnailViewHeight).isActive = true
+        pdfThumbnailView!.leadingAnchor.constraint(equalTo: detailViewController.backgroundView.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        pdfThumbnailView!.trailingAnchor.constraint(equalTo: detailViewController.backgroundView.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        pdfThumbnailView!.bottomAnchor.constraint(equalTo: detailViewController.backgroundView.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
+        tapGesture.numberOfTapsRequired = 1
+        
+        if var recognizer = self.gestureRecognizers {
+            recognizer.append(tapGesture)
+            self.gestureRecognizers = recognizer
+        }
     }
+    
+    @objc func didTap(_ recognizer: UITapGestureRecognizer) {
+        guard let detailViewController = self.detailViewController else { return }
+        guard let navigationController = detailViewController.navigationController else { return }
+        
+        if navigationController.isNavigationBarHidden {
+            navigationController.isNavigationBarHidden = false
+            pdfThumbnailView!.isHidden = false
+            detailViewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            self.frame = CGRect(x: 0, y: 0, width: detailViewController.backgroundView.frame.width, height: detailViewController.backgroundView.frame.height - thumbnailViewHeight)
+        } else {
+            navigationController.isNavigationBarHidden = true
+            pdfThumbnailView!.isHidden = true
+            detailViewController.view.backgroundColor = .black
+            backgroundColor = .black
+            self.frame = CGRect(x: 0, y: 0, width: detailViewController.backgroundView.frame.width, height: detailViewController.backgroundView.frame.height)
+        }
+    }
+
 }
