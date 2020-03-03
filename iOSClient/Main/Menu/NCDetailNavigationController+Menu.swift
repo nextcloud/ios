@@ -79,7 +79,7 @@ extension NCDetailNavigationController {
         if CCUtility.isDocumentModifiableExtension(fileNameExtension) && (directEditingCreators == nil || !appDelegate.reachability.isReachable()) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_internal_modify_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "pencil"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         if let navigationController = UIStoryboard(name: "NCText", bundle: nil).instantiateViewController(withIdentifier: "NCText") as? UINavigationController {
                             navigationController.modalPresentationStyle = .pageSheet
