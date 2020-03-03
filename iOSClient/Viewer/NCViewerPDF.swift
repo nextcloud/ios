@@ -42,7 +42,12 @@ import PDFKit
     }
     
     @objc func changeTheming() {
-        backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        guard let navigationController = detailViewController?.navigationController else { return }
+
+        if navigationController.isNavigationBarHidden == false {
+            backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            detailViewController?.view.backgroundColor = backgroundColor
+        }
     }
     
     @objc func setupPdfView(filePath: URL, detailViewController: NCDetailViewController) {
@@ -88,14 +93,16 @@ import PDFKit
         if navigationController.isNavigationBarHidden {
             navigationController.isNavigationBarHidden = false
             pdfThumbnailView!.isHidden = false
-            detailViewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            detailViewController.view.backgroundColor = backgroundColor
+            backgroundColor = .black
+
             self.frame = CGRect(x: 0, y: 0, width: detailViewController.backgroundView.frame.width, height: detailViewController.backgroundView.frame.height - thumbnailViewHeight)
         } else {
             navigationController.isNavigationBarHidden = true
             pdfThumbnailView!.isHidden = true
-            detailViewController.view.backgroundColor = .black
             backgroundColor = .black
+            detailViewController.view.backgroundColor = backgroundColor
             self.frame = CGRect(x: 0, y: 0, width: detailViewController.backgroundView.frame.width, height: detailViewController.backgroundView.frame.height)
         }
     }
