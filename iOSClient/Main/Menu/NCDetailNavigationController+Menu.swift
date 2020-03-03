@@ -76,6 +76,15 @@ extension NCDetailNavigationController {
             )
         )
         
+        actions.append(
+            NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    self.appDelegate.activeDetail.viewUnload()
+                }
+            )
+        )
+        
         if CCUtility.isDocumentModifiableExtension(fileNameExtension) && (directEditingCreators == nil || !appDelegate.reachability.isReachable()) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_internal_modify_", comment: ""),
