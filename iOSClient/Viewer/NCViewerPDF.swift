@@ -106,5 +106,4 @@ import PDFKit
             self.frame = CGRect(x: 0, y: 0, width: detailViewController.backgroundView.frame.width, height: detailViewController.backgroundView.frame.height)
         }
     }
-
 }

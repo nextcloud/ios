@@ -633,7 +633,7 @@
         <scene sceneID="vvl-da-xtI">
             <objects>
                 <navigationController id="k86-ao-8mQ" customClass="NCMasterNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translucent="NO" id="yOS-hc-yM4" customClass="NC">
+                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translucent="NO" id="yOS-hc-yM4">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
