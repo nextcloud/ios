@@ -39,6 +39,7 @@ class NCDetailViewController: UIViewController {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var mediaBrowser: MediaBrowserViewController?
     private var metadatas = [tableMetadata]()
+    private var mediaBrowserIndexStart = 0
         
     //MARK: -
 
@@ -377,14 +378,14 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         
         if let metadatas = getMetadatasMediaBrowser() {
                             
-            var index = 0, counter = 0
+            var counter = 0
             for metadata in metadatas {
-                if metadata.ocId == self.metadata!.ocId { index = counter }
+                if metadata.ocId == self.metadata!.ocId { mediaBrowserIndexStart = counter }
                 counter += 1
             }
             self.metadatas = metadatas
             
-            mediaBrowser = MediaBrowserViewController(index: index, dataSource: self, delegate: self)
+            mediaBrowser = MediaBrowserViewController(index: mediaBrowserIndexStart, dataSource: self, delegate: self)
             if mediaBrowser != nil {
                            
                 self.backgroundView.image = nil
@@ -424,7 +425,23 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
         }
         
-        if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        // Original only for the first
+        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == mediaBrowserIndexStart {
+            var image: UIImage?
+                
+            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let ext = CCUtility.getExtension(metadata.fileNameView)
+            if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
+            else { image = UIImage.init(contentsOfFile: imagePath) }
+                               
+            if let image = image {
+                completion(index, image, ZoomScale.default, nil)
+            } else {
+                completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+            }
+                
+        // Preview
+        } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
             let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if let image = UIImage.init(contentsOfFile: imagePath) {
@@ -469,7 +486,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                 else { image = UIImage.init(contentsOfFile: imagePath) }
                                           
                 if let image = image {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(140)) {
                         view.image = image
                     }
                 }
