@@ -250,6 +250,9 @@ class NCDetailViewController: UIViewController {
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
             
+            //self.extendedLayoutIncludesOpaqueBars = true
+            //self.edgesForExtendedLayout = .all
+            
             viewImage()
             return
         }
