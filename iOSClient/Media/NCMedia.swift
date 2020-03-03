@@ -518,7 +518,7 @@ extension NCMedia {
         var metadatas = [tableMetadata]()
         
         for ocId in selectocId {
-            if let metadata = NCManageDatabase.sharedInstance.getTableMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
+            if let metadata = NCManageDatabase.sharedInstance.getMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
                 metadatas.append(metadata)
             }
         }

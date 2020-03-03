@@ -2372,7 +2372,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Media
  
-    @objc func getTableMedia(predicate: NSPredicate) -> tableMetadata? {
+    @objc func getMedia(predicate: NSPredicate) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
