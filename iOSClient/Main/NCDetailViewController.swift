@@ -113,6 +113,7 @@ class NCDetailViewController: UIViewController {
         
         self.splitViewController?.preferredDisplayMode = .allVisible
         self.navigationController?.isNavigationBarHidden = false
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
     }
