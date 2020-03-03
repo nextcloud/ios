@@ -158,7 +158,7 @@ class NCDetailViewController: UIViewController {
                         self.metadata = metadatas[index]
                         
                         viewImage()
-                        
+                                                
                     } else {
                      
                         viewUnload()
@@ -401,7 +401,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                 
                 mediaBrowser!.didMove(toParent: self)
                 
-                DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
                     self.mediaBrowser!.view.isHidden = false
                 }
