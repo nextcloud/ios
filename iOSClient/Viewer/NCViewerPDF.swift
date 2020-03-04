@@ -31,13 +31,15 @@ import PDFKit
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var thumbnailViewHeight: CGFloat = 48
     private var pdfThumbnailView: PDFThumbnailView?
+    private var backgroundView: UIView?
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
     override init(frame: CGRect) {
-        super.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height - thumbnailViewHeight))
+        let height = frame.height - frame.origin.y - thumbnailViewHeight
+        super.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: height))
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
     }
     
@@ -50,7 +52,7 @@ import PDFKit
     }
     
     @objc func setupPdfView(filePath: URL, view: UIView) {
-        
+        self.backgroundView = view
         guard let pdfDocument = PDFDocument(url: filePath) else { return }
         
         document = pdfDocument
@@ -85,28 +87,27 @@ import PDFKit
     
     @objc func didTap(_ recognizer: UITapGestureRecognizer) {
         guard let navigationController = appDelegate.activeDetail.navigationController else { return }
-        guard let splitViewController = self.appDelegate.window?.rootViewController as? UISplitViewController else { return }
+        guard let backgroundView = self.backgroundView else { return }
         
         if navigationController.isNavigationBarHidden {
-            
-            if splitViewController.isCollapsed {
-                
-            }
             
             navigationController.isNavigationBarHidden = false
             pdfThumbnailView!.isHidden = false
             backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            backgroundColor = .black
+            backgroundView.backgroundColor = backgroundColor
             
         } else {
-            
-            if splitViewController.isCollapsed {
-                
-            }
             
             navigationController.isNavigationBarHidden = true
             pdfThumbnailView!.isHidden = true
             backgroundColor = .black
+            backgroundView.backgroundColor = backgroundColor
+        }
+    
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
+            let size = self.backgroundView!.bounds
+            let height = size.height - size.origin.y 
+            self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
         }
     }
 }
