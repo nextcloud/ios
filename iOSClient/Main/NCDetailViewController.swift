@@ -131,22 +131,8 @@ class NCDetailViewController: UIViewController {
     }
    
     @objc func changeDisplayMode() {
-        guard let mediaBrowser = self.mediaBrowser else { return }
-        var image: UIImage?
-        var contentViewSaved : MediaContentView?
-        for contentView in mediaBrowser.contentViews {
-            if contentView.position == 0 && contentView.isLoading == false {
-                image = contentView.image
-                contentViewSaved = contentView
-                contentView.image = nil
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
-            self.mediaBrowser?.changeInViewSize(to: self.backgroundView.frame.size)
-            if image != nil {
-                contentViewSaved?.image = image
-            }
-        }
+       
+        imageChangeSizeView()
     }
     
     @objc func moveFile(_ notification: NSNotification) {
@@ -518,6 +504,8 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             navigationController.isNavigationBarHidden = true
             view.backgroundColor = .black
         }
+        
+        imageChangeSizeView()
     }
     
     func mediaBrowserDismiss() {
@@ -553,5 +541,25 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: self.view.frame.width, height: self.view.frame.width, color: NCBrandColor.sharedInstance.brand)
 
         return image!
+    }
+    
+    func imageChangeSizeView() {
+        
+        guard let mediaBrowser = self.mediaBrowser else { return }
+        var image: UIImage?
+        var contentViewSaved : MediaContentView?
+        for contentView in mediaBrowser.contentViews {
+            if contentView.position == 0 && contentView.isLoading == false {
+                image = contentView.image
+                contentViewSaved = contentView
+                contentView.image = nil
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
+            self.mediaBrowser?.changeInViewSize(to: self.backgroundView.frame.size)
+            if image != nil {
+                contentViewSaved?.image = image
+            }
+        }
     }
 }
