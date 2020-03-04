@@ -37,7 +37,7 @@ class NCViewerMedia: NSObject {
         return viewMedia
     }()
 
-    @objc func viewMedia(_ metadata: tableMetadata, view: UIView) {
+    @objc func viewMedia(_ metadata: tableMetadata, view: UIView, frame: CGRect) {
         
         var videoURLProxy: URL!
 
@@ -77,7 +77,7 @@ class NCViewerMedia: NSObject {
         appDelegate.playerController = AVPlayerViewController()
         
         appDelegate.playerController.player = appDelegate.player
-        appDelegate.playerController.view.frame = view.frame
+        appDelegate.playerController.view.frame = frame
         appDelegate.playerController.allowsPictureInPicturePlayback = false
         
         view.addSubview(appDelegate.playerController.view)

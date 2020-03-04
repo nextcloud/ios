@@ -243,7 +243,8 @@ class NCDetailViewController: UIViewController {
         // AUDIO VIDEO
         if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
-            NCViewerMedia.sharedInstance.viewMedia(metadata, view: backgroundView)
+            let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+            NCViewerMedia.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
             return
         }
         
