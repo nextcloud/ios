@@ -250,9 +250,6 @@ class NCDetailViewController: UIViewController {
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
             
-            //self.extendedLayoutIncludesOpaqueBars = true
-            //self.edgesForExtendedLayout = .all
-            
             viewImage()
             return
         }
@@ -521,8 +518,6 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             navigationController.isNavigationBarHidden = true
             view.backgroundColor = .black
         }
-        
-        mediaBrowser.changeInViewSize(to: self.backgroundView.frame.size)
     }
     
     func mediaBrowserDismiss() {
