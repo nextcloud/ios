@@ -40,7 +40,8 @@ class NCViewerImageCommon: NSObject {
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+        DispatchQueue.main.async {
+        //DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             mediaBrowser.changeInViewSize(to: size)
             if image != nil {
                 contentViewSaved?.image = image
