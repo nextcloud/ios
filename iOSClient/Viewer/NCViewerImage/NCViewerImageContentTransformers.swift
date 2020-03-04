@@ -1,24 +1,25 @@
 //
 //  ContentTransformers.swift
-//  ATGMediaBrowser
+//  Nextcloud
 //
-//  Created by Suraj Thomas K on 7/17/18.
-//  Copyright © 2018 Al Tayer Group LLC.
+//  Created by Suraj Thomas K on 7/17/18 Copyright © 2018 Al Tayer Group LLC..
+//  Modify for Nextcloud by Marino Faggiana on 04/03/2020.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
-//  and associated documentation files (the "Software"), to deal in the Software without
-//  restriction, including without limitation the rights to use, copy, modify, merge, publish,
-//  distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
-//  The above copyright notice and this permission notice shall be included in all copies or
-//  substantial portions of the Software.
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
 //
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-//  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-//  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 /**
@@ -41,12 +42,12 @@
 
     Be mindful of the drawing order, when designing new transitions.
  */
-public typealias ContentTransformer = (_ contentView: UIView, _ position: CGFloat) -> Void
+public typealias NCViewerImageContentTransformer = (_ contentView: UIView, _ position: CGFloat) -> Void
 
 // MARK: - Default Transitions
 
 /// An enumeration to hold default content transformers
-public enum DefaultContentTransformers {
+public enum NCViewerImageDefaultContentTransformers {
 
     /**
      Horizontal move-in-out content transformer.
@@ -54,9 +55,9 @@ public enum DefaultContentTransformers {
      - Requires:
          * GestureDirection: Horizontal
     */
-    public static let horizontalMoveInOut: ContentTransformer = { contentView, position in
+    public static let horizontalMoveInOut: NCViewerImageContentTransformer = { contentView, position in
 
-        let widthIncludingGap = contentView.bounds.size.width + MediaContentView.interItemSpacing
+        let widthIncludingGap = contentView.bounds.size.width + NCViewerImageContentView.interItemSpacing
         contentView.transform = CGAffineTransform(translationX: widthIncludingGap * position, y: 0.0)
     }
 
@@ -66,9 +67,9 @@ public enum DefaultContentTransformers {
      - Requires:
         * GestureDirection: Vertical
      */
-    public static let verticalMoveInOut: ContentTransformer = { contentView, position in
+    public static let verticalMoveInOut: NCViewerImageContentTransformer = { contentView, position in
 
-        let heightIncludingGap = contentView.bounds.size.height + MediaContentView.interItemSpacing
+        let heightIncludingGap = contentView.bounds.size.height + NCViewerImageContentView.interItemSpacing
         contentView.transform = CGAffineTransform(translationX: 0.0, y: heightIncludingGap * position)
     }
 
@@ -79,7 +80,7 @@ public enum DefaultContentTransformers {
         * GestureDirection: Horizontal
         * DrawOrder: PreviousToNext
      */
-    public static let horizontalSlideOut: ContentTransformer = { contentView, position in
+    public static let horizontalSlideOut: NCViewerImageContentTransformer = { contentView, position in
 
         var scale: CGFloat = 1.0
         if position < -0.5 {
@@ -89,7 +90,7 @@ public enum DefaultContentTransformers {
         }
         var transform = CGAffineTransform(scaleX: scale, y: scale)
 
-        let widthIncludingGap = contentView.bounds.size.width + MediaContentView.interItemSpacing
+        let widthIncludingGap = contentView.bounds.size.width + NCViewerImageContentView.interItemSpacing
         let x = position >= 0.0 ? widthIncludingGap * position : 0.0
         transform = transform.translatedBy(x: x, y: 0.0)
 
@@ -106,7 +107,7 @@ public enum DefaultContentTransformers {
          * GestureDirection: Vertical
          * DrawOrder: PreviousToNext
      */
-    public static let verticalSlideOut: ContentTransformer = { contentView, position in
+    public static let verticalSlideOut: NCViewerImageContentTransformer = { contentView, position in
 
         var scale: CGFloat = 1.0
         if position < -0.5 {
@@ -116,7 +117,7 @@ public enum DefaultContentTransformers {
         }
         var transform = CGAffineTransform(scaleX: scale, y: scale)
 
-        let heightIncludingGap = contentView.bounds.size.height + MediaContentView.interItemSpacing
+        let heightIncludingGap = contentView.bounds.size.height + NCViewerImageContentView.interItemSpacing
         let y = position >= 0.0 ? heightIncludingGap * position : 0.0
         transform = transform.translatedBy(x: 0.0, y: y)
 
@@ -133,7 +134,7 @@ public enum DefaultContentTransformers {
          * GestureDirection: Horizontal
          * DrawOrder: NextToPrevious
      */
-    public static let horizontalSlideIn: ContentTransformer = { contentView, position in
+    public static let horizontalSlideIn: NCViewerImageContentTransformer = { contentView, position in
 
         var scale: CGFloat = 1.0
         if position > 0.5 {
@@ -143,7 +144,7 @@ public enum DefaultContentTransformers {
         }
         var transform = CGAffineTransform(scaleX: scale, y: scale)
 
-        let widthIncludingGap = contentView.bounds.size.width + MediaContentView.interItemSpacing
+        let widthIncludingGap = contentView.bounds.size.width + NCViewerImageContentView.interItemSpacing
         let x = position > 0.0 ? 0.0 : widthIncludingGap * position
         transform = transform.translatedBy(x: x, y: 0.0)
 
@@ -160,7 +161,7 @@ public enum DefaultContentTransformers {
          * GestureDirection: Vertical
          * DrawOrder: NextToPrevious
      */
-    public static let verticalSlideIn: ContentTransformer = { contentView, position in
+    public static let verticalSlideIn: NCViewerImageContentTransformer = { contentView, position in
 
         var scale: CGFloat = 1.0
         if position > 0.5 {
@@ -170,7 +171,7 @@ public enum DefaultContentTransformers {
         }
         var transform = CGAffineTransform(scaleX: scale, y: scale)
 
-        let heightIncludingGap = contentView.bounds.size.height + MediaContentView.interItemSpacing
+        let heightIncludingGap = contentView.bounds.size.height + NCViewerImageContentView.interItemSpacing
         let y = position > 0.0 ? 0.0 : heightIncludingGap * position
         transform = transform.translatedBy(x: 0.0, y: y)
 
@@ -186,7 +187,7 @@ public enum DefaultContentTransformers {
      - Requires:
      * GestureDirection: Horizontal
      */
-    public static let horizontalZoomInOut: ContentTransformer = { contentView, position in
+    public static let horizontalZoomInOut: NCViewerImageContentTransformer = { contentView, position in
 
         let minScale: CGFloat = 0.5
         // Scale factor is used to reduce the scale animation speed.
@@ -195,7 +196,7 @@ public enum DefaultContentTransformers {
 
         // Actual gap will be scaleFactor * 0.5 times of contentView.bounds.size.width.
         let actualGap = contentView.bounds.size.width * scaleFactor * 0.5
-        let gapCorrector = MediaContentView.interItemSpacing - actualGap
+        let gapCorrector = NCViewerImageContentView.interItemSpacing - actualGap
 
         let widthIncludingGap = contentView.bounds.size.width + gapCorrector
         let translation = (widthIncludingGap * position)/scale
@@ -212,7 +213,7 @@ public enum DefaultContentTransformers {
      - Requires:
      * GestureDirection: Vertical
      */
-    public static let verticalZoomInOut: ContentTransformer = { contentView, position in
+    public static let verticalZoomInOut: NCViewerImageContentTransformer = { contentView, position in
 
         let minScale: CGFloat = 0.5
         // Scale factor is used to reduce the scale animation speed.
@@ -221,7 +222,7 @@ public enum DefaultContentTransformers {
 
         // Actual gap will be scaleFactor * 0.5 times of contentView.bounds.size.height.
         let actualGap = contentView.bounds.size.height * scaleFactor * 0.5
-        let gapCorrector = MediaContentView.interItemSpacing - actualGap
+        let gapCorrector = NCViewerImageContentView.interItemSpacing - actualGap
 
         let heightIncludingGap = contentView.bounds.size.height + gapCorrector
         let translation = (heightIncludingGap * position)/scale

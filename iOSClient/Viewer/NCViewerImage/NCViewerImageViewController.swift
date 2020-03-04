@@ -1,29 +1,28 @@
 //
-//  MediaBrowserViewController.swift
-//  ATGMediaBrowser
+//  NCViewerImageViewController.swift
+//  Nextcloud
 //
-//  Created by Suraj Thomas K on 7/10/18.
-//  Copyright © 2018 Al Tayer Group LLC.
+//  Created by Suraj Thomas K on 7/10/18 Copyright © 2018 Al Tayer Group LLC..
+//  Modify for Nextcloud by Marino Faggiana on 04/03/2020.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
-//  and associated documentation files (the "Software"), to deal in the Software without
-//  restriction, including without limitation the rights to use, copy, modify, merge, publish,
-//  distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
-//  The above copyright notice and this permission notice shall be included in all copies or
-//  substantial portions of the Software.
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
 //
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-//  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-//  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// MARK: - MediaBrowserViewControllerDataSource protocol
-/// Protocol to supply media browser contents.
-public protocol MediaBrowserViewControllerDataSource: class {
+public protocol NCViewerImageViewControllerDataSource: class {
 
     /**
      Completion block for passing requested media image with details.
@@ -43,7 +42,7 @@ public protocol MediaBrowserViewControllerDataSource: class {
      - parameter mediaBrowser: Reference to media browser object.
      - returns: An integer with number of items to be shown in media browser.
      */
-    func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int
+    func numberOfItems(in mediaBrowser: NCViewerImageViewController) -> Int
 
     /**
      Method to supply image for specific index.
@@ -51,7 +50,7 @@ public protocol MediaBrowserViewControllerDataSource: class {
      - parameter index: Index of the requested media.
      - parameter completion: Completion block to be executed on fetching the media image.
      */
-    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping CompletionBlock)
+    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, imageAt index: Int, completion: @escaping CompletionBlock)
 
     /**
      This method is used to get the target frame into which the browser will perform the dismiss transition.
@@ -60,17 +59,17 @@ public protocol MediaBrowserViewControllerDataSource: class {
      - note:
         If this method is not implemented, the media browser will perform slide up/down transition on dismissal.
     */
-    func targetFrameForDismissal(_ mediaBrowser: MediaBrowserViewController) -> CGRect?
+    func targetFrameForDismissal(_ mediaBrowser: NCViewerImageViewController) -> CGRect?
 }
 
-extension MediaBrowserViewControllerDataSource {
+extension NCViewerImageViewControllerDataSource {
 
-    public func targetFrameForDismissal(_ mediaBrowser: MediaBrowserViewController) -> CGRect? { return nil }
+    public func targetFrameForDismissal(_ mediaBrowser: NCViewerImageViewController) -> CGRect? { return nil }
 }
 
-// MARK: - MediaBrowserViewControllerDelegate protocol
+// MARK: - NCViewerImageViewControllerDelegate protocol
 
-public protocol MediaBrowserViewControllerDelegate: class {
+public protocol NCViewerImageViewControllerDelegate: class {
 
     /**
      Method invoked on scrolling to next/previous media items.
@@ -79,19 +78,19 @@ public protocol MediaBrowserViewControllerDelegate: class {
      - note:
         This method will not be called on first load, and will be called only on swiping left and right.
      */
-    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int, view: MediaContentView)
+    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView)
     
-    func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController)
+    func mediaBrowserTap(_ mediaBrowser: NCViewerImageViewController)
 
     func mediaBrowserDismiss()
 }
 
-extension MediaBrowserViewControllerDelegate {
+extension NCViewerImageViewControllerDelegate {
 
-    public func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int, view: MediaContentView) {}
+    public func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {}
 }
 
-public class MediaBrowserViewController: UIViewController {
+public class NCViewerImageViewController: UIViewController {
 
     // MARK: - Exposed Enumerations
 
@@ -149,17 +148,17 @@ public class MediaBrowserViewController: UIViewController {
     // MARK: - Exposed variables
 
     /// Data-source object to supply media browser contents.
-    public weak var dataSource: MediaBrowserViewControllerDataSource?
+    public weak var dataSource: NCViewerImageViewControllerDataSource?
     /// Delegate object to get callbacks on media browser events.
-    public weak var delegate: MediaBrowserViewControllerDelegate?
+    public weak var delegate: NCViewerImageViewControllerDelegate?
 
     /// Gesture direction. Default is `horizontal`.
     public var gestureDirection: GestureDirection = .horizontal
     /// Content transformer closure. Default is `horizontalMoveInOut`.
-    public var contentTransformer: ContentTransformer = DefaultContentTransformers.horizontalMoveInOut {
+    public var contentTransformer: NCViewerImageContentTransformer = NCViewerImageDefaultContentTransformers.horizontalMoveInOut {
         didSet {
 
-            MediaContentView.contentTransformer = contentTransformer
+            NCViewerImageContentView.contentTransformer = contentTransformer
             contentViews.forEach({ $0.updateTransform() })
         }
     }
@@ -176,7 +175,7 @@ public class MediaBrowserViewController: UIViewController {
     /// Gap between consecutive media items. Default is `50.0`.
     public var gapBetweenMediaViews: CGFloat = Constants.gapBetweenContents {
         didSet {
-            MediaContentView.interItemSpacing = gapBetweenMediaViews
+            NCViewerImageContentView.interItemSpacing = gapBetweenMediaViews
             contentViews.forEach({ $0.updateTransform() })
         }
     }
@@ -215,7 +214,7 @@ public class MediaBrowserViewController: UIViewController {
         }
     }
 
-    public var contentViews: [MediaContentView] = []
+    public var contentViews: [NCViewerImageContentView] = []
 
     lazy private var tapGestureRecognizer: UITapGestureRecognizer = { [unowned self] in
         let gesture = UITapGestureRecognizer()
@@ -258,7 +257,7 @@ public class MediaBrowserViewController: UIViewController {
 
     private var numMediaItems = 0
 
-    private lazy var dismissController = DismissAnimationController(
+    private lazy var dismissController = NCViewerImageDismissAnimationController(
         gestureDirection: gestureDirection,
         viewController: self
     )
@@ -280,8 +279,8 @@ public class MediaBrowserViewController: UIViewController {
 
     public init(
         index: Int = 0,
-        dataSource: MediaBrowserViewControllerDataSource,
-        delegate: MediaBrowserViewControllerDelegate? = nil
+        dataSource: NCViewerImageViewControllerDataSource,
+        delegate: NCViewerImageViewControllerDelegate? = nil
         ) {
 
         self.index = index
@@ -316,7 +315,7 @@ public class MediaBrowserViewController: UIViewController {
 
 // MARK: - View Lifecycle and Events
 
-extension MediaBrowserViewController {
+extension NCViewerImageViewController {
 
     override public var prefersStatusBarHidden: Bool {
 
@@ -370,14 +369,14 @@ extension MediaBrowserViewController {
             mediaContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        MediaContentView.interItemSpacing = gapBetweenMediaViews
-        MediaContentView.contentTransformer = contentTransformer
+        NCViewerImageContentView.interItemSpacing = gapBetweenMediaViews
+        NCViewerImageContentView.contentTransformer = contentTransformer
 
         contentViews.forEach({ $0.removeFromSuperview() })
         contentViews.removeAll()
 
         for i in -1...1 {
-            let mediaView = MediaContentView(
+            let mediaView = NCViewerImageContentView(
                 index: i + index,
                 position: CGFloat(i),
                 frame: view.bounds
@@ -405,7 +404,7 @@ extension MediaBrowserViewController {
 
 // MARK: - Gesture Recognizers
 
-extension MediaBrowserViewController {
+extension NCViewerImageViewController {
 
     @objc private func panGestureEvent(_ recognizer: UIPanGestureRecognizer) {
 
@@ -498,7 +497,7 @@ extension MediaBrowserViewController {
 
 // MARK: - Updating View Positions
 
-extension MediaBrowserViewController {
+extension NCViewerImageViewController {
 
     @objc private func update(_ timeInterval: TimeInterval) {
 
@@ -635,7 +634,7 @@ extension MediaBrowserViewController {
         return normalizedTranslation
     }
 
-    private func updateContents(of contentView: MediaContentView) {
+    private func updateContents(of contentView: NCViewerImageContentView) {
 
         contentView.image = nil
         let convertedIndex = sanitizeIndex(contentView.index)
@@ -674,7 +673,7 @@ extension MediaBrowserViewController {
         return mediaView(at: 1)?.image
     }
 
-    private func mediaView(at index: Int) -> MediaContentView? {
+    private func mediaView(at index: Int) -> NCViewerImageContentView? {
 
         guard index < contentViews.count else {
 
@@ -687,7 +686,7 @@ extension MediaBrowserViewController {
 
 // MARK: - UIGestureRecognizerDelegate
 
-extension MediaBrowserViewController: UIGestureRecognizerDelegate {
+extension NCViewerImageViewController: UIGestureRecognizerDelegate {
 
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
 
@@ -719,7 +718,7 @@ extension MediaBrowserViewController: UIGestureRecognizerDelegate {
         ) -> Bool {
 
         if gestureRecognizer is UIPanGestureRecognizer,
-            let scrollView = otherGestureRecognizer.view as? MediaContentView {
+            let scrollView = otherGestureRecognizer.view as? NCViewerImageContentView {
             return scrollView.zoomScale == 1.0
         }
         return false
@@ -731,7 +730,7 @@ extension MediaBrowserViewController: UIGestureRecognizerDelegate {
         ) -> Bool {
 
         if gestureRecognizer is UITapGestureRecognizer {
-            return otherGestureRecognizer.view is MediaContentView
+            return otherGestureRecognizer.view is NCViewerImageContentView
         }
         return false
     }

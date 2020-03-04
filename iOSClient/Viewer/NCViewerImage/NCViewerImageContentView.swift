@@ -1,24 +1,25 @@
 //
-//  MediaContentView.swift
-//  ATGMediaBrowser
+//  NCViewerImageContentView.swift
+//  Nextcloud
 //
-//  Created by Suraj Thomas K on 7/10/18.
-//  Copyright © 2018 Al Tayer Group LLC.
+//  Created by Suraj Thomas K on 7/10/18 Copyright © 2018 Al Tayer Group LLC..
+//  Modify for Nextcloud by Marino Faggiana on 04/03/2020.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
-//  and associated documentation files (the "Software"), to deal in the Software without
-//  restriction, including without limitation the rights to use, copy, modify, merge, publish,
-//  distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
-//  The above copyright notice and this permission notice shall be included in all copies or
-//  substantial portions of the Software.
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
 //
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-//  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-//  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 /// Holds the value of minimumZoomScale and maximumZoomScale of the image.
@@ -42,11 +43,6 @@ public struct ZoomScale {
         maximum: 1.0
     )
 
-    /**
-     Initializer.
-     - parameter minimum: The minimum zoom level.
-     - parameter maximum: The maximum zoom level.
-     */
     public init(minimum: CGFloat, maximum: CGFloat) {
 
         minimumZoomScale = minimum
@@ -54,7 +50,7 @@ public struct ZoomScale {
     }
 }
 
-public class MediaContentView: UIScrollView {
+public class NCViewerImageContentView: UIScrollView {
 
     // MARK: - Exposed variables
     internal static var interItemSpacing: CGFloat = 0.0
@@ -63,7 +59,7 @@ public class MediaContentView: UIScrollView {
             resetZoom()
         }
     }
-    internal static var contentTransformer: ContentTransformer = DefaultContentTransformers.horizontalMoveInOut
+    internal static var contentTransformer: NCViewerImageContentTransformer = NCViewerImageDefaultContentTransformers.horizontalMoveInOut
 
     internal var position: CGFloat {
         didSet {
@@ -150,7 +146,7 @@ public class MediaContentView: UIScrollView {
 
 // MARK: - View Composition and Events
 
-extension MediaContentView {
+extension NCViewerImageContentView {
 
     private func initializeViewComponents() {
 
@@ -214,7 +210,7 @@ extension MediaContentView {
 
     internal func updateTransform() {
 
-        MediaContentView.contentTransformer(self, position)
+        NCViewerImageContentView.contentTransformer(self, position)
     }
 
     internal func handleChangeInViewSize(to size: CGSize) {
@@ -274,7 +270,7 @@ extension MediaContentView {
 
 // MARK: - UIScrollViewDelegate
 
-extension MediaContentView: UIScrollViewDelegate {
+extension NCViewerImageContentView: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 

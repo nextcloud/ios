@@ -37,7 +37,7 @@ class NCDetailViewController: UIViewController {
     @objc var offlineFilterImage: Bool = false
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var mediaBrowser: MediaBrowserViewController?
+    private var mediaBrowser: NCViewerImageViewController?
     private var metadatas = [tableMetadata]()
     private var mediaBrowserIndexStart = 0
         
@@ -378,7 +378,7 @@ class NCDetailViewController: UIViewController {
 
 //MARK: - MediaBrowser - Delegate/DataSource
 
-extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrowserViewControllerDataSource {
+extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerImageViewControllerDataSource {
     
     func viewImage() {
         
@@ -393,7 +393,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             }
             self.metadatas = metadatas
             
-            mediaBrowser = MediaBrowserViewController(index: mediaBrowserIndexStart, dataSource: self, delegate: self)
+            mediaBrowser = NCViewerImageViewController(index: mediaBrowserIndexStart, dataSource: self, delegate: self)
             if mediaBrowser != nil {
                            
                 self.backgroundView.image = nil
@@ -418,11 +418,11 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         }
     }
     
-    func numberOfItems(in mediaBrowser: MediaBrowserViewController) -> Int {
+    func numberOfItems(in mediaBrowser: NCViewerImageViewController) -> Int {
         return metadatas.count
     }
 
-    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, imageAt index: Int, completion: @escaping MediaBrowserViewControllerDataSource.CompletionBlock) {
+    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, imageAt index: Int, completion: @escaping NCViewerImageViewControllerDataSource.CompletionBlock) {
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
@@ -474,7 +474,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         }
     }
     
-    func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int, view: MediaContentView) {
+    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
@@ -488,7 +488,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         }
     }
     
-    func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController) {
+    func mediaBrowserTap(_ mediaBrowser: NCViewerImageViewController) {
         guard let navigationController = self.navigationController else { return }
         
         if navigationController.isNavigationBarHidden {
