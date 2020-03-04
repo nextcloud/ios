@@ -156,25 +156,24 @@
         <!--Detail View Controller-->
         <scene sceneID="zJM-E9-jgK">
             <objects>
-                <viewController storyboardIdentifier="CCDetailVC" id="zg6-hy-EbU" customClass="NCDetailViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCDetailVC" extendedLayoutIncludesOpaqueBars="YES" id="zg6-hy-EbU" customClass="NCDetailViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" tag="900" contentMode="scaleToFill" id="cUA-lB-tGG">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView tag="999" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="zlU-MP-ZVs" secondAttribute="trailing" id="GuY-bH-GIn"/>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="top" secondItem="cUA-lB-tGG" secondAttribute="top" id="HSh-HF-TAJ"/>
-                            <constraint firstAttribute="bottom" secondItem="zlU-MP-ZVs" secondAttribute="bottom" id="hvN-HY-D9V"/>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="leading" secondItem="cUA-lB-tGG" secondAttribute="leading" id="sVy-C6-hu1"/>
+                            <constraint firstItem="3ph-Od-2hO" firstAttribute="bottom" secondItem="zlU-MP-ZVs" secondAttribute="bottom" id="hvN-HY-D9V"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="leading" secondItem="3ph-Od-2hO" secondAttribute="leading" id="sVy-C6-hu1"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="top" secondItem="3ph-Od-2hO" secondAttribute="top" id="tUS-Af-SE7"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="cJm-UN-Dvj" userLabel="Detail"/>
                     <connections>
                         <outlet property="backgroundView" destination="zlU-MP-ZVs" id="yVd-Vz-gsJ"/>
@@ -182,7 +181,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IJ0-oL-QKv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5750" y="2407"/>
+            <point key="canvasLocation" x="5749.275362318841" y="2406.6964285714284"/>
         </scene>
         <!--Detail Navigation Controller-->
         <scene sceneID="Xur-XN-mjy">
