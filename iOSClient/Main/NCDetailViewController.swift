@@ -37,9 +37,9 @@ class NCDetailViewController: UIViewController {
     @objc var offlineFilterImage: Bool = false
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var mediaBrowser: NCViewerImageViewController?
+    private var viewerImageViewController: NCViewerImageViewController?
     private var metadatas = [tableMetadata]()
-    private var mediaBrowserIndexStart = 0
+    private var viewerImageViewControllerIndexStart = 0
         
     //MARK: -
 
@@ -132,7 +132,7 @@ class NCDetailViewController: UIViewController {
    
     @objc func changeDisplayMode() {
        
-        NCViewerImageCommon.shared.imageChangeSizeView(mediaBrowser: mediaBrowser, size: self.backgroundView.frame.size, metadata: metadata)
+        NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
     }
     
     @objc func moveFile(_ notification: NSNotification) {
@@ -150,11 +150,11 @@ class NCDetailViewController: UIViewController {
                 if errorCode != 0 { return }
                 
                 // IMAGE
-                if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                         
                     if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                                 
-                        var index = mediaBrowser!.index - 1
+                        var index = viewerImageViewController!.index - 1
                         if index < 0 { index = 0}
                         self.metadata = metadatas[index]
                         
@@ -180,7 +180,7 @@ class NCDetailViewController: UIViewController {
                 if errorCode != 0 { return }
                 
                 // IMAGE
-                if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
@@ -197,7 +197,7 @@ class NCDetailViewController: UIViewController {
                 if errorCode != 0 { return }
                 
                 // IMAGE
-                if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
@@ -376,7 +376,7 @@ class NCDetailViewController: UIViewController {
     }
 }
 
-//MARK: - MediaBrowser - Delegate/DataSource
+//MARK: - viewerImageViewController - Delegate/DataSource
 
 extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerImageViewControllerDataSource {
     
@@ -388,53 +388,53 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                             
             var counter = 0
             for metadata in metadatas {
-                if metadata.ocId == self.metadata!.ocId { mediaBrowserIndexStart = counter }
+                if metadata.ocId == self.metadata!.ocId { viewerImageViewControllerIndexStart = counter }
                 counter += 1
             }
             self.metadatas = metadatas
             
-            mediaBrowser = NCViewerImageViewController(index: mediaBrowserIndexStart, dataSource: self, delegate: self)
-            if mediaBrowser != nil {
+            viewerImageViewController = NCViewerImageViewController(index: viewerImageViewControllerIndexStart, dataSource: self, delegate: self)
+            if viewerImageViewController != nil {
                            
                 self.backgroundView.image = nil
 
-                mediaBrowser!.view.isHidden = true
+                viewerImageViewController!.view.isHidden = true
                 
-                mediaBrowser!.enableInteractiveDismissal = true
+                viewerImageViewController!.enableInteractiveDismissal = true
                 
-                addChild(mediaBrowser!)
-                backgroundView.addSubview(mediaBrowser!.view)
+                addChild(viewerImageViewController!)
+                backgroundView.addSubview(viewerImageViewController!.view)
                 
-                mediaBrowser!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
-                mediaBrowser!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+                viewerImageViewController!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 
-                mediaBrowser!.didMove(toParent: self)
+                viewerImageViewController!.didMove(toParent: self)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
-                    self.mediaBrowser!.view.isHidden = false
+                    self.viewerImageViewController!.changeInViewSize(to: self.backgroundView.frame.size)
+                    self.viewerImageViewController!.view.isHidden = false
                 }
             }
         }
     }
     
-    func numberOfItems(in mediaBrowser: NCViewerImageViewController) -> Int {
+    func numberOfItems(in viewerImageViewController: NCViewerImageViewController) -> Int {
         return metadatas.count
     }
 
-    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, imageAt index: Int, completion: @escaping NCViewerImageViewControllerDataSource.CompletionBlock) {
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping NCViewerImageViewControllerDataSource.CompletionBlock) {
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
         
         // Refresh self metadata && title
-        if mediaBrowser.index < metadatas.count {
-            self.metadata = metadatas[mediaBrowser.index]
+        if viewerImageViewController.index < metadatas.count {
+            self.metadata = metadatas[viewerImageViewController.index]
             self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
         }
         
         // Original only for the first
-        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == mediaBrowserIndexStart {
+        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == viewerImageViewControllerIndexStart {
                 
             if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -474,7 +474,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
     
-    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
@@ -488,7 +488,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
     
-    func mediaBrowserTap(_ mediaBrowser: NCViewerImageViewController) {
+    func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController) {
         guard let navigationController = self.navigationController else { return }
         
         if navigationController.isNavigationBarHidden {
@@ -499,10 +499,10 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             view.backgroundColor = .black
         }
         
-        NCViewerImageCommon.shared.imageChangeSizeView(mediaBrowser: mediaBrowser, size: self.backgroundView.frame.size, metadata: metadata)
+        NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
     }
     
-    func mediaBrowserDismiss() {
+    func viewerImageViewControllerDismiss() {
         viewUnload()
     }
     

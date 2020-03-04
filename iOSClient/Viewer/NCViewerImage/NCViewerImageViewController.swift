@@ -39,32 +39,32 @@ public protocol NCViewerImageViewControllerDataSource: class {
 
     /**
      Method to supply number of items to be shown in media browser.
-     - parameter mediaBrowser: Reference to media browser object.
+     - parameter viewerImageViewController: Reference to media browser object.
      - returns: An integer with number of items to be shown in media browser.
      */
-    func numberOfItems(in mediaBrowser: NCViewerImageViewController) -> Int
+    func numberOfItems(in viewerImageViewController: NCViewerImageViewController) -> Int
 
     /**
      Method to supply image for specific index.
-     - parameter mediaBrowser: Reference to media browser object.
+     - parameter viewerImageViewController: Reference to media browser object.
      - parameter index: Index of the requested media.
      - parameter completion: Completion block to be executed on fetching the media image.
      */
-    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, imageAt index: Int, completion: @escaping CompletionBlock)
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping CompletionBlock)
 
     /**
      This method is used to get the target frame into which the browser will perform the dismiss transition.
-     - parameter mediaBrowser: Reference to media browser object.
+     - parameter viewerImageViewController: Reference to media browser object.
 
      - note:
         If this method is not implemented, the media browser will perform slide up/down transition on dismissal.
     */
-    func targetFrameForDismissal(_ mediaBrowser: NCViewerImageViewController) -> CGRect?
+    func targetFrameForDismissal(_ viewerImageViewController: NCViewerImageViewController) -> CGRect?
 }
 
 extension NCViewerImageViewControllerDataSource {
 
-    public func targetFrameForDismissal(_ mediaBrowser: NCViewerImageViewController) -> CGRect? { return nil }
+    public func targetFrameForDismissal(_ viewerImageViewController: NCViewerImageViewController) -> CGRect? { return nil }
 }
 
 // MARK: - NCViewerImageViewControllerDelegate protocol
@@ -73,21 +73,21 @@ public protocol NCViewerImageViewControllerDelegate: class {
 
     /**
      Method invoked on scrolling to next/previous media items.
-     - parameter mediaBrowser: Reference to media browser object.
+     - parameter viewerImageViewController: Reference to media browser object.
      - parameter index: Index of the newly focussed media item.
      - note:
         This method will not be called on first load, and will be called only on swiping left and right.
      */
-    func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView)
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView)
     
-    func mediaBrowserTap(_ mediaBrowser: NCViewerImageViewController)
+    func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController)
 
-    func mediaBrowserDismiss()
+    func viewerImageViewControllerDismiss()
 }
 
 extension NCViewerImageViewControllerDelegate {
 
-    public func mediaBrowser(_ mediaBrowser: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {}
+    public func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {}
 }
 
 public class NCViewerImageViewController: UIViewController {
@@ -491,7 +491,7 @@ extension NCViewerImageViewController {
             mediaView.zoomScaleOne()
         }
 
-        self.delegate?.mediaBrowserTap(self)
+        self.delegate?.viewerImageViewControllerTap(self)
     }
 }
 
@@ -583,7 +583,7 @@ extension NCViewerImageViewController {
                 mediaContainerView.sendSubviewToBack(previousView)
             }
 
-            delegate?.mediaBrowser(self, didChangeFocusTo: index, view: nextView)
+            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: nextView)
 
         } else if middleView.position > (1 + normalizedGap - normalizedCenter) {
 
@@ -604,7 +604,7 @@ extension NCViewerImageViewController {
                 mediaContainerView.bringSubviewToFront(nextView)
             }
 
-            delegate?.mediaBrowser(self, didChangeFocusTo: index, view: previousView)
+            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: previousView)
         }
     }
 
@@ -639,7 +639,7 @@ extension NCViewerImageViewController {
         contentView.image = nil
         let convertedIndex = sanitizeIndex(contentView.index)
         contentView.isLoading = true
-        dataSource?.mediaBrowser(
+        dataSource?.viewerImageViewController(
             self,
             imageAt: convertedIndex,
             completion: { [weak self] (index, image, zoom, _) in

@@ -186,7 +186,7 @@ internal class NCViewerImageDismissAnimationController: NSObject {
         let directionalPosition = (gestureDirection == .horizontal) ? relativePosition.y : relativePosition.x
         if directionalPosition != 0.0 {
             viewController?.dismiss(animated: false, completion: {
-                self.viewController?.delegate?.mediaBrowserDismiss()
+                self.viewController?.delegate?.viewerImageViewControllerDismiss()
             })
         } else {
             viewController?.mediaContainerView.isHidden = false
