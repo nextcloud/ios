@@ -24,6 +24,21 @@ class NCViewerImageCommon: NSObject {
         return nil
     }
     
+    func getImage(metadata: tableMetadata) -> UIImage? {
+        
+        var image: UIImage?
+        
+        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+           
+            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let ext = CCUtility.getExtension(metadata.fileNameView)
+            if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
+            else { image = UIImage.init(contentsOfFile: imagePath) }
+        }
+        
+        return image
+    }
+    
     func imageChangeSizeView(mediaBrowser: MediaBrowserViewController?, size: CGSize, metadata: tableMetadata?) {
         guard let mediaBrowser = mediaBrowser else { return }
         

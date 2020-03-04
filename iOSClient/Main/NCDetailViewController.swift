@@ -407,7 +407,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
                 
                 mediaBrowser!.didMove(toParent: self)
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                     self.mediaBrowser!.changeInViewSize(to: self.backgroundView.frame.size)
                     self.mediaBrowser!.view.isHidden = false
                 }
@@ -432,15 +432,11 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         
         // Original only for the first
         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == mediaBrowserIndexStart {
-            var image: UIImage?
                 
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let ext = CCUtility.getExtension(metadata.fileNameView)
-            if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
-            else { image = UIImage.init(contentsOfFile: imagePath) }
-                               
-            if let image = image {
-                completion(index, image, ZoomScale.default, nil)
+            if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    completion(index, image, ZoomScale.default, nil)
+                }
             } else {
                 completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
             }
@@ -481,18 +477,9 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         let metadata = metadatas[index]
         
         DispatchQueue.global().async {
-            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
-                var image: UIImage?
-                           
-                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                let ext = CCUtility.getExtension(metadata.fileNameView)
-                if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
-                else { image = UIImage.init(contentsOfFile: imagePath) }
-                                          
-                if let image = image {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
-                        view.image = image
-                    }
+            if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+                    view.image = image
                 }
             }
         }
