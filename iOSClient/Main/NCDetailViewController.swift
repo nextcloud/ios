@@ -152,7 +152,7 @@ class NCDetailViewController: UIViewController {
                 // IMAGE
                 if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                         
-                    if let metadatas = getMetadatasMediaBrowser() {
+                    if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                                 
                         var index = mediaBrowser!.index - 1
                         if index < 0 { index = 0}
@@ -181,7 +181,7 @@ class NCDetailViewController: UIViewController {
                 
                 // IMAGE
                 if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
-                    if getMetadatasMediaBrowser() != nil {
+                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
                         viewUnload()
@@ -198,7 +198,7 @@ class NCDetailViewController: UIViewController {
                 
                 // IMAGE
                 if mediaBrowser != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
-                    if getMetadatasMediaBrowser() != nil {
+                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
                         viewUnload()
@@ -381,7 +381,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         
         for view in backgroundView.subviews { view.removeFromSuperview() }
         
-        if let metadatas = getMetadatasMediaBrowser() {
+        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                             
             var counter = 0
             for metadata in metadatas {
@@ -501,30 +501,6 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
     
     func mediaBrowserDismiss() {
         viewUnload()
-    }
-    
-    func getMetadatasMediaBrowser() -> [tableMetadata]? {
-        guard let metadata = self.metadata else { return nil }
-        if favoriteFilterImage {
-            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
-        } else if mediaFilterImage {
-            return NCManageDatabase.sharedInstance.getMedias(account: metadata.account, predicate: NSPredicate(format: "account == %@ AND typeFile == %@", metadata.account, k_metadataTypeFile_image))
-        } else if offlineFilterImage {
-            var datasourceSorted = ""
-            var datasourceAscending = true
-            (_, datasourceSorted, datasourceAscending, _, _) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
-            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: datasourceSorted, ascending: datasourceAscending) {
-                var ocIds = [String]()
-                for file: tableLocalFile in files {
-                    ocIds.append(file.ocId)
-                }
-                return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds), sorted: datasourceSorted, ascending: datasourceAscending)
-            }
-        } else {
-            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
-        }
-        
-        return nil
     }
     
     func getImageOffOutline() -> UIImage {
