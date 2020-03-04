@@ -251,7 +251,8 @@ class NCDetailViewController: UIViewController {
         // DOCUMENT - INTERNAL VIEWER
         if metadata.typeFile == k_metadataTypeFile_document && selector != nil && selector == selectorLoadFileInternalView {
             
-            NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
+            let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+            NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView, frame: frame)
             return
         }
         
@@ -370,7 +371,8 @@ class NCDetailViewController: UIViewController {
         }
         
         // OTHER
-        NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView)
+        let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+        NCViewerDocumentWeb.sharedInstance.viewDocumentWebAt(metadata, view: backgroundView, frame: frame)
     }
 }
 

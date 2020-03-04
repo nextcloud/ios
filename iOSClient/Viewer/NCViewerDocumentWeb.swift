@@ -35,7 +35,7 @@ class NCViewerDocumentWeb: NSObject {
         return instance
     }()
     
-    @objc func viewDocumentWebAt(_ metadata: tableMetadata, view: UIView) {
+    @objc func viewDocumentWebAt(_ metadata: tableMetadata, view: UIView, frame: CGRect) {
         
         if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) { return }
         
@@ -68,7 +68,7 @@ class NCViewerDocumentWeb: NSObject {
         
         configuration.preferences = preferences
         
-        let webView = WKWebView(frame: view.frame)
+        let webView = WKWebView(frame: frame)
         webView.navigationDelegate = self
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.backgroundColor = .white
