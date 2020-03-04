@@ -22,29 +22,22 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-/// Holds the value of minimumZoomScale and maximumZoomScale of the image.
 public struct ZoomScale {
 
-    /// Minimum zoom level, the image can be zoomed out to.
     public var minimumZoomScale: CGFloat
-
-    /// Maximum zoom level, the image can be zoomed into.
     public var maximumZoomScale: CGFloat
 
-    /// Default zoom scale. minimum is 1.0 and maximum is 3.0
     public static let `default` = ZoomScale(
         minimum: 1.0,
         maximum: 10.0
     )
 
-    /// Identity zoom scale. Pass this to disable zoom.
     public static let identity = ZoomScale(
         minimum: 1.0,
         maximum: 1.0
     )
 
     public init(minimum: CGFloat, maximum: CGFloat) {
-
         minimumZoomScale = minimum
         maximumZoomScale = maximum
     }
