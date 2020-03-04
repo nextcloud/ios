@@ -229,6 +229,22 @@ extension MediaContentView {
 
         contentSize = imageView.frame.size
     }
+    
+    func zoomScaleOne() {
+        if zoomScale == 1 { return }
+        
+        let width = bounds.size.width
+        let height = bounds.size.height
+
+        let zoomRect = CGRect(
+            x: bounds.size.width/2 - width * 0.5,
+            y: bounds.size.height/2 - height * 0.5,
+            width: width,
+            height: height
+        )
+
+        zoom(to: zoomRect, animated: true)
+    }
 
     @objc private func didDoubleTap(_ recognizer: UITapGestureRecognizer) {
 

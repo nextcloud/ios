@@ -487,6 +487,10 @@ extension MediaBrowserViewController {
         guard !dismissController.interactionInProgress else {
             return
         }
+        
+        if let mediaView = self.mediaView(at: 1) {
+            mediaView.zoomScaleOne()
+        }
 
         self.delegate?.mediaBrowserTap(self)
     }
