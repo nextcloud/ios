@@ -485,7 +485,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         }
     }
     
-    func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController) {
+    func mediaBrowserTap(_ view: MediaContentView) {
         guard let navigationController = self.navigationController else { return }
         
         if navigationController.isNavigationBarHidden {

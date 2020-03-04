@@ -81,7 +81,7 @@ public protocol MediaBrowserViewControllerDelegate: class {
      */
     func mediaBrowser(_ mediaBrowser: MediaBrowserViewController, didChangeFocusTo index: Int, view: MediaContentView)
     
-    func mediaBrowserTap(_ mediaBrowser: MediaBrowserViewController)
+    func mediaBrowserTap(_ view: MediaContentView)
 
     func mediaBrowserDismiss()
 }
@@ -217,15 +217,6 @@ public class MediaBrowserViewController: UIViewController {
 
     public var contentViews: [MediaContentView] = []
 
-    lazy private var tapGestureRecognizer: UITapGestureRecognizer = { [unowned self] in
-        let gesture = UITapGestureRecognizer()
-        gesture.numberOfTapsRequired = 1
-        gesture.numberOfTouchesRequired = 1
-        gesture.delegate = self
-        gesture.addTarget(self, action: #selector(tapGestureEvent(_:)))
-        return gesture
-    }()
-
     private var previousTranslation: CGPoint = .zero
 
     private var timer: Timer?
@@ -332,7 +323,6 @@ extension MediaBrowserViewController {
         populateContentViews()
 
         view.addGestureRecognizer(panGestureRecognizer)
-        view.addGestureRecognizer(tapGestureRecognizer)
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -380,7 +370,8 @@ extension MediaBrowserViewController {
             let mediaView = MediaContentView(
                 index: i + index,
                 position: CGFloat(i),
-                frame: view.bounds
+                frame: view.bounds,
+                delegate: self.delegate
             )
             mediaContainerView.addSubview(mediaView)
             mediaView.translatesAutoresizingMaskIntoConstraints = false
@@ -480,15 +471,6 @@ extension MediaBrowserViewController {
         }
 
         previousTranslation = translation
-    }
-
-    @objc private func tapGestureEvent(_ recognizer: UITapGestureRecognizer) {
-
-        guard !dismissController.interactionInProgress else {
-            return
-        }
-
-        self.delegate?.mediaBrowserTap(self)
     }
 }
 

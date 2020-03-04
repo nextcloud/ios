@@ -125,17 +125,27 @@ public class MediaContentView: UIScrollView {
         return container
     }()
 
+    private lazy var singleTapGestureRecognizer: UITapGestureRecognizer = { [unowned self] in
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(didSingleTap(_:)))
+        gesture.numberOfTapsRequired = 1
+        gesture.numberOfTouchesRequired = 1
+        return gesture
+    }()
+    
     private lazy var doubleTapGestureRecognizer: UITapGestureRecognizer = { [unowned self] in
         let gesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTap(_:)))
         gesture.numberOfTapsRequired = 2
         gesture.numberOfTouchesRequired = 1
         return gesture
     }()
+    
+    private var mediaBrowserViewControllerDelegate: MediaBrowserViewControllerDelegate?
 
-    init(index itemIndex: Int, position: CGFloat, frame: CGRect) {
+    init(index itemIndex: Int, position: CGFloat, frame: CGRect, delegate: MediaBrowserViewControllerDelegate?) {
 
         self.index = itemIndex
         self.position = position
+        self.mediaBrowserViewControllerDelegate = delegate
 
         super.init(frame: frame)
 
@@ -161,8 +171,12 @@ extension MediaContentView {
 
         configureScrollView()
 
+        addGestureRecognizer(singleTapGestureRecognizer)
+        
         addGestureRecognizer(doubleTapGestureRecognizer)
 
+        singleTapGestureRecognizer.require(toFail: doubleTapGestureRecognizer)
+        
         updateTransform()
     }
 
@@ -230,6 +244,27 @@ extension MediaContentView {
         contentSize = imageView.frame.size
     }
 
+    @objc private func didSingleTap(_ recognizer: UITapGestureRecognizer) {
+                
+        if zoomScale != 1 {
+            
+            let locationInImage = recognizer.location(in: imageView)
+            let width = bounds.size.width
+            let height = bounds.size.height
+
+            let zoomRect = CGRect(
+                x: locationInImage.x - width * 0.5,
+                y: locationInImage.y - height * 0.5,
+                width: width,
+                height: height
+            )
+
+            zoom(to: zoomRect, animated: true)
+        }
+        
+        self.mediaBrowserViewControllerDelegate?.mediaBrowserTap(self)
+    }
+    
     @objc private func didDoubleTap(_ recognizer: UITapGestureRecognizer) {
 
         let locationInImage = recognizer.location(in: imageView)
