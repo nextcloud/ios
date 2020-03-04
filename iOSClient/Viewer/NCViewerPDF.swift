@@ -31,7 +31,6 @@ import PDFKit
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var thumbnailViewHeight: CGFloat = 48
     private var pdfThumbnailView: PDFThumbnailView?
-    private var backgroundView: UIView?
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -52,7 +51,6 @@ import PDFKit
     }
     
     @objc func setupPdfView(filePath: URL, view: UIView) {
-        self.backgroundView = view
         guard let pdfDocument = PDFDocument(url: filePath) else { return }
         
         document = pdfDocument
@@ -87,26 +85,32 @@ import PDFKit
     
     @objc func didTap(_ recognizer: UITapGestureRecognizer) {
         guard let navigationController = appDelegate.activeDetail.navigationController else { return }
-        guard let backgroundView = self.backgroundView else { return }
         
         if navigationController.isNavigationBarHidden {
             
             navigationController.isNavigationBarHidden = false
             pdfThumbnailView!.isHidden = false
             backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            backgroundView.backgroundColor = backgroundColor
+            appDelegate.activeDetail.view.backgroundColor = backgroundColor
             
         } else {
             
             navigationController.isNavigationBarHidden = true
             pdfThumbnailView!.isHidden = true
             backgroundColor = .black
-            backgroundView.backgroundColor = backgroundColor
+            appDelegate.activeDetail.view.backgroundColor = backgroundColor
         }
     
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
-            let size = self.backgroundView!.bounds
-            let height = size.height - size.origin.y 
+            let size = self.appDelegate.activeDetail.backgroundView!.bounds
+            var height: CGFloat = 0
+            
+            if navigationController.isNavigationBarHidden {
+                height = size.height - size.origin.y
+            } else {
+                height = size.height - size.origin.y - self.thumbnailViewHeight
+            }
+             
             self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
         }
     }
