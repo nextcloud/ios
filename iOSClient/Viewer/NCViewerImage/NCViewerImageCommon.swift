@@ -94,8 +94,8 @@ class NCViewerImageCommon: NSObject {
                 }
             }
         }
+        
         DispatchQueue.main.async {
-        //DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             viewerImageViewController.changeInViewSize(to: size)
             if image != nil {
                 contentViewSaved?.image = image
