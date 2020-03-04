@@ -134,6 +134,7 @@
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
+		F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381439240FE48D00404AC7 /* NCViewerImageCommon.swift */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
@@ -785,6 +786,7 @@
 		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
 		F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F736B551234DCF57008A5C9F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		F7381439240FE48D00404AC7 /* NCViewerImageCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerImageCommon.swift; sourceTree = "<group>"; };
 		F7381EDA218218C9000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
 		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
@@ -2174,21 +2176,22 @@
 			path = Trash;
 			sourceTree = "<group>";
 		};
-		F79018B1240962C7007C9B6D /* NCMediaBrowser */ = {
+		F79018B1240962C7007C9B6D /* NCViewerImage */ = {
 			isa = PBXGroup;
 			children = (
 				F79018B2240962C7007C9B6D /* DismissAnimationController.swift */,
 				F79018B3240962C7007C9B6D /* MediaContentView.swift */,
+				F7381439240FE48D00404AC7 /* NCViewerImageCommon.swift */,
 				F79018B4240962C7007C9B6D /* MediaBrowserViewController.swift */,
 				F79018B5240962C7007C9B6D /* ContentTransformers.swift */,
 			);
-			path = NCMediaBrowser;
+			path = NCViewerImage;
 			sourceTree = "<group>";
 		};
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
-				F79018B1240962C7007C9B6D /* NCMediaBrowser */,
+				F79018B1240962C7007C9B6D /* NCViewerImage */,
 				F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */,
 				F710D1F42405770F00A6033D /* NCViewerPDF.swift */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
@@ -3523,6 +3526,7 @@
 				F762CB141EACB66200B38484 /* XLFormRightImageButton.m in Sources */,
 				F73D71621F2673C200E233EB /* NCText.swift in Sources */,
 				F73B4EF81F470D9100BBEE4B /* LangDanishModel.cpp in Sources */,
+				F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */,
 				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
 				F73B4F051F470D9100BBEE4B /* nsCharSetProber.cpp in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,

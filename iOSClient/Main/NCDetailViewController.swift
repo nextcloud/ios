@@ -132,7 +132,7 @@ class NCDetailViewController: UIViewController {
    
     @objc func changeDisplayMode() {
        
-        imageChangeSizeView()
+        NCViewerImageCommon.shared.imageChangeSizeView(mediaBrowser: mediaBrowser, size: self.backgroundView.frame.size, metadata: metadata)
     }
     
     @objc func moveFile(_ notification: NSNotification) {
@@ -448,8 +448,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         // Preview
         } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
-            let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            if let image = UIImage.init(contentsOfFile: imagePath) {
+            if let image = NCViewerImageCommon.shared.getThumbnailImage(metadata: metadata) {
                 completion(index, image, ZoomScale.default, nil)
             } else {
                 completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
@@ -510,7 +509,7 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
             view.backgroundColor = .black
         }
         
-        imageChangeSizeView()
+        NCViewerImageCommon.shared.imageChangeSizeView(mediaBrowser: mediaBrowser, size: self.backgroundView.frame.size, metadata: metadata)
     }
     
     func mediaBrowserDismiss() {
@@ -546,25 +545,5 @@ extension NCDetailViewController: MediaBrowserViewControllerDelegate, MediaBrows
         let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: self.view.frame.width, height: self.view.frame.width, color: NCBrandColor.sharedInstance.brand)
 
         return image!
-    }
-    
-    func imageChangeSizeView() {
-        
-        guard let mediaBrowser = self.mediaBrowser else { return }
-        var image: UIImage?
-        var contentViewSaved : MediaContentView?
-        for contentView in mediaBrowser.contentViews {
-            if contentView.position == 0 && contentView.isLoading == false {
-                image = contentView.image
-                contentViewSaved = contentView
-                contentView.image = nil
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
-            self.mediaBrowser?.changeInViewSize(to: self.backgroundView.frame.size)
-            if image != nil {
-                contentViewSaved?.image = image
-            }
-        }
     }
 }
