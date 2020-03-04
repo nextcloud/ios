@@ -260,7 +260,9 @@ class NCDetailViewController: UIViewController {
             // PDF
             if metadata.contentType == "application/pdf" {
                 if #available(iOS 11.0, *) {
-                    let viewerPDF = NCViewerPDF.init(frame: backgroundView.frame)
+                    
+                    let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                    let viewerPDF = NCViewerPDF.init(frame: frame)
                     
                     let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) == false {
@@ -294,7 +296,8 @@ class NCDetailViewController: UIViewController {
                             
                             if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                                 
-                                let nextcloudText = NCViewerNextcloudText.init(frame: self.backgroundView.frame, configuration: WKWebViewConfiguration())
+                                let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                                let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
                                 nextcloudText.viewerAt(url!, metadata: metadata, editor: editor, view: self.backgroundView, viewController: self)
                                 if editor == k_editor_text && self.splitViewController!.isCollapsed {
                                     self.navigationController?.navigationItem.hidesBackButton = true
@@ -313,7 +316,8 @@ class NCDetailViewController: UIViewController {
                         
                     } else {
                         
-                        let nextcloudText = NCViewerNextcloudText.init(frame: backgroundView.frame, configuration: WKWebViewConfiguration())
+                        let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                        let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
                         nextcloudText.viewerAt(metadata.url, metadata: metadata, editor: editor, view: backgroundView, viewController: self)
                         if editor == k_editor_text && self.splitViewController!.isCollapsed {
                             self.navigationController?.navigationItem.hidesBackButton = true
@@ -335,7 +339,8 @@ class NCDetailViewController: UIViewController {
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                             
-                            let richDocument = NCViewerRichdocument.init(frame: self.backgroundView.frame, configuration: WKWebViewConfiguration())
+                            let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                            let richDocument = NCViewerRichdocument.init(frame: frame, configuration: WKWebViewConfiguration())
                             richDocument.viewRichDocumentAt(url!, metadata: metadata, view: self.backgroundView, viewController: self)
                             if self.splitViewController != nil && self.splitViewController!.isCollapsed {
                                 self.navigationController?.navigationItem.hidesBackButton = true

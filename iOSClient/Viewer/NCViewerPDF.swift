@@ -37,8 +37,8 @@ import PDFKit
     }
     
     override init(frame: CGRect) {
-        let height = frame.height - frame.origin.y - thumbnailViewHeight
-        super.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: height))
+        let height = frame.height - thumbnailViewHeight
+        super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: height))
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
     }
     
