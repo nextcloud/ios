@@ -4,7 +4,6 @@
 //
 //  Created by Suraj Thomas K on 7/19/18 Copyright © 2018 Al Tayer Group LLC..
 //  Modify for Nextcloud by Marino Faggiana on 04/03/2020.
-//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
