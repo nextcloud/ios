@@ -29,14 +29,15 @@ class NCDetailViewController: UIViewController {
     
     @IBOutlet weak var backgroundView: UIImageView!
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+   
+    @objc var isNavigationBarHidden = false
     @objc var metadata: tableMetadata?
     @objc var selector: String?
-    
     @objc var favoriteFilterImage: Bool = false
     @objc var mediaFilterImage: Bool = false
     @objc var offlineFilterImage: Bool = false
-
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
     private var viewerImageViewController: NCViewerImageViewController?
     private var metadatas = [tableMetadata]()
     private var viewerImageViewControllerIndexStart = 0
@@ -65,6 +66,12 @@ class NCDetailViewController: UIViewController {
         if metadata != nil  {
             viewFile(metadata: metadata!, selector: selector)
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigateControllerBarHidden(isNavigationBarHidden)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -116,6 +123,17 @@ class NCDetailViewController: UIViewController {
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
+    }
+    
+    @objc func navigateControllerBarHidden(_ state: Bool) {
+        if state  {
+            view.backgroundColor = .black
+        } else {
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        }
+        
+        navigationController?.isNavigationBarHidden = state
+        isNavigationBarHidden = state
     }
     
     //MARK: - NotificationCenter
@@ -492,11 +510,9 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         guard let navigationController = self.navigationController else { return }
         
         if navigationController.isNavigationBarHidden {
-            navigationController.isNavigationBarHidden = false
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            navigateControllerBarHidden(false)
         } else {
-            navigationController.isNavigationBarHidden = true
-            view.backgroundColor = .black
+            navigateControllerBarHidden(true)
         }
         
         NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)

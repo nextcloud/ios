@@ -88,23 +88,20 @@ import PDFKit
     @objc func didTap(_ recognizer: UITapGestureRecognizer) {
         guard let navigationController = appDelegate.activeDetail.navigationController else { return }
         
-        
         if navigationController.isNavigationBarHidden {
             
-            navigationController.isNavigationBarHidden = false
+            appDelegate.activeDetail.navigateControllerBarHidden(false)
             pdfThumbnailView!.isHidden = false
             backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            appDelegate.activeDetail.view.backgroundColor = backgroundColor
             
         } else {
             
             let point = recognizer.location(in: self)
             if point.y > self.frame.height - thumbnailViewHeight { return }
             
-            navigationController.isNavigationBarHidden = true
+            appDelegate.activeDetail.navigateControllerBarHidden(true)
             pdfThumbnailView!.isHidden = true
             backgroundColor = .black
-            appDelegate.activeDetail.view.backgroundColor = backgroundColor
         }
 
         let size = self.appDelegate.activeDetail.backgroundView!.bounds
