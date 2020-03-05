@@ -3274,6 +3274,10 @@
                     }
                     
                 } else {
+                    
+                    if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
+                        [self shouldPerformSegue:self.metadata selector:selectorLoadFileView];
+                    }
                    
                     self.metadata.session = k_download_session;
                     self.metadata.sessionError = @"";
