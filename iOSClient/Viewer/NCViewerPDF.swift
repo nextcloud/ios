@@ -29,7 +29,7 @@ import PDFKit
 @objc class NCViewerPDF: PDFView {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var thumbnailViewHeight: CGFloat = 48
+    private var thumbnailViewHeight: CGFloat = 40
     private var pdfThumbnailView: PDFThumbnailView?
 
     required init?(coder: NSCoder) {
@@ -69,7 +69,7 @@ import PDFKit
         pdfThumbnailView!.translatesAutoresizingMaskIntoConstraints = false
         pdfThumbnailView!.pdfView = self
         pdfThumbnailView!.layoutMode = .horizontal
-        pdfThumbnailView!.thumbnailSize = CGSize(width: 40, height: thumbnailViewHeight - 2)
+        pdfThumbnailView!.thumbnailSize = CGSize(width: 40, height: thumbnailViewHeight)
         //pdfThumbnailView.layer.shadowOffset.height = -5
         //pdfThumbnailView.layer.shadowOpacity = 0.25
         
