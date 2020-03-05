@@ -32,7 +32,10 @@ class NCViewerImageCommon: NSObject {
     func getMetadatasDatasource(metadata: tableMetadata?, favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
         guard let metadata = metadata else { return nil }
         if favoriteDatasorce {
-            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+            if metadatas == nil {
+                return [metadata]
+            }
         } else if mediaDatasorce {
             return NCManageDatabase.sharedInstance.getMedias(account: metadata.account, predicate: NSPredicate(format: "account == %@ AND typeFile == %@", metadata.account, k_metadataTypeFile_image))
         } else if offLineDatasource {
