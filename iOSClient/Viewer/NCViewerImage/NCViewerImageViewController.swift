@@ -37,28 +37,11 @@ public protocol NCViewerImageViewControllerDataSource: class {
      */
     typealias CompletionBlock = (_ index: Int, _ image: UIImage?, _ zoomScale: ZoomScale?, _ error: Error?) -> Void
 
-    /**
-     Method to supply number of items to be shown in media browser.
-     - parameter viewerImageViewController: Reference to media browser object.
-     - returns: An integer with number of items to be shown in media browser.
-     */
+   
     func numberOfItems(in viewerImageViewController: NCViewerImageViewController) -> Int
 
-    /**
-     Method to supply image for specific index.
-     - parameter viewerImageViewController: Reference to media browser object.
-     - parameter index: Index of the requested media.
-     - parameter completion: Completion block to be executed on fetching the media image.
-     */
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping CompletionBlock)
 
-    /**
-     This method is used to get the target frame into which the browser will perform the dismiss transition.
-     - parameter viewerImageViewController: Reference to media browser object.
-
-     - note:
-        If this method is not implemented, the media browser will perform slide up/down transition on dismissal.
-    */
     func targetFrameForDismissal(_ viewerImageViewController: NCViewerImageViewController) -> CGRect?
 }
 
@@ -71,13 +54,6 @@ extension NCViewerImageViewControllerDataSource {
 
 public protocol NCViewerImageViewControllerDelegate: class {
 
-    /**
-     Method invoked on scrolling to next/previous media items.
-     - parameter viewerImageViewController: Reference to media browser object.
-     - parameter index: Index of the newly focussed media item.
-     - note:
-        This method will not be called on first load, and will be called only on swiping left and right.
-     */
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView)
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController)
