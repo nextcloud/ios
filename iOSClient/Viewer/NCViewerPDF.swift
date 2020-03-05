@@ -106,18 +106,16 @@ import PDFKit
             backgroundColor = .black
             appDelegate.activeDetail.view.backgroundColor = backgroundColor
         }
-    
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150)) {
-            let size = self.appDelegate.activeDetail.backgroundView!.bounds
-            var height: CGFloat = 0
+
+        let size = self.appDelegate.activeDetail.backgroundView!.bounds
+        var height: CGFloat = 0
             
-            if navigationController.isNavigationBarHidden {
-                height = size.height - size.origin.y
-            } else {
-                height = size.height - size.origin.y - self.thumbnailViewHeight
-            }
-             
-            self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
+        if navigationController.isNavigationBarHidden {
+            height = size.height - size.origin.y
+        } else {
+            height = size.height - size.origin.y - self.thumbnailViewHeight
         }
+             
+        self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
     }
 }
