@@ -47,6 +47,11 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         super.init(coder: coder)
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+    }
+    
     @objc func viewerAt(_ link: String, metadata: tableMetadata, editor: String, view: UIView, viewController: UIViewController) {
                 
         self.metadata = metadata

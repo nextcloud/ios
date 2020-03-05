@@ -48,6 +48,11 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         super.init(coder: coder)
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+    }
+    
     @objc func viewRichDocumentAt(_ link: String, metadata: tableMetadata, view: UIView, viewController: UIViewController) {
         
         self.metadata = metadata
