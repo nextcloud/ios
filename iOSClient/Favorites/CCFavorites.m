@@ -625,23 +625,42 @@
                 if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) && self.metadata.e2eEncrypted == NO) {
                         
                     [self shouldPerformSegue:self.metadata selector:@""];
+                
+                    } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isDirectEditing:self.metadata] != nil) {
+                        
+                        if (appDelegate.reachability.isReachable) {
+                            [self shouldPerformSegue:self.metadata selector:@""];
+                        } else {
+                            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                        }
+                        
+                    } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
+                        
+                        if (appDelegate.reachability.isReachable) {
+                            [self shouldPerformSegue:self.metadata selector:@""];
+                        } else {
+                            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                        }
                         
                 } else {
                         
+                    if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
+                        [self shouldPerformSegue:self.metadata selector:selectorLoadFileView];
+                    }
+                    
                     self.metadata.session = k_download_session;
                     self.metadata.sessionError = @"";
                     self.metadata.sessionSelector = selectorLoadFileViewFavorite;
                     self.metadata.status = k_metadataStatusWaitDownload;
                         
                     // Add Metadata for Download
-                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                    [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
-                        
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
                     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
+                    
+                    [appDelegate startLoadAutoDownloadUpload];
                 }
             }
         }
-        
     }
     
     // Directory
