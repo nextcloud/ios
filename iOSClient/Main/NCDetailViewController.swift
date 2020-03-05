@@ -132,7 +132,7 @@ class NCDetailViewController: UIViewController {
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
         
-        navigationController?.isNavigationBarHidden = state
+        navigationController?.setNavigationBarHidden(state, animated: false)
         isNavigationBarHidden = state
     }
     
