@@ -109,8 +109,9 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             registerForPreviewing(with: self, sourceView: view)
         }
         
-        // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+
         changeTheming()
     }
     
@@ -141,6 +142,12 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.actionSheet?.viewDidLayoutSubviews()
         }
+    }
+    
+    //MARK: - NotificationCenter
+
+    @objc func deleteFile(_ notification: NSNotification) {
+        self.loadDatasource()
     }
     
     @objc func changeTheming() {
@@ -762,18 +769,12 @@ extension NCOffline {
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
         
-        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
-            return
-        }
-        
         items.append(DestructiveButton(title: NSLocalizedString("_delete_", comment: "")))
         items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
         
         actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
             if item is DestructiveButton  {
-                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderocId: tableDirectory.ocId) { (errorCode, message) in
-                    self.loadDatasource()
-                }
+                NCNetworking.sharedInstance.deleteMetadata(metadata) { (errorCode, errorDescription) in }
             }
             if item is CancelButton { print("Cancel buttons has the value `true`") }
         })

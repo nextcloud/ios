@@ -90,9 +90,9 @@
     
     // Notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
-
-    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
+    
     [self changeTheming];
     
     // Query data source
@@ -109,9 +109,29 @@
     [self reloadDatasource:nil action:k_action_NULL];
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== NotificationCenter ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)triggerProgressTask:(NSNotification *)notification
+{
+    if (sectionDataSource.ocIdIndexPath != nil) {
+        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
+    }
+}
+
 - (void)changeTheming
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
+}
+
+- (void)deleteFile:(NSNotification *)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+    if (metadata) {
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_DEL];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -264,13 +284,6 @@
 #pragma mark ===== Progress & Task Button =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)triggerProgressTask:(NSNotification *)notification
-{
-    if (sectionDataSource.ocIdIndexPath != nil) {
-        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
-    }
-}
-
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
 {
     UITouch *touch = [[event allTouches] anyObject];
@@ -393,26 +406,14 @@
 - (void)actionDelete:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-    tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
-        tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, metadata.serverUrl]];
-        
-        [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:metadata.serverUrl folderocId:tableDirectory.ocId completion:^(NSInteger errorCode, NSString *message) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_DEL];
-        }];
+        [[NCNetworking sharedInstance] deleteMetadata:metadata completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }]];
     
-    if (localFile) {
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
-        }]];
-    }
-    
+   
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     

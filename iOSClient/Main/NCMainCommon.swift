@@ -928,7 +928,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
     }
     
     //MARK: -
-    
+    /*
     @objc func deleteFile(metadatas: NSArray, e2ee: Bool, serverUrl: String, folderocId: String, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
         
         var copyMetadatas = [tableMetadata]()
@@ -1041,6 +1041,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         
         self.reloadDatasource(ServerUrl: serverUrl, ocId: nil, action: k_action_NULL)
     }
+    */
     
     @objc func editPhoto(_ metadata: tableMetadata, viewController: UIViewController) {
         guard let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
