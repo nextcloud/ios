@@ -111,11 +111,10 @@ class NCDetailViewController: UIViewController {
                     navigationController.popToRootViewController(animated: true)
                 }
             } else {
-                if backgroundView != nil {
-                    for view in backgroundView.subviews {
-                        view.removeFromSuperview()
-                    }
+                for view in backgroundView.subviews {
+                    view.removeFromSuperview()
                 }
+                
                 self.navigationController?.navigationBar.topItem?.title = ""
             }
         }
