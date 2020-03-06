@@ -58,8 +58,7 @@ extension NCDetailNavigationController {
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         
-                        NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: false, serverUrl: "", folderocId: "") { (errorCode, errorMessage) in
-                            
+                        NCNetworking.sharedInstance.deleteMetadata(metadata, notificationCenterPost: true) { (errorCode, errorMessage) in
                             if errorCode == 0 {
                                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: k_action_DEL)
                             }
