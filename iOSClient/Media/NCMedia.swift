@@ -155,7 +155,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
                 self.selectocId.removeAll { $0 == metadata.ocId }
                 self.reloadDataSource(loadNetworkDatasource: false)
             }
