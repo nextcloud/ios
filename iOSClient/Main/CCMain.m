@@ -441,10 +441,15 @@
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
     if ([metadata.serverUrl isEqualToString:self.serverUrl]) {
-        if (self.searchController.isActive) {
-            [self readFolder:self.serverUrl];
+        
+        if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
+            [self readFileReloadFolder];
         } else {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+            if (self.searchController.isActive) {
+                [self readFolder:self.serverUrl];
+            } else {
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+            }
         }
     }
 }
