@@ -39,6 +39,8 @@ class NCSharePaging: UIViewController {
         
         pagingViewController.metadata = metadata
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         // Navigation Controller
         var image = CCGraphics.changeThemingColorImage(UIImage(named: "exitCircle")!, width: 60, height: 60, color: NCBrandColor.sharedInstance.brandText)
         image = image?.withRenderingMode(.alwaysOriginal)
@@ -72,13 +74,12 @@ class NCSharePaging: UIViewController {
         let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemForIndex: indexPage) as PagingIndexItem
         self.title = pagingIndexItem.title
         
-        // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
         pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm

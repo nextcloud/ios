@@ -25,6 +25,7 @@
     [super viewDidLoad];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotateDeviceChangeNotification:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    
     _storeOrientation = [[UIApplication sharedApplication] statusBarOrientation];
 
     [self.view addSubview:self.actionSheet];
