@@ -247,15 +247,13 @@ import NCCommunication
     
     //MARK: - WebDav
     
-    @objc func deleteMetadata(_ metadata: tableMetadata, notificationCenterPost:Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         // verify permission
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
         if metadata.permissions != "" && permission == false {
-            if notificationCenterPost {
-                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(k_CCErrorNotPermission), "errorDescription": NSLocalizedString("_no_permission_delete_file_", comment: "")]
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
-            }
+            let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(k_CCErrorNotPermission), "errorDescription": NSLocalizedString("_no_permission_delete_file_", comment: "")]
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
             completion(Int(k_CCErrorNotPermission), "_no_permission_delete_file_")
             return
         }
@@ -282,10 +280,8 @@ import NCCommunication
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
             
-            if notificationCenterPost {
-                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": description]
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
-            }
+            let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": description]
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
             completion(errorCode, description)
         }
     }
