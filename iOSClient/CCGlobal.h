@@ -199,6 +199,7 @@
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"
+#define selectorOpenInDetail                            @"openInDetail"
 #define selectorReadFile                                @"readFile"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFolder                              @"readFolder"

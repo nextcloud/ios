@@ -35,7 +35,7 @@ extension NCDetailNavigationController {
             NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenIn)
+                    NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenInDetail)
                 }
             )
         )

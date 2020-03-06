@@ -1127,24 +1127,23 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
 
     //MARK: - OpenIn
     
-    func openIn(metadata: tableMetadata) {
+    func openIn(metadata: tableMetadata, selector: String) {
         
         docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) as URL)
         docController?.delegate = self
         
-        guard let splitViewController = self.appDelegate.window?.rootViewController as? UISplitViewController else {
-            return
+        if selector == selectorOpenInDetail {
+            guard let barButtonItem = appDelegate.activeDetail.navigationItem.rightBarButtonItem else { return }
+            guard let buttonItemView = barButtonItem.value(forKey: "view") as? UIView else { return }
+            
+            docController?.presentOptionsMenu(from: buttonItemView.frame, in: buttonItemView, animated: true)
+            
+        } else {
+            guard let splitViewController = self.appDelegate.window?.rootViewController as? UISplitViewController, let view = splitViewController.viewControllers.first?.view, let frame = splitViewController.viewControllers.first?.view.frame else {
+                return }
+    
+            docController?.presentOptionsMenu(from: frame, in: view, animated: true)
         }
-        
-        guard let view = splitViewController.viewControllers.first?.view else {
-            return
-        }
-        
-        guard let frame = splitViewController.viewControllers.first?.view.frame else {
-            return
-        }
-        
-        docController?.presentOptionsMenu(from: frame, in: view, animated: true)
     }
     
     //MARK: - OpenShare
@@ -1352,7 +1351,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
                 
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                    NCMainCommon.sharedInstance.openIn(metadata: metadata)
+                    NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
                     
                 } else {
                     
@@ -1366,9 +1365,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
             }
             
             // Open in...
-            if selector == selectorOpenIn && UIApplication.shared.applicationState == UIApplication.State.active {
+            if (selector == selectorOpenIn || selector == selectorOpenInDetail) && UIApplication.shared.applicationState == UIApplication.State.active {
 
-                NCMainCommon.sharedInstance.openIn(metadata: metadata)
+                NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
             }
             
             // Save to Photo Album
