@@ -181,7 +181,7 @@ extension CCMain {
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    self.deleteFile()
+                    self.deleteMetadatas()
                 }
             )
         )

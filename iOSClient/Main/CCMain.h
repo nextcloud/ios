@@ -91,7 +91,7 @@
 
 //expose methods for swift
 - (void)didSelectAll;
-- (void)deleteFile;
+- (void)deleteMetadatas;
 - (void)saveSelectedFiles;
 - (void)downloadSelectedFilesFolders;
 - (void)moveOpenWindow:(NSArray *)indexPaths;

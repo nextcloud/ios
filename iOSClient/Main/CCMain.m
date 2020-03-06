@@ -94,6 +94,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     }
     
     return self;
@@ -191,7 +193,6 @@
     [self setTitle];
 
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     [self changeTheming];
 }
 
@@ -429,6 +430,18 @@
             [FileProviderDomain.sharedInstance removeAllDomain];
         }        
     }    
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== NotificationCenter ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)deleteFile:(NSNotification *)notification
+{
+    if (self.searchController.isActive)
+        [self readFolder:self.serverUrl];
+    else
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1411,7 +1424,7 @@
 #pragma mark ===== Delete File or Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFile
+- (void)deleteMetadatas
 {
     if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
         return;
@@ -1426,15 +1439,10 @@
     // remove optimization
     _dateReadDataSource = nil;
     
-    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderocId:_metadataFolder.ocId completion:^(NSInteger errorCode, NSString *message) {
-        
-        // Reload
-        if (self.searchController.isActive)
-            [self readFolder:self.serverUrl];
-        else
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-    }];
-    
+    for (tableMetadata *metadata in metadatas) {
+        [[NCNetworking sharedInstance] deleteMetadata:metadata completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    }
+
     // End Select Table View
     [self tableViewSelect:false];
 }
@@ -2657,7 +2665,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [self performSelector:@selector(deleteFile) withObject:nil];
+        [self performSelector:@selector(deleteMetadatas) withObject:nil];
     }]];
     
     if (localFile) {
