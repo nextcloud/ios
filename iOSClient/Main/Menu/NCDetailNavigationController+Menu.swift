@@ -58,13 +58,10 @@ extension NCDetailNavigationController {
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         
-                        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+                        NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: false, serverUrl: "", folderocId: "") { (errorCode, errorMessage) in
                             
-                            NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: directory.e2eEncrypted, serverUrl: metadata.serverUrl, folderocId: directory.ocId) { (errorCode, errorMessage) in
-                                
-                                if errorCode == 0 {
-                                    NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: k_action_DEL)
-                                }
+                            if errorCode == 0 {
+                                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: k_action_DEL)
                             }
                         }
                     })

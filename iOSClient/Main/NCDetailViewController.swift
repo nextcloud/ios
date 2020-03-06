@@ -319,9 +319,6 @@ class NCDetailViewController: UIViewController {
                                 let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
                                 let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
                                 nextcloudText.viewerAt(url!, metadata: metadata, editor: editor, view: self.backgroundView, viewController: self)
-                                if editor == k_editor_text && self.splitViewController!.isCollapsed {
-                                    self.navigationController?.navigationItem.hidesBackButton = true
-                                }
                                 
                             } else if errorCode != 0 {
                                 
@@ -339,9 +336,6 @@ class NCDetailViewController: UIViewController {
                         let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
                         let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
                         nextcloudText.viewerAt(metadata.url, metadata: metadata, editor: editor, view: backgroundView, viewController: self)
-                        if editor == k_editor_text && self.splitViewController!.isCollapsed {
-                            self.navigationController?.navigationItem.hidesBackButton = true
-                        }
                     }
                 }
                 
@@ -362,9 +356,6 @@ class NCDetailViewController: UIViewController {
                             let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
                             let richDocument = NCViewerRichdocument.init(frame: frame, configuration: WKWebViewConfiguration())
                             richDocument.viewRichDocumentAt(url!, metadata: metadata, view: self.backgroundView, viewController: self)
-                            if self.splitViewController != nil && self.splitViewController!.isCollapsed {
-                                self.navigationController?.navigationItem.hidesBackButton = true
-                            }
                             
                         } else if errorCode != 0 {
                             
@@ -381,9 +372,6 @@ class NCDetailViewController: UIViewController {
                     
                     let richDocument = NCViewerRichdocument.init(frame: backgroundView.frame, configuration: WKWebViewConfiguration())
                     richDocument.viewRichDocumentAt(metadata.url, metadata: metadata, view: backgroundView, viewController: self)
-                    if self.splitViewController != nil && self.splitViewController!.isCollapsed {
-                        self.navigationController?.navigationItem.hidesBackButton = true
-                    }
                 }
             }
         }
