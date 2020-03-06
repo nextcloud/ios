@@ -37,7 +37,7 @@ class NCDetailNavigationController: UINavigationController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let buttonMore = UIBarButtonItem.init(image: UIImage(named: "more"), style: .plain, target: self, action: #selector(self.openMenuMore))
+        let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
         topViewController?.navigationItem.rightBarButtonItem = buttonMore
                
         topViewController?.navigationItem.leftBarButtonItem = nil
