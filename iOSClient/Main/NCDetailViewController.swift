@@ -100,7 +100,7 @@ class NCDetailViewController: UIViewController {
         return backgroundView.subviews.first
     }
     
-    func viewUnload() {
+    @objc func viewUnload() {
         
         metadata = nil
         selector = nil
@@ -111,8 +111,10 @@ class NCDetailViewController: UIViewController {
                     navigationController.popToRootViewController(animated: true)
                 }
             } else {
-                for view in backgroundView.subviews {
-                    view.removeFromSuperview()
+                if backgroundView != nil {
+                    for view in backgroundView.subviews {
+                        view.removeFromSuperview()
+                    }
                 }
                 self.navigationController?.navigationBar.topItem?.title = ""
             }

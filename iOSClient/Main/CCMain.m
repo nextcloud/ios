@@ -387,12 +387,7 @@
         if (appDelegate.player != nil && appDelegate.player.rate != 0) {
             [appDelegate.player pause];
         }
-        for (UIView *view in [appDelegate.activeDetail.view subviews]) {
-            if ([view isKindOfClass:[UIImageView class]] == NO) { // View Image Nextcloud
-                [view removeFromSuperview];
-            }
-        }
-        appDelegate.activeDetail.title = nil;
+        [appDelegate.activeDetail viewUnload];
         
         // remove all Notification Messages
         [appDelegate.listOfNotifications removeAllObjects];
