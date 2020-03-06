@@ -253,7 +253,7 @@ import NCCommunication
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
         if metadata.permissions != "" && permission == false {
             if notificationCenterPost {
-                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(k_CCErrorNotPermission)]
+                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(k_CCErrorNotPermission), "errorDescription": NSLocalizedString("_no_permission_delete_file_", comment: "")]
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
             }
             completion(Int(k_CCErrorNotPermission), "_no_permission_delete_file_")
@@ -262,6 +262,9 @@ import NCCommunication
                 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, account: metadata.account) { (account, errorCode, errorDescription) in
+            var description = ""
+            if errorDescription != nil { description = errorDescription! }
+            
             if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                 
                 do {
@@ -277,15 +280,12 @@ import NCCommunication
                 }
             }
             
+            
             if notificationCenterPost {
-                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode)]
+                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": description]
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
             }
-            if errorDescription != nil {
-                completion(errorCode, errorDescription!)
-            } else {
-                completion(errorCode, "")
-            }
+            completion(errorCode, description)
         }
     }
 }

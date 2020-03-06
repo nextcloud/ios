@@ -154,6 +154,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                self.selectocId.removeAll { $0 == metadata.ocId }
+                self.reloadDataSource(loadNetworkDatasource: false)
+            }
+        }
     }
     
     // MARK: DZNEmpty
@@ -526,10 +532,7 @@ extension NCMedia {
                 
         for ocId in selectocId {
             if let metadata = NCManageDatabase.sharedInstance.getMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                NCNetworking.sharedInstance.deleteMetadata(metadata, notificationCenterPost: true) { (errorCode, errorDescription) in
-                    self.selectocId.removeAll { $0 == metadata.ocId }
-                    self.reloadDataSource(loadNetworkDatasource: false)
-                }
+                NCNetworking.sharedInstance.deleteMetadata(metadata, notificationCenterPost: true) { (errorCode, errorDescription) in }
             }
         }
     }
