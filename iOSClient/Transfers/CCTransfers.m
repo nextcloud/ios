@@ -81,7 +81,7 @@
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [self changeTheming];
     
     [self reloadDatasource:nil action:k_action_NULL];
