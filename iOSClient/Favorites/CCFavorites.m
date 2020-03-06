@@ -53,6 +53,10 @@
     if (self = [super initWithCoder:aDecoder])  {
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         appDelegate.activeFavorites = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     }
     return self;
 }
@@ -87,11 +91,6 @@
         self.title = _titleViewControl;
     else
         self.title = NSLocalizedString(@"_favorites_", nil);
-    
-    // Notification
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     
     [self changeTheming];
     

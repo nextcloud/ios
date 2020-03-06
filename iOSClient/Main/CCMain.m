@@ -438,10 +438,15 @@
 
 - (void)deleteFile:(NSNotification *)notification
 {
-    if (self.searchController.isActive)
-        [self readFolder:self.serverUrl];
-    else
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+    if ([metadata.serverUrl isEqualToString:self.serverUrl]) {
+        if (self.searchController.isActive) {
+            [self readFolder:self.serverUrl];
+        } else {
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+        }
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
