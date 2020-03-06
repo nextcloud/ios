@@ -247,7 +247,7 @@ import NCCommunication
     
     //MARK: - WebDav
     
-    @objc func deleteMetadata(_ metadata: tableMetadata, notificationCenterPost:Bool, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, notificationCenterPost:Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         // verify permission
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
