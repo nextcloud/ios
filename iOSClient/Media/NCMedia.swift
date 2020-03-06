@@ -62,6 +62,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.init(coder: aDecoder)
 
         appDelegate.activeMedia = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
     }
     
     override func viewDidLoad() {
@@ -100,7 +103,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         }
         
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
@@ -145,10 +147,15 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         }
     }
     
+    //MARK: - NotificationCenter
+
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
 
+    @objc func deleteFile(_ notification: NSNotification) {
+    }
+    
     // MARK: DZNEmpty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
@@ -511,25 +518,18 @@ extension NCMedia {
     
     func deleteItems() {
         
+        self.isEditMode = false
+        
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
-        
-        var metadatas = [tableMetadata]()
-        
+                
         for ocId in selectocId {
             if let metadata = NCManageDatabase.sharedInstance.getMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                metadatas.append(metadata)
-            }
-        }
-        
-        if metadatas.count > 0 {
-            NCMainCommon.sharedInstance.deleteFile(metadatas: metadatas as NSArray, e2ee: false, serverUrl: "", folderocId: "") { (errorCode, message) in
-                
-                self.isEditMode = false
-                self.selectocId.removeAll()
-                
-                self.selectSearchSections()
+                NCNetworking.sharedInstance.deleteMetadata(metadata, notificationCenterPost: true) { (errorCode, errorDescription) in
+                    self.selectocId.removeAll { $0 == metadata.ocId }
+                    self.reloadDataSource(loadNetworkDatasource: false)
+                }
             }
         }
     }
