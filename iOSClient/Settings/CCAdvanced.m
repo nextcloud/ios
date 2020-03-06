@@ -242,7 +242,7 @@
     [appDelegate maintenanceMode:NO];
 
     // Inizialized home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
 }
 
 - (void)clearCacheRequest:(XLFormRowDescriptor *)sender

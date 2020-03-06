@@ -320,6 +320,7 @@
 
 // Notification Center
 
+#define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_changeTheming              @"changeTheming"
 #define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
 

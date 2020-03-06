@@ -174,7 +174,7 @@
     }
 
     // init home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
     
     return YES;
 }
@@ -452,7 +452,7 @@
             NSString *newAccount = listAccount[0];
             tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:newAccount];
             [self settingActiveAccount:newAccount activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
         } else {
             [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:false];
         }
@@ -1522,7 +1522,7 @@
                                 if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
                                     matchedAccount = [[NCManageDatabase sharedInstance] setAccountActive:account.account];
                                     [self settingActiveAccount:matchedAccount.account activeUrl:matchedAccount.url activeUser:matchedAccount.user activeUserID:matchedAccount.userID activePassword:[CCUtility getPassword:matchedAccount.account]];
-                                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+                                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
                                 }
                             }
                         }

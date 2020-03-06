@@ -89,6 +89,8 @@
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         appDelegate.activeMain = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:k_notificationCenter_initializeMain object:nil];
     }
     
     return self;
@@ -123,8 +125,7 @@
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
-    // Notifiation
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:@"initializeMain" object:nil];
+    // Notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
@@ -425,7 +426,7 @@
         } else {
             [FileProviderDomain.sharedInstance removeAllDomain];
         }        
-    }    
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2158,7 +2159,7 @@
         [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
     
         // go to home sweet home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
     }
 }
 

@@ -365,18 +365,18 @@
         [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
         
         if ([CCUtility getIntro]) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
             [self dismissViewControllerAnimated:YES completion:nil];
         } else {
             [CCUtility setIntro:YES];
             if (self.presentingViewController == nil) {
                 UISplitViewController *splitController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
                 splitController.modalPresentationStyle = UIModalPresentationFullScreen;
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
                 appDelegate.window.rootViewController = splitController;
                 [appDelegate.window makeKeyWindow];
             } else {
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
         }
