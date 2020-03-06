@@ -598,7 +598,7 @@
     }
     
     // NSNotificationCenter
-    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode)};
+    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage};
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadFile object:nil userInfo:userInfo];
 }
 
@@ -1247,7 +1247,7 @@
     }
     
     // NSNotificationCenter
-    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode)};
+    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage};
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFile object:nil userInfo:userInfo];
 }
 

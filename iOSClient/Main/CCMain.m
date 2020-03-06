@@ -1529,7 +1529,7 @@
                             tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew ocId:metadata.ocId];
                             
                             if (metadataNew) {
-                                NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode)};
+                                NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
                                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
                             }
                             
@@ -1569,7 +1569,7 @@
                             
                             [[NCContentPresenter shared] messageNotification:@"_rename_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                             
-                            NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadata, @"errorCode": @(errorCode)};
+                            NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadata, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
                             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
                             
                         } else {
@@ -1641,7 +1641,7 @@
                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];
                         
                         if (metadataNew) {
-                            NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode)};
+                            NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
                             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_moveFile object:nil userInfo:userInfo];
                         }
                         
@@ -1679,7 +1679,7 @@
                         else
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:nil action:k_action_NULL];
                         
-                        NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadata, @"errorCode": @(errorCode)};
+                        NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadata, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
                         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_moveFile object:nil userInfo:userInfo];
                         
                     } else {
