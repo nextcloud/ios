@@ -185,6 +185,7 @@
 #define k_CCErrorInternalError                          -9996
 #define k_CCErrorFileAlreadyInDownload                  -9995
 #define k_CCErrorWebdavResponseError                    -9994
+#define k_CCErrorNotPermission                          -9993
 
 // Search
 #define k_minCharsSearch                                2

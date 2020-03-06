@@ -153,6 +153,8 @@ import NCCommunication
         return result
     }
     
+    //MARK: - File <> Metadata
+    
     @objc func convertFile(_ file: NCFile, urlString: String, serverUrl : String?, fileName: String, user: String) -> tableMetadata {
         
         let metadata = tableMetadata()
@@ -241,5 +243,49 @@ import NCCommunication
         }
         
         return metadatas
+    }
+    
+    //MARK: - WebDav
+    
+    @objc func deleteMetadata(_ metadata: tableMetadata, with notificationCenterPost:Bool, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
+        
+        // verify permission
+        let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
+        if metadata.permissions != "" && permission == false {
+            if notificationCenterPost {
+                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(k_CCErrorNotPermission)]
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
+            }
+            completion(Int(k_CCErrorNotPermission), "_no_permission_delete_file_")
+            return
+        }
+                
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, account: metadata.account) { (account, errorCode, errorDescription) in
+            if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
+                
+                do {
+                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                } catch { }
+                                       
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.sharedInstance.deleteMedia(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+
+                if metadata.directory {
+                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                }
+            }
+            
+            if notificationCenterPost {
+                let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode)]
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
+            }
+            if errorDescription != nil {
+                completion(errorCode, errorDescription!)
+            } else {
+                completion(errorCode, "")
+            }
+        }
     }
 }
