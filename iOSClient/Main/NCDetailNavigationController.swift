@@ -102,6 +102,10 @@ class NCDetailNavigationController: UINavigationController {
     //MARK: - ProgressBar
 
     @objc func setProgressBar() {
+        if progressView != nil {
+            progressView?.removeFromSuperview()
+        }
+        
         progressView = UIProgressView.init(progressViewStyle: .bar)
         progressView!.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
         progressView!.setProgress(0, animated: false)
