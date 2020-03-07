@@ -28,7 +28,7 @@ class NCDetailNavigationController: UINavigationController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var progressView: UIProgressView?
-    let progressHeight: CGFloat = 2
+    let progressHeight: CGFloat = 10
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,7 +83,8 @@ class NCDetailNavigationController: UINavigationController {
     //MARK: - ProgressBar
 
     @objc func setProgressBar() {
-        progressView = UIProgressView.init(frame: CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight))
+        progressView = UIProgressView.init(progressViewStyle: .bar)
+        progressView!.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
         progressView!.setProgress(0, animated: false)
         progressView!.tintColor = NCBrandColor.sharedInstance.textView
         progressView!.trackTintColor = .clear
