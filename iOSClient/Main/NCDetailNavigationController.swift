@@ -27,16 +27,11 @@ class NCDetailNavigationController: UINavigationController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var progressView: UIProgressView?
-    let progressHeight: CGFloat = 1
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.downloadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFile), object: nil)
-                
+        
         changeTheming()
     }
     
@@ -51,9 +46,7 @@ class NCDetailNavigationController: UINavigationController {
             if !splitViewController.isCollapsed {
                 topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
             }
-        }
-        
-        setProgressBar()
+        }        
     }
     
     //MARK: - NotificationCenter
@@ -64,66 +57,11 @@ class NCDetailNavigationController: UINavigationController {
         navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.brandText]
     }
     
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let metadata = appDelegate.activeDetail.metadata else {
-            setProgressBar()
-            return
-        }
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let account = userInfo["account"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let progress = userInfo["progress"] as? Float {
-                if account == metadata.account && serverUrl == metadata.serverUrl {
-                    self.progress(progress)
-                }
-            }
-        }
-    }
-    
-    @objc func downloadFile(_ notification: NSNotification) {
-        guard let metadataDetail = appDelegate.activeDetail.metadata else { return }
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadataDetail.account == metadata.account && metadataDetail.serverUrl == metadata.serverUrl {
-                    setProgressBar()
-                }
-            }
-        }
-    }
-    
     //MARK: - Button
 
     @objc func openMenuMore() {
         if let metadata = appDelegate.activeDetail?.metadata {
             self.toggleMoreMenu(viewController: self, metadata: metadata)
         }
-    }
-    
-    //MARK: - ProgressBar
-
-    @objc func setProgressBar() {
-        if progressView != nil {
-            progressView?.removeFromSuperview()
-        }
-        
-        progressView = UIProgressView.init(progressViewStyle: .bar)
-        progressView!.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
-        progressView!.setProgress(0, animated: false)
-        progressView!.tintColor = NCBrandColor.sharedInstance.icon
-        progressView!.trackTintColor = .clear
-        navigationBar.addSubview(progressView!)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
-    }
-    
-    @objc func progress(_ progress: Float) {
-        guard let progressView = self.progressView else { return }
-        progressView.progress = progress
-    }
-    
-    @objc func orientationDidChange() {
-        guard let progressView = self.progressView else { return }
-        
-        progressView.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
     }
 }

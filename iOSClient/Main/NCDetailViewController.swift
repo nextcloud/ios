@@ -40,6 +40,8 @@ class NCDetailViewController: UIViewController {
     
     @objc  var viewerImageViewController: NCViewerImageViewController?
     private var metadatas = [tableMetadata]()
+    private var progressView: UIProgressView?
+    private let progressHeight: CGFloat = 2
         
     //MARK: -
 
@@ -60,9 +62,11 @@ class NCDetailViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.uploadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
         
         changeTheming()
-        
+        setProgressBar()
+
         if metadata != nil  {
             viewFile(metadata: metadata!, selector: selector)
         }
@@ -91,7 +95,32 @@ class NCDetailViewController: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: nil) { _ in
+            
+            if let progressView = self.progressView, let navigationBar = self.navigationController?.navigationBar {
+                 progressView.frame = CGRect(x: 0, y: navigationBar.frame.height-self.progressHeight, width: navigationBar.frame.width, height: self.progressHeight)
+            }
         }
+    }
+    
+    //MARK: - ProgressBar
+
+    @objc func setProgressBar() {
+        
+        if progressView != nil { progressView?.removeFromSuperview() }
+        guard let navigationBar = self.navigationController?.navigationBar else { return }
+        
+        progressView = UIProgressView.init(progressViewStyle: .bar)
+        progressView!.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
+        progressView!.setProgress(0, animated: false)
+        progressView!.tintColor = NCBrandColor.sharedInstance.icon
+        progressView!.trackTintColor = .clear
+        progressView!.transform = CGAffineTransform(scaleX: 1, y: progressHeight)
+        navigationBar.addSubview(progressView!)
+    }
+    
+    @objc func progress(_ progress: Float) {
+        guard let progressView = self.progressView else { return }
+        progressView.progress = progress
     }
     
     //MARK: - Utility
@@ -155,13 +184,29 @@ class NCDetailViewController: UIViewController {
         NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
     }
     
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        guard let metadata = self.metadata else { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let account = userInfo["account"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let progress = userInfo["progress"] as? Float {
+                if account == metadata.account && serverUrl == metadata.serverUrl {
+                    self.progress(progress)
+                }
+            }
+        }
+    }
+    
     @objc func downloadFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
-                if errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
+                if errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
                     
-                    viewerImageViewController?.reloadContentViews()
+                    if metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
+                        viewerImageViewController?.reloadContentViews()
+                    }
+                    
+                    setProgressBar()
                 }
             }
         }
